@@ -1,0 +1,22 @@
+{
+  "_fv": 18,
+  "_type": "potion",
+  "definition": {
+    "name": "Heaviness",
+    "effectName": "Heaviness",
+    "icon": "heaviness.png",
+    "color": {
+      "value": -10066330,
+      "falpha": 0.0
+    },
+    "isInstant": true,
+    "isBad": true,
+    "isBenefitical": false,
+    "registerPotionType": true,
+    "renderStatusInInventory": true,
+    "renderStatusInHUD": true,
+    "onActiveTick": {
+      "name": "HeavinessOnPotionActiveTick"
+    }
+  }
+}

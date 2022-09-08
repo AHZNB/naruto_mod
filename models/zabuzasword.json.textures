@@ -1,0 +1,10 @@
+{
+  "mappings": {
+    "default": {
+      "map": {
+        "3": "zabuza_sword2"
+      },
+      "name": "default"
+    }
+  }
+}

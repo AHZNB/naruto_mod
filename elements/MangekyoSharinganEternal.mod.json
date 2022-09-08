@@ -1,0 +1,51 @@
+{
+  "_fv": 18,
+  "_type": "armor",
+  "definition": {
+    "enableHelmet": true,
+    "textureHelmet": "mangekyosharingan_eterna",
+    "enableBody": false,
+    "textureBody": "",
+    "enableLeggings": false,
+    "textureLeggings": "",
+    "enableBoots": false,
+    "textureBoots": "",
+    "onHelmetTick": {
+      "name": "SharinganHelmetTickEvent"
+    },
+    "creativeTab": {
+      "value": "CUSTOM:ModTab"
+    },
+    "armorTextureFile": "sasuke_",
+    "helmetName": "Eternal Mangekyo Sharingan",
+    "bodyName": "Mangekyo Sharingan Eternal Body",
+    "leggingsName": "Mangekyo Sharingan Eternal Leggings",
+    "bootsName": "Mangekyo Sharingan Eternal Boots",
+    "helmetSpecialInfo": [],
+    "bodySpecialInfo": [],
+    "leggingsSpecialInfo": [],
+    "bootsSpecialInfo": [],
+    "helmetModelName": "ModelHelmetSnug",
+    "helmetModelPart": "bb_main",
+    "helmetModelTexture": "mangekyosharinganhelmet_eternal.png",
+    "bodyModelName": "Default",
+    "bodyModelPart": "Body",
+    "bodyModelTexture": "From armor",
+    "leggingsModelName": "Default",
+    "leggingsModelPartL": "Leggings L",
+    "leggingsModelPartR": "Leggings R",
+    "leggingsModelTexture": "From armor",
+    "bootsModelName": "Default",
+    "bootsModelPartL": "Boots L",
+    "bootsModelPartR": "Boots R",
+    "bootsModelTexture": "From armor",
+    "maxDamage": 1024,
+    "damageValueHelmet": 100,
+    "damageValueBody": 6,
+    "damageValueLeggings": 5,
+    "damageValueBoots": 2,
+    "enchantability": 0,
+    "toughness": 5.0,
+    "knockbackResistance": 0.0
+  }
+}

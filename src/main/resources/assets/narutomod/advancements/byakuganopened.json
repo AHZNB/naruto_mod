@@ -1,0 +1,26 @@
+{
+  "display": {
+    "icon": {
+      "item": "narutomod:byakuganhelmet"
+    },
+    "title": {
+      "translate": "advancements.byakuganopened.title"
+    },
+    "description": {
+      "translate": "advancements.byakuganopened.descr"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "byakuganopened": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "rewards": {
+    "experience": 0
+  },
+  "parent": "narutomod:ninjaachievement"
+}

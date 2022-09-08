@@ -1,0 +1,26 @@
+{
+  "_fv": 18,
+  "_type": "food",
+  "definition": {
+    "renderType": 0,
+    "texture": "chakrafruit",
+    "customModelName": "Normal",
+    "name": "Chakra Fruit",
+    "rarity": "COMMON",
+    "specialInfo": [],
+    "creativeTab": {
+      "value": "CUSTOM:ModTab"
+    },
+    "stackSize": 1,
+    "nutritionalValue": 20,
+    "saturation": 0.30000001192092896,
+    "eatingSpeed": 32,
+    "forDogs": false,
+    "isAlwaysEdible": true,
+    "animation": "eat",
+    "hasGlow": true,
+    "onEaten": {
+      "name": "ChakraFruitFoodEaten"
+    }
+  }
+}

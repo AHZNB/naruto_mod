@@ -1,0 +1,45 @@
+{
+  "_fv": 18,
+  "_type": "recipe",
+  "definition": {
+    "recipeType": "Crafting",
+    "xpReward": 0.0,
+    "cookingTime": 200,
+    "recipeRetstackSize": 1,
+    "recipeShapeless": false,
+    "recipeSlots": [
+      {
+        "value": "Items.STRING"
+      },
+      {
+        "value": "Items.LEATHER_LEGGINGS"
+      },
+      {
+        "value": "Blocks.WOOL#10"
+      },
+      {
+        "value": "Blocks.WOOL#11"
+      },
+      {
+        "value": ""
+      },
+      {
+        "value": "Blocks.WOOL#11"
+      },
+      {
+        "value": "Blocks.WOOL#11"
+      },
+      {
+        "value": ""
+      },
+      {
+        "value": "Blocks.WOOL#11"
+      }
+    ],
+    "recipeReturnStack": {
+      "value": "CUSTOM:Uchiha.legs"
+    },
+    "name": "recipeuchihapants",
+    "namespace": "mod"
+  }
+}

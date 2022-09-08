@@ -1,0 +1,204 @@
+package net.narutomod.procedure;
+
+import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.eventhandler.Event;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.event.entity.living.LivingEvent;
+import net.minecraftforge.client.event.RenderLivingEvent;
+import net.minecraftforge.common.MinecraftForge;
+
+import net.minecraft.world.World;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.Entity;
+import net.minecraft.client.model.ModelBiped;
+import net.minecraft.client.Minecraft;
+import net.minecraft.util.math.BlockPos;
+
+//import net.narutomod.item.ItemMangekyoSharinganObito;
+//import net.narutomod.item.ItemMangekyoSharinganEternal;
+//import net.narutomod.EntityTracker;
+import net.narutomod.NarutomodModVariables;
+import net.narutomod.NarutomodMod;
+import net.narutomod.ElementsNarutomodMod;
+
+import io.netty.buffer.ByteBuf;
+
+@ElementsNarutomodMod.ModElement.Tag
+public class ProcedureOnLivingUpdate extends ElementsNarutomodMod.ModElement {
+	//private static boolean noClip = false;
+	//private static double motionY;
+	
+	public ProcedureOnLivingUpdate(ElementsNarutomodMod instance) {
+		super(instance, 105);
+	}
+
+	@Override
+	public void preInit(FMLPreInitializationEvent event) {
+		this.elements.addNetworkMessage(CustomDataMessage.Handler.class, CustomDataMessage.class, Side.CLIENT);
+	}
+
+	@Override
+	public void init(FMLInitializationEvent event) {
+		MinecraftForge.EVENT_BUS.register(this);
+	}
+
+	public static boolean isNoClip(Entity player) {
+		//return noClip;
+		return player.getEntityData().getByte(NarutomodModVariables.noClipFlag) != 0;
+	}
+
+	public static boolean noClipAllowClicks(Entity player) {
+		return (player.getEntityData().getByte(NarutomodModVariables.noClipFlag) & 2) != 0;
+	}
+
+	public static void setNoClip(Entity player, boolean noClip) {
+		setNoClip(player, noClip, false);
+	}
+
+	public static void setNoClip(Entity player, boolean noClip, boolean allowMouseClicks) {
+		if (player instanceof EntityPlayerMP) {
+			byte flag = noClip ? (byte)(1|(allowMouseClicks?2:0)) : (byte)0;
+			player.noClip = noClip;
+			player.getEntityData().setByte(NarutomodModVariables.noClipFlag, flag);
+			NarutomodMod.PACKET_HANDLER.sendTo(new CustomDataMessage(player, flag), (EntityPlayerMP) player);
+			NarutomodMod.PACKET_HANDLER.sendToAllTracking(new CustomDataMessage(player, flag), player);
+		}
+	}
+	
+	public static class CustomDataMessage implements IMessage {
+		int id;
+		byte flag;
+		//double my;
+
+		public CustomDataMessage() {
+		}
+
+		public CustomDataMessage(Entity entity, byte flagIn) {
+			this.id = entity.getEntityId();
+			this.flag = flagIn;
+			//this.my = entity.motionY;
+		}
+
+		public static class Handler implements IMessageHandler<CustomDataMessage, IMessage> {
+			@SideOnly(Side.CLIENT)
+			@Override
+			public IMessage onMessage(CustomDataMessage message, MessageContext context) {
+				Minecraft.getMinecraft().addScheduledTask(() -> {
+					Entity player = Minecraft.getMinecraft().world.getEntityByID(message.id);
+					if (player instanceof EntityPlayer) {
+						player.getEntityData().setByte(NarutomodModVariables.noClipFlag, message.flag);
+						player.noClip = message.flag != 0 ? true : false;
+					}
+					//noClip = message.bVar1;
+					//motionY = message.qwVar2;
+				});
+				return null;
+			}
+		}
+
+		public void toBytes(ByteBuf buf) {
+			buf.writeInt(this.id);
+			buf.writeByte(this.flag);
+			//buf.writeDouble(this.my);
+		}
+
+		public void fromBytes(ByteBuf buf) {
+			this.id = buf.readInt();
+			this.flag = buf.readByte();
+			//this.my = buf.readDouble();
+		}
+	}
+	
+	@SubscribeEvent
+	public void onLivingUpdate(LivingEvent.LivingUpdateEvent event) {
+		EntityLivingBase entity = event.getEntityLiving();
+		World world = entity.world;
+		//EntityTracker.getOrCreate(entity).saveBB();
+		if (entity.getEntityData().hasKey(NarutomodModVariables.noClipFlag)) {
+			entity.noClip = isNoClip(entity);
+			if (entity.noClip) {
+				if (!entity.hasNoGravity()) {
+					if (world.isAirBlock(new BlockPos(entity.posX, entity.posY-0.1d, entity.posZ)) || entity.isSneaking()) {
+						entity.motionY -= 0.01d;
+					} else {
+						entity.motionY = 0;
+					}
+				}
+			}
+		}
+		if (!world.isRemote && entity.getEntityData().getDouble(NarutomodModVariables.DeathAnimationTime) > 0.0D) {
+			event.setCanceled(true);
+			{
+				java.util.HashMap<String, Object> $_dependencies = new java.util.HashMap<>();
+				$_dependencies.put("entity", entity);
+				$_dependencies.put("world", world);
+				ProcedureDeathAnimations.executeProcedure($_dependencies);
+			}
+			entity.getEntityData().setDouble(NarutomodModVariables.DeathAnimationTime, entity.getEntityData().getDouble(NarutomodModVariables.DeathAnimationTime) - 1.0D);
+			if (entity.getEntityData().getDouble(NarutomodModVariables.DeathAnimationTime) <= 0.0D) {
+				if (entity.getEntityData().getDouble("deathAnimationType") == 2d) {
+					entity.setHealth(0f);
+				} else {
+					entity.onKillCommand();
+				}
+			}
+		}
+		if (entity.getEntityData().getDouble(NarutomodModVariables.InvulnerableTime) > 0D) {
+			entity.getEntityData().setDouble(NarutomodModVariables.InvulnerableTime, entity.getEntityData().getDouble(NarutomodModVariables.InvulnerableTime) - 1d);
+		}
+		if (entity.getEntityData().getInteger("FearEffect") > 0) {
+			entity.getEntityData().setInteger("FearEffect", entity.getEntityData().getInteger("FearEffect") - 1);
+		}
+		if (entity.getEntityData().getInteger("ForceExtinguish") > 0) {
+			entity.getEntityData().setInteger("ForceExtinguish", entity.getEntityData().getInteger("ForceExtinguish") - 1);
+			entity.extinguish();
+		}
+		if (entity.getEntityData().hasKey("GlowingTicks")) {
+			int i = entity.getEntityData().getInteger("GlowingTicks");
+			entity.setGlowing(i > 0);
+			if (i > 0) {
+				setGlowingFor(entity, i - 1);
+			} else {
+				entity.getEntityData().removeTag("GlowingTicks");
+			}
+		}
+		if (entity instanceof EntityLiving) {
+			EntityLivingBase target = ((EntityLiving)entity).getAttackTarget();
+			if (target != null && !target.isEntityAlive()) {
+				((EntityLiving)entity).setAttackTarget(null);
+			}
+		}
+	}
+
+	public static void setGlowingFor(Entity entity, int ticks) {
+		entity.getEntityData().setInteger("GlowingTicks", ticks);
+	}
+
+	@SideOnly(Side.CLIENT)
+	@SubscribeEvent
+	public void onRenderName(RenderLivingEvent.Specials.Pre event) {
+		if (isNoClip(event.getEntity())) {
+			event.setCanceled(true);
+		}
+	}
+
+	@SideOnly(Side.CLIENT)
+	@SubscribeEvent
+	public void onRenderLivingPre(RenderLivingEvent.Pre event) {
+		if (event.getRenderer().getMainModel() instanceof ModelBiped) {
+			ModelBiped model = (ModelBiped)event.getRenderer().getMainModel();
+			if (event.getEntity().getEntityData().getBoolean(NarutomodModVariables.forceBowPose)) {
+				model.rightArmPose = ModelBiped.ArmPose.BOW_AND_ARROW;
+			}
+		}
+	}
+}

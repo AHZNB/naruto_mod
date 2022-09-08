@@ -1,0 +1,22 @@
+{
+  "_fv": 18,
+  "_type": "potion",
+  "definition": {
+    "name": "Amaterasu",
+    "effectName": "Amaterasu",
+    "icon": "fire_black_0.png",
+    "color": {
+      "value": -16777216,
+      "falpha": 0.0
+    },
+    "isInstant": true,
+    "isBad": true,
+    "isBenefitical": false,
+    "registerPotionType": false,
+    "renderStatusInInventory": true,
+    "renderStatusInHUD": true,
+    "onActiveTick": {
+      "name": "AmaterasuFlameOnPotionActiveTick"
+    }
+  }
+}

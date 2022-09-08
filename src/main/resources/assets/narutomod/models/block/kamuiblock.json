@@ -1,0 +1,7 @@
+{
+  "parent": "block/cube_all",
+  "textures": {
+    "all": "narutomod:blocks/concrete_light_blue",
+    "particle": "narutomod:blocks/concrete_light_blue"
+  }
+}

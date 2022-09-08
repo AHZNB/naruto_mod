@@ -1,0 +1,26 @@
+{
+  "display": {
+    "icon": {
+      "item": "narutomod:jiton"
+    },
+    "title": {
+      "translate": "advancements.jiton_acquired.title"
+    },
+    "description": {
+      "translate": "advancements.jiton_acquired.descr"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "jiton_acquired": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "rewards": {
+    "experience": 0
+  },
+  "parent": "narutomod:ninjaachievement"
+}

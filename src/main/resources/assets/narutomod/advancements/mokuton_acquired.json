@@ -1,0 +1,26 @@
+{
+  "display": {
+    "icon": {
+      "item": "narutomod:mokuton"
+    },
+    "title": {
+      "translate": "advancements.mokuton_acquired.title"
+    },
+    "description": {
+      "translate": "advancements.mokuton_acquired.descr"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "mokuton_acquired": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "rewards": {
+    "experience": 0
+  },
+  "parent": "narutomod:ninjaachievement"
+}

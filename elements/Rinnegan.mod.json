@@ -1,0 +1,57 @@
+{
+  "_fv": 18,
+  "_type": "armor",
+  "definition": {
+    "enableHelmet": true,
+    "textureHelmet": "rinnegan",
+    "enableBody": true,
+    "textureBody": "6path_chestplate",
+    "enableLeggings": true,
+    "textureLeggings": "6path_leggings",
+    "enableBoots": false,
+    "textureBoots": "",
+    "onHelmetTick": {
+      "name": "RinneganHelmetTickEvent"
+    },
+    "creativeTab": {
+      "value": "CUSTOM:ModTab"
+    },
+    "armorTextureFile": "1p-armor_",
+    "helmetName": "Rinnegan ",
+    "bodyName": "Rinnesharingan Body",
+    "leggingsName": "Rinnesharingan Leggings",
+    "bootsName": "",
+    "helmetSpecialInfo": [],
+    "bodySpecialInfo": [],
+    "leggingsSpecialInfo": [],
+    "bootsSpecialInfo": [],
+    "helmetModelName": "ModelHelmetSnug",
+    "helmetModelPart": "bb_main",
+    "helmetModelTexture": "rinneganhelmet.png",
+    "bodyModelName": "ModelFirstEvil",
+    "bodyModelPart": "bodywear",
+    "armsModelPartL": "leftArmwear",
+    "armsModelPartR": "rightArmwear",
+    "bodyModelTexture": "madara_jinchuriki.png",
+    "leggingsModelName": "ModelFirstEvil",
+    "leggingsModelPartL": "leftLegwear",
+    "leggingsModelPartR": "rightLegwear",
+    "leggingsModelTexture": "madara_jinchuriki.png",
+    "bootsModelName": "Default",
+    "bootsModelPartL": "Boots L",
+    "bootsModelPartR": "Boots R",
+    "bootsModelTexture": "From armor",
+    "maxDamage": 25,
+    "damageValueHelmet": 2,
+    "damageValueBody": 6,
+    "damageValueLeggings": 5,
+    "damageValueBoots": 2,
+    "enchantability": 0,
+    "toughness": 5.0,
+    "knockbackResistance": 0.0,
+    "equipSound": {
+      "value": ""
+    },
+    "repairItems": []
+  }
+}

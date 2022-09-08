@@ -1,0 +1,39 @@
+{
+  "_fv": 18,
+  "_type": "tool",
+  "definition": {
+    "renderType": 1,
+    "texture": "kusanagi128",
+    "customModelName": "shibuki:default",
+    "name": "Shibuki Sword",
+    "specialInfo": [
+      "The Shibuki is one of the swords of the Seven Swordsmen of the Mist. The blade utilises various explosive tags",
+      "contained within a substantial scroll",
+      "in order to incorporate explosions into the user's own swordsmanship",
+      "earning it the title of \"blastsword\"."
+    ],
+    "creativeTab": {
+      "value": "CUSTOM:ModTab"
+    },
+    "toolType": "Sword",
+    "harvestLevel": 1,
+    "efficiency": 4.0,
+    "attackSpeed": 0.5,
+    "enchantability": 0,
+    "damageVsEntity": 8.0,
+    "usageCount": 100,
+    "blocksAffected": [],
+    "hasGlow": false,
+    "repairItems": [
+      {
+        "value": "CUSTOM:ExplosiveTag"
+      }
+    ],
+    "immuneToFire": false,
+    "stayInGridWhenCrafting": false,
+    "damageOnCrafting": false,
+    "onEntityHitWith": {
+      "name": "ShibukiSwordLivingEntityIsHitWithTool"
+    }
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "display": {
+    "icon": {
+      "item": "narutomod:shikotsumyaku"
+    },
+    "title": {
+      "translate": "advancements.shikotsumyaku_acquired.title"
+    },
+    "description": {
+      "translate": "advancements.shikotsumyaku_acquired.descr"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "shikotsumyaku_acquired": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "rewards": {
+    "experience": 0
+  },
+  "parent": "narutomod:ninjaachievement"
+}

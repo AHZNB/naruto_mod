@@ -1,0 +1,10 @@
+{
+  "mappings": {
+    "default": {
+      "map": {
+        "4": "sword_anbu"
+      },
+      "name": "default"
+    }
+  }
+}

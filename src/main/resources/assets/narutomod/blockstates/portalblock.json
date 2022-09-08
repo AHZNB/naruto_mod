@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "narutomod:portalblock" },
+    "facing=south": { "model": "narutomod:portalblock" },
+    "facing=east": { "model": "narutomod:portalblock" },
+    "facing=west": { "model": "narutomod:portalblock" }
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "mappings": {
+    "default": {
+      "map": {
+        "2": "hammer"
+      },
+      "name": "default"
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "_fv": 18,
+  "_type": "keybind",
+  "definition": {
+    "triggerKey": "UP",
+    "keyBindingName": "Power Increase",
+    "keyBindingCategoryKey": "misc",
+    "onKeyPressed": {
+      "name": "PowerIncreaseOnKeyPressed"
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "_fv": 18,
+  "_type": "achievement",
+  "definition": {
+    "achievementName": "Mangekyo Sharingan Acquired!",
+    "achievementDescription": "A strong emotional response triggers your Sharingan to transform into Magekyo Shanringan.",
+    "achievementIcon": {
+      "value": "CUSTOM:MangekyoSharingan.helmet"
+    },
+    "disableDisplay": false,
+    "showPopup": true,
+    "announceToChat": true,
+    "hideIfNotCompleted": false,
+    "rewardXP": 0,
+    "achievementType": "goal",
+    "parent": {
+      "value": "CUSTOM:SharinganOpened"
+    },
+    "triggerxml": "<xml><block type=\"custom_trigger\" x=\"40\" y=\"80\"><next><block type=\"advancement_trigger\" deletable=\"false\"/></next></block></xml>"
+  }
+}

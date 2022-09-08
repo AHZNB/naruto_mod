@@ -1,0 +1,28 @@
+{
+  "group": "narutomod",
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "0 2",
+    "3 5"
+  ],
+  "key": {
+    "0": {
+      "item": "minecraft:wool",
+      "data": 15
+    },
+    "2": {
+      "item": "minecraft:wool",
+      "data": 15
+    },
+    "3": {
+      "item": "minecraft:leather"
+    },
+    "5": {
+      "item": "minecraft:leather"
+    }
+  },
+  "result": {
+    "item": "narutomod:uchihaboots",
+    "count": 1
+  }
+}

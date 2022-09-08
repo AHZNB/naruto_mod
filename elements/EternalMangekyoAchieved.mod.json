@@ -1,0 +1,25 @@
+{
+  "_fv": 18,
+  "_type": "achievement",
+  "definition": {
+    "achievementName": "Eternal Mangekyo Awakened",
+    "achievementDescription": "The Eternal Mangeky¨­ Sharingan is proof an Uchiha has continued to push forward despite experiencing great losses.",
+    "achievementIcon": {
+      "value": "CUSTOM:MangekyoSharinganEternal.helmet"
+    },
+    "background": "Default",
+    "disableDisplay": false,
+    "showPopup": true,
+    "announceToChat": true,
+    "hideIfNotCompleted": false,
+    "rewardLoot": [],
+    "rewardRecipes": [],
+    "rewardFunction": "No function",
+    "rewardXP": 0,
+    "achievementType": "goal",
+    "parent": {
+      "value": "CUSTOM:MangekyoSharinganOpened"
+    },
+    "triggerxml": "<xml xmlns=\"https://developers.google.com/blockly/xml\"><block type=\"custom_trigger\" x=\"40\" y=\"80\"><next><block type=\"advancement_trigger\" deletable=\"false\"/></next></block></xml>"
+  }
+}

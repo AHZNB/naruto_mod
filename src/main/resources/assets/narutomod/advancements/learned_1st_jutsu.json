@@ -1,0 +1,26 @@
+{
+  "display": {
+    "icon": {
+      "item": "narutomod:ninjutsu"
+    },
+    "title": {
+      "translate": "advancements.learned_1st_jutsu.title"
+    },
+    "description": {
+      "translate": "advancements.learned_1st_jutsu.descr"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "learned_1st_jutsu": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "rewards": {
+    "experience": 1
+  },
+  "parent": "narutomod:ninjaachievement"
+}

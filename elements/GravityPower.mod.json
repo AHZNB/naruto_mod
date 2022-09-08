@@ -1,0 +1,7 @@
+{
+  "_fv": 18,
+  "_type": "procedure",
+  "definition": {
+    "procedurexml": "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><xml xmlns=\"https://developers.google.com/blockly/xml\"><block deletable=\"false\" type=\"event_trigger\" x=\"40\" y=\"40\"><field name=\"trigger\">no_ext_trigger</field><next><block type=\"controls_if\"><value name=\"IF0\"><block type=\"custom_dependency_logic\"><field name=\"NAME\">is_pressed</field></block></value><statement name=\"DO0\"><block type=\"entity_swing_mainhand\"><next><block type=\"set_time\"><value name=\"time\"><block type=\"math_number\"><field name=\"NUM\">1</field></block></value></block></next><value name=\"entity\"><block type=\"entity_from_deps\"/></value></block></statement></block></next></block><block type=\"play_sound\" x=\"173\" y=\"250\"><field name=\"sound\">block.gravel.break</field><value name=\"x\"><block type=\"coord_x\"/></value><value name=\"y\"><block type=\"coord_y\"/></value><value name=\"z\"><block type=\"coord_z\"/></value><value name=\"level\"><block type=\"math_number\"><field name=\"NUM\">1</field></block></value><value name=\"pitch\"><block type=\"math_number\"><field name=\"NUM\">1</field></block></value></block></xml>"
+  }
+}

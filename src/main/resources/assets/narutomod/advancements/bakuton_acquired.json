@@ -1,0 +1,26 @@
+{
+  "display": {
+    "icon": {
+      "item": "narutomod:bakuton"
+    },
+    "title": {
+      "translate": "advancements.bakuton_acquired.title"
+    },
+    "description": {
+      "translate": "advancements.bakuton_acquired.descr"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "bakuton_acquired": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "rewards": {
+    "experience": 0
+  },
+  "parent": "narutomod:ninjaachievement"
+}

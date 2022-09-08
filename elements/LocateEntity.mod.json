@@ -1,0 +1,11 @@
+{
+  "_fv": 18,
+  "_type": "command",
+  "definition": {
+    "commandName": "locateEntity",
+    "permissionLevel": "4",
+    "onCommandExecuted": {
+      "name": "LocateEntityCommandExecuted"
+    }
+  }
+}

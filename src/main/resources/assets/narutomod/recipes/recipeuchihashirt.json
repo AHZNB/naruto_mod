@@ -1,0 +1,46 @@
+{
+  "group": "narutomod",
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "0 2",
+    "345",
+    "678"
+  ],
+  "key": {
+    "0": {
+      "item": "minecraft:wool",
+      "data": 8
+    },
+    "2": {
+      "item": "minecraft:wool",
+      "data": 0
+    },
+    "3": {
+      "item": "minecraft:wool",
+      "data": 8
+    },
+    "4": {
+      "item": "minecraft:leather_chestplate"
+    },
+    "5": {
+      "item": "minecraft:wool",
+      "data": 0
+    },
+    "6": {
+      "item": "minecraft:wool",
+      "data": 8
+    },
+    "7": {
+      "item": "minecraft:wool",
+      "data": 14
+    },
+    "8": {
+      "item": "minecraft:wool",
+      "data": 0
+    }
+  },
+  "result": {
+    "item": "narutomod:uchihabody",
+    "count": 1
+  }
+}

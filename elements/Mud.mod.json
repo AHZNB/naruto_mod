@@ -1,0 +1,26 @@
+{
+  "_fv": 18,
+  "_type": "fluid",
+  "definition": {
+    "name": "Mud",
+    "textureStill": "mud_still",
+    "textureFlowing": "mud_flow",
+    "luminosity": 0,
+    "density": 5000,
+    "viscosity": 20000,
+    "isGas": false,
+    "type": "WATER",
+    "generateBucket": false,
+    "creativeTab": {
+      "value": "CUSTOM:ModTab"
+    },
+    "frequencyOnChunks": 5,
+    "spawnWorldTypes": [
+      "Surface"
+    ],
+    "restrictionBiomes": [],
+    "onEntityCollides": {
+      "name": "MudMobplayerCollidesBlock"
+    }
+  }
+}

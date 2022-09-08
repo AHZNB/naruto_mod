@@ -1,0 +1,27 @@
+{
+  "_fv": 18,
+  "_type": "tool",
+  "definition": {
+    "renderType": 1,
+    "texture": "kusanagi128",
+    "customModelName": "bonedrill:default",
+    "name": "Bone Drill",
+    "specialInfo": [],
+    "creativeTab": {
+      "value": "No creative tab entry"
+    },
+    "toolType": "Special",
+    "harvestLevel": 3,
+    "efficiency": 8.0,
+    "attackSpeed": 0.5,
+    "enchantability": 0,
+    "damageVsEntity": 83.0,
+    "usageCount": 50,
+    "blocksAffected": [],
+    "hasGlow": false,
+    "repairItems": [],
+    "immuneToFire": true,
+    "stayInGridWhenCrafting": false,
+    "damageOnCrafting": false
+  }
+}

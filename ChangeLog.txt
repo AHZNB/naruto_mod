@@ -1,0 +1,102 @@
+0.2.9-beta------------------------------------------------------
+
+Wood burial:
+ - fixed target escaped by kamui intangible will get caught again after dispelling kamui
+
+Mind Transfer:
+ - fixed when mind controlling a target player, skin does not change to target player
+ - fixed when dispelling, target player remains invisible
+ - dispell mind control when entering another dimension
+ 
+Shadow Imitation:
+ - dispell jutsu when entering another dimension
+ - target player can only use chat gui while being controlled
+ - chakra usage is based on the targets strength, stronger target more chakra usage
+ 
+Giant Wood Golem:
+ - added chakra burn per second based on jutsuXp (max 50/sec)
+ 
+Susanoo:
+ - added 500 base chakra consumption on initial use and up-stage
+ 
+Eight Gates:
+ - attacking/attacked with 8-gate item in hand only grows jutsuXp if you don't have enough for gate 1
+ - now need to open to your max gate to grow jutsuXp (grows 1 jutsuXp per 2 seconds)
+ 
+Rasenshuriken:
+ - no longer hurts user
+ 
+addninjaxp command:
+ - now allows floating point numbers
+ 
+Dust Release cube:
+ - no longer destroys blocks when gamerule mobgriefing is off
+ 
+cloak 2 Tailed beast bomb:
+ - max 14
+ 
+Jutsu1 keybind:
+ - keybind callback will always trigger when pressed or released, even when interrupted by other keys such as movement keys
+ 
+Jutsus:
+ - added Kirin
+ - added 1000-hand buddha
+ 
+Shift+jump:
+ - tweaked the leap trajectory
+ 
+Full Biju mode:
+ - added time limit depending on jutsuXp (hidden)
+ - added cooldown depending on usage time
+
+Chidori:
+ - shortened the duration
+ - gives mining fatigue to user
+ 
+Shinratensei:
+ - added particle effects
+ 
+Spherical explosions:
+ - added camera shake if explsion radius larger than 20
+ 
+Rasengan:
+ - fixed after breaking blocks leaving behind ghost blocks
+ 
+Explosive tags:
+ - fixed crash when placing tag in world
+
+Nuibari sword:
+ - fixed skewering non-player entities max 15 seconds
+ 
+Kusanagi sword:
+ - added when thrown, look at target entity to target lock (max target range 30 blocks)
+ 
+Asakujaku:
+ - shortened the fireball range
+ 
+Truth seeking orbs:
+ - on defense, each projectile will be targeted by one truth seeking orb
+ 
+Gedo Mazo:
+ - can only spawn 1 entity in the world at a time 
+ - added purple dragon
+ 
+Textures:
+ - updated konoha forehead protector item texture
+ 
+Chakra:
+ - on death, set chakra to 10 instead of 0
+
+Mobs:
+ - no longer attacks invisible targets unless wearing sharingan/byakugan
+ 
+items:
+ - added Akatsuki hat and robe
+ - added green jumpsuit and recipe
+ - added ninja fishnet shirt+pants and recipe
+ - upgraded main village armors to HD
+ - added anbu sword
+ 
+Puppets:
+ - added Sanshouo, can be driven if the driver has puppet jutsu
+ 

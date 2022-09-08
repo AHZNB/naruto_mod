@@ -1,0 +1,60 @@
+{
+  "_fv": 18,
+  "_type": "armor",
+  "definition": {
+    "enableHelmet": true,
+    "textureHelmet": "tenseigan_item",
+    "enableBody": true,
+    "textureBody": "tenseigan_chakrachest_item",
+    "enableLeggings": true,
+    "textureLeggings": "tenseigan_chakrapants_item",
+    "enableBoots": false,
+    "textureBoots": "",
+    "onHelmetTick": {
+      "name": "TenseiganHelmetTickEvent"
+    },
+    "onBodyTick": {
+      "name": "TenseiganBodyTickEvent"
+    },
+    "creativeTab": {
+      "value": "CUSTOM:ModTab"
+    },
+    "armorTextureFile": "sasuke_",
+    "helmetName": "Tenseigan",
+    "bodyName": "Tenseigan Chakra",
+    "leggingsName": "Tenseigan Chakra",
+    "bootsName": "",
+    "helmetSpecialInfo": [],
+    "bodySpecialInfo": [],
+    "leggingsSpecialInfo": [],
+    "bootsSpecialInfo": [],
+    "helmetModelName": "ModelHelmetSnug",
+    "helmetModelPart": "bb_main",
+    "helmetModelTexture": "tenseiganhelmet.png",
+    "bodyModelName": "ModelSizPathRobe",
+    "bodyModelPart": "bipedBody",
+    "armsModelPartL": "bipedLeftArm",
+    "armsModelPartR": "bipedRightArm",
+    "bodyModelTexture": "tenseigan_chakramode.png",
+    "leggingsModelName": "ModelSizPathRobe",
+    "leggingsModelPartL": "bipedLeftLeg",
+    "leggingsModelPartR": "bipedRightLeg",
+    "leggingsModelTexture": "tenseigan_chakramode.png",
+    "bootsModelName": "Default",
+    "bootsModelPartL": "Boots L",
+    "bootsModelPartR": "Boots R",
+    "bootsModelTexture": "From armor",
+    "maxDamage": 5,
+    "damageValueHelmet": 50,
+    "damageValueBody": 100,
+    "damageValueLeggings": 75,
+    "damageValueBoots": 2,
+    "enchantability": 0,
+    "toughness": 0.0,
+    "knockbackResistance": 0.0,
+    "equipSound": {
+      "value": ""
+    },
+    "repairItems": []
+  }
+}

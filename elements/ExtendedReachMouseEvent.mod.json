@@ -1,0 +1,12 @@
+{
+  "_fv": 18,
+  "_type": "keybind",
+  "definition": {
+    "triggerKey": "NONE",
+    "keyBindingName": "Extended Reach Mouse Event",
+    "keyBindingCategoryKey": "misc",
+    "onKeyPressed": {
+      "name": "ExtendedReachOnMouseClicked"
+    }
+  }
+}

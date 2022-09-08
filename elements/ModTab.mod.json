@@ -1,0 +1,11 @@
+{
+  "_fv": 18,
+  "_type": "tab",
+  "definition": {
+    "name": "Naruto",
+    "icon": {
+      "value": "CUSTOM:Ninjutsu"
+    },
+    "showSearch": true
+  }
+}

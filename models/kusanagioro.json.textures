@@ -1,0 +1,10 @@
+{
+  "mappings": {
+    "default": {
+      "map": {
+        "0": "kusanagi_oroch"
+      },
+      "name": "default"
+    }
+  }
+}

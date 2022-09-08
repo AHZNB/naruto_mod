@@ -1,0 +1,37 @@
+{
+  "_fv": 18,
+  "_type": "gun",
+  "definition": {
+    "renderType": 1,
+    "texture": "medical-ninja-symbol",
+    "customModelName": "iryo:default",
+    "name": "Medical Ninjutsu",
+    "specialInfo": [],
+    "creativeTab": {
+      "value": "CUSTOM:ModTab"
+    },
+    "stackSize": 1,
+    "ammoItem": {
+      "value": ""
+    },
+    "shootConstantly": false,
+    "usageCount": 100,
+    "actionSound": {
+      "value": ""
+    },
+    "hasGlow": false,
+    "animation": "block",
+    "enableMeleeDamage": false,
+    "damageVsEntity": 0.0,
+    "bulletPower": 1.0,
+    "bulletDamage": 5.0,
+    "bulletKnockback": 5,
+    "bulletParticles": false,
+    "bulletIgnitesFire": false,
+    "bulletItemTexture": {
+      "value": ""
+    },
+    "bulletModel": "ModelArmFist",
+    "customBulletModelTexture": "armfist.png"
+  }
+}

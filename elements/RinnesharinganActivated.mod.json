@@ -1,0 +1,21 @@
+{
+  "_fv": 18,
+  "_type": "achievement",
+  "definition": {
+    "achievementName": "Rinne Sharingan Activated",
+    "achievementDescription": "The Rinne Sharingan is a dojutsu kekkei mora and the predecessor to the Rinnegan and Sharingan.",
+    "achievementIcon": {
+      "value": "CUSTOM:ByakuRinnesharingan.helmet"
+    },
+    "disableDisplay": false,
+    "showPopup": true,
+    "announceToChat": true,
+    "hideIfNotCompleted": false,
+    "rewardXP": 0,
+    "achievementType": "goal",
+    "parent": {
+      "value": "CUSTOM:ByakuganOpened"
+    },
+    "triggerxml": "<xml><block type=\"custom_trigger\" x=\"40\" y=\"80\"><next><block type=\"advancement_trigger\" deletable=\"false\"/></next></block></xml>"
+  }
+}

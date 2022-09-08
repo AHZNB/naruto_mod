@@ -1,0 +1,116 @@
+{
+  "_fv": 18,
+  "_type": "gui",
+  "definition": {
+    "type": 0,
+    "width": 257,
+    "height": 156,
+    "inventoryOffsetX": 0,
+    "inventoryOffsetY": 0,
+    "renderBgLayer": false,
+    "doesPauseGame": false,
+    "components": [
+      {
+        "type": "image",
+        "data": {
+          "image": "scroll_empty.png",
+          "use1Xscale": true,
+          "name": "scroll_empty.png",
+          "x": 86,
+          "y": -8
+        }
+      },
+      {
+        "type": "label",
+        "data": {
+          "text": "Team Name",
+          "color": {
+            "value": -16777216,
+            "falpha": 0.0
+          },
+          "name": "Team Name",
+          "x": 146,
+          "y": 76
+        }
+      },
+      {
+        "type": "label",
+        "data": {
+          "text": "<teamName:text>",
+          "color": {
+            "value": -12829636,
+            "falpha": 0.0
+          },
+          "name": "<teamName:text>",
+          "x": 146,
+          "y": 108
+        }
+      },
+      {
+        "type": "label",
+        "data": {
+          "text": "member2",
+          "color": {
+            "value": -12829636,
+            "falpha": 0.0
+          },
+          "name": "member2",
+          "x": 146,
+          "y": 124
+        }
+      },
+      {
+        "type": "label",
+        "data": {
+          "text": "member3",
+          "color": {
+            "value": -12829636,
+            "falpha": 0.0
+          },
+          "name": "member3",
+          "x": 146,
+          "y": 140
+        }
+      },
+      {
+        "type": "button",
+        "data": {
+          "text": "Leave",
+          "onClick": {
+            "name": "TeamManagerLeave"
+          },
+          "width": 44,
+          "height": 20,
+          "name": "Leave",
+          "x": 290,
+          "y": 148
+        }
+      },
+      {
+        "type": "button",
+        "data": {
+          "text": "Join",
+          "onClick": {
+            "name": "TeamManagerJoin"
+          },
+          "width": 44,
+          "height": 20,
+          "name": "Join",
+          "x": 290,
+          "y": 124
+        }
+      },
+      {
+        "type": "textfield",
+        "data": {
+          "placeholder": "",
+          "width": 108,
+          "height": 20,
+          "name": "teamName",
+          "x": 226,
+          "y": 72
+        }
+      }
+    ]
+  }
+}

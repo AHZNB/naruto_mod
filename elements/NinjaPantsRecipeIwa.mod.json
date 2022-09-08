@@ -1,0 +1,46 @@
+{
+  "_fv": 18,
+  "_type": "recipe",
+  "definition": {
+    "recipeType": "Crafting",
+    "xpReward": 0.0,
+    "cookingTime": 200,
+    "recipeRetstackSize": 1,
+    "group": "",
+    "recipeShapeless": false,
+    "recipeSlots": [
+      {
+        "value": "Blocks.WOOL#14"
+      },
+      {
+        "value": "Items.LEATHER_LEGGINGS"
+      },
+      {
+        "value": "Blocks.WOOL#14"
+      },
+      {
+        "value": "Blocks.WOOL#14"
+      },
+      {
+        "value": ""
+      },
+      {
+        "value": "Blocks.WOOL#14"
+      },
+      {
+        "value": "Blocks.WOOL#14"
+      },
+      {
+        "value": ""
+      },
+      {
+        "value": "Blocks.WOOL#14"
+      }
+    ],
+    "recipeReturnStack": {
+      "value": "CUSTOM:NinjaArmorIwa.legs"
+    },
+    "name": "ninja_pants_recipe_iwa",
+    "namespace": "mod"
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "normal": {
+      "model": "narutomod:explosive_tag"
+    },
+    "facing=north": {
+      "model": "narutomod:explosive_tag"
+    },
+    "facing=east": {
+      "model": "narutomod:explosive_tag",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "narutomod:explosive_tag",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "narutomod:explosive_tag",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "narutomod:explosive_tag",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "narutomod:explosive_tag",
+      "x": 90
+    }
+  }
+}

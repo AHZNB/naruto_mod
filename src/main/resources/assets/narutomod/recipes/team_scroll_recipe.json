@@ -1,0 +1,42 @@
+{
+  "group": "narutomod",
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "012",
+    "345",
+    "678"
+  ],
+  "key": {
+    "0": {
+      "item": "minecraft:stick"
+    },
+    "1": {
+      "item": "minecraft:paper"
+    },
+    "2": {
+      "item": "minecraft:paper"
+    },
+    "3": {
+      "item": "minecraft:paper"
+    },
+    "4": {
+      "item": "minecraft:book"
+    },
+    "5": {
+      "item": "minecraft:paper"
+    },
+    "6": {
+      "item": "minecraft:stick"
+    },
+    "7": {
+      "item": "minecraft:paper"
+    },
+    "8": {
+      "item": "minecraft:paper"
+    }
+  },
+  "result": {
+    "item": "narutomod:team_scroll",
+    "count": 1
+  }
+}

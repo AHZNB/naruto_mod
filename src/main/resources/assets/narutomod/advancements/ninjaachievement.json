@@ -1,0 +1,40 @@
+{
+  "display": {
+    "background": "minecraft:textures/blocks/stone.png",
+    "icon": {
+      "item": "narutomod:kunai"
+    },
+    "title": {
+      "translate": "advancements.ninjaachievement.title"
+    },
+    "description": {
+      "translate": "advancements.ninjaachievement.descr"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "ninjaachievement": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          { "item": "narutomod:kunai", "count": {"min": 1, "max": 64} },
+          { "item": "narutomod:shuriken", "count": {"min": 1, "max": 64} }
+        ]
+      }
+    }
+  },
+  "rewards": {
+    "experience": 0,
+    "recipes": [
+      "narutomod:ninja_armor_recipe_boots",
+      "narutomod:ninja_armor_recipe_pants",
+      "narutomod:ninja_armor_recipe_vest",
+      "narutomod:ninja_armor_recipe_headband",
+      "narutomod:explosive_tag_recipe",
+      "narutomod:kunai_explosive_recipe"
+    ]
+  }
+}

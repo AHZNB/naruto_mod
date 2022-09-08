@@ -1,0 +1,29 @@
+{
+  "_fv": 18,
+  "_type": "food",
+  "definition": {
+    "renderType": 0,
+    "texture": "military_rations_pill",
+    "customModelName": "Normal",
+    "name": "Military Rations Pill",
+    "rarity": "COMMON",
+    "specialInfo": [],
+    "creativeTab": {
+      "value": "CUSTOM:ModTab"
+    },
+    "stackSize": 64,
+    "nutritionalValue": 0,
+    "saturation": 0.3,
+    "eatingSpeed": 32,
+    "forDogs": false,
+    "isAlwaysEdible": false,
+    "animation": "eat",
+    "hasGlow": false,
+    "onRightClicked": {
+      "name": "MilitaryRationsPillOnFoodRightClicked"
+    },
+    "onEaten": {
+      "name": "MilitaryRationsPillFoodEaten"
+    }
+  }
+}

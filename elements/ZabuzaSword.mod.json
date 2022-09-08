@@ -1,0 +1,29 @@
+{
+  "_fv": 18,
+  "_type": "tool",
+  "definition": {
+    "renderType": 1,
+    "texture": "zabuza",
+    "customModelName": "zabuzasword:default",
+    "name": "Executioner's Blade",
+    "specialInfo": [
+      "One of the legendary swords belonging to the Seven Ninja Swordsmen of the Mist this sword is passed down from generation to generation amongst the group's members."
+    ],
+    "creativeTab": {
+      "value": "CUSTOM:ModTab"
+    },
+    "toolType": "MultiTool",
+    "harvestLevel": 3,
+    "efficiency": 10.0,
+    "attackSpeed": 0.6,
+    "enchantability": 0,
+    "damageVsEntity": 16.0,
+    "usageCount": 300,
+    "blocksAffected": [],
+    "hasGlow": false,
+    "repairItems": [],
+    "immuneToFire": false,
+    "stayInGridWhenCrafting": false,
+    "damageOnCrafting": false
+  }
+}

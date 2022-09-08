@@ -1,0 +1,25 @@
+{
+  "_fv": 18,
+  "_type": "achievement",
+  "definition": {
+    "achievementName": "Wood Release Acquired",
+    "achievementDescription": "Wood Release is a nature transformation kekkei genkai, a combination of Earth and Water Release. It was famously used by Hashirama Senju, and in fact is not known to have naturally occurred in anyone else, leading to it being regarded as impossible to use without having his cells.",
+    "achievementIcon": {
+      "value": "CUSTOM:Mokuton"
+    },
+    "background": "Default",
+    "disableDisplay": false,
+    "showPopup": true,
+    "announceToChat": true,
+    "hideIfNotCompleted": false,
+    "rewardLoot": [],
+    "rewardRecipes": [],
+    "rewardFunction": "No function",
+    "rewardXP": 0,
+    "achievementType": "goal",
+    "parent": {
+      "value": "CUSTOM:NinjaAchievement"
+    },
+    "triggerxml": "<xml xmlns=\"https://developers.google.com/blockly/xml\"><block type=\"custom_trigger\" x=\"79\" y=\"135\"><next><block type=\"advancement_trigger\" deletable=\"false\"></block></next></block></xml>"
+  }
+}

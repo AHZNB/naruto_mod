@@ -1,0 +1,26 @@
+{
+  "display": {
+    "icon": {
+      "item": "narutomod:mangekyosharinganeternalhelmet"
+    },
+    "title": {
+      "translate": "advancements.eternalmangekyoachieved.title"
+    },
+    "description": {
+      "translate": "advancements.eternalmangekyoachieved.descr"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "eternalmangekyoachieved": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "rewards": {
+    "experience": 0
+  },
+  "parent": "narutomod:mangekyosharinganopened"
+}

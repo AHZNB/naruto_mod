@@ -1,0 +1,22 @@
+{
+  "group": "narutomod",
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "012"
+  ],
+  "key": {
+    "0": {
+      "item": "minecraft:paper"
+    },
+    "1": {
+      "item": "minecraft:gunpowder"
+    },
+    "2": {
+      "item": "minecraft:paper"
+    }
+  },
+  "result": {
+    "item": "narutomod:smoke_bomb",
+    "count": 1
+  }
+}

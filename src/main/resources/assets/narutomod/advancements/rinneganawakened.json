@@ -1,0 +1,26 @@
+{
+  "display": {
+    "icon": {
+      "item": "narutomod:rinneganhelmet"
+    },
+    "title": {
+      "translate": "advancements.rinneganawakened.title"
+    },
+    "description": {
+      "translate": "advancements.rinneganawakened.descr"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "rinneganawakened": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "rewards": {
+    "experience": 0
+  },
+  "parent": "narutomod:eternalmangekyoachieved"
+}

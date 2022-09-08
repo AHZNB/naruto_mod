@@ -1,0 +1,43 @@
+{
+  "_fv": 18,
+  "_type": "gun",
+  "definition": {
+    "renderType": 1,
+    "texture": "kunai_explosive",
+    "customModelName": "kunaiexplosive:default",
+    "name": "Kunai Explosive",
+    "specialInfo": [],
+    "creativeTab": {
+      "value": "CUSTOM:ModTab"
+    },
+    "stackSize": 3,
+    "ammoItem": {
+      "value": "CUSTOM:KunaiExplosive"
+    },
+    "shootConstantly": false,
+    "usageCount": 0,
+    "actionSound": {
+      "value": "entity.arrow.shoot"
+    },
+    "hasGlow": false,
+    "animation": "bow",
+    "enableMeleeDamage": true,
+    "damageVsEntity": 8.0,
+    "bulletPower": 0.5,
+    "bulletDamage": 5.0,
+    "bulletKnockback": 1,
+    "bulletParticles": false,
+    "bulletIgnitesFire": false,
+    "bulletItemTexture": {
+      "value": "CUSTOM:KunaiExplosive"
+    },
+    "bulletModel": "Default",
+    "customBulletModelTexture": "",
+    "onBulletHitsBlock": {
+      "name": "KunaiExplosiveBulletHitsBlock"
+    },
+    "onBulletHitsEntity": {
+      "name": "KunaiExplosiveBulletHitsLivingEntity"
+    }
+  }
+}

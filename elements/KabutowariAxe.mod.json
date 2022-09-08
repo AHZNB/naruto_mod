@@ -1,0 +1,30 @@
+{
+  "_fv": 18,
+  "_type": "tool",
+  "definition": {
+    "renderType": 1,
+    "texture": "kusanagi128",
+    "customModelName": "kabutowariaxe:default",
+    "name": "Kabutowari Axe",
+    "specialInfo": [],
+    "creativeTab": {
+      "value": "CUSTOM:ModTab"
+    },
+    "toolType": "Axe",
+    "harvestLevel": 5,
+    "efficiency": 20.0,
+    "attackSpeed": 1.0,
+    "enchantability": 0,
+    "damageVsEntity": 10.0,
+    "usageCount": 0,
+    "blocksAffected": [],
+    "hasGlow": false,
+    "repairItems": [],
+    "immuneToFire": false,
+    "stayInGridWhenCrafting": false,
+    "damageOnCrafting": false,
+    "onItemInInventoryTick": {
+      "name": "KabutowariAxeToolInInventoryTick"
+    }
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "_fv": 18,
+  "_type": "food",
+  "definition": {
+    "renderType": 0,
+    "texture": "military_rations_pill_gold",
+    "customModelName": "Normal",
+    "name": "Military Rations Pill - Gold",
+    "rarity": "COMMON",
+    "specialInfo": [
+      "Restores 500 chakra. Regenerates 5% chakra every second for 30 seconds"
+    ],
+    "creativeTab": {
+      "value": "FOOD"
+    },
+    "stackSize": 64,
+    "nutritionalValue": 8,
+    "saturation": 0.6,
+    "eatingSpeed": 32,
+    "forDogs": false,
+    "isAlwaysEdible": true,
+    "animation": "eat",
+    "hasGlow": false
+  }
+}

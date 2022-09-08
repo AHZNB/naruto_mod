@@ -1,0 +1,28 @@
+{
+  "group": "narutomod",
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " 1",
+    " 3",
+    "45"
+  ],
+  "key": {
+    "1": {
+      "item": "minecraft:iron_ingot"
+    },
+    "3": {
+      "item": "minecraft:iron_ingot"
+    },
+    "4": {
+      "item": "minecraft:wool",
+      "data": 15
+    },
+    "5": {
+      "item": "minecraft:iron_ingot"
+    }
+  },
+  "result": {
+    "item": "narutomod:anbu_sword",
+    "count": 1
+  }
+}

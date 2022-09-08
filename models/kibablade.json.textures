@@ -1,0 +1,10 @@
+{
+  "mappings": {
+    "default": {
+      "map": {
+        "4": "kibablade"
+      },
+      "name": "default"
+    }
+  }
+}

@@ -1,0 +1,207 @@
+{
+  "type": "minecraft:generic",
+  "pools": [
+    {
+      "name": "rank_a_pool",
+      "rolls": {
+        "min": 0,
+        "max": 1
+      },
+      "conditions": [
+        {
+          "condition": "random_chance",
+          "chance": 0.2
+        }
+      ],
+      "entries": [
+        {
+          "type": "item",
+          "name": "narutomod:scroll_chidori",
+          "weight": 10
+        },
+        {
+          "type": "item",
+          "name": "narutomod:scroll_rasengan",
+          "weight": 10
+        },
+        {
+          "type": "item",
+          "name": "narutomod:scroll_swamp_pit",
+          "weight": 20
+        },
+        {
+          "type": "item",
+          "name": "narutomod:scroll_shadow_imitation",
+          "weight": 20
+        },
+        {
+          "type": "item",
+          "name": "narutomod:scroll_hiding_in_camouflage",
+          "weight": 20
+        }
+      ]
+    },
+    {
+      "name": "rank_b_pool",
+      "rolls": {
+        "min": 0,
+        "max": 3
+      },
+      "conditions": [
+        {
+          "condition": "random_chance",
+          "chance": 0.2
+        }
+      ],
+      "entries": [
+        {
+          "type": "item",
+          "name": "narutomod:scroll_earth_sandwich",
+          "weight": 10
+        },
+        {
+          "type": "item",
+          "name": "narutomod:scroll_earth_wall",
+          "weight": 10
+        },
+        {
+          "type": "item",
+          "name": "narutomod:scroll_fire_annihilation",
+          "weight": 10
+        },
+        {
+          "type": "item",
+          "name": "narutomod:scroll_futon_vacuum",
+          "weight": 10
+        },
+        {
+          "type": "item",
+          "name": "narutomod:scroll_genjutsu",
+          "weight": 5
+        },
+        {
+          "type": "item",
+          "name": "narutomod:scroll_hiding_in_ash",
+          "weight": 10
+        },
+        {
+          "type": "item",
+          "name": "narutomod:scroll_kage_bunshin",
+          "weight": 15
+        },
+        {
+          "type": "item",
+          "name": "narutomod:scroll_lightning_chakra_mode",
+          "weight": 10
+        },
+        {
+          "type": "item",
+          "name": "narutomod:scroll_healing",
+          "weight": 10
+        },
+        {
+          "type": "item",
+          "name": "narutomod:scroll_false_darkness",
+          "weight": 10
+        },
+        {
+          "type": "item",
+          "name": "narutomod:scroll_poison_mist",
+          "weight": 10
+        },
+        {
+          "type": "item",
+          "name": "narutomod:scroll_multi_size",
+          "weight": 10
+        },
+        {
+          "type": "item",
+          "name": "narutomod:scroll_water_dragon",
+          "weight": 10
+        },
+        {
+          "type": "item",
+          "name": "narutomod:scroll_water_shark",
+          "weight": 10
+        },
+        {
+          "type": "item",
+          "name": "narutomod:scroll_water_shockwave",
+          "weight": 10
+        }
+      ]
+    },
+    {
+      "name": "rank_cd_pool",
+      "rolls": 3,
+      "conditions": [
+        {
+          "condition": "random_chance",
+          "chance": 0.3
+        }
+      ],
+      "entries": [
+        {
+          "type": "item",
+          "name": "narutomod:scroll_big_blow",
+          "weight": 5
+        },
+        {
+          "type": "item",
+          "name": "narutomod:scroll_body_replacement",
+          "weight": 20
+        },
+        {
+          "type": "item",
+          "name": "narutomod:scroll_futon_chakra_flow",
+          "weight": 15
+        },
+        {
+          "type": "item",
+          "name": "narutomod:scroll_great_fireball",
+          "weight": 5
+        },
+        {
+          "type": "item",
+          "name": "narutomod:scroll_fire_stream",
+          "weight": 5
+        },
+        {
+          "type": "item",
+          "name": "narutomod:scroll_hiding_in_mist",
+          "weight": 10
+        },
+        {
+          "type": "item",
+          "name": "narutomod:scroll_hiding_in_rock",
+          "weight": 5
+        },
+        {
+          "type": "item",
+          "name": "narutomod:scroll_lightning_beast",
+          "weight": 5
+        },
+        {
+          "type": "item",
+          "name": "narutomod:scroll_water_prison",
+          "weight": 5
+        },
+        {
+          "type": "item",
+          "name": "narutomod:scroll_earth_spears",
+          "weight": 5
+        },
+        {
+          "type": "item",
+          "name": "narutomod:scroll_mind_transfer",
+          "weight": 5
+        },
+        {
+          "type": "item",
+          "name": "narutomod:scroll_water_stream",
+          "weight": 5
+        }
+      ]
+    }
+  ]
+}

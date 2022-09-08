@@ -1,0 +1,24 @@
+{
+  "group": "narutomod",
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "012"
+  ],
+  "key": {
+    "0": {
+      "item": "minecraft:wool",
+      "data": 4
+    },
+    "1": {
+      "item": "minecraft:iron_ingot"
+    },
+    "2": {
+      "item": "minecraft:wool",
+      "data": 4
+    }
+  },
+  "result": {
+    "item": "narutomod:ninja_armor_sunahelmet",
+    "count": 1
+  }
+}

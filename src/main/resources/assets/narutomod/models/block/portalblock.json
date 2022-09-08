@@ -1,0 +1,10 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "facing=north": "narutomod:blocks/blank",
+    "facing=east": "narutomod:blocks/blank",
+    "facing=south": "narutomod:blocks/blank",
+    "facing=west": "narutomod:blocks/blank",
+    "particle": "narutomod:blocks/blank"
+  }
+}

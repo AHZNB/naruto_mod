@@ -1,0 +1,51 @@
+{
+  "_fv": 18,
+  "_type": "armor",
+  "definition": {
+    "enableHelmet": false,
+    "textureHelmet": "asura_helmet",
+    "enableBody": true,
+    "textureBody": "asura_chestplate",
+    "enableLeggings": false,
+    "textureLeggings": "",
+    "enableBoots": false,
+    "textureBoots": "",
+    "onBodyTick": {
+      "name": "AsuraPathArmorBodyTickEvent"
+    },
+    "creativeTab": {
+      "value": "CUSTOM:ModTab"
+    },
+    "armorTextureFile": "sasuke_",
+    "helmetName": "",
+    "bodyName": "Asura Path Bodygear",
+    "leggingsName": "",
+    "bootsName": "",
+    "helmetSpecialInfo": [],
+    "bodySpecialInfo": [],
+    "leggingsSpecialInfo": [],
+    "bootsSpecialInfo": [],
+    "helmetModelName": "ModelArmorCustom",
+    "helmetModelPart": "helmet",
+    "helmetModelTexture": "asura_path.png",
+    "bodyModelName": "ModelArmorCustom",
+    "bodyModelPart": "bodywear",
+    "bodyModelTexture": "asura_path.png",
+    "leggingsModelName": "Default",
+    "leggingsModelPartL": "Leggings L",
+    "leggingsModelPartR": "Leggings R",
+    "leggingsModelTexture": "From armor",
+    "bootsModelName": "Default",
+    "bootsModelPartL": "Boots L",
+    "bootsModelPartR": "Boots R",
+    "bootsModelTexture": "From armor",
+    "maxDamage": 1024,
+    "damageValueHelmet": 2,
+    "damageValueBody": 1024,
+    "damageValueLeggings": 5,
+    "damageValueBoots": 2,
+    "enchantability": 0,
+    "toughness": 5.0,
+    "knockbackResistance": 0.0
+  }
+}

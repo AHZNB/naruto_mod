@@ -1,0 +1,23 @@
+{
+  "_fv": 18,
+  "_type": "overlay",
+  "definition": {
+    "priority": "NORMAL",
+    "components": [
+      {
+        "type": "label",
+        "data": {
+          "text": "Tracking:",
+          "color": {
+            "value": -1,
+            "falpha": 0.0
+          },
+          "name": "Tracking:",
+          "x": 181,
+          "y": 10
+        }
+      }
+    ],
+    "baseTexture": ""
+  }
+}

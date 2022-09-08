@@ -1,0 +1,46 @@
+{
+  "_fv": 18,
+  "_type": "recipe",
+  "definition": {
+    "recipeType": "Crafting",
+    "xpReward": 0.0,
+    "cookingTime": 200,
+    "recipeRetstackSize": 1,
+    "group": "",
+    "recipeShapeless": false,
+    "recipeSlots": [
+      {
+        "value": "Blocks.WHEAT"
+      },
+      {
+        "value": "Items.SUGAR"
+      },
+      {
+        "value": "Blocks.WHEAT"
+      },
+      {
+        "value": "Items.DYE#3"
+      },
+      {
+        "value": "Items.SPLASH_POTION"
+      },
+      {
+        "value": "Blocks.RED_FLOWER#0"
+      },
+      {
+        "value": "Blocks.WHEAT"
+      },
+      {
+        "value": "Items.MELON_SEEDS"
+      },
+      {
+        "value": "Items.WHEAT"
+      }
+    ],
+    "recipeReturnStack": {
+      "value": "CUSTOM:MilitaryRationsPill"
+    },
+    "name": "military_rations_pill_recipe",
+    "namespace": "mod"
+  }
+}

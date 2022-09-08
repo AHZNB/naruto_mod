@@ -1,0 +1,26 @@
+{
+  "display": {
+    "icon": {
+      "item": "narutomod:jinton"
+    },
+    "title": {
+      "translate": "advancements.kekkei_tota_awakened.title"
+    },
+    "description": {
+      "translate": "advancements.kekkei_tota_awakened.descr"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "kekkei_tota_awakened": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "rewards": {
+    "experience": 0
+  },
+  "parent": "narutomod:ninjaachievement"
+}

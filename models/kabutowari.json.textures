@@ -1,0 +1,11 @@
+{
+  "mappings": {
+    "default": {
+      "map": {
+        "1": "hammer",
+        "2": "axe"
+      },
+      "name": "default"
+    }
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "display": {
+    "icon": {
+      "item": "narutomod:byakurinnesharinganhelmet"
+    },
+    "title": {
+      "translate": "advancements.rinnesharinganactivated.title"
+    },
+    "description": {
+      "translate": "advancements.rinnesharinganactivated.descr"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "rinnesharinganactivated": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "rewards": {
+    "experience": 0
+  },
+  "parent": "narutomod:byakuganopened"
+}

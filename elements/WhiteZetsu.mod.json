@@ -1,0 +1,222 @@
+{
+  "_fv": 18,
+  "_type": "mob",
+  "definition": {
+    "mobName": "White Zetsu",
+    "mobLabel": "",
+    "mobModelName": "Biped",
+    "mobModelTexture": "zetsu_white.png",
+    "modelWidth": 0.6,
+    "modelHeight": 1.8,
+    "modelShadowSize": 0.5,
+    "mountedYOffset": 0.0,
+    "hasSpawnEgg": true,
+    "spawnEggBaseColor": {
+      "value": -16724788,
+      "falpha": 0.0
+    },
+    "spawnEggDotColor": {
+      "value": -1,
+      "falpha": 0.0
+    },
+    "creativeTab": {
+      "value": "MISC"
+    },
+    "isBoss": false,
+    "bossBarColor": "PINK",
+    "bossBarType": "PROGRESS",
+    "equipmentMainHand": {
+      "value": "CUSTOM:Kunai"
+    },
+    "equipmentOffHand": {
+      "value": ""
+    },
+    "equipmentHelmet": {
+      "value": ""
+    },
+    "equipmentBody": {
+      "value": ""
+    },
+    "equipmentLeggings": {
+      "value": ""
+    },
+    "equipmentBoots": {
+      "value": ""
+    },
+    "mobBehaviourType": "Mob",
+    "mobCreatureType": "UNDEFINED",
+    "attackStrength": 5,
+    "attackKnockback": 0.0,
+    "knockbackResistance": 0.0,
+    "movementSpeed": 0.6,
+    "armorBaseValue": 0.5,
+    "trackingRange": 64,
+    "health": 25,
+    "xpAmount": 25,
+    "waterMob": false,
+    "flyingMob": false,
+    "inventorySize": 9,
+    "inventoryStackSize": 64,
+    "disableCollisions": false,
+    "ridable": false,
+    "canControlForward": false,
+    "canControlStrafe": false,
+    "immuneToFire": false,
+    "immuneToArrows": false,
+    "immuneToFallDamage": false,
+    "immuneToCactus": false,
+    "immuneToDrowning": false,
+    "immuneToLightning": false,
+    "immuneToPotions": false,
+    "immuneToPlayer": false,
+    "immuneToExplosion": false,
+    "immuneToTrident": false,
+    "immuneToAnvil": false,
+    "immuneToWither": false,
+    "immuneToDragonBreath": false,
+    "mobDrop": {
+      "value": ""
+    },
+    "livingSound": {
+      "value": ""
+    },
+    "hurtSound": {
+      "value": "entity.witch.hurt"
+    },
+    "deathSound": {
+      "value": "entity.witch.death"
+    },
+    "spawnParticles": false,
+    "particleToSpawn": {
+      "value": "EXPLOSION_NORMAL"
+    },
+    "particleSpawningShape": "Spread",
+    "particleSpawningRadious": 0.5,
+    "particleAmount": 4,
+    "whenMobDies": {
+      "name": "WhiteZetsuEntityEntityDies"
+    },
+    "hasAI": true,
+    "aiBase": "(none)",
+    "aixml": "<xml xmlns=\"https://developers.google.com/blockly/xml\"><block type=\"aitasks_container\" deletable=\"false\" x=\"40\" y=\"40\"><next><block type=\"watch_closest_entity\"><field name=\"radius\">50</field><field name=\"entity\">EntityPlayer</field><next><block type=\"attack_entity\"><field name=\"insight\">FALSE</field><field name=\"nearby\">FALSE</field><field name=\"entity\">EntityPlayer</field><next><block type=\"attack_on_collide\"><field name=\"speed\">1</field><field name=\"longmemory\">TRUE</field><next><block type=\"wander\"><field name=\"speed\">0.5</field><next><block type=\"look_around\"/></next></block></next></block></next></block></next></block></next></block><block type=\"swim_in_water\" x=\"273\" y=\"336\"><next><block type=\"leap_at_target\"><field name=\"speed\">0.8</field><next><block type=\"panic_when_attacked\"><field name=\"speed\">1.2</field><next><block type=\"attack_action\"><field name=\"callhelp\">FALSE</field></block></next></block></next></block></next></block></xml>",
+    "breedable": false,
+    "tameable": false,
+    "breedTriggerItems": [],
+    "ranged": false,
+    "rangedAttackItem": {
+      "value": ""
+    },
+    "rangedItemType": "Default item",
+    "spawnThisMob": true,
+    "doesDespawnWhenIdle": true,
+    "spawningProbability": 10,
+    "mobSpawningType": "monster",
+    "minNumberOfMobsPerGroup": 1,
+    "maxNumberOfMobsPerGroup": 1,
+    "restrictionBiomes": [
+      {
+        "value": "mountains"
+      },
+      {
+        "value": "forest"
+      },
+      {
+        "value": "taiga"
+      },
+      {
+        "value": "swamp"
+      },
+      {
+        "value": "beaches"
+      },
+      {
+        "value": "desert_hills"
+      },
+      {
+        "value": "forest_hills"
+      },
+      {
+        "value": "taiga_hills"
+      },
+      {
+        "value": "jungle"
+      },
+      {
+        "value": "jungle_hills"
+      },
+      {
+        "value": "jungle_edge"
+      },
+      {
+        "value": "birch_forest"
+      },
+      {
+        "value": "birch_forest_hills"
+      },
+      {
+        "value": "roofed_forest"
+      },
+      {
+        "value": "redwood_taiga"
+      },
+      {
+        "value": "redwood_taiga_hills"
+      },
+      {
+        "value": "extreme_hills_with_trees"
+      },
+      {
+        "value": "savanna"
+      },
+      {
+        "value": "badlands"
+      },
+      {
+        "value": "wooded_badlands_plateau"
+      },
+      {
+        "value": "badlands_plateau"
+      },
+      {
+        "value": "mutated_extreme_hills"
+      },
+      {
+        "value": "mutated_forest"
+      },
+      {
+        "value": "mutated_taiga"
+      },
+      {
+        "value": "mutated_swampland"
+      },
+      {
+        "value": "mutated_jungle"
+      },
+      {
+        "value": "mutated_jungle_edge"
+      },
+      {
+        "value": "mutated_birch_forest"
+      },
+      {
+        "value": "mutated_birch_forest_hills"
+      },
+      {
+        "value": "mutated_roofed_forest"
+      },
+      {
+        "value": "mutated_redwood_taiga"
+      },
+      {
+        "value": "mutated_redwood_taiga_hills"
+      },
+      {
+        "value": "mutated_extreme_hills_with_trees"
+      },
+      {
+        "value": "mutated_savanna"
+      }
+    ],
+    "spawnInDungeons": false
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "_fv": 18,
+  "_type": "achievement",
+  "definition": {
+    "achievementName": "Byakugan Opened",
+    "achievementDescription": "Byakugan is regarded as one of the \"Three Great D¨­jutsu\", the others being the Sharingan and the Rinnegan.",
+    "achievementIcon": {
+      "value": "CUSTOM:Byakugan.helmet"
+    },
+    "disableDisplay": false,
+    "showPopup": true,
+    "announceToChat": true,
+    "hideIfNotCompleted": false,
+    "rewardXP": 0,
+    "achievementType": "goal",
+    "parent": {
+      "value": "CUSTOM:NinjaAchievement"
+    },
+    "triggerxml": "<xml><block type=\"custom_trigger\" x=\"40\" y=\"80\"><next><block type=\"advancement_trigger\" deletable=\"false\"/></next></block></xml>"
+  }
+}

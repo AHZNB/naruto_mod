@@ -1,0 +1,7 @@
+{
+  "_fv": 18,
+  "_type": "procedure",
+  "definition": {
+    "procedurexml": "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><xml xmlns=\"https://developers.google.com/blockly/xml\"><block deletable=\"false\" type=\"event_trigger\" x=\"40\" y=\"40\"><field name=\"trigger\">no_ext_trigger</field><next><block type=\"controls_if\"><value name=\"IF0\"><block type=\"logic_binary_ops\"><field name=\"OP\">AND</field><value name=\"A\"><block type=\"logic_entity_compare\"><field name=\"entity\">EntityLiving</field><value name=\"compareTo\"><block type=\"entity_from_deps\"/></value></block></value><value name=\"B\"><block type=\"entity_nbt_logic_get\"><value name=\"entity\"><block type=\"entity_from_deps\"/></value><value name=\"tagName\"><block type=\"text\"><field name=\"TEXT\">temporaryDisableAI</field></block></value></block></value></block></value><statement name=\"DO0\"><block type=\"java_code\"><field name=\"CODE\">((EntityLiving)entity).setNoAI(false);</field><next><block type=\"entity_nbt_logic_set\"><value name=\"entity\"><block type=\"entity_from_deps\"/></value><value name=\"tagName\"><block type=\"text\"><field name=\"TEXT\">temporaryDisableAI</field></block></value><value name=\"tagValue\"><block type=\"logic_boolean\"><field name=\"BOOL\">FALSE</field></block></value></block></next></block></statement></block></next></block></xml>"
+  }
+}

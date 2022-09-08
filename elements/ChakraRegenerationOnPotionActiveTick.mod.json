@@ -1,0 +1,7 @@
+{
+  "_fv": 18,
+  "_type": "procedure",
+  "definition": {
+    "procedurexml": "<xml xmlns=\"https://developers.google.com/blockly/xml\"><block type=\"event_trigger\" deletable=\"false\" x=\"40\" y=\"40\"><field name=\"trigger\">no_ext_trigger</field><next><block type=\"controls_if\"><value name=\"IF0\"><block type=\"logic_entity_compare\"><field name=\"entity\">EntityPlayerMP</field><value name=\"compareTo\"><block type=\"entity_from_deps\"></block></value></block></value><statement name=\"DO0\"><block type=\"java_code\"><field name=\"CODE\">if (entity.ticksExisted%20==0)</field><next><block type=\"java_code\"><field name=\"CODE\">Chakra.pathway((EntityPlayer)entity).consume(-0.05f, true);</field></block></next></block></statement></block></next></block></xml>"
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "_fv": 18,
+  "_type": "armor",
+  "definition": {
+    "enableHelmet": false,
+    "textureHelmet": "",
+    "enableBody": true,
+    "textureBody": "gourd_chestplate",
+    "enableLeggings": false,
+    "textureLeggings": "",
+    "enableBoots": false,
+    "textureBoots": "",
+    "onBodyTick": {
+      "name": "GourdBodyTickEvent"
+    },
+    "creativeTab": {
+      "value": "CUSTOM:ModTab"
+    },
+    "armorTextureFile": "sasuke_",
+    "helmetName": "",
+    "bodyName": "Iron Sand Gourd",
+    "leggingsName": "",
+    "bootsName": "",
+    "helmetSpecialInfo": [],
+    "bodySpecialInfo": [],
+    "leggingsSpecialInfo": [],
+    "bootsSpecialInfo": [],
+    "helmetModelName": "Default",
+    "helmetModelPart": "Helmet",
+    "helmetModelTexture": "From armor",
+    "bodyModelName": "ModelGourd",
+    "bodyModelPart": "bipedBody",
+    "armsModelPartL": "bipedLeftArm",
+    "armsModelPartR": "bipedRightArm",
+    "bodyModelTexture": "gourd.png",
+    "leggingsModelName": "Default",
+    "leggingsModelPartL": "Leggings L",
+    "leggingsModelPartR": "Leggings R",
+    "leggingsModelTexture": "From armor",
+    "bootsModelName": "Default",
+    "bootsModelPartL": "Boots L",
+    "bootsModelPartR": "Boots R",
+    "bootsModelTexture": "From armor",
+    "maxDamage": 1024,
+    "damageValueHelmet": 2,
+    "damageValueBody": 1024,
+    "damageValueLeggings": 5,
+    "damageValueBoots": 2,
+    "enchantability": 0,
+    "toughness": 5.0,
+    "knockbackResistance": 0.0,
+    "equipSound": {
+      "value": ""
+    },
+    "repairItems": []
+  }
+}

@@ -1,0 +1,102 @@
+{
+  "_fv": 18,
+  "_type": "gui",
+  "definition": {
+    "type": 1,
+    "width": 176,
+    "height": 175,
+    "inventoryOffsetX": 0,
+    "inventoryOffsetY": 0,
+    "renderBgLayer": true,
+    "doesPauseGame": false,
+    "components": [
+      {
+        "type": "inputslot",
+        "data": {
+          "inputLimit": {
+            "value": ""
+          },
+          "id": 0,
+          "disableStackInteraction": false,
+          "dropItemsWhenNotBound": true,
+          "name": "Slot #0",
+          "x": 147,
+          "y": 53
+        }
+      },
+      {
+        "type": "inputslot",
+        "data": {
+          "inputLimit": {
+            "value": ""
+          },
+          "id": 1,
+          "disableStackInteraction": false,
+          "dropItemsWhenNotBound": true,
+          "name": "Slot #1",
+          "x": 263,
+          "y": 53
+        }
+      },
+      {
+        "type": "outputslot",
+        "data": {
+          "color": {
+            "value": -13421773,
+            "falpha": 0.0
+          },
+          "id": 2,
+          "disableStackInteraction": false,
+          "dropItemsWhenNotBound": true,
+          "name": "Slot #2",
+          "x": 203,
+          "y": 54
+        }
+      },
+      {
+        "type": "image",
+        "data": {
+          "image": "seal_blank1.png",
+          "use1Xscale": false,
+          "name": "seal_blank1.png",
+          "x": 187,
+          "y": 38
+        }
+      },
+      {
+        "type": "button",
+        "data": {
+          "text": "Activate",
+          "onClick": {
+            "name": "MedicalScrollGUIOnButtonClicked"
+          },
+          "width": 74,
+          "height": 20,
+          "name": "Activate",
+          "x": 174,
+          "y": 96
+        }
+      },
+      {
+        "type": "image",
+        "data": {
+          "image": "primary.png",
+          "use1Xscale": false,
+          "name": "primary.png",
+          "x": 140,
+          "y": 68
+        }
+      },
+      {
+        "type": "image",
+        "data": {
+          "image": "secondary.png",
+          "use1Xscale": false,
+          "name": "secondary.png",
+          "x": 257,
+          "y": 68
+        }
+      }
+    ]
+  }
+}

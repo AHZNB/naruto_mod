@@ -1,0 +1,22 @@
+{
+  "_fv": 18,
+  "_type": "potion",
+  "definition": {
+    "name": "Feather Falling",
+    "effectName": "Feather Falling",
+    "icon": "feather.png",
+    "color": {
+      "value": -1,
+      "falpha": 0.0
+    },
+    "isInstant": true,
+    "isBad": false,
+    "isBenefitical": true,
+    "registerPotionType": false,
+    "renderStatusInInventory": true,
+    "renderStatusInHUD": true,
+    "onActiveTick": {
+      "name": "FeatherFallingOnPotionActiveTick"
+    }
+  }
+}

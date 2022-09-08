@@ -1,0 +1,25 @@
+{
+  "_fv": 18,
+  "_type": "potion",
+  "definition": {
+    "name": "Flight",
+    "effectName": "Flight",
+    "icon": "flight.png",
+    "color": {
+      "value": -26317,
+      "falpha": 0.0
+    },
+    "isInstant": true,
+    "isBad": false,
+    "isBenefitical": true,
+    "registerPotionType": false,
+    "renderStatusInInventory": true,
+    "renderStatusInHUD": true,
+    "onActiveTick": {
+      "name": "FlightOnPotionActiveTick"
+    },
+    "onExpired": {
+      "name": "FlightPotionExpires"
+    }
+  }
+}

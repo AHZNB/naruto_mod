@@ -1,0 +1,43 @@
+{
+  "group": "narutomod",
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "012",
+    "345",
+    "678"
+  ],
+  "key": {
+    "0": {
+      "item": "minecraft:paper"
+    },
+    "1": {
+      "item": "minecraft:paper"
+    },
+    "2": {
+      "item": "minecraft:paper"
+    },
+    "3": {
+      "item": "minecraft:stick"
+    },
+    "4": {
+      "item": "narutomod:kunai"
+    },
+    "5": {
+      "item": "minecraft:lingering_potion",
+      "data": 32767
+    },
+    "6": {
+      "item": "minecraft:paper"
+    },
+    "7": {
+      "item": "minecraft:paper"
+    },
+    "8": {
+      "item": "minecraft:paper"
+    }
+  },
+  "result": {
+    "item": "narutomod:medical_scroll",
+    "count": 1
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "group": "narutomod",
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "012",
+    "345",
+    "678"
+  ],
+  "key": {
+    "0": {
+      "item": "minecraft:gold_ingot"
+    },
+    "1": {
+      "item": "minecraft:gold_ingot"
+    },
+    "2": {
+      "item": "minecraft:gold_ingot"
+    },
+    "3": {
+      "item": "minecraft:gold_ingot"
+    },
+    "4": {
+      "item": "narutomod:military_rations_pill"
+    },
+    "5": {
+      "item": "minecraft:gold_ingot"
+    },
+    "6": {
+      "item": "minecraft:gold_ingot"
+    },
+    "7": {
+      "item": "minecraft:lingering_potion",
+      "data": 32767
+    },
+    "8": {
+      "item": "minecraft:gold_ingot"
+    }
+  },
+  "result": {
+    "item": "narutomod:military_rations_pill_gold",
+    "count": 1
+  }
+}

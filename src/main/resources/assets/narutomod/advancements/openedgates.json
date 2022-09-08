@@ -1,0 +1,26 @@
+{
+  "display": {
+    "icon": {
+      "item": "narutomod:eightgates"
+    },
+    "title": {
+      "translate": "advancements.openedgates.title"
+    },
+    "description": {
+      "translate": "advancements.openedgates.descr"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "openedgates": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "rewards": {
+    "experience": 10
+  },
+  "parent": "narutomod:ninjaachievement"
+}

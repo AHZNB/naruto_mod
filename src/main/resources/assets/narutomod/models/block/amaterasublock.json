@@ -1,0 +1,8 @@
+{
+  "parent": "narutomod:custom/fire_vanilla",
+  "textures": {
+    "all": "narutomod:blocks/fire_black_layer_0",
+    "particle": "narutomod:blocks/fire_black_layer_0",
+    "fire": "narutomod:blocks/fire_black_layer_1"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "_fv": 18,
+  "_type": "keybind",
+  "definition": {
+    "triggerKey": "F",
+    "keyBindingName": "Special Jutsu 2",
+    "keyBindingCategoryKey": "misc",
+    "onKeyPressed": {
+      "name": "SpecialJutsu2OnKeyPressed"
+    }
+  }
+}

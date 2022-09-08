@@ -1,0 +1,19 @@
+{
+  "_fv": 18,
+  "_type": "potion",
+  "definition": {
+    "name": "Reach",
+    "effectName": "Reach",
+    "icon": "reach.png",
+    "color": {
+      "value": -1,
+      "falpha": 0.0
+    },
+    "isInstant": true,
+    "isBad": false,
+    "isBenefitical": true,
+    "registerPotionType": false,
+    "renderStatusInInventory": true,
+    "renderStatusInHUD": true
+  }
+}

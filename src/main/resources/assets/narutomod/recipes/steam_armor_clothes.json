@@ -1,0 +1,43 @@
+{
+  "group": "narutomod",
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "0 2",
+    "345",
+    "678"
+  ],
+  "key": {
+    "0": {
+      "item": "minecraft:dye",
+      "data": 5
+    },
+    "2": {
+      "item": "minecraft:dye",
+      "data": 5
+    },
+    "3": {
+      "item": "minecraft:iron_ingot"
+    },
+    "4": {
+      "item": "minecraft:leather_chestplate"
+    },
+    "5": {
+      "item": "minecraft:iron_ingot"
+    },
+    "6": {
+      "item": "minecraft:dye",
+      "data": 5
+    },
+    "7": {
+      "item": "minecraft:iron_ingot"
+    },
+    "8": {
+      "item": "minecraft:dye",
+      "data": 5
+    }
+  },
+  "result": {
+    "item": "narutomod:steam_armorbody",
+    "count": 1
+  }
+}

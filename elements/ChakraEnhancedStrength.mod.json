@@ -1,0 +1,19 @@
+{
+  "_fv": 18,
+  "_type": "potion",
+  "definition": {
+    "name": "Chakra Enhanced Strength",
+    "effectName": "Chakra Enhanced Strength",
+    "icon": "strength.png",
+    "color": {
+      "value": -13369396,
+      "falpha": 0.0
+    },
+    "isInstant": true,
+    "isBad": false,
+    "isBenefitical": true,
+    "registerPotionType": false,
+    "renderStatusInInventory": true,
+    "renderStatusInHUD": true
+  }
+}

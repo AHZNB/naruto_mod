@@ -1,0 +1,7 @@
+{
+  "_fv": 18,
+  "_type": "procedure",
+  "definition": {
+    "procedurexml": "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><xml xmlns=\"https://developers.google.com/blockly/xml\"><block deletable=\"false\" type=\"event_trigger\" x=\"40\" y=\"40\"><field name=\"trigger\">player_left_click_block</field><next><block type=\"play_sound\"><field name=\"sound\">CUSTOM:Amaterasu</field><value name=\"x\"><block type=\"entity_pos_x\"><value name=\"entity\"><block type=\"entity_from_deps\"/></value></block></value><value name=\"y\"><block type=\"entity_pos_y\"><value name=\"entity\"><block type=\"entity_from_deps\"/></value></block></value><value name=\"z\"><block type=\"entity_pos_z\"><value name=\"entity\"><block type=\"entity_from_deps\"/></value></block></value><value name=\"level\"><block type=\"math_number\"><field name=\"NUM\">1</field></block></value><value name=\"pitch\"><block type=\"math_number\"><field name=\"NUM\">1</field></block></value></block></next></block></xml>"
+  }
+}

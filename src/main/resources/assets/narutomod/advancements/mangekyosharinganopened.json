@@ -1,0 +1,26 @@
+{
+  "display": {
+    "icon": {
+      "item": "narutomod:mangekyosharinganhelmet"
+    },
+    "title": {
+      "translate": "advancements.mangekyosharinganopened.title"
+    },
+    "description": {
+      "translate": "advancements.mangekyosharinganopened.descr"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "mangekyosharinganopened": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "rewards": {
+    "experience": 0
+  },
+  "parent": "narutomod:sharinganopened"
+}

@@ -1,0 +1,39 @@
+{
+  "_fv": 18,
+  "_type": "gun",
+  "definition": {
+    "renderType": 1,
+    "texture": "kusanagi128",
+    "customModelName": "kusanagioro:default",
+    "name": "Kusanagi Sword (WIP)",
+    "specialInfo": [
+      "The Kusanagi Sword of Japanese legend"
+    ],
+    "creativeTab": {
+      "value": "CUSTOM:ModTab"
+    },
+    "stackSize": 1,
+    "ammoItem": {
+      "value": ""
+    },
+    "shootConstantly": false,
+    "usageCount": 0,
+    "actionSound": {
+      "value": "entity.arrow.shoot"
+    },
+    "hasGlow": false,
+    "animation": "bow",
+    "enableMeleeDamage": true,
+    "damageVsEntity": 23.0,
+    "bulletPower": 1.0,
+    "bulletDamage": 20.0,
+    "bulletKnockback": 0,
+    "bulletParticles": false,
+    "bulletIgnitesFire": false,
+    "bulletItemTexture": {
+      "value": "CUSTOM:KusanagiSword"
+    },
+    "bulletModel": "Default",
+    "customBulletModelTexture": ""
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "_fv": 18,
+  "_type": "armor",
+  "definition": {
+    "enableHelmet": true,
+    "textureHelmet": "ninjaarmor_headband_item",
+    "enableBody": true,
+    "textureBody": "ninjaarmor_body_item",
+    "enableLeggings": true,
+    "textureLeggings": "ninjaarmor_pants_item",
+    "enableBoots": false,
+    "textureBoots": "",
+    "creativeTab": {
+      "value": "CUSTOM:ModTab"
+    },
+    "armorTextureFile": "sasuke_",
+    "helmetName": "Forehead Protector (Konoha)",
+    "bodyName": "Ninja Tactical Vest (Konoha)",
+    "leggingsName": "Ninja pants (Konoha)",
+    "bootsName": "",
+    "helmetSpecialInfo": [],
+    "bodySpecialInfo": [],
+    "leggingsSpecialInfo": [],
+    "bootsSpecialInfo": [],
+    "helmetModelName": "ModelNinjaArmor",
+    "helmetModelPart": "bipedHead",
+    "helmetModelTexture": "leafarmor.png",
+    "bodyModelName": "ModelNinjaArmor",
+    "bodyModelPart": "bipedBody",
+    "armsModelPartL": "bipedLeftArm",
+    "armsModelPartR": "bipedRightArm",
+    "bodyModelTexture": "leafarmor.png",
+    "leggingsModelName": "ModelNinjaArmor",
+    "leggingsModelPartL": "bipedLeftLeg",
+    "leggingsModelPartR": "bipedRightLeg",
+    "leggingsModelTexture": "leafarmor.png",
+    "bootsModelName": "Default",
+    "bootsModelPartL": "Boots L",
+    "bootsModelPartR": "Boots R",
+    "bootsModelTexture": "From armor",
+    "maxDamage": 5,
+    "damageValueHelmet": 2,
+    "damageValueBody": 6,
+    "damageValueLeggings": 5,
+    "damageValueBoots": 2,
+    "enchantability": 0,
+    "toughness": 1.0,
+    "knockbackResistance": 0.0,
+    "equipSound": {
+      "value": ""
+    },
+    "repairItems": [
+      {
+        "value": "Blocks.WOOL#0"
+      }
+    ]
+  }
+}

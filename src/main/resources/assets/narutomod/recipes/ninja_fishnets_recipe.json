@@ -1,0 +1,40 @@
+{
+  "group": "narutomod",
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "012",
+    "3 5",
+    "6 8"
+  ],
+  "key": {
+    "0": {
+      "item": "minecraft:string"
+    },
+    "1": {
+      "item": "minecraft:leather_leggings"
+    },
+    "2": {
+      "item": "minecraft:string"
+    },
+    "3": {
+      "item": "minecraft:wool",
+      "data": 15
+    },
+    "5": {
+      "item": "minecraft:wool",
+      "data": 15
+    },
+    "6": {
+      "item": "minecraft:wool",
+      "data": 15
+    },
+    "8": {
+      "item": "minecraft:wool",
+      "data": 15
+    }
+  },
+  "result": {
+    "item": "narutomod:ninja_armor_fishnetslegs",
+    "count": 1
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "mappings": {
+    "default": {
+      "map": {
+        "fire": "fire_black_layer_1"
+      },
+      "name": "default"
+    }
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "display": {
+    "icon": {
+      "item": "narutomod:iryo_jutsu"
+    },
+    "title": {
+      "translate": "advancements.achievementmedicalgenin.title"
+    },
+    "description": {
+      "translate": "advancements.achievementmedicalgenin.descr"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "achievementmedicalgenin": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "rewards": {
+    "experience": 0,
+    "recipes": [
+      "narutomod:military_rations_pill_recipe",
+      "narutomod:recipemedicalscroll",
+      "narutomod:mrpg_recipe"
+    ]
+  },
+  "parent": "narutomod:ninjaachievement"
+}

@@ -1,0 +1,32 @@
+{
+  "group": "narutomod",
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "012",
+    "345"
+  ],
+  "key": {
+    "0": {
+      "item": "minecraft:stick"
+    },
+    "1": {
+      "item": "minecraft:stick"
+    },
+    "2": {
+      "item": "minecraft:stick"
+    },
+    "3": {
+      "item": "minecraft:iron_ingot"
+    },
+    "4": {
+      "item": "minecraft:leather_helmet"
+    },
+    "5": {
+      "item": "minecraft:iron_ingot"
+    }
+  },
+  "result": {
+    "item": "narutomod:steam_armorhelmet",
+    "count": 1
+  }
+}

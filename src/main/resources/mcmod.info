@@ -1,0 +1,20 @@
+[
+  {
+    "modid": "narutomod",
+    "name": "NarutoMod",
+    "description": "",
+    "version": "0.2.9-beta",
+    "credits": "Created using mod maker MCreator - https://mcreator.net/about",
+    "logoFile": "",
+    "mcversion": "1.12.2",
+    "url": "https://www.youtube.com/c/AHZNB",
+    "updateUrl": "",
+    "authorList": [
+      "ahznb"
+    ],
+    "dependencies": [],
+    "dependants": [],
+    "requiredMods": [],
+    "useDependencyInformation": "true"
+  }
+]

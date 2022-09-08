@@ -1,0 +1,45 @@
+{
+  "_fv": 18,
+  "_type": "recipe",
+  "definition": {
+    "recipeType": "Crafting",
+    "xpReward": 0.0,
+    "cookingTime": 200,
+    "recipeRetstackSize": 1,
+    "recipeShapeless": false,
+    "recipeSlots": [
+      {
+        "value": "Blocks.WOOL#8"
+      },
+      {
+        "value": ""
+      },
+      {
+        "value": "Blocks.WOOL#0"
+      },
+      {
+        "value": "Blocks.WOOL#8"
+      },
+      {
+        "value": "Items.LEATHER_CHESTPLATE"
+      },
+      {
+        "value": "Blocks.WOOL#0"
+      },
+      {
+        "value": "Blocks.WOOL#8"
+      },
+      {
+        "value": "Blocks.WOOL#14"
+      },
+      {
+        "value": "Blocks.WOOL#0"
+      }
+    ],
+    "recipeReturnStack": {
+      "value": "CUSTOM:Uchiha.body"
+    },
+    "name": "recipeuchihashirt",
+    "namespace": "mod"
+  }
+}

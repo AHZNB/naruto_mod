@@ -1,0 +1,118 @@
+{
+  "_fv": 18,
+  "_type": "block",
+  "definition": {
+    "texture": "blank",
+    "textureTop": "",
+    "textureLeft": "",
+    "textureFront": "",
+    "textureRight": "",
+    "textureBack": "",
+    "renderType": 11,
+    "customModelName": "Single texture",
+    "rotationMode": 0,
+    "emissiveRendering": false,
+    "displayFluidOverlay": false,
+    "itemTexture": "",
+    "particleTexture": "",
+    "tintType": "No tint",
+    "isItemTinted": false,
+    "hasTransparency": true,
+    "connectedSides": false,
+    "transparencyType": "TRANSLUCENT",
+    "disableOffset": false,
+    "boundingBoxes": [
+      {
+        "mx": 8.0,
+        "my": 8.0,
+        "mz": 8.0,
+        "Mx": 8.0,
+        "My": 8.0,
+        "Mz": 8.0,
+        "subtract": false
+      }
+    ],
+    "name": "Light Source",
+    "specialInfo": [],
+    "hardness": 64000.0,
+    "resistance": 10.0,
+    "hasGravity": false,
+    "isWaterloggable": false,
+    "creativeTab": {
+      "value": "No creative tab entry"
+    },
+    "destroyTool": "Not specified",
+    "customDrop": {
+      "value": ""
+    },
+    "dropAmount": 0,
+    "useLootTableForDrops": false,
+    "enchantPowerBonus": 0.0,
+    "plantsGrowOn": false,
+    "canProvidePower": false,
+    "lightOpacity": 0,
+    "material": {
+      "value": "BARRIER"
+    },
+    "tickRate": 2,
+    "tickRandomly": false,
+    "isReplaceable": false,
+    "colorOnMap": "AIR",
+    "creativePickItem": {
+      "value": ""
+    },
+    "offsetType": "NONE",
+    "aiPathNodeType": "OPEN",
+    "flammability": 0,
+    "fireSpreadSpeed": 0,
+    "isLadder": false,
+    "slipperiness": 0.6,
+    "speedFactor": 1.0,
+    "jumpFactor": 1.0,
+    "reactionToPushing": "IGNORE",
+    "isNotColidable": true,
+    "soundOnStep": {
+      "value": "GROUND"
+    },
+    "luminance": 15,
+    "unbreakable": true,
+    "breakHarvestLevel": 1,
+    "spawnParticles": false,
+    "particleToSpawn": {
+      "value": "EXPLOSION_NORMAL"
+    },
+    "particleSpawningShape": "Spread",
+    "particleSpawningRadious": 0.5,
+    "particleAmount": 4,
+    "hasInventory": true,
+    "guiBoundTo": "<NONE>",
+    "openGUIOnRightClick": false,
+    "inventorySize": 0,
+    "inventoryStackSize": 64,
+    "inventoryDropWhenDestroyed": false,
+    "inventoryComparatorPower": false,
+    "inventoryOutSlotIDs": [],
+    "inventoryInSlotIDs": [],
+    "hasEnergyStorage": false,
+    "energyInitial": 0,
+    "energyCapacity": 400000,
+    "energyMaxReceive": 200,
+    "energyMaxExtract": 200,
+    "isFluidTank": false,
+    "fluidCapacity": 8000,
+    "fluidRestrictions": [],
+    "onTickUpdate": {
+      "name": "LightSourceUpdateTick"
+    },
+    "onBlockPlayedBy": {
+      "name": "LightSourceBlockIsPlacedBy"
+    },
+    "spawnWorldTypes": [],
+    "restrictionBiomes": [],
+    "blocksToReplace": [],
+    "frequencyPerChunks": 10,
+    "frequencyOnChunk": 16,
+    "minGenerateHeight": 0,
+    "maxGenerateHeight": 64
+  }
+}

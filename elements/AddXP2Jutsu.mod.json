@@ -1,0 +1,11 @@
+{
+  "_fv": 18,
+  "_type": "command",
+  "definition": {
+    "commandName": "addxp2jutsu",
+    "permissionLevel": "4",
+    "onCommandExecuted": {
+      "name": "AddXP2JutsuCommandExecuted"
+    }
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "_fv": 18,
+  "_type": "potion",
+  "definition": {
+    "name": "Paralysis",
+    "effectName": "Paralysis",
+    "icon": "paralysis.png",
+    "color": {
+      "value": -16724788,
+      "falpha": 0.0
+    },
+    "isInstant": false,
+    "isBad": true,
+    "isBenefitical": false,
+    "registerPotionType": false,
+    "renderStatusInInventory": true,
+    "renderStatusInHUD": true,
+    "onActiveTick": {
+      "name": "ParalysisOnPotionActiveTick"
+    },
+    "onExpired": {
+      "name": "ParalysisPotionExpires"
+    }
+  }
+}

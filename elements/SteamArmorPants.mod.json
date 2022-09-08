@@ -1,0 +1,46 @@
+{
+  "_fv": 18,
+  "_type": "recipe",
+  "definition": {
+    "recipeType": "Crafting",
+    "xpReward": 0.0,
+    "cookingTime": 200,
+    "recipeRetstackSize": 1,
+    "group": "",
+    "recipeShapeless": false,
+    "recipeSlots": [
+      {
+        "value": "Items.DYE#5"
+      },
+      {
+        "value": "Items.DYE#5"
+      },
+      {
+        "value": "Items.DYE#5"
+      },
+      {
+        "value": "Items.LEATHER"
+      },
+      {
+        "value": "Items.LEATHER_LEGGINGS"
+      },
+      {
+        "value": "Items.LEATHER"
+      },
+      {
+        "value": "Items.IRON_INGOT"
+      },
+      {
+        "value": ""
+      },
+      {
+        "value": "Items.IRON_INGOT"
+      }
+    ],
+    "recipeReturnStack": {
+      "value": "CUSTOM:SteamArmor.legs"
+    },
+    "name": "steam_armor_pants",
+    "namespace": "mod"
+  }
+}

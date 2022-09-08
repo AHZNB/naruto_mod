@@ -1,0 +1,27 @@
+{
+  "_fv": 18,
+  "_type": "tool",
+  "definition": {
+    "renderType": 1,
+    "texture": "samehada",
+    "customModelName": "samehada:default",
+    "name": "Samehada",
+    "specialInfo": [],
+    "creativeTab": {
+      "value": "CUSTOM:ModTab"
+    },
+    "toolType": "MultiTool",
+    "harvestLevel": 1,
+    "efficiency": 1.0,
+    "attackSpeed": 0.8,
+    "enchantability": 0,
+    "damageVsEntity": 15.0,
+    "usageCount": 0,
+    "blocksAffected": [],
+    "hasGlow": false,
+    "repairItems": [],
+    "immuneToFire": false,
+    "stayInGridWhenCrafting": false,
+    "damageOnCrafting": true
+  }
+}

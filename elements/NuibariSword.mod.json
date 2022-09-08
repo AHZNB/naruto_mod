@@ -1,0 +1,48 @@
+{
+  "_fv": 18,
+  "_type": "gun",
+  "definition": {
+    "renderType": 1,
+    "texture": "kusanagi128",
+    "customModelName": "nuibari:default",
+    "name": "Nuibari Sword",
+    "specialInfo": [
+      "The Nuibari is one of the swords of the Seven Swordsmen of the Mist. The blade itself assumes the form of a narrow \"longsword\" that greatly resembles a large needle. This sword is said to possess the ability to pierce all and stitch them together."
+    ],
+    "creativeTab": {
+      "value": "CUSTOM:ModTab"
+    },
+    "stackSize": 1,
+    "ammoItem": {
+      "value": "CUSTOM:NuibariSword"
+    },
+    "shootConstantly": false,
+    "usageCount": 0,
+    "actionSound": {
+      "value": "entity.arrow.shoot"
+    },
+    "hasGlow": false,
+    "animation": "spear",
+    "enableMeleeDamage": true,
+    "damageVsEntity": 0.7,
+    "bulletPower": 2.0,
+    "bulletDamage": 8.0,
+    "bulletKnockback": 0,
+    "bulletParticles": false,
+    "bulletIgnitesFire": false,
+    "bulletItemTexture": {
+      "value": "CUSTOM:NuibariSword"
+    },
+    "bulletModel": "Default",
+    "customBulletModelTexture": "",
+    "onBulletHitsBlock": {
+      "name": "NuibariSwordBulletHitsBlock"
+    },
+    "onBulletHitsEntity": {
+      "name": "NuibariSwordBulletHitsLivingEntity"
+    },
+    "onBulletFlyingTick": {
+      "name": "NuibariSwordWhileBulletFlyingTick"
+    }
+  }
+}

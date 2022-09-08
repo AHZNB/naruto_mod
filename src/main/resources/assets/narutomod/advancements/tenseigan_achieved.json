@@ -1,0 +1,26 @@
+{
+  "display": {
+    "icon": {
+      "item": "narutomod:tenseiganhelmet"
+    },
+    "title": {
+      "translate": "advancements.tenseigan_achieved.title"
+    },
+    "description": {
+      "translate": "advancements.tenseigan_achieved.descr"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "tenseigan_achieved": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "rewards": {
+    "experience": 0
+  },
+  "parent": "narutomod:byakuganopened"
+}

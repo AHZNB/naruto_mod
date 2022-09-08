@@ -1,0 +1,10 @@
+{
+  "mappings": {
+    "default": {
+      "map": {
+        "0": "kunai_256"
+      },
+      "name": "default"
+    }
+  }
+}

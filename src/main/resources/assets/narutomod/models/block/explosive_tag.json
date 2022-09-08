@@ -1,0 +1,8 @@
+{
+  "parent": "narutomod:custom/explosivetag",
+  "textures": {
+    "all": "narutomod:blocks/explosivetag",
+    "particle": "narutomod:blocks/explosivetag",
+    "0": "narutomod:blocks/explosivetag"
+  }
+}

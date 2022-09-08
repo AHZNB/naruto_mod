@@ -1,0 +1,22 @@
+{
+  "_fv": 18,
+  "_type": "potion",
+  "definition": {
+    "name": "Chakra Regeneration",
+    "effectName": "Chakra ++",
+    "icon": "military_rations_pill_gold.png",
+    "color": {
+      "value": -16724788,
+      "falpha": 0.0
+    },
+    "isInstant": false,
+    "isBad": false,
+    "isBenefitical": true,
+    "registerPotionType": false,
+    "renderStatusInInventory": true,
+    "renderStatusInHUD": true,
+    "onActiveTick": {
+      "name": "ChakraRegenerationOnPotionActiveTick"
+    }
+  }
+}

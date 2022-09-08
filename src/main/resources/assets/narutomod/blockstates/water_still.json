@@ -1,0 +1,20 @@
+{
+  "variants": {
+    "level=0": { "model": "narutomod:water_still" },
+    "level=1": { "model": "narutomod:water_still" },
+    "level=2": { "model": "narutomod:water_still" },
+    "level=3": { "model": "narutomod:water_still" },
+    "level=4": { "model": "narutomod:water_still" },
+    "level=5": { "model": "narutomod:water_still" },
+    "level=6": { "model": "narutomod:water_still" },
+    "level=7": { "model": "narutomod:water_still" },
+    "level=8": { "model": "narutomod:water_still" },
+    "level=9": { "model": "narutomod:water_still" },
+    "level=10": { "model": "narutomod:water_still" },
+    "level=11": { "model": "narutomod:water_still" },
+    "level=12": { "model": "narutomod:water_still" },
+    "level=13": { "model": "narutomod:water_still" },
+    "level=14": { "model": "narutomod:water_still" },
+    "level=15": { "model": "narutomod:water_still" }
+  }
+}

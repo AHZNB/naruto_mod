@@ -1,0 +1,7 @@
+{
+  "_fv": 18,
+  "_type": "procedure",
+  "definition": {
+    "procedurexml": "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><xml xmlns=\"https://developers.google.com/blockly/xml\"><block deletable=\"false\" type=\"event_trigger\" x=\"46\" y=\"86\"><field name=\"trigger\">no_ext_trigger</field><next><block type=\"controls_if\"><value name=\"IF0\"><block type=\"logic_negate\"><value name=\"BOOL\"><block type=\"entity_haspotioneffect\"><field name=\"potion\">CUSTOM:Flight</field><value name=\"entity\"><block type=\"entity_from_deps\"/></value></block></value></block></value><statement name=\"DO0\"><block type=\"entity_set_flying\"><value name=\"entity\"><block type=\"entity_from_deps\"/></value><value name=\"condition\"><block type=\"logic_boolean\"><field name=\"BOOL\">FALSE</field></block></value><next><block type=\"entity_add_potion_advanced\"><field name=\"potion\">CUSTOM:FeatherFalling</field><value name=\"level\"><block type=\"math_number\"><field name=\"NUM\">4</field></block></value><value name=\"duration\"><block type=\"math_number\"><field name=\"NUM\">200</field></block></value><value name=\"ambient\"><block type=\"logic_boolean\"><field name=\"BOOL\">FALSE</field></block></value><value name=\"particles\"><block type=\"logic_boolean\"><field name=\"BOOL\">FALSE</field></block></value><value name=\"entity\"><block type=\"entity_from_deps\"/></value></block></next></block></statement></block></next></block></xml>"
+  }
+}

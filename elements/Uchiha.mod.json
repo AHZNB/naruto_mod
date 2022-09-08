@@ -1,0 +1,51 @@
+{
+  "_fv": 18,
+  "_type": "armor",
+  "definition": {
+    "enableHelmet": false,
+    "textureHelmet": "",
+    "enableBody": true,
+    "textureBody": "sasuke-chestplate",
+    "enableLeggings": true,
+    "textureLeggings": "sasuke-leggings",
+    "enableBoots": true,
+    "textureBoots": "sasuke-boots",
+    "onBodyTick": {
+      "name": "UchihaBodyTickEvent"
+    },
+    "creativeTab": {
+      "value": "CUSTOM:ModTab"
+    },
+    "armorTextureFile": "sasuke_",
+    "helmetName": "Uchiha Helmet",
+    "bodyName": "Uchiha Body",
+    "leggingsName": "Uchiha Leggings",
+    "bootsName": "Uchiha Boots",
+    "helmetSpecialInfo": [],
+    "bodySpecialInfo": [],
+    "leggingsSpecialInfo": [],
+    "bootsSpecialInfo": [],
+    "helmetModelName": "Default",
+    "helmetModelPart": "Helmet",
+    "helmetModelTexture": "From armor",
+    "bodyModelName": "ModelArmorCustom",
+    "bodyModelPart": "bodywear",
+    "bodyModelTexture": "From armor",
+    "leggingsModelName": "ModelArmorCustom",
+    "leggingsModelPartL": "leftLegwear",
+    "leggingsModelPartR": "rightLegwear",
+    "leggingsModelTexture": "From armor",
+    "bootsModelName": "ModelArmorCustom",
+    "bootsModelPartL": "leftLegwear",
+    "bootsModelPartR": "rightLegwear",
+    "bootsModelTexture": "From armor",
+    "maxDamage": 50,
+    "damageValueHelmet": 20,
+    "damageValueBody": 30,
+    "damageValueLeggings": 25,
+    "damageValueBoots": 20,
+    "enchantability": 10,
+    "toughness": 5.0,
+    "knockbackResistance": 0.0
+  }
+}
