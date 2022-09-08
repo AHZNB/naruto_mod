@@ -1,0 +1,6 @@
+{
+  "parent": "narutomod:custom/yoton",
+  "textures": {
+    "1": "narutomod:blocks/yoton"
+  }
+}

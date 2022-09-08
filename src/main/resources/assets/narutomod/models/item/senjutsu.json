@@ -1,0 +1,6 @@
+{
+  "parent": "narutomod:custom/senjutsu",
+  "textures": {
+    "1": "narutomod:blocks/senjutsu"
+  }
+}

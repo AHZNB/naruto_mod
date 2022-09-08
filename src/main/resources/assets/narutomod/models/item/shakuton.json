@@ -1,0 +1,6 @@
+{
+  "parent": "narutomod:custom/shakuton",
+  "textures": {
+    "1": "narutomod:blocks/shakuton"
+  }
+}

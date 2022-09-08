@@ -1,0 +1,6 @@
+{
+  "parent": "narutomod:custom/raiton",
+  "textures": {
+    "1": "narutomod:blocks/raiton"
+  }
+}

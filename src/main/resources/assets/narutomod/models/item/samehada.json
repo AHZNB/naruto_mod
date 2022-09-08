@@ -1,0 +1,6 @@
+{
+  "parent": "narutomod:custom/samehada",
+  "textures": {
+    "1": "narutomod:blocks/samehada"
+  }
+}

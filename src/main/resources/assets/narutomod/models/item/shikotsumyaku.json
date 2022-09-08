@@ -1,0 +1,6 @@
+{
+  "parent": "narutomod:custom/shikotsumyaku",
+  "textures": {
+    "2": "narutomod:blocks/shikotsumyaku"
+  }
+}

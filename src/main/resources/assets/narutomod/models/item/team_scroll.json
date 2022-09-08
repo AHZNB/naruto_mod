@@ -1,0 +1,6 @@
+{
+  "parent": "narutomod:custom/teamscroll",
+  "textures": {
+    "2": "narutomod:blocks/scroll_closed"
+  }
+}

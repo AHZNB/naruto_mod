@@ -1,0 +1,6 @@
+{
+  "parent": "narutomod:custom/bomb",
+  "textures": {
+    "0": "narutomod:blocks/bomb"
+  }
+}

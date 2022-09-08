@@ -1,0 +1,6 @@
+{
+  "parent": "narutomod:custom/shuriken",
+  "textures": {
+    "0": "narutomod:blocks/shuriken"
+  }
+}

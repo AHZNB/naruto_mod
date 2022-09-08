@@ -1,0 +1,6 @@
+{
+  "parent": "narutomod:custom/armfist",
+  "textures": {
+    "0": "narutomod:blocks/armfist"
+  }
+}

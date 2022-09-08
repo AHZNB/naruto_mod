@@ -1,0 +1,6 @@
+{
+  "parent": "narutomod:custom/shibuki",
+  "textures": {
+    "4": "narutomod:blocks/shibuki"
+  }
+}

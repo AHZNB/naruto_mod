@@ -1,0 +1,6 @@
+{
+  "parent": "narutomod:custom/zabuzasword",
+  "textures": {
+    "3": "narutomod:blocks/zabuza_sword2"
+  }
+}

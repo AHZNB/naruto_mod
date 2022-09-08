@@ -1,0 +1,6 @@
+{
+  "parent": "narutomod:custom/summoningscroll",
+  "textures": {
+    "0": "narutomod:blocks/scroll_summoning"
+  }
+}

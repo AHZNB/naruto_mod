@@ -1,0 +1,6 @@
+{
+  "parent": "narutomod:custom/ryo1000000",
+  "textures": {
+    "0": "narutomod:blocks/ryo10000"
+  }
+}

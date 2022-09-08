@@ -1,0 +1,7 @@
+{
+  "parent": "narutomod:custom/totsukasword",
+  "textures": {
+    "0": "narutomod:blocks/fire_layer_0",
+    "1": "narutomod:blocks/fire_layer_1"
+  }
+}
