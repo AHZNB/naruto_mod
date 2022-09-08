@@ -1,0 +1,7 @@
+{
+  "parent": "narutomod:custom/kabutowari",
+  "textures": {
+    "1": "narutomod:blocks/hammer",
+    "2": "narutomod:blocks/axe"
+  }
+}

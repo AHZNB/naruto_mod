@@ -1,0 +1,7 @@
+{
+  "parent": "narutomod:custom/kagutsuchisword",
+  "textures": {
+    "0": "narutomod:blocks/fire_black_layer_0",
+    "1": "narutomod:blocks/fire_black_layer_1"
+  }
+}

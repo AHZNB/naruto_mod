@@ -1,0 +1,6 @@
+{
+  "parent": "narutomod:custom/kabutowarihammer",
+  "textures": {
+    "2": "narutomod:blocks/hammer"
+  }
+}

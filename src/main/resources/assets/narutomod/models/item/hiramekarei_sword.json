@@ -1,0 +1,6 @@
+{
+  "parent": "narutomod:custom/hiramekarei",
+  "textures": {
+    "0": "narutomod:blocks/hiramekarei"
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "parent": "narutomod:custom/foldingfan",
+  "textures": {
+    "0": "narutomod:blocks/foldingfan"
+  }
+}

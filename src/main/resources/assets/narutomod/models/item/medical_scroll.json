@@ -1,0 +1,6 @@
+{
+  "parent": "narutomod:custom/medicalscroll",
+  "textures": {
+    "1": "narutomod:blocks/scroll_medical"
+  }
+}

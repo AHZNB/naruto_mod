@@ -1,0 +1,6 @@
+{
+  "parent": "narutomod:custom/swordanbu",
+  "textures": {
+    "4": "narutomod:blocks/sword_anbu"
+  }
+}

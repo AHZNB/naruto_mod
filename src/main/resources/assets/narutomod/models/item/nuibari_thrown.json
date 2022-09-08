@@ -1,0 +1,6 @@
+{
+  "parent": "narutomod:custom/nuibarithrown",
+  "textures": {
+    "3": "narutomod:blocks/nuibari"
+  }
+}

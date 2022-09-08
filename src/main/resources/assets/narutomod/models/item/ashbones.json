@@ -1,0 +1,6 @@
+{
+  "parent": "narutomod:custom/ashbone",
+  "textures": {
+    "0": "narutomod:blocks/ashbone"
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "parent": "narutomod:custom/iryo",
+  "textures": {
+    "2": "narutomod:blocks/medical-ninja-symbol"
+  }
+}

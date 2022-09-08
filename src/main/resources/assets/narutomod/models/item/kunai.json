@@ -1,0 +1,6 @@
+{
+  "parent": "narutomod:custom/kunai",
+  "textures": {
+    "0": "narutomod:blocks/kunai_256"
+  }
+}

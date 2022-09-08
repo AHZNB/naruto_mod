@@ -1,0 +1,6 @@
+{
+  "parent": "narutomod:custom/bonesword",
+  "textures": {
+    "3": "narutomod:blocks/bonesword"
+  }
+}

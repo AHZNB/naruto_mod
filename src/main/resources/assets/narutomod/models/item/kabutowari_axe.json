@@ -1,0 +1,6 @@
+{
+  "parent": "narutomod:custom/kabutowariaxe",
+  "textures": {
+    "2": "narutomod:blocks/axe"
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "parent": "narutomod:custom/kibablade",
+  "textures": {
+    "4": "narutomod:blocks/kibablade"
+  }
+}

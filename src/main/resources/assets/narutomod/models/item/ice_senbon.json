@@ -1,0 +1,6 @@
+{
+  "parent": "narutomod:custom/spike",
+  "textures": {
+    "0": "narutomod:blocks/spike_ice"
+  }
+}

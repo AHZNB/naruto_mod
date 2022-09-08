@@ -1,0 +1,6 @@
+{
+  "parent": "narutomod:custom/mokuton",
+  "textures": {
+    "0": "narutomod:blocks/mokuton_symbol"
+  }
+}

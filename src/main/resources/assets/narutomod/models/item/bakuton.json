@@ -1,0 +1,6 @@
+{
+  "parent": "narutomod:custom/bakuton",
+  "textures": {
+    "2": "narutomod:blocks/bakuton"
+  }
+}

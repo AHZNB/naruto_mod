@@ -1,0 +1,6 @@
+{
+  "parent": "narutomod:custom/kusanagioro",
+  "textures": {
+    "0": "narutomod:blocks/kusanagi_oroch"
+  }
+}

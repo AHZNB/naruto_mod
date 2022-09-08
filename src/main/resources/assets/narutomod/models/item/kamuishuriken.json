@@ -1,0 +1,6 @@
+{
+  "parent": "narutomod:custom/kamuishuriken",
+  "textures": {
+    "1": "narutomod:blocks/kamuishuriken64"
+  }
+}
