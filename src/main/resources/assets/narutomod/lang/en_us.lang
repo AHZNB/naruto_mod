@@ -181,6 +181,7 @@ entity.futon_vacuum.name=Vacuum Wave
 entity.ninja_kumo.name=Ninja Kumo
 item.ninja_armor_amebody.name=
 advancements.yooton_acquired.descr=Lava Release ("Corrosion Style" or "Lava Style") is a nature transformation kekkei genkai, a combination of fire and earth.
+item.scroll_kikaichu_sphere.name=Hiden Technique: Kikaichu Sphere
 tooltip.general.powerupkey=Press the Power Increase key to cycle through abilities
 subtitles.charge_ground=
 entity.tailbeastball.name=Tail beast ball

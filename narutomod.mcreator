@@ -1,7 +1,7 @@
 {
   "id_map": {
     "ENTITY": 382,
-    "GUI": 54,
+    "GUI": 55,
     "DIMENSION": 13
   },
   "mod_elements": [
@@ -6244,6 +6244,26 @@
         "eb": false,
         "ec": false
       }
+    },
+    {
+      "name": "ScrollKikaichuSphereGui",
+      "type": "gui",
+      "sortid": 750,
+      "compiles": true,
+      "locked_code": true,
+      "ids": {
+        "0": 55
+      },
+      "registry_name": "scroll_kikaichu_sphere_gui"
+    },
+    {
+      "name": "ScrollKikaichuSphere",
+      "type": "item",
+      "sortid": 750,
+      "compiles": true,
+      "locked_code": false,
+      "ids": {},
+      "registry_name": "scroll_kikaichu_sphere"
     }
   ],
   "variable_elements": [
@@ -7253,6 +7273,7 @@
       "entity.ninja_kumo.name": "Ninja Kumo",
       "item.ninja_armor_amebody.name": "",
       "advancements.yooton_acquired.descr": "Lava Release (\"Corrosion Style\" or \"Lava Style\") is a nature transformation kekkei genkai, a combination of fire and earth.",
+      "item.scroll_kikaichu_sphere.name": "Hiden Technique: Kikaichu Sphere",
       "tooltip.general.powerupkey": "Press the Power Increase key to cycle through abilities",
       "subtitles.charge_ground": "",
       "entity.tailbeastball.name": "Tail beast ball",
@@ -7838,6 +7859,7 @@
       "entity.ninja_kumo.name": "Ninja Kumo",
       "item.ninja_armor_amebody.name": "",
       "advancements.yooton_acquired.descr": "Lava Release (\"Corrosion Style\" or \"Lava Style\") is a nature transformation kekkei genkai, a combination of fire and earth.",
+      "item.scroll_kikaichu_sphere.name": "Hiden Technique: Kikaichu Sphere",
       "tooltip.general.powerupkey": "按【技能提升】键更换技能",
       "subtitles.charge_ground": "",
       "entity.tailbeastball.name": "尾獣玉",
