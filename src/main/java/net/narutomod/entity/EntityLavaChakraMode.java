@@ -8,6 +8,7 @@ import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
 
 import net.minecraft.init.SoundEvents;
+import net.minecraft.init.MobEffects;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.World;
 import net.minecraft.util.ResourceLocation;
@@ -27,6 +28,7 @@ import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.model.ModelBase;
+import net.minecraft.potion.PotionEffect;
 
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.item.ItemJutsu;
@@ -62,6 +64,7 @@ public class EntityLavaChakraMode extends ElementsNarutomodMod.ModElement {
 	public static class EC extends Entity {
 		private static final DataParameter<Integer> USERID = EntityDataManager.<Integer>createKey(EC.class, DataSerializers.VARINT);
 		protected static final String LCMEntityIdKey = "LavaChakraModeEntityId";
+		private int strengthAmplifier = 9;
 
 		public EC(World world) {
 			super(world);
@@ -73,6 +76,9 @@ public class EntityLavaChakraMode extends ElementsNarutomodMod.ModElement {
 			this.setUser(userIn);
 			this.setPosition(userIn.posX, userIn.posY, userIn.posZ);
 			userIn.getEntityData().setInteger(LCMEntityIdKey, this.getEntityId());
+			if (userIn.isPotionActive(MobEffects.STRENGTH)) {
+				this.strengthAmplifier += userIn.getActivePotionEffect(MobEffects.STRENGTH).getAmplifier() + 1;
+			}
 		}
 
 		@Override
@@ -106,8 +112,12 @@ public class EntityLavaChakraMode extends ElementsNarutomodMod.ModElement {
 			EntityLivingBase user = this.getUser();
 			if (user != null) {
 				this.setPosition(user.posX, user.posY, user.posZ);
-				if (this.ticksExisted % 20 == 19 && !Chakra.pathway(user).consume(ItemYooton.CHAKRAMODE.chakraUsage)) {
-					this.setDead();
+				if (this.ticksExisted % 20 == 19) {
+					if (!Chakra.pathway(user).consume(ItemYooton.CHAKRAMODE.chakraUsage)) {
+						this.setDead();
+					} else {
+						user.addPotionEffect(new PotionEffect(MobEffects.STRENGTH, 21, this.strengthAmplifier, false, false));
+					}
 				}
 				if (this.rand.nextInt(20) == 0) {
 					this.playSound(SoundEvents.BLOCK_LAVA_AMBIENT, 0.5f, this.rand.nextFloat() * 0.6f + 0.6f);
@@ -142,8 +152,7 @@ public class EntityLavaChakraMode extends ElementsNarutomodMod.ModElement {
 		public static class Jutsu implements ItemJutsu.IJutsuCallback {
 			@Override
 			public boolean createJutsu(ItemStack stack, EntityLivingBase entity, float power) {
-				//if (entity instanceof EntityPlayer && EntityBijuManager.getTails((EntityPlayer)entity) == 4
-				// && EntityBijuManager.cloakLevel((EntityPlayer)entity) == 1) {
+				if (entity instanceof EntityPlayer && EntityBijuManager.getTails((EntityPlayer)entity) == 4) {
 				 	Entity entity1 = entity.world.getEntityByID(entity.getEntityData().getInteger(LCMEntityIdKey));
 					if (!(entity1 instanceof EC)) {
 						entity.world.spawnEntity(new EC(entity));
@@ -151,7 +160,7 @@ public class EntityLavaChakraMode extends ElementsNarutomodMod.ModElement {
 					} else {
 						entity1.setDead();
 					}
-				//}
+				}
 				return false;
 			}
 		}
@@ -168,7 +177,7 @@ public class EntityLavaChakraMode extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void doRender(EC entity, double x, double y, double z, float entityYaw, float pt) {
 			EntityLivingBase user = entity.getUser();
-			if (user != null) {
+			if (user != null && (!user.equals(this.renderManager.renderViewEntity) || this.renderManager.options.thirdPersonView != 0)) {
 				RenderLivingBase userRenderer = (RenderLivingBase)this.renderManager.getEntityRenderObject(user);
 				ModelBase model = userRenderer.getMainModel();
 				float f = (float)user.ticksExisted + pt;

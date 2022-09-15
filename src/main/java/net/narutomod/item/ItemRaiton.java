@@ -121,6 +121,7 @@ public class ItemRaiton extends ElementsNarutomodMod.ModElement {
 		//private int maxCooldown = 400;
 		private EntityLivingBase summoner;
 		private ItemStack usingItemstack;
+		private int strengthAmplifier = 9;
 		//private int jutsuIndex;
 		//private int duration;
 
@@ -151,6 +152,9 @@ public class ItemRaiton extends ElementsNarutomodMod.ModElement {
 				//((ItemJutsu.Base)stack.getItem()).setCurrentJutsuCooldown(stack, this.duration + this.maxCooldown);
 				this.usingItemstack = stack;
 			}
+			if (summonerIn.isPotionActive(MobEffects.STRENGTH)) {
+				this.strengthAmplifier += summonerIn.getActivePotionEffect(MobEffects.STRENGTH).getAmplifier() + 1;
+			}
 		}
 
 		@Override
@@ -163,25 +167,19 @@ public class ItemRaiton extends ElementsNarutomodMod.ModElement {
 			this.setNewCooldown();
 		}
 
-		private void consumeChakra() {
-			if (this.summoner != null) {
-				if (Chakra.pathway(this.summoner).getAmount() < this.CHAKRA_BURN) {
-					this.setDead();
-				} else if (this.ticksExisted % 20 == 0) {
-					Chakra.pathway(this.summoner).consume(this.CHAKRA_BURN);
-				}
-			}
-		}
-
 		@Override
 		public void onUpdate() {
 			super.onUpdate();
 			if (this.summoner != null && this.summoner.isEntityAlive()) {
-				this.consumeChakra();
-				this.summoner.addPotionEffect(new PotionEffect(MobEffects.RESISTANCE, 2, 3, false, false));
-				this.summoner.addPotionEffect(new PotionEffect(MobEffects.SPEED, 2, 32, false, false));
-				this.summoner.addPotionEffect(new PotionEffect(MobEffects.STRENGTH, 2, 9, false, false));
-				this.summoner.addPotionEffect(new PotionEffect(MobEffects.JUMP_BOOST, 2, 6, false, false));
+				if (this.ticksExisted % 20 == 2) {
+					if (!Chakra.pathway(this.summoner).consume(this.CHAKRA_BURN)) {
+						this.setDead();
+					}
+					this.summoner.addPotionEffect(new PotionEffect(MobEffects.RESISTANCE, 21, 3, false, false));
+					this.summoner.addPotionEffect(new PotionEffect(MobEffects.SPEED, 21, 32, false, false));
+					this.summoner.addPotionEffect(new PotionEffect(MobEffects.STRENGTH, 21, this.strengthAmplifier, false, false));
+					this.summoner.addPotionEffect(new PotionEffect(MobEffects.JUMP_BOOST, 21, 6, false, false));
+				}
 				this.setPosition(this.summoner.posX, this.summoner.posY, this.summoner.posZ);
 				if (this.rand.nextInt(8) == 0) {
 					this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation(("narutomod:electricity"))),

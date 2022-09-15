@@ -149,8 +149,6 @@ public class ItemJutsu extends ElementsNarutomodMod.ModElement {
 		protected abstract float getPower(ItemStack stack, EntityLivingBase entity, int timeLeft);
 
 		protected float getPower(ItemStack stack, EntityLivingBase entity, int timeLeft, float basePower, float powerupDelay) {
-			//Chakra.Pathway cp = Chakra.pathway(entity);
-			float chakramodifier = (float)Chakra.getChakraModifier(entity);
 			//boolean flag = entity instanceof EntityPlayer && ((EntityPlayer)entity).isCreative();
 			//int i = flag ? this.getCurrentJutsuRequiredXp(stack) : this.getCurrentJutsuXp(stack);
 			//float xpmodifier = i != 0 ? (float)this.getCurrentJutsuRequiredXp(stack) / (float)i : 0f;

@@ -149,6 +149,7 @@ public class ItemFuton extends ElementsNarutomodMod.ModElement {
 			if (itemstack.getItem() == block) {
 				float f = ((RangedItem)itemstack.getItem()).getCurrentJutsuXpModifier(itemstack, user);
 				if (f > 0.0f) {
+					f = 1.0f / f;
 					if (user instanceof EntityPlayer) {
 						f *= PlayerTracker.getNinjaLevel((EntityPlayer)user) / 20d;
 					}
