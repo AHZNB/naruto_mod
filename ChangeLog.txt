@@ -33,6 +33,7 @@ Jutsus:
  - Lava release chakra mode: gives user +9 strength effect
  - added Kirin
  - added 1000-hand buddha
+ - added Hiding in camouflage
  
 Shift+jump:
  - tweaked the leap trajectory
