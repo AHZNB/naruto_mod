@@ -174,25 +174,25 @@ public class ItemMokuton extends ElementsNarutomodMod.ModElement {
 			if (rtr.typeOfHit == RayTraceResult.Type.BLOCK && rtr.sideHit == EnumFacing.UP 
 			 && ItemCustom.canSpawnStructureHere(world, rtr.getBlockPos()) && !world.isRemote) {
 				Template template = ((WorldServer)world).getStructureTemplateManager()
-				 .getTemplate(world.getMinecraftServer(), new ResourceLocation("narutomod", "wood_house"));
+				 .getTemplate(world.getMinecraftServer(), new ResourceLocation("narutomod", "wood_house_2"));
 				if (template != null) {
 					BlockPos spawnTo, spos;
 					Rotation rotation;
 					float yaw = MathHelper.wrapDegrees(entity.rotationYaw);
 					if (yaw >= 135f || yaw < -135f) {
-						spawnTo = rtr.getBlockPos().add(-3, 1, -14);
+						spawnTo = rtr.getBlockPos().add(-8, 1, -16);
 						spos = spawnTo;
 						rotation = Rotation.NONE;
 					} else if (yaw >= -45f && yaw < 45f) {
-						spawnTo = rtr.getBlockPos().add(3, 1, 14);
+						spawnTo = rtr.getBlockPos().add(8, 1, 16);
 						spos = spawnTo.add(-template.getSize().getX(), 0, -template.getSize().getZ());
 						rotation = Rotation.CLOCKWISE_180;
 					} else if (yaw >= 45f && yaw < 135f) {
-						spawnTo = rtr.getBlockPos().add(-14, 1, 3);
+						spawnTo = rtr.getBlockPos().add(-16, 1, 8);
 						spos = spawnTo.add(0, 0, -template.getSize().getX());
 						rotation = Rotation.COUNTERCLOCKWISE_90;
 					} else {
-						spawnTo = rtr.getBlockPos().add(14, 1, -3);
+						spawnTo = rtr.getBlockPos().add(16, 1, -8);
 						spos = spawnTo.add(-template.getSize().getZ(), 0, 0);
 						rotation = Rotation.CLOCKWISE_90;
 					}

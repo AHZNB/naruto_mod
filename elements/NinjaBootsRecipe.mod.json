@@ -19,28 +19,28 @@
         "value": ""
       },
       {
-        "value": "Blocks.WOOL#13"
-      },
-      {
-        "value": "Items.IRON_INGOT"
-      },
-      {
-        "value": "Blocks.WOOL#13"
+        "value": "Blocks.WOOL#15"
       },
       {
         "value": ""
       },
       {
-        "value": ""
+        "value": "Blocks.WOOL#15"
+      },
+      {
+        "value": "Items.LEATHER"
       },
       {
         "value": ""
+      },
+      {
+        "value": "Items.LEATHER"
       }
     ],
     "recipeReturnStack": {
-      "value": "CUSTOM:NinjaArmorKonoha.helmet"
+      "value": "CUSTOM:Uchiha.boots"
     },
-    "name": "ninja_armor_recipe_headband",
+    "name": "ninja_boots_recipe",
     "namespace": "mod"
   }
 }

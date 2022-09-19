@@ -691,8 +691,8 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static boolean advancementAchieved(EntityPlayerMP player, String advancementName) {
-		return player.getAdvancements().getProgress(((WorldServer)player.world).getAdvancementManager()
-		 .getAdvancement(new ResourceLocation(advancementName))).isDone();
+		Advancement adv = ((WorldServer)player.world).getAdvancementManager().getAdvancement(new ResourceLocation(advancementName));
+		return adv != null ? player.getAdvancements().getProgress(adv).isDone() : false;
 	}
 
 	public static void grantAdvancement(EntityPlayerMP player, String advancementName, boolean playToast) {

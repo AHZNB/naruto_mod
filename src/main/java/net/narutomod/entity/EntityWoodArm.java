@@ -74,17 +74,13 @@ public class EntityWoodArm extends ElementsNarutomodMod.ModElement {
 			Entity parent = this.getParent();
 			if (parent != null && parent.isEntityAlive() && this.ticksExisted < this.lifespan) {
 				if (!this.world.isRemote && this.getIndex() == 0 && this.ticksExisted > 1 && this.ticksExisted <= 50) {
-					float yaw = (this.rand.nextFloat()-0.5f) * 30f;
-					float pitch = (this.rand.nextFloat()-0.5f) * 30f;
+					ProcedureUtils.Vec2f vec2f = new ProcedureUtils.Vec2f((this.rand.nextFloat()-0.5f) * 30f, (this.rand.nextFloat()-0.5f) * 30f);
 					if (this.hasLivingTarget() && this.prevSegment.getIndex() > 10) {
 						Vec3d vec = this.target.getPositionVector().addVector(0d, this.target.height/2, 0d);
-						ProcedureUtils.Vec2f vec2f = ProcedureUtils.getYawPitchFromVec(vec.subtract(this.prevSegment.getPositionVector()));
-						yaw = MathHelper.wrapDegrees(vec2f.x - this.prevSegment.rotationYaw);
-						pitch = MathHelper.wrapDegrees(vec2f.y + 90.0f - this.prevSegment.rotationPitch);
 						double d = this.prevSegment.getDistance(vec.x, vec.y, vec.z);
 						float f1 = 1.0f / (this.target.width + (float)MathHelper.clamp(d, 1.0d, 4.4d));
-						yaw *= f1;
-						pitch *= f1;
+						vec2f = ProcedureUtils.getYawPitchFromVec(vec.subtract(this.prevSegment.getPositionVector()))
+						 .add(-this.prevSegment.rotationYaw, 90.0f - this.prevSegment.rotationPitch).scale(f1);
 						if (d < (this.target.width + this.width) * 0.6f) {
 							++this.reachedCount;
 						}
@@ -95,7 +91,7 @@ public class EntityWoodArm extends ElementsNarutomodMod.ModElement {
 							this.targetYawOffset = MathHelper.wrapDegrees(ProcedureUtils.getYawFromVec(vec.x, vec.z) - parent.rotationYaw);
 						}
 					}
-					this.prevSegment = new EC(this.prevSegment, yaw, pitch);
+					this.prevSegment = new EC(this.prevSegment, vec2f.x, vec2f.y);
 					this.prevSegment.setLifespan(this.lifespan - this.ticksExisted * 2);
 					this.world.spawnEntity(this.prevSegment);
 				}

@@ -16,6 +16,7 @@ import net.narutomod.item.ItemEightGates;
 import net.narutomod.item.ItemAsuraPathArmor;
 import net.narutomod.item.ItemBlackReceiver;
 import net.narutomod.item.ItemAshBones;
+import net.narutomod.item.ItemBoneDrill;
 import net.narutomod.ElementsNarutomodMod;
 
 @ElementsNarutomodMod.ModElement.Tag
@@ -29,7 +30,7 @@ public class ProcedureOnItemTossed extends ElementsNarutomodMod.ModElement {
 		EntityPlayer entity = event.getPlayer();
 		if (!entity.world.isRemote) {
 			ItemStack itemstack = event.getEntityItem().getItem();
-			if (itemstack.getItem() == ItemAsuraPathArmor.body 
+			/*if (itemstack.getItem() == ItemAsuraPathArmor.body 
 			 //|| itemstack.getItem() == ItemEightyGodsKusho.block 
 			 //|| itemstack.getItem() == ItemExpandedTruthSeekerBall.block
 			 || itemstack.getItem() == ItemAshBones.block) {
@@ -40,8 +41,11 @@ public class ProcedureOnItemTossed extends ElementsNarutomodMod.ModElement {
 				//}
 				itemstack.shrink(1);
 				event.setCanceled(true);
-			} else if (itemstack.getItem() == ItemBlackReceiver.block
+			} else*/ if (itemstack.getItem() == ItemBlackReceiver.block
 			 || itemstack.getItem() == ItemEightGates.block
+			 || itemstack.getItem() == ItemBoneDrill.block
+			 || itemstack.getItem() == ItemAsuraPathArmor.body
+			 || itemstack.getItem() == ItemAshBones.block
 			 || itemstack.getItem() instanceof ItemJutsu.Base) {
 				event.setCanceled(true);
 			}

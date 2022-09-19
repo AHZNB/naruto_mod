@@ -14,20 +14,21 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraft.world.World;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.DamageSource;
-import net.minecraft.entity.Entity;
-import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.entity.ai.EntityMoveHelper;
+import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.Entity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.pathfinding.PathNavigate;
 import net.minecraft.pathfinding.PathNavigateFlying;
-import net.minecraft.entity.ai.EntityMoveHelper;
 
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.item.ItemSixPathSenjutsu;
@@ -243,7 +244,13 @@ public class EntityLimboClone extends ElementsNarutomodMod.ModElement {
 			List<EC> list = EC.Jutsu.getLimboClones(entity);
 			if (!list.isEmpty()) {
 				for (EC clone : list) {
-					if (clone.getDistance(entity) <= 6) {
+					if (clone.getDistanceSq(entity) <= 64.0d) {
+						if (event.getSource().getDamageLocation() != null) {
+							Vec3d vec = event.getSource().getDamageLocation().subtract(entity.getPositionVector())
+							 .scale(event.getSource().getImmediateSource() instanceof EntityLivingBase ? 0.5d : 0.8d);
+							ProcedureUtils.Vec2f vec2 = ProcedureUtils.getYawPitchFromVec(vec);
+							clone.setPositionAndRotation(entity.posX + vec.x, entity.posY + vec.y, entity.posZ + vec.z, vec2.x, vec2.y);
+						}
 						event.setCanceled(true);
 						clone.attackEntityFrom(event.getSource(), event.getAmount());
 						return;

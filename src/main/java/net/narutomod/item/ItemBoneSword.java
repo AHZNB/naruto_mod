@@ -80,6 +80,11 @@ public class ItemBoneSword extends ElementsNarutomodMod.ModElement {
 				ret.put("sword", 1);
 				return ret.keySet();
 			}
+
+			@Override
+			public boolean onDroppedByPlayer(ItemStack item, EntityPlayer player) {
+				return false;
+			}
 		}.setUnlocalizedName("bone_sword").setRegistryName("bone_sword").setCreativeTab(null));
 	}
 

@@ -1,4 +1,18 @@
-0.2.9-beta------------------------------------------------------
+0.2.10-beta ===============================================================================
+
+Jutsus:
+ - Lava release chakra mode: gives user +16 speed effect
+ - Explosion release explosive clay: fixed targeting system freeze after target dies
+ - Kamui teleport: removed chat text stating 'entity teleported'
+ 
+Items:
+ - Bone drill can't be dropped into the world
+ - Amegakure headband+mask can breathe under water
+ 
+Structures:
+ - rebuilt the 4 pillar wood house to match anime
+
+0.2.9-beta ================================================================================
 
 Commands:
  - addninjaxp: now allows floating point numbers
@@ -34,15 +48,13 @@ Jutsus:
  - added Kirin
  - added 1000-hand buddha
  - added Hiding in camouflage
+ - added 8-branch snake as a snake sage mode jutsu
  
 Shift+jump:
  - tweaked the leap trajectory
  
 Spherical explosions:
  - added camera shake if explsion radius larger than 20
- 
-Textures:
- - updated konoha forehead protector item texture
  
 Chakra:
  - on death, set chakra to 10 instead of 0
@@ -62,4 +74,5 @@ items:
  - added ninja fishnet shirt+pants and recipe
  - added Amegakure headband/mask
  - upgraded main village armors to HD
+ - updated konoha forehead protector item texture
  - added anbu sword

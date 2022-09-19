@@ -10,9 +10,14 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 
+import net.minecraft.world.World;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.potion.PotionEffect;
+import net.minecraft.init.MobEffects;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class ItemNinjaArmorAme extends ElementsNarutomodMod.ModElement {
@@ -26,6 +31,14 @@ public class ItemNinjaArmorAme extends ElementsNarutomodMod.ModElement {
 	@Override
 	public void initElements() {
 		elements.items.add(() -> new ItemNinjaArmor.Base(ItemNinjaArmor.Type.AME, EntityEquipmentSlot.HEAD) {
+			@Override
+			public void onArmorTick(World world, EntityPlayer entity, ItemStack itemstack) {
+				super.onArmorTick(world, entity, itemstack);
+				if (entity.ticksExisted % 20 == 3) {
+					entity.addPotionEffect(new PotionEffect(MobEffects.WATER_BREATHING, 21, 0, false, false));
+				}
+			}
+			
 			@Override
 			protected ItemNinjaArmor.ArmorData setArmorData(ItemNinjaArmor.Type type, EntityEquipmentSlot slotIn) {
 				return new Armor4Slot();

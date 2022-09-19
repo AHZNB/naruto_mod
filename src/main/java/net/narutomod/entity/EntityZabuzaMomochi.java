@@ -10,6 +10,7 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.common.DungeonHooks;
 
+import net.minecraft.init.Biomes;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.World;
 import net.minecraft.world.BossInfoServer;
@@ -76,13 +77,10 @@ public class EntityZabuzaMomochi extends ElementsNarutomodMod.ModElement {
 
 	@Override
 	public void init(FMLInitializationEvent event) {
-		Biome[] spawnBiomes = {Biome.REGISTRY.getObject(new ResourceLocation("plains")),
-				Biome.REGISTRY.getObject(new ResourceLocation("extreme_hills")), Biome.REGISTRY.getObject(new ResourceLocation("forest")),
-				Biome.REGISTRY.getObject(new ResourceLocation("taiga")), Biome.REGISTRY.getObject(new ResourceLocation("swampland")),
-				Biome.REGISTRY.getObject(new ResourceLocation("river")), Biome.REGISTRY.getObject(new ResourceLocation("jungle")),
-				Biome.REGISTRY.getObject(new ResourceLocation("savanna")), Biome.REGISTRY.getObject(new ResourceLocation("ice_mountains")),
-				Biome.REGISTRY.getObject(new ResourceLocation("ice_flats")), Biome.REGISTRY.getObject(new ResourceLocation("beaches")),
-				Biome.REGISTRY.getObject(new ResourceLocation("cold_beach")),};
+		Biome[] spawnBiomes = { 
+			Biomes.PLAINS, Biomes.EXTREME_HILLS, Biomes.FOREST, Biomes.TAIGA, Biomes.SWAMPLAND, Biomes.RIVER,
+			Biomes.JUNGLE, Biomes.SAVANNA, Biomes.ICE_MOUNTAINS, Biomes.ICE_PLAINS, Biomes.BEACH, Biomes.COLD_BEACH
+		};
 		EntityRegistry.addSpawn(EntityCustom.class, 1, 1, 1, EnumCreatureType.MONSTER, spawnBiomes);
 		DungeonHooks.addDungeonMob(new ResourceLocation("narutomod:zabuza_momochi"), 180);
 	}

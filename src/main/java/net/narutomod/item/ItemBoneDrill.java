@@ -109,5 +109,10 @@ public class ItemBoneDrill extends ElementsNarutomodMod.ModElement {
 		public int getItemEnchantability() {
 			return 0;
 		}
+
+		@Override
+		public boolean onDroppedByPlayer(ItemStack item, EntityPlayer player) {
+			return false;
+		}
 	}
 }

@@ -10,37 +10,37 @@
     "recipeShapeless": false,
     "recipeSlots": [
       {
-        "value": ""
+        "value": "Blocks.WOOL#13"
+      },
+      {
+        "value": "Items.LEATHER_LEGGINGS"
+      },
+      {
+        "value": "Blocks.WOOL#13"
+      },
+      {
+        "value": "Blocks.WOOL#13"
       },
       {
         "value": ""
       },
       {
-        "value": ""
+        "value": "Blocks.WOOL#13"
       },
       {
-        "value": "Blocks.WOOL#15"
-      },
-      {
-        "value": ""
-      },
-      {
-        "value": "Blocks.WOOL#15"
-      },
-      {
-        "value": "Items.LEATHER"
+        "value": "Blocks.WOOL#13"
       },
       {
         "value": ""
       },
       {
-        "value": "Items.LEATHER"
+        "value": "Blocks.WOOL#13"
       }
     ],
     "recipeReturnStack": {
-      "value": "CUSTOM:Uchiha.boots"
+      "value": "CUSTOM:NinjaArmorKonoha.legs"
     },
-    "name": "ninja_armor_recipe_boots",
+    "name": "ninja_pants_recipe_konoha",
     "namespace": "mod"
   }
 }

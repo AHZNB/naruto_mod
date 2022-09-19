@@ -11,6 +11,7 @@ import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.common.DungeonHooks;
 
 import net.minecraft.init.MobEffects;
+import net.minecraft.init.Biomes;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.World;
@@ -88,13 +89,11 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 
 	@Override
 	public void init(FMLInitializationEvent event) {
-		Biome[] spawnBiomes = {Biome.REGISTRY.getObject(new ResourceLocation("forest")), Biome.REGISTRY.getObject(new ResourceLocation("taiga")),
-				Biome.REGISTRY.getObject(new ResourceLocation("swampland")), Biome.REGISTRY.getObject(new ResourceLocation("river")),
-				Biome.REGISTRY.getObject(new ResourceLocation("forest_hills")), Biome.REGISTRY.getObject(new ResourceLocation("taiga_hills")),
-				Biome.REGISTRY.getObject(new ResourceLocation("jungle")), Biome.REGISTRY.getObject(new ResourceLocation("jungle_hills")),
-				Biome.REGISTRY.getObject(new ResourceLocation("birch_forest")), Biome.REGISTRY.getObject(new ResourceLocation("birch_forest_hills")),
-				Biome.REGISTRY.getObject(new ResourceLocation("roofed_forest")), Biome.REGISTRY.getObject(new ResourceLocation("savanna")),
-				Biome.REGISTRY.getObject(new ResourceLocation("extreme_hills")),};
+		Biome[] spawnBiomes = {
+			Biomes.FOREST, Biomes.TAIGA, Biomes.SWAMPLAND, Biomes.RIVER, Biomes.FOREST_HILLS,
+			Biomes.TAIGA_HILLS, Biomes.JUNGLE, Biomes.JUNGLE_HILLS, Biomes.BIRCH_FOREST,
+			Biomes.BIRCH_FOREST_HILLS, Biomes.ROOFED_FOREST, Biomes.SAVANNA, Biomes.EXTREME_HILLS
+		};
 		EntityRegistry.addSpawn(EntityCustom.class, 1, 1, 1, EnumCreatureType.MONSTER, spawnBiomes);
 		DungeonHooks.addDungeonMob(new ResourceLocation("narutomod:itachi"), 180);
 	}

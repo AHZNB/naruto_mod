@@ -318,17 +318,18 @@ public class ItemBakuton extends ElementsNarutomodMod.ModElement {
 	
 	        @Override
 	        public boolean shouldExecute() {
-	            if (ExplosiveClay.this.getAttackTarget() != null 
+	        	EntityLivingBase target = ExplosiveClay.this.getAttackTarget();
+	            if (target != null
 	             && !ExplosiveClay.this.getMoveHelper().isUpdating() && ExplosiveClay.this.rand.nextInt(5) == 0) {
-	                return ExplosiveClay.this.getDistanceSq(ExplosiveClay.this.getAttackTarget()) > 4.0D;
+	                return ExplosiveClay.this.getDistanceSq(target) > 4.0D;
 	            }
                 return false;
 	        }
 	
 	        @Override
 	        public boolean shouldContinueExecuting() {
-	            return ExplosiveClay.this.getMoveHelper().isUpdating()
-	             && ExplosiveClay.this.getAttackTarget() != null && ExplosiveClay.this.getAttackTarget().isEntityAlive();
+	            return //ExplosiveClay.this.getMoveHelper().isUpdating() &&
+	             ExplosiveClay.this.getAttackTarget() != null && ExplosiveClay.this.getAttackTarget().isEntityAlive();
 	        }
 	
 	        @Override
@@ -339,15 +340,11 @@ public class ItemBakuton extends ElementsNarutomodMod.ModElement {
 	        }
 	
 	        @Override
-	        public void resetTask() {
-	        }
-	
-	        @Override
 	        public void updateTask() {
 	            EntityLivingBase entitylivingbase = ExplosiveClay.this.getAttackTarget();
 	            if (ExplosiveClay.this.getEntityBoundingBox().intersects(entitylivingbase.getEntityBoundingBox())) {
 	                ExplosiveClay.this.attackEntityAsMob(entitylivingbase);
-	            } else if (ExplosiveClay.this.getDistanceSq(entitylivingbase) < 9.0D) {
+	            } else { //if (ExplosiveClay.this.getDistanceSq(entitylivingbase) < 9.0D) {
 	                Vec3d vec3d = entitylivingbase.getPositionEyes(1.0F);
 	                ExplosiveClay.this.moveHelper.setMoveTo(vec3d.x, vec3d.y, vec3d.z, 2.0D);
 	            }
@@ -355,22 +352,20 @@ public class ItemBakuton extends ElementsNarutomodMod.ModElement {
 	    }
 
 	    class AICopyOwnerTarget extends EntityAITarget {
-	    	private EntityLivingBase targetEntity;
-
 	        public AICopyOwnerTarget(EntityCreature creature) {
 	            super(creature, false);
 	        }
 	
 	        public boolean shouldExecute() {
-	        	this.targetEntity = ExplosiveClay.this.owner instanceof EntityLiving 
+	        	this.target = ExplosiveClay.this.owner instanceof EntityLiving 
 	        	 ? ((EntityLiving)ExplosiveClay.this.owner).getAttackTarget() 
 	        	 : ExplosiveClay.this.owner != null ? ExplosiveClay.this.owner.getRevengeTarget() != null
 	        	 ? ExplosiveClay.this.owner.getRevengeTarget() : ExplosiveClay.this.owner.getLastAttackedEntity() : null;
-	            return this.targetEntity != null && this.isSuitableTarget(this.targetEntity, false);
+	            return this.target != null && this.isSuitableTarget(this.target, false);
 	        }
 	
 	        public void startExecuting() {
-	            ExplosiveClay.this.setAttackTarget(this.targetEntity);
+	            ExplosiveClay.this.setAttackTarget(this.target);
 	            super.startExecuting();
 	        }
 	    }

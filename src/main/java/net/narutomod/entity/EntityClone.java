@@ -458,6 +458,7 @@ public class EntityClone extends ElementsNarutomodMod.ModElement {
         @Override
         public void onUpdateMoveHelper() {
             if (this.action == EntityMoveHelper.Action.MOVE_TO) {
+                this.action = EntityMoveHelper.Action.WAIT;
             	this.entity.setNoGravity(true);
                 double d0 = this.posX - this.entity.posX;
                 double d1 = this.posY - this.entity.posY;
@@ -478,7 +479,6 @@ public class EntityClone extends ElementsNarutomodMod.ModElement {
                         this.entity.renderYawOffset = this.entity.rotationYaw;
                     }
                 } else {
-                    this.action = EntityMoveHelper.Action.WAIT;
                     this.entity.motionX *= 0.5D;
                     this.entity.motionY *= 0.5D;
                     this.entity.motionZ *= 0.5D;

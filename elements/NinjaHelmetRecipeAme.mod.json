@@ -10,37 +10,37 @@
     "recipeShapeless": false,
     "recipeSlots": [
       {
-        "value": "Blocks.WOOL#13"
+        "value": ""
       },
       {
         "value": ""
       },
       {
-        "value": "Blocks.WOOL#13"
+        "value": ""
       },
       {
-        "value": "Blocks.WOOL#13"
+        "value": "Blocks.WOOL#7"
       },
       {
-        "value": "Items.LEATHER_CHESTPLATE"
+        "value": "Items.IRON_INGOT"
       },
       {
-        "value": "Blocks.WOOL#13"
+        "value": "Blocks.WOOL#7"
       },
       {
-        "value": "Blocks.WOOL#13"
+        "value": ""
       },
       {
-        "value": "Blocks.WOOL#13"
+        "value": "Items.IRON_INGOT"
       },
       {
-        "value": "Blocks.WOOL#13"
+        "value": ""
       }
     ],
     "recipeReturnStack": {
-      "value": "CUSTOM:NinjaArmorKonoha.body"
+      "value": "CUSTOM:NinjaArmorAme.helmet"
     },
-    "name": "ninja_armor_recipe_vest",
+    "name": "ninja_helmet_recipe_ame",
     "namespace": "mod"
   }
 }

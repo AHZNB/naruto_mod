@@ -157,11 +157,6 @@ public class ProcedureKamuiJikukanIdo extends ElementsNarutomodMod.ModElement {
 							}
 						} else {
 							ProcedureKamuiTeleportEntity.eEntity(t.entityHit, x, z, dimid);
-							if (entity instanceof EntityPlayer && !entity.world.isRemote) {
-								((EntityPlayer) entity).sendStatusMessage(new TextComponentString(
-										((net.minecraft.util.text.translation.I18n.translateToLocal("chattext.teleported")) + "" + (t.entityHit))),
-										(false));
-							}
 						}
 					}
 					timer = (double) 0;

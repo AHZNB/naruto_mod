@@ -10,6 +10,9 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.common.DungeonHooks;
 
+import net.minecraft.init.Biomes;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
@@ -22,12 +25,21 @@ import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.EntityDamageSource;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.EnumHandSide;
+import net.minecraft.util.EnumHand;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.entity.IEntityLivingData;
 import net.minecraft.entity.IRangedAttackMob;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
+import net.minecraft.entity.ai.EntityAISwimming;
+import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
+import net.minecraft.entity.ai.EntityAIHurtByTarget;
+import net.minecraft.entity.ai.EntityAIAttackRanged;
+import net.minecraft.entity.ai.EntityAIAttackMelee;
+import net.minecraft.entity.ai.EntityAIWander;
+import net.minecraft.entity.ai.EntityMoveHelper;
 import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -36,13 +48,6 @@ import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.entity.EnumCreatureAttribute;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.ai.EntityAISwimming;
-import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
-import net.minecraft.entity.ai.EntityAIHurtByTarget;
-import net.minecraft.entity.ai.EntityAIAttackRanged;
-import net.minecraft.entity.ai.EntityAIAttackMelee;
-import net.minecraft.entity.ai.EntityAIWander;
-import net.minecraft.entity.ai.EntityMoveHelper;
 import net.minecraft.client.renderer.entity.RenderLiving;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.model.ModelBox;
@@ -50,15 +55,11 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.entity.RenderBiped;
-import net.minecraft.util.EnumHandSide;
-import net.minecraft.util.EnumHand;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.pathfinding.PathNavigate;
 import net.minecraft.pathfinding.PathNavigateSwimmer;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.SoundEvents;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.inventory.EntityEquipmentSlot;
 
@@ -90,12 +91,11 @@ public class EntityKisameHoshigaki extends ElementsNarutomodMod.ModElement {
 
 	@Override
 	public void init(FMLInitializationEvent event) {
-		Biome[] spawnBiomes = {Biome.REGISTRY.getObject(new ResourceLocation("swampland")), Biome.REGISTRY.getObject(new ResourceLocation("forest")),
-				Biome.REGISTRY.getObject(new ResourceLocation("taiga")), Biome.REGISTRY.getObject(new ResourceLocation("river")),
-				Biome.REGISTRY.getObject(new ResourceLocation("beaches")), Biome.REGISTRY.getObject(new ResourceLocation("forest_hills")),
-				Biome.REGISTRY.getObject(new ResourceLocation("taiga_hills")), Biome.REGISTRY.getObject(new ResourceLocation("jungle")),
-				Biome.REGISTRY.getObject(new ResourceLocation("jungle_hills")), Biome.REGISTRY.getObject(new ResourceLocation("birch_forest")),
-				Biome.REGISTRY.getObject(new ResourceLocation("birch_forest_hills")), Biome.REGISTRY.getObject(new ResourceLocation("savanna")),};
+		Biome[] spawnBiomes = {
+			Biomes.SWAMPLAND, Biomes.FOREST, Biomes.TAIGA, Biomes.RIVER, Biomes.BEACH,
+			Biomes.FOREST_HILLS, Biomes.TAIGA_HILLS, Biomes.JUNGLE, Biomes.JUNGLE_HILLS,
+			Biomes.BIRCH_FOREST, Biomes.BIRCH_FOREST_HILLS, Biomes.SAVANNA
+		};
 		EntityRegistry.addSpawn(EntityCustom.class, 1, 1, 1, EnumCreatureType.MONSTER, spawnBiomes);
 		DungeonHooks.addDungeonMob(new ResourceLocation("narutomod:kisame_hoshigaki"), 180);
 	}

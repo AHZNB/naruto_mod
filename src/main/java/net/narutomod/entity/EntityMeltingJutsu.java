@@ -129,7 +129,7 @@ public class EntityMeltingJutsu extends ElementsNarutomodMod.ModElement {
 				this.setIdlePosition();
 				if (this.duration > 1) {
 					Vec3d vec = this.shootingEntity.getLookVec();
-					for (int i = 0; i < 6; i++) {
+					for (int i = 0; i < 10; i++) {
 						EC entity = new EC(this.shootingEntity, 0f);
 						entity.shoot(vec.x, vec.y, vec.z, 0.85f, 0.1f);
 						this.world.spawnEntity(entity);

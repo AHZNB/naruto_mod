@@ -29,10 +29,10 @@
   "rewards": {
     "experience": 0,
     "recipes": [
-      "narutomod:ninja_armor_recipe_boots",
-      "narutomod:ninja_armor_recipe_pants",
-      "narutomod:ninja_armor_recipe_vest",
-      "narutomod:ninja_armor_recipe_headband",
+      "narutomod:ninja_boots_recipe",
+      "narutomod:ninja_pants_recipe_konoha",
+      "narutomod:ninja_vest_recipe_konoha",
+      "narutomod:ninja_helmet_recipe_konoha",
       "narutomod:explosive_tag_recipe",
       "narutomod:kunai_explosive_recipe"
     ]

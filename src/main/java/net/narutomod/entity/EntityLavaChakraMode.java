@@ -117,6 +117,7 @@ public class EntityLavaChakraMode extends ElementsNarutomodMod.ModElement {
 						this.setDead();
 					} else {
 						user.addPotionEffect(new PotionEffect(MobEffects.STRENGTH, 21, this.strengthAmplifier, false, false));
+						user.addPotionEffect(new PotionEffect(MobEffects.SPEED, 21, 16, false, false));
 					}
 				}
 				if (this.rand.nextInt(20) == 0) {
