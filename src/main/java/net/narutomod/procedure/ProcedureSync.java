@@ -30,6 +30,7 @@ import net.narutomod.Particles;
 import io.netty.buffer.ByteBuf;
 import javax.annotation.Nullable;
 import net.minecraft.entity.IEntityMultiPart;
+import java.util.List;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class ProcedureSync extends ElementsNarutomodMod.ModElement {
@@ -60,6 +61,7 @@ public class ProcedureSync extends ElementsNarutomodMod.ModElement {
 		this.elements.addNetworkMessage(CPacketSpawnLightning.Handler.class, CPacketSpawnLightning.class, Side.SERVER);
 		this.elements.addNetworkMessage(MultiPartsPacket.ServerHandler.class, MultiPartsPacket.class, Side.SERVER);
 		this.elements.addNetworkMessage(MultiPartsPacket.ClientHandler.class, MultiPartsPacket.class, Side.CLIENT);
+		this.elements.addNetworkMessage(MultiPartsSetPassengers.ClientHandler.class, MultiPartsSetPassengers.class, Side.CLIENT);
 	}
 	
 	public static class SwingMainArm implements IMessage {
@@ -415,6 +417,10 @@ public class ProcedureSync extends ElementsNarutomodMod.ModElement {
 
 		public static void sendToTracking(Entity entity) {
 			NarutomodMod.PACKET_HANDLER.sendToAllTracking(new EntityPositionAndRotation(entity), entity);
+		}
+
+		public static void sendToSelf(EntityPlayerMP entity) {
+			NarutomodMod.PACKET_HANDLER.sendTo(new EntityPositionAndRotation(entity), entity);
 		}
 
 		public static void sendToServer(Entity entity) {
@@ -1044,6 +1050,92 @@ public class ProcedureSync extends ElementsNarutomodMod.ModElement {
 			this.pr = new PositionRotationPacket[this.parts];
 			for (int i = 0; i < this.parts; i++) {
 				this.pr[i] = new PositionRotationPacket(buf);
+			}
+		}
+	}
+
+	public static class MultiPartsSetPassengers implements IMessage {
+		int id;
+		int partid;
+		int passengers;
+		int[] passengerIds;
+
+		public MultiPartsSetPassengers() {
+		}
+
+		public MultiPartsSetPassengers(Entity entity, int partId) {
+			this.id = entity.getEntityId();
+			Entity[] partentities = entity.getParts();
+			if (partentities == null) {
+				throw new IllegalArgumentException("" + entity.getClass() + "not multi-part entity!");
+			} else {
+				for (Entity part : partentities) {
+					if (part.getEntityId() == partId) {
+						this.partid = partId;
+						List<Entity> list = part.getPassengers();
+						this.passengers = list.size();
+						this.passengerIds = new int[this.passengers];
+						for (int i = 0; i < this.passengers; ++i) {
+							this.passengerIds[i] = ((Entity)list.get(i)).getEntityId();
+						}
+					}
+				}
+				if (this.partid == 0) {
+					System.err.println("Sending passengers for non-existing part");
+				}
+			}
+		}
+
+		public static void sendToTracking(Entity entity, int partId) {
+			NarutomodMod.PACKET_HANDLER.sendToAllTracking(new MultiPartsSetPassengers(entity, partId), entity);
+		}
+
+		private static void setParts(@Nullable Entity entity, MultiPartsSetPassengers message) {
+			if (entity instanceof IEntityMultiPart) {
+				Entity[] entityparts = entity.getParts();
+				if (entityparts != null && entityparts.length > 0) {
+					for (Entity part : entityparts) {
+						if (part.getEntityId() == message.partid) {
+							for (int i : message.passengerIds) {
+								Entity entity1 = entity.world.getEntityByID(i);
+								if (entity1 != null) {
+									entity1.startRiding(part, true);
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
+		public static class ClientHandler implements IMessageHandler<MultiPartsSetPassengers, IMessage> {
+			@SideOnly(Side.CLIENT)
+			@Override
+			public IMessage onMessage(MultiPartsSetPassengers message, MessageContext context) {
+				Minecraft mc = Minecraft.getMinecraft();
+				mc.addScheduledTask(() -> {
+					setParts(mc.world.getEntityByID(message.id), message);
+				});
+				return null;
+			}
+		}
+
+		public void toBytes(ByteBuf buf) {
+			buf.writeInt(this.id);
+			buf.writeInt(this.partid);
+			buf.writeInt(this.passengers);
+			for (int i = 0; i < this.passengers; i++) {
+				buf.writeInt(this.passengerIds[i]);
+			}
+		}
+
+		public void fromBytes(ByteBuf buf) {
+			this.id = buf.readInt();
+			this.partid = buf.readInt();
+			this.passengers = buf.readInt();
+			this.passengerIds = new int[this.passengers];
+			for (int i = 0; i < this.passengers; i++) {
+				this.passengerIds[i] = buf.readInt();
 			}
 		}
 	}

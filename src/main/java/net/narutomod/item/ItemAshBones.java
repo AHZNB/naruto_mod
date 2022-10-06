@@ -12,6 +12,7 @@ import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraft.world.World;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.EntitySelectors;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.EnumActionResult;
@@ -165,15 +166,22 @@ public class ItemAshBones extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void onUpdate() {
 			super.onUpdate();
-			for (int i = 0; i < 5; i++)
+			for (int i = 0; i < 5; i++) {
 				this.world.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, this.posX, this.posY, this.posZ, 0.0D, 0.0D, 0.0D, new int[0]);
-			//if (this.inGround)
-			//	this.world.removeEntity(this);
+			}
+			if (!this.world.isRemote) {
+				for (EntityLivingBase entity : this.world.getEntitiesWithinAABB(EntityLivingBase.class,
+				 this.getEntityBoundingBox().grow(0.75d), EntitySelectors.getTeamCollisionPredicate(this))) {
+					if (!entity.equals(this.shootingEntity)) {
+						hitLivingEntity(entity);
+					}
+				}
+			}
 		}
 	}
 
 	protected static void hitLivingEntity(Entity entity) {
-		if (!entity.world.isRemote) {
+		if (!entity.world.isRemote && entity.getEntityData().getDouble("deathAnimationType") != 1.0d) {
 			entity.getEntityData().setDouble("deathAnimationType", 1.0D);
 			entity.getEntityData().setDouble(NarutomodModVariables.DeathAnimationTime, NarutomodModVariables.DeathAnimation_slowDust);
 		}

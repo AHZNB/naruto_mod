@@ -150,11 +150,12 @@ public class EntityChidori extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public void onUpdate() {
+			boolean flag = this.isHoldingWeapon(EnumHand.MAIN_HAND);
 			if (!this.world.isRemote && this.summoner instanceof EntityPlayer
 			 //&& this.isHoldingWeapon(EnumHand.MAIN_HAND) != (PlayerRender.poseForcedArm((EntityPlayer)this.summoner) == null)) {
 				//PlayerRender.forceBowPose((EntityPlayer)this.summoner, EnumHandSide.RIGHT, !this.isHoldingWeapon(EnumHand.MAIN_HAND));
-			 && this.isHoldingWeapon(EnumHand.MAIN_HAND) != !this.summoner.getEntityData().getBoolean(NarutomodModVariables.forceBowPose)) {
-				ProcedureSync.EntityNBTTag.setAndSync(this.summoner, NarutomodModVariables.forceBowPose, true);
+			 && flag != !this.summoner.getEntityData().getBoolean(NarutomodModVariables.forceBowPose)) {
+				ProcedureSync.EntityNBTTag.setAndSync(this.summoner, NarutomodModVariables.forceBowPose, !flag);
 			}
 			if (this.summoner != null) {
 				this.summoner.addPotionEffect(new PotionEffect(MobEffects.MINING_FATIGUE, 2, 6, false, false));
@@ -176,14 +177,14 @@ public class EntityChidori extends ElementsNarutomodMod.ModElement {
 				  ? ProcedureUtils.objectEntityLookingAt(this.summoner, 20d)
 				  : this.summoner instanceof EntityLiving && ((EntityLiving)this.summoner).getAttackTarget() != null 
 				  ? new RayTraceResult(((EntityLiving)this.summoner).getAttackTarget()) : null;
-				if (rtr != null && rtr.entityHit instanceof EntityLivingBase && this.ticksExisted % 6 == 0) {
+				if (!flag && rtr != null && rtr.entityHit instanceof EntityLivingBase && this.ticksExisted % 6 == 0) {
 					this.launchAtTarget((EntityLivingBase)rtr.entityHit);
 				}
 				if (this.summoner.swingProgressInt == 1) {
 					if (rtr.entityHit instanceof EntityLivingBase) {
 						double d = rtr.entityHit.getDistance(this.summoner);
 						if (d <= 5) {
-							float damage = this.isHoldingWeapon(EnumHand.MAIN_HAND) 
+							float damage = flag 
 							 ? (float)ProcedureUtils.getModifiedAttackDamage(this.summoner) * this.damageMultiplier() * 1.3f
 							 : (25f * this.damageMultiplier());
 							EntityLightningArc.onStruck(rtr.entityHit,
@@ -376,8 +377,8 @@ public class EntityChidori extends ElementsNarutomodMod.ModElement {
 					}
 				} else {
 					if (flag1 && entity.world.rand.nextFloat() <= 0.01f) {
-						Vec3d vec0 = this.transform3rdPerson(new Vec3d(0d, -0.525d, 0.2d), mainarmAngles, user, mainhandside, partialTicks);
-						Vec3d vec1 = this.transform3rdPerson(new Vec3d(0d, -0.525d, 1.6d), mainarmAngles, user, mainhandside, partialTicks)
+						Vec3d vec0 = this.transform3rdPerson(new Vec3d(0d, -0.6875d, 0.2d), mainarmAngles, user, mainhandside, partialTicks);
+						Vec3d vec1 = this.transform3rdPerson(new Vec3d(0d, -0.6875d, 1.6d), mainarmAngles, user, mainhandside, partialTicks)
 						 .subtract(vec0).scale(0.2);
 						vec0 = vec0.add(vec1);
 						EntityLightningArc.spawnAsParticle(entity.world, vec0.x, vec0.y, vec0.z, 0.01d, vec1.x, vec1.y, vec1.z);
@@ -386,8 +387,8 @@ public class EntityChidori extends ElementsNarutomodMod.ModElement {
 						}
 					}
 					if (flag2 && entity.world.rand.nextFloat() <= 0.01f) {
-						Vec3d vec0 = this.transform3rdPerson(new Vec3d(0d, -0.525d, 0.2d), offarmAngles, user, mainhandside.opposite(), partialTicks);
-						Vec3d vec1 = this.transform3rdPerson(new Vec3d(0d, -0.525d, 1.6d), offarmAngles, user, mainhandside.opposite(), partialTicks)
+						Vec3d vec0 = this.transform3rdPerson(new Vec3d(0d, -0.6875d, 0.2d), offarmAngles, user, mainhandside.opposite(), partialTicks);
+						Vec3d vec1 = this.transform3rdPerson(new Vec3d(0d, -0.6875d, 1.6d), offarmAngles, user, mainhandside.opposite(), partialTicks)
 						 .subtract(vec0).scale(0.2);
 						vec0 = vec0.add(vec1);
 						EntityLightningArc.spawnAsParticle(entity.world, vec0.x, vec0.y, vec0.z, 0.01d, vec1.x, vec1.y, vec1.z);

@@ -90,47 +90,6 @@ public class EntityTwoTails extends ElementsNarutomodMod.ModElement {
 			}
 		}
 
-		/*@Override
-		public void toggleBijuCloak() {
-			super.toggleBijuCloak();
-			EntityPlayer jinchuriki = this.getJinchurikiPlayer();
-			if (this.getCloakLevel() > 0) {
-				if (jinchuriki.inventory.armorInventory.get(3).getItem() != ItemBijuCloak.helmet) {
-					ProcedureUtils.swapItemToSlot(jinchuriki, EntityEquipmentSlot.HEAD, new ItemStack(ItemBijuCloak.helmet));
-				}
-				if (jinchuriki.inventory.armorInventory.get(2).getItem() != ItemBijuCloak.body) {
-					ProcedureUtils.swapItemToSlot(jinchuriki, EntityEquipmentSlot.CHEST, new ItemStack(ItemBijuCloak.body, 1, 2));
-				}
-				if (jinchuriki.inventory.armorInventory.get(1).getItem() != ItemBijuCloak.legs) {
-					ProcedureUtils.swapItemToSlot(jinchuriki, EntityEquipmentSlot.LEGS, new ItemStack(ItemBijuCloak.legs));
-				}
-			} else if (jinchuriki != null) {
-				jinchuriki.inventory.clearMatchingItems(ItemBijuCloak.helmet, -1, -1, null);
-				jinchuriki.inventory.clearMatchingItems(ItemBijuCloak.body, -1, -1, null);
-				jinchuriki.inventory.clearMatchingItems(ItemBijuCloak.legs, -1, -1, null);
-				EntityCustom entity = this.getEntityInWorld(jinchuriki.world);
-				if (entity != null) {
-					entity.setDead();
-				}
-			}
-		}
-
-		@Override
-		public int increaseCloakLevel() {
-			int ret = super.increaseCloakLevel();
-			if (ret == 3) {
-				EntityPlayer jinchuriki = this.getJinchurikiPlayer();
-				jinchuriki.inventory.clearMatchingItems(ItemBijuCloak.helmet, -1, -1, null);
-				jinchuriki.inventory.clearMatchingItems(ItemBijuCloak.body, -1, -1, null);
-				jinchuriki.inventory.clearMatchingItems(ItemBijuCloak.legs, -1, -1, null);
-				Entity biju = new EntityCustom(jinchuriki);
-				biju.forceSpawn = true;
-				jinchuriki.world.spawnEntity(biju);
-				biju.forceSpawn = false;
-			}
-			return ret;
-		}*/
-
 		@Override
 		public void markDirty() {
 			Save.getInstance().markDirty();

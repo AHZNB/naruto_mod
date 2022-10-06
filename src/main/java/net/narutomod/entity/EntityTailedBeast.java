@@ -470,6 +470,13 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
+		public void incFuuinProgress(int i) {
+			if (this.getJinchuriki() != null) {
+				this.deathTicks += i;
+			}
+		}
+
+		@Override
 		protected void onDeathUpdate() {
 			this.deathTicks++;
 			if (!this.world.isRemote) {
@@ -488,8 +495,8 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 				//if (this.deathTicks == 1 && jinchuriki == null) {
 				//	this.deathTicks = 300;
 				//}
-				if (jinchuriki != null && this.deathTicks % 50 == 1) {
-					this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:KamuiSFX")), 10.0F, 1.0F);
+				if (jinchuriki != null && this.ticksExisted % 50 == 1) {
+					this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:KamuiSFX")), 3.0F, 1.0F);
 				}
 				//if (this.deathTotalTicks - this.deathTicks < 100) {
 					for (int i = 0; i < (int)(((float)this.deathTicks / this.deathTotalTicks) * 100f); i++) {

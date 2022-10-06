@@ -59,25 +59,6 @@ public class EntityMindTransfer extends ElementsNarutomodMod.ModElement {
 		 .tracker(64, 3, true).build());
 	}
 
-	/*@SideOnly(Side.CLIENT)
-	@Override
-	public void preInit(FMLPreInitializationEvent event) {
-		RenderingRegistry.registerEntityRenderingHandler(EntityCustom.class, renderManager -> {
-			RenderBiped customRender = new RenderBiped(renderManager, new ModelBiped(), 0.5f) {
-				protected ResourceLocation getEntityTexture(Entity entity) {
-					return new ResourceLocation("narutomod:textures/armfist.png");
-				}
-			};
-			customRender.addLayer(new net.minecraft.client.renderer.entity.layers.LayerBipedArmor(customRender) {
-				protected void initArmor() {
-					this.modelLeggings = new ModelBiped(0.5f);
-					this.modelArmor = new ModelBiped(1);
-				}
-			});
-			return customRender;
-		});
-	}*/
-
 	public static class EC extends Entity implements PlayerInput.Hook.IHandler {
 		private EntityLivingBase user;
 		private EntityLivingBase target;
@@ -154,7 +135,7 @@ public class EntityMindTransfer extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void onUpdate() {
 			if (this.user instanceof EntityPlayer && this.user.isEntityAlive() 
-			 && this.target instanceof EntityLivingBase && this.target.isEntityAlive()
+			 && this.target != null && this.target.isEntityAlive()
 			 && Chakra.pathway(this.user).consume(this.chakraBurn)) {
 				this.setPosition(this.user.posX, this.user.posY, this.user.posZ);
 				if (this.ticksExisted == 1) {
@@ -203,10 +184,6 @@ public class EntityMindTransfer extends ElementsNarutomodMod.ModElement {
 							this.userInput.handleMouseEvent(this.target);
 						}
 						this.spectate((EntityPlayerMP)this.user, this.target);
-						//this.user.addPotionEffect(new PotionEffect(MobEffects.INVISIBILITY, 2, 0, false, false));
-						//this.user.getEntityData().setDouble(NarutomodModVariables.InvulnerableTime, 10d);
-						//this.user.setPositionAndUpdate(this.target.posX, this.target.posY + this.target.height + 1.0d, this.target.posZ);
-						//((EntityPlayerMP)this.user).setSpectatingEntity(this.target);
 					}
 				} else {
 					this.setDead();

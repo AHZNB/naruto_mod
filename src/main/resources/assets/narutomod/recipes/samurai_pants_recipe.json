@@ -1,0 +1,20 @@
+{
+  "group": "narutomod",
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "0",
+    "1"
+  ],
+  "key": {
+    "0": {
+      "item": "minecraft:leather_chestplate"
+    },
+    "1": {
+      "item": "minecraft:leather_leggings"
+    }
+  },
+  "result": {
+    "item": "narutomod:samurai_armorlegs",
+    "count": 1
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "_fv": 18,
+  "_type": "armor",
+  "definition": {
+    "enableHelmet": true,
+    "textureHelmet": "samuraiarmoritemhelmet",
+    "enableBody": true,
+    "textureBody": "samuraiarmoritemchest",
+    "enableLeggings": true,
+    "textureLeggings": "samuraiarmoritemlegs",
+    "enableBoots": false,
+    "textureBoots": "",
+    "creativeTab": {
+      "value": "CUSTOM:ModTab"
+    },
+    "armorTextureFile": "sasuke_",
+    "helmetName": "Samurai Helmet",
+    "bodyName": "Samurai Armor",
+    "leggingsName": "Samurai Leggings",
+    "bootsName": "Samurai Armor Boots",
+    "helmetSpecialInfo": [],
+    "bodySpecialInfo": [],
+    "leggingsSpecialInfo": [],
+    "bootsSpecialInfo": [],
+    "helmetModelName": "ModelNinjaArmor",
+    "helmetModelPart": "bipedHead",
+    "helmetModelTexture": "samuraiarmor.png",
+    "bodyModelName": "ModelNinjaArmor",
+    "bodyModelPart": "bipedBody",
+    "armsModelPartL": "bipedLeftArm",
+    "armsModelPartR": "bipedRightArm",
+    "bodyModelTexture": "samuraiarmor.png",
+    "leggingsModelName": "ModelNinjaArmor",
+    "leggingsModelPartL": "bipedLeftLeg",
+    "leggingsModelPartR": "bipedRightLeg",
+    "leggingsModelTexture": "samuraiarmor.png",
+    "bootsModelName": "Default",
+    "bootsModelPartL": "Boots L",
+    "bootsModelPartR": "Boots R",
+    "bootsModelTexture": "From armor",
+    "maxDamage": 28,
+    "damageValueHelmet": 2,
+    "damageValueBody": 6,
+    "damageValueLeggings": 5,
+    "damageValueBoots": 2,
+    "enchantability": 9,
+    "toughness": 0.0,
+    "knockbackResistance": 0.0,
+    "equipSound": {
+      "value": ""
+    },
+    "repairItems": [
+      {
+        "value": "Items.IRON_INGOT"
+      }
+    ]
+  }
+}

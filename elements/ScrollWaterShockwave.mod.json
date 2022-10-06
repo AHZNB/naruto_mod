@@ -5,10 +5,10 @@
     "renderType": 1,
     "texture": "scroll_c",
     "customModelName": "scrollb:default",
-    "name": "Scroll Water Shockwave",
+    "name": "Water Release - Water Shockwave",
     "rarity": "COMMON",
     "creativeTab": {
-      "value": "MISC"
+      "value": "CUSTOM:ModTab"
     },
     "stackSize": 1,
     "enchantability": 0,

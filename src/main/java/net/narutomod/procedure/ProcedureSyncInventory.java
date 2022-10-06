@@ -20,7 +20,7 @@ public class ProcedureSyncInventory extends ElementsNarutomodMod.ModElement {
 			return;
 		}
 		Entity entity = (Entity) dependencies.get("entity");
-		if (((entity instanceof EntityPlayerMP) && entity.ticksExisted % 40 == 10)) {
+		if (((entity instanceof EntityPlayerMP) && entity.ticksExisted % 30 == 9)) {
 			ItemOnBody.InventoryTracker.createOrSyncInventory((EntityPlayerMP) entity);
 		}
 	}

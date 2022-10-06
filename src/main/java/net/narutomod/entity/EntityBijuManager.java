@@ -328,13 +328,22 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 				this.cloakCD = l;
 				cp.consume(-5000d, true);
 				if (this.jinchurikiPlayer.inventory.armorInventory.get(3).getItem() != ItemBijuCloak.helmet) {
-					ProcedureUtils.swapItemToSlot(this.jinchurikiPlayer, EntityEquipmentSlot.HEAD, new ItemStack(ItemBijuCloak.helmet));
+					ItemStack stack = new ItemStack(ItemBijuCloak.helmet);
+					stack.setTagCompound(new NBTTagCompound());
+					stack.getTagCompound().setInteger("Tails", this.tails);
+					ProcedureUtils.swapItemToSlot(this.jinchurikiPlayer, EntityEquipmentSlot.HEAD, stack);
 				}
 				if (this.jinchurikiPlayer.inventory.armorInventory.get(2).getItem() != ItemBijuCloak.body) {
-					ProcedureUtils.swapItemToSlot(this.jinchurikiPlayer, EntityEquipmentSlot.CHEST, new ItemStack(ItemBijuCloak.body, 1, this.tails));
+					ItemStack stack = new ItemStack(ItemBijuCloak.body, 1, this.tails);
+					stack.setTagCompound(new NBTTagCompound());
+					stack.getTagCompound().setInteger("Tails", this.tails);
+					ProcedureUtils.swapItemToSlot(this.jinchurikiPlayer, EntityEquipmentSlot.CHEST, stack);
 				}
 				if (this.jinchurikiPlayer.inventory.armorInventory.get(1).getItem() != ItemBijuCloak.legs) {
-					ProcedureUtils.swapItemToSlot(this.jinchurikiPlayer, EntityEquipmentSlot.LEGS, new ItemStack(ItemBijuCloak.legs));
+					ItemStack stack = new ItemStack(ItemBijuCloak.legs);
+					stack.setTagCompound(new NBTTagCompound());
+					stack.getTagCompound().setInteger("Tails", this.tails);
+					ProcedureUtils.swapItemToSlot(this.jinchurikiPlayer, EntityEquipmentSlot.LEGS, stack);
 				}
 			} else {
 				this.saveAndResetWearingTicks(this.cloakLevel);
@@ -420,5 +429,6 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 	public interface ITailBeast {
 		void fuuinIntoPlayer(EntityPlayer player, int fuuinTime);
 		void cancelFuuin();
+		void incFuuinProgress(int i);
 	}
 }

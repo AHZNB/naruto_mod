@@ -185,12 +185,14 @@ public abstract class EntityShieldBase extends EntityLivingBase {
 	}
 
 	private void clampMotion(double d) {
-		if (Math.abs(this.motionX) > d)
-			this.motionX = (this.motionX > 0.0D) ? d : -d;
-		if (Math.abs(this.motionY) > d)
-			this.motionY = (this.motionY > 0.0D) ? d : -d;
-		if (Math.abs(this.motionZ) > d)
-			this.motionZ = (this.motionZ > 0.0D) ? d : -d;
+		if (this.getRevengeTarget() != null && this.ticksExisted - this.getRevengeTimer() < 10) {
+			if (Math.abs(this.motionX) > d)
+				this.motionX = (this.motionX > 0.0D) ? d : -d;
+			if (Math.abs(this.motionY) > d)
+				this.motionY = (this.motionY > 0.0D) ? d : -d;
+			if (Math.abs(this.motionZ) > d)
+				this.motionZ = (this.motionZ > 0.0D) ? d : -d;
+		}
 	}
 
 	@Override

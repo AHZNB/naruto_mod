@@ -47,8 +47,8 @@ public class GuiTeamManager extends ElementsNarutomodMod.ModElement {
 
 	@Override
 	public void preInit(FMLPreInitializationEvent event) {
-		elements.addNetworkMessage(GUIButtonPressedMessageHandler.class, GUIButtonPressedMessage.class, Side.SERVER);
-		elements.addNetworkMessage(GUISlotChangedMessageHandler.class, GUISlotChangedMessage.class, Side.SERVER);
+		elements.addNetworkMessage(GUIButtonPressedMessage.Handler.class, GUIButtonPressedMessage.class, Side.SERVER);
+		elements.addNetworkMessage(GUISlotChangedMessage.Handler.class, GUISlotChangedMessage.class, Side.SERVER);
 	}
 	
 	public static class GuiContainerMod extends Container implements Supplier<Map<Integer, Slot>> {
@@ -219,38 +219,6 @@ public class GuiTeamManager extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-	public static class GUIButtonPressedMessageHandler implements IMessageHandler<GUIButtonPressedMessage, IMessage> {
-		@Override
-		public IMessage onMessage(GUIButtonPressedMessage message, MessageContext context) {
-			EntityPlayerMP entity = context.getServerHandler().player;
-			entity.getServerWorld().addScheduledTask(() -> {
-				int buttonID = message.buttonID;
-				int x = message.x;
-				int y = message.y;
-				int z = message.z;
-				handleButtonAction(entity, buttonID, x, y, z);
-			});
-			return null;
-		}
-	}
-
-	public static class GUISlotChangedMessageHandler implements IMessageHandler<GUISlotChangedMessage, IMessage> {
-		@Override
-		public IMessage onMessage(GUISlotChangedMessage message, MessageContext context) {
-			EntityPlayerMP entity = context.getServerHandler().player;
-			entity.getServerWorld().addScheduledTask(() -> {
-				int slotID = message.slotID;
-				int changeType = message.changeType;
-				int meta = message.meta;
-				int x = message.x;
-				int y = message.y;
-				int z = message.z;
-				handleSlotAction(entity, slotID, changeType, meta, x, y, z);
-			});
-			return null;
-		}
-	}
-
 	public static class GUIButtonPressedMessage implements IMessage {
 		int buttonID, x, y, z;
 		public GUIButtonPressedMessage() {
@@ -261,6 +229,21 @@ public class GuiTeamManager extends ElementsNarutomodMod.ModElement {
 			this.x = x;
 			this.y = y;
 			this.z = z;
+		}
+
+		public static class Handler implements IMessageHandler<GUIButtonPressedMessage, IMessage> {
+			@Override
+			public IMessage onMessage(GUIButtonPressedMessage message, MessageContext context) {
+				EntityPlayerMP entity = context.getServerHandler().player;
+				entity.getServerWorld().addScheduledTask(() -> {
+					int buttonID = message.buttonID;
+					int x = message.x;
+					int y = message.y;
+					int z = message.z;
+					handleButtonAction(entity, buttonID, x, y, z);
+				});
+				return null;
+			}
 		}
 
 		@Override
@@ -292,6 +275,23 @@ public class GuiTeamManager extends ElementsNarutomodMod.ModElement {
 			this.z = z;
 			this.changeType = changeType;
 			this.meta = meta;
+		}
+
+		public static class Handler implements IMessageHandler<GUISlotChangedMessage, IMessage> {
+			@Override
+			public IMessage onMessage(GUISlotChangedMessage message, MessageContext context) {
+				EntityPlayerMP entity = context.getServerHandler().player;
+				entity.getServerWorld().addScheduledTask(() -> {
+					int slotID = message.slotID;
+					int changeType = message.changeType;
+					int meta = message.meta;
+					int x = message.x;
+					int y = message.y;
+					int z = message.z;
+					handleSlotAction(entity, slotID, changeType, meta, x, y, z);
+				});
+				return null;
+			}
 		}
 
 		@Override

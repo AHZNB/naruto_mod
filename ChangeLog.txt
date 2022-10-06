@@ -1,16 +1,31 @@
 0.2.10-beta ===============================================================================
 
 Jutsus:
+ - Lava release chakra mode: is enabled when player becomes the 4-tail jinchuriki
  - Lava release chakra mode: gives user +16 speed effect
  - Explosion release explosive clay: fixed targeting system freeze after target dies
  - Kamui teleport: removed chat text stating 'entity teleported'
+ - using chidori with a weapon in hand no longer lunges at target
+ - improved rasengan impact particles rendering
+ - biju cloak 2 requires 800 jutsuXp to master
+ - full Kurama mode: change Kurama texture to KCM texture
+ - Mind transfer/shadow imitation: improved mouse sensitivity when controlling mobs
+ - kagebunshin: fixed ninjaxp not reseting after death of original (when player is a bunshin)
+ - added Transformation jutsu and scroll
  
 Items:
  - Bone drill can't be dropped into the world
- - Amegakure headband+mask can breathe under water
+ - Amegakure headband+mask can breathe under water and immune to poison & wither
+ - re-positioned the dojutsus lower on the face
+ - added Konoha facial protector (tobirama/yamato style) and recipe
+ - added 1st Ninja war armor and recipe
+ - added samurai armor and recipe
  
 Structures:
  - rebuilt the 4 pillar wood house to match anime
+ 
+General:
+ - reach effect: targeting fuzziness increases with reach, i.e. fuzziness = targetBoundingBox +- reach * 0.1
 
 0.2.9-beta ================================================================================
 

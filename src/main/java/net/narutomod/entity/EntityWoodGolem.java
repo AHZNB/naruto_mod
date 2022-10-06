@@ -463,14 +463,14 @@ public class EntityWoodGolem extends ElementsNarutomodMod.ModElement {
 			leftCalf.cubeList.add(new ModelBox(leftCalf, 44, 8, -2.1F, -0.4981F, 0.0436F, 4, 7, 4, 0.2F, true));
 	
 			dragon = new ModelRenderer(this);
-			dragon.setRotationPoint(0.0F, 2.0F, 0.0F);
-			dragon.cubeList.add(new ModelBox(dragon, 44, 19, -4.0F, 13.5F, 3.0F, 4, 4, 4, 0.0F, false));
-			dragon.cubeList.add(new ModelBox(dragon, 44, 19, -4.0F, 15.875F, 3.0F, 4, 4, 4, -0.5F, false));
-			dragon.cubeList.add(new ModelBox(dragon, 44, 19, -4.0F, 17.875F, 3.0F, 4, 4, 4, -1.0F, false));
-			dragon.cubeList.add(new ModelBox(dragon, 44, 19, -4.05F, 19.3F, 3.0F, 4, 4, 4, -1.2F, false));
+			dragon.setRotationPoint(0.0F, 0.0F, 0.0F);
+			dragon.cubeList.add(new ModelBox(dragon, 44, 19, -4.0F, 15.5F, 3.0F, 4, 4, 4, 0.0F, false));
+			dragon.cubeList.add(new ModelBox(dragon, 44, 19, -4.0F, 17.875F, 3.0F, 4, 4, 4, -0.5F, false));
+			dragon.cubeList.add(new ModelBox(dragon, 44, 19, -4.0F, 19.875F, 3.0F, 4, 4, 4, -1.0F, false));
+			dragon.cubeList.add(new ModelBox(dragon, 44, 19, -4.05F, 21.3F, 3.0F, 4, 4, 4, -1.2F, false));
 	
 			bone10 = new ModelRenderer(this);
-			bone10.setRotationPoint(-2.0F, 13.0F, 5.0F);
+			bone10.setRotationPoint(-2.0F, 15.0F, 5.0F);
 			dragon.addChild(bone10);
 			setRotationAngle(bone10, 0.2618F, 0.0F, -0.2618F);
 			bone10.cubeList.add(new ModelBox(bone10, 44, 19, -1.8706F, -1.4665F, -1.875F, 4, 4, 4, 0.0F, false));
@@ -701,11 +701,13 @@ public class EntityWoodGolem extends ElementsNarutomodMod.ModElement {
 			GlStateManager.translate(0.0F, 1.5F - f6 * ((EC)entity).getGrowth(ageInTicks), 0.0F);
 			GlStateManager.scale(MODELSCALE, MODELSCALE, MODELSCALE);
 			super.render(entity, f, f1, ageInTicks, f3, f4, f5);
-			dragon.render(f5);
+			//dragon.render(f5);
 			GlStateManager.disableLighting();
 			OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240.0F, 240.0F);
 			bipedHeadwear.render(f5);
-			dragonEyes.render(f5);
+			//if (dragon.showModel) {
+			//	dragonEyes.render(f5);
+			//}
 			GlStateManager.enableLighting();
 			//GlStateManager.popMatrix();
 		}

@@ -1,0 +1,23 @@
+{
+  "group": "narutomod",
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " 1 ",
+    "3 5"
+  ],
+  "key": {
+    "1": {
+      "item": "narutomod:ninja_armor_konohahelmet"
+    },
+    "3": {
+      "item": "minecraft:iron_nugget"
+    },
+    "5": {
+      "item": "minecraft:iron_nugget"
+    }
+  },
+  "result": {
+    "item": "narutomod:ninja_armor_war_1helmet",
+    "count": 1
+  }
+}

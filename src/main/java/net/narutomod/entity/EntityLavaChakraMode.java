@@ -37,6 +37,8 @@ import net.narutomod.Chakra;
 import net.narutomod.ElementsNarutomodMod;
 
 import javax.annotation.Nullable;
+import net.minecraft.util.EnumHandSide;
+import net.minecraft.client.model.ModelBiped;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityLavaChakraMode extends ElementsNarutomodMod.ModElement {
@@ -178,48 +180,74 @@ public class EntityLavaChakraMode extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void doRender(EC entity, double x, double y, double z, float entityYaw, float pt) {
 			EntityLivingBase user = entity.getUser();
-			if (user != null && (!user.equals(this.renderManager.renderViewEntity) || this.renderManager.options.thirdPersonView != 0)) {
+			if (user != null) {
 				RenderLivingBase userRenderer = (RenderLivingBase)this.renderManager.getEntityRenderObject(user);
 				ModelBase model = userRenderer.getMainModel();
 				float f = (float)user.ticksExisted + pt;
-				x = user.lastTickPosX + (user.posX - user.lastTickPosX) * pt - this.renderManager.viewerPosX;
-				y = user.lastTickPosY + (user.posY - user.lastTickPosY) * pt - this.renderManager.viewerPosY;
-				z = user.lastTickPosZ + (user.posZ - user.lastTickPosZ) * pt - this.renderManager.viewerPosZ;
 	            float f1 = ProcedureUtils.interpolateRotation(user.prevRenderYawOffset, user.renderYawOffset, pt);
 	            float f2 = ProcedureUtils.interpolateRotation(user.prevRotationYawHead, user.rotationYawHead, pt);
-	            float f7 = user.prevRotationPitch + (user.rotationPitch - user.prevRotationPitch) * pt;
 	            float f3 = f2 - f1;
                 float f5 = user.prevLimbSwingAmount + (user.limbSwingAmount - user.prevLimbSwingAmount) * pt;
                 float f6 = user.limbSwing - user.limbSwingAmount * (1.0F - pt);
-				if (user.isSneaking()) {
-					y -= 0.125F;
-				}
+	            float f7 = user.prevRotationPitch + (user.rotationPitch - user.prevRotationPitch) * pt;
+				x = user.lastTickPosX + (user.posX - user.lastTickPosX) * pt - this.renderManager.viewerPosX;
+				y = user.lastTickPosY + (user.posY - user.lastTickPosY) * pt - this.renderManager.viewerPosY;
+				z = user.lastTickPosZ + (user.posZ - user.lastTickPosZ) * pt - this.renderManager.viewerPosZ;
 				this.bindEntityTexture(entity);
-				GlStateManager.pushMatrix();
-				GlStateManager.translate(x, y, z);
-				float f4 = userRenderer.prepareScale(user, pt);
-				//GlStateManager.scale(1.1F, 1.1F, 1.1F);
-				GlStateManager.rotate(f1 - 180F, 0.0F, 1.0F, 0.0F);
-				//GlStateManager.rotate(180F, 1.0F, 0.0F, 0.0F);
-				GlStateManager.matrixMode(5890);
-				GlStateManager.loadIdentity();
-				GlStateManager.translate(f * 0.01F, f * 0.01F, 0.0F);
-				GlStateManager.matrixMode(5888);
-				//GlStateManager.disableDepth();
-				GlStateManager.enableBlend();
-				GlStateManager.color(1.0F, 1.0F, 1.0F, 0.6F);
-				GlStateManager.disableLighting();
-				GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-				OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240.0F, 240.0F);
-                model.setRotationAngles(f6, f5, f, f3, f7, f4, user);
-				model.render(user, f6, f5, f, f3, f7, f4);
-	            GlStateManager.matrixMode(5890);
-	            GlStateManager.loadIdentity();
-	            GlStateManager.matrixMode(5888);
-	            GlStateManager.enableLighting();
-	            GlStateManager.disableBlend();
-	            //GlStateManager.enableDepth();
-	            GlStateManager.popMatrix();
+				if (!user.equals(this.renderManager.renderViewEntity) || this.renderManager.options.thirdPersonView != 0) {
+					if (user.isSneaking()) {
+						y -= 0.125F;
+					}
+					GlStateManager.pushMatrix();
+					GlStateManager.translate(x, y, z);
+					float f4 = userRenderer.prepareScale(user, pt);
+					//GlStateManager.scale(1.1F, 1.1F, 1.1F);
+					GlStateManager.rotate(f1 - 180F, 0.0F, 1.0F, 0.0F);
+					//GlStateManager.rotate(180F, 1.0F, 0.0F, 0.0F);
+					GlStateManager.matrixMode(5890);
+					GlStateManager.loadIdentity();
+					GlStateManager.translate(f * 0.01F, f * 0.01F, 0.0F);
+					GlStateManager.matrixMode(5888);
+					//GlStateManager.disableDepth();
+					GlStateManager.enableBlend();
+					GlStateManager.color(1.0F, 1.0F, 1.0F, 0.6F);
+					GlStateManager.disableLighting();
+					GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+					OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240.0F, 240.0F);
+	                model.setRotationAngles(f6, f5, f, f3, f7, f4, user);
+					model.render(user, f6, f5, f, f3, f7, f4);
+		            GlStateManager.matrixMode(5890);
+		            GlStateManager.loadIdentity();
+		            GlStateManager.matrixMode(5888);
+		            GlStateManager.enableLighting();
+		            GlStateManager.disableBlend();
+		            //GlStateManager.enableDepth();
+		            GlStateManager.popMatrix();
+				/*} else if (model instanceof ModelBiped) {
+					GlStateManager.pushMatrix();
+   		            GlStateManager.translate(x, y + 3.0F, z);
+   		            GlStateManager.rotate(-ProcedureUtils.interpolateRotation(user.prevRotationYaw, user.rotationYaw, pt), 0.0F, 1.0F, 0.0F);
+   		            GlStateManager.rotate(f7, 1.0F, 0.0F, 0.0F);
+   		            GlStateManager.rotate(180F, 0.0F, 1.0F, 0.0F);
+   		            EntityRasengan.rotateArmIn1stPerson(user, pt);
+					GlStateManager.matrixMode(5890);
+					GlStateManager.loadIdentity();
+					GlStateManager.translate(f * 0.01F, f * 0.01F, 0.0F);
+					GlStateManager.matrixMode(5888);
+					GlStateManager.enableBlend();
+					GlStateManager.color(1.0F, 1.0F, 1.0F, 0.6F);
+					GlStateManager.disableLighting();
+					GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+					OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240.0F, 240.0F);
+					(user.getPrimaryHand() == EnumHandSide.LEFT ? ((ModelBiped)model).bipedLeftArm : ((ModelBiped)model).bipedRightArm)
+					 .render(userRenderer.prepareScale(user, pt));
+		            GlStateManager.matrixMode(5890);
+		            GlStateManager.loadIdentity();
+		            GlStateManager.matrixMode(5888);
+		            GlStateManager.enableLighting();
+		            GlStateManager.disableBlend();
+   		            GlStateManager.popMatrix();*/
+				}
 			}
 		}
 

@@ -34,6 +34,8 @@ public class ItemNinjaArmorAme extends ElementsNarutomodMod.ModElement {
 			@Override
 			public void onArmorTick(World world, EntityPlayer entity, ItemStack itemstack) {
 				super.onArmorTick(world, entity, itemstack);
+				entity.removePotionEffect(MobEffects.POISON);
+				entity.removePotionEffect(MobEffects.WITHER);
 				if (entity.ticksExisted % 20 == 3) {
 					entity.addPotionEffect(new PotionEffect(MobEffects.WATER_BREATHING, 21, 0, false, false));
 				}

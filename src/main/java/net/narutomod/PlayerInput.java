@@ -92,6 +92,7 @@ public class PlayerInput extends ElementsNarutomodMod.ModElement {
 		private boolean jump;
 		private boolean sneak;
 		private boolean newMouseEvent;
+		private float mouseSensitivity;
 		private int dx;
 		private int dy;
 		private boolean attackPressed;
@@ -116,6 +117,7 @@ public class PlayerInput extends ElementsNarutomodMod.ModElement {
 				}
 			} else {
 				if (this.newMovementInput) {
+					this.newMovementInput = false;
 					player.movementInput.moveStrafe = this.strafe;
 					player.movementInput.moveForward = this.forward;
 					player.movementInput.forwardKeyDown = this.forwardKeyDown;
@@ -124,9 +126,9 @@ public class PlayerInput extends ElementsNarutomodMod.ModElement {
 					player.movementInput.rightKeyDown = this.rightKeyDown;
 					player.movementInput.jump = this.jump;
 					player.movementInput.sneak = this.sneak;
-					this.newMovementInput = false;
 				}
 				if (this.newMouseEvent) {
+	                this.newMouseEvent = false;
 		            float f = mc.gameSettings.mouseSensitivity * 1.2F + 0.4F;
 		            float f1 = f * f * f * 8.0F;
 		            float f2 = (float)this.dx * f1;
@@ -140,12 +142,12 @@ public class PlayerInput extends ElementsNarutomodMod.ModElement {
 	                } else if (player.isHandActive()) {
 	                	mc.playerController.onStoppedUsingItem(player);
 	                }
-	                this.newMouseEvent = false;
 				}
 			}
 		}
 
 		public void handleMovement(EntityLivingBase entity) {
+			this.clearMovementInput();
 			if (entity instanceof EntityPlayerMP) {
 				MovementPacket.sendToClient((EntityPlayerMP)entity, this.strafe, this.forward, 
 				 this.forwardKeyDown, this.backKeyDown, this.leftKeyDown, this.rightKeyDown, this.jump, this.sneak);
@@ -164,14 +166,14 @@ public class PlayerInput extends ElementsNarutomodMod.ModElement {
 				entity.motionY *= 0.98d;
 				entity.setSneaking(this.sneak);
 			}
-			this.clearMovementInput();
 		}
 
 		public void handleMouseEvent(EntityLivingBase entity) {
+			this.clearMouseEvent();
 			if (entity instanceof EntityPlayerMP) {
 				MousePacket.sendToClient((EntityPlayerMP)entity, this.dx, this.dy, this.attackPressed, this.useItemPressed);
 			} else {
-	            float f1 = 20F;
+	            float f1 = this.mouseSensitivity > 0.0F ? this.mouseSensitivity * 20.0F : 6.0F;
 	            float f2 = (float)this.dx * f1;
 	            float f3 = (float)this.dy * f1;
 	            entity.rotationYaw = entity.rotationYawHead = (float)((double)entity.rotationYawHead + (double)f2 * 0.15D);
@@ -185,7 +187,6 @@ public class PlayerInput extends ElementsNarutomodMod.ModElement {
 	            	}
 	            }
 			}
-			this.clearMouseEvent();
 		}
 
 		@SideOnly(Side.CLIENT)
@@ -198,7 +199,7 @@ public class PlayerInput extends ElementsNarutomodMod.ModElement {
 				while (iter.hasNext()) {
 					Entity entity = mc.world.getEntityByID(iter.next());
 					if (entity instanceof IHandler) {
-						MousePacket.sendToServer(entity, Mouse.getEventDX(), Mouse.getEventDY(),
+						MousePacket.sendToServer(entity, Mouse.getEventDX(), Mouse.getEventDY(), mc.gameSettings.mouseSensitivity,
 						 mc.gameSettings.keyBindAttack.isPressed(), mc.gameSettings.keyBindUseItem.isPressed());
 					} else {
 						iter.remove();
@@ -429,25 +430,27 @@ public class PlayerInput extends ElementsNarutomodMod.ModElement {
 			int id;
 			int dx;
 			int dy;
+			float sensitivity;
 			boolean attackPressed;
 			boolean useItemPressed;
 	
 			public MousePacket() { }
 	
-			public MousePacket(int eid, int i1, int i2, boolean b1, boolean b2) {
+			public MousePacket(int eid, int i1, int i2, float f1, boolean b1, boolean b2) {
 				this.id = eid;
 				this.dx = i1;
 				this.dy = i2;
+				this.sensitivity = f1;
 				this.attackPressed = b1;
 				this.useItemPressed = b2;
 			}
 	
 			public static void sendToClient(EntityPlayerMP target, int x, int y, boolean ap, boolean uip) {
-				NarutomodMod.PACKET_HANDLER.sendTo(new MousePacket(0, x, y, ap, uip), target);
+				NarutomodMod.PACKET_HANDLER.sendTo(new MousePacket(0, x, y, 0f, ap, uip), target);
 			}
 	
-			public static void sendToServer(Entity entity, int x, int y, boolean ap, boolean uip) {
-				NarutomodMod.PACKET_HANDLER.sendToServer(new MousePacket(entity.getEntityId(), x, y, ap, uip));
+			public static void sendToServer(Entity entity, int x, int y, float f, boolean ap, boolean uip) {
+				NarutomodMod.PACKET_HANDLER.sendToServer(new MousePacket(entity.getEntityId(), x, y, f, ap, uip));
 			}
 	
 			public static class ClientHandler implements IMessageHandler<MousePacket, IMessage> {
@@ -488,6 +491,7 @@ public class PlayerInput extends ElementsNarutomodMod.ModElement {
 				buf.writeInt(this.id);
 				buf.writeInt(this.dx);
 				buf.writeInt(this.dy);
+				buf.writeFloat(this.sensitivity);
 				buf.writeBoolean(this.attackPressed);
 				buf.writeBoolean(this.useItemPressed);
 			}
@@ -496,6 +500,7 @@ public class PlayerInput extends ElementsNarutomodMod.ModElement {
 				this.id = buf.readInt();
 				this.dx = buf.readInt();
 				this.dy = buf.readInt();
+				this.sensitivity = buf.readFloat();
 				this.attackPressed = buf.readBoolean();
 				this.useItemPressed = buf.readBoolean();
 			}
@@ -520,6 +525,7 @@ public class PlayerInput extends ElementsNarutomodMod.ModElement {
 		public void copyMouseInput(MousePacket packet) {
 			this.dx = packet.dx;
 			this.dy = packet.dy;
+			this.mouseSensitivity = packet.sensitivity;
 			this.attackPressed = packet.attackPressed;
 			this.useItemPressed = packet.useItemPressed;
 			this.newMouseEvent = true;

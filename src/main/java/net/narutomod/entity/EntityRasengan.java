@@ -222,10 +222,10 @@ public class EntityRasengan extends ElementsNarutomodMod.ModElement {
 					Vec3d vec = ProcedureUtils.pushEntity(this.shootingEntity, entityIn, 20d, 2f);
 					Vec3d vec1 = this.shootingEntity.getLookVec().add(this.shootingEntity.getPositionEyes(1.0f));
 					for (int i = 1; i <= 100; i++) {
-						double d = (double)i * 0.01d * vec.lengthVector() * 0.4d;
+						double d = (double)i * vec.lengthVector() * 0.05d;
 						Vec3d vec2 = vec.normalize().scale(d);
 						Particles.spawnParticle(this.world, Particles.Types.WHIRLPOOL, vec1.x, vec1.y, vec1.z, 1,
-						 0d, 0d, 0d, vec2.x, vec2.y, vec2.z, 0x80b9fffd, (int)(d * 80), (int)(d * 20), 0xF0);
+						 0d, 0d, 0d, vec2.x, vec2.y, vec2.z, 0x80b9fffd, (int)(d * 20), (int)d, 0xF0);
 					}
 				}
 				this.setDead();
@@ -264,6 +264,34 @@ public class EntityRasengan extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
+    @SideOnly(Side.CLIENT)
+    public static void rotateArmIn1stPerson(Entity viewer, float partialTicks) {
+    	if (viewer instanceof EntityPlayerSP) {
+	        EntityPlayerSP entityplayersp = (EntityPlayerSP)viewer;
+	        float swingProgress = entityplayersp.getSwingProgress(partialTicks);
+	        float f0 = entityplayersp.prevRenderArmPitch + (entityplayersp.renderArmPitch - entityplayersp.prevRenderArmPitch) * partialTicks;
+	        float f01 = entityplayersp.prevRenderArmYaw + (entityplayersp.renderArmYaw - entityplayersp.prevRenderArmYaw) * partialTicks;
+	        GlStateManager.rotate((entityplayersp.rotationPitch - f0) * 0.1F, 1.0F, 0.0F, 0.0F);
+	        GlStateManager.rotate((entityplayersp.rotationYaw - f01) * 0.1F, 0.0F, 1.0F, 0.0F);
+	        float f = 1.0F;
+	        float f1 = MathHelper.sqrt(swingProgress);
+	        float f2 = -0.3F * MathHelper.sin(f1 * (float)Math.PI);
+	        float f3 = 0.4F * MathHelper.sin(f1 * ((float)Math.PI * 2F));
+	        float f4 = -0.4F * MathHelper.sin(swingProgress * (float)Math.PI);
+	        GlStateManager.translate(f * (f2 + 0.64000005F), f3 + -0.6F + 0F * -0.6F, f4 + -0.71999997F);
+	        GlStateManager.rotate(f * 45.0F, 0.0F, 1.0F, 0.0F);
+	        float f5 = MathHelper.sin(swingProgress * swingProgress * (float)Math.PI);
+	        float f6 = MathHelper.sin(f1 * (float)Math.PI);
+	        GlStateManager.rotate(f * f6 * 70.0F, 0.0F, 1.0F, 0.0F);
+	        GlStateManager.rotate(f * f5 * -20.0F, 0.0F, 0.0F, 1.0F);
+	        GlStateManager.translate(f * -1.0F, 3.6F, 3.5F);
+	        GlStateManager.rotate(f * 120.0F, 0.0F, 0.0F, 1.0F);
+	        GlStateManager.rotate(200.0F, 1.0F, 0.0F, 0.0F);
+	        GlStateManager.rotate(f * -135.0F, 0.0F, 1.0F, 0.0F);
+	        GlStateManager.translate(f * 5.6F, 0.0F, 0.0F);
+    	}
+    }
+
 	@SideOnly(Side.CLIENT)
 	public class RenderRasengan extends Render<EC> {
 		private final ResourceLocation texture = new ResourceLocation("narutomod:textures/longcube_white.png");
@@ -282,33 +310,6 @@ public class EntityRasengan extends ElementsNarutomodMod.ModElement {
 			   .rotateYaw((-entity.prevRenderYawOffset - (entity.renderYawOffset - entity.prevRenderYawOffset) * pt) * (float)(Math.PI / 180d))
 			   .addVector(entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * pt, entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * pt, entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * pt);
 		}
-
-	    private void rotateArmIn1stPerson(Entity viewer, float partialTicks) {
-	    	if (viewer instanceof EntityPlayerSP) {
-		        EntityPlayerSP entityplayersp = (EntityPlayerSP)viewer;
-		        float swingProgress = entityplayersp.getSwingProgress(partialTicks);
-		        float f0 = entityplayersp.prevRenderArmPitch + (entityplayersp.renderArmPitch - entityplayersp.prevRenderArmPitch) * partialTicks;
-		        float f01 = entityplayersp.prevRenderArmYaw + (entityplayersp.renderArmYaw - entityplayersp.prevRenderArmYaw) * partialTicks;
-		        GlStateManager.rotate((entityplayersp.rotationPitch - f0) * 0.1F, 1.0F, 0.0F, 0.0F);
-		        GlStateManager.rotate((entityplayersp.rotationYaw - f01) * 0.1F, 0.0F, 1.0F, 0.0F);
-		        float f = 1.0F;
-		        float f1 = MathHelper.sqrt(swingProgress);
-		        float f2 = -0.3F * MathHelper.sin(f1 * (float)Math.PI);
-		        float f3 = 0.4F * MathHelper.sin(f1 * ((float)Math.PI * 2F));
-		        float f4 = -0.4F * MathHelper.sin(swingProgress * (float)Math.PI);
-		        GlStateManager.translate(f * (f2 + 0.64000005F), f3 + -0.6F + 0F * -0.6F, f4 + -0.71999997F);
-		        GlStateManager.rotate(f * 45.0F, 0.0F, 1.0F, 0.0F);
-		        float f5 = MathHelper.sin(swingProgress * swingProgress * (float)Math.PI);
-		        float f6 = MathHelper.sin(f1 * (float)Math.PI);
-		        GlStateManager.rotate(f * f6 * 70.0F, 0.0F, 1.0F, 0.0F);
-		        GlStateManager.rotate(f * f5 * -20.0F, 0.0F, 0.0F, 1.0F);
-		        GlStateManager.translate(f * -1.0F, 3.6F, 3.5F);
-		        GlStateManager.rotate(f * 120.0F, 0.0F, 0.0F, 1.0F);
-		        GlStateManager.rotate(200.0F, 1.0F, 0.0F, 0.0F);
-		        GlStateManager.rotate(f * -135.0F, 0.0F, 1.0F, 0.0F);
-		        GlStateManager.translate(f * 5.6F, 0.0F, 0.0F);
-	    	}
-	    }
 
 		@Override
 		public void doRender(EC entity, double x, double y, double z, float f, float partialTicks) {
@@ -331,7 +332,7 @@ public class EntityRasengan extends ElementsNarutomodMod.ModElement {
 		            GlStateManager.rotate(-this.interpolateRotation(owner.prevRotationYaw, owner.rotationYaw, partialTicks), 0.0F, 1.0F, 0.0F);
 		            GlStateManager.rotate(owner.prevRotationPitch + (owner.rotationPitch - owner.prevRotationPitch) * partialTicks, 1.0F, 0.0F, 0.0F);
 		            GlStateManager.rotate(180F, 0.0F, 1.0F, 0.0F);
-	            	this.rotateArmIn1stPerson(owner, partialTicks);
+	            	rotateArmIn1stPerson(owner, partialTicks);
 		            model.postRenderArm(0.0625F * 0.9375F, EnumHandSide.RIGHT);
 		            GlStateManager.translate(-0.125F, entity.height - 0.025F, 0.0F);
 	            } else {

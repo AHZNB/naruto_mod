@@ -6,10 +6,10 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
 
 import net.minecraft.world.World;
+import net.minecraft.world.GameType;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.IRangedAttackMob;
 import net.minecraft.entity.ai.EntityAIAttackRanged;
 import net.minecraft.entity.ai.EntityAIHurtByTarget;
@@ -19,10 +19,12 @@ import net.minecraft.entity.ai.EntityAIAttackMelee;
 import net.minecraft.entity.ai.EntityAILookIdle;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.Entity;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
-import net.minecraft.world.GameType;
-import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.potion.PotionEffect;
+import net.minecraft.init.MobEffects;
 
 import net.narutomod.item.ItemBijuCloak;
 import net.narutomod.procedure.ProcedureUtils;
@@ -75,6 +77,10 @@ public class EntityJinchurikiClone extends ElementsNarutomodMod.ModElement {
 			}
 		}
 
+		public int getLevel() {
+			return this.level;
+		}
+
 		@Override
 		protected void initEntityAI() {
 			this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, true));
@@ -121,6 +127,7 @@ public class EntityJinchurikiClone extends ElementsNarutomodMod.ModElement {
 			if (!this.world.isRemote && this.getSummoner() instanceof EntityPlayerMP) {
 				EntityPlayerMP user = (EntityPlayerMP)this.getSummoner();
 				user.setGameType(GameType.getByID(this.getEntityData().getInteger("OriginalGameMode")));
+				user.addPotionEffect(new PotionEffect(MobEffects.INVISIBILITY, 2, 0, false, false));
 				user.setHealth(this.getHealth());
 			}
 		}

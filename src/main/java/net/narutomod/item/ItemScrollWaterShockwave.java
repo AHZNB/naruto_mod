@@ -2,6 +2,7 @@
 package net.narutomod.item;
 
 import net.narutomod.gui.GuiScrollWaterShockwaveGui;
+import net.narutomod.creativetab.TabModTab;
 import net.narutomod.NarutomodMod;
 import net.narutomod.ElementsNarutomodMod;
 
@@ -17,7 +18,6 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Item;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.block.state.IBlockState;
@@ -48,7 +48,7 @@ public class ItemScrollWaterShockwave extends ElementsNarutomodMod.ModElement {
 			maxStackSize = 1;
 			setUnlocalizedName("scroll_water_shockwave");
 			setRegistryName("scroll_water_shockwave");
-			setCreativeTab(CreativeTabs.MISC);
+			setCreativeTab(TabModTab.tab);
 		}
 
 		@Override

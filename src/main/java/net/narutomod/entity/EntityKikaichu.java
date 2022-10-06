@@ -355,7 +355,10 @@ public class EntityKikaichu extends ElementsNarutomodMod.ModElement {
 			GlStateManager.rotate(-entity.prevRotationYaw - (entity.rotationYaw - entity.prevRotationYaw) * partialTicks, 0.0F, 1.0F, 0.0F);
 			GlStateManager.rotate(entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks - 180.0F, 1.0F, 0.0F, 0.0F);
 			GlStateManager.scale(0.1F, 0.1F, 0.1F);
+			GlStateManager.enableBlend();
+			GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 			this.model.render(entity, f6, f5, 0.0F, 0.0F, 0.0F, 0.0625F);
+			GlStateManager.disableBlend();
 			GlStateManager.popMatrix();
 		}
 
@@ -377,6 +380,8 @@ public class EntityKikaichu extends ElementsNarutomodMod.ModElement {
 		private final ModelRenderer Eye2;
 		//private final ModelRenderer body;
 		//private final ModelRenderer leg1;
+		private final ModelRenderer wingLeft;
+		private final ModelRenderer wingRight;
 		private final ModelRenderer foreleg1;
 		//private final ModelRenderer leg2;
 		private final ModelRenderer foreleg2;
@@ -422,6 +427,20 @@ public class EntityKikaichu extends ElementsNarutomodMod.ModElement {
 			body.cubeList.add(new ModelBox(body, 0, 14, -3.5F, -1.0F, 5.0F, 7, 4, 3, 0.0F, false));
 			body.cubeList.add(new ModelBox(body, 0, 21, -3.0F, 0.0F, 7.0F, 6, 3, 3, 0.0F, false));
 			body.cubeList.add(new ModelBox(body, 26, 0, -2.5F, 1.0F, 9.0F, 5, 2, 2, 0.0F, false));
+			wingLeft = new ModelRenderer(this);
+			wingLeft.setRotationPoint(1.0F, -1.75F, -4.0F);
+			body.addChild(wingLeft);
+			setRotationAngle(wingLeft, 0.0873F, 0.2618F, 0.0F);
+			//setRotationAngle(wingLeft, 0.1309F, 1.0472F, 0.0F);
+			//setRotationAngle(wingLeft, 0.2618F, 0.5236F, 0.0F);
+			wingLeft.cubeList.add(new ModelBox(wingLeft, 28, 0, -3.0F, 0.0F, 0.0F, 6, 0, 12, 0.0F, false));
+			wingRight = new ModelRenderer(this);
+			wingRight.setRotationPoint(-1.0F, -1.75F, -4.0F);
+			body.addChild(wingRight);
+			setRotationAngle(wingRight, 0.0873F, -0.2618F, 0.0F);
+			//setRotationAngle(wingRight, 0.1309F, -1.0472F, 0.0F);
+			//setRotationAngle(wingRight, 0.2618F, -0.5236F, 0.0F);
+			wingRight.cubeList.add(new ModelBox(wingRight, 28, 0, -3.0F, 0.0F, 0.0F, 6, 0, 12, 0.0F, true));
 			leg1 = new ModelRenderer(this);
 			leg1.setRotationPoint(-3.0F, 2.0F, -4.0F);
 			setRotationAngle(leg1, 0.0F, -0.5236F, 0.5236F);
@@ -493,6 +512,16 @@ public class EntityKikaichu extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public void setRotationAngles(float f, float f1, float f2, float f3, float f4, float f5, Entity e) {
+			if (e.onGround) {
+				setRotationAngle(wingRight, 0.0873F, -0.2618F, 0.0F);
+				setRotationAngle(wingLeft, 0.0873F, 0.2618F, 0.0F);
+			} else {
+				float f6 = MathHelper.sin(f2);
+				wingLeft.rotateAngleX = 0.1964F + f6 * 0.0655F;
+				wingLeft.rotateAngleY = 0.7854F + f6 * 0.2618F;
+				wingRight.rotateAngleX = 0.1964F + f6 * 0.0655F;
+				wingRight.rotateAngleY = -0.7854F - f6 * 0.2618F;
+			}
 	        leg1.rotateAngleX = MathHelper.cos(f * 0.6662F) * 1.4F * f1;
 	        leg2.rotateAngleX = MathHelper.cos(f * 0.6662F + (float)Math.PI) * 1.4F * f1;
 	        leg3.rotateAngleX = MathHelper.cos(f * 0.6662F + (float)Math.PI) * 1.4F * f1;

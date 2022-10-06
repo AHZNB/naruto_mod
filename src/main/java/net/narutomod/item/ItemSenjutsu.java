@@ -286,7 +286,7 @@ public class ItemSenjutsu extends ElementsNarutomodMod.ModElement {
 				case SNAKE:
 					return "narutomod:textures/sagesnakehelmet.png";
 				case SLUG:
-					return "narutomod:textures/sagewoodhelmet.png";
+					return "narutomod:textures/sageslughelmet.png";
 				default:
 					return null;
 			}

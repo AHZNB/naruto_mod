@@ -90,7 +90,8 @@ public class KeyBindingExtendedReachMouseEvent extends ElementsNarutomodMod.ModE
 		 ? (EntityLivingBase)playerSP.getRidingEntity() : playerSP;
 		double reach = ProcedureUtils.getReachDistance(attacker);
 		if (reach > 5.0D) {
-			RayTraceResult rtr = ProcedureUtils.objectEntityLookingAt(playerSP, reach, playerSP.isRiding() ? playerSP.getRidingEntity() : null);
+			//RayTraceResult rtr = ProcedureUtils.objectEntityLookingAt(playerSP, reach, playerSP.isRiding() ? playerSP.getRidingEntity() : null);
+			RayTraceResult rtr = ProcedureUtils.objectEntityLookingAt(playerSP, reach, reach * 0.1d);
 			if (rtr != null && rtr.typeOfHit == RayTraceResult.Type.ENTITY) {
 				NarutomodMod.PACKET_HANDLER.sendToServer(new Message(attacker.getEntityId(), rtr.entityHit.getEntityId()));
 			}

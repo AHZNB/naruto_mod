@@ -44,6 +44,7 @@ import net.narutomod.entity.EntityLimboClone;
 import net.narutomod.entity.EntitySealingChains;
 import net.narutomod.entity.EntityPuppet;
 import net.narutomod.entity.EntityKikaichu;
+import net.narutomod.entity.EntityTransformationJutsu;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.Chakra;
 
@@ -63,6 +64,7 @@ public class ItemNinjutsu extends ElementsNarutomodMod.ModElement {
 	public static final ItemJutsu.JutsuEnum PUPPET = new ItemJutsu.JutsuEnum(5, "tooltip.ninjutsu.puppetjutsu", 'C', 0.25d, new PuppetJutsu());
 	public static final ItemJutsu.JutsuEnum BUGSWARM = new ItemJutsu.JutsuEnum(6, "bugball", 'C', 100d, new EntityKikaichu.EC.Jutsu());
 	public static final ItemJutsu.JutsuEnum INVISABILITY = new ItemJutsu.JutsuEnum(7, "tooltip.ninjutsu.hidingincamouflage", 'A', 20d, new HidingWithCamouflage());
+	public static final ItemJutsu.JutsuEnum TRANSFORM = new ItemJutsu.JutsuEnum(8, "transformation_jutsu", 'D', 50d, new EntityTransformationJutsu.EC.Jutsu());
 
 	public ItemNinjutsu(ElementsNarutomodMod instance) {
 		super(instance, 377);
@@ -70,7 +72,7 @@ public class ItemNinjutsu extends ElementsNarutomodMod.ModElement {
 	
 	@Override
 	public void initElements() {
-		elements.items.add(() -> new RangedItem(REPLACEMENT, KAGEBUNSHIN, RASENGAN, LIMBOCLONE, SEALINGCHAIN, PUPPET, BUGSWARM, INVISABILITY));
+		elements.items.add(() -> new RangedItem(REPLACEMENT, KAGEBUNSHIN, RASENGAN, LIMBOCLONE, SEALINGCHAIN, PUPPET, BUGSWARM, INVISABILITY, TRANSFORM));
 		elements.entities.add(() -> EntityEntryBuilder.create().entity(EntityReplacementClone.class)
 			.id(new ResourceLocation("narutomod", "replacementclone"), ENTITYID).name("replacementclone")
 			.tracker(64, 1, true).build());

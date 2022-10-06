@@ -65,6 +65,7 @@ public class EntityKageBunshin extends ElementsNarutomodMod.ModElement {
 		//private InventoryPlayer summonerInventory;
 		private boolean isOriginal;
 		private double chakra;
+		private DamageSource deathCause;
 
 		public EC(World world) {
 			super(world);
@@ -156,7 +157,7 @@ public class EntityKageBunshin extends ElementsNarutomodMod.ModElement {
 					summoner.rotationYaw = this.rotationYaw;
 					summoner.setPositionAndUpdate(this.posX, this.posY, this.posZ);
 					if (summoner.isEntityAlive()) {
-						summoner.setHealth(0);
+						summoner.attackEntityFrom(this.deathCause != null ? this.deathCause : DamageSource.GENERIC, Float.MAX_VALUE);
 					} else {
 						flag = true;
 					}
@@ -201,6 +202,12 @@ public class EntityKageBunshin extends ElementsNarutomodMod.ModElement {
 	    	if (++this.deathTime == 20) {
 	            this.setDead();
 	    	}
+	    }
+
+	    @Override
+	    public void onDeath(DamageSource cause) {
+	    	super.onDeath(cause);
+	    	this.deathCause = cause;
 	    }
 
 	    @Override
@@ -295,7 +302,7 @@ public class EntityKageBunshin extends ElementsNarutomodMod.ModElement {
 			EntityLivingBase entity = event.getEntityLiving();
 			if (entity instanceof EntityPlayer && isPlayerClone((EntityPlayer)entity)) {
 				Entity clone = entity.world.getEntityByID(entity.getEntityData().getInteger(OGCLONE_KEY));
-				if (clone instanceof EC) {
+				if (clone instanceof EC && clone.isEntityAlive()) {
 					clone.setDead();
 					event.setCanceled(true);
 					entity.isDead = false;

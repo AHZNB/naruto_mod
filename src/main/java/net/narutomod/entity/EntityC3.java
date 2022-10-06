@@ -120,8 +120,8 @@ public class EntityC3 extends ElementsNarutomodMod.ModElement {
 			if (!this.world.isRemote && this.ticksExisted > this.growTime) {
 				if (this.effectEntity == null) {
 					this.playSound((SoundEvent)SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:c3")), 50f, 1f);
-					this.effectEntity = EntitySpecialEffect.spawn(this.world, EntitySpecialEffect.Type.ROTATING_LINES_MAGENTA_END, 
-					 30f, 120, this.posX, this.posY, this.posZ);
+					this.effectEntity = EntitySpecialEffect.spawn(this.world, EntitySpecialEffect.Type.ROTATING_LINES_COLOR_END, 
+					 0xFFFF00, 30f, 120, this.posX, this.posY, this.posZ);
 				} else {
 					this.effectEntity.setPosition(this.posX, this.posY, this.posZ);
 				}
@@ -264,11 +264,11 @@ public class EntityC3 extends ElementsNarutomodMod.ModElement {
 			setRotationAngle(bone13, 0.0F, 0.0F, -0.2618F);
 			bone13.cubeList.add(new ModelBox(bone13, 0, 54, -1.0F, -4.0F, -1.0F, 2, 8, 2, 0.4F, true));
 			head = new ModelRenderer(this);
-			head.setRotationPoint(0.0F, 4.5F, -3.5F);
+			head.setRotationPoint(0.0F, 4.5F, -4.5F);
 			body.addChild(head);
 			head.cubeList.add(new ModelBox(head, 44, 31, -2.5F, -3.5F, -2.5F, 5, 6, 5, 0.0F, false));
 			hump = new ModelRenderer(this);
-			hump.setRotationPoint(0.0F, 4.0F, 1.0F);
+			hump.setRotationPoint(0.0F, 4.0F, -0.5F);
 			body.addChild(hump);
 			hump.cubeList.add(new ModelBox(hump, 30, 22, -4.5F, -2.0F, -3.0F, 9, 2, 7, 0.0F, false));
 			bone2 = new ModelRenderer(this);

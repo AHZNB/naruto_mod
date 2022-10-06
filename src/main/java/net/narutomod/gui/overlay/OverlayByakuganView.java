@@ -24,6 +24,7 @@ import net.minecraft.client.Minecraft;
 
 import net.narutomod.item.ItemByakugan;
 import net.narutomod.entity.EntityAltCamView;
+import net.narutomod.PlayerTracker;
 import net.narutomod.NarutomodMod;
 import net.narutomod.ElementsNarutomodMod;
 
@@ -142,10 +143,11 @@ public class OverlayByakuganView extends ElementsNarutomodMod.ModElement {
 
 		@SideOnly(Side.CLIENT)
 		private void setFOV(EntityPlayer player) {
+			double xp = PlayerTracker.getNinjaLevel(player) / 3;
 			if (this.first_on) {
 				Minecraft mc = Minecraft.getMinecraft();
 				this.prevRenderDistance = mc.gameSettings.renderDistanceChunks;
-				mc.gameSettings.renderDistanceChunks = MathHelper.clamp(player.experienceLevel * 11 / 16, 16, 32);
+				mc.gameSettings.renderDistanceChunks = MathHelper.clamp((int)xp * 11 / 16, 16, 32);
 				this.camEntity = new EntityAltCamView.EntityCustom(player);
 				mc.world.spawnEntity(this.camEntity);
 				mc.setRenderViewEntity(this.camEntity);
@@ -153,7 +155,7 @@ public class OverlayByakuganView extends ElementsNarutomodMod.ModElement {
 			}
 			if (this.camEntity != null) {
 				Vec3d vec3d1 = player.getPositionEyes(1.0F)
-				 .add(player.getLookVec().scale(((110.0F - renderDistanceChunks) * Math.min(player.experienceLevel, 70) / 10.0F + 1.0F)));
+				 .add(player.getLookVec().scale(((110.0F - renderDistanceChunks) * Math.min((float)xp, 70f) / 10.0F + 1.0F)));
 				this.camEntity.setLocationAndAngles(vec3d1.x, vec3d1.y, vec3d1.z, player.rotationYaw, player.rotationPitch);
 			}
 		}
@@ -171,24 +173,5 @@ public class OverlayByakuganView extends ElementsNarutomodMod.ModElement {
 				this.first_on = true;
 			}
 		}
-		/*
-		private void _setFOV(EntityPlayer player) { 
-			if (this.first_on) {
-				this.prevrenderDistanceChunks = (Minecraft.getMinecraft()).gameSettings.fovSetting;
-				this.prevRenderDistance = (Minecraft.getMinecraft()).gameSettings.renderDistanceChunks;
-			 	(Minecraft.getMinecraft()).gameSettings.renderDistanceChunks = 32;
-			 	this.first_on = false; 
-		 	} 
-		 	(Minecraft.getMinecraft()).gameSettings.fovSetting = MCreatorByakuganView.renderDistanceChunks; 
-		}
- 
-		private void _resetFOV(EntityPlayer player) { 
-		 	if (!this.first_on) {
-				(Minecraft.getMinecraft()).gameSettings.fovSetting = this.prevrenderDistanceChunks;
-		 		(Minecraft.getMinecraft()).gameSettings.renderDistanceChunks = this.prevRenderDistance;
-		 		this.first_on = true; 
-			}
-		}
-		*/
 	}
 }

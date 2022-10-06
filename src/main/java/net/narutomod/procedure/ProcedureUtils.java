@@ -877,6 +877,10 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 		return (float) (-MathHelper.atan2(x, z) * (180d / Math.PI));
 	}
 
+	public static float getYawFromVec(Vec3d vec) {
+		return (float) (-MathHelper.atan2(vec.x, vec.z) * (180d / Math.PI));
+	}
+
 	public static float getPitchFromVec(double x, double y, double z) {
 		float f = MathHelper.sqrt(x * x + z * z);
 		return (float) (-MathHelper.atan2(y, f) * (180d / Math.PI));

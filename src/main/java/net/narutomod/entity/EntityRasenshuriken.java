@@ -187,6 +187,9 @@ public class EntityRasenshuriken extends ElementsNarutomodMod.ModElement {
 			}
 			if (this.ticksInAir > 200 || (!this.world.isRemote && this.shootingEntity == null && !this.isLaunched())) {
 				this.setDead();
+				if (this.shootingEntity != null) {
+					ProcedureSync.EntityNBTTag.removeAndSync(this.shootingEntity, NarutomodModVariables.forceBowPose);
+				}
 			}
 		}
 
@@ -198,7 +201,6 @@ public class EntityRasenshuriken extends ElementsNarutomodMod.ModElement {
 				return;
 			}
 			if (!this.world.isRemote && this.shootingEntity != null) {
-				//PlayerRender.forceBowPose((EntityPlayer)this.shootingEntity, EnumHandSide.RIGHT, false);
 				ProcedureSync.EntityNBTTag.removeAndSync(this.shootingEntity, NarutomodModVariables.forceBowPose);
 			}
 			this.setImpactTicks(1);

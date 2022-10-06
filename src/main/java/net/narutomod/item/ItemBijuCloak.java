@@ -84,10 +84,12 @@ public class ItemBijuCloak extends ElementsNarutomodMod.ModElement {
 			@Override
 			@SideOnly(Side.CLIENT)
 			public ModelBiped getArmorModel(EntityLivingBase living, ItemStack stack, EntityEquipmentSlot slot, ModelBiped defaultModel) {
-				ModelBiped armorModel = MODEL[stack.getMetadata()];
+				ModelBijuCloak armorModel = MODEL[stack.getMetadata()];
 				armorModel.isSneak = living.isSneaking();
 				armorModel.isRiding = living.isRiding();
 				armorModel.isChild = living.isChild();
+				armorModel.bodyShine = getTails(stack) == 9 && getCloakLevel(stack) == 2 && getCloakXp(stack) >= 800;
+				armorModel.layerShine = true;
 				return armorModel;
 			}
 
@@ -100,6 +102,7 @@ public class ItemBijuCloak extends ElementsNarutomodMod.ModElement {
 						itemstack.shrink(1);
 					} else {
 						setCloakLevel(itemstack, cloakLevel);
+						setCloakXp(itemstack, EntityBijuManager.getCloakXp((EntityPlayer)entity) + getWearingTicks(entity) / 20);
 					}
 				}
 			}
@@ -116,8 +119,10 @@ public class ItemBijuCloak extends ElementsNarutomodMod.ModElement {
 
 			@Override
 			public String getArmorTexture(ItemStack stack, Entity entity, EntityEquipmentSlot slot, String type) {
-				return getCloakLevel(stack) == 2 
-				 ? "narutomod:textures/bijucloakl2.png" : "narutomod:textures/bijucloakl1.png";
+				int i = getTails(stack);
+				return i == 1 ? "narutomod:textures/bijucloak_sand.png"
+				 : getCloakLevel(stack) == 2 ? i == 9 && getCloakXp(stack) >= 800 ? "narutomod:textures/bijucloak_kurama.png"
+				 : "narutomod:textures/bijucloakl2.png" : "narutomod:textures/bijucloakl1.png";
 			}
 		}.setUnlocalizedName("biju_cloakhelmet").setRegistryName("biju_cloakhelmet").setCreativeTab(null));
 
@@ -125,10 +130,12 @@ public class ItemBijuCloak extends ElementsNarutomodMod.ModElement {
 			@Override
 			@SideOnly(Side.CLIENT)
 			public ModelBiped getArmorModel(EntityLivingBase living, ItemStack stack, EntityEquipmentSlot slot, ModelBiped defaultModel) {
-				ModelBiped armorModel = MODEL[stack.getMetadata()];
+				ModelBijuCloak armorModel = MODEL[stack.getMetadata()];
 				armorModel.isSneak = living.isSneaking();
 				armorModel.isRiding = living.isRiding();
 				armorModel.isChild = living.isChild();
+				armorModel.bodyShine = getTails(stack) == 9 && getCloakLevel(stack) == 2 && getCloakXp(stack) >= 800;
+				armorModel.layerShine = true;
 				return armorModel;
 			}
 
@@ -149,16 +156,17 @@ public class ItemBijuCloak extends ElementsNarutomodMod.ModElement {
 				 				int cloakXp = EntityBijuManager.getCloakXp(livingEntity);
 						 	 	wearingTicks = wearingTicks > 0 ? ++wearingTicks : 1;
 						 	 	if (wearingTicks <= cloakXp * 5 + 200) {
-									setCloakXp(itemstack, cloakXp + wearingTicks / 20);
+						 	 		cloakXp += wearingTicks / 20;
+									setCloakXp(itemstack, cloakXp);
 									setWearingTicks(livingEntity, wearingTicks);
-									if (cloakXp >= 400) {
+									if (cloakXp >= 800 || (cloakLevel == 1 && cloakXp >= 400)) {
 										revertOriginal(livingEntity, itemstack);
-										applyEffects(livingEntity, cloakLevel);
+										applyEffects(livingEntity, cloakLevel, getTails(itemstack) != 1 && cloakLevel == 1);
 									} else {
 										spawnClone(livingEntity, itemstack);
 									}
 						 	 	} else {
-						 	 		if (cloakXp < 400) {
+						 	 		if (cloakXp < 400 || (cloakLevel == 2 && cloakXp < 800)) {
 						 	 			revertOriginal(livingEntity, itemstack);
 						 	 		}
 						 	 		EntityBijuManager.toggleBijuCloak(livingEntity);
@@ -175,7 +183,8 @@ public class ItemBijuCloak extends ElementsNarutomodMod.ModElement {
 					int wearingTicks = getWearingTicks(entity);
 					setWearingTicks(entity, wearingTicks + 1);
 					if (!world.isRemote) {
-						applyEffects((EntityLivingBase)entity, getCloakLevel(itemstack));
+						int i = getCloakLevel(itemstack);
+						applyEffects((EntityLivingBase)entity, i, getTails(itemstack) != 1 && i == 1);
 					}
 				}
 			}
@@ -212,8 +221,10 @@ public class ItemBijuCloak extends ElementsNarutomodMod.ModElement {
 
 			@Override
 			public String getArmorTexture(ItemStack stack, Entity entity, EntityEquipmentSlot slot, String type) {
-				return getCloakLevel(stack) == 2 
-				 ? "narutomod:textures/bijucloakl2.png" : "narutomod:textures/bijucloakl1.png";
+				int i = getTails(stack);
+				return i == 1 ? "narutomod:textures/bijucloak_sand.png"
+				 : getCloakLevel(stack) == 2 ? i == 9 && getCloakXp(stack) >= 800 ? "narutomod:textures/bijucloak_kurama.png"
+				 : "narutomod:textures/bijucloakl2.png" : "narutomod:textures/bijucloakl1.png";
 			}
 		}.setUnlocalizedName("biju_cloakbody").setRegistryName("biju_cloakbody").setCreativeTab(null));
 
@@ -221,10 +232,12 @@ public class ItemBijuCloak extends ElementsNarutomodMod.ModElement {
 			@Override
 			@SideOnly(Side.CLIENT)
 			public ModelBiped getArmorModel(EntityLivingBase living, ItemStack stack, EntityEquipmentSlot slot, ModelBiped defaultModel) {
-				ModelBiped armorModel = MODEL[stack.getMetadata()];
+				ModelBijuCloak armorModel = MODEL[stack.getMetadata()];
 				armorModel.isSneak = living.isSneaking();
 				armorModel.isRiding = living.isRiding();
 				armorModel.isChild = living.isChild();
+				armorModel.bodyShine = getTails(stack) == 9 && getCloakLevel(stack) == 2 && getCloakXp(stack) >= 800;
+				armorModel.layerShine = true;
 				return armorModel;
 			}
 
@@ -237,6 +250,7 @@ public class ItemBijuCloak extends ElementsNarutomodMod.ModElement {
 						itemstack.shrink(1);
 					} else {
 						setCloakLevel(itemstack, cloakLevel);
+						setCloakXp(itemstack, EntityBijuManager.getCloakXp((EntityPlayer)entity) + getWearingTicks(entity) / 20);
 					}
 				}
 			}
@@ -253,8 +267,10 @@ public class ItemBijuCloak extends ElementsNarutomodMod.ModElement {
 
 			@Override
 			public String getArmorTexture(ItemStack stack, Entity entity, EntityEquipmentSlot slot, String type) {
-				return getCloakLevel(stack) == 2 
-				 ? "narutomod:textures/bijucloakl2.png" : "narutomod:textures/bijucloakl1.png";
+				int i = getTails(stack);
+				return i == 1 ? "narutomod:textures/bijucloak_sand.png"
+				 : getCloakLevel(stack) == 2 ? i == 9 && getCloakXp(stack) >= 800 ? "narutomod:textures/bijucloak_kurama.png"
+				 : "narutomod:textures/bijucloakl2.png" : "narutomod:textures/bijucloakl1.png";
 			}
 		}.setUnlocalizedName("biju_cloaklegs").setRegistryName("biju_cloaklegs").setCreativeTab(null));
 	}
@@ -269,17 +285,23 @@ public class ItemBijuCloak extends ElementsNarutomodMod.ModElement {
 			 40, 0.2d, 0.4d, 0.2d, 0d, 0d, 0d, 0x2088001b, 20, 
 			 (int)(4.0D / (entity.getRNG().nextDouble() * 0.8D + 0.2D)), 0, entity.getEntityId());
 		}
-		//entity.addPotionEffect(new PotionEffect(MobEffects.SATURATION, 5, 0, false, false));
-		entity.addPotionEffect(new PotionEffect(PotionChakraEnhancedStrength.potion, 5, level * 24, false, false));
-		entity.addPotionEffect(new PotionEffect(MobEffects.SPEED, 5, level * 32, false, false));
-		entity.addPotionEffect(new PotionEffect(MobEffects.JUMP_BOOST, 5, 7, false, false));
-		entity.addPotionEffect(new PotionEffect(PotionReach.potion, 5, level - 1, false, false));
-		if (entity.ticksExisted % 20 == 0 && entity.getHealth() < entity.getMaxHealth() && entity.getHealth() > 0f) {
-			entity.heal((float)level);
+		if (!entity.world.isRemote && entity.ticksExisted % 5 == 4) {
+			//entity.addPotionEffect(new PotionEffect(MobEffects.SATURATION, 5, 0, false, false));
+			entity.addPotionEffect(new PotionEffect(PotionChakraEnhancedStrength.potion, 7, level * 24, false, false));
+			entity.addPotionEffect(new PotionEffect(MobEffects.SPEED, 7, level * 32, false, false));
+			entity.addPotionEffect(new PotionEffect(MobEffects.JUMP_BOOST, 7, 7, false, false));
+			entity.addPotionEffect(new PotionEffect(PotionReach.potion, 7, level - 1, false, false));
+			if (entity.getHealth() < entity.getMaxHealth() && entity.getHealth() > 0f) {
+				entity.heal((float)level);
+			}
+			if (level == 2) {
+				entity.addPotionEffect(new PotionEffect(MobEffects.RESISTANCE, 7, 2, false, false));
+			}
 		}
-		if (level == 2) {
-			entity.addPotionEffect(new PotionEffect(MobEffects.RESISTANCE, 5, 2, false, false));
-		}
+	}
+
+	private static int getTails(ItemStack stack) {
+		return stack.getTagCompound().getInteger("Tails");
 	}
 
 	private void setCloakLevel(ItemStack itemstack, int level) {
@@ -397,6 +419,11 @@ public class ItemBijuCloak extends ElementsNarutomodMod.ModElement {
 		//private final ModelRenderer bipedLeftArm;
 		//private final ModelRenderer bipedRightLeg;
 		//private final ModelRenderer bipedLeftLeg;
+		private final ModelRenderer bipedBodyWear;
+		private final ModelRenderer bipedRightArmWear;
+		private final ModelRenderer bipedLeftArmWear;
+		private final ModelRenderer bipedRightLegWear;
+		private final ModelRenderer bipedLeftLegWear;
 		private final float tailSwayX[][] = new float[9][8];
 		private final float tailSwayZ[][] = new float[9][8];
 		private final float leftEarSwayX[] = new float[6];
@@ -404,6 +431,8 @@ public class ItemBijuCloak extends ElementsNarutomodMod.ModElement {
 		private final float rightEarSwayX[] = new float[6];
 		private final float rightEarSwayZ[] = new float[6];
 		private int[] tailShowMap = { 0, 1, 6, 0x19, 0x1E, 0x1F, 0x1F8, 0x7F, 0x1FE, 0x1FF };
+		private boolean bodyShine;
+		private boolean layerShine;
 		private final Random rand = new Random();
 	
 		public ModelBijuCloak(int tails) {
@@ -838,18 +867,39 @@ public class ItemBijuCloak extends ElementsNarutomodMod.ModElement {
 			tail[8][6].addChild(tail[8][7]);
 			setRotationAngle(tail[8][7], 0.2618F, 0.0F, 0.0F);
 			tail[8][7].cubeList.add(new ModelBox(tail[8][7], 16, 32, -2.0F, -5.5F, -2.0F, 4, 6, 4, -1.0F, false));
+			bipedBodyWear = new ModelRenderer(this);
+			bipedBodyWear.setRotationPoint(0.0F, 0.0F, 0.0F);
+			bipedBodyWear.cubeList.add(new ModelBox(bipedBodyWear, 80, 16, -4.0F, 0.0F, -2.0F, 8, 12, 4, 0.65F, false));
+			bipedBodyWear.cubeList.add(new ModelBox(bipedBodyWear, 80, 32, -4.0F, 0.0F, -2.0F, 8, 12, 4, 0.7F, false));
 			bipedRightArm = new ModelRenderer(this);
 			bipedRightArm.setRotationPoint(-5.0F, 2.0F, 0.0F);
 			bipedRightArm.cubeList.add(new ModelBox(bipedRightArm, 40, 16, -3.0F, -2.0F, -2.0F, 4, 12, 4, 0.6F, false));
+			bipedRightArmWear = new ModelRenderer(this);
+			bipedRightArmWear.setRotationPoint(-5.0F, 2.0F, 0.0F);
+			bipedRightArmWear.cubeList.add(new ModelBox(bipedRightArmWear, 104, 16, -3.0F, -2.0F, -2.0F, 4, 12, 4, 0.65F, false));
+			bipedRightArmWear.cubeList.add(new ModelBox(bipedRightArmWear, 104, 32, -3.0F, -2.0F, -2.0F, 4, 12, 4, 0.7F, false));
 			bipedLeftArm = new ModelRenderer(this);
 			bipedLeftArm.setRotationPoint(5.0F, 2.0F, 0.0F);
 			bipedLeftArm.cubeList.add(new ModelBox(bipedLeftArm, 32, 48, -1.0F, -2.0F, -2.0F, 4, 12, 4, 0.6F, false));
+			bipedLeftArmWear = new ModelRenderer(this);
+			bipedLeftArmWear.setRotationPoint(5.0F, 2.0F, 0.0F);
+			bipedLeftArmWear.cubeList.add(new ModelBox(bipedLeftArmWear, 96, 48, -1.0F, -2.0F, -2.0F, 4, 12, 4, 0.65F, false));
+			bipedLeftArmWear.cubeList.add(new ModelBox(bipedLeftArmWear, 112, 48, -1.0F, -2.0F, -2.0F, 4, 12, 4, 0.7F, false));
 			bipedRightLeg = new ModelRenderer(this);
 			bipedRightLeg.setRotationPoint(-1.9F, 12.0F, 0.0F);
 			bipedRightLeg.cubeList.add(new ModelBox(bipedRightLeg, 0, 16, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.6F, false));
+			bipedRightLegWear = new ModelRenderer(this);
+			bipedRightLegWear.setRotationPoint(-1.9F, 12.0F, 0.0F);
+			bipedRightLegWear.cubeList.add(new ModelBox(bipedRightLegWear, 64, 16, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.65F, false));
+			bipedRightLegWear.cubeList.add(new ModelBox(bipedRightLegWear, 64, 32, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.7F, false));
 			bipedLeftLeg = new ModelRenderer(this);
 			bipedLeftLeg.setRotationPoint(1.9F, 12.0F, 0.0F);
 			bipedLeftLeg.cubeList.add(new ModelBox(bipedLeftLeg, 16, 48, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.6F, false));
+			bipedLeftLegWear = new ModelRenderer(this);
+			bipedLeftLegWear.setRotationPoint(1.9F, 12.0F, 0.0F);
+			bipedLeftLegWear.cubeList.add(new ModelBox(bipedLeftLegWear, 80, 48, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.65F, false));
+			bipedLeftLegWear.cubeList.add(new ModelBox(bipedLeftLegWear, 64, 48, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.7F, false));
+
 			for (int i = 1; i < 6; i++) {
 				leftEarSwayX[i] = (rand.nextFloat() * 0.2618F + 0.0873F) * (rand.nextBoolean() ? -1F : 1F);
 				leftEarSwayZ[i] = (rand.nextFloat() * 0.2618F + 0.0873F) * (rand.nextBoolean() ? -1F : 1F);
@@ -899,22 +949,38 @@ public class ItemBijuCloak extends ElementsNarutomodMod.ModElement {
 			GlStateManager.color(1.0F, 1.0F, 1.0F, MathHelper.clamp((float)getWearingTicks(entity) / 80.0F, 0.0F, 1.0F));
 			GlStateManager.disableLighting();
 			GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+			int k = entity.getBrightnessForRender();
+			if (this.bodyShine) {
+				OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240.0F, 240.0F);
+			} else {
+				OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float)(k % 65536), (float)(k / 65536));
+			}
 			(Minecraft.getMinecraft()).entityRenderer.setupFogColor(true);
 			super.render(entity, f0, f1, f2, f3, f4, f5);// + MathHelper.sin(f2 * 0.1f) * 0.003125F + 0.00625F);
 			(Minecraft.getMinecraft()).entityRenderer.setupFogColor(false);
 			GlStateManager.matrixMode(5890);
 			GlStateManager.loadIdentity();
 			GlStateManager.matrixMode(5888);
-			if (bipedHead.showModel) {
-				bipedHeadwear.showModel = true;
-				if (entity.isSneaking()) {
-					GlStateManager.translate(0.0F, 0.2F, 0.0F);
-				}
+			if (this.layerShine) {
 				OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240.0F, 240.0F);
-				bipedHeadwear.render(f5);// + MathHelper.sin(f2 * 0.1f) * 0.003125F + 0.00625F);
-				int i = entity.getBrightnessForRender();
-				OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float)(i % 65536), (float)(i / 65536));
+			} else {
+				OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float)(k % 65536), (float)(k / 65536));
 			}
+			bipedHeadwear.showModel = true;
+			if (entity.isSneaking()) {
+				GlStateManager.translate(0.0F, 0.2F, 0.0F);
+			}
+			this.copyModelAngles(bipedBody, bipedBodyWear);
+			this.copyModelAngles(bipedRightArm, bipedRightArmWear);
+			this.copyModelAngles(bipedLeftArm, bipedLeftArmWear);
+			this.copyModelAngles(bipedRightLeg, bipedRightLegWear);
+			this.copyModelAngles(bipedLeftLeg, bipedLeftLegWear);
+			bipedHeadwear.render(f5);
+			bipedBodyWear.render(f5);
+			bipedRightArmWear.render(f5);
+			bipedLeftArmWear.render(f5);
+			bipedRightLegWear.render(f5);
+			bipedLeftLegWear.render(f5);
 			GlStateManager.enableLighting();
 			GlStateManager.disableBlend();
 			GlStateManager.depthMask(false);

@@ -63,6 +63,7 @@ import net.minecraft.client.model.ModelPlayer;
 @ElementsNarutomodMod.ModElement.Tag
 public class PlayerRender extends ElementsNarutomodMod.ModElement {
 	private static final String CLONETARGETID = "SkinCloningTargetId";
+	private static final String CLONETARGETLAYERS = "SkinCloningRenderTargetLayers";
 	private static final String PLAYERTRANSPARENT = "PlayerRenderTransparent";
 	private static final String COLORMULTIPLIER = "SkinColorMultiplier";
 	//private static final String FORCEBOWPOSE = "PlayerForcedBowPoseSide";
@@ -96,10 +97,16 @@ public class PlayerRender extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static void setSkinCloneTarget(EntityPlayer entity, @Nullable EntityPlayer target) {
+		setSkinCloneTarget(entity, target, true);
+	}
+
+	public static void setSkinCloneTarget(EntityPlayer entity, @Nullable EntityPlayer target, boolean renderLayers) {
 		if (target != null) {
 			ProcedureSync.EntityNBTTag.setAndSync(entity, CLONETARGETID, target.getEntityId());
+			ProcedureSync.EntityNBTTag.setAndSync(entity, CLONETARGETLAYERS, renderLayers);
 		} else {
 			ProcedureSync.EntityNBTTag.removeAndSync(entity, CLONETARGETID);
+			ProcedureSync.EntityNBTTag.removeAndSync(entity, CLONETARGETLAYERS);
 		}
 	}
 
@@ -206,7 +213,7 @@ public class PlayerRender extends ElementsNarutomodMod.ModElement {
 		protected void renderLayers(AbstractClientPlayer entity, float f0, float f1, float f2, float f3, float f4, float f5, float f6) {
 			if (!entity.isInvisible() || !entity.isInvisibleToPlayer(Minecraft.getMinecraft().player)) {
 				AbstractClientPlayer target = this.getSkinCloneTarget(entity);
-				if (target != null) {
+				if (target != null && entity.getEntityData().getBoolean(CLONETARGETLAYERS)) {
 					if (target.isSneaking()) {
 						GlStateManager.translate(0.0F, -0.2F, 0.0F);
 					}

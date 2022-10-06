@@ -15,11 +15,14 @@ import net.minecraft.world.World;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvent;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Mirror;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Item;
@@ -28,16 +31,14 @@ import net.minecraft.init.Blocks;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.block.material.Material;
-import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.block.Block;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.GlStateManager;
@@ -176,6 +177,8 @@ public class ItemMokuton extends ElementsNarutomodMod.ModElement {
 				Template template = ((WorldServer)world).getStructureTemplateManager()
 				 .getTemplate(world.getMinecraftServer(), new ResourceLocation("narutomod", "wood_house_2"));
 				if (template != null) {
+					world.playSound(null, rtr.getBlockPos(), SoundEvent.REGISTRY.getObject(new ResourceLocation(("narutomod:woodspawn"))),
+					 SoundCategory.BLOCKS, 2f, world.rand.nextFloat() * 0.4f + 0.8f);
 					BlockPos spawnTo, spos;
 					Rotation rotation;
 					float yaw = MathHelper.wrapDegrees(entity.rotationYaw);
@@ -203,7 +206,7 @@ public class ItemMokuton extends ElementsNarutomodMod.ModElement {
 					 .setIgnoreEntities(false);
 					for (BlockPos pos : BlockPos.getAllInBoxMutable(spos, spos.add(template.transformedSize(rotation)))) {
 						((WorldServer)world).spawnParticle(EnumParticleTypes.BLOCK_DUST, pos.getX()+0.5d, pos.getY(), pos.getZ()+0.5d,
-						 6, 0D, 0D, 0D, 0.1D, Block.getIdFromBlock(Blocks.OAK_FENCE));
+						 6, 0D, 0D, 0D, 0.2D, Block.getIdFromBlock(Blocks.OAK_FENCE));
 					}
 					template.addBlocksToWorldChunk(world, spawnTo, placementsetting);
 				}

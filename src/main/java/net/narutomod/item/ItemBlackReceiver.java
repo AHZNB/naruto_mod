@@ -16,6 +16,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.EntitySelectors;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Item;
 import net.minecraft.item.EnumAction;
@@ -122,9 +123,7 @@ public class ItemBlackReceiver extends ElementsNarutomodMod.ModElement {
 						(net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY
 								.getObject(new ResourceLocation(("narutomod:hand_shoot"))),
 						SoundCategory.NEUTRAL, 1, 1f / (itemRand.nextFloat() * 0.5f + 1f) + (power / 2));
-				if (entity.isCreative()) {
-					entityarrow.pickupStatus = EntityArrow.PickupStatus.DISALLOWED;
-				}
+				entityarrow.pickupStatus = EntityArrow.PickupStatus.DISALLOWED;
 				world.spawnEntity(entityarrow);
 				entity.getCooldownTracker().setCooldown(itemstack.getItem(), 40);
 			}
@@ -145,7 +144,7 @@ public class ItemBlackReceiver extends ElementsNarutomodMod.ModElement {
 					if (!ProcedureUtils.hasItemInInventory((EntityPlayer)entity, ItemRinnegan.helmet)
 					 && !ProcedureUtils.hasItemInInventory((EntityPlayer)entity, ItemTenseigan.helmet)) {
 			 		//if (!((EntityPlayer)entity).inventory.hasItemStack(new ItemStack(ItemRinnegan.helmet))) {
-			 			((EntityLivingBase)entity).addPotionEffect(new PotionEffect(MobEffects.NAUSEA, 80, 1, false, false));
+			 			((EntityLivingBase)entity).addPotionEffect(new PotionEffect(MobEffects.NAUSEA, 100, 1, false, false));
 			 		}
 				} else if (entity instanceof EntityLiving) {
 					((EntityLiving)entity).setNoAI(true);
@@ -212,18 +211,18 @@ public class ItemBlackReceiver extends ElementsNarutomodMod.ModElement {
 			return new ItemStack(block);
 		}
 
-		/*@Override
+		@Override
 		public void onUpdate() {
 			super.onUpdate();
-			int x = (int) this.posX;
-			int y = (int) this.posY;
-			int z = (int) this.posZ;
-			World world = this.world;
-			Entity entity = (Entity) shootingEntity;
-			if (this.inGround) {
-				this.world.removeEntity(this);
+			if (!this.world.isRemote) {
+				for (EntityLivingBase entity : this.world.getEntitiesWithinAABB(EntityLivingBase.class,
+				 this.getEntityBoundingBox().grow(0.75d), EntitySelectors.getTeamCollisionPredicate(this))) {
+					if (!entity.equals(this.shootingEntity)) {
+			 			entity.addPotionEffect(new PotionEffect(MobEffects.NAUSEA, 200, 1, false, false));
+					}
+				}
 			}
-		}*/
+		}
 	}
 
 	@SideOnly(Side.CLIENT)

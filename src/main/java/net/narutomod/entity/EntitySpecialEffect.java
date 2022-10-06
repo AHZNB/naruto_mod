@@ -55,7 +55,7 @@ public class EntitySpecialEffect extends ElementsNarutomodMod.ModElement {
 	}
 
 	public enum Type {
-		ROTATING_LINES_MAGENTA_END(0),
+		ROTATING_LINES_COLOR_END(0),
 		EXPANDING_SPHERES_FADE_TO_BLACK(1);
 
 		private final int id;
@@ -79,8 +79,8 @@ public class EntitySpecialEffect extends ElementsNarutomodMod.ModElement {
 		}
 	}
 	
-	public static EntityCustom spawn(World worldIn, Type type, float radius, int lifespan, double x, double y, double z) {
-		EntityCustom entity = new EntityCustom(worldIn, type, radius, lifespan);
+	public static EntityCustom spawn(World worldIn, Type type, int color, float radius, int lifespan, double x, double y, double z) {
+		EntityCustom entity = new EntityCustom(worldIn, type, color, radius, lifespan);
 		entity.setPosition(x, y, z);
 		worldIn.spawnEntity(entity);
 		return entity;
@@ -91,6 +91,7 @@ public class EntitySpecialEffect extends ElementsNarutomodMod.ModElement {
 		private static final DataParameter<Integer> AGE = EntityDataManager.<Integer>createKey(EntityCustom.class, DataSerializers.VARINT);
 		private static final DataParameter<Float> RADIUS = EntityDataManager.<Float>createKey(EntityCustom.class, DataSerializers.FLOAT);
 		private static final DataParameter<Integer> LIFESPAN = EntityDataManager.<Integer>createKey(EntityCustom.class, DataSerializers.VARINT);
+		private static final DataParameter<Integer> COLOR = EntityDataManager.<Integer>createKey(EntityCustom.class, DataSerializers.VARINT);
 		
 		public EntityCustom(World world) {
 			super(world);
@@ -102,14 +103,15 @@ public class EntitySpecialEffect extends ElementsNarutomodMod.ModElement {
 		}
 
 		public EntityCustom(World world, float radius, int lifespan) {
-			this(world, Type.ROTATING_LINES_MAGENTA_END, radius, lifespan);
+			this(world, Type.ROTATING_LINES_COLOR_END, 0xFF00FF, radius, lifespan);
 		}
 
-		public EntityCustom(World world, Type type, float radius, int lifespan) {
+		public EntityCustom(World world, Type type, int color, float radius, int lifespan) {
 			this(world);
 			this.setEffectType(type);
 			this.setRadius(radius);
 			this.setLifespan(lifespan);
+			this.setColor(color);
 		}
 
 		@Override
@@ -118,6 +120,7 @@ public class EntitySpecialEffect extends ElementsNarutomodMod.ModElement {
 			this.getDataManager().register(AGE, Integer.valueOf(0));
 			this.getDataManager().register(RADIUS, Float.valueOf(200f));
 			this.getDataManager().register(LIFESPAN, Integer.valueOf(600));
+			this.getDataManager().register(COLOR, Integer.valueOf(0xFF00FF));
 		}
 
 		private Type getEffectType() {
@@ -150,6 +153,14 @@ public class EntitySpecialEffect extends ElementsNarutomodMod.ModElement {
 
 		protected void setLifespan(int lifespan) {
 			this.getDataManager().set(LIFESPAN, Integer.valueOf(lifespan));
+		}
+
+		public int getColor() {
+			return ((Integer)this.getDataManager().get(COLOR)).intValue();
+		}
+
+		protected void setColor(int color) {
+			this.getDataManager().set(COLOR, Integer.valueOf(color));
 		}
 
 		@Override
@@ -238,7 +249,7 @@ public class EntitySpecialEffect extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void doRender(EntityCustom entity, double x, double y, double z, float entityYaw, float partialTicks) {
 			switch (entity.getEffectType()) {
-				case ROTATING_LINES_MAGENTA_END:
+				case ROTATING_LINES_COLOR_END:
 					this.renderRotatingLines(entity, x, y, z, entityYaw, partialTicks);
 					break;
 				case EXPANDING_SPHERES_FADE_TO_BLACK:
@@ -268,6 +279,10 @@ public class EntitySpecialEffect extends ElementsNarutomodMod.ModElement {
 			GlStateManager.enableCull();//GlStateManager.disableCull();
 			GlStateManager.depthMask(false);
 			float r = entity.getRadius();
+			int j = entity.getColor();
+			int red = j >> 16 & 0xFF;
+			int green = j >> 8 & 0xFF;
+			int blue = j & 0xFF;
 			// for (int i = 0; i < (f + f * f) / 2.0F * 60.0F; i++) {
 			for (int i = 0; i < 120.0F; i++) {
 				GlStateManager.rotate(random.nextFloat() * 360.0F, 1.0F, 0.0F, 0.0F);
@@ -280,10 +295,10 @@ public class EntitySpecialEffect extends ElementsNarutomodMod.ModElement {
 				float f3 = (random.nextFloat() + f1) * 0.12F * r;
 				bufferbuilder.begin(6, DefaultVertexFormats.POSITION_COLOR);
 				bufferbuilder.pos(0.0D, 0.0D, 0.0D).color(255, 255, 255, (int) (255.0F * (1.0F - f1))).endVertex();
-				bufferbuilder.pos(-0.866D * f3, f2, (-0.5F * f3)).color(255, 0, 255, 0).endVertex();
-				bufferbuilder.pos(0.866D * f3, f2, (-0.5F * f3)).color(255, 0, 255, 0).endVertex();
-				bufferbuilder.pos(0.0D, f2, (1.0F * f3)).color(255, 0, 255, 0).endVertex();
-				bufferbuilder.pos(-0.866D * f3, f2, (-0.5F * f3)).color(255, 0, 255, 0).endVertex();
+				bufferbuilder.pos(-0.866D * f3, f2, (-0.5F * f3)).color(red, green, blue, 0).endVertex();
+				bufferbuilder.pos(0.866D * f3, f2, (-0.5F * f3)).color(red, green, blue, 0).endVertex();
+				bufferbuilder.pos(0.0D, f2, (1.0F * f3)).color(red, green, blue, 0).endVertex();
+				bufferbuilder.pos(-0.866D * f3, f2, (-0.5F * f3)).color(red, green, blue, 0).endVertex();
 				tessellator.draw();
 			}
 			GlStateManager.depthMask(true);

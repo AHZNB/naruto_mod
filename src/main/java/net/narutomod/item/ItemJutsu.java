@@ -174,7 +174,7 @@ public class ItemJutsu extends ElementsNarutomodMod.ModElement {
 			}
 			if (player.world.isRemote) {
 				Particles.spawnParticle(player.world, Particles.Types.SMOKE, player.posX, player.posY, player.posZ, 
-				 40, 0.2d, 0d, 0.2d, 0d, 0.5d, 0d, 0x206AD1FF, 40, 5, 0xF0, player.getEntityId());
+				 40, 0.2d, 0d, 0.2d, 0d, 0.5d, 0d, 0x106AD1FF, 40, 5, 0xF0, player.getEntityId());
 			}
 			if (timeLeft % 10 == 0) {
 				player.world.playSound(null, player.posX, player.posY, player.posZ,
