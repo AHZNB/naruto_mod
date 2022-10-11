@@ -58,6 +58,8 @@ public class EntityPuppetKarasu extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static class EntityCustom extends EntityPuppet.Base implements IRangedAttackMob {
+		public static final float MAXHEALTH = 40.0f;
+		
 		public EntityCustom(World worldIn) {
 			super(worldIn);
 			this.setSize(0.6f, 2.0f);
@@ -84,7 +86,7 @@ public class EntityPuppetKarasu extends ElementsNarutomodMod.ModElement {
 		protected void applyEntityAttributes() {
 			super.applyEntityAttributes();
 			this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(10D);
-			this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(20D);
+			this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(MAXHEALTH);
 			this.getAttributeMap().registerAttribute(SharedMonsterAttributes.ATTACK_DAMAGE);
 			this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(10D);
 			this.getEntityAttribute(SharedMonsterAttributes.FLYING_SPEED).setBaseValue(0.4D);

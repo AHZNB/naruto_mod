@@ -21,7 +21,6 @@ import net.minecraft.world.World;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.SoundEvent;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -79,9 +78,7 @@ public class EntityTransformationJutsu extends ElementsNarutomodMod.ModElement {
 		public void setDead() {
 			if (!this.world.isRemote) {
 				if (this.user != null) {
-					this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:poof")), 1.0F, 1.0F);
-					Particles.spawnParticle(this.world, Particles.Types.SMOKE, this.posX, this.posY+this.user.height/2, this.posZ,
-					 300, this.user.width * 0.5d, this.user.height * 0.3d, this.user.width * 0.5d, 0d, 0d, 0d, 0xD0FFFFFF, 25);
+					ProcedureUtils.poofWithSmoke(this.user);
 					this.user.getEntityData().removeTag(Jutsu.ECENTITYID);
 					if (this.user instanceof EntityPlayer) {
 						PlayerRender.setSkinCloneTarget((EntityPlayer)this.user, null);
@@ -116,9 +113,7 @@ public class EntityTransformationJutsu extends ElementsNarutomodMod.ModElement {
 						PlayerInput.Hook.copyInputFrom((EntityPlayerMP)this.user, this, true);
 						PlayerInput.Hook.haltTargetInput(this.clone, true);
 					}
-					this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:poof")), 1f, 1f);
-					Particles.spawnParticle(this.world, Particles.Types.SMOKE, this.posX, this.posY+this.user.height/2, this.posZ,
-					 300, this.user.width * 0.5d, this.user.height * 0.3d, this.user.width * 0.5d, 0d, 0d, 0d, 0xD0FFFFFF, 25);
+					ProcedureUtils.poofWithSmoke(this.user);
 				} else if (this.clone != null) {
 					if (this.userInput.hasNewMovementInput()) {
 						this.userInput.handleMovement(this.clone);

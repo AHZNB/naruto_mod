@@ -130,10 +130,7 @@ public class EntityKageBunshin extends ElementsNarutomodMod.ModElement {
 
 		private void poof(Entity entity) {
 			//Random rand = new Random();
-			entity.world.playSound(null, entity.posX, entity.posY, entity.posZ, (SoundEvent) SoundEvent.REGISTRY
-			  .getObject(new ResourceLocation("narutomod:poof")), SoundCategory.NEUTRAL, 1.0F, 1.0F);
-			((WorldServer)entity.world).spawnParticle(EnumParticleTypes.EXPLOSION_NORMAL, entity.posX, entity.posY+entity.height/2, 
-			  entity.posZ, 200, entity.width * 0.5d, entity.height * 0.3d, entity.width * 0.5d, 0.02d);
+			ProcedureUtils.poofWithSmoke(entity);
 			/*} else {
 		        for (int k = 0; k < 200; ++k) {
 		       		double d2 = rand.nextGaussian() * 0.02D;
@@ -236,7 +233,7 @@ public class EntityKageBunshin extends ElementsNarutomodMod.ModElement {
 					return false;
 				}
 				if (!(entity instanceof EntityPlayer) || Chakra.pathway((EntityPlayer)entity).getAmount() >= 200d) {
-					entity.world.playSound(null, entity.posX, entity.posY, entity.posZ, (SoundEvent) SoundEvent.REGISTRY
+					entity.world.playSound(null, entity.posX, entity.posY, entity.posZ, SoundEvent.REGISTRY
 					  .getObject(new ResourceLocation("narutomod:kagebunshin")), SoundCategory.NEUTRAL, 1.0F, 1.0F);
 					updateClones(entity, true);
 					return true;

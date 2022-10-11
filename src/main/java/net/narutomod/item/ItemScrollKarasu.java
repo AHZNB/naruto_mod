@@ -1,8 +1,10 @@
 
 package net.narutomod.item;
 
+import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.entity.EntityPuppetKarasu;
 import net.narutomod.creativetab.TabModTab;
+import net.narutomod.Particles;
 import net.narutomod.ElementsNarutomodMod;
 
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -26,9 +28,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Item;
 import net.minecraft.item.EnumAction;
-import net.minecraft.entity.projectile.EntityTippedArrow;
-import net.minecraft.entity.projectile.EntityArrow;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
@@ -41,6 +40,7 @@ import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.init.SoundEvents;
+import net.minecraft.util.SoundEvent;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class ItemScrollKarasu extends ElementsNarutomodMod.ModElement {
@@ -77,25 +77,46 @@ public class ItemScrollKarasu extends ElementsNarutomodMod.ModElement {
 	public static class RangedItem extends Item implements ItemOnBody.Interface {
 		public RangedItem() {
 			super();
-			setMaxDamage(0);
-			setFull3D();
-			setUnlocalizedName("scroll_karasu");
-			setRegistryName("scroll_karasu");
-			maxStackSize = 1;
-			setCreativeTab(TabModTab.tab);
+			this.setMaxDamage((int)EntityPuppetKarasu.EntityCustom.MAXHEALTH);
+			this.setFull3D();
+			this.setUnlocalizedName("scroll_karasu");
+			this.setRegistryName("scroll_karasu");
+			this.maxStackSize = 1;
+			this.setCreativeTab(TabModTab.tab);
 		}
 
 		@Override
 		public EnumActionResult onItemUse(EntityPlayer entity, World world, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
 			if (!world.isRemote && world.getBlockState(pos).isTopSolid() && facing == EnumFacing.UP) {
-				float power = 1f;
-				world.playSound(null, entity.posX, entity.posY, entity.posZ, SoundEvents.BLOCK_CLOTH_PLACE,
-						SoundCategory.NEUTRAL, 1, 1f / (itemRand.nextFloat() * 0.5f + 1f) + (power / 2));
-				EntityArrowCustom entityarrow = new EntityArrowCustom(entity);
-				entityarrow.setLocationAndAngles(0.5d + pos.getX(), 1.1d + pos.getY(), 0.5d + pos.getZ(), entity.rotationYaw, 0f);
-				world.spawnEntity(entityarrow);
+				ItemStack stack = entity.getHeldItem(hand);
+				if (!stack.hasTagCompound() || stack.getTagCompound().getBoolean("sealed")) {
+					world.playSound(null, entity.posX, entity.posY, entity.posZ, SoundEvents.BLOCK_CLOTH_PLACE,
+							SoundCategory.NEUTRAL, 1, 1f / (itemRand.nextFloat() * 0.5f + 1f) + 0.5f);
+					EntityArrowCustom entityarrow = new EntityArrowCustom(entity, this.getMaxDamage() - this.getDamage(stack));
+					entityarrow.setLocationAndAngles(0.5d + pos.getX(), 1.1d + pos.getY(), 0.5d + pos.getZ(), entity.rotationYaw, 0f);
+					world.spawnEntity(entityarrow);
+					if (!stack.hasTagCompound()) {
+						stack.setTagCompound(new NBTTagCompound());
+					}
+					stack.getTagCompound().setBoolean("sealed", false);
+				}
 			}
 			return EnumActionResult.PASS;
+		}
+
+		@Override
+		public boolean itemInteractionForEntity(ItemStack stack, EntityPlayer playerIn, EntityLivingBase target, EnumHand hand) {
+			if (target instanceof EntityPuppetKarasu.EntityCustom && !playerIn.world.isRemote) {
+				ItemStack stack1 = playerIn.getHeldItem(hand);
+				if (stack1.hasTagCompound() && !stack1.getTagCompound().getBoolean("sealed")) {
+					ProcedureUtils.poofWithSmoke(target);
+					this.setDamage(stack1, (int)(target.getMaxHealth() - target.getHealth()));
+					target.setDead();
+					stack1.getTagCompound().setBoolean("sealed", true);
+					return true;
+				}
+			}
+			return false;
 		}
 
 		@Override
@@ -118,15 +139,17 @@ public class ItemScrollKarasu extends ElementsNarutomodMod.ModElement {
 	public static class EntityArrowCustom extends Entity {
 		private final int openScrollTime = 30;
 		private EntityLivingBase summoner;
+		private float puppetHealth;
 		
 		public EntityArrowCustom(World a) {
 			super(a);
 			this.setSize(1.0f, 0.2f);
 		}
 
-		public EntityArrowCustom(EntityLivingBase summonerIn) {
+		public EntityArrowCustom(EntityLivingBase summonerIn, float health) {
 			this(summonerIn.world);
 			this.summoner = summonerIn;
+			this.puppetHealth = health;
 		}
 
 		@Override
@@ -139,7 +162,9 @@ public class ItemScrollKarasu extends ElementsNarutomodMod.ModElement {
 			if (this.ticksExisted > this.openScrollTime && !this.world.isRemote) {
 				EntityPuppetKarasu.EntityCustom entity = new EntityPuppetKarasu.EntityCustom(this.summoner);
 				entity.setLocationAndAngles(this.posX, this.posY, this.posZ, this.summoner.rotationYaw, 0f);
+				entity.setHealth(this.puppetHealth);
 				this.world.spawnEntity(entity);
+				ProcedureUtils.poofWithSmoke(entity);
 				this.setDead();
 			}
 		}

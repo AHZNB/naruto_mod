@@ -14,7 +14,6 @@ import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.SoundEvent;
 import net.minecraft.item.ItemStack;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.EntityLivingBase;
@@ -30,6 +29,7 @@ import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.network.datasync.DataSerializers;
 
 import net.narutomod.procedure.ProcedureUtils;
+import net.narutomod.item.ItemScrollSanshouo;
 import net.narutomod.item.ItemNinjutsu;
 import net.narutomod.Particles;
 import net.narutomod.ElementsNarutomodMod;
@@ -77,6 +77,7 @@ public class EntityPuppetSanshouo extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static class EntityCustom extends EntityShieldBase {
+		public static final float MAXHEALTH = 200.0f;
 		private static final DataParameter<Integer> REAL_AGE = EntityDataManager.<Integer>createKey(EntityCustom.class, DataSerializers.VARINT);
 		private final float driveSpeed = 5.0F;
 
@@ -124,7 +125,7 @@ public class EntityPuppetSanshouo extends ElementsNarutomodMod.ModElement {
 			super.applyEntityAttributes();
 			this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(0D);
 			this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(1.0D);
-			this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(200.0D);
+			this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(MAXHEALTH);
 			//this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(3D);
 		}
 
@@ -150,7 +151,7 @@ public class EntityPuppetSanshouo extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public boolean processInitialInteract(EntityPlayer entity, EnumHand hand) {
-			if (!this.world.isRemote) {
+			if (!this.world.isRemote && entity.getHeldItem(hand).getItem() != ItemScrollSanshouo.block) {
 				entity.startRiding(this);
 				return true;
 			}
@@ -161,11 +162,9 @@ public class EntityPuppetSanshouo extends ElementsNarutomodMod.ModElement {
 		public void onUpdate() {
 			super.onUpdate();
 			int age = this.getAge();
-			if (age == 0 && !this.world.isRemote) {
-				this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:poof")), 1.0F, 1.0F);
-				Particles.spawnParticle(this.world, Particles.Types.SMOKE, this.posX, this.posY+this.height/2, this.posZ, 300,
-				 this.width * 0.5d, this.height * 0.3d, this.width * 0.5d, 0d, 0d, 0d, 0xD0FFFFFF, 30);
-			}
+			//if (age == 0 && !this.world.isRemote) {
+			//	ProcedureUtils.poofWithSmoke(this);
+			//}
 			Entity controllingRider = this.getControllingPassenger();
 			if (controllingRider instanceof EntityPlayer && this.ticksExisted % 10 == 3) {
 				ItemStack stack = ProcedureUtils.getMatchingItemStack((EntityPlayer)controllingRider, ItemNinjutsu.block);
@@ -212,12 +211,10 @@ public class EntityPuppetSanshouo extends ElementsNarutomodMod.ModElement {
 			}
 		}
 
-		@Override
+		/*@Override
 		public void setDead() {
 			if (!this.world.isRemote) {
-				this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:poof")), 2.0F, 1.0F);
-				Particles.spawnParticle(this.world, Particles.Types.SMOKE, this.posX, this.posY+this.height/2, this.posZ, 300,
-				 this.width * 0.5d, this.height * 0.3d, this.width * 0.5d, 0d, 0d, 0d, 0xD0FFFFFF, 30);
+				ProcedureUtils.poofWithSmoke(this);
 			}
 			super.setDead();
 		}
@@ -225,7 +222,7 @@ public class EntityPuppetSanshouo extends ElementsNarutomodMod.ModElement {
 		@Override
 		protected void onDeathUpdate() {
 			this.setDead();
-		}
+		}*/
 	}
 
 	// Made with Blockbench 4.3.1

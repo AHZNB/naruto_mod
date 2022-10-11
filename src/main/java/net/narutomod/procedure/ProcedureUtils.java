@@ -53,6 +53,7 @@ import net.narutomod.item.ItemMangekyoSharinganEternal;
 import net.narutomod.item.ItemMangekyoSharingan;
 import net.narutomod.item.ItemJutsu;
 import net.narutomod.PlayerTracker;
+import net.narutomod.Particles;
 import net.narutomod.NarutomodModVariables;
 import net.narutomod.ElementsNarutomodMod;
 
@@ -841,6 +842,12 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 		} catch (Exception e) {
 			throw new RuntimeException("Trying to set EntityPlayerMP@invulnerableDimensionChange");
 		}
+	}
+
+	public static void poofWithSmoke(Entity entity) {
+		entity.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:poof")), 1f, 1f);
+		Particles.spawnParticle(entity.world, Particles.Types.SMOKE, entity.posX, entity.posY+entity.height/2, entity.posZ,
+		 300, entity.width * 0.5d, entity.height * 0.3d, entity.width * 0.5d, 0d, 0d, 0d, 0xD0FFFFFF, 30);
 	}
 
 	public static float subtractDegreesWrap(float cur, float prev) {

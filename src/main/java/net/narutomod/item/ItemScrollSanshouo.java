@@ -1,6 +1,7 @@
 
 package net.narutomod.item;
 
+import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.entity.EntityPuppetSanshouo;
 import net.narutomod.creativetab.TabModTab;
 import net.narutomod.ElementsNarutomodMod;
@@ -77,7 +78,7 @@ public class ItemScrollSanshouo extends ElementsNarutomodMod.ModElement {
 	public static class RangedItem extends Item implements ItemOnBody.Interface {
 		public RangedItem() {
 			super();
-			this.setMaxDamage(0);
+			this.setMaxDamage((int)EntityPuppetSanshouo.EntityCustom.MAXHEALTH);
 			this.setFull3D();
 			this.setUnlocalizedName("scroll_sanshouo");
 			this.setRegistryName("scroll_sanshouo");
@@ -88,14 +89,35 @@ public class ItemScrollSanshouo extends ElementsNarutomodMod.ModElement {
 		@Override
 		public EnumActionResult onItemUse(EntityPlayer entity, World world, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
 			if (!world.isRemote && world.getBlockState(pos).isTopSolid() && facing == EnumFacing.UP) {
-				float power = 1f;
-				world.playSound(null, entity.posX, entity.posY, entity.posZ, SoundEvents.BLOCK_CLOTH_PLACE,
-						SoundCategory.NEUTRAL, 1, 1f / (itemRand.nextFloat() * 0.5f + 1f) + (power / 2));
-				EntityArrowCustom entityarrow = new EntityArrowCustom(entity);
-				entityarrow.setLocationAndAngles(0.5d + pos.getX(), 1.1d + pos.getY(), 0.5d + pos.getZ(), entity.rotationYaw, 0f);
-				world.spawnEntity(entityarrow);
+				ItemStack stack = entity.getHeldItem(hand);
+				if (!stack.hasTagCompound() || stack.getTagCompound().getBoolean("sealed")) {
+					world.playSound(null, entity.posX, entity.posY, entity.posZ, SoundEvents.BLOCK_CLOTH_PLACE,
+							SoundCategory.NEUTRAL, 1, 1f / (itemRand.nextFloat() * 0.5f + 1f) + 0.5f);
+					EntityArrowCustom entityarrow = new EntityArrowCustom(entity, this.getMaxDamage() - this.getDamage(stack));
+					entityarrow.setLocationAndAngles(0.5d + pos.getX(), 1.1d + pos.getY(), 0.5d + pos.getZ(), entity.rotationYaw, 0f);
+					world.spawnEntity(entityarrow);
+					if (!stack.hasTagCompound()) {
+						stack.setTagCompound(new NBTTagCompound());
+					}
+					stack.getTagCompound().setBoolean("sealed", false);
+				}
 			}
 			return EnumActionResult.PASS;
+		}
+
+		@Override
+		public boolean itemInteractionForEntity(ItemStack stack, EntityPlayer playerIn, EntityLivingBase target, EnumHand hand) {
+			if (target instanceof EntityPuppetSanshouo.EntityCustom && !playerIn.world.isRemote) {
+				ItemStack stack1 = playerIn.getHeldItem(hand);
+				if (stack1.hasTagCompound() && !stack1.getTagCompound().getBoolean("sealed")) {
+					ProcedureUtils.poofWithSmoke(target);
+					this.setDamage(stack1, (int)(target.getMaxHealth() - target.getHealth()));
+					target.setDead();
+					stack1.getTagCompound().setBoolean("sealed", true);
+					return true;
+				}
+			}
+			return false;
 		}
 
 		@Override
@@ -118,15 +140,17 @@ public class ItemScrollSanshouo extends ElementsNarutomodMod.ModElement {
 	public static class EntityArrowCustom extends Entity {
 		private final int openScrollTime = 30;
 		private EntityLivingBase summoner;
+		private float puppetHealth;
 		
 		public EntityArrowCustom(World a) {
 			super(a);
 			this.setSize(1.0f, 0.2f);
 		}
 
-		public EntityArrowCustom(EntityLivingBase summonerIn) {
+		public EntityArrowCustom(EntityLivingBase summonerIn, float health) {
 			this(summonerIn.world);
 			this.summoner = summonerIn;
+			this.puppetHealth = health;
 		}
 
 		@Override
@@ -137,7 +161,10 @@ public class ItemScrollSanshouo extends ElementsNarutomodMod.ModElement {
 		public void onUpdate() {
 			super.onUpdate();
 			if (this.ticksExisted > this.openScrollTime && !this.world.isRemote) {
-				this.world.spawnEntity(new EntityPuppetSanshouo.EntityCustom(this.summoner, this.posX, this.posY, this.posZ));
+				EntityLivingBase entity = new EntityPuppetSanshouo.EntityCustom(this.summoner, this.posX, this.posY, this.posZ);
+				this.world.spawnEntity(entity);
+				entity.setHealth(this.puppetHealth);
+				ProcedureUtils.poofWithSmoke(entity);
 				this.setDead();
 			}
 		}

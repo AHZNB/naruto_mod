@@ -1,8 +1,8 @@
 {
   "id_map": {
     "DIMENSION": 13,
-    "GUI": 56,
-    "ENTITY": 388
+    "ENTITY": 390,
+    "GUI": 56
   },
   "mod_elements": [
     {
@@ -6405,6 +6405,18 @@
         "0": 388
       },
       "registry_name": "scroll_karasu"
+    },
+    {
+      "name": "PuppetHiruko",
+      "type": "mob",
+      "sortid": 768,
+      "compiles": true,
+      "locked_code": false,
+      "ids": {
+        "0": 389,
+        "1": 390
+      },
+      "registry_name": "puppet_hiruko"
     }
   ],
   "variable_elements": [
@@ -7795,6 +7807,7 @@
       "key.mcreator.powerincrease": "Switch Jutsu / Increase",
       "entity.gedo_statue.name": "Gedo Statue",
       "entity.water_shockwave.name": "Exploding Water Shockwave",
+      "entity.puppet_hiruko.name": "Hiruko Puppet",
       "item.ninja_armor_kumolegs.name": "Ninja Pants (Kumogakure)",
       "entity.puppet.name": "Puppet",
       "splash_potion.effect.paralysis": "Splash Paralysis",
@@ -8373,6 +8386,7 @@
       "key.mcreator.powerincrease": "術切换/提升",
       "entity.gedo_statue.name": "外道魔像",
       "entity.water_shockwave.name": "水遁：爆水衝波",
+      "entity.puppet_hiruko.name": "Hiruko Puppet",
       "item.ninja_armor_kumolegs.name": "Ninja Pants (雲隠)",
       "entity.puppet.name": "Puppet",
       "splash_potion.effect.paralysis": "Splash Paralysis",
