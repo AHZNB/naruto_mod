@@ -154,6 +154,11 @@ public class EntityNineTails extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
+		public float getModelScale() {
+			return MODELSCALE;
+		}
+
+		@Override
 		protected void entityInit() {
 			super.entityInit();
 			this.getDataManager().register(KCM, Boolean.valueOf(false));

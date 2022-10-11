@@ -14,6 +14,7 @@ import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.SoundEvent;
 import net.minecraft.item.ItemStack;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.EntityLivingBase;
@@ -24,9 +25,13 @@ import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.model.ModelBox;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.network.datasync.DataParameter;
+import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraft.network.datasync.DataSerializers;
 
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.item.ItemNinjutsu;
+import net.narutomod.Particles;
 import net.narutomod.ElementsNarutomodMod;
 
 @ElementsNarutomodMod.ModElement.Tag
@@ -43,7 +48,7 @@ public class EntityPuppetSanshouo extends ElementsNarutomodMod.ModElement {
 	public void initElements() {
 		elements.entities.add(() -> EntityEntryBuilder.create().entity(EntityCustom.class)
 		 .id(new ResourceLocation("narutomod", "puppet_sanshouo"), ENTITYID)
-		 .name("puppet_sanshouo").tracker(64, 3, true).egg(-8821925, -9526919).build());
+		 .name("puppet_sanshouo").tracker(64, 3, true).build());
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -72,6 +77,7 @@ public class EntityPuppetSanshouo extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static class EntityCustom extends EntityShieldBase {
+		private static final DataParameter<Integer> REAL_AGE = EntityDataManager.<Integer>createKey(EntityCustom.class, DataSerializers.VARINT);
 		private final float driveSpeed = 5.0F;
 
 		public EntityCustom(World world) {
@@ -79,16 +85,33 @@ public class EntityPuppetSanshouo extends ElementsNarutomodMod.ModElement {
 			this.setSize(2.0f * MODELSCALE, 1.0f * MODELSCALE);
 			this.stepHeight = MODELSCALE * 1.5f;
 			this.dieOnNoPassengers = false;
+			this.setAlwaysRenderNameTag(false);
 			//this.setOwnerCanSteer(true, this.driveSpeed);
 		}
 
 		public EntityCustom(EntityLivingBase summonerIn) {
-			super(summonerIn);
-			this.setSize(2.0f * MODELSCALE, 1.0f * MODELSCALE);
-			this.stepHeight = MODELSCALE * 1.5f;
+			this(summonerIn, summonerIn.posX, summonerIn.posY, summonerIn.posZ);
+		}
+
+		public EntityCustom(EntityLivingBase summonerIn, double x, double y, double z) {
+			this(summonerIn.world);
+			this.setSummoner(summonerIn);
+			this.setLocationAndAngles(x, y, z, summonerIn.rotationYaw, summonerIn.rotationPitch);
 			this.setHealth(this.getMaxHealth());
-			this.dieOnNoPassengers = false;
-			//this.setOwnerCanSteer(true, this.driveSpeed);
+		}
+
+		@Override
+		protected void entityInit() {
+			super.entityInit();
+			this.dataManager.register(REAL_AGE, Integer.valueOf(0));
+		}
+
+		private void setAge(int age) {
+			this.dataManager.set(REAL_AGE, Integer.valueOf(age));
+		}
+	
+		public int getAge() {
+			return ((Integer)this.getDataManager().get(REAL_AGE)).intValue();
 		}
 
 		@Override
@@ -101,7 +124,7 @@ public class EntityPuppetSanshouo extends ElementsNarutomodMod.ModElement {
 			super.applyEntityAttributes();
 			this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(0D);
 			this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(1.0D);
-			this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(10D);
+			this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(200.0D);
 			//this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(3D);
 		}
 
@@ -137,6 +160,12 @@ public class EntityPuppetSanshouo extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void onUpdate() {
 			super.onUpdate();
+			int age = this.getAge();
+			if (age == 0 && !this.world.isRemote) {
+				this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:poof")), 1.0F, 1.0F);
+				Particles.spawnParticle(this.world, Particles.Types.SMOKE, this.posX, this.posY+this.height/2, this.posZ, 300,
+				 this.width * 0.5d, this.height * 0.3d, this.width * 0.5d, 0d, 0d, 0d, 0xD0FFFFFF, 30);
+			}
 			Entity controllingRider = this.getControllingPassenger();
 			if (controllingRider instanceof EntityPlayer && this.ticksExisted % 10 == 3) {
 				ItemStack stack = ProcedureUtils.getMatchingItemStack((EntityPlayer)controllingRider, ItemNinjutsu.block);
@@ -144,6 +173,7 @@ public class EntityPuppetSanshouo extends ElementsNarutomodMod.ModElement {
 				 .canActivateJutsu(stack, ItemNinjutsu.PUPPET, (EntityPlayer)controllingRider) == EnumActionResult.SUCCESS;
 				this.setOwnerCanSteer(flag, this.driveSpeed);
 			}
+			this.setAge(age + 1);
 		}
 
 		@Override
@@ -180,6 +210,21 @@ public class EntityPuppetSanshouo extends ElementsNarutomodMod.ModElement {
                     }
                 }
 			}
+		}
+
+		@Override
+		public void setDead() {
+			if (!this.world.isRemote) {
+				this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:poof")), 2.0F, 1.0F);
+				Particles.spawnParticle(this.world, Particles.Types.SMOKE, this.posX, this.posY+this.height/2, this.posZ, 300,
+				 this.width * 0.5d, this.height * 0.3d, this.width * 0.5d, 0d, 0d, 0d, 0xD0FFFFFF, 30);
+			}
+			super.setDead();
+		}
+
+		@Override
+		protected void onDeathUpdate() {
+			this.setDead();
 		}
 	}
 

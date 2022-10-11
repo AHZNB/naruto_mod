@@ -149,6 +149,11 @@ public class EntityThreeTails extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
+		public float getModelScale() {
+			return MODELSCALE;
+		}
+
+		@Override
 		protected void applyEntityAttributes() {
 			super.applyEntityAttributes();
 			this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(100.0D);
@@ -1643,9 +1648,10 @@ public class EntityThreeTails extends ElementsNarutomodMod.ModElement {
 			bipedRightLeg.showModel = false;
 			bipedLeftLeg.showModel = false;
 			GlStateManager.pushMatrix();
-			GlStateManager.translate(0.0F, 1.5F - 1.5F * MODELSCALE, 0.0F);
+			float scale = ((EntityTailedBeast.Base)entity).getModelScale();
+			GlStateManager.translate(0.0F, 1.5F - 1.5F * scale, 0.0F);
 			//GlStateManager.translate(0.0F, 0.0F, 0.375F * MODELSCALE);
-			GlStateManager.scale(MODELSCALE, MODELSCALE, MODELSCALE);
+			GlStateManager.scale(scale, scale, scale);
 			super.render(entity, f0, f1, f2, f3, f4, f5);
 			for (int i = 0; i < 3; i++) {
 				Tail[i][0].render(f5);

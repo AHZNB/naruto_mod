@@ -8,6 +8,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.entity.Entity;
 import net.minecraft.command.ICommandSender;
+import net.minecraft.command.CommandBase;
 
 import net.narutomod.procedure.ProcedureAddNinjaXpCommandExecuted;
 import net.narutomod.ElementsNarutomodMod;
@@ -17,7 +18,6 @@ import java.util.List;
 import java.util.HashMap;
 import java.util.Arrays;
 import java.util.ArrayList;
-import net.minecraft.command.CommandBase;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class CommandAddNinjaXp extends ElementsNarutomodMod.ModElement {

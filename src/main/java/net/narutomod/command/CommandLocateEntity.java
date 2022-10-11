@@ -13,12 +13,15 @@ import net.minecraft.entity.Entity;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.ICommand;
 import net.minecraft.command.CommandHandler;
+import net.minecraft.command.CommandBase;
 
 import java.util.Map;
 import java.util.List;
 import java.util.HashMap;
 import java.util.Arrays;
 import java.util.ArrayList;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Lists;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class CommandLocateEntity extends ElementsNarutomodMod.ModElement {
@@ -30,6 +33,7 @@ public class CommandLocateEntity extends ElementsNarutomodMod.ModElement {
 	public void serverLoad(FMLServerStartingEvent event) {
 		event.registerServerCommand(new CommandHandler());
 	}
+
 	public static class CommandHandler implements ICommand {
 		@Override
 		public int compareTo(ICommand c) {
@@ -47,7 +51,14 @@ public class CommandLocateEntity extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
-		public List getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, BlockPos pos) {
+		public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, BlockPos pos) {
+			if (args.length == 1) {
+				return Level1.getAllCommands();
+			} else if (args.length == 2 && args[0].equals(Level1.JINCHURIKI.toString())) {
+				return JinchurikiLevel2.getAllCommands();
+			} else if (args.length == 3 && args[1].equals(JinchurikiLevel2.ASSIGN.toString())) {
+				return CommandBase.getListOfStringsMatchingLastWord(args, server.getOnlinePlayerNames());
+			}
 			return new ArrayList();
 		}
 
@@ -87,6 +98,85 @@ public class CommandLocateEntity extends ElementsNarutomodMod.ModElement {
 					ProcedureLocateEntityCommandExecuted.executeProcedure($_dependencies);
 				}
 			}
+		}
+	}
+
+	public enum Level1 {
+		BIJU("biju"),
+		JINCHURIKI("jinchuriki"),
+		UNKNOWN;
+
+		private final String argString;
+		private static final Map<String, Level1> COMMANDS = Maps.newHashMap();
+
+		static {
+			for (Level1 cmd : values()) {
+				if (cmd.argString != null) {
+					COMMANDS.put(cmd.argString, cmd);
+				}
+			}
+		}
+
+		Level1() {
+			this.argString = null;
+		}
+		
+		Level1(String str) {
+			this.argString = str;
+		}
+
+		public String toString() {
+			return this.argString;
+		}
+
+		public static Level1 getTypeFromString(String str) {
+			return COMMANDS.get(str);
+		}
+
+		public static List<String> getAllCommands() {
+			List<String> list = Lists.<String>newArrayList();
+			list.addAll(COMMANDS.keySet());
+			return list;
+		}
+	}
+
+	public enum JinchurikiLevel2 {
+		LIST("list"),
+		REVOKE("revoke"),
+		ASSIGN("assign"),
+		UNKNOWN;
+		
+		private final String argString;
+		private static final Map<String, JinchurikiLevel2> COMMANDS = Maps.newHashMap();
+
+		static {
+			for (JinchurikiLevel2 cmd : values()) {
+				if (cmd.argString != null) {
+					COMMANDS.put(cmd.argString, cmd);
+				}
+			}
+		}
+
+		JinchurikiLevel2() {
+			this.argString = null;
+		}
+		
+		JinchurikiLevel2(String str) {
+			this.argString = str;
+		}
+
+		public String toString() {
+			return this.argString;
+		}
+
+		public static JinchurikiLevel2 getTypeFromString(String str) {
+			return COMMANDS.get(str);
+		}
+
+		public static List<String> getAllCommands() {
+			List<String> list = Lists.<String>newArrayList();
+			list.addAll(COMMANDS.keySet());
+			return list;
 		}
 	}
 }

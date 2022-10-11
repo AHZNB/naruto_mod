@@ -1,20 +1,14 @@
 package net.narutomod.procedure;
 
-import net.narutomod.entity.EntityTwoTails;
-import net.narutomod.entity.EntityThreeTails;
-import net.narutomod.entity.EntityTenTails;
-import net.narutomod.entity.EntitySixTails;
-import net.narutomod.entity.EntitySevenTails;
-import net.narutomod.entity.EntityOneTail;
-import net.narutomod.entity.EntityNineTails;
-import net.narutomod.entity.EntityFourTails;
-import net.narutomod.entity.EntityFiveTails;
-import net.narutomod.entity.EntityEightTails;
 import net.narutomod.entity.EntityBijuManager;
+import net.narutomod.command.CommandLocateEntity;
 import net.narutomod.ElementsNarutomodMod;
+
+import net.minecraftforge.fml.common.FMLCommonHandler;
 
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.Entity;
 
@@ -54,9 +48,29 @@ public class ProcedureLocateEntityCommandExecuted extends ElementsNarutomodMod.M
 				}
 				return "";
 			}
-		}.getText())).equals("TenTails"))) {
-			vec3d = EntityTenTails.getBijuManager().locateEntity();
-			string = (String) "Ten Tails";
+		}.getText())).equals(CommandLocateEntity.Level1.BIJU.toString()))) {
+			tailnum = (double) new Object() {
+				int convert(String s) {
+					try {
+						return Integer.parseInt(s.trim());
+					} catch (Exception e) {
+					}
+					return 0;
+				}
+			}.convert((new Object() {
+				public String getText() {
+					String param = (String) cmdparams.get("1");
+					if (param != null) {
+						return param;
+					}
+					return "";
+				}
+			}.getText()));
+			Entity biju = EntityBijuManager.getEntityByTails((int) tailnum);
+			if (biju != null) {
+				vec3d = biju.getPositionVector();
+				string = (String) biju.getName();
+			}
 		} else if ((((new Object() {
 			public String getText() {
 				String param = (String) cmdparams.get("0");
@@ -65,105 +79,7 @@ public class ProcedureLocateEntityCommandExecuted extends ElementsNarutomodMod.M
 				}
 				return "";
 			}
-		}.getText())).equals("NineTails"))) {
-			vec3d = EntityNineTails.getBijuManager().locateEntity();
-			string = (String) "Nine Tails";
-		} else if ((((new Object() {
-			public String getText() {
-				String param = (String) cmdparams.get("0");
-				if (param != null) {
-					return param;
-				}
-				return "";
-			}
-		}.getText())).equals("EightTails"))) {
-			vec3d = EntityEightTails.getBijuManager().locateEntity();
-			string = (String) "Eight Tails";
-		} else if ((((new Object() {
-			public String getText() {
-				String param = (String) cmdparams.get("0");
-				if (param != null) {
-					return param;
-				}
-				return "";
-			}
-		}.getText())).equals("SevenTails"))) {
-			vec3d = EntitySevenTails.getBijuManager().locateEntity();
-			string = (String) "Seven Tails";
-		} else if ((((new Object() {
-			public String getText() {
-				String param = (String) cmdparams.get("0");
-				if (param != null) {
-					return param;
-				}
-				return "";
-			}
-		}.getText())).equals("SixTails"))) {
-			vec3d = EntitySixTails.getBijuManager().locateEntity();
-			string = (String) "Six Tails";
-		} else if ((((new Object() {
-			public String getText() {
-				String param = (String) cmdparams.get("0");
-				if (param != null) {
-					return param;
-				}
-				return "";
-			}
-		}.getText())).equals("FiveTails"))) {
-			vec3d = EntityFiveTails.getBijuManager().locateEntity();
-			string = (String) "Five Tails";
-		} else if ((((new Object() {
-			public String getText() {
-				String param = (String) cmdparams.get("0");
-				if (param != null) {
-					return param;
-				}
-				return "";
-			}
-		}.getText())).equals("FourTails"))) {
-			vec3d = EntityFourTails.getBijuManager().locateEntity();
-			string = (String) "Four Tails";
-		} else if ((((new Object() {
-			public String getText() {
-				String param = (String) cmdparams.get("0");
-				if (param != null) {
-					return param;
-				}
-				return "";
-			}
-		}.getText())).equals("ThreeTails"))) {
-			vec3d = EntityThreeTails.getBijuManager().locateEntity();
-			string = (String) "Three Tails";
-		} else if ((((new Object() {
-			public String getText() {
-				String param = (String) cmdparams.get("0");
-				if (param != null) {
-					return param;
-				}
-				return "";
-			}
-		}.getText())).equals("TwoTails"))) {
-			vec3d = EntityTwoTails.getBijuManager().locateEntity();
-		} else if ((((new Object() {
-			public String getText() {
-				String param = (String) cmdparams.get("0");
-				if (param != null) {
-					return param;
-				}
-				return "";
-			}
-		}.getText())).equals("OneTail"))) {
-			vec3d = EntityOneTail.getBijuManager().locateEntity();
-			string = (String) "One Tail";
-		} else if ((((new Object() {
-			public String getText() {
-				String param = (String) cmdparams.get("0");
-				if (param != null) {
-					return param;
-				}
-				return "";
-			}
-		}.getText())).equals("jinchuriki"))) {
+		}.getText())).equals(CommandLocateEntity.Level1.JINCHURIKI.toString()))) {
 			if ((((new Object() {
 				public String getText() {
 					String param = (String) cmdparams.get("1");
@@ -172,7 +88,7 @@ public class ProcedureLocateEntityCommandExecuted extends ElementsNarutomodMod.M
 					}
 					return "";
 				}
-			}.getText())).equals("list"))) {
+			}.getText())).equals(CommandLocateEntity.JinchurikiLevel2.LIST.toString()))) {
 				List<String> list = EntityBijuManager.listJinchuriki();
 				for (int index0 = 0; index0 < (int) (list.size()); index0++) {
 					if (entity instanceof EntityPlayer && !entity.world.isRemote) {
@@ -187,7 +103,7 @@ public class ProcedureLocateEntityCommandExecuted extends ElementsNarutomodMod.M
 					}
 					return "";
 				}
-			}.getText())).equals("revoke"))) {
+			}.getText())).equals(CommandLocateEntity.JinchurikiLevel2.REVOKE.toString()))) {
 				if ((((new Object() {
 					public String getText() {
 						String param = (String) cmdparams.get("2");
@@ -220,10 +136,50 @@ public class ProcedureLocateEntityCommandExecuted extends ElementsNarutomodMod.M
 						EntityBijuManager.revokeJinchurikiByTails((int) tailnum);
 					}
 				}
+			} else if ((((new Object() {
+				public String getText() {
+					String param = (String) cmdparams.get("1");
+					if (param != null) {
+						return param;
+					}
+					return "";
+				}
+			}.getText())).equals(CommandLocateEntity.JinchurikiLevel2.ASSIGN.toString()))) {
+				string = (String) (new Object() {
+					public String getText() {
+						String param = (String) cmdparams.get("2");
+						if (param != null) {
+							return param;
+						}
+						return "";
+					}
+				}.getText());
+				EntityPlayerMP player = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerByUsername(string);
+				tailnum = (double) new Object() {
+					int convert(String s) {
+						try {
+							return Integer.parseInt(s.trim());
+						} catch (Exception e) {
+						}
+						return 0;
+					}
+				}.convert((new Object() {
+					public String getText() {
+						String param = (String) cmdparams.get("3");
+						if (param != null) {
+							return param;
+						}
+						return "";
+					}
+				}.getText()));
+				if (player != null) {
+					EntityBijuManager.setPlayerAsJinchurikiByTails(player, (int) tailnum);
+				}
 			} else {
 				if (entity instanceof EntityPlayer && !entity.world.isRemote) {
-					((EntityPlayer) entity).sendStatusMessage(new TextComponentString(
-							"Usage: /locateEntity <TenTails | NineTails | EightTails | SevenTails | SixTails | FiveTails | FourTails | ThreeTails | TwoTails | OneTail | jinchuriki {list | revoke {all | [num]}}>"),
+					((EntityPlayer) entity).sendStatusMessage(
+							new TextComponentString(
+									"Usage: /locateEntity <biju [num] | jinchuriki {list | revoke {all | [num]} | assign [playername] [num]}>"),
 							(false));
 				}
 			}
@@ -231,8 +187,7 @@ public class ProcedureLocateEntityCommandExecuted extends ElementsNarutomodMod.M
 		} else {
 			if (entity instanceof EntityPlayer && !entity.world.isRemote) {
 				((EntityPlayer) entity).sendStatusMessage(new TextComponentString(
-						"Usage: /locateEntity <TenTails | NineTails | EightTails | SevenTails | SixTails | FiveTails | FourTails | ThreeTails | TwoTails | OneTail | jinchuriki {list | revoke {all | [num]}}>"),
-						(false));
+						"Usage: /locateEntity <biju [num] | jinchuriki {list | revoke {all | [num]} | assign [playername] [num]}>"), (false));
 			}
 			return;
 		}

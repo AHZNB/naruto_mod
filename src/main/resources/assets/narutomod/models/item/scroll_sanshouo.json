@@ -1,0 +1,6 @@
+{
+  "parent": "narutomod:custom/scrollsanshouo",
+  "textures": {
+    "0": "narutomod:blocks/scroll_sanshouo_item"
+  }
+}

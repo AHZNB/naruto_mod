@@ -11,6 +11,8 @@ Jutsus:
  - full Kurama mode: change Kurama texture to KCM texture
  - Mind transfer/shadow imitation: improved mouse sensitivity when controlling mobs
  - kagebunshin: fixed ninjaxp not reseting after death of original (when player is a bunshin)
+ - Adamantine sealing chains: no longer seals the biju in the player
+ - Adamantine sealing chains: added chakra drain on target entity (drain amount based on player's chakra)
  - added Transformation jutsu and scroll
  
 Items:
@@ -20,9 +22,18 @@ Items:
  - added Konoha facial protector (tobirama/yamato style) and recipe
  - added 1st Ninja war armor and recipe
  - added samurai armor and recipe
+ - added Sanshouo puppet's summoning scroll
+ - added Karasu puppet's summoning scroll
+ 
+Entities:
+ - changed Sanshouo puppet's health to 200
  
 Structures:
  - rebuilt the 4 pillar wood house to match anime
+
+Commands:
+ - locateEntity: added tab completions
+ - locateEntity: added jinchuriki assign
  
 General:
  - reach effect: targeting fuzziness increases with reach, i.e. fuzziness = targetBoundingBox +- reach * 0.1

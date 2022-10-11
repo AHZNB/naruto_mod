@@ -17,11 +17,15 @@ import net.minecraft.world.World;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.DamageSource;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.DamageSource;
 import net.minecraft.entity.IEntityMultiPart;
 import net.minecraft.entity.MultiPartEntityPart;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.client.renderer.GlStateManager;
@@ -30,10 +34,8 @@ import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelBox;
-import net.minecraft.util.EnumHand;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.init.Blocks;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntitySealing extends ElementsNarutomodMod.ModElement {
@@ -47,7 +49,7 @@ public class EntitySealing extends ElementsNarutomodMod.ModElement {
 	@Override
 	public void initElements() {
 		elements.entities.add(() -> EntityEntryBuilder.create().entity(EC.class).id(new ResourceLocation("narutomod", "sealing"), ENTITYID)
-				.name("sealing").tracker(64, 3, true).build());
+				.name("sealing").tracker(96, 3, true).build());
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -58,10 +60,12 @@ public class EntitySealing extends ElementsNarutomodMod.ModElement {
 
 	public static class EC extends Entity implements IEntityMultiPart {
 		private final EntitySittingCircle[] parts = new EntitySittingCircle[4];
+		private EntityTailedBeast.Base bijuEntity;
+		private EntityLivingBase jinchurikiEntity;
 
 		public EC(World world) {
 			super(world);
-			this.setSize(10f, 0.01f);
+			this.setSize(12f, 0.01f);
 			this.isImmuneToFire = true;
 			for (int i = 0; i < this.parts.length; i++) {
 				this.parts[i] = new EntitySittingCircle(this, "circle"+i);
@@ -115,7 +119,7 @@ public class EntitySealing extends ElementsNarutomodMod.ModElement {
 			this.parts[1].setLocationAndAngles(this.posX, this.posY + 0.005d, this.posZ + 5d, 0f, 0f);
 			this.parts[2].setLocationAndAngles(this.posX + 5d, this.posY + 0.005d, this.posZ, 0f, 0f);
 			this.parts[3].setLocationAndAngles(this.posX, this.posY + 0.005d, this.posZ - 5d, 0f, 0f);
-			if (this.ticksExisted > 600 && !this.world.isRemote) {
+			if (this.ticksExisted > 200 && !this.world.isRemote) {
 				this.setDead();
 			}
 		}
@@ -123,15 +127,17 @@ public class EntitySealing extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void setDead() {
 			super.setDead();
-			//if (!this.world.isRemote) {
-				for (int i = 0; i < this.parts.length; i++) {
-					Entity passenger = this.parts[i].getControllingPassenger();
-					if (passenger != null) {
-						passenger.dismountRidingEntity();
-					}
-					//this.parts[i].removePassengers();
-				}
-			//}
+			for (int i = 0; i < this.parts.length; i++) {
+				this.parts[i].removePassengers();
+			}
+		}
+
+		public int getSealersCount() {
+			int j = 0;
+			for (int i = 0; i < this.parts.length; i++) {
+				j += this.parts[i].isBeingRidden() ? 1 : 0;
+			}
+			return j;
 		}
 
 		@Override
@@ -150,15 +156,35 @@ public class EntitySealing extends ElementsNarutomodMod.ModElement {
 		public static class Jutsu implements ItemJutsu.IJutsuCallback {
 			@Override
 			public boolean createJutsu(ItemStack stack, EntityLivingBase entity, float power) {
-				RayTraceResult result = ProcedureUtils.objectEntityLookingAt(entity, 10d, true);
-				if (result != null && result.typeOfHit == RayTraceResult.Type.BLOCK && result.sideHit == EnumFacing.UP) {
-					entity.world.playSound(null, result.getBlockPos().up(),
+				RayTraceResult rtr = ProcedureUtils.objectEntityLookingAt(entity, 10d, true);
+				if (rtr != null && rtr.typeOfHit == RayTraceResult.Type.BLOCK && rtr.sideHit == EnumFacing.UP) {
+					for (BlockPos.MutableBlockPos pos : BlockPos.getAllInBoxMutable(rtr.getBlockPos().add(-6, 0, -6), rtr.getBlockPos().add(6, 0, 6))) {
+						if (pos.distanceSq(rtr.getBlockPos()) < 49.0d) {
+							if (!entity.world.getBlockState(pos).isFullBlock() || !entity.world.isAirBlock(pos.up(2))
+							 || !this.isTorchOrAir(entity.world, pos.up(), rtr.getBlockPos())) {
+								return false;
+							}
+						}
+					}
+					entity.world.playSound(null, rtr.getBlockPos().up(),
 					 net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:jutsu")),
 					 net.minecraft.util.SoundCategory.NEUTRAL, 1f, 1f);
-					entity.world.spawnEntity(new EC(entity.world, result.getBlockPos().up()));
+					entity.world.spawnEntity(new EC(entity.world, rtr.getBlockPos().up()));
 					return true;
 				}
 				return false;
+			}
+
+			private boolean isTorchOrAir(World world, BlockPos pos, BlockPos centerPos) {
+				BlockPos[] torchPos = { new BlockPos(-2, 1, 1), new BlockPos(-1, 1, 2), new BlockPos(1, 1, 2), new BlockPos(2, 1, 1),
+				 new BlockPos(2, 1, -1), new BlockPos(1, 1, -2), new BlockPos(-1, 1, -2), new BlockPos(-2, 1, -1) };
+				IBlockState blockstate = world.getBlockState(pos);
+				for (BlockPos pos1 : torchPos) {
+					if (pos.equals(centerPos.add(pos1))) {
+						return blockstate.getBlock() == Blocks.TORCH;
+					}
+				}
+				return blockstate.getBlock().isAir(blockstate, world, pos);
 			}
 		}
 	}

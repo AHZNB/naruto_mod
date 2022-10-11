@@ -29,6 +29,7 @@ import net.minecraft.potion.PotionEffect;
 import net.narutomod.potion.PotionHeaviness;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.item.ItemJutsu;
+import net.narutomod.Chakra;
 import net.narutomod.ElementsNarutomodMod;
 
 import javax.annotation.Nullable;
@@ -62,6 +63,7 @@ public class EntitySealingChains extends ElementsNarutomodMod.ModElement {
 		private double initialDistance;
 		private int slowAmplifier;
 		private int retractTime = -1;
+		private final double baseChakraDrainOnTarget = 10.0d; // per sec
 
 		public EC(World worldIn) {
 			super(worldIn);
@@ -152,7 +154,12 @@ public class EntitySealingChains extends ElementsNarutomodMod.ModElement {
 			EntityLivingBase target = this.getTarget();
 			if (this.shootingEntity != null && this.shootingEntity.isEntityAlive() && this.isTargetable(target)) {
 			 	if (this.retractTime < 0) {
-					target.addPotionEffect(new PotionEffect(PotionHeaviness.potion, 2, this.slowAmplifier));
+					if (this.ticksExisted % 20 == 19) {
+						target.addPotionEffect(new PotionEffect(PotionHeaviness.potion, 22, this.slowAmplifier));
+						double d = this.shootingEntity instanceof EntityLivingBase
+						 ? Chakra.getLevel((EntityLivingBase)this.shootingEntity) * 0.02d : 1.0d;
+						Chakra.pathway(target).consume(this.baseChakraDrainOnTarget * d);
+					}
 					double d = this.getDistance(target);
 					if (d > this.initialDistance) {
 						Vec3d vec = this.shootingEntity.getPositionVector().subtract(target.getPositionVector())
@@ -160,11 +167,11 @@ public class EntitySealingChains extends ElementsNarutomodMod.ModElement {
 						target.addVelocity(vec.x, vec.y, vec.z);
 						target.velocityChanged = true;
 					}
-					if (target instanceof EntityBijuManager.ITailBeast && this.shootingEntity instanceof EntityPlayer
-					 && (((EntityPlayer)this.shootingEntity).isCreative() || target.getHealth() < target.getMaxHealth() * 0.1f)
-					 && ProcedureUtils.getModifiedSpeed(target) < 0.05d) {
-						((EntityBijuManager.ITailBeast)target).fuuinIntoPlayer((EntityPlayer)this.shootingEntity, 400);
-					}
+					//if (target instanceof EntityBijuManager.ITailBeast && this.shootingEntity instanceof EntityPlayer
+					// && (((EntityPlayer)this.shootingEntity).isCreative() || target.getHealth() < target.getMaxHealth() * 0.1f)
+					// && ProcedureUtils.getModifiedSpeed(target) < 0.05d) {
+					//	((EntityBijuManager.ITailBeast)target).fuuinIntoPlayer((EntityPlayer)this.shootingEntity, 400);
+					//}
 			 	} else if (--this.retractTime < 0) {
 			 		this.setDead();
 			 	}

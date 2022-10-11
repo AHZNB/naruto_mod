@@ -42,7 +42,7 @@ public class EntityPuppetKarasu extends ElementsNarutomodMod.ModElement {
 	public void initElements() {
 		elements.entities.add(() -> EntityEntryBuilder.create().entity(EntityCustom.class)
 		 .id(new ResourceLocation("narutomod", "puppet_karasu"), ENTITYID)
-		 .name("puppet_karasu").tracker(64, 3, true).egg(-39424, -13421773).build());
+		 .name("puppet_karasu").tracker(64, 3, true).build());
 	}
 
 	@SideOnly(Side.CLIENT)

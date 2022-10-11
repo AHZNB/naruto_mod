@@ -1,0 +1,6 @@
+{
+  "parent": "narutomod:custom/scrollkarasu",
+  "textures": {
+    "0": "narutomod:blocks/scroll_karasu_item"
+  }
+}

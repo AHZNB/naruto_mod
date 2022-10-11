@@ -177,6 +177,8 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 			this.lifeSpan = lifespan;
 		}
 
+		public abstract float getModelScale();
+
 		@Nullable
 		private EntityPlayer getJinchuriki() {
 			Entity entity = this.world.getEntityByID(((Integer)this.getDataManager().get(JINCHURIKI)).intValue());
@@ -327,6 +329,11 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 					entity.isAirBorne = true;
                 }
 			}
+		}
+
+		public Vec3d getPositionMouth() {
+			return Vec3d.fromPitchYaw(this.rotationPitch, this.rotationYawHead)
+			 .scale(this.width * 1.5).add(this.getPositionEyes(1.0f));
 		}
 
 		@Override
@@ -694,7 +701,8 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 		}
 
 		private void setBuildupPosition() {
-			Vec3d vec3d = Vec3d.fromPitchYaw(this.shootingEntity.rotationPitch, this.shootingEntity.rotationYawHead)
+			Vec3d vec3d = this.shootingEntity instanceof Base ? ((Base)this.shootingEntity).getPositionMouth()
+			 : Vec3d.fromPitchYaw(this.shootingEntity.rotationPitch, this.shootingEntity.rotationYawHead)
 			 .scale(this.shootingEntity.width * 1.5).add(this.shootingEntity.getPositionEyes(1.0f));
 			this.setPosition(vec3d.x, vec3d.y, vec3d.z);
 		}
@@ -1073,6 +1081,7 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 				this.copyLimbSwing(entity, (EntityLivingBase)entity.getControllingPassenger());
 			}
 			this.setModelVisibilities(entity);
+			this.shadowSize = entity.getModelScale() * 0.5f;
 			super.doRender(entity, x, y, z, entityYaw, partialTicks);
 		}
 

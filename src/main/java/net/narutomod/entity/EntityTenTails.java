@@ -142,6 +142,11 @@ public class EntityTenTails extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
+		public float getModelScale() {
+			return MODELSCALE;
+		}
+
+		@Override
 		public EntityBijuManager getBijuManager() {
 			return tailBeastManager;
 		}

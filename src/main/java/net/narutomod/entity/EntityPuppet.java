@@ -41,6 +41,7 @@ import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.ElementsNarutomodMod;
 
 import javax.annotation.Nullable;
+import net.minecraft.nbt.NBTTagCompound;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityPuppet extends ElementsNarutomodMod.ModElement {
@@ -53,6 +54,7 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 
 	public abstract static class Base extends EntityCreature {
 		private static final DataParameter<Integer> OWNERID = EntityDataManager.<Integer>createKey(Base.class, DataSerializers.VARINT);
+		private static final DataParameter<Integer> REAL_AGE = EntityDataManager.<Integer>createKey(Base.class, DataSerializers.VARINT);
 
 		public Base(World worldIn) {
 			super(worldIn);
@@ -71,7 +73,16 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 		@Override
 		protected void entityInit() {
 			super.entityInit();
-			this.getDataManager().register(OWNERID, Integer.valueOf(-1));
+			this.dataManager.register(OWNERID, Integer.valueOf(-1));
+			this.dataManager.register(REAL_AGE, Integer.valueOf(0));
+		}
+
+		private void setAge(int age) {
+			this.dataManager.set(REAL_AGE, Integer.valueOf(age));
+		}
+	
+		public int getAge() {
+			return ((Integer)this.getDataManager().get(REAL_AGE)).intValue();
 		}
 
 		@Nullable
@@ -80,7 +91,7 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 			return entity instanceof EntityLivingBase ? (EntityLivingBase)entity : null;
 		}
 
-		private void setOwner(@Nullable EntityLivingBase player) {
+		protected void setOwner(@Nullable EntityLivingBase player) {
 			this.getDataManager().set(OWNERID, Integer.valueOf(player != null ? player.getEntityId() : -1));
 			this.setNoAI(player == null);
 		}
@@ -140,10 +151,23 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 
 	    @Override
 	    public void onUpdate() {
+	    	this.setAge(this.getAge() + 1);
 	    	this.fallDistance = 0f;
 	    	this.clearActivePotions();
 	    	super.onUpdate();
 	    }
+
+		@Override
+		public void readEntityFromNBT(NBTTagCompound compound) {
+			super.readEntityFromNBT(compound);
+			this.setAge(compound.getInteger("age"));
+		}
+
+		@Override
+		public void writeEntityToNBT(NBTTagCompound compound) {
+			super.writeEntityToNBT(compound);
+			compound.setInteger("age", this.getAge());
+		}
 
 		public class FlyHelper extends EntityMoveHelper {
 			public FlyHelper(Base entityIn) {

@@ -138,6 +138,12 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 		}
 	}
 
+	@Nullable
+	public static EntityTailedBeast.Base getEntityByTails(int tailnum) {
+		EntityBijuManager bm = mapByTailnum.get(tailnum);
+		return bm != null ? bm.getEntity() : null;
+	}
+
 	public static int getTails(EntityPlayer player) {
 		EntityBijuManager bm = getBijuManagerFrom(player);
 		return bm != null ? bm.getTails() : 0;
@@ -394,7 +400,7 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 
 	@Nullable
 	public Vec3d locateEntity() {
-		return (this.entity != null) ? new Vec3d(this.entity.posX, this.entity.posY, this.entity.posZ) : null;
+		return this.entity != null ? this.entity.getPositionVector() : null;
 	}
 
 	public int getTails() {

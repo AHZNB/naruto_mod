@@ -61,7 +61,7 @@ public abstract class EntityShieldBase extends EntityLivingBase {
 		this.dataManager.register(SUMMONERID, Integer.valueOf(-1));
 	}
 
-	private void setSummoner(EntityLivingBase entity) {
+	protected void setSummoner(EntityLivingBase entity) {
 		this.dataManager.set(SUMMONERID, Integer.valueOf(entity.getEntityId()));
 	}
 
