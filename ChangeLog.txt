@@ -1,11 +1,12 @@
 
 0.2.10-beta ===============================================================================
 
-Testing variation -
+Test:
 
 Items:
-
-- Yagura Staff
+Gunbai: gives wind from folding fan (similar to gunbai in show)
+Senbons: Ninja tool for attacks
+Yaguras Staff: 4th Mizukage's staff
 
 
 0.2.10-beta ===============================================================================
