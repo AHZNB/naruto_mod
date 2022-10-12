@@ -1,3 +1,13 @@
+
+0.2.10-beta ===============================================================================
+
+Testing variation -
+
+Items:
+
+- Yagura Staff
+
+
 0.2.10-beta ===============================================================================
 
 Jutsus:
@@ -22,8 +32,8 @@ Items:
  - added Konoha facial protector (tobirama/yamato style) and recipe
  - added 1st Ninja war armor and recipe
  - added samurai armor and recipe
- - added Sanshouo puppet's summoning scroll. after summon, use scroll on puppet to seal it back
- - added Karasu puppet's summoning scroll. after summon, use scroll on puppet to seal it back
+ - added Sanshouo puppet's summoning scroll
+ - added Karasu puppet's summoning scroll
  
 Entities:
  - changed Sanshouo puppet's health to 200
