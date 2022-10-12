@@ -1,0 +1,14 @@
+{
+  "mappings": {
+    "default": {
+      "map": {
+        "1": "gunbai_black_wool",
+        "2": "gunbai_light_gray_concrete",
+        "4": "gunbai_cobblestone",
+        "5": "gunbai_white_concrete",
+        "missing": "gunbai_light_gray_wool"
+      },
+      "name": "default"
+    }
+  }
+}
