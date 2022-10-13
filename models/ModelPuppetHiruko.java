@@ -50,12 +50,14 @@ public static class ModelPuppetHiruko extends ModelBase {
 	private final ModelRenderer bone7;
 	private final ModelRenderer bone5;
 	private final ModelRenderer bipedRightArm;
+	private final ModelRenderer bipedRightUpperArm;
 	private final ModelRenderer bipedRightForeArm;
-	private final ModelRenderer bipedRightArm2;
+	private final ModelRenderer bipedRightUpperArm2;
 	private final ModelRenderer bipedRightForeArm2;
 	private final ModelRenderer bipedLeftArm;
+	private final ModelRenderer bipedLeftUpperArm;
 	private final ModelRenderer bipedLeftForeArm;
-	private final ModelRenderer bipedLeftArm2;
+	private final ModelRenderer bipedLeftUpperArm2;
 	private final ModelRenderer bipedLeftForeArm2;
 	private final ModelRenderer bipedRightLeg;
 	private final ModelRenderer rightThigh;
@@ -360,25 +362,31 @@ public static class ModelPuppetHiruko extends ModelBase {
 		bipedRightArm = new ModelRenderer(this);
 		bipedRightArm.setRotationPoint(-5.0F, -10.0F, 0.0F);
 		body.addChild(bipedRightArm);
-		setRotationAngle(bipedRightArm, -1.0472F, 0.0F, 0.0F);
-		bipedRightArm.cubeList.add(new ModelBox(bipedRightArm, 16, 54, -3.0F, -2.0F, -2.0F, 4, 6, 4, 0.0F, false));
+
+		bipedRightUpperArm = new ModelRenderer(this);
+		bipedRightUpperArm.setRotationPoint(0.0F, 0.0F, 0.0F);
+		bipedRightArm.addChild(bipedRightUpperArm);
+		setRotationAngle(bipedRightUpperArm, -1.0472F, 0.0F, 0.0F);
+		bipedRightUpperArm.cubeList
+				.add(new ModelBox(bipedRightUpperArm, 16, 54, -3.0F, -2.0F, -2.0F, 4, 6, 4, 0.0F, false));
 
 		bipedRightForeArm = new ModelRenderer(this);
 		bipedRightForeArm.setRotationPoint(-1.0F, 4.0F, 2.0F);
-		bipedRightArm.addChild(bipedRightForeArm);
+		bipedRightUpperArm.addChild(bipedRightForeArm);
 		setRotationAngle(bipedRightForeArm, -0.2618F, 0.0F, 0.0F);
 		bipedRightForeArm.cubeList
 				.add(new ModelBox(bipedRightForeArm, 44, 50, -2.0F, 0.0F, -4.0F, 4, 6, 4, 0.0F, false));
 
-		bipedRightArm2 = new ModelRenderer(this);
-		bipedRightArm2.setRotationPoint(-5.0F, -10.0F, 0.0F);
-		body.addChild(bipedRightArm2);
-		setRotationAngle(bipedRightArm2, -0.5236F, 0.2618F, 1.3963F);
-		bipedRightArm2.cubeList.add(new ModelBox(bipedRightArm2, 16, 54, -3.0F, -2.0F, -2.0F, 4, 6, 4, 0.0F, false));
+		bipedRightUpperArm2 = new ModelRenderer(this);
+		bipedRightUpperArm2.setRotationPoint(0.0F, 0.0F, 0.0F);
+		bipedRightArm.addChild(bipedRightUpperArm2);
+		setRotationAngle(bipedRightUpperArm2, -0.5236F, 0.2618F, 1.3963F);
+		bipedRightUpperArm2.cubeList
+				.add(new ModelBox(bipedRightUpperArm2, 16, 54, -3.0F, -2.0F, -2.0F, 4, 6, 4, 0.0F, false));
 
 		bipedRightForeArm2 = new ModelRenderer(this);
 		bipedRightForeArm2.setRotationPoint(-1.0F, 4.0F, 2.0F);
-		bipedRightArm2.addChild(bipedRightForeArm2);
+		bipedRightUpperArm2.addChild(bipedRightForeArm2);
 		setRotationAngle(bipedRightForeArm2, -1.0472F, 0.0F, 0.0F);
 		bipedRightForeArm2.cubeList
 				.add(new ModelBox(bipedRightForeArm2, 44, 50, -2.0F, 0.0F, -4.0F, 4, 6, 4, 0.0F, false));
@@ -386,25 +394,31 @@ public static class ModelPuppetHiruko extends ModelBase {
 		bipedLeftArm = new ModelRenderer(this);
 		bipedLeftArm.setRotationPoint(5.0F, -10.0F, 0.0F);
 		body.addChild(bipedLeftArm);
-		setRotationAngle(bipedLeftArm, -1.0472F, 0.0F, 0.0F);
-		bipedLeftArm.cubeList.add(new ModelBox(bipedLeftArm, 16, 54, -1.0F, -2.0F, -2.0F, 4, 6, 4, 0.0F, true));
+
+		bipedLeftUpperArm = new ModelRenderer(this);
+		bipedLeftUpperArm.setRotationPoint(0.0F, 0.0F, 0.0F);
+		bipedLeftArm.addChild(bipedLeftUpperArm);
+		setRotationAngle(bipedLeftUpperArm, -1.0472F, 0.0F, 0.0F);
+		bipedLeftUpperArm.cubeList
+				.add(new ModelBox(bipedLeftUpperArm, 16, 54, -1.0F, -2.0F, -2.0F, 4, 6, 4, 0.0F, true));
 
 		bipedLeftForeArm = new ModelRenderer(this);
 		bipedLeftForeArm.setRotationPoint(1.0F, 4.0F, 2.0F);
-		bipedLeftArm.addChild(bipedLeftForeArm);
+		bipedLeftUpperArm.addChild(bipedLeftForeArm);
 		setRotationAngle(bipedLeftForeArm, -0.2618F, 0.0F, 0.0F);
 		bipedLeftForeArm.cubeList.add(new ModelBox(bipedLeftForeArm, 44, 50, -2.0F, 0.0F, -4.0F, 4, 6, 4, 0.0F, true));
 		bipedLeftForeArm.cubeList.add(new ModelBox(bipedLeftForeArm, 44, 66, -2.0F, 0.0F, -4.0F, 4, 6, 4, 0.5F, true));
 
-		bipedLeftArm2 = new ModelRenderer(this);
-		bipedLeftArm2.setRotationPoint(5.0F, -10.0F, 0.0F);
-		body.addChild(bipedLeftArm2);
-		setRotationAngle(bipedLeftArm2, -0.5236F, -1.5708F, -1.3963F);
-		bipedLeftArm2.cubeList.add(new ModelBox(bipedLeftArm2, 16, 54, -1.0F, -2.0F, -2.0F, 4, 6, 4, 0.0F, true));
+		bipedLeftUpperArm2 = new ModelRenderer(this);
+		bipedLeftUpperArm2.setRotationPoint(0.0F, 0.0F, 0.0F);
+		bipedLeftArm.addChild(bipedLeftUpperArm2);
+		setRotationAngle(bipedLeftUpperArm2, -0.5236F, -1.5708F, -1.3963F);
+		bipedLeftUpperArm2.cubeList
+				.add(new ModelBox(bipedLeftUpperArm2, 16, 54, -1.0F, -2.0F, -2.0F, 4, 6, 4, 0.0F, true));
 
 		bipedLeftForeArm2 = new ModelRenderer(this);
 		bipedLeftForeArm2.setRotationPoint(1.0F, 4.0F, 2.0F);
-		bipedLeftArm2.addChild(bipedLeftForeArm2);
+		bipedLeftUpperArm2.addChild(bipedLeftForeArm2);
 		setRotationAngle(bipedLeftForeArm2, -1.0472F, 0.0F, 0.0F);
 		bipedLeftForeArm2.cubeList
 				.add(new ModelBox(bipedLeftForeArm2, 44, 50, -2.0F, 0.0F, -4.0F, 4, 6, 4, 0.0F, true));
