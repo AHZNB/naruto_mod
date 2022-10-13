@@ -22,8 +22,8 @@ Items:
  - added Konoha facial protector (tobirama/yamato style) and recipe
  - added 1st Ninja war armor and recipe
  - added samurai armor and recipe
- - added Sanshouo puppet's summoning scroll
- - added Karasu puppet's summoning scroll
+ - added Sanshouo puppet's summoning scroll. after summon, use scroll on puppet to seal it back
+ - added Karasu puppet's summoning scroll. after summon, use scroll on puppet to seal it back
  - added gunbai: gives wind from folding fan
  - added senbons: Ninja tool for attacks
  - added Yaguras Staff: 4th Mizukage's staff
