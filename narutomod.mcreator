@@ -6443,7 +6443,7 @@
       "type": "gun",
       "sortid": 770,
       "compiles": true,
-      "locked_code": false,
+      "locked_code": true,
       "ids": {
         "0": 391
       },

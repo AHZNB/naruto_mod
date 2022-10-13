@@ -23,13 +23,17 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Item;
 import net.minecraft.item.EnumAction;
-import net.minecraft.entity.projectile.EntityTippedArrow;
 import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
-import net.minecraft.client.renderer.entity.RenderSnowball;
+import net.minecraft.client.renderer.RenderItem;
+import net.minecraft.client.renderer.entity.Render;
+import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
+import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.Minecraft;
 
@@ -41,6 +45,7 @@ public class ItemSenbon extends ElementsNarutomodMod.ModElement {
 	@GameRegistry.ObjectHolder("narutomod:senbon")
 	public static final Item block = null;
 	public static final int ENTITYID = 391;
+
 	public ItemSenbon(ElementsNarutomodMod instance) {
 		super(instance, 770);
 	}
@@ -62,9 +67,10 @@ public class ItemSenbon extends ElementsNarutomodMod.ModElement {
 	@Override
 	public void preInit(FMLPreInitializationEvent event) {
 		RenderingRegistry.registerEntityRenderingHandler(EntityArrowCustom.class, renderManager -> {
-			return new RenderSnowball(renderManager, new ItemStack(ItemSenbon.block, (int) (1)).getItem(), Minecraft.getMinecraft().getRenderItem());
+			return new RenderCustom(renderManager);
 		});
 	}
+
 	public static class RangedItem extends Item {
 		public RangedItem() {
 			super();
@@ -117,7 +123,7 @@ public class ItemSenbon extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-	public static class EntityArrowCustom extends EntityTippedArrow {
+	public static class EntityArrowCustom extends EntityArrow {
 		public EntityArrowCustom(World a) {
 			super(a);
 		}
@@ -135,10 +141,6 @@ public class ItemSenbon extends ElementsNarutomodMod.ModElement {
 			super.arrowHit(entity);
 			entity.setArrowCountInEntity(entity.getArrowCountInEntity() - 1);
 			Entity sourceentity = this.shootingEntity;
-			int x = (int) this.posX;
-			int y = (int) this.posY;
-			int z = (int) this.posZ;
-			World world = this.world;
 			{
 				Map<String, Object> $_dependencies = new HashMap<>();
 				$_dependencies.put("sourceentity", sourceentity);
@@ -147,16 +149,51 @@ public class ItemSenbon extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
-		public void onUpdate() {
-			super.onUpdate();
-			int x = (int) this.posX;
-			int y = (int) this.posY;
-			int z = (int) this.posZ;
-			World world = this.world;
-			Entity entity = (Entity) shootingEntity;
-			if (this.inGround) {
-				this.world.removeEntity(this);
-			}
+		protected ItemStack getArrowStack() {
+			return new ItemStack(block);
 		}
+	}
+
+	@SideOnly(Side.CLIENT)
+	public class RenderCustom extends Render<EntityArrowCustom> {
+		protected final Item item;
+		private final RenderItem itemRenderer;
+
+		public RenderCustom(RenderManager renderManagerIn) {
+			super(renderManagerIn);
+			this.item = block;
+			this.itemRenderer = Minecraft.getMinecraft().getRenderItem();
+		}
+
+	    @Override
+	    public void doRender(EntityArrowCustom entity, double x, double y, double z, float entityYaw, float partialTicks) {
+	        GlStateManager.pushMatrix();
+	        GlStateManager.translate((float)x, (float)y, (float)z);
+	        GlStateManager.enableRescaleNormal();
+	        GlStateManager.rotate(entity.prevRotationYaw + (entity.rotationYaw - entity.prevRotationYaw) * partialTicks - 90.0F, 0.0F, 1.0F, 0.0F);
+	        GlStateManager.rotate(entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks, 0.0F, 0.0F, 1.0F);
+	        this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+	        if (this.renderOutlines) {
+	            GlStateManager.enableColorMaterial();
+	            GlStateManager.enableOutlineMode(this.getTeamColor(entity));
+	        }
+	        this.itemRenderer.renderItem(this.getStackToRender(entity), ItemCameraTransforms.TransformType.GROUND);
+	        if (this.renderOutlines) {
+	            GlStateManager.disableOutlineMode();
+	            GlStateManager.disableColorMaterial();
+	        }
+	        GlStateManager.disableRescaleNormal();
+	        GlStateManager.popMatrix();
+	        super.doRender(entity, x, y, z, entityYaw, partialTicks);
+	    }
+	
+	    public ItemStack getStackToRender(EntityArrowCustom entityIn) {
+	        return new ItemStack(this.item);
+	    }
+	
+		@Override
+	    protected ResourceLocation getEntityTexture(EntityArrowCustom entity) {
+	        return TextureMap.LOCATION_BLOCKS_TEXTURE;
+	    }
 	}
 }
