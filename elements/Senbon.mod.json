@@ -33,9 +33,6 @@
     },
     "bulletModel": "Default",
     "customBulletModelTexture": "",
-    "onBulletHitsBlock": {
-      "name": "ShurikenBulletHitsBlock"
-    },
     "onBulletHitsEntity": {
       "name": "KunaiBulletHitsLivingEntity"
     }

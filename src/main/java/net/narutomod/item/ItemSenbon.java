@@ -1,7 +1,6 @@
 
 package net.narutomod.item;
 
-import net.narutomod.procedure.ProcedureShurikenBulletHitsBlock;
 import net.narutomod.procedure.ProcedureKunaiBulletHitsLivingEntity;
 import net.narutomod.creativetab.TabModTab;
 import net.narutomod.ElementsNarutomodMod;
@@ -156,15 +155,6 @@ public class ItemSenbon extends ElementsNarutomodMod.ModElement {
 			World world = this.world;
 			Entity entity = (Entity) shootingEntity;
 			if (this.inGround) {
-				{
-					Map<String, Object> $_dependencies = new HashMap<>();
-					$_dependencies.put("entity", entity);
-					$_dependencies.put("x", x);
-					$_dependencies.put("y", y);
-					$_dependencies.put("z", z);
-					$_dependencies.put("world", world);
-					ProcedureShurikenBulletHitsBlock.executeProcedure($_dependencies);
-				}
 				this.world.removeEntity(this);
 			}
 		}
