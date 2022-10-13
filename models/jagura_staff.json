@@ -1,6 +1,5 @@
 {
 	"credit": "Made with Blockbench",
-	"parent": "jagura staff",
 	"texture_size": [1024, 1024],
 	"textures": {
 		"0": "flowerstaff_1",

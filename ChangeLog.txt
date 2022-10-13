@@ -1,14 +1,3 @@
-
-0.2.10-beta ===============================================================================
-
-Test:
-
-Items:
-Gunbai: gives wind from folding fan (similar to gunbai in show)
-Senbons: Ninja tool for attacks
-Yaguras Staff: 4th Mizukage's staff
-
-
 0.2.10-beta ===============================================================================
 
 Jutsus:
@@ -35,6 +24,9 @@ Items:
  - added samurai armor and recipe
  - added Sanshouo puppet's summoning scroll
  - added Karasu puppet's summoning scroll
+ - added gunbai: gives wind from folding fan
+ - added senbons: Ninja tool for attacks
+ - added Yaguras Staff: 4th Mizukage's staff
  
 Entities:
  - changed Sanshouo puppet's health to 200

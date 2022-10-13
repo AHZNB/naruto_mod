@@ -36,6 +36,6 @@ public class ProcedureFoldingFanRangedItemUsed extends ElementsNarutomodMod.ModE
 		}
 		(entity).extinguish();
 		new EntityFutonGreatBreakthrough.EC.Jutsu().createJutsu(itemstack, (EntityLivingBase) entity,
-				((EntityLivingBase) entity).getItemInUseMaxCount() * 0.5f);
+				0.5f * (float) ((EntityLivingBase) entity).getItemInUseMaxCount());
 	}
 }

@@ -880,5 +880,23 @@
         "stream": false
       }
     ]
+  },
+  "senbon": {
+    "category": "ambient",
+    "sounds": [
+      {
+        "name": "narutomod:senbon",
+        "stream": false
+      }
+    ]
+  },
+  "gunbaiwind": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "narutomod:gunbaiwind",
+        "stream": false
+      }
+    ]
   }
 }

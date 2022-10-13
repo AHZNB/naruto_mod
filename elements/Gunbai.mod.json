@@ -15,9 +15,9 @@
       "value": ""
     },
     "shootConstantly": false,
-    "usageCount": 100000,
+    "usageCount": 2000,
     "actionSound": {
-      "value": "CUSTOM:gunbaiwind"
+      "value": ""
     },
     "hasGlow": false,
     "animation": "bow",

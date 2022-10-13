@@ -74,7 +74,7 @@ public class ItemGunbai extends ElementsNarutomodMod.ModElement {
 	public static class RangedItem extends Item {
 		public RangedItem() {
 			super();
-			setMaxDamage(100000);
+			setMaxDamage(2000);
 			setFull3D();
 			setUnlocalizedName("gunbai");
 			setRegistryName("gunbai");
@@ -110,8 +110,7 @@ public class ItemGunbai extends ElementsNarutomodMod.ModElement {
 				int y = (int) entity.posY;
 				int z = (int) entity.posZ;
 				world.playSound((EntityPlayer) null, (double) x, (double) y, (double) z,
-						(net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY
-								.getObject(new ResourceLocation(("narutomod:gunbaiwind"))),
+						(net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation((""))),
 						SoundCategory.NEUTRAL, 1, 1f / (itemRand.nextFloat() * 0.5f + 1f) + (power / 2));
 				entityarrow.pickupStatus = EntityArrow.PickupStatus.DISALLOWED;
 				if (!world.isRemote)
