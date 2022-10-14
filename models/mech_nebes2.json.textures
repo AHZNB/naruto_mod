@@ -1,0 +1,10 @@
+{
+  "mappings": {
+    "default": {
+      "map": {
+        "0": "peacockblade_1"
+      },
+      "name": "default"
+    }
+  }
+}
