@@ -1,6 +1,6 @@
 {
   "parent": "narutomod:custom/gauntletsound",
   "textures": {
-    "0": "narutomod:blocks/gaunlet"
+    "1": "narutomod:blocks/gaunlet_sound"
   }
 }

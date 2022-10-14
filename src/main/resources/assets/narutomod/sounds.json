@@ -898,5 +898,14 @@
         "stream": false
       }
     ]
+  },
+  "chainsound": {
+    "category": "ambient",
+    "sounds": [
+      {
+        "name": "narutomod:hidansscythechain",
+        "stream": false
+      }
+    ]
   }
 }

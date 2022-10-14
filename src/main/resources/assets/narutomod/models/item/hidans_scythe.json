@@ -1,6 +1,0 @@
-{
-  "parent": "narutomod:custom/scythe3blade3",
-  "textures": {
-    "1": "narutomod:blocks/hidans_texture"
-  }
-}

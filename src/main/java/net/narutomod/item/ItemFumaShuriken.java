@@ -99,7 +99,7 @@ public class ItemFumaShuriken extends ElementsNarutomodMod.ModElement {
 		public void onPlayerStoppedUsing(ItemStack itemstack, World world, EntityLivingBase entityLivingBase, int timeLeft) {
 			if (!world.isRemote && entityLivingBase instanceof EntityPlayerMP) {
 				EntityPlayerMP entity = (EntityPlayerMP) entityLivingBase;
-				float power = 3f;
+				float power = 1.5f;
 				EntityArrowCustom entityarrow = new EntityArrowCustom(world, entity);
 				entityarrow.shoot(entity.getLookVec().x, entity.getLookVec().y, entity.getLookVec().z, power * 2, 0);
 				entityarrow.setSilent(true);

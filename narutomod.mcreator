@@ -1,8 +1,8 @@
 {
   "id_map": {
+    "ENTITY": 398,
     "GUI": 56,
-    "DIMENSION": 13,
-    "ENTITY": 397
+    "DIMENSION": 13
   },
   "mod_elements": [
     {
@@ -6459,35 +6459,6 @@
       "registry_name": "adamant_staff"
     },
     {
-      "name": "HidansScythe",
-      "type": "gun",
-      "sortid": 772,
-      "compiles": true,
-      "locked_code": false,
-      "ids": {
-        "0": 395
-      },
-      "registry_name": "hidans_scythe"
-    },
-    {
-      "name": "PeacockSword",
-      "type": "tool",
-      "sortid": 773,
-      "compiles": true,
-      "locked_code": false,
-      "ids": {},
-      "registry_name": "peacock_sword"
-    },
-    {
-      "name": "PeacockSword2",
-      "type": "tool",
-      "sortid": 774,
-      "compiles": true,
-      "locked_code": false,
-      "ids": {},
-      "registry_name": "peacock_sword_2"
-    },
-    {
       "name": "FumaShuriken",
       "type": "gun",
       "sortid": 775,
@@ -6517,6 +6488,17 @@
         "0": 397
       },
       "registry_name": "sound_gaunlet"
+    },
+    {
+      "name": "ScytheHidan",
+      "type": "gun",
+      "sortid": 778,
+      "compiles": true,
+      "locked_code": false,
+      "ids": {
+        "0": 398
+      },
+      "registry_name": "scythe_hidan"
     }
   ],
   "variable_elements": [
@@ -7367,42 +7349,41 @@
   ],
   "language_map": {
     "en_us": {
-      "entity.crow.name": "Crow",
       "item.kiba_blades.name": "Kiba Blades",
+      "entity.crow.name": "Crow",
       "entity.tenten.name": "Tenten",
-      "item.hidans_scythe.name": "Hidans Scythe",
       "item.futton.name": "Boil Release",
       "item.scroll_water_prison.name": "Water Release - Water Prison jutsu",
       "subtitles.sando_no_jutsi": "",
       "item.steam_armorlegs.name": "Steam Armor Leggings",
-      "subtitles.sando_no_jutsu": "",
       "item.futon.name": "Wind Release",
+      "subtitles.sando_no_jutsu": "",
       "subtitles.laser": "",
       "item.ryo_100.name": "100 Ryo",
-      "item.summoning_contract.name": "Summoning Contract",
       "tooltip.samehada.general": "Samehada is a sentient sword utilised by the Seven Ninja Swordsmen of the Mist and is regarded as the most terrifying out of all the Seven Swordsmen\u0027s blades.",
+      "item.summoning_contract.name": "Summoning Contract",
       "item.shuriken.name": "Shuriken",
       "entity.cellular_activation.name": "Cellular Activation",
       "entity.entityasakujaku.name": "Asakujaku (Morning Peacock)",
       "item.scroll_water_dragon.name": "Water Release - Water Dragon Bullet",
       "tooltip.kekkeimora.expansivetsb": "Expansive Truth Seeking Ball",
-      "entity.tailed_beast.name": "Tailed Beast",
       "item.gunbai.name": "",
+      "entity.tailed_beast.name": "Tailed Beast",
       "item.scroll_rasenshuriken.name": "Wind Release - Rasenshuriken",
       "entity.itachi.name": "Uchiha Itachi",
       "entity.jinchuriki_clone.name": "Tail beast cloak",
       "tipped_arrow.effect.paralysis": "Arrow of Paralysis",
-      "tipped_arrow.effect.reach": "Arrow of Reach",
       "item.byakurinnesharinganhelmet.name": "Fake Rinne Sharingan",
+      "tipped_arrow.effect.reach": "Arrow of Reach",
       "chattext.medicalgui.notmedninja": "You don\u0027t know any medical ninjutsu.",
       "tooltip.shikotsumyaku.dancelarch": "Larch Dance",
-      "advancements.futton_acquired.title": "Boil Release Acquired",
       "entity.tensei_baku_silver.name": "Silver wheel Rebirth Blast",
+      "advancements.futton_acquired.title": "Boil Release Acquired",
       "subtitles.chains": "",
       "item.bone_sword.name": "Bone Sword",
       "item.rinneganboots.name": "",
-      "entity.gaara.name": "Gaara",
       "chattext.outerpath.alreadyhere": "Unable to summon Ten Tails, it is already here.",
+      "entity.gaara.name": "Gaara",
       "entity.ice_spear.name": "Shooting Ice Spears",
       "tipped_arrow.effect.flight": "Arrow of Flight",
       "entity.truthseekerball.name": "Truth Seeking Ball",
@@ -7430,8 +7411,8 @@
       "entity.kankuro.name": "Kankuro",
       "subtitles.shinsusenju": "",
       "entity.genjutsu.name": "Genjutsu",
-      "tooltip.shakuton.scorchblast": "Super steam blast",
       "chattext.tentails.sealedintoplayer": "Sealing %s into %s\u0027s body",
+      "tooltip.shakuton.scorchblast": "Super steam blast",
       "subtitles.waterblast": "",
       "item.ninja_armor_war_1helmet.name": "Facial Protector (Konoha)",
       "item.asuracanon.name": "Asura Canon",
@@ -7448,8 +7429,8 @@
       "advancements.bakuton_acquired.title": "Explosion Release Acquired",
       "advancements.ranton_acquired.title": "Storm Release Acquired",
       "entity.susanoowinged.name": "Susanoo",
-      "advancements.tenseigan_achieved.title": "Tenseigan Achieved",
       "item.ninja_armor_iwaboots.name": "Ninja Boots (Iwagakure)",
+      "advancements.tenseigan_achieved.title": "Tenseigan Achieved",
       "item.ryo_1_m.name": "Ryo 1,000,000",
       "entity.magmaball.name": "Scorching rocks",
       "item.yoton.name": "Yang Release",
@@ -7561,7 +7542,6 @@
       "entity.eighttrigrams.name": "Eight Trigrams",
       "subtitles.explosion": "",
       "entity.kakashi.name": "Kakashi",
-      "item.peacock_sword.name": "Peacock Sword",
       "item.mangekyosharinganeternalhelmet.name": "Eternal Mangekyo Sharingan",
       "entity.earth_blocks.name": "Earth Blocks",
       "item.uchihalegs.name": "Uchiha Leggings",
@@ -7644,6 +7624,7 @@
       "advancements.ninjaachievement.descr": "You may now begin your ninja training!",
       "advancements.hyoton_acquired.title": "Ice Release Acquired",
       "item.yagura_staff.name": "Yagura Staff",
+      "item.scythe_hidan.name": "Scythe 3 bladed",
       "entity.rantoncloud.name": "Thunder Cloud Void Wave",
       "tile.meteorite.name": "Meteorite",
       "fluid.mud": "Mud",
@@ -7889,7 +7870,6 @@
       "advancements.jiton_acquired.title": "Magnet Release Acquired",
       "item.ninja_armor_fishnetslegs.name": "Ninja Fishnets shirt and pants",
       "entity.entityngdragon.name": "Yagai (Night Guy)",
-      "item.peacock_sword_2.name": "Peacock Sword",
       "item.scroll_fire_stream.name": "Fire Release - Great Flame",
       "item.ninja_armor_kumobody.name": "Flak jacket (Kumogakure)",
       "entity.futonchakraflow.name": "Chakra Flow",

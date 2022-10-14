@@ -2,7 +2,7 @@
   "mappings": {
     "default": {
       "map": {
-        "0": "gaunlet"
+        "1": "gaunlet_sound"
       },
       "name": "default"
     }
