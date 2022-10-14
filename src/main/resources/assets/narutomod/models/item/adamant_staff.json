@@ -1,0 +1,6 @@
+{
+  "parent": "narutomod:custom/palka_hiruzen",
+  "textures": {
+    "0": "narutomod:blocks/hiruzen_1"
+  }
+}

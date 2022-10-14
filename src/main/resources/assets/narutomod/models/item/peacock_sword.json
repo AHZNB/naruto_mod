@@ -1,0 +1,6 @@
+{
+  "parent": "narutomod:custom/mech_nebes1",
+  "textures": {
+    "0": "narutomod:blocks/peacockblade_0"
+  }
+}
