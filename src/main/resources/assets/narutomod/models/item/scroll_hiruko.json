@@ -1,0 +1,6 @@
+{
+  "parent": "narutomod:custom/scrollhiruko",
+  "textures": {
+    "0": "narutomod:blocks/scroll_hiruko_item"
+  }
+}

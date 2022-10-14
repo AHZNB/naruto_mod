@@ -1,6 +1,6 @@
 {
   "id_map": {
-    "ENTITY": 398,
+    "ENTITY": 399,
     "GUI": 56,
     "DIMENSION": 13
   },
@@ -6411,7 +6411,7 @@
       "type": "mob",
       "sortid": 768,
       "compiles": true,
-      "locked_code": false,
+      "locked_code": true,
       "ids": {
         "0": 389,
         "1": 390
@@ -6499,6 +6499,17 @@
         "0": 398
       },
       "registry_name": "scythe_hidan"
+    },
+    {
+      "name": "ScrollHiruko",
+      "type": "gun",
+      "sortid": 779,
+      "compiles": true,
+      "locked_code": true,
+      "ids": {
+        "0": 399
+      },
+      "registry_name": "scroll_hiruko"
     }
   ],
   "variable_elements": [
@@ -7367,7 +7378,7 @@
       "entity.entityasakujaku.name": "Asakujaku (Morning Peacock)",
       "item.scroll_water_dragon.name": "Water Release - Water Dragon Bullet",
       "tooltip.kekkeimora.expansivetsb": "Expansive Truth Seeking Ball",
-      "item.gunbai.name": "",
+      "item.gunbai.name": "Gunbai",
       "entity.tailed_beast.name": "Tailed Beast",
       "item.scroll_rasenshuriken.name": "Wind Release - Rasenshuriken",
       "entity.itachi.name": "Uchiha Itachi",
@@ -7437,8 +7448,8 @@
       "lingering_potion.effect.chakra_enhanced_strength": "Lingering Chakra Enhanced Strength",
       "chattext.intangible": "Intangible ",
       "tooltip.kabutowari.general": "The Kabutowari (Helmet Splitter) is one of the swords of the Seven Ninja Swordsmen of the Mist. The sword consists of a giant axe and hammer, which together are referred to as a \"bluntsword\" that is said to be able to break through any defence.",
-      "item.senbon.name": "Senbons",
-      "item.sound_gaunlet.name": "Sound Gaunlet",
+      "item.senbon.name": "Senbon",
+      "item.sound_gaunlet.name": "Echo resonating gauntlet",
       "item.mangekyosharinganobitohelmet.name": "Mangekyo Sharingan - Kamui",
       "advancements.sharinganopened.title": "Sharingan activated",
       "tipped_arrow.effect.chakra_regeneration": "Arrow of Chakra Regeneration",
@@ -7595,7 +7606,7 @@
       "item.ninja_armor_konohaboots.name": "",
       "advancements.byakuganopened.title": "Byakugan Opened",
       "entity.futon_great_breakthrough.name": "Great Breakthrough",
-      "item.adamant_staff.name": "Adamant Staff",
+      "item.adamant_staff.name": "Adamantin Staff",
       "item.nuibari_sword.name": "Nuibari Sword",
       "splash_potion.effect.reach": "Splash Reach",
       "item.nuibari_thrown.name": "Nuibari Sword",
@@ -7624,7 +7635,7 @@
       "advancements.ninjaachievement.descr": "You may now begin your ninja training!",
       "advancements.hyoton_acquired.title": "Ice Release Acquired",
       "item.yagura_staff.name": "Yagura Staff",
-      "item.scythe_hidan.name": "Scythe 3 bladed",
+      "item.scythe_hidan.name": "Scythe 3-blade",
       "entity.rantoncloud.name": "Thunder Cloud Void Wave",
       "tile.meteorite.name": "Meteorite",
       "fluid.mud": "Mud",
@@ -7689,6 +7700,7 @@
       "subtitles.katsu": "",
       "entity.summon_animal.name": "Summon Animal",
       "subtitles.flamethrow": "",
+      "item.scroll_hiruko.name": "Scroll Hiruko",
       "advancements.tenseigan_achieved.descr": "The Tenseigan (literally meaning: Reincarnation Eye), is the next evolution of the Byakugan.",
       "chattext.rinnegan.path4": "Naraka Path",
       "chattext.rinnegan.path5": "Outer Path",
