@@ -1,8 +1,8 @@
 {
   "id_map": {
-    "DIMENSION": 13,
     "GUI": 56,
-    "ENTITY": 391
+    "DIMENSION": 13,
+    "ENTITY": 397
   },
   "mod_elements": [
     {
@@ -6448,6 +6448,75 @@
         "0": 391
       },
       "registry_name": "senbon"
+    },
+    {
+      "name": "AdamantStaff",
+      "type": "tool",
+      "sortid": 771,
+      "compiles": true,
+      "locked_code": false,
+      "ids": {},
+      "registry_name": "adamant_staff"
+    },
+    {
+      "name": "HidansScythe",
+      "type": "gun",
+      "sortid": 772,
+      "compiles": true,
+      "locked_code": false,
+      "ids": {
+        "0": 395
+      },
+      "registry_name": "hidans_scythe"
+    },
+    {
+      "name": "PeacockSword",
+      "type": "tool",
+      "sortid": 773,
+      "compiles": true,
+      "locked_code": false,
+      "ids": {},
+      "registry_name": "peacock_sword"
+    },
+    {
+      "name": "PeacockSword2",
+      "type": "tool",
+      "sortid": 774,
+      "compiles": true,
+      "locked_code": false,
+      "ids": {},
+      "registry_name": "peacock_sword_2"
+    },
+    {
+      "name": "FumaShuriken",
+      "type": "gun",
+      "sortid": 775,
+      "compiles": true,
+      "locked_code": false,
+      "ids": {
+        "0": 396
+      },
+      "registry_name": "fuma_shuriken"
+    },
+    {
+      "name": "SageStaff",
+      "type": "tool",
+      "sortid": 776,
+      "compiles": true,
+      "locked_code": false,
+      "ids": {},
+      "registry_name": "sage_staff"
+    },
+    {
+      "name": "SoundGaunlet",
+      "type": "gun",
+      "sortid": 777,
+      "compiles": true,
+      "locked_code": false,
+      "ids": {
+        "0": 397
+      },
+      "registry_name": "sound_gaunlet"
     }
   ],
   "variable_elements": [
@@ -7286,6 +7355,14 @@
       ],
       "category": "master",
       "subtitle": ""
+    },
+    {
+      "name": "chainsound",
+      "files": [
+        "hidansscythechain"
+      ],
+      "category": "ambient",
+      "subtitle": ""
     }
   ],
   "language_map": {
@@ -7293,6 +7370,7 @@
       "entity.crow.name": "Crow",
       "item.kiba_blades.name": "Kiba Blades",
       "entity.tenten.name": "Tenten",
+      "item.hidans_scythe.name": "Hidans Scythe",
       "item.futton.name": "Boil Release",
       "item.scroll_water_prison.name": "Water Release - Water Prison jutsu",
       "subtitles.sando_no_jutsi": "",
@@ -7379,6 +7457,7 @@
       "chattext.intangible": "Intangible ",
       "tooltip.kabutowari.general": "The Kabutowari (Helmet Splitter) is one of the swords of the Seven Ninja Swordsmen of the Mist. The sword consists of a giant axe and hammer, which together are referred to as a \"bluntsword\" that is said to be able to break through any defence.",
       "item.senbon.name": "Senbons",
+      "item.sound_gaunlet.name": "Sound Gaunlet",
       "item.mangekyosharinganobitohelmet.name": "Mangekyo Sharingan - Kamui",
       "advancements.sharinganopened.title": "Sharingan activated",
       "tipped_arrow.effect.chakra_regeneration": "Arrow of Chakra Regeneration",
@@ -7387,6 +7466,7 @@
       "item.inton.name": "Yin Release",
       "subtitles.lasercircus": "",
       "entity.limbo_clone.name": "Limbo Clone",
+      "subtitles.chainsound": "",
       "subtitles.charging_chakra": "",
       "subtitles.shadow_sfx": "",
       "item.scroll_water_shockwave.name": "Water Release - Water Shockwave",
@@ -7471,6 +7551,7 @@
       "item.rinneganhelmet.name": "Rinnegan ",
       "entity.futon_vacuum.name": "Vacuum Wave",
       "entity.ninja_kumo.name": "Ninja Kumo",
+      "item.fuma_shuriken.name": "Fuma Shuriken",
       "advancements.yooton_acquired.descr": "Lava Release (\"Corrosion Style\" or \"Lava Style\") is a nature transformation kekkei genkai, a combination of fire and earth.",
       "item.scroll_kikaichu_sphere.name": "Hiden Technique: Kikaichu Sphere",
       "tooltip.general.powerupkey": "Press the Power Increase key to cycle through abilities",
@@ -7480,6 +7561,7 @@
       "entity.eighttrigrams.name": "Eight Trigrams",
       "subtitles.explosion": "",
       "entity.kakashi.name": "Kakashi",
+      "item.peacock_sword.name": "Peacock Sword",
       "item.mangekyosharinganeternalhelmet.name": "Eternal Mangekyo Sharingan",
       "entity.earth_blocks.name": "Earth Blocks",
       "item.uchihalegs.name": "Uchiha Leggings",
@@ -7533,6 +7615,7 @@
       "item.ninja_armor_konohaboots.name": "",
       "advancements.byakuganopened.title": "Byakugan Opened",
       "entity.futon_great_breakthrough.name": "Great Breakthrough",
+      "item.adamant_staff.name": "Adamant Staff",
       "item.nuibari_sword.name": "Nuibari Sword",
       "splash_potion.effect.reach": "Splash Reach",
       "item.nuibari_thrown.name": "Nuibari Sword",
@@ -7560,7 +7643,7 @@
       "lingering_potion.effect.paralysis": "Lingering Paralysis",
       "advancements.ninjaachievement.descr": "You may now begin your ninja training!",
       "advancements.hyoton_acquired.title": "Ice Release Acquired",
-      "item.yagura_staff.name": "",
+      "item.yagura_staff.name": "Yagura Staff",
       "entity.rantoncloud.name": "Thunder Cloud Void Wave",
       "tile.meteorite.name": "Meteorite",
       "fluid.mud": "Mud",
@@ -7684,6 +7767,7 @@
       "tooltip.sharingan.descr": "50% chance to evade attacks",
       "item.ninja_armor_kiriboots.name": "Ninja Boots (Kirigakure)",
       "item.uchihabody.name": "Uchiha Body",
+      "item.sage_staff.name": "Sage Staff",
       "entity.haku.name": "Haku",
       "entity.eight_tails.name": "Gyuuki",
       "entity.scorchorb.name": "Spawn scorch orb",
@@ -7805,6 +7889,7 @@
       "advancements.jiton_acquired.title": "Magnet Release Acquired",
       "item.ninja_armor_fishnetslegs.name": "Ninja Fishnets shirt and pants",
       "entity.entityngdragon.name": "Yagai (Night Guy)",
+      "item.peacock_sword_2.name": "Peacock Sword",
       "item.scroll_fire_stream.name": "Fire Release - Great Flame",
       "item.ninja_armor_kumobody.name": "Flak jacket (Kumogakure)",
       "entity.futonchakraflow.name": "Chakra Flow",
