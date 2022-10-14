@@ -27,6 +27,23 @@ Items:
  - added gunbai: gives wind from folding fan
  - added senbons: Ninja tool for attacks
  - added Yaguras Staff: 4th Mizukage's staff
+ - added Staff of Sage of Six Paths
+ - added Peacock Swords 1 and 2 from show
+ - added 3rd Hokage's Staff
+ - added Hidan's Scythe
+ - added Fuma Shuriken
+ - added Sound Gaunlet
+
+NOTE: Weapons that do not currently have abilties and are supposed to will be given abilities, they are currently in as drafts and will be worked on accordingly.
+
+To add tomorrow:
+
+Sound Gaunlet
+Claw
+Cleaver
+Ishiken 
+(This will be after they are touched up on with textures)
+
  
 Entities:
  - changed Sanshouo puppet's health to 200
