@@ -64,6 +64,7 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 		public static final float MAXHEALTH = 100.0f;
 		private final int poseProgressEnd = 14;
 		private int poseProgress = -1;
+		private Object model;
 
 		public EntityCustom(World world) {
 			super(world);
@@ -138,7 +139,7 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 				ItemStack stack = ProcedureUtils.getMatchingItemStack((EntityPlayer)controllingRider, ItemNinjutsu.block);
 				boolean flag = stack != null && ((ItemNinjutsu.RangedItem)stack.getItem())
 				 .canActivateJutsu(stack, ItemNinjutsu.PUPPET, (EntityPlayer)controllingRider) == EnumActionResult.SUCCESS;
-				this.setOwnerCanSteer(flag, 0.5f);
+				this.setOwnerCanSteer(flag, this.isRobeOff() ? 1.5f : 0.5f);
 			}
 			if (controllingRider != null) {
 				controllingRider.setInvisible(true);
@@ -147,6 +148,15 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public void onLivingUpdate() {
+			if (!this.world.isRemote) {
+				EntityLivingBase entity = this.getSummoner();
+				if (entity != null && entity.swingProgressInt == 1) {
+					this.setPose(1);
+				}
+				if (!this.isRobeOff()) {
+					this.takeRobeOff(true);
+				}
+			}
 			this.updateTailSwingProgress();
 			super.onLivingUpdate();
 		}
@@ -167,15 +177,19 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 	@SideOnly(Side.CLIENT)
 	public class RenderCustom extends RenderLivingBase<EntityCustom> {
 		private final ResourceLocation texture = new ResourceLocation("narutomod:textures/hiruko.png");
-		private final ModelPuppetHiruko model;
+		private ModelPuppetHiruko model;
 
 		public RenderCustom(RenderManager renderManagerIn) {
 			super(renderManagerIn, new ModelPuppetHiruko(), 0.5F);
-			this.model = (ModelPuppetHiruko)this.getMainModel();
 		}
 
 	 	@Override
 		public void doRender(EntityCustom entity, double x, double y, double z, float entityYaw, float partialTicks) {
+			if (entity.model == null) {
+				entity.model = this.mainModel = this.model = new ModelPuppetHiruko();
+			} else {
+				this.mainModel = this.model = (ModelPuppetHiruko)entity.model;
+			}
 			if (entity.isBeingRidden() && entity.getControllingPassenger() instanceof EntityLivingBase) {
 				this.copyLimbSwing(entity, (EntityLivingBase)entity.getControllingPassenger());
 			}
@@ -283,7 +297,7 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 		private final ModelRenderer bone2;
 		private final ModelRenderer bone15;
 		private final Vector3f[] tailSway = new Vector3f[10];
-		private final Vector3f[][] tailPose = {
+		private final Vector3f[][] tailPoseRobeOn = {
 			{
 				new Vector3f(),
 				new Vector3f(0.2618F, 0.0F, 0.0F), new Vector3f(0.2618F, 0.0F, 0.0F), new Vector3f(0.2618F, 0.0F, 0.0F),
@@ -311,6 +325,36 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 				new Vector3f(0.2618F, 0.0F, 0.0F), new Vector3f(0.2618F, 0.0F, 0.0F), new Vector3f(0.2618F, 0.0F, 0.0F), 
 				new Vector3f(0.2618F, 0.0F, 0.0F), new Vector3f(0.2618F, 0.0F, 0.0F), new Vector3f(0.2618F, 0.0F, 0.0F), 
 				new Vector3f(0.1745F, 0.0F, 0.0F), new Vector3f(0.0873F, 0.0F, 0.0F)
+			}
+		};
+		private final Vector3f[][] tailPoseRobeOff = {
+			{
+				new Vector3f(),
+				new Vector3f(0.2618F, 0.0F, 0.0F), new Vector3f(0.2618F, 0.0F, 0.0F), new Vector3f(0.2618F, 0.0F, 0.0F),
+				new Vector3f(0.2618F, 0.0F, 0.0F), new Vector3f(0.1745F, 0.0F, 0.0F), new Vector3f(0.0873F, 0.0F, 0.0F), 
+				new Vector3f(0.0436F, 0.0F, 0.0F), new Vector3f(0.0436F, 0.0F, 0.0F), new Vector3f(0.0436F, 0.0F, 0.0F)
+			},
+			{
+				new Vector3f(),
+				new Vector3f(0.2618F, 0.0F, 0.0F), new Vector3f(0.2618F, 0.0F, 0.0F), new Vector3f(0.2618F, 0.0F, 0.0F),
+				new Vector3f(0.2618F, 0.0F, 0.0F), new Vector3f(0.1745F, 0.0F, 0.0F), new Vector3f(0.0873F, 0.0F, 0.0F), 
+				new Vector3f(0.0436F, 0.0F, 0.0F), new Vector3f(0.0436F, 0.0F, 0.0F), new Vector3f(0.0436F, 0.0F, 0.0F),
+				new Vector3f(0.0436F, 0.0F, 0.0F), new Vector3f(0.0436F, 0.0F, 0.0F), new Vector3f(0.0436F, 0.0F, 0.0F), 
+				new Vector3f(0.0436F, 0.0F, 0.0F), new Vector3f(0.0436F, 0.0F, 0.0F), new Vector3f(0.0436F, 0.0F, 0.0F), 
+				new Vector3f(0.0436F, 0.0F, 0.0F), new Vector3f(0.0436F, 0.0F, 0.0F), new Vector3f(0.0436F, 0.0F, 0.0F), 
+				new Vector3f(0.0436F, 0.0F, 0.0F), new Vector3f(0.0436F, 0.0F, 0.0F), new Vector3f(0.0436F, 0.0F, 0.0F), 
+				new Vector3f(0.0436F, 0.0F, 0.0F), new Vector3f(0.0436F, 0.0F, 0.0F)
+			},
+			{
+				new Vector3f(),
+				new Vector3f(0.2618F, -0.5236F, 0.0F), new Vector3f(0.2618F, -0.5236F, 0.0F), new Vector3f(0.2618F, -0.5236F, 0.0F), 
+				new Vector3f(0.2618F, -0.2618F, 0.0F), new Vector3f(0.2618F, 0.0F, 0.0F), new Vector3f(0.3491F, 0.0F, 0.0F), 
+				new Vector3f(0.3491F, 0.0F, 0.0F), new Vector3f(0.3491F, 0.0F, 0.0F), new Vector3f(0.3491F, 0.0F, 0.0F), 
+				new Vector3f(0.3491F, 0.0F, 0.0F), new Vector3f(0.3491F, -0.0873F, 0.0F), new Vector3f(0.2618F, -0.0873F, 0.0F), 
+				new Vector3f(0.2618F, -0.0873F, 0.0F), new Vector3f(0.2618F, -0.0873F, 0.0F), new Vector3f(0.2618F, -0.0873F, 0.0F), 
+				new Vector3f(0.2618F, -0.0873F, 0.0F), new Vector3f(0.1745F, -0.0873F, 0.0F), new Vector3f(0.1745F, -0.0873F, 0.0F), 
+				new Vector3f(0.2618F, -0.0873F, 0.0F), new Vector3f(0.2618F, -0.0873F, 0.0F), new Vector3f(0.2618F, -0.0873F, 0.0F), 
+				new Vector3f(0.2618F, -0.0873F, 0.0F), new Vector3f(0.2618F, 0.0F, 0.0F)
 			}
 		};
 		private final Random rand = new Random();
@@ -696,7 +740,7 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 			
 			tailEnd = new ModelRenderer(this);
 			tailEnd.setRotationPoint(0.0F, 0.0F, 4.0F);
-			tail[23].addChild(tailEnd);
+			//tail[23].addChild(tailEnd);
 			tail[9].addChild(tailEnd);
 			tail[10].showModel = false;
 			setRotationAngle(tailEnd, 0.2618F, 0.0F, 0.0F);
@@ -746,8 +790,11 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 			EntityCustom entity = (EntityCustom)e;
 			int pose = entity.getPose();
 			boolean robeOff = entity.isRobeOff();
+			Vector3f[][] tailPose = tailPoseRobeOn;
 			if (robeOff) {
-				this.robe.showModel = false;
+				tailPose = tailPoseRobeOff;
+				mask.showModel = false;
+				robe.showModel = false;
 				body.rotateAngleX = 1.8326F;
 				bipedHead.rotateAngleX += -1.5708F;
 				setRotationAngle(bipedRightUpperArm, -0.5236F, 0.2618F, 1.3963F);
@@ -758,7 +805,8 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 				leftThigh.rotateAngleY = -1.309F;
 				tail[0].rotateAngleX = 1.5708F;
 			} else {
-				this.robe.showModel = true;
+				mask.showModel = true;
+				robe.showModel = true;
 				body.rotateAngleX = 1.0472F;
 				bipedHead.rotateAngleX += -1.0472F;
 				setRotationAngle(bipedRightUpperArm, -1.0472F, 0.0F, 0.0F);
@@ -771,19 +819,51 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 			}
 			if (entity.poseProgress >= 0) {
 				if (pose == 0) {
-					
+					/*float f9 = (float)(entity.poseProgressEnd - entity.poseProgress + 1);
+					for (int i = 1; i <= 9; i++) {
+						float f6 = tail[i+1].rotateAngleX;
+						float f7 = tail[i+1].rotateAngleY;
+						float f8 = tail[i+1].rotateAngleZ;
+						f6 += (tailPose[pose][i].x - f6) / f9;
+						f7 += (tailPose[pose][i].y - f7) / f9;
+						f8 += (tailPose[pose][i].z - f8) / f9;
+						this.setRotationAngle(tail[i], f6, f7, f8);
+					}*/
+					ModelRenderer mr = tail[8 + entity.poseProgressEnd - entity.poseProgress];
+					if (mr.childModels == null || !mr.childModels.contains(tailEnd)) {
+						mr.addChild(tailEnd);
+					}
+					tail[9 + entity.poseProgressEnd - entity.poseProgress].showModel = false;
+					if (tail[9 + entity.poseProgressEnd - entity.poseProgress].childModels != null) {
+						tail[9 + entity.poseProgressEnd - entity.poseProgress].childModels.remove(tailEnd);
+					}
 				} else {
-					tail[8 + entity.poseProgress].childModels.remove(tailEnd);
-					tail[9 + entity.poseProgress].addChild(tailEnd);
-					tail[10 + entity.poseProgress].showModel = false;
-					//tailPose[pose][entity.poseProgress]
-				}
-				if (pose == 2) {
-					
-				} else if (pose == 1) {
-					
-				} else {
-					
+					if (tail[8 + entity.poseProgress].childModels != null) {
+						tail[8 + entity.poseProgress].childModels.remove(tailEnd);
+					}
+					ModelRenderer mr = tail[9 + entity.poseProgress];
+					if (mr.childModels == null || !mr.childModels.contains(tailEnd)) {
+						mr.addChild(tailEnd);
+					}
+					if (entity.poseProgress < entity.poseProgressEnd) {
+						tail[10 + entity.poseProgress].showModel = false;
+					}
+					float f9 = (float)(entity.poseProgressEnd - entity.poseProgress + 1);
+					for (int i = 9 + entity.poseProgress; i > 0; i--) {
+						float f6 = tail[i-1].rotateAngleX;
+						float f7 = tail[i-1].rotateAngleY;
+						float f8 = tail[i-1].rotateAngleZ;
+						if (i == 1) {
+							f6 = 0.0F;
+							f7 = 0.0F;
+							f8 = 0.0F;
+						}
+						f6 += (tailPose[pose][i].x - f6) / f9;
+						f7 += (tailPose[pose][i].y - f7) / f9;
+						f8 += (tailPose[pose][i].z - f8) / f9;
+						this.setRotationAngle(tail[i], f6, f7, f8);
+						tail[i].showModel = true;
+					}
 				}
 			} else {
 				for (int j = 1; j < 10; j++) {
@@ -796,6 +876,8 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 			this.copyModelAngles(bipedHead, bipedHeadwear);
 			this.setRotationAngle(rightArm, bipedRightArm.rotateAngleX, bipedRightArm.rotateAngleY, bipedRightArm.rotateAngleZ);
 			this.setRotationAngle(leftArm, bipedLeftArm.rotateAngleX, bipedLeftArm.rotateAngleY, bipedLeftArm.rotateAngleZ);
+			bipedRightLeg.rotationPointY = 15.0F;
+			bipedLeftLeg.rotationPointY = 15.0F;
 		}
 	}
 }

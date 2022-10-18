@@ -17,6 +17,7 @@ import net.minecraft.entity.EnumCreatureAttribute;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.Entity;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.network.datasync.DataSerializers;
@@ -25,10 +26,12 @@ import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.ElementsNarutomodMod;
 
 import javax.annotation.Nullable;
+import com.google.common.base.Optional;
+import java.util.UUID;
 
 @ElementsNarutomodMod.ModElement.Tag
 public abstract class EntityShieldBase extends EntityLivingBase {
-	private static final DataParameter<Integer> SUMMONERID = EntityDataManager.<Integer>createKey(EntityShieldBase.class, DataSerializers.VARINT);
+	private static final DataParameter<Optional<UUID>> SUMMONER_UUID = EntityDataManager.<Optional<UUID>>createKey(EntityShieldBase.class, DataSerializers.OPTIONAL_UNIQUE_ID);
 	private EntityLivingBase summoner;
 	private boolean ownerCanSteer = false;
 	private float steerSpeed;
@@ -58,33 +61,34 @@ public abstract class EntityShieldBase extends EntityLivingBase {
 	@Override
 	protected void entityInit() {
 		super.entityInit();
-		this.dataManager.register(SUMMONERID, Integer.valueOf(-1));
+		this.dataManager.register(SUMMONER_UUID, Optional.absent());
 	}
 
-	protected void setSummoner(EntityLivingBase entity) {
-		this.dataManager.set(SUMMONERID, Integer.valueOf(entity.getEntityId()));
+	private void setSummonerUuid(UUID uuid) {
+		this.dataManager.set(SUMMONER_UUID, Optional.fromNullable(uuid));
 	}
 
+	private UUID getSummonerUuid() {
+		return (UUID)((Optional)this.dataManager.get(SUMMONER_UUID)).orNull();
+	}
+	
+	public void setSummoner(EntityLivingBase player) {
+	    this.setSummonerUuid(player.getUniqueID());
+	}
+	
 	@Nullable
 	public EntityLivingBase getSummoner() {
-		Entity entity = this.world.getEntityByID(((Integer)this.getDataManager().get(SUMMONERID)).intValue());
-		return entity instanceof EntityLivingBase ? (EntityLivingBase)entity : null;
+	    UUID uuid = this.getSummonerUuid();
+	    if (uuid == null) {
+	   		return null;
+	    } else {
+	    	Entity entity = ProcedureUtils.getEntityFromUUID(this.world, uuid);
+	        if (entity instanceof EntityLivingBase) {
+	        	return (EntityLivingBase)entity;
+	        }
+		    return null;
+	    }
 	}
-
-	//@Override
-	//protected boolean canDespawn() {
-	//	return false;
-	//}
-
-	//@Override
-	//protected Item getDropItem() {
-	//	return null;
-	//}
-
-	//@Override
-	//public net.minecraft.util.SoundEvent getAmbientSound() {
-	//	return null;
-	//}
 
 	@Override
 	public net.minecraft.util.SoundEvent getHurtSound(DamageSource ds) {
@@ -218,6 +222,23 @@ public abstract class EntityShieldBase extends EntityLivingBase {
 	//public Vec3d getLookVec() {
 	//	return this.getVectorForRotation(this.rotationPitch, this.rotationYawHead);
 	//}
+
+	@Override
+	public void readEntityFromNBT(NBTTagCompound compound) {
+		super.readEntityFromNBT(compound);
+		if (compound.hasUniqueId("summonerUUID")) {
+			this.setSummonerUuid(compound.getUniqueId("summonerUUID"));
+		}
+	}
+
+	@Override
+	public void writeEntityToNBT(NBTTagCompound compound) {
+		super.writeEntityToNBT(compound);
+		UUID suuid = this.getSummonerUuid();
+		if (suuid != null) {
+			compound.setUniqueId("summonerUUID", suuid);
+		}
+	}
 
 	@Override
 	public EnumHandSide getPrimaryHand() {
