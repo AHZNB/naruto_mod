@@ -33,16 +33,27 @@ Items:
  - added Hidan's Scythe (WIP)
  - added Fuma Shuriken (WIP)
  - added Sound Gaunlet (WIP)
+ - added Poison Bombs (WIP)
+ - added Poison Senbons (WIP)
+ - added Cleaver
+ - added Curry of Life
+ - added Curry and Rice
+ - added Rice
+ - added Onigiri
+ - added Sake
+ - added Ichiraku Ramen
+ - added Tea
 
 NOTE: Weapons that do not currently have abilties and are supposed to will be given abilities, they are currently in as drafts and will be worked on accordingly.
 
-To add tomorrow:
+To add:
 
 Sound Gaunlet
 Claw
-Cleaver
 Ishiken 
 (This will be after they are touched up on with textures)
+
+- Ichiraku as food vendor
 
  
 Entities:
