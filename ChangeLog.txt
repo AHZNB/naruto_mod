@@ -43,6 +43,7 @@ Items:
  - added Sake
  - added Ichiraku Ramen
  - added Tea
+ - added flying thunder god kunai (WIP)
 
 NOTE: Weapons that do not currently have abilties and are supposed to will be given abilities, they are currently in as drafts and will be worked on accordingly.
 

@@ -1,0 +1,6 @@
+{
+  "parent": "narutomod:custom/kunai_hiraishin",
+  "textures": {
+    "1": "narutomod:blocks/kunai_hiraishin"
+  }
+}
