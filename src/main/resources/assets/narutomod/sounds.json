@@ -907,5 +907,14 @@
         "stream": false
       }
     ]
+  },
+  "hiruko_tail": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "narutomod:hiruko_tail",
+        "stream": false
+      }
+    ]
   }
 }

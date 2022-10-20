@@ -91,6 +91,10 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 		private void setPose(int pose) {
 			this.dataManager.set(POSE, Integer.valueOf(pose));
 			this.poseProgress = 0;
+			if (pose != 0) {
+				this.playSound(net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation(("narutomod:hiruko_tail"))),
+				 1f, this.rand.nextFloat() * 0.4f + 0.7f);
+			}
 		}
 	
 		public int getPose() {
@@ -153,9 +157,9 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 				if (entity != null && entity.swingProgressInt == 1) {
 					this.setPose(1);
 				}
-				if (!this.isRobeOff()) {
-					this.takeRobeOff(true);
-				}
+				//if (!this.isRobeOff()) {
+				//	this.takeRobeOff(true);
+				//}
 			}
 			this.updateTailSwingProgress();
 			super.onLivingUpdate();
@@ -258,6 +262,26 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 		private final ModelRenderer bone11;
 		private final ModelRenderer bone12;
 		private final ModelRenderer bone13;
+		private final ModelRenderer hat;
+		private final ModelRenderer Bell_r1;
+		private final ModelRenderer Bell_r2;
+		private final ModelRenderer cube_r1;
+		private final ModelRenderer cube_r2;
+		private final ModelRenderer cube_r3;
+		private final ModelRenderer cube_r4;
+		private final ModelRenderer cube_r5;
+		private final ModelRenderer cube_r6;
+		private final ModelRenderer cube_r7;
+		private final ModelRenderer cube_r8;
+		private final ModelRenderer cube_r9;
+		private final ModelRenderer cube_r10;
+		private final ModelRenderer cube_r11;
+		private final ModelRenderer cube_r12;
+		private final ModelRenderer cube_r13;
+		private final ModelRenderer cube_r14;
+		private final ModelRenderer cube_r15;
+		private final ModelRenderer cube_r16;
+		private final ModelRenderer veil;
 		//private final ModelRenderer bipedBody;
 		private final ModelRenderer robe;
 		private final ModelRenderer bone21;
@@ -515,6 +539,105 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 			hair.addChild(bone13);
 			setRotationAngle(bone13, 0.0F, 0.0F, 0.7854F);
 			bone13.cubeList.add(new ModelBox(bone13, 68, 0, -0.75F, 0.0F, 0.25F, 1, 2, 8, 0.05F, true));
+			hat = new ModelRenderer(this);
+			hat.setRotationPoint(0.0F, -5.5F, 0.0F);
+			bipedHeadwear.addChild(hat);
+			setRotationAngle(hat, -0.0436F, 0.0F, 0.0F);
+			Bell_r1 = new ModelRenderer(this);
+			Bell_r1.setRotationPoint(-3.825F, 0.0F, -9.0F);
+			hat.addChild(Bell_r1);
+			setRotationAngle(Bell_r1, 0.0F, 2.0071F, 0.0F);
+			Bell_r1.cubeList.add(new ModelBox(Bell_r1, 116, 16, 0.0F, 0.35F, -1.0F, 0, 7, 2, 0.0F, false));
+			Bell_r2 = new ModelRenderer(this);
+			Bell_r2.setRotationPoint(-3.825F, 0.0F, -9.0F);
+			hat.addChild(Bell_r2);
+			setRotationAngle(Bell_r2, 0.2182F, 0.3927F, 0.0F);
+			Bell_r2.cubeList.add(new ModelBox(Bell_r2, 116, 24, 0.0F, -0.225F, -1.175F, 0, 2, 2, 0.0F, false));
+			cube_r1 = new ModelRenderer(this);
+			cube_r1.setRotationPoint(0.0F, -6.5F, 0.0F);
+			hat.addChild(cube_r1);
+			setRotationAngle(cube_r1, 0.9599F, 0.3927F, 0.0F);
+			cube_r1.cubeList.add(new ModelBox(cube_r1, 120, 16, -2.0F, 0.5F, 0.0F, 4, 12, 0, 0.0F, false));
+			cube_r2 = new ModelRenderer(this);
+			cube_r2.setRotationPoint(0.0F, -6.5F, 0.0F);
+			hat.addChild(cube_r2);
+			setRotationAngle(cube_r2, 0.9599F, 0.7854F, 0.0F);
+			cube_r2.cubeList.add(new ModelBox(cube_r2, 120, 16, -2.0F, 0.5F, 0.0F, 4, 12, 0, 0.0F, false));
+			cube_r3 = new ModelRenderer(this);
+			cube_r3.setRotationPoint(0.0F, -6.5F, 0.0F);
+			hat.addChild(cube_r3);
+			setRotationAngle(cube_r3, 0.9599F, 1.1781F, 0.0F);
+			cube_r3.cubeList.add(new ModelBox(cube_r3, 120, 16, -2.0F, 0.5F, 0.0F, 4, 12, 0, 0.0F, false));
+			cube_r4 = new ModelRenderer(this);
+			cube_r4.setRotationPoint(0.0F, -6.5F, 0.0F);
+			hat.addChild(cube_r4);
+			setRotationAngle(cube_r4, 0.9599F, 1.5708F, 0.0F);
+			cube_r4.cubeList.add(new ModelBox(cube_r4, 120, 16, -2.0F, 0.5F, 0.0F, 4, 12, 0, 0.0F, false));
+			cube_r5 = new ModelRenderer(this);
+			cube_r5.setRotationPoint(0.0F, -6.5F, 0.0F);
+			hat.addChild(cube_r5);
+			setRotationAngle(cube_r5, 0.9599F, 1.9635F, 0.0F);
+			cube_r5.cubeList.add(new ModelBox(cube_r5, 120, 16, -2.0F, 0.5F, 0.0F, 4, 12, 0, 0.0F, false));
+			cube_r6 = new ModelRenderer(this);
+			cube_r6.setRotationPoint(0.0F, -6.5F, 0.0F);
+			hat.addChild(cube_r6);
+			setRotationAngle(cube_r6, 0.9599F, 2.3562F, 0.0F);
+			cube_r6.cubeList.add(new ModelBox(cube_r6, 120, 16, -2.0F, 0.5F, 0.0F, 4, 12, 0, 0.0F, false));
+			cube_r7 = new ModelRenderer(this);
+			cube_r7.setRotationPoint(0.0F, -6.5F, 0.0F);
+			hat.addChild(cube_r7);
+			setRotationAngle(cube_r7, 0.9599F, 2.7489F, 0.0F);
+			cube_r7.cubeList.add(new ModelBox(cube_r7, 120, 16, -2.0F, 0.5F, 0.0F, 4, 12, 0, 0.0F, false));
+			cube_r8 = new ModelRenderer(this);
+			cube_r8.setRotationPoint(0.0F, -6.5F, 0.0F);
+			hat.addChild(cube_r8);
+			setRotationAngle(cube_r8, 0.9599F, 3.1416F, 0.0F);
+			cube_r8.cubeList.add(new ModelBox(cube_r8, 120, 16, -2.0F, 0.5F, 0.0F, 4, 12, 0, 0.0F, false));
+			cube_r9 = new ModelRenderer(this);
+			cube_r9.setRotationPoint(0.0F, -6.5F, 0.0F);
+			hat.addChild(cube_r9);
+			setRotationAngle(cube_r9, 0.9599F, -2.7489F, 0.0F);
+			cube_r9.cubeList.add(new ModelBox(cube_r9, 120, 16, -2.0F, 0.5F, 0.0F, 4, 12, 0, 0.0F, false));
+			cube_r10 = new ModelRenderer(this);
+			cube_r10.setRotationPoint(0.0F, -6.5F, 0.0F);
+			hat.addChild(cube_r10);
+			setRotationAngle(cube_r10, 0.9599F, -2.3562F, 0.0F);
+			cube_r10.cubeList.add(new ModelBox(cube_r10, 120, 16, -2.0F, 0.5F, 0.0F, 4, 12, 0, 0.0F, false));
+			cube_r11 = new ModelRenderer(this);
+			cube_r11.setRotationPoint(0.0F, -6.5F, 0.0F);
+			hat.addChild(cube_r11);
+			setRotationAngle(cube_r11, 0.9599F, -1.9635F, 0.0F);
+			cube_r11.cubeList.add(new ModelBox(cube_r11, 120, 16, -2.0F, 0.5F, 0.0F, 4, 12, 0, 0.0F, false));
+			cube_r12 = new ModelRenderer(this);
+			cube_r12.setRotationPoint(0.0F, -6.5F, 0.0F);
+			hat.addChild(cube_r12);
+			setRotationAngle(cube_r12, 0.9599F, -1.5708F, 0.0F);
+			cube_r12.cubeList.add(new ModelBox(cube_r12, 120, 16, -2.0F, 0.5F, 0.0F, 4, 12, 0, 0.0F, false));
+			cube_r13 = new ModelRenderer(this);
+			cube_r13.setRotationPoint(0.0F, -6.5F, 0.0F);
+			hat.addChild(cube_r13);
+			setRotationAngle(cube_r13, 0.9599F, -1.1781F, 0.0F);
+			cube_r13.cubeList.add(new ModelBox(cube_r13, 120, 16, -2.0F, 0.5F, 0.0F, 4, 12, 0, 0.0F, false));
+			cube_r14 = new ModelRenderer(this);
+			cube_r14.setRotationPoint(0.0F, -6.5F, 0.0F);
+			hat.addChild(cube_r14);
+			setRotationAngle(cube_r14, 0.9599F, -0.7854F, 0.0F);
+			cube_r14.cubeList.add(new ModelBox(cube_r14, 120, 16, -2.0F, 0.5F, 0.0F, 4, 12, 0, 0.0F, false));
+			cube_r15 = new ModelRenderer(this);
+			cube_r15.setRotationPoint(0.0F, -6.5F, 0.0F);
+			hat.addChild(cube_r15);
+			setRotationAngle(cube_r15, 0.9599F, -0.3927F, 0.0F);
+			cube_r15.cubeList.add(new ModelBox(cube_r15, 120, 16, -2.0F, 0.5F, 0.0F, 4, 12, 0, 0.0F, false));
+			cube_r16 = new ModelRenderer(this);
+			cube_r16.setRotationPoint(0.0F, -6.5F, 0.0F);
+			hat.addChild(cube_r16);
+			setRotationAngle(cube_r16, 0.9599F, 0.0F, 0.0F);
+			cube_r16.cubeList.add(new ModelBox(cube_r16, 120, 16, -2.0F, 0.5F, 0.0F, 4, 12, 0, 0.0F, false));
+			veil = new ModelRenderer(this);
+			veil.setRotationPoint(0.0F, 5.5F, 0.0F);
+			hat.addChild(veil);
+			setRotationAngle(veil, 0.0436F, 0.0F, 0.0F);
+			veil.cubeList.add(new ModelBox(veil, 96, 0, -4.0F, -8.6F, -4.0F, 8, 8, 8, 2.0F, false));
 			bipedBody = new ModelRenderer(this);
 			bipedBody.setRotationPoint(0.0F, -12.0F, 0.0F);
 			body.addChild(bipedBody);
@@ -794,6 +917,8 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 			if (robeOff) {
 				tailPose = tailPoseRobeOff;
 				mask.showModel = false;
+				hair.showModel = true;
+				hat.showModel = false;
 				robe.showModel = false;
 				body.rotateAngleX = 1.8326F;
 				bipedHead.rotateAngleX += -1.5708F;
@@ -806,6 +931,8 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 				tail[0].rotateAngleX = 1.5708F;
 			} else {
 				mask.showModel = true;
+				hair.showModel = false;
+				hat.showModel = true;
 				robe.showModel = true;
 				body.rotateAngleX = 1.0472F;
 				bipedHead.rotateAngleX += -1.0472F;
@@ -818,17 +945,8 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 				tail[0].rotateAngleX = 0.7854F;
 			}
 			if (entity.poseProgress >= 0) {
-				if (pose == 0) {
-					/*float f9 = (float)(entity.poseProgressEnd - entity.poseProgress + 1);
-					for (int i = 1; i <= 9; i++) {
-						float f6 = tail[i+1].rotateAngleX;
-						float f7 = tail[i+1].rotateAngleY;
-						float f8 = tail[i+1].rotateAngleZ;
-						f6 += (tailPose[pose][i].x - f6) / f9;
-						f7 += (tailPose[pose][i].y - f7) / f9;
-						f8 += (tailPose[pose][i].z - f8) / f9;
-						this.setRotationAngle(tail[i], f6, f7, f8);
-					}*/
+				switch (pose) {
+				case 0:
 					ModelRenderer mr = tail[8 + entity.poseProgressEnd - entity.poseProgress];
 					if (mr.childModels == null || !mr.childModels.contains(tailEnd)) {
 						mr.addChild(tailEnd);
@@ -837,11 +955,12 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 					if (tail[9 + entity.poseProgressEnd - entity.poseProgress].childModels != null) {
 						tail[9 + entity.poseProgressEnd - entity.poseProgress].childModels.remove(tailEnd);
 					}
-				} else {
+					break;
+				case 1:
 					if (tail[8 + entity.poseProgress].childModels != null) {
 						tail[8 + entity.poseProgress].childModels.remove(tailEnd);
 					}
-					ModelRenderer mr = tail[9 + entity.poseProgress];
+					mr = tail[9 + entity.poseProgress];
 					if (mr.childModels == null || !mr.childModels.contains(tailEnd)) {
 						mr.addChild(tailEnd);
 					}
@@ -864,8 +983,16 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 						this.setRotationAngle(tail[i], f6, f7, f8);
 						tail[i].showModel = true;
 					}
+					break;
+				case 2:
+					for (int i = 1; i < tailPose[pose].length; i++) {
+						this.setRotationAngle(tail[i], tailPose[pose][i].x, tailPose[pose][i].y, tailPose[pose][i].z);
+						tail[i].showModel = true;
+					}
+					break;
 				}
-			} else {
+			}
+			if (pose == 2 || entity.poseProgress < 0) {
 				for (int j = 1; j < 10; j++) {
 					tail[j].rotateAngleX = tailPose[pose][j].x + MathHelper.sin((f2 - j) * 0.1F) * tailSway[j].x;
 					tail[j].rotateAngleZ = tailPose[pose][j].z + MathHelper.cos((f2 - j) * 0.1F) * tailSway[j].z;
