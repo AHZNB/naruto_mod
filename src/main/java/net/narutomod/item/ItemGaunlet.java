@@ -33,43 +33,41 @@ import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.Minecraft;
 
 @ElementsNarutomodMod.ModElement.Tag
-public class ItemPoisonbomb extends ElementsNarutomodMod.ModElement {
-	@GameRegistry.ObjectHolder("narutomod:poisonbomb")
+public class ItemGaunlet extends ElementsNarutomodMod.ModElement {
+	@GameRegistry.ObjectHolder("narutomod:gaunlet")
 	public static final Item block = null;
-	public static final int ENTITYID = 400;
-	public ItemPoisonbomb(ElementsNarutomodMod instance) {
-		super(instance, 788);
+	public static final int ENTITYID = 403;
+	public ItemGaunlet(ElementsNarutomodMod instance) {
+		super(instance, 793);
 	}
 
 	@Override
 	public void initElements() {
 		elements.items.add(() -> new RangedItem());
 		elements.entities.add(() -> EntityEntryBuilder.create().entity(EntityArrowCustom.class)
-				.id(new ResourceLocation("narutomod", "entitybulletpoisonbomb"), ENTITYID).name("entitybulletpoisonbomb").tracker(64, 1, true)
-				.build());
+				.id(new ResourceLocation("narutomod", "entitybulletgaunlet"), ENTITYID).name("entitybulletgaunlet").tracker(64, 1, true).build());
 	}
 
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void registerModels(ModelRegistryEvent event) {
-		ModelLoader.setCustomModelResourceLocation(block, 0, new ModelResourceLocation("narutomod:poisonbomb", "inventory"));
+		ModelLoader.setCustomModelResourceLocation(block, 0, new ModelResourceLocation("narutomod:gaunlet", "inventory"));
 	}
 
 	@SideOnly(Side.CLIENT)
 	@Override
 	public void preInit(FMLPreInitializationEvent event) {
 		RenderingRegistry.registerEntityRenderingHandler(EntityArrowCustom.class, renderManager -> {
-			return new RenderSnowball(renderManager, new ItemStack(ItemPoisonbomb.block, (int) (1)).getItem(),
-					Minecraft.getMinecraft().getRenderItem());
+			return new RenderSnowball(renderManager, new ItemStack(ItemClaw.block, (int) (1)).getItem(), Minecraft.getMinecraft().getRenderItem());
 		});
 	}
 	public static class RangedItem extends Item {
 		public RangedItem() {
 			super();
-			setMaxDamage(1);
+			setMaxDamage(0);
 			setFull3D();
-			setUnlocalizedName("poisonbomb");
-			setRegistryName("poisonbomb");
+			setUnlocalizedName("gaunlet");
+			setRegistryName("gaunlet");
 			maxStackSize = 1;
 			setCreativeTab(TabModTab.tab);
 		}
@@ -83,15 +81,14 @@ public class ItemPoisonbomb extends ElementsNarutomodMod.ModElement {
 				entityarrow.shoot(entity.getLookVec().x, entity.getLookVec().y, entity.getLookVec().z, power * 2, 0);
 				entityarrow.setSilent(true);
 				entityarrow.setIsCritical(false);
-				entityarrow.setDamage(5);
-				entityarrow.setKnockbackStrength(5);
+				entityarrow.setDamage(8);
+				entityarrow.setKnockbackStrength(0);
 				itemstack.damageItem(1, entity);
 				int x = (int) entity.posX;
 				int y = (int) entity.posY;
 				int z = (int) entity.posZ;
 				world.playSound((EntityPlayer) null, (double) x, (double) y, (double) z,
-						(net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY
-								.getObject(new ResourceLocation(("entity.snowman.shoot"))),
+						(net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation(("narutomod:bullet"))),
 						SoundCategory.NEUTRAL, 1, 1f / (itemRand.nextFloat() * 0.5f + 1f) + (power / 2));
 				entityarrow.pickupStatus = EntityArrow.PickupStatus.DISALLOWED;
 				if (!world.isRemote)
