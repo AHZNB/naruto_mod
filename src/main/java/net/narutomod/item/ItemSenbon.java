@@ -2,6 +2,7 @@
 package net.narutomod.item;
 
 import net.narutomod.procedure.ProcedureKunaiBulletHitsLivingEntity;
+import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.creativetab.TabModTab;
 import net.narutomod.ElementsNarutomodMod;
 
@@ -14,6 +15,7 @@ import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 
+import net.minecraft.init.Enchantments;
 import net.minecraft.world.World;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.ResourceLocation;
@@ -23,6 +25,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Item;
 import net.minecraft.item.EnumAction;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.EntityPlayer;
@@ -74,7 +77,7 @@ public class ItemSenbon extends ElementsNarutomodMod.ModElement {
 	public static class RangedItem extends Item {
 		public RangedItem() {
 			super();
-			setMaxDamage(1);
+			setMaxDamage(0);
 			setFull3D();
 			setUnlocalizedName("senbon");
 			setRegistryName("senbon");
@@ -82,27 +85,21 @@ public class ItemSenbon extends ElementsNarutomodMod.ModElement {
 			setCreativeTab(TabModTab.tab);
 		}
 
-		@Override
+		/*@Override
 		public void onPlayerStoppedUsing(ItemStack itemstack, World world, EntityLivingBase entityLivingBase, int timeLeft) {
-			if (!world.isRemote && entityLivingBase instanceof EntityPlayerMP) {
+			EntityArrowCustom.spawnArrow(entityLivingBase);
+		}*/
+
+		@Override
+		public void onUsingTick(ItemStack itemstack, EntityLivingBase entityLivingBase, int count) {
+			if (entityLivingBase instanceof EntityPlayerMP) {
 				EntityPlayerMP entity = (EntityPlayerMP) entityLivingBase;
-				float power = 1f;
-				EntityArrowCustom entityarrow = new EntityArrowCustom(world, entity);
-				entityarrow.shoot(entity.getLookVec().x, entity.getLookVec().y, entity.getLookVec().z, power * 2, 0);
-				entityarrow.setSilent(true);
-				entityarrow.setIsCritical(false);
-				entityarrow.setDamage(2.5);
-				entityarrow.setKnockbackStrength(0);
-				itemstack.damageItem(1, entity);
-				int x = (int) entity.posX;
-				int y = (int) entity.posY;
-				int z = (int) entity.posZ;
-				world.playSound((EntityPlayer) null, (double) x, (double) y, (double) z,
-						(net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation(("narutomod:senbon"))),
-						SoundCategory.NEUTRAL, 1, 1f / (itemRand.nextFloat() * 0.5f + 1f) + (power / 2));
-				entityarrow.pickupStatus = EntityArrow.PickupStatus.DISALLOWED;
-				if (!world.isRemote)
-					world.spawnEntity(entityarrow);
+				EntityArrowCustom.spawnArrow(entity);
+				if (!entity.capabilities.isCreativeMode
+				 && EnchantmentHelper.getEnchantmentLevel(Enchantments.INFINITY, itemstack) <= 0) {
+					entity.inventory.clearMatchingItems(block, -1, 1, null);
+				}
+				entity.stopActiveHand();
 			}
 		}
 
@@ -152,6 +149,23 @@ public class ItemSenbon extends ElementsNarutomodMod.ModElement {
 		protected ItemStack getArrowStack() {
 			return new ItemStack(block);
 		}
+
+		public static void spawnArrow(EntityLivingBase entity) {
+			if (!entity.world.isRemote) {
+				float power = 1f;
+				EntityArrowCustom entityarrow = new EntityArrowCustom(entity.world, entity);
+				entityarrow.shoot(entity.getLookVec().x, entity.getLookVec().y, entity.getLookVec().z, power * 2, 0);
+				entityarrow.setSilent(true);
+				entityarrow.setIsCritical(false);
+				entityarrow.setDamage(2.5);
+				entityarrow.setKnockbackStrength(0);
+				entity.world.playSound(null, entity.posX, entity.posY, entity.posZ,
+						net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation(("narutomod:senbon"))),
+						SoundCategory.NEUTRAL, 1, 1f / (entity.getRNG().nextFloat() * 0.5f + 1f) + (power / 2));
+				entityarrow.pickupStatus = EntityArrow.PickupStatus.DISALLOWED;
+				entity.world.spawnEntity(entityarrow);
+			}
+		}
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -167,10 +181,11 @@ public class ItemSenbon extends ElementsNarutomodMod.ModElement {
 
 	    @Override
 	    public void doRender(EntityArrowCustom entity, double x, double y, double z, float entityYaw, float partialTicks) {
+	    	float f = ProcedureUtils.interpolateRotation(entity.prevRotationYaw, entity.rotationYaw, partialTicks);
 	        GlStateManager.pushMatrix();
 	        GlStateManager.translate((float)x, (float)y, (float)z);
 	        GlStateManager.enableRescaleNormal();
-	        GlStateManager.rotate(entity.prevRotationYaw + (entity.rotationYaw - entity.prevRotationYaw) * partialTicks - 90.0F, 0.0F, 1.0F, 0.0F);
+	        GlStateManager.rotate(f - 90.0F, 0.0F, 1.0F, 0.0F);
 	        GlStateManager.rotate(entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks, 0.0F, 0.0F, 1.0F);
 	        this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
 	        if (this.renderOutlines) {

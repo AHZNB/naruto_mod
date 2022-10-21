@@ -5387,6 +5387,103 @@
         0.8,
         1
       ]
+    },
+    "thirdperson_lefthand": {
+      "rotation": [
+        90,
+        0,
+        0
+      ],
+      "translation": [
+        0,
+        -2,
+        4
+      ],
+      "scale": [
+        1,
+        0.8,
+        1
+      ]
+    },
+    "firstperson_righthand": {
+      "rotation": [
+        90,
+        0,
+        0
+      ],
+      "translation": [
+        0,
+        -2,
+        4
+      ],
+      "scale": [
+        1,
+        0.8,
+        1
+      ]
+    },
+    "firstperson_lefthand": {
+      "rotation": [
+        90,
+        0,
+        0
+      ],
+      "translation": [
+        0,
+        -2,
+        4
+      ],
+      "scale": [
+        1,
+        0.8,
+        1
+      ]
+    },
+    "ground": {
+      "rotation": [
+        0,
+        0,
+        180
+      ],
+      "translation": [
+        0,
+        3.25,
+        0
+      ]
+    },
+    "gui": {
+      "rotation": [
+        128.25,
+        -45,
+        180
+      ],
+      "translation": [
+        0,
+        1,
+        -1
+      ],
+      "scale": [
+        1.5,
+        1.5,
+        1.5
+      ]
+    },
+    "fixed": {
+      "rotation": [
+        0,
+        -45,
+        180
+      ],
+      "translation": [
+        0,
+        -2.75,
+        -1
+      ],
+      "scale": [
+        1.5,
+        1.5,
+        1.5
+      ]
     }
   },
   "groups": [
@@ -5398,8 +5495,6 @@
         8
       ],
       "color": 0,
-      "nbt": "{}",
-      "armAnimationEnabled": false,
       "children": [
         {
           "name": "group",
@@ -5409,8 +5504,6 @@
             8
           ],
           "color": 0,
-          "nbt": "{}",
-          "armAnimationEnabled": false,
           "children": [
             {
               "name": "hexadecagon",
@@ -5420,8 +5513,6 @@
                 8
               ],
               "color": 0,
-              "nbt": "{}",
-              "armAnimationEnabled": false,
               "children": [
                 0,
                 1,
@@ -5449,8 +5540,6 @@
                 8
               ],
               "color": 0,
-              "nbt": "{}",
-              "armAnimationEnabled": false,
               "children": [
                 16,
                 17,
@@ -5478,8 +5567,6 @@
                 8
               ],
               "color": 0,
-              "nbt": "{}",
-              "armAnimationEnabled": false,
               "children": [
                 32,
                 33,
@@ -5507,8 +5594,6 @@
                 8
               ],
               "color": 0,
-              "nbt": "{}",
-              "armAnimationEnabled": false,
               "children": [
                 48,
                 49,
@@ -5530,8 +5615,6 @@
             8
           ],
           "color": 0,
-          "nbt": "{}",
-          "armAnimationEnabled": false,
           "children": [
             56,
             57
@@ -5545,8 +5628,6 @@
             9.62132
           ],
           "color": 0,
-          "nbt": "{}",
-          "armAnimationEnabled": false,
           "children": [
             {
               "name": "group",
@@ -5556,8 +5637,6 @@
                 6.5
               ],
               "color": 0,
-              "nbt": "{}",
-              "armAnimationEnabled": false,
               "children": [
                 58,
                 59
@@ -5571,8 +5650,6 @@
                 6.5
               ],
               "color": 0,
-              "nbt": "{}",
-              "armAnimationEnabled": false,
               "children": [
                 60,
                 61
@@ -5586,8 +5663,6 @@
                 6.5
               ],
               "color": 0,
-              "nbt": "{}",
-              "armAnimationEnabled": false,
               "children": [
                 62,
                 63
@@ -5601,8 +5676,6 @@
                 6.5
               ],
               "color": 0,
-              "nbt": "{}",
-              "armAnimationEnabled": false,
               "children": [
                 64,
                 65
@@ -5616,8 +5689,6 @@
                 6.5
               ],
               "color": 0,
-              "nbt": "{}",
-              "armAnimationEnabled": false,
               "children": [
                 66,
                 67

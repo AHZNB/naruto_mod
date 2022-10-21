@@ -124,9 +124,11 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 		protected void applyEntityAttributes() {
 			super.applyEntityAttributes();
 			this.getAttributeMap().registerAttribute(SharedMonsterAttributes.ATTACK_DAMAGE);
+			this.getAttributeMap().registerAttribute(EntityPlayer.REACH_DISTANCE);
 			this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.3D);
 			this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(MAXHEALTH);
 			this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(12.0D);
+			this.getEntityAttribute(EntityPlayer.REACH_DISTANCE).setBaseValue(6.0D);
 		}
 
 		@Override
@@ -136,6 +138,12 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 				return true;
 			}
 			return false;
+		}
+
+		@Override
+		public boolean attackEntityAsMob(Entity entityIn) {
+			super.attackEntityAsMob(entityIn);
+			return ProcedureUtils.attackEntityAsMob(this, entityIn);
 		}
 
 		@Override
@@ -157,7 +165,7 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 		public void onLivingUpdate() {
 			if (!this.world.isRemote) {
 				EntityLivingBase entity = this.getSummoner();
-				if (entity != null && entity.swingProgressInt == 1) {
+				if (entity != null && entity.swingProgressInt == -1) {
 					this.setPose(1);
 				}
 				//if (!this.isRobeOff()) {
@@ -215,6 +223,17 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 		protected void setModelVisibilities(EntityCustom entity) {
 			this.model.setVisible(true);
 			this.model.body.showModel = true;
+			if (entity.isRobeOff()) {
+				this.model.mask.showModel = false;
+				this.model.hair.showModel = true;
+				this.model.hat.showModel = false;
+				this.model.robe.showModel = false;
+			} else {
+				this.model.mask.showModel = true;
+				this.model.hair.showModel = false;
+				this.model.hat.showModel = true;
+				this.model.robe.showModel = true;
+			}
 			if (this.renderManager.renderViewEntity.equals(entity.getControllingPassenger())
 			 && this.renderManager.options.thirdPersonView == 0) {
 				this.model.body.showModel = false;
@@ -309,6 +328,7 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 		//private final ModelRenderer bipedLeftArm;
 		private final ModelRenderer bipedLeftUpperArm;
 		private final ModelRenderer bipedLeftForeArm;
+		private final ModelRenderer torpedo;
 		//private final ModelRenderer bipedLeftUpperArm2;
 		//private final ModelRenderer bipedLeftForeArm2;
 		//private final ModelRenderer bipedRightLeg;
@@ -741,7 +761,10 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 			bipedLeftUpperArm.addChild(bipedLeftForeArm);
 			setRotationAngle(bipedLeftForeArm, -0.2618F, 0.0F, 0.0F);
 			bipedLeftForeArm.cubeList.add(new ModelBox(bipedLeftForeArm, 44, 50, -2.0F, 0.0F, -4.0F, 4, 6, 4, 0.0F, true));
-			bipedLeftForeArm.cubeList.add(new ModelBox(bipedLeftForeArm, 44, 66, -2.0F, 0.0F, -4.0F, 4, 6, 4, 0.5F, true));
+			torpedo = new ModelRenderer(this);
+			torpedo.setRotationPoint(-6.0F, 18.0F, -2.0F);
+			bipedLeftForeArm.addChild(torpedo);
+			torpedo.cubeList.add(new ModelBox(torpedo, 44, 66, 4.0F, -18.0F, -2.0F, 4, 6, 4, 0.5F, true));
 			bipedRightLeg = new ModelRenderer(this);
 			bipedRightLeg.setRotationPoint(-1.9F, 15.0F, 0.0F);
 			rightThigh = new ModelRenderer(this);
@@ -916,14 +939,9 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 			EntityCustom entity = (EntityCustom)e;
 			float pt = f2 - entity.ticksExisted;
 			int pose = entity.getPose();
-			boolean robeOff = entity.isRobeOff();
 			Vector3f[][] tailPose = tailPoseRobeOn;
-			if (robeOff) {
+			if (entity.isRobeOff()) {
 				tailPose = tailPoseRobeOff;
-				mask.showModel = false;
-				hair.showModel = true;
-				hat.showModel = false;
-				robe.showModel = false;
 				body.rotateAngleX = 1.8326F;
 				bipedHead.rotateAngleX += -1.5708F;
 				setRotationAngle(bipedRightUpperArm, -0.5236F, 0.2618F, 1.3963F);
@@ -934,10 +952,6 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 				leftThigh.rotateAngleY = -1.309F;
 				tail[0].rotateAngleX = 1.5708F;
 			} else {
-				mask.showModel = true;
-				hair.showModel = false;
-				hat.showModel = true;
-				robe.showModel = true;
 				body.rotateAngleX = 1.0472F;
 				bipedHead.rotateAngleX += -1.0472F;
 				setRotationAngle(bipedRightUpperArm, -1.0472F, 0.0F, 0.0F);

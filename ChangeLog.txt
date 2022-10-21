@@ -59,6 +59,7 @@ Ishiken
  
 Entities:
  - changed Sanshouo puppet's health to 200
+ - changed kisame & zabuza's AI: no longer actively attacks players
  - added Hiruko puppet (WIP)
  
 Structures:
@@ -70,6 +71,7 @@ Commands:
  
 General:
  - reach effect: targeting fuzziness increases with reach, i.e. fuzziness = targetBoundingBox +- reach * 0.1
+ - chakra: force sync to client on player respawn
 
 0.2.9-beta ================================================================================
 

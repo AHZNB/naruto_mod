@@ -1,8 +1,8 @@
 {
   "id_map": {
-    "DIMENSION": 13,
     "GUI": 56,
-    "ENTITY": 403
+    "DIMENSION": 13,
+    "ENTITY": 404
   },
   "mod_elements": [
     {
@@ -7778,7 +7778,7 @@
       "item.scroll_earth_wall.name": "Earth Release - Earth Wall jutsu scroll",
       "subtitles.sabakusoso": "",
       "entity.wood_golem.name": "Wood Golem",
-      "item.gaunlet.name": "Gaunlet",
+      "item.gaunlet.name": "Metal Gauntlet",
       "entity.water_dragon.name": "Water Dragon Bullet Technique",
       "item.uchihaboots.name": "Ninja Sandles",
       "chattext.eightgates.gate7": "7th Gate: Gate of Shock",

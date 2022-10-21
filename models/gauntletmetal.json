@@ -2,8 +2,8 @@
 	"credit": "Made with Blockbench",
 	"texture_size": [64, 64],
 	"textures": {
-		"0": "Gaunletpng",
-		"particle": "Gaunletpng"
+		"0": "gauntlet_metal",
+		"particle": "gauntlet_metal"
 	},
 	"elements": [
 		{
@@ -966,6 +966,35 @@
 			"rotation": [90, 0, 0],
 			"translation": [0, -2, 4],
 			"scale": [1, 0.8, 1]
+		},
+		"thirdperson_lefthand": {
+			"rotation": [90, 0, 0],
+			"translation": [0, -2, 4],
+			"scale": [1, 0.8, 1]
+		},
+		"firstperson_righthand": {
+			"rotation": [90, 0, 0],
+			"translation": [0, -2, 4],
+			"scale": [1, 0.8, 1]
+		},
+		"firstperson_lefthand": {
+			"rotation": [90, 0, 0],
+			"translation": [0, -2, 4],
+			"scale": [1, 0.8, 1]
+		},
+		"ground": {
+			"rotation": [0, 0, 180],
+			"translation": [0, 3.25, 0]
+		},
+		"gui": {
+			"rotation": [128.25, -45, 180],
+			"translation": [0, 1, -1],
+			"scale": [1.5, 1.5, 1.5]
+		},
+		"fixed": {
+			"rotation": [0, -45, 180],
+			"translation": [0, -2.75, -1],
+			"scale": [1.5, 1.5, 1.5]
 		}
 	},
 	"groups": [
@@ -973,46 +1002,34 @@
 			"name": "group",
 			"origin": [8, 8, 8],
 			"color": 0,
-			"nbt": "{}",
-			"armAnimationEnabled": false,
 			"children": [
 				{
 					"name": "group",
 					"origin": [8, 8, 8],
 					"color": 0,
-					"nbt": "{}",
-					"armAnimationEnabled": false,
 					"children": [
 						{
 							"name": "hexadecagon",
 							"origin": [8, 8, 8],
 							"color": 0,
-							"nbt": "{}",
-							"armAnimationEnabled": false,
 							"children": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
 						},
 						{
 							"name": "hexadecagon",
 							"origin": [8, 8, 8],
 							"color": 0,
-							"nbt": "{}",
-							"armAnimationEnabled": false,
 							"children": [16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31]
 						},
 						{
 							"name": "hexadecagon",
 							"origin": [8, 8, 8],
 							"color": 0,
-							"nbt": "{}",
-							"armAnimationEnabled": false,
 							"children": [32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47]
 						},
 						{
 							"name": "hexadecagon",
 							"origin": [8, 8, 8],
 							"color": 0,
-							"nbt": "{}",
-							"armAnimationEnabled": false,
 							"children": [48, 49, 50, 51, 52, 53, 54, 55]
 						}
 					]
@@ -1021,55 +1038,41 @@
 					"name": "hexadecagon",
 					"origin": [8, 8, 8],
 					"color": 0,
-					"nbt": "{}",
-					"armAnimationEnabled": false,
 					"children": [56, 57]
 				},
 				{
 					"name": "group",
 					"origin": [9.20711, 2, 9.62132],
 					"color": 0,
-					"nbt": "{}",
-					"armAnimationEnabled": false,
 					"children": [
 						{
 							"name": "group",
 							"origin": [9.5, 1.5, 6.5],
 							"color": 0,
-							"nbt": "{}",
-							"armAnimationEnabled": false,
 							"children": [58, 59]
 						},
 						{
 							"name": "group",
 							"origin": [9.5, 1.5, 6.5],
 							"color": 0,
-							"nbt": "{}",
-							"armAnimationEnabled": false,
 							"children": [60, 61]
 						},
 						{
 							"name": "group",
 							"origin": [9.5, 1.5, 6.5],
 							"color": 0,
-							"nbt": "{}",
-							"armAnimationEnabled": false,
 							"children": [62, 63]
 						},
 						{
 							"name": "group",
 							"origin": [9.5, 1.5, 6.5],
 							"color": 0,
-							"nbt": "{}",
-							"armAnimationEnabled": false,
 							"children": [64, 65]
 						},
 						{
 							"name": "group",
 							"origin": [9.5, 1.5, 6.5],
 							"color": 0,
-							"nbt": "{}",
-							"armAnimationEnabled": false,
 							"children": [66, 67]
 						},
 						68
