@@ -1,0 +1,6 @@
+{
+  "parent": "narutomod:custom/ishiken",
+  "textures": {
+    "0": "narutomod:blocks/ishiken"
+  }
+}
