@@ -2,7 +2,7 @@
   "id_map": {
     "DIMENSION": 13,
     "GUI": 56,
-    "ENTITY": 402
+    "ENTITY": 403
   },
   "mod_elements": [
     {
@@ -6649,6 +6649,35 @@
         "0": 402
       },
       "registry_name": "kunai_hiraishin"
+    },
+    {
+      "name": "Ishiken",
+      "type": "tool",
+      "sortid": 791,
+      "compiles": true,
+      "locked_code": false,
+      "ids": {},
+      "registry_name": "ishiken"
+    },
+    {
+      "name": "Claw",
+      "type": "tool",
+      "sortid": 792,
+      "compiles": true,
+      "locked_code": false,
+      "ids": {},
+      "registry_name": "claw"
+    },
+    {
+      "name": "Gaunlet",
+      "type": "gun",
+      "sortid": 793,
+      "compiles": true,
+      "locked_code": false,
+      "ids": {
+        "0": 403
+      },
+      "registry_name": "gaunlet"
     }
   ],
   "variable_elements": [
@@ -7749,6 +7778,7 @@
       "item.scroll_earth_wall.name": "Earth Release - Earth Wall jutsu scroll",
       "subtitles.sabakusoso": "",
       "entity.wood_golem.name": "Wood Golem",
+      "item.gaunlet.name": "Gaunlet",
       "entity.water_dragon.name": "Water Dragon Bullet Technique",
       "item.uchihaboots.name": "Ninja Sandles",
       "chattext.eightgates.gate7": "7th Gate: Gate of Shock",
@@ -7922,6 +7952,7 @@
       "entity.eight_tails.name": "Gyuuki",
       "entity.scorchorb.name": "Spawn scorch orb",
       "item.samurai_armorhelmet.name": "Samurai Helmet",
+      "item.ishiken.name": "Ishiken",
       "subtitles.mokujin_no_jutsu": "",
       "splash_potion.effect.corrosion": "Splash Corrosion",
       "entity.melting_jutsu.name": "Lava Melting Jutsu",
@@ -7947,6 +7978,7 @@
       "tile.meteor.name": "Meteor",
       "item.ninja_armor_konohalegs.name": "Ninja pants (Konoha)",
       "item.scroll_hiding_in_mist.name": "Water Release - Hiding In Mist",
+      "item.claw.name": "Claw",
       "advancements.openedgates.title": "Power of Youth!",
       "tile.explosive_tag.name": "Explosive Tag",
       "item.scroll_water_stream.name": "Water Release - Water Bullet",
