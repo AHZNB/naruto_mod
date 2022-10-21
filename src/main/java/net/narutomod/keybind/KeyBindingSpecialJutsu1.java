@@ -39,7 +39,7 @@ public class KeyBindingSpecialJutsu1 extends ElementsNarutomodMod.ModElement {
 
 	@Override
 	public void preInit(FMLPreInitializationEvent event) {
-		elements.addNetworkMessage(KeyBindingPressedMessageHandler.class, KeyBindingPressedMessage.class, Side.SERVER);
+		elements.addNetworkMessage(KeyBindingPressedMessage.Handler.class, KeyBindingPressedMessage.class, Side.SERVER);
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -50,17 +50,6 @@ public class KeyBindingSpecialJutsu1 extends ElementsNarutomodMod.ModElement {
 		MinecraftForge.EVENT_BUS.register(this);
 	}
 
-	/*@SubscribeEvent
-	@SideOnly(Side.CLIENT)
-	public void onKeyInput(InputEvent.KeyInputEvent event) {
-		if (Minecraft.getMinecraft().currentScreen == null && this.keys.getKeyCode() > 0) {
-			this.processKeyBind();
-			if (!Keyboard.areRepeatEventsEnabled()) {
-				Keyboard.enableRepeatEvents(true);
-			}
-		}
-	}*/
-
 	@SubscribeEvent
 	@SideOnly(Side.CLIENT)
 	public void OnClientPostTick(TickEvent.ClientTickEvent event) {
@@ -68,14 +57,6 @@ public class KeyBindingSpecialJutsu1 extends ElementsNarutomodMod.ModElement {
 			this.processKeyBind();
 		}
 	}
-
-	/*@SubscribeEvent
-	@SideOnly(Side.CLIENT)
-	public void onMouseEvent(InputEvent.MouseInputEvent event) {
-		if (Minecraft.getMinecraft().currentScreen == null && this.keys.getKeyCode() <= 0) {
-			this.processKeyBind();
-		}
-	}*/
 
 	@SideOnly(Side.CLIENT)
 	private void processKeyBind() {
@@ -87,16 +68,6 @@ public class KeyBindingSpecialJutsu1 extends ElementsNarutomodMod.ModElement {
 		this.wasKeyDown = isKeyDown;
 	}
 
-	public static class KeyBindingPressedMessageHandler implements IMessageHandler<KeyBindingPressedMessage, IMessage> {
-		@Override
-		public IMessage onMessage(KeyBindingPressedMessage message, MessageContext context) {
-			EntityPlayerMP entity = context.getServerHandler().player;
-			entity.getServerWorld().addScheduledTask(() -> {
-				pressAction(entity, message.is_pressed);
-			});
-			return null;
-		}
-	}
 
 	public static class KeyBindingPressedMessage implements IMessage {
 		boolean is_pressed;
@@ -105,6 +76,17 @@ public class KeyBindingSpecialJutsu1 extends ElementsNarutomodMod.ModElement {
 
 		public KeyBindingPressedMessage(boolean is_pressed) {
 			this.is_pressed = is_pressed;
+		}
+
+		public static class Handler implements IMessageHandler<KeyBindingPressedMessage, IMessage> {
+			@Override
+			public IMessage onMessage(KeyBindingPressedMessage message, MessageContext context) {
+				EntityPlayerMP entity = context.getServerHandler().player;
+				entity.getServerWorld().addScheduledTask(() -> {
+					pressAction(entity, message.is_pressed);
+				});
+				return null;
+			}
 		}
 
 		public void toBytes(ByteBuf buf) {

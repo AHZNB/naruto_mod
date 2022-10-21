@@ -79,13 +79,14 @@ public class Chakra extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-	public static Pathway pathway(EntityPlayer player) {
+	public static PathwayPlayer pathway(EntityPlayer player) {
 		if (player.world.isRemote) {
-			if (clientPlayerPathway == null || clientPlayerPathway.user != player)
+			if (clientPlayerPathway == null || clientPlayerPathway.user != player) {
 				clientPlayerPathway = new PathwayPlayer(player);
+			}
 			return clientPlayerPathway;
 		}
-		Pathway p = playerMap.get(player);
+		PathwayPlayer p = playerMap.get(player);
 		return p != null ? p : new PathwayPlayer(player);
 	}
 
@@ -119,7 +120,6 @@ public class Chakra extends ElementsNarutomodMod.ModElement {
 			double d = this.getAmount();
 			double max = this.getMax();
 			double d1 = d - amountIn;
-			//this.set(d > this.getMax() ? (ignoreMax || amountIn > 0d ? d : this.getMax()) : d > 0 ? d : 0d);
 			d1 = d1 > max ? (ignoreMax ? d1 : amountIn > 0d ? d1 : d > max ? d : max) : d1 > 0 ? d1 : d;
 			this.set(d1);
 			return d != d1;
@@ -189,7 +189,6 @@ public class Chakra extends ElementsNarutomodMod.ModElement {
 	public static class PathwayPlayer extends Pathway<EntityPlayer> {
 		protected PathwayPlayer(EntityPlayer playerIn) {
 			super(playerIn);
-			//this.amount = playerIn.getEntityData().getDouble(DATAKEY);
 			this.setMax(PlayerTracker.getBattleXp(playerIn) * 0.5d);
 			this.set(playerIn.getEntityData().getDouble(DATAKEY));
 			if (this.getAmount() < 0d) {
@@ -253,7 +252,7 @@ public class Chakra extends ElementsNarutomodMod.ModElement {
 					} else {
 						Pathway p = playerMap.get((EntityPlayer)entity);
 						if (p != null) {
-							p.set(10d);
+							p.set(Math.min(10d, p.getMax()));
 							playerMap.remove((EntityPlayer)entity);
 						}
 					}
@@ -300,7 +299,9 @@ public class Chakra extends ElementsNarutomodMod.ModElement {
 					EntityPlayer oldPlayer = event.getOriginal();
 					PathwayPlayer p = playerMap.get(oldPlayer);
 					if (p != null) {
-						pathway(event.getEntityPlayer()).set(p.getAmount());
+						PathwayPlayer pnew = pathway(event.getEntityPlayer());
+						pnew.set(p.getAmount());
+						pnew.sendToClient();
 						playerMap.remove(oldPlayer);
 					}
 				//}

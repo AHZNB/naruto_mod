@@ -1,6 +1,7 @@
 
 package net.narutomod.item;
 
+import net.narutomod.creativetab.TabModTab;
 import net.narutomod.ElementsNarutomodMod;
 
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -27,7 +28,6 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.client.renderer.entity.RenderSnowball;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.Minecraft;
@@ -71,7 +71,7 @@ public class ItemPoisonbomb extends ElementsNarutomodMod.ModElement {
 			setUnlocalizedName("poisonbomb");
 			setRegistryName("poisonbomb");
 			maxStackSize = 1;
-			setCreativeTab(CreativeTabs.COMBAT);
+			setCreativeTab(TabModTab.tab);
 		}
 
 		@Override

@@ -1,6 +1,7 @@
 
 package net.narutomod.item;
 
+import net.narutomod.creativetab.TabModTab;
 import net.narutomod.ElementsNarutomodMod;
 
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -17,7 +18,6 @@ import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.block.state.IBlockState;
@@ -42,7 +42,7 @@ public class ItemSageStaff extends ElementsNarutomodMod.ModElement {
 				super.addInformation(itemstack, world, list, flag);
 				list.add("Six Path Shakujo: This is the staff created by the truth seeking orb - Originally being held by the sage of the six paths");
 			}
-		}.setUnlocalizedName("sage_staff").setRegistryName("sage_staff").setCreativeTab(CreativeTabs.TOOLS));
+		}.setUnlocalizedName("sage_staff").setRegistryName("sage_staff").setCreativeTab(TabModTab.tab));
 	}
 
 	@SideOnly(Side.CLIENT)

@@ -8,7 +8,7 @@
     "name": "Poison Bomb",
     "specialInfo": [],
     "creativeTab": {
-      "value": "COMBAT"
+      "value": "CUSTOM:ModTab"
     },
     "stackSize": 1,
     "ammoItem": {

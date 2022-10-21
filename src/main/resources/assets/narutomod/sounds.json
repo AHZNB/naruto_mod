@@ -880,5 +880,41 @@
         "stream": false
       }
     ]
+  },
+  "senbon": {
+    "category": "ambient",
+    "sounds": [
+      {
+        "name": "narutomod:senbon",
+        "stream": false
+      }
+    ]
+  },
+  "gunbaiwind": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "narutomod:gunbaiwind",
+        "stream": false
+      }
+    ]
+  },
+  "chainsound": {
+    "category": "ambient",
+    "sounds": [
+      {
+        "name": "narutomod:hidansscythechain",
+        "stream": false
+      }
+    ]
+  },
+  "hiruko_tail": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "narutomod:hiruko_tail",
+        "stream": false
+      }
+    ]
   }
 }

@@ -24,9 +24,42 @@ Items:
  - added samurai armor and recipe
  - added Sanshouo puppet's summoning scroll. after summon, use scroll on puppet to seal it back
  - added Karasu puppet's summoning scroll. after summon, use scroll on puppet to seal it back
+ - added Hiruko puppet's summoning scroll. after summon, use scroll on puppet to seal it back
+ - added gunbai: gives wind from folding fan
+ - added senbons: Ninja tool for attacks
+ - added Yaguras Staff: 4th Mizukage's staff (WIP)
+ - added Staff of Sage of Six Paths (WIP)
+ - added 3rd Hokage's Staff (WIP)
+ - added Hidan's Scythe (WIP)
+ - added Fuma Shuriken (WIP)
+ - added Sound Gaunlet (WIP)
+ - added Poison Bombs (WIP)
+ - added Poison Senbons (WIP)
+ - added Cleaver
+ - added Curry of Life
+ - added Curry and Rice
+ - added Rice
+ - added Onigiri
+ - added Sake
+ - added Ichiraku Ramen
+ - added Tea
+ - added flying thunder god kunai (WIP)
+
+NOTE: Weapons that do not currently have abilties and are supposed to will be given abilities, they are currently in as drafts and will be worked on accordingly.
+
+To add:
+
+Sound Gaunlet
+Claw
+Ishiken 
+(This will be after they are touched up on with textures)
+
+- Ichiraku as food vendor
+
  
 Entities:
  - changed Sanshouo puppet's health to 200
+ - added Hiruko puppet (WIP)
  
 Structures:
  - rebuilt the 4 pillar wood house to match anime
