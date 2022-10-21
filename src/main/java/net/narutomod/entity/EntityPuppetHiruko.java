@@ -62,7 +62,7 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 		private static final DataParameter<Integer> POSE = EntityDataManager.<Integer>createKey(EntityCustom.class, DataSerializers.VARINT);
 		private static final DataParameter<Boolean> ROBE_OFF = EntityDataManager.<Boolean>createKey(EntityCustom.class, DataSerializers.BOOLEAN);
 		public static final float MAXHEALTH = 100.0f;
-		private final int poseProgressEnd = 14;
+		private int poseProgressEnd = 14;
 		private int poseProgress = -1;
 		private Object model;
 
@@ -91,6 +91,7 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 		private void setPose(int pose) {
 			this.dataManager.set(POSE, Integer.valueOf(pose));
 			this.poseProgress = 0;
+			this.poseProgressEnd = pose == 1 ? 7 : pose == 2 ? 3 : 14;
 			if (pose != 0) {
 				this.playSound(net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation(("narutomod:hiruko_tail"))),
 				 1f, this.rand.nextFloat() * 0.4f + 0.7f);
@@ -114,6 +115,8 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 			super.notifyDataManagerChange(key);
 			if (POSE.equals(key) && this.world.isRemote) {
 				this.poseProgress = 0;
+				int pose = this.getPose();
+				this.poseProgressEnd = pose == 1 ? 7 : pose == 2 ? 3 : 14;
 			}
 		}
 
@@ -911,6 +914,7 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 		public void setRotationAngles(float f, float f1, float f2, float f3, float f4, float f5, Entity e) {
 			super.setRotationAngles(f, f1, f2, f3, f4, f5, e);
 			EntityCustom entity = (EntityCustom)e;
+			float pt = f2 - entity.ticksExisted;
 			int pose = entity.getPose();
 			boolean robeOff = entity.isRobeOff();
 			Vector3f[][] tailPose = tailPoseRobeOn;
@@ -947,28 +951,31 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 			if (entity.poseProgress >= 0) {
 				switch (pose) {
 				case 0:
-					ModelRenderer mr = tail[8 + entity.poseProgressEnd - entity.poseProgress];
+					int j = MathHelper.clamp((int)(((float)entity.poseProgressEnd - (float)entity.poseProgress - pt + 1f) / (float)entity.poseProgressEnd * 14.0f), 0, 14);
+					ModelRenderer mr = tail[8 + j];
 					if (mr.childModels == null || !mr.childModels.contains(tailEnd)) {
 						mr.addChild(tailEnd);
 					}
-					tail[9 + entity.poseProgressEnd - entity.poseProgress].showModel = false;
-					if (tail[9 + entity.poseProgressEnd - entity.poseProgress].childModels != null) {
-						tail[9 + entity.poseProgressEnd - entity.poseProgress].childModels.remove(tailEnd);
+					tail[9 + j].showModel = false;
+					if (tail[9 + j].childModels != null) {
+						tail[9 + j].childModels.remove(tailEnd);
 					}
 					break;
 				case 1:
-					if (tail[8 + entity.poseProgress].childModels != null) {
-						tail[8 + entity.poseProgress].childModels.remove(tailEnd);
+				case 2:
+					j = MathHelper.clamp((int)(((float)entity.poseProgress + pt) / (float)entity.poseProgressEnd * 14.0f), 0, 14);
+					if (tail[8 + j].childModels != null) {
+						tail[8 + j].childModels.remove(tailEnd);
 					}
-					mr = tail[9 + entity.poseProgress];
+					mr = tail[9 + j];
 					if (mr.childModels == null || !mr.childModels.contains(tailEnd)) {
 						mr.addChild(tailEnd);
 					}
-					if (entity.poseProgress < entity.poseProgressEnd) {
-						tail[10 + entity.poseProgress].showModel = false;
+					if (j < 14) {
+						tail[10 + j].showModel = false;
 					}
 					float f9 = (float)(entity.poseProgressEnd - entity.poseProgress + 1);
-					for (int i = 9 + entity.poseProgress; i > 0; i--) {
+					for (int i = 9 + j; i > 0; i--) {
 						float f6 = tail[i-1].rotateAngleX;
 						float f7 = tail[i-1].rotateAngleY;
 						float f8 = tail[i-1].rotateAngleZ;
@@ -981,12 +988,6 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 						f7 += (tailPose[pose][i].y - f7) / f9;
 						f8 += (tailPose[pose][i].z - f8) / f9;
 						this.setRotationAngle(tail[i], f6, f7, f8);
-						tail[i].showModel = true;
-					}
-					break;
-				case 2:
-					for (int i = 1; i < tailPose[pose].length; i++) {
-						this.setRotationAngle(tail[i], tailPose[pose][i].x, tailPose[pose][i].y, tailPose[pose][i].z);
 						tail[i].showModel = true;
 					}
 					break;
