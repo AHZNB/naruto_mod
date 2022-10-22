@@ -26,7 +26,7 @@ Items:
  - added Karasu puppet's summoning scroll. after summon, use scroll on puppet to seal it back
  - added Hiruko puppet's summoning scroll. after summon, use scroll on puppet to seal it back
  - added gunbai: gives wind from folding fan
- - added senbons: Ninja tool for attacks
+ - added senbons and recipe
  - added Yaguras Staff: 4th Mizukage's staff (WIP)
  - added Staff of Sage of Six Paths (WIP)
  - added 3rd Hokage's Staff (WIP)

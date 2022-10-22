@@ -4,6 +4,7 @@ package net.narutomod.entity;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.item.ItemNinjutsu;
 import net.narutomod.item.ItemScrollHiruko;
+import net.narutomod.NarutomodMod;
 import net.narutomod.ElementsNarutomodMod;
 
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -11,16 +12,25 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
+import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.client.event.MouseEvent;
+import net.minecraftforge.common.MinecraftForge;
 
 import net.minecraft.world.World;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
@@ -29,12 +39,14 @@ import net.minecraft.client.renderer.entity.RenderLivingBase;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.model.ModelBox;
 import net.minecraft.client.model.ModelBiped;
+import net.minecraft.client.Minecraft;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.network.datasync.DataSerializers;
 
 import java.util.Random;
 import javax.vecmath.Vector3f;
+import io.netty.buffer.ByteBuf;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
@@ -51,10 +63,23 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 				.id(new ResourceLocation("narutomod", "puppet_hiruko"), ENTITYID).name("puppet_hiruko").tracker(64, 3, true).build());
 	}
 
-	@SideOnly(Side.CLIENT)
+	public class Renderer extends EntityRendererRegister {
+		@SideOnly(Side.CLIENT)
+		@Override
+		protected void register() {
+			RenderingRegistry.registerEntityRenderingHandler(EntityCustom.class, renderManager -> new RenderCustom(renderManager));
+		}
+	}
+
 	@Override
 	public void preInit(FMLPreInitializationEvent event) {
-		RenderingRegistry.registerEntityRenderingHandler(EntityCustom.class, renderManager -> new RenderCustom(renderManager));
+		new Renderer().register();
+		this.elements.addNetworkMessage(PlayerHook.Message.Handler.class, PlayerHook.Message.class, Side.SERVER);
+	}
+
+	@Override
+	public void init(FMLInitializationEvent event) {
+		MinecraftForge.EVENT_BUS.register(new PlayerHook());
 	}
 
 	public static class EntityCustom extends EntityShieldBase {
@@ -65,6 +90,7 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 		private int poseProgressEnd = 14;
 		private int poseProgress = -1;
 		private Object model;
+		private boolean shouldBlock;
 
 		public EntityCustom(World world) {
 			super(world);
@@ -89,10 +115,11 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 		}
 
 		private void setPose(int pose) {
+			int prevPose = this.getPose();
 			this.dataManager.set(POSE, Integer.valueOf(pose));
 			this.poseProgress = 0;
 			this.poseProgressEnd = pose == 1 ? 7 : pose == 2 ? 3 : 14;
-			if (pose != 0) {
+			if (pose != 0 && pose != prevPose) {
 				this.playSound(net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation(("narutomod:hiruko_tail"))),
 				 1f, this.rand.nextFloat() * 0.4f + 0.7f);
 			}
@@ -147,6 +174,14 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
+		public boolean attackEntityFrom(DamageSource source, float amount) {
+			if (this.shouldBlock) {
+				amount *= 0.2f;
+			}
+			return super.attackEntityFrom(source, amount);
+		}
+
+		@Override
 		public void onUpdate() {
 			super.onUpdate();
 			Entity controllingRider = this.getControllingPassenger();
@@ -164,9 +199,13 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void onLivingUpdate() {
 			if (!this.world.isRemote) {
-				EntityLivingBase entity = this.getSummoner();
-				if (entity != null && entity.swingProgressInt == -1) {
-					this.setPose(1);
+				if (this.shouldBlock) {
+					this.setPose(2);
+				} else {
+					EntityLivingBase entity = this.getSummoner();
+					if (entity != null && entity.swingProgressInt == -1) {
+						this.setPose(1);
+					}
 				}
 				//if (!this.isRobeOff()) {
 				//	this.takeRobeOff(true);
@@ -1020,6 +1059,51 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 			this.setRotationAngle(leftArm, bipedLeftArm.rotateAngleX, bipedLeftArm.rotateAngleY, bipedLeftArm.rotateAngleZ);
 			bipedRightLeg.rotationPointY = 15.0F;
 			bipedLeftLeg.rotationPointY = 15.0F;
+		}
+	}
+
+	public static class PlayerHook {
+		@SubscribeEvent
+		@SideOnly(Side.CLIENT)
+		public void onMouseRightButton(MouseEvent event) {
+			EntityPlayer player = Minecraft.getMinecraft().player;
+			if (Minecraft.getMinecraft().currentScreen == null && player.getRidingEntity() instanceof EntityCustom
+			 && event.getButton() == 1) {
+				NarutomodMod.PACKET_HANDLER.sendToServer(new Message(event.isButtonstate()));
+			}
+		}
+		
+		public static class Message implements IMessage {
+			boolean pressed;
+	
+			public Message() {
+			}
+	
+			public Message(boolean var1) {
+				this.pressed = var1;
+			}
+	
+			public static class Handler implements IMessageHandler<Message, IMessage> {
+				@Override
+				public IMessage onMessage(Message message, MessageContext context) {
+					EntityPlayerMP entity = context.getServerHandler().player;
+					entity.getServerWorld().addScheduledTask(() -> {
+						if (entity.world.isBlockLoaded(new BlockPos(entity.posX, entity.posY, entity.posZ))
+						 && entity.getRidingEntity() instanceof EntityCustom) {
+							((EntityCustom)entity.getRidingEntity()).shouldBlock = message.pressed;
+						}
+					});
+					return null;
+				}
+			}
+	
+			public void toBytes(ByteBuf buf) {
+				buf.writeBoolean(this.pressed);
+			}
+	
+			public void fromBytes(ByteBuf buf) {
+				this.pressed = buf.readBoolean();
+			}
 		}
 	}
 }

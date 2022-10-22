@@ -2,7 +2,7 @@
 package net.narutomod.item;
 
 import net.narutomod.procedure.ProcedureKunaiBulletHitsLivingEntity;
-import net.narutomod.procedure.ProcedureUtils;
+//import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.creativetab.TabModTab;
 import net.narutomod.ElementsNarutomodMod;
 
@@ -157,7 +157,7 @@ public class ItemSenbon extends ElementsNarutomodMod.ModElement {
 				entityarrow.shoot(entity.getLookVec().x, entity.getLookVec().y, entity.getLookVec().z, power * 2, 0);
 				entityarrow.setSilent(true);
 				entityarrow.setIsCritical(false);
-				entityarrow.setDamage(2.5);
+				entityarrow.setDamage(3.0f);
 				entityarrow.setKnockbackStrength(0);
 				entity.world.playSound(null, entity.posX, entity.posY, entity.posZ,
 						net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation(("narutomod:senbon"))),
@@ -181,11 +181,11 @@ public class ItemSenbon extends ElementsNarutomodMod.ModElement {
 
 	    @Override
 	    public void doRender(EntityArrowCustom entity, double x, double y, double z, float entityYaw, float partialTicks) {
-	    	float f = ProcedureUtils.interpolateRotation(entity.prevRotationYaw, entity.rotationYaw, partialTicks);
+	    	//float f = ProcedureUtils.interpolateRotation(entity.prevRotationYaw, entity.rotationYaw, partialTicks);
 	        GlStateManager.pushMatrix();
 	        GlStateManager.translate((float)x, (float)y, (float)z);
 	        GlStateManager.enableRescaleNormal();
-	        GlStateManager.rotate(f - 90.0F, 0.0F, 1.0F, 0.0F);
+	        GlStateManager.rotate(entityYaw - 90.0F, 0.0F, 1.0F, 0.0F);
 	        GlStateManager.rotate(entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks, 0.0F, 0.0F, 1.0F);
 	        this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
 	        if (this.renderOutlines) {
