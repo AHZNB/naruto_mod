@@ -71,7 +71,8 @@ Commands:
  
 General:
  - reach effect: targeting fuzziness increases with reach, i.e. fuzziness = targetBoundingBox +- reach * 0.1
- - chakra: force sync to client on player respawn
+ - chakra: force sync to client on next tick on player respawn/changeDimension
+ - ninjaxp: force sync to client on next tick on player respawn/changeDimension
 
 0.2.9-beta ================================================================================
 

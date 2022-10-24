@@ -187,6 +187,8 @@ public class Chakra extends ElementsNarutomodMod.ModElement {
 	}
 	
 	public static class PathwayPlayer extends Pathway<EntityPlayer> {
+		private boolean forceSync;
+
 		protected PathwayPlayer(EntityPlayer playerIn) {
 			super(playerIn);
 			this.setMax(PlayerTracker.getBattleXp(playerIn) * 0.5d);
@@ -207,7 +209,7 @@ public class Chakra extends ElementsNarutomodMod.ModElement {
 
 		private void sendToClient() {
 			if (this.user instanceof EntityPlayerMP) {
-				PathwayPlayer.Message.sendToSelf((EntityPlayerMP)this.user, this.getAmount(), this.getMax());
+				Message.sendToSelf((EntityPlayerMP)this.user, this.getAmount(), this.getMax());
 			}
 		}
 
@@ -236,7 +238,8 @@ public class Chakra extends ElementsNarutomodMod.ModElement {
 				this.consume(-0.6f);
 			}
 			double d = PlayerTracker.getBattleXp(this.user) * 0.5d;
-			if (d != this.getMax()) {
+			if (d != this.getMax() || this.forceSync) {
+				this.forceSync = false;
 				this.setMax(d);
 				this.sendToClient();
 			}
@@ -281,7 +284,7 @@ public class Chakra extends ElementsNarutomodMod.ModElement {
 					  event.player.experience, event.player.experienceTotal, event.player.experienceLevel));
 					PathwayPlayer p = playerMap.get(event.player);
 					if (p != null) {
-						p.sendToClient();
+						p.forceSync = true;
 					}
 				}
 			}
@@ -297,12 +300,17 @@ public class Chakra extends ElementsNarutomodMod.ModElement {
 			public void onRespawn(net.minecraftforge.event.entity.player.PlayerEvent.Clone event) {
 				//if (!event.isWasDeath()) {
 					EntityPlayer oldPlayer = event.getOriginal();
+					EntityPlayer newPlayer = event.getEntityPlayer();
 					PathwayPlayer p = playerMap.get(oldPlayer);
 					if (p != null) {
-						PathwayPlayer pnew = pathway(event.getEntityPlayer());
-						pnew.set(p.getAmount());
-						pnew.sendToClient();
-						playerMap.remove(oldPlayer);
+						if (oldPlayer == newPlayer) {
+							p.forceSync = true;
+						} else {
+							PathwayPlayer pnew = pathway(newPlayer);
+							pnew.set(p.getAmount());
+							pnew.forceSync = true;
+							playerMap.remove(oldPlayer);
+						}
 					}
 				//}
 			}
@@ -322,7 +330,7 @@ public class Chakra extends ElementsNarutomodMod.ModElement {
 			}
 
 			public static void sendToSelf(EntityPlayerMP player, double d1, double d2) {
-				NarutomodMod.PACKET_HANDLER.sendTo(new Chakra.PathwayPlayer.Message(d1, d2), player);
+				NarutomodMod.PACKET_HANDLER.sendTo(new Message(d1, d2), player);
 			}
 	
 			public static class Handler implements IMessageHandler<Message, IMessage> {
