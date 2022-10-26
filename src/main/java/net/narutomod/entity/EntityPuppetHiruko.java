@@ -4,6 +4,7 @@ package net.narutomod.entity;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.item.ItemNinjutsu;
 import net.narutomod.item.ItemScrollHiruko;
+import net.narutomod.item.ItemSenbon;
 import net.narutomod.NarutomodMod;
 import net.narutomod.ElementsNarutomodMod;
 
@@ -91,6 +92,8 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 		private int poseProgress = -1;
 		private Object model;
 		private boolean shouldBlock;
+		private boolean leftArmRaise;
+		private boolean maskOff;
 
 		public EntityCustom(World world) {
 			super(world);
@@ -159,10 +162,26 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
+		public float getEyeHeight() {
+			return this.isRobeOff() ? 0.3125f : 0.9375f;
+		}
+
+		@Override
 		public boolean processInitialInteract(EntityPlayer entity, EnumHand hand) {
 			if (!this.world.isRemote && entity.getHeldItem(hand).getItem() != ItemScrollHiruko.block) {
-				entity.startRiding(this);
-				return true;
+				return entity.startRiding(this);
+			}
+			return false;
+		}
+
+		@Override
+		protected boolean canFitPassenger(Entity passenger) {
+			if (passenger instanceof EntityPlayer) {
+				ItemStack stack = ProcedureUtils.getMatchingItemStack((EntityPlayer)passenger, ItemNinjutsu.block);
+				if (stack != null && ((ItemNinjutsu.RangedItem)stack.getItem())
+				 .canActivateJutsu(stack, ItemNinjutsu.PUPPET, (EntityPlayer)passenger) == EnumActionResult.SUCCESS) {
+					return super.canFitPassenger(passenger);
+				}
 			}
 			return false;
 		}
@@ -184,13 +203,8 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void onUpdate() {
 			super.onUpdate();
+			this.setOwnerCanSteer(this.isBeingRidden(), this.isRobeOff() ? 1.5f : 0.5f);
 			Entity controllingRider = this.getControllingPassenger();
-			if (controllingRider instanceof EntityPlayer && this.ticksExisted % 10 == 3) {
-				ItemStack stack = ProcedureUtils.getMatchingItemStack((EntityPlayer)controllingRider, ItemNinjutsu.block);
-				boolean flag = stack != null && ((ItemNinjutsu.RangedItem)stack.getItem())
-				 .canActivateJutsu(stack, ItemNinjutsu.PUPPET, (EntityPlayer)controllingRider) == EnumActionResult.SUCCESS;
-				this.setOwnerCanSteer(flag, this.isRobeOff() ? 1.5f : 0.5f);
-			}
 			if (controllingRider != null) {
 				controllingRider.setInvisible(true);
 			}
@@ -211,6 +225,7 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 				//	this.takeRobeOff(true);
 				//}
 			}
+			this.maskOff = this.isRiderHoldingSenbon();
 			this.updateTailSwingProgress();
 			super.onLivingUpdate();
 		}
@@ -225,6 +240,11 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 					}
 				}
 			}
+		}
+
+		private boolean isRiderHoldingSenbon() {
+			Entity rider = this.getControllingPassenger();
+			return rider instanceof EntityLivingBase && ((EntityLivingBase)rider).getHeldItemMainhand().getItem() == ItemSenbon.block;
 		}
 	}
 
@@ -268,7 +288,7 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 				this.model.hat.showModel = false;
 				this.model.robe.showModel = false;
 			} else {
-				this.model.mask.showModel = true;
+				this.model.mask.showModel = !entity.maskOff;
 				this.model.hair.showModel = false;
 				this.model.hat.showModel = true;
 				this.model.robe.showModel = true;
@@ -459,11 +479,13 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 			bipedHead.cubeList.add(new ModelBox(bipedHead, 32, 64, -0.5F, -1.0F, -3.9F, 1, 1, 4, -0.01F, false));
 			jaw = new ModelRenderer(this);
 			jaw.setRotationPoint(0.0F, -2.0F, 0.0F);
+			setRotationAngle(jaw, 0.2618F, 0.0F, 0.0F);
 			bipedHead.addChild(jaw);
 			jaw.cubeList.add(new ModelBox(jaw, 0, 74, 1.0F, 0.0F, -4.0F, 2, 2, 4, 0.0F, false));
 			jaw.cubeList.add(new ModelBox(jaw, 0, 74, -3.0F, 0.0F, -4.0F, 2, 2, 4, 0.0F, true));
 			jawMid = new ModelRenderer(this);
 			jawMid.setRotationPoint(0.0F, 0.0F, 0.0F);
+			setRotationAngle(jawMid, 0.1309F, 0.0F, 0.0F);
 			jaw.addChild(jawMid);
 			jawMid.cubeList.add(new ModelBox(jawMid, 12, 74, -1.0F, 0.0F, -4.0F, 2, 2, 4, 0.0F, false));
 			mask = new ModelRenderer(this);
@@ -985,7 +1007,7 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 				bipedHead.rotateAngleX += -1.5708F;
 				setRotationAngle(bipedRightUpperArm, -0.5236F, 0.2618F, 1.3963F);
 				bipedRightForeArm.rotateAngleX = -1.0472F;
-				setRotationAngle(bipedLeftUpperArm, -0.5236F, -1.5708F, -1.3963F);
+				setRotationAngle(bipedLeftUpperArm, -0.5236F, entity.leftArmRaise ? -1.5708F : -0.2618F, -1.3963F);
 				bipedLeftForeArm.rotateAngleX = -1.0472F;
 				rightThigh.rotateAngleY = 1.309F;
 				leftThigh.rotateAngleY = -1.309F;
@@ -1068,7 +1090,7 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 		public void onMouseRightButton(MouseEvent event) {
 			EntityPlayer player = Minecraft.getMinecraft().player;
 			if (Minecraft.getMinecraft().currentScreen == null && player.getRidingEntity() instanceof EntityCustom
-			 && event.getButton() == 1) {
+			 && event.getButton() == 1 && !((EntityCustom)player.getRidingEntity()).isRiderHoldingSenbon()) {
 				NarutomodMod.PACKET_HANDLER.sendToServer(new Message(event.isButtonstate()));
 			}
 		}

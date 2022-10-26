@@ -1,8 +1,7 @@
 
 package net.narutomod.item;
 
-import net.narutomod.procedure.ProcedureKunaiBulletHitsLivingEntity;
-//import net.narutomod.procedure.ProcedureUtils;
+import net.narutomod.entity.EntityPuppetHiruko;
 import net.narutomod.creativetab.TabModTab;
 import net.narutomod.ElementsNarutomodMod;
 
@@ -22,6 +21,8 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Item;
 import net.minecraft.item.EnumAction;
@@ -94,10 +95,17 @@ public class ItemSenbon extends ElementsNarutomodMod.ModElement {
 		public void onUsingTick(ItemStack itemstack, EntityLivingBase entityLivingBase, int count) {
 			if (entityLivingBase instanceof EntityPlayerMP) {
 				EntityPlayerMP entity = (EntityPlayerMP) entityLivingBase;
-				EntityArrowCustom.spawnArrow(entity);
+				boolean flag = entity.getRidingEntity() instanceof EntityPuppetHiruko.EntityCustom;
+				if (flag) {
+					for (int i = 0; i < 3; i++) {
+						EntityArrowCustom.spawnArrow((EntityLivingBase)entity.getRidingEntity(), false);
+					}
+				} else {
+					EntityArrowCustom.spawnArrow(entity, false);
+				}
 				if (!entity.capabilities.isCreativeMode
 				 && EnchantmentHelper.getEnchantmentLevel(Enchantments.INFINITY, itemstack) <= 0) {
-					entity.inventory.clearMatchingItems(block, -1, 1, null);
+					entity.inventory.clearMatchingItems(block, -1, flag ? 3 : 1, null);
 				}
 				entity.stopActiveHand();
 			}
@@ -134,15 +142,36 @@ public class ItemSenbon extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
+		public void onUpdate() {
+			super.onUpdate();
+			if (this.timeInGround > 400) {
+				this.setDead();
+			}
+		}
+
+		@Override
+		protected void onHit(RayTraceResult rtr) {
+			if (rtr.entityHit != null) {
+				rtr.entityHit.hurtResistantTime = 0;
+			}
+			if (!this.world.isRemote) {
+				this.world.playSound(null, rtr.hitVec.x, rtr.hitVec.y, rtr.hitVec.z,
+				 net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:senbon_impact")),
+				 SoundCategory.NEUTRAL, 0.1f, 0.4f + this.rand.nextFloat() * 0.6f);
+			}
+			super.onHit(rtr);
+		}
+
+		@Override
 		protected void arrowHit(EntityLivingBase entity) {
 			super.arrowHit(entity);
 			entity.setArrowCountInEntity(entity.getArrowCountInEntity() - 1);
-			Entity sourceentity = this.shootingEntity;
-			{
-				Map<String, Object> $_dependencies = new HashMap<>();
-				$_dependencies.put("sourceentity", sourceentity);
-				ProcedureKunaiBulletHitsLivingEntity.executeProcedure($_dependencies);
-			}
+		}
+
+		@Override
+		protected Entity findEntityOnPath(Vec3d start, Vec3d end) {
+			Entity entity = super.findEntityOnPath(start, end);
+			return entity != null && entity.isRiding() && entity.getRidingEntity().equals(this.shootingEntity) ? null : entity;
 		}
 
 		@Override
@@ -150,18 +179,26 @@ public class ItemSenbon extends ElementsNarutomodMod.ModElement {
 			return new ItemStack(block);
 		}
 
-		public static void spawnArrow(EntityLivingBase entity) {
+		public static void spawnArrow(Entity entity, boolean randomDirection) {
 			if (!entity.world.isRemote) {
 				float power = 1f;
-				EntityArrowCustom entityarrow = new EntityArrowCustom(entity.world, entity);
-				entityarrow.shoot(entity.getLookVec().x, entity.getLookVec().y, entity.getLookVec().z, power * 2, 0);
+				EntityArrowCustom entityarrow = entity instanceof EntityLivingBase
+				 ? new EntityArrowCustom(entity.world, (EntityLivingBase)entity)
+				 : new EntityArrowCustom(entity.world, entity.posX, entity.posY, entity.posZ);
+				if (randomDirection) {
+					entityarrow.shoot(entity.world.rand.nextFloat() * 2.0f - 1.0f, entity.world.rand.nextFloat() * 2.0f - 1.0f,
+					 entity.world.rand.nextFloat() * 2.0f - 1.0f, power * 2, 0.0f);
+				} else {
+					entityarrow.shoot(entity.getLookVec().x, entity.getLookVec().y, entity.getLookVec().z, power * 2,
+					 entity instanceof EntityPuppetHiruko.EntityCustom ? 4.0f : 0.0f);
+				}
 				entityarrow.setSilent(true);
 				entityarrow.setIsCritical(false);
 				entityarrow.setDamage(3.0f);
 				entityarrow.setKnockbackStrength(0);
 				entity.world.playSound(null, entity.posX, entity.posY, entity.posZ,
 						net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation(("narutomod:senbon"))),
-						SoundCategory.NEUTRAL, 1, 1f / (entity.getRNG().nextFloat() * 0.5f + 1f) + (power / 2));
+						SoundCategory.NEUTRAL, 1, 1f / (entity.world.rand.nextFloat() * 0.5f + 1f) + (power / 2));
 				entityarrow.pickupStatus = EntityArrow.PickupStatus.DISALLOWED;
 				entity.world.spawnEntity(entityarrow);
 			}
@@ -181,7 +218,6 @@ public class ItemSenbon extends ElementsNarutomodMod.ModElement {
 
 	    @Override
 	    public void doRender(EntityArrowCustom entity, double x, double y, double z, float entityYaw, float partialTicks) {
-	    	//float f = ProcedureUtils.interpolateRotation(entity.prevRotationYaw, entity.rotationYaw, partialTicks);
 	        GlStateManager.pushMatrix();
 	        GlStateManager.translate((float)x, (float)y, (float)z);
 	        GlStateManager.enableRescaleNormal();

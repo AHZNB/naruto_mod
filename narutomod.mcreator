@@ -1,8 +1,8 @@
 {
   "id_map": {
-    "ENTITY": 404,
+    "DIMENSION": 13,
     "GUI": 56,
-    "DIMENSION": 13
+    "ENTITY": 406
   },
   "mod_elements": [
     {
@@ -6687,6 +6687,28 @@
       "locked_code": false,
       "ids": {},
       "registry_name": "senbon_recipe"
+    },
+    {
+      "name": "ScytheMadara",
+      "type": "gun",
+      "sortid": 795,
+      "compiles": true,
+      "locked_code": false,
+      "ids": {
+        "0": 405
+      },
+      "registry_name": "scythe_madara"
+    },
+    {
+      "name": "SenbonArm",
+      "type": "gun",
+      "sortid": 796,
+      "compiles": true,
+      "locked_code": true,
+      "ids": {
+        "0": 406
+      },
+      "registry_name": "senbon_arm"
     }
   ],
   "variable_elements": [
@@ -7541,6 +7563,14 @@
       ],
       "category": "master",
       "subtitle": ""
+    },
+    {
+      "name": "senbon_impact",
+      "files": [
+        "senbon_impact"
+      ],
+      "category": "master",
+      "subtitle": ""
     }
   ],
   "language_map": {
@@ -7697,6 +7727,7 @@
       "entity.scalable_projectile.name": "Scalable Projectile",
       "entity.ninja_kiri.name": "Ninja Kiri",
       "item.scroll_earth_sandwich.name": "Earth Release - Mountain sandwich",
+      "subtitles.senbon_impact": "",
       "subtitles.rasengan_during": "",
       "entity.chidori.name": "Chidori/Spear/Current",
       "advancements.shikotsumyaku_acquired.title": "Shikotsumyaku Acquired",
@@ -7805,6 +7836,7 @@
       "item.nuibari_thrown.name": "Nuibari Sword",
       "item.scroll_swamp_pit.name": "Earth Release: Hell Swamp",
       "entity.ice_prison.name": "Ice Prison",
+      "item.senbon_arm.name": "Senbon Arm",
       "chattext.mightguy.arrival": "Konoha\u0027s Noble Green Beast has arrived! This is the power of youth!",
       "chattext.amaterasu": "Amaterasu!",
       "item.ninja_armor_anbuboots.name": "Ninja Boots (Anbu)",
@@ -8070,6 +8102,7 @@
       "item.sharinganhelmet.name": "Sharingan",
       "item.samurai_armorbody.name": "Samurai Armor",
       "advancements.jiton_acquired.descr": "Magnet Release is a nature transformation kekkei genkai, a combination of wind and earth. Magnet Release users generate a magnetic force which they apply to other substances for various purposes.",
+      "item.scythe_madara.name": "Scythe Madara",
       "tooltip.kusanagi.description": "The Kusanagi sword of Japanese legend",
       "tooltip.jadensword.description": "The ultimate weapon wielded by the Mighty Jaden",
       "entity.c_2.name": "C 2",
