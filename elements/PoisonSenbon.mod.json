@@ -4,7 +4,7 @@
   "definition": {
     "renderType": 1,
     "texture": "kusanagi128",
-    "customModelName": "senbon:default",
+    "customModelName": "senbonpoison:default",
     "name": "Poison Senbons",
     "specialInfo": [],
     "creativeTab": {

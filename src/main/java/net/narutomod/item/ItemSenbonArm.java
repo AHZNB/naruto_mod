@@ -1,6 +1,7 @@
 
 package net.narutomod.item;
 
+import net.narutomod.entity.EntityPuppetHiruko;
 import net.narutomod.creativetab.TabModTab;
 import net.narutomod.ElementsNarutomodMod;
 
@@ -19,30 +20,27 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemBow;
 import net.minecraft.item.Item;
 import net.minecraft.item.EnumAction;
-import net.minecraft.init.Enchantments;
 import net.minecraft.entity.projectile.EntityTippedArrow;
 import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
-import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.client.renderer.entity.RenderSnowball;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.Minecraft;
-
-import java.util.Map;
-import java.util.HashMap;
-import net.minecraft.item.ItemBow;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class ItemSenbonArm extends ElementsNarutomodMod.ModElement {
 	@GameRegistry.ObjectHolder("narutomod:senbon_arm")
 	public static final Item block = null;
 	public static final int ENTITYID = 406;
+
 	public ItemSenbonArm(ElementsNarutomodMod instance) {
 		super(instance, 796);
 	}
@@ -69,6 +67,7 @@ public class ItemSenbonArm extends ElementsNarutomodMod.ModElement {
 					Minecraft.getMinecraft().getRenderItem());
 		});
 	}
+
 	public static class RangedItem extends Item {
 		public RangedItem() {
 			super();
@@ -83,7 +82,7 @@ public class ItemSenbonArm extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void onPlayerStoppedUsing(ItemStack itemstack, World world, EntityLivingBase entityLivingBase, int timeLeft) {
 			float power = ItemBow.getArrowVelocity(this.getMaxItemUseDuration(itemstack) - timeLeft);
-			if (!world.isRemote && entityLivingBase instanceof EntityPlayerMP && power > 0.1f) {
+			if (!world.isRemote && entityLivingBase instanceof EntityPlayerMP && power > 0.2f) {
 				EntityPlayerMP entity = (EntityPlayerMP) entityLivingBase;
 				EntityArrowCustom entityarrow = new EntityArrowCustom(world, entity);
 				entityarrow.shoot(entity.getLookVec().x, entity.getLookVec().y, entity.getLookVec().z, power * 3.0f, 2.0f);
@@ -107,11 +106,17 @@ public class ItemSenbonArm extends ElementsNarutomodMod.ModElement {
 				}
 				world.spawnEntity(entityarrow);
 			}
+			if (entityLivingBase.getRidingEntity() instanceof EntityPuppetHiruko.EntityCustom) {
+				((EntityPuppetHiruko.EntityCustom)entityLivingBase.getRidingEntity()).raiseLeftArm(false);
+			}
 		}
 
 		@Override
 		public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer entity, EnumHand hand) {
 			entity.setActiveHand(hand);
+			if (entity.getRidingEntity() instanceof EntityPuppetHiruko.EntityCustom) {
+				((EntityPuppetHiruko.EntityCustom)entity.getRidingEntity()).raiseLeftArm(true);
+			}
 			return new ActionResult(EnumActionResult.SUCCESS, entity.getHeldItem(hand));
 		}
 
@@ -148,11 +153,18 @@ public class ItemSenbonArm extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
+		protected Entity findEntityOnPath(Vec3d start, Vec3d end) {
+			Entity entity = super.findEntityOnPath(start, end);
+			return entity != null && entity.isBeingRidden() && entity.getControllingPassenger().equals(this.shootingEntity)
+			 ? null : entity;
+		}
+
+		@Override
 		public void onUpdate() {
 			super.onUpdate();
 			if (!this.world.isRemote && this.ticksExisted > 10) {
 				for (int index0 = 0; index0 < 20; index0++) {
-					ItemSenbon.EntityArrowCustom.spawnArrow(this, true);
+					ItemPoisonSenbon.spawnArrow(this, true);
 				}
 			}
 			if (this.inGround) {

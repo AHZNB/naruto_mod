@@ -5,6 +5,8 @@ import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.item.ItemNinjutsu;
 import net.narutomod.item.ItemScrollHiruko;
 import net.narutomod.item.ItemSenbon;
+import net.narutomod.item.ItemPoisonSenbon;
+import net.narutomod.item.ItemSenbonArm;
 import net.narutomod.NarutomodMod;
 import net.narutomod.ElementsNarutomodMod;
 
@@ -35,6 +37,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.entity.RenderLivingBase;
 import net.minecraft.client.model.ModelRenderer;
@@ -92,19 +95,19 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 		private int poseProgress = -1;
 		private Object model;
 		private boolean shouldBlock;
-		private boolean leftArmRaise;
 		private boolean maskOff;
+		private boolean raiseLeftArm;
 
 		public EntityCustom(World world) {
 			super(world);
-			this.setSize(0.8f, 1.5f);
+			this.setSize(1.25f, 1.5f);
 			this.stepHeight = 1.0f;
 			this.dieOnNoPassengers = false;
 		}
 
 		public EntityCustom(EntityLivingBase summonerIn, double x, double y, double z) {
 			super(summonerIn, x, y, z);
-			this.setSize(0.8f, 1.5f);
+			this.setSize(1.25f, 1.5f);
 			this.stepHeight = 1.0f;
 			this.dieOnNoPassengers = false;
 			this.setHealth(this.getMaxHealth());
@@ -123,7 +126,7 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 			this.poseProgress = 0;
 			this.poseProgressEnd = pose == 1 ? 7 : pose == 2 ? 3 : 14;
 			if (pose != 0 && pose != prevPose) {
-				this.playSound(net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation(("narutomod:hiruko_tail"))),
+				this.playSound(net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:hiruko_tail")),
 				 1f, this.rand.nextFloat() * 0.4f + 0.7f);
 			}
 		}
@@ -163,7 +166,7 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public float getEyeHeight() {
-			return this.isRobeOff() ? 0.3125f : 0.9375f;
+			return this.isRobeOff() ? 0.4375f : 0.9375f;
 		}
 
 		@Override
@@ -221,9 +224,9 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 						this.setPose(1);
 					}
 				}
-				//if (!this.isRobeOff()) {
-				//	this.takeRobeOff(true);
-				//}
+				if (!this.isRobeOff()) {
+					this.takeRobeOff(this.isRiderHoldingSenbonArm());
+				}
 			}
 			this.maskOff = this.isRiderHoldingSenbon();
 			this.updateTailSwingProgress();
@@ -244,7 +247,26 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 
 		private boolean isRiderHoldingSenbon() {
 			Entity rider = this.getControllingPassenger();
-			return rider instanceof EntityLivingBase && ((EntityLivingBase)rider).getHeldItemMainhand().getItem() == ItemSenbon.block;
+			return rider instanceof EntityLivingBase
+			 && (((EntityLivingBase)rider).getHeldItemMainhand().getItem() == ItemSenbon.block
+			  || ((EntityLivingBase)rider).getHeldItemMainhand().getItem() == ItemPoisonSenbon.block);
+		}
+
+		private boolean isRiderHoldingSenbonArm() {
+			Entity rider = this.getControllingPassenger();
+			return rider instanceof EntityLivingBase
+			 && (((EntityLivingBase)rider).getHeldItemMainhand().getItem() == ItemSenbonArm.block
+			  || ((EntityLivingBase)rider).getHeldItemOffhand().getItem() == ItemSenbonArm.block);
+		}
+
+		private boolean hasSenbonArmInRiderInventory() {
+			Entity rider = this.getControllingPassenger();
+			return rider instanceof EntityPlayer
+			 && ProcedureUtils.hasItemInInventory((EntityPlayer)rider, ItemSenbonArm.block);
+		}
+
+		public void raiseLeftArm(boolean b) {
+			this.raiseLeftArm = b;
 		}
 	}
 
@@ -271,6 +293,13 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 			super.doRender(entity, x, y, z, entityYaw, partialTicks);
 		}
 
+		@Override
+		protected void preRenderCallback(EntityCustom entity, float partialTickTime) {
+			if (entity.isRobeOff()) {
+				GlStateManager.scale(1.25F, 1.25F, 1.25F);
+			}
+		}
+
 		protected void copyLimbSwing(EntityCustom entity, EntityLivingBase rider) {
 			entity.swingProgress = rider.swingProgress;
 			entity.swingProgressInt = rider.swingProgressInt;
@@ -293,6 +322,7 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 				this.model.hat.showModel = true;
 				this.model.robe.showModel = true;
 			}
+			this.model.torpedo.showModel = entity.hasSenbonArmInRiderInventory();
 			if (this.renderManager.renderViewEntity.equals(entity.getControllingPassenger())
 			 && this.renderManager.options.thirdPersonView == 0) {
 				this.model.body.showModel = false;
@@ -1007,7 +1037,7 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 				bipedHead.rotateAngleX += -1.5708F;
 				setRotationAngle(bipedRightUpperArm, -0.5236F, 0.2618F, 1.3963F);
 				bipedRightForeArm.rotateAngleX = -1.0472F;
-				setRotationAngle(bipedLeftUpperArm, -0.5236F, entity.leftArmRaise ? -1.5708F : -0.2618F, -1.3963F);
+				setRotationAngle(bipedLeftUpperArm, -0.5236F, entity.raiseLeftArm ? -1.5708F : -0.2618F, -1.3963F);
 				bipedLeftForeArm.rotateAngleX = -1.0472F;
 				rightThigh.rotateAngleY = 1.309F;
 				leftThigh.rotateAngleY = -1.309F;
@@ -1090,7 +1120,8 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 		public void onMouseRightButton(MouseEvent event) {
 			EntityPlayer player = Minecraft.getMinecraft().player;
 			if (Minecraft.getMinecraft().currentScreen == null && player.getRidingEntity() instanceof EntityCustom
-			 && event.getButton() == 1 && !((EntityCustom)player.getRidingEntity()).isRiderHoldingSenbon()) {
+			 && event.getButton() == 1 && !((EntityCustom)player.getRidingEntity()).isRiderHoldingSenbon()
+			 && !((EntityCustom)player.getRidingEntity()).isRiderHoldingSenbonArm()) {
 				NarutomodMod.PACKET_HANDLER.sendToServer(new Message(event.isButtonstate()));
 			}
 		}
