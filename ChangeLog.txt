@@ -14,6 +14,7 @@ Jutsus:
  - Adamantine sealing chains: no longer seals the biju in the player
  - Adamantine sealing chains: added chakra drain on target entity (drain amount based on player's chakra)
  - added Transformation jutsu and scroll
+ - added 4-symbols sealing jutsu and scroll
  
 Items:
  - Bone drill can't be dropped into the world
@@ -45,18 +46,9 @@ Items:
  - added Tea
  - added flying thunder god kunai (WIP)
  - added madara's 1-bladed scythe (WIP)
-
-NOTE: Weapons that do not currently have abilties and are supposed to will be given abilities, they are currently in as drafts and will be worked on accordingly.
-
-To add:
-
-Sound Gaunlet
-Claw
-Ishiken 
-(This will be after they are touched up on with textures)
-
-- Ichiraku as food vendor
-
+ - added Sound Gaunlet (WIP)
+ - added metal claw
+ - added Jiraiya's stone sword Ishiken (WIP)
  
 Entities:
  - changed Sanshouo puppet's health to 200

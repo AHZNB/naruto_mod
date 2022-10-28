@@ -69,6 +69,7 @@ item.asuracanon.name=Asura Canon
 advancements.learned_1st_jutsu.title=Learned first jutsu
 item.ninja_armor_sunabody.name=Flak jacket (Sunagakure)
 tooltip.6psenjutsu.rasenshuriken=Truth Seeking Rasenshuriken
+item.scroll_sealing_4_symbols.name=Four Symbols Sealing Jutsu
 chattext.biju.playerisjinchuriki=%s is %s's jinchuriki
 tooltip.6psenjutsu.shield=Truth Seeking Ball: shield
 lingering_potion.effect.amaterasuflame=Lingering Amaterasu

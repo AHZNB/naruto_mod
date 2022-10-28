@@ -1,8 +1,8 @@
 {
   "id_map": {
-    "DIMENSION": 13,
-    "GUI": 56,
-    "ENTITY": 406
+    "GUI": 58,
+    "ENTITY": 406,
+    "DIMENSION": 13
   },
   "mod_elements": [
     {
@@ -6709,6 +6709,26 @@
         "0": 406
       },
       "registry_name": "senbon_arm"
+    },
+    {
+      "name": "ScrollSealing4SymbolsGui",
+      "type": "gui",
+      "sortid": 797,
+      "compiles": true,
+      "locked_code": true,
+      "ids": {
+        "0": 58
+      },
+      "registry_name": "scroll_sealing_4_symbols_gui"
+    },
+    {
+      "name": "ScrollSealing4Symbols",
+      "type": "item",
+      "sortid": 798,
+      "compiles": true,
+      "locked_code": false,
+      "ids": {},
+      "registry_name": "scroll_sealing_4_symbols"
     }
   ],
   "variable_elements": [
@@ -7646,6 +7666,7 @@
       "advancements.learned_1st_jutsu.title": "Learned first jutsu",
       "item.ninja_armor_sunabody.name": "Flak jacket (Sunagakure)",
       "tooltip.6psenjutsu.rasenshuriken": "Truth Seeking Rasenshuriken",
+      "item.scroll_sealing_4_symbols.name": "Four Symbols Sealing Jutsu",
       "chattext.biju.playerisjinchuriki": "%s is %s\u0027s jinchuriki",
       "tooltip.6psenjutsu.shield": "Truth Seeking Ball: shield",
       "lingering_potion.effect.amaterasuflame": "Lingering Amaterasu",
