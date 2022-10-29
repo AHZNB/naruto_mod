@@ -201,6 +201,7 @@ public abstract class EntityShieldBase extends EntityLivingBase {
 
 	@Override
 	public void onLivingUpdate() {
+		this.clearActivePotions();
 		super.onLivingUpdate();
 		clampMotion(0.1D);
 		EntityLivingBase summoner = this.getSummoner();

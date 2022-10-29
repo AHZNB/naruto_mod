@@ -11,6 +11,7 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 
+import net.minecraft.world.World;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -58,6 +59,25 @@ public class ItemPoisonSenbon extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
+		public void onPlayerStoppedUsing(ItemStack itemstack, World world, EntityLivingBase entityLivingBase, int timeLeft) {
+			if (entityLivingBase instanceof EntityPlayerMP) {
+				EntityPlayerMP entity = (EntityPlayerMP) entityLivingBase;
+				boolean flag = entity.getRidingEntity() instanceof EntityPuppetHiruko.EntityCustom;
+				if (flag) {
+					for (int i = 0; i < 3; i++) {
+						spawnArrow((EntityLivingBase)entity.getRidingEntity(), false);
+					}
+				} else {
+					spawnArrow(entity, false);
+				}
+				if (!entity.capabilities.isCreativeMode
+				 && EnchantmentHelper.getEnchantmentLevel(Enchantments.INFINITY, itemstack) <= 0) {
+					entity.inventory.clearMatchingItems(block, -1, flag ? 3 : 1, null);
+				}
+			}
+		}
+
+		/*@Override
 		public void onUsingTick(ItemStack itemstack, EntityLivingBase entityLivingBase, int count) {
 			if (entityLivingBase instanceof EntityPlayerMP) {
 				EntityPlayerMP entity = (EntityPlayerMP) entityLivingBase;
@@ -75,7 +95,7 @@ public class ItemPoisonSenbon extends ElementsNarutomodMod.ModElement {
 				}
 			}
 			entityLivingBase.resetActiveHand();
-		}
+		}*/
 	}
 
 	public static void spawnArrow(Entity entity, boolean randomDirection) {

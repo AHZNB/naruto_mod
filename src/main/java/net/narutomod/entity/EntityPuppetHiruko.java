@@ -197,6 +197,9 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public boolean attackEntityFrom(DamageSource source, float amount) {
+			if (source.isProjectile()) {
+				amount *= 0.4f;
+			}
 			if (this.shouldBlock) {
 				amount *= 0.2f;
 			}

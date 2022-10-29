@@ -9,10 +9,8 @@ import net.minecraftforge.fml.client.registry.RenderingRegistry;
 
 import net.minecraft.world.World;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.DamageSource;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.client.renderer.entity.RenderLiving;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.model.ModelBox;
 import net.minecraft.entity.EntityLivingBase;
@@ -88,7 +86,6 @@ public class EntityPuppetKarasu extends ElementsNarutomodMod.ModElement {
 		@Override
 		protected void applyEntityAttributes() {
 			super.applyEntityAttributes();
-			this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(10D);
 			this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(MAXHEALTH);
 			this.getAttributeMap().registerAttribute(SharedMonsterAttributes.ATTACK_DAMAGE);
 			this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(10D);

@@ -117,6 +117,7 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 		protected void applyEntityAttributes() {
 			super.applyEntityAttributes();
 			this.getAttributeMap().registerAttribute(SharedMonsterAttributes.FLYING_SPEED);
+			this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(100D);
 			this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(48D);
 		}
 
@@ -134,6 +135,9 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 		public boolean attackEntityFrom(DamageSource source, float amount) {
 			if (source == DamageSource.FALL) {
 				return false;
+			}
+			if (source.isProjectile()) {
+				amount *= 0.2f;
 			}
 			return super.attackEntityFrom(source, amount);
 		}

@@ -105,11 +105,13 @@ public class EntitySealing extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public boolean processInitialInteract(EntityPlayer player, EnumHand hand) {
-			AxisAlignedBB bb = this.tableBB.offset(this.posX, this.posY, this.posZ);
-			Vec3d vec = player.getPositionEyes(1f);
-			if (bb.calculateIntercept(vec, vec.add(player.getLookVec().scale(4d))) != null) {
-				this.jinchurikiEntity = player;
-				return player.startRiding(this);
+			if (!EntityBijuManager.isJinchuriki(player)) {
+				AxisAlignedBB bb = this.tableBB.offset(this.posX, this.posY, this.posZ);
+				Vec3d vec = player.getPositionEyes(1f);
+				if (bb.calculateIntercept(vec, vec.add(player.getLookVec().scale(4d))) != null) {
+					this.jinchurikiEntity = player;
+					return player.startRiding(this);
+				}
 			}
 			return false;
 		}
@@ -139,20 +141,22 @@ public class EntitySealing extends ElementsNarutomodMod.ModElement {
 			this.parts[3].setLocationAndAngles(this.posX, this.posY + 0.005d, this.posZ - 5d, 0f, 0f);
 			if (this.bijuEntity == null) {
 				for (EntityLivingBase entity : this.world.getEntitiesWithinAABB(EntityLivingBase.class, this.getEntityBoundingBox())) {
-					if (entity instanceof EntityTailedBeast.Base) {
+					if (entity instanceof EntityTailedBeast.Base && !((EntityTailedBeast.Base)entity).getBijuManager().isSealed()) {
 						this.bijuEntity = (EntityTailedBeast.Base)entity;
 					}
 				}
 			}
 			if (!this.world.isRemote && this.bijuEntity != null) {
-				if (this.jinchurikiEntity != null && this.getSealersCount() > 0) {
+				if (this.bijuEntity.getBijuManager().isSealed()) {
+					this.ticks2Death = 0;
+				} else if (this.jinchurikiEntity != null && this.getSealersCount() > 0) {
 					if (!this.bijuEntity.isFuuinInProgress()) {
 						this.bijuEntity.fuuinIntoPlayer(this.jinchurikiEntity, 36000);
 					} else {
 						this.bijuEntity.incFuuinProgress(this.getSealersCount() - 1);
 					}
 					this.ticks2Death = 600;
-					this.sendProgressToSealers(this.bijuEntity.getFuuinProgress());
+					this.sendSealingProgress(this.bijuEntity.getFuuinProgress());
 				} else if (this.bijuEntity.isFuuinInProgress()) {
 					this.bijuEntity.cancelFuuin();
 					this.ticks2Death = 0;
@@ -175,9 +179,13 @@ public class EntitySealing extends ElementsNarutomodMod.ModElement {
 			return j;
 		}
 
-		public void sendProgressToSealers(float progress) {
+		public void sendSealingProgress(float progress) {
+			Entity entity = this.getControllingPassenger();
+			if (entity instanceof EntityPlayer) {
+				((EntityPlayer)entity).sendStatusMessage(new TextComponentString(String.format("%.1f", progress*100)+"%"), true);
+			}
 			for (int i = 0; i < this.parts.length; i++) {
-				Entity entity = this.parts[i].getControllingPassenger();
+				entity = this.parts[i].getControllingPassenger();
 				if (entity instanceof EntityPlayer) {
 					((EntityPlayer)entity).sendStatusMessage(new TextComponentString(String.format("%.1f", progress*100)+"%"), true);
 				}
@@ -253,10 +261,11 @@ public class EntitySealing extends ElementsNarutomodMod.ModElement {
 				Entity passenger = this.getControllingPassenger();
 				this.world.updateEntity(passenger);
 				if (!(passenger instanceof EntityLivingBase) || passenger.isSneaking()
-				 || (this.ticksExisted % 20 == 0 && this.ec.isSealingInProgress()
+				 || (!this.world.isRemote && this.ticksExisted % 20 == 0 && this.ec.isSealingInProgress()
 				  && !Chakra.pathway((EntityLivingBase)passenger).consume(10d))) {
 					passenger.dismountRidingEntity();
-				} else if (!this.world.isRemote) {
+				}
+				if (!this.world.isRemote) {
 					ProcedureSync.MultiPartsSetPassengers.sendToTracking(this.ec, this.getEntityId());
 				}
 			}

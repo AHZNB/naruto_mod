@@ -159,6 +159,14 @@ public class EntityPuppetSanshouo extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
+		public boolean attackEntityFrom(DamageSource source, float amount) {
+			if (source.isProjectile()) {
+				amount *= 0.2f;
+			}
+			return super.attackEntityFrom(source, amount);
+		}
+
+		@Override
 		public void onUpdate() {
 			super.onUpdate();
 			int age = this.getAge();
