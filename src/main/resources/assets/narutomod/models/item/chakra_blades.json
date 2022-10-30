@@ -1,0 +1,6 @@
+{
+  "parent": "narutomod:custom/chakrablade",
+  "textures": {
+    "1": "narutomod:blocks/chakrablade"
+  }
+}
