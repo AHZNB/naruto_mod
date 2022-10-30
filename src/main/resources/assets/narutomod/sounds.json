@@ -925,5 +925,14 @@
         "stream": false
       }
     ]
+  },
+  "roar": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "narutomod:roar",
+        "stream": false
+      }
+    ]
   }
 }

@@ -65,8 +65,8 @@ public class EntityLightningArc extends ElementsNarutomodMod.ModElement {
 		});
 	}
 
-	public static void onStruck(Entity entity, DamageSource source, float damage) {
-		entity.attackEntityFrom(source, damage);
+	public static boolean onStruck(Entity entity, DamageSource source, float damage) {
+		boolean retval = entity.attackEntityFrom(source, damage);
 		boolean flag = entity.isBurning();
 		entity.onStruckByLightning(new EntityLightningBolt(entity.world, 0, 0, 0, true));
 		if (!flag) {
@@ -75,6 +75,7 @@ public class EntityLightningArc extends ElementsNarutomodMod.ModElement {
 		if (entity instanceof EntityLivingBase) {
 			((EntityLivingBase)entity).addPotionEffect(new PotionEffect(PotionParalysis.potion, 100, 2 + (int)(damage * 0.1f), false, false));
 		}
+		return retval;
 	}
 
 	public static void spawnAsParticle(World world, double x, double y, double z, int... param) {
@@ -296,9 +297,10 @@ public class EntityLightningArc extends ElementsNarutomodMod.ModElement {
 		        BufferBuilder bufferbuilder = tessellator.getBuffer();
 		        GlStateManager.disableTexture2D();
 		        GlStateManager.enableBlend();
+		        GlStateManager.disableCull();
 		        GlStateManager.depthMask(false);
 		        GlStateManager.disableLighting();
-		        GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE);
+		        //GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE);
 		        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, isBranch?160F:240F, isBranch?160F:240F);
 				bufferbuilder.begin(5, DefaultVertexFormats.POSITION_COLOR);
                 //int a = (color & 0xFF000000) >> 24;
@@ -308,10 +310,19 @@ public class EntityLightningArc extends ElementsNarutomodMod.ModElement {
                 for (int i = 1; i <= 3; i++) {
 	                if (!isBranch || i >= 2) {
 	                	double w = thickness * i;
-	                	int a = i == 3 ? 0x20 : i == 2 ? 0x80 : 0xF0;
-		                int r1 = i == 1 ? 255 : r;
-		                int g1 = i == 1 ? 255 : g;
-		                int b1 = i == 1 ? 255 : b;
+	                	int a = 0xF0;
+		                int r1 = r;
+		                int g1 = g;
+		                int b1 = b;
+	                	if (i == 1) {
+	                		r1 = 255;
+	                		g1 = 255;
+	                		b1 = 255;
+	                		GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE);
+	                	} else {
+	                		a = i == 3 ? 0x10 : 0x20;
+		        			GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+	                	}
 		                bufferbuilder.pos(fromVec.x - w, fromVec.y - w, fromVec.z).color(r1, g1, b1, a).endVertex();
 		                bufferbuilder.pos(toVec.x - w, toVec.y - w, toVec.z).color(r1, g1, b1, a).endVertex();
 		                bufferbuilder.pos(fromVec.x - w, fromVec.y + w, fromVec.z).color(r1, g1, b1, a).endVertex();
@@ -327,6 +338,7 @@ public class EntityLightningArc extends ElementsNarutomodMod.ModElement {
                 tessellator.draw();
 	        	GlStateManager.enableLighting();
 		        GlStateManager.depthMask(true);
+		        GlStateManager.enableCull();
 		        GlStateManager.disableBlend();
 	        	GlStateManager.enableTexture2D();
 	    	} else {

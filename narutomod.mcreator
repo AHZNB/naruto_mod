@@ -1,7 +1,7 @@
 {
   "id_map": {
-    "ENTITY": 408,
     "DIMENSION": 13,
+    "ENTITY": 410,
     "GUI": 58
   },
   "mod_elements": [
@@ -6750,6 +6750,18 @@
       "locked_code": false,
       "ids": {},
       "registry_name": "chakra_blades"
+    },
+    {
+      "name": "LightningPanther",
+      "type": "mob",
+      "sortid": 801,
+      "compiles": true,
+      "locked_code": true,
+      "ids": {
+        "0": 409,
+        "1": 410
+      },
+      "registry_name": "lightning_panther"
     }
   ],
   "variable_elements": [
@@ -7612,6 +7624,14 @@
       ],
       "category": "master",
       "subtitle": ""
+    },
+    {
+      "name": "roar",
+      "files": [
+        "roar"
+      ],
+      "category": "master",
+      "subtitle": ""
     }
   ],
   "language_map": {
@@ -7928,6 +7948,7 @@
       "entity.kurotsuchi.name": "Kurotsuchi",
       "entity.biggerme.name": "Multi-Size jutsu",
       "item.ninja_armor_war_1body.name": "1st Ninja War Body Armor",
+      "subtitles.roar": "",
       "entity.futton_mist.name": "Corrosion Mist",
       "tooltip.jinton.musthave": "Must have Doton, Futon \u0026 Katon",
       "subtitles.amaterasu2": "",
@@ -8109,6 +8130,7 @@
       "item.shibuki_sword.name": "Shibuki Sword",
       "tooltip.eightgates.requiredxp": "(required XP: %d)",
       "item.ninjutsu.name": "Ninjutsu",
+      "entity.lightning_panther.name": "Lightning Panther",
       "potion.effect.reach": "Reach",
       "lingering_potion.effect.feather_falling": "Lingering Feather Falling",
       "effect.paralysis": "Paralysis",

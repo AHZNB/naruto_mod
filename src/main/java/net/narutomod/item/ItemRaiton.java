@@ -28,6 +28,7 @@ import net.minecraft.client.renderer.entity.RenderManager;
 
 import net.narutomod.entity.EntityLightningArc;
 import net.narutomod.entity.EntityLightningBeast;
+import net.narutomod.entity.EntityLightningPanther;
 import net.narutomod.entity.EntityChidori;
 import net.narutomod.entity.EntityFalseDarkness;
 import net.narutomod.entity.EntityKirin;
@@ -48,6 +49,7 @@ public class ItemRaiton extends ElementsNarutomodMod.ModElement {
 	public static final ItemJutsu.JutsuEnum CHASINGDOG = new ItemJutsu.JutsuEnum(2, "lightning_beast", 'C', 20d, new EntityLightningBeast.EC.Jutsu());
 	public static final ItemJutsu.JutsuEnum GIAN = new ItemJutsu.JutsuEnum(3, "false_darkness", 'B', 100d, new EntityFalseDarkness.EC.Jutsu());
 	public static final ItemJutsu.JutsuEnum KIRIN = new ItemJutsu.JutsuEnum(4, "kirin", 'S', 1500d, new EntityKirin.EC.Jutsu());
+	public static final ItemJutsu.JutsuEnum BLACKPANTHER = new ItemJutsu.JutsuEnum(5, "lightning_panther", 'S', 80d, new EntityLightningPanther.EC.Jutsu());
 
 	public ItemRaiton(ElementsNarutomodMod instance) {
 		super(instance, 373);
@@ -55,7 +57,7 @@ public class ItemRaiton extends ElementsNarutomodMod.ModElement {
 
 	@Override
 	public void initElements() {
-		elements.items.add(() -> new RangedItem(CHIDORI, CHAKRAMODE, CHASINGDOG, GIAN, KIRIN));
+		elements.items.add(() -> new RangedItem(CHIDORI, CHAKRAMODE, CHASINGDOG, GIAN, KIRIN, BLACKPANTHER));
 		elements.entities.add(() -> EntityEntryBuilder.create().entity(EntityChakraMode.class)
 			.id(new ResourceLocation("narutomod", "raitonchakramode"), ENTITYID).name("raitonchakramode").tracker(64, 1, true).build());
 	}
@@ -84,7 +86,9 @@ public class ItemRaiton extends ElementsNarutomodMod.ModElement {
 			} else if (jutsu == GIAN) {
 				return this.getPower(stack, entity, timeLeft, 1f, 150f);
 			} else if (jutsu == KIRIN) {
-				 return this.getPower(stack, entity, timeLeft, 0f, 400f);
+				return this.getPower(stack, entity, timeLeft, 0f, 400f);
+			} else if (jutsu == BLACKPANTHER) {
+				return this.getPower(stack, entity, timeLeft, 0f, 100f);
 			}
 			return 1f;
 		}
