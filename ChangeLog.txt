@@ -49,6 +49,8 @@ Items:
  - added Sound Gaunlet (WIP)
  - added metal claw
  - added Jiraiya's stone sword Ishiken (WIP)
+ - added Earth Golem (WIP)
+ - added Chakra Blades (WIP)
  
 Entities:
  - changed Sanshouo puppet's health to 200, reduces projectile damage by 80%

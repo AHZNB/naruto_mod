@@ -1,8 +1,8 @@
 {
   "id_map": {
+    "ENTITY": 408,
     "DIMENSION": 13,
-    "GUI": 58,
-    "ENTITY": 406
+    "GUI": 58
   },
   "mod_elements": [
     {
@@ -6729,6 +6729,27 @@
       "locked_code": false,
       "ids": {},
       "registry_name": "scroll_sealing_4_symbols"
+    },
+    {
+      "name": "EarthGolem",
+      "type": "mob",
+      "sortid": 799,
+      "compiles": true,
+      "locked_code": false,
+      "ids": {
+        "0": 407,
+        "1": 408
+      },
+      "registry_name": "earth_golem"
+    },
+    {
+      "name": "ChakraBlades",
+      "type": "tool",
+      "sortid": 800,
+      "compiles": true,
+      "locked_code": false,
+      "ids": {},
+      "registry_name": "chakra_blades"
     }
   ],
   "variable_elements": [
@@ -7721,6 +7742,7 @@
       "item.zzz.name": "Zzz",
       "item.ninja_armor_kirilegs.name": "Ninja Pants (Kirigakure)",
       "entity.zabuza_momochi.name": "Zabuza Momochi",
+      "entity.earth_golem.name": "Earth Golem",
       "entity.laser_circus.name": "Laser Circus",
       "tooltip.general.leftclick": "Left click: ",
       "item.rinnesharinganbody.name": "6 Path Body",
@@ -8093,6 +8115,7 @@
       "tile.water_still.name": "Water Still",
       "subtitles.bugs": "",
       "entity.entity80gods.name": "Eighty Gods Vacuum Fists",
+      "item.chakra_blades.name": "Chakra Blades",
       "effect.chakra_regeneration": "Chakra ++",
       "tooltip.bakuton.jiraiken": "Landmine Fist",
       "advancements.shikotsumyaku_acquired.descr": "Shikotsumyaku (Skeletal control) is a kekkei genkai which gives its wielder the ability to manipulate their own bones.",
