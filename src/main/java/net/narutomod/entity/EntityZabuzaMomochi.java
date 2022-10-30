@@ -11,18 +11,22 @@ import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.common.DungeonHooks;
 
 import net.minecraft.init.Biomes;
+import net.minecraft.init.Blocks;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
 import net.minecraft.world.BossInfoServer;
 import net.minecraft.world.BossInfo;
+import net.minecraft.world.DifficultyInstance;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.EnumHandSide;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Item;
 import net.minecraft.inventory.EntityEquipmentSlot;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.ai.EntityAIWander;
 import net.minecraft.entity.ai.EntityAISwimming;
 import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
@@ -31,25 +35,24 @@ import net.minecraft.entity.ai.EntityAIAttackMelee;
 import net.minecraft.entity.ai.EntityAIAttackRanged;
 import net.minecraft.entity.ai.EntityAITarget;
 import net.minecraft.entity.ai.EntityAIAvoidEntity;
+import net.minecraft.entity.ai.EntityAIWatchClosest2;
+import net.minecraft.entity.ai.EntityAIWatchClosest;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.EnumCreatureType;
+import net.minecraft.entity.IRangedAttackMob;
+import net.minecraft.entity.IEntityLivingData;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.monster.IMob;
+import net.minecraft.entity.monster.EntityMob;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.client.renderer.entity.RenderBiped;
 import net.minecraft.client.model.ModelBiped;
-import net.minecraft.entity.monster.IMob;
-import net.minecraft.entity.IRangedAttackMob;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.EnumHandSide;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.model.ModelBox;
 import net.minecraft.client.model.ModelRenderer;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.init.Blocks;
-import net.minecraft.entity.IEntityLivingData;
-import net.minecraft.world.DifficultyInstance;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.world.WorldServer;
 
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.item.ItemZabuzaSword;
@@ -172,6 +175,19 @@ public class EntityZabuzaMomochi extends ElementsNarutomodMod.ModElement {
 				}
 			});
 			this.tasks.addTask(4, new EntityAIWander(this, 0.5));
+			this.tasks.addTask(5, new EntityAIWatchClosest2(this, EntityPlayer.class, 15.0F, 1.0F));
+			this.tasks.addTask(6, new EntityAIWatchClosest(this, EntityMob.class, 8.0F));
+		}
+
+		public void removeTargetsTasks() {
+			//this.targetTasks.removeTask(this.aiTargetPlayer);
+			this.targetTasks.removeTask(this.aiTargetHurt);
+			this.setAttackTarget(null);
+		}
+
+		public void setAttackTargetsTasks() {
+			//this.targetTasks.addTask(1, this.aiTargetPlayer);
+			this.targetTasks.addTask(1, this.aiTargetHurt);
 		}
 
 		@Override
@@ -214,9 +230,6 @@ public class EntityZabuzaMomochi extends ElementsNarutomodMod.ModElement {
 			super.updateAITasks();
 
 			EntityLivingBase target = this.getAttackTarget();
-			//if (this.getHeldItemMainhand().isEmpty() != (target == null && this.avoidTarget == null)) {
-			//	this.swapWithInventory(EntityEquipmentSlot.MAINHAND);
-			//}
 			if (target != null && target.isEntityAlive()) {
 				double distanceToTarget = this.getDistance(target);
 				if (!this.isClone()
@@ -239,8 +252,6 @@ public class EntityZabuzaMomochi extends ElementsNarutomodMod.ModElement {
 					this.world.spawnEntity(new EntityCustom(this));
 					this.cloneLastUsed = this.ticksExisted;
 				}
-			//} else {
-			//	this.setAttackTarget(null);
 			}
 			if (!this.isClone() && this.getHealth() <= this.getMaxHealth() * 0.4f && this.getRevengeTarget() != null
 			 && this.ticksExisted > this.lastCallForHelp + 40) {
@@ -252,26 +263,15 @@ public class EntityZabuzaMomochi extends ElementsNarutomodMod.ModElement {
 		}
 
 		private void callHelp() {
-		    double d0 = ProcedureUtils.getFollowRange(this);
+		    //double d0 = ProcedureUtils.getFollowRange(this);
             for (Class<? extends EntityNinjaMob.Base> oclass : EntityNinjaMob.TeamZabuza) {
 			    for (EntityNinjaMob.Base ninja : 
-			     this.world.getEntitiesWithinAABB(oclass, this.getEntityBoundingBox().grow(d0, 8.0D, d0))) {
+			     this.world.getEntitiesWithinAABB(oclass, this.getEntityBoundingBox().grow(64.0D, 8.0D, 64.0D))) {
 			        if (ninja != this && !ninja.isOnSameTeam(this.avoidTarget)) {
 			        	ninja.setAttackTarget(this.avoidTarget);
 			        }
                 }
 		    }
-		}
-
-		public void removeTargetsTasks() {
-			this.targetTasks.removeTask(this.aiTargetPlayer);
-			this.targetTasks.removeTask(this.aiTargetHurt);
-			this.setAttackTarget(null);
-		}
-
-		public void setAttackTargetsTasks() {
-			this.targetTasks.addTask(1, this.aiTargetPlayer);
-			this.targetTasks.addTask(2, this.aiTargetHurt);
 		}
 
 		@Override

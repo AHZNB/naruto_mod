@@ -7,6 +7,10 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraft.world.World;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.SoundEvent;
+import net.minecraft.util.EnumHand;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Item;
 import net.minecraft.entity.SharedMonsterAttributes;
@@ -19,9 +23,6 @@ import net.minecraft.entity.ai.EntityMoveHelper;
 import net.minecraft.entity.ai.EntityAISwimming;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.ai.EntityAITarget;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.SoundEvent;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.network.datasync.DataParameter;
@@ -34,14 +35,13 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.util.EnumHand;
+import net.minecraft.nbt.NBTTagCompound;
 
 import net.narutomod.item.ItemNinjutsu;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.ElementsNarutomodMod;
 
 import javax.annotation.Nullable;
-import net.minecraft.nbt.NBTTagCompound;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityPuppet extends ElementsNarutomodMod.ModElement {
@@ -100,7 +100,7 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 		protected void initEntityAI() {
 			super.initEntityAI();
 			this.tasks.addTask(0, new EntityAISwimming(this));
-			this.targetTasks.addTask(1, new AICopyOwnerTarget(this));
+			this.targetTasks.addTask(0, new AICopyOwnerTarget(this));
 		}
 
 		@Override
@@ -117,6 +117,7 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 		protected void applyEntityAttributes() {
 			super.applyEntityAttributes();
 			this.getAttributeMap().registerAttribute(SharedMonsterAttributes.FLYING_SPEED);
+			this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(100D);
 			this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(48D);
 		}
 
@@ -134,6 +135,9 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 		public boolean attackEntityFrom(DamageSource source, float amount) {
 			if (source == DamageSource.FALL) {
 				return false;
+			}
+			if (source.isProjectile()) {
+				amount *= 0.2f;
 			}
 			return super.attackEntityFrom(source, amount);
 		}
@@ -156,6 +160,11 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 	    	this.clearActivePotions();
 	    	super.onUpdate();
 	    }
+
+		@Override
+		public Vec3d getLookVec() {
+			return this.getVectorForRotation(this.rotationPitch, this.rotationYawHead);
+		}
 
 		@Override
 		public void readEntityFromNBT(NBTTagCompound compound) {
@@ -185,7 +194,7 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 					if (d3 < 1.6E-7D) {
 						ProcedureUtils.multiplyVelocity(this.entity, 0.0d);
 					} else {
-						float f = this. entity.onGround 
+						float f = this.entity.onGround 
 						 ? (float)(this.speed * this.entity.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).getAttributeValue())
 						 : (float)(this.speed * this.entity.getEntityAttribute(SharedMonsterAttributes.FLYING_SPEED).getAttributeValue());
 						this.entity.motionX = d0 / d3 * f;

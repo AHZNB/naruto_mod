@@ -2,7 +2,7 @@
   "mappings": {
     "default": {
       "map": {
-        "0": "gaunletmetal"
+        "0": "gauntlet_metal"
       },
       "name": "default"
     }

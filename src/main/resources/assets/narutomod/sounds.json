@@ -916,5 +916,14 @@
         "stream": false
       }
     ]
+  },
+  "senbon_impact": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "narutomod:senbon_impact",
+        "stream": false
+      }
+    ]
   }
 }

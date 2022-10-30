@@ -469,6 +469,11 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
+		public boolean isFuuinInProgress() {
+			return this.getJinchuriki() != null && this.deathTicks > 0;
+		}
+
+		@Override
 		public void cancelFuuin() {
 			this.setHealth(this.getMaxHealth() * 0.09f);
 			this.setJinchuriki(null);
@@ -484,35 +489,29 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
+		public float getFuuinProgress() {
+			return this.isFuuinInProgress() ? (float)this.deathTicks / (float)this.deathTotalTicks : 0.0f;
+		}
+
+		@Override
 		protected void onDeathUpdate() {
 			this.deathTicks++;
 			if (!this.world.isRemote) {
 				EntityPlayer jinchuriki = this.getJinchuriki();
 				if (jinchuriki != null) {
-					//if (!this.getBijuManager().isSealed()) {
-					//	this.getBijuManager().setJinchurikiPlayer(jinchuriki);
-					//	ProcedureUtils.sendChatAll(I18n.translateToLocalFormatted("chattext.tentails.sealedintoplayer", this.getName(), jinchuriki.getName()));
-					//} else if (this.deathTicks == 1) {
 					if (this.getBijuManager().isSealed() && this.deathTicks == 1) {
 						jinchuriki = null;
 						this.setJinchuriki(null);
 						this.deathTotalTicks = 100;
 					}
 				}
-				//if (this.deathTicks == 1 && jinchuriki == null) {
-				//	this.deathTicks = 300;
-				//}
 				if (jinchuriki != null && this.ticksExisted % 50 == 1) {
 					this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:KamuiSFX")), 3.0F, 1.0F);
 				}
-				//if (this.deathTotalTicks - this.deathTicks < 100) {
-					for (int i = 0; i < (int)(((float)this.deathTicks / this.deathTotalTicks) * 100f); i++) {
-						Particles.spawnParticle(this.world, Particles.Types.SMOKE, this.posX, this.posY + this.height * 0.5, this.posZ,
-						  1, this.width * 0.5D, this.height * 0.5D, this.width * 0.5D, 0d, 0.5d, 0d, 96d, 0x10B00000, 100);
-					}
-					//((WorldServer)this.world).spawnParticle(EnumParticleTypes.EXPLOSION_HUGE, this.posX, this.posY + (this.height / 2.0F), 
-					// this.posZ, 1, this.width * 0.5D, this.height * 0.5D, this.width * 0.5D, 0.0D, new int[0]);
-				//}
+				for (int i = 0; i < (int)(((float)this.deathTicks / this.deathTotalTicks) * 100f); i++) {
+					Particles.spawnParticle(this.world, Particles.Types.SMOKE, this.posX, this.posY + this.height * 0.5, this.posZ,
+					  1, this.width * 0.5D, this.height * 0.5D, this.width * 0.5D, 0d, 0.5d, 0d, 96d, 0x10B00000, 100);
+				}
 				if (this.deathTicks > this.deathTotalTicks) {
 					if (jinchuriki != null) {
 						this.getBijuManager().setJinchurikiPlayer(jinchuriki);

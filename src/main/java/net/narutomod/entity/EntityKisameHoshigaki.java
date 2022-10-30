@@ -39,11 +39,14 @@ import net.minecraft.entity.ai.EntityAIHurtByTarget;
 import net.minecraft.entity.ai.EntityAIAttackRanged;
 import net.minecraft.entity.ai.EntityAIAttackMelee;
 import net.minecraft.entity.ai.EntityAIWander;
+import net.minecraft.entity.ai.EntityAIWatchClosest2;
+import net.minecraft.entity.ai.EntityAIWatchClosest;
 import net.minecraft.entity.ai.EntityMoveHelper;
 import net.minecraft.entity.monster.IMob;
-import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.entity.EnumCreatureAttribute;
 import net.minecraft.entity.EntityLivingBase;
@@ -70,6 +73,7 @@ import net.narutomod.item.ItemAkatsukiRobe;
 import net.narutomod.ElementsNarutomodMod;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.base.Predicate;
 import javax.annotation.Nullable;
 
 @ElementsNarutomodMod.ModElement.Tag
@@ -188,8 +192,14 @@ public class EntityKisameHoshigaki extends ElementsNarutomodMod.ModElement {
 		@Override
 		protected void initEntityAI() {
 			super.initEntityAI();
-			this.targetTasks.addTask(1, new EntityAINearestAttackableTarget(this, EntityPlayer.class, true, false));
-			this.targetTasks.addTask(2, new EntityAIHurtByTarget(this, false));
+			//this.targetTasks.addTask(1, new EntityAINearestAttackableTarget(this, EntityPlayer.class, true, false));
+			this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, false));
+			this.targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, EntityPlayer.class, 10, true, false, 
+				new Predicate<EntityPlayer>() {
+					public boolean apply(@Nullable EntityPlayer p_apply_1_) {
+						return p_apply_1_ != null && EntityBijuManager.isJinchuriki(p_apply_1_);
+					}
+				}));
 			this.tasks.addTask(0, new EntityAISwimming(this) {
 				@Override
 				public boolean shouldExecute() {
@@ -205,6 +215,8 @@ public class EntityKisameHoshigaki extends ElementsNarutomodMod.ModElement {
 				}
 			});
 			this.tasks.addTask(4, new EntityAIWander(this, 0.5));
+			this.tasks.addTask(5, new EntityAIWatchClosest2(this, EntityPlayer.class, 15.0F, 1.0F));
+			this.tasks.addTask(6, new EntityAIWatchClosest(this, EntityMob.class, 8.0F));
 		}
 
 		public boolean isClone() {

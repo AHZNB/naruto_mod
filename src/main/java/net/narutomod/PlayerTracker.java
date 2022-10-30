@@ -8,7 +8,6 @@ import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.world.WorldEvent;
-//import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.common.MinecraftForge;
@@ -45,6 +44,8 @@ import com.google.common.collect.Lists;
 public class PlayerTracker extends ElementsNarutomodMod.ModElement {
 	private static final String BATTLEXP = NarutomodModVariables.BATTLEXP;
 	private static final String KEEPXP_RULE = "keepNinjaXp";
+	private static final String FORCE_SEND = "forceSendBattleXP2self";
+	private static final String UPDATE_HEALTH = "forceUpdateHealth";
 
 	public PlayerTracker(ElementsNarutomodMod instance) {
 		super(instance, 181);
@@ -63,11 +64,19 @@ public class PlayerTracker extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static void addBattleXp(EntityPlayerMP entity, double xp) {
+		addBattleXp(entity, xp, true);
+	}
+
+	private static void addBattleXp(EntityPlayer entity, double xp, boolean sendMessage) {
 		entity.getEntityData().setDouble(BATTLEXP, Math.min(getBattleXp(entity) + xp, 100000.0d));
-		sendBattleXPToSelf(entity);
-		entity.sendStatusMessage(new TextComponentString(
-		 net.minecraft.util.text.translation.I18n.translateToLocal("chattext.ninjaexperience")+
-		 String.format("%.1f", getBattleXp(entity))), true);
+		if (entity instanceof EntityPlayerMP) {
+			sendBattleXPToSelf((EntityPlayerMP)entity);
+			if (sendMessage) {
+				entity.sendStatusMessage(new TextComponentString(
+				 net.minecraft.util.text.translation.I18n.translateToLocal("chattext.ninjaexperience")+
+				 String.format("%.1f", getBattleXp(entity))), true);
+			}
+		}
 	}
 
 	public static void logBattleExp(EntityPlayer entity, double xp) {
@@ -187,10 +196,6 @@ public class PlayerTracker extends ElementsNarutomodMod.ModElement {
 		@SubscribeEvent
 		public void onTick(TickEvent.PlayerTickEvent event) {
 			if (event.phase == TickEvent.Phase.END && event.player instanceof EntityPlayerMP) {
-				if (event.player.ticksExisted < 5) {
-					sendBattleXPToSelf((EntityPlayerMP)event.player);
-					event.player.setHealth(event.player.getHealth());
-				}
 				double d = getBattleXp(event.player) * 0.005d;
 				if (d > 0d) {
 					IAttributeInstance maxHealthAttr = event.player.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH);
@@ -203,6 +208,14 @@ public class PlayerTracker extends ElementsNarutomodMod.ModElement {
 						event.player.setHealth(event.player.getHealth() + 0.1f);
 					}
 				}
+				if (event.player.getEntityData().getBoolean(FORCE_SEND)) {
+					event.player.getEntityData().removeTag(FORCE_SEND);
+					sendBattleXPToSelf((EntityPlayerMP)event.player);
+				}
+				if (event.player.getEntityData().getBoolean(UPDATE_HEALTH)) {
+					event.player.getEntityData().removeTag(UPDATE_HEALTH);
+					event.player.setHealth(event.player.getHealth());
+				}
 			}
 		}
 
@@ -214,19 +227,17 @@ public class PlayerTracker extends ElementsNarutomodMod.ModElement {
 			}
 		}
 
-		@SubscribeEvent
+		@SubscribeEvent(priority = EventPriority.LOW)
 		public void onDamaged(LivingDamageEvent event) {
 			Entity targetEntity = event.getEntity();
 			Entity sourceEntity = event.getSource().getTrueSource();
 			float amount = event.getAmount();
 			if (!targetEntity.equals(sourceEntity) && amount > 0f) {
 				if (targetEntity instanceof EntityPlayer && amount < ((EntityPlayer)targetEntity).getHealth()) {
-					//logBattleExp((EntityPlayer)targetEntity, 1d);
 					double bxp = getBattleXp((EntityPlayer)targetEntity);
 					logBattleExp((EntityPlayer)targetEntity, bxp < 1d ? 1d : (amount / MathHelper.sqrt(MathHelper.sqrt(bxp))));
 				}
 				if (sourceEntity instanceof EntityPlayer) {
-					//logBattleExp((EntityPlayer)sourceEntity, 1d);
 					double xp = 1d;
 					if (targetEntity instanceof EntityLivingBase) {
 						EntityLivingBase target = (EntityLivingBase)targetEntity;
@@ -248,14 +259,17 @@ public class PlayerTracker extends ElementsNarutomodMod.ModElement {
 		public void onLogin(PlayerEvent.PlayerLoggedInEvent event) {
 			if (!event.player.world.isRemote) {
 				event.player.setAlwaysRenderNameTag(true);
-				sendBattleXPToSelf((EntityPlayerMP)event.player);
+				//sendBattleXPToSelf((EntityPlayerMP)event.player);
+				event.player.getEntityData().setBoolean(FORCE_SEND, true);
+				event.player.getEntityData().setBoolean(UPDATE_HEALTH, true);
 			}
 		}
 
 		@SubscribeEvent
 		public void onChangeDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
 			if (event.player instanceof EntityPlayerMP) {
-				sendBattleXPToSelf((EntityPlayerMP)event.player);
+				//sendBattleXPToSelf((EntityPlayerMP)event.player);
+				event.player.getEntityData().setBoolean(FORCE_SEND, true);
 			}
 		}
 
@@ -264,7 +278,7 @@ public class PlayerTracker extends ElementsNarutomodMod.ModElement {
 			//if (!event.isWasDeath()) {
 				EntityPlayer newPlayer = event.getEntityPlayer();
 				newPlayer.getEntityData().setDouble(BATTLEXP, getBattleXp(event.getOriginal()));
-				sendBattleXPToSelf((EntityPlayerMP)newPlayer);
+				newPlayer.getEntityData().setBoolean(FORCE_SEND, true);
 			//}
 		}
 

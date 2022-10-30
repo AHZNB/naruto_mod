@@ -92,6 +92,9 @@ public class ProcedureWhenPlayerAttcked extends ElementsNarutomodMod.ModElement 
 				evt.setCanceled(true);
 				entity.getRidingEntity().attackEntityFrom(evt.getSource(), evt.getAmount());
 			}
+			if (attacker instanceof EntityPlayer && !evt.getSource().getImmediateSource().equals(attacker)) {
+				((EntityLivingBase)attacker).setLastAttackedEntity(entity);
+			}
 			//if (entity instanceof EntityPlayer && !entity.equals(attacker))
 			//	PlayerTracker.logBattleExp((EntityPlayer) entity, 0.5D);
 		}

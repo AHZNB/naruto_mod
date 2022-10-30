@@ -9,10 +9,8 @@ import net.minecraftforge.fml.client.registry.RenderingRegistry;
 
 import net.minecraft.world.World;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.DamageSource;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.client.renderer.entity.RenderLiving;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.model.ModelBox;
 import net.minecraft.entity.EntityLivingBase;
@@ -26,7 +24,8 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.pathfinding.PathNavigateFlying;
 
 //import net.narutomod.procedure.ProcedureUtils;
-import net.narutomod.item.ItemKunai;
+//import net.narutomod.item.ItemKunai;
+import net.narutomod.item.ItemSenbon;
 import net.narutomod.ElementsNarutomodMod;
 
 @ElementsNarutomodMod.ModElement.Tag
@@ -73,6 +72,8 @@ public class EntityPuppetKarasu extends ElementsNarutomodMod.ModElement {
 			Vec3d vec = ownerIn.getLookVec();
 			vec = ownerIn.getPositionVector().addVector(vec.x, 1d, vec.z);
 			this.setLocationAndAngles(vec.x, vec.y, vec.z, ownerIn.rotationYaw, 0f);
+			this.navigator = new PathNavigateFlying(this, ownerIn.world);
+			this.moveHelper = new EntityPuppet.Base.FlyHelper(this);
 		}
 
 		@Override
@@ -85,7 +86,6 @@ public class EntityPuppetKarasu extends ElementsNarutomodMod.ModElement {
 		@Override
 		protected void applyEntityAttributes() {
 			super.applyEntityAttributes();
-			this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(10D);
 			this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(MAXHEALTH);
 			this.getAttributeMap().registerAttribute(SharedMonsterAttributes.ATTACK_DAMAGE);
 			this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(10D);
@@ -108,13 +108,17 @@ public class EntityPuppetKarasu extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public void attackEntityWithRangedAttack(EntityLivingBase target, float flval) {
-			ItemKunai.EntityArrowCustom kunai = new ItemKunai.EntityArrowCustom(this.world, this);
+			Vec3d vec = target.getPositionVector().addVector(0d, 0.5d * target.height, 0d);
+			for (int i = 0; i < 10; i++) {
+				ItemSenbon.spawnArrow(this, vec);
+			}
+			/*ItemKunai.EntityArrowCustom kunai = new ItemKunai.EntityArrowCustom(this.world, this);
 			Vec3d vec = target.getPositionEyes(1f).subtract(kunai.getPositionVector());
 			kunai.shoot(vec.x, vec.y + MathHelper.sqrt(vec.x * vec.x + vec.z * vec.z) * 0.2d, vec.z, 1f, 0);
 			kunai.setDamage(5);
 			kunai.setKnockbackStrength(0);
 			this.playSound(SoundEvents.ENTITY_ARROW_SHOOT, 1, 1f / (this.rand.nextFloat() * 0.5f + 1f) + 0.25f);
-			this.world.spawnEntity(kunai);
+			this.world.spawnEntity(kunai);*/
 		}
 
 		public double getVelocity() {
