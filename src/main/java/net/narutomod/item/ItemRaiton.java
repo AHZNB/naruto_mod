@@ -49,7 +49,7 @@ public class ItemRaiton extends ElementsNarutomodMod.ModElement {
 	public static final ItemJutsu.JutsuEnum CHASINGDOG = new ItemJutsu.JutsuEnum(2, "lightning_beast", 'C', 20d, new EntityLightningBeast.EC.Jutsu());
 	public static final ItemJutsu.JutsuEnum GIAN = new ItemJutsu.JutsuEnum(3, "false_darkness", 'B', 100d, new EntityFalseDarkness.EC.Jutsu());
 	public static final ItemJutsu.JutsuEnum KIRIN = new ItemJutsu.JutsuEnum(4, "kirin", 'S', 1500d, new EntityKirin.EC.Jutsu());
-	public static final ItemJutsu.JutsuEnum BLACKPANTHER = new ItemJutsu.JutsuEnum(5, "lightning_panther", 'S', 80d, new EntityLightningPanther.EC.Jutsu());
+	public static final ItemJutsu.JutsuEnum BLACKPANTHER = new ItemJutsu.JutsuEnum(5, "lightning_panther", 'S', 50d, new EntityLightningPanther.EC.Jutsu());
 
 	public ItemRaiton(ElementsNarutomodMod instance) {
 		super(instance, 373);
@@ -104,8 +104,17 @@ public class ItemRaiton extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public void onUsingTick(ItemStack stack, EntityLivingBase player, int timeLeft) {
-			if (this.getCurrentJutsu(stack) == KIRIN && !player.world.isRemote) {
-				EntityKirin.chargingEffects(player, this.getPower(stack, player, timeLeft));
+			if (!player.world.isRemote) {
+				ItemJutsu.JutsuEnum jutsu = this.getCurrentJutsu(stack);
+				if (jutsu == KIRIN) {
+					EntityKirin.chargingEffects(player, this.getPower(stack, player, timeLeft));
+				} else if (jutsu == BLACKPANTHER) {
+					EntityLightningArc.spawnAsParticle(player.world, player.posX + this.itemRand.nextGaussian() * 0.3d, 
+					  player.posY + this.itemRand.nextDouble() * 1.3d, player.posZ + this.itemRand.nextGaussian() * 0.3d,
+					  1.0d, 0d, 0.15d, 0d, 0);
+					Particles.spawnParticle(player.world, Particles.Types.SMOKE, player.posX, player.posY, player.posZ,
+					  20, 0.3d, 0.0d, 0.3d, 0d, 0.5d, 0d, 0x20000000, 50, 5, 0xF0, player.getEntityId());
+				}
 			}
 			super.onUsingTick(stack, player, timeLeft);
 		}
@@ -189,17 +198,11 @@ public class ItemRaiton extends ElementsNarutomodMod.ModElement {
 					this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation(("narutomod:electricity"))),
 					 0.1f, this.rand.nextFloat() * 0.6f + 0.3f);
 				}
-				//if (this.rand.nextFloat() <= 0.5f) {
-					EntityLightningArc.spawnAsParticle(this.world, this.posX + this.rand.nextGaussian() * 0.3d, 
-					  this.posY + this.rand.nextDouble() * 1.3d, this.posZ + this.rand.nextGaussian() * 0.3d);
-				//}
-				//for (int i = 0; i < 50; i++) {
-					Particles.spawnParticle(world, Particles.Types.SMOKE, this.posX, this.posY, this.posZ,
-					  //50, 0.3d, 0.0d, 0.3d, 0d, this.rand.nextDouble() * 0.1d + 0.3d, 0d, 0x2080D0FF, 50,
-					  //(int) (2.0D / (this.rand.nextDouble() * 0.8D + 0.2D)), 0xF0, this.summoner.getEntityId());
-					  20, 0.3d, 0.0d, 0.3d, 0d, 0.5d, 0d, 0x2080D0FF, 50,
-					  5, 0xF0, this.summoner.getEntityId());
-				//}
+				EntityLightningArc.spawnAsParticle(this.world, this.posX + this.rand.nextGaussian() * 0.3d, 
+				  this.posY + this.rand.nextDouble() * 1.3d, this.posZ + this.rand.nextGaussian() * 0.3d,
+				  0.5d, 0d, 0.15d, 0d);
+				Particles.spawnParticle(world, Particles.Types.SMOKE, this.posX, this.posY, this.posZ,
+				  20, 0.3d, 0.0d, 0.3d, 0d, 0.5d, 0d, 0x2080D0FF, 50, 5, 0xF0, this.summoner.getEntityId());
 			} else if (!this.world.isRemote) {
 				this.setDead();
 			}

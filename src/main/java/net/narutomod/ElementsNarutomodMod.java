@@ -21,6 +21,7 @@ import net.narutomod.gui.GuiScrollRasenganGui;
 import net.narutomod.gui.GuiScrollPoisonMistGui;
 import net.narutomod.gui.GuiScrollMultiSizeGui;
 import net.narutomod.gui.GuiScrollMindTransferGui;
+import net.narutomod.gui.GuiScrollLightningPantherGui;
 import net.narutomod.gui.GuiScrollLightningChakraModeGui;
 import net.narutomod.gui.GuiScrollLightningBeastGui;
 import net.narutomod.gui.GuiScrollKikaichuSphereGui;
@@ -415,6 +416,8 @@ public class ElementsNarutomodMod implements IFuelHandler, IWorldGenerator {
 				return new GuiScrollTransformationGui.GuiContainerMod(world, x, y, z, player);
 			if (id == GuiScrollSealing4SymbolsGui.GUIID)
 				return new GuiScrollSealing4SymbolsGui.GuiContainerMod(world, x, y, z, player);
+			if (id == GuiScrollLightningPantherGui.GUIID)
+				return new GuiScrollLightningPantherGui.GuiContainerMod(world, x, y, z, player);
 			return null;
 		}
 
@@ -500,6 +503,8 @@ public class ElementsNarutomodMod implements IFuelHandler, IWorldGenerator {
 				return new GuiScrollTransformationGui.GuiWindow(world, x, y, z, player);
 			if (id == GuiScrollSealing4SymbolsGui.GUIID)
 				return new GuiScrollSealing4SymbolsGui.GuiWindow(world, x, y, z, player);
+			if (id == GuiScrollLightningPantherGui.GUIID)
+				return new GuiScrollLightningPantherGui.GuiWindow(world, x, y, z, player);
 			return null;
 		}
 	}

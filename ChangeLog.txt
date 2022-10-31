@@ -15,6 +15,7 @@ Jutsus:
  - Adamantine sealing chains: added chakra drain on target entity (drain amount based on player's chakra)
  - added Transformation jutsu and scroll
  - added 4-symbols sealing jutsu and scroll
+ - added lightning release: black panther and scroll
  
 Items:
  - Bone drill can't be dropped into the world
@@ -35,7 +36,7 @@ Items:
  - added Fuma Shuriken (WIP)
  - added Sound Gaunlet (WIP)
  - added Poison Bombs (WIP)
- - added Poison Senbons (WIP)
+ - added Poison Senbons and recipe
  - added Cleaver
  - added Curry of Life
  - added Curry and Rice

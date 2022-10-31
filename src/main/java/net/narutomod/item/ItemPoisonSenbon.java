@@ -8,19 +8,29 @@ import net.narutomod.ElementsNarutomodMod;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.event.ModelRegistryEvent;
+import net.minecraftforge.common.crafting.IShapedRecipe;
+import net.minecraftforge.registries.GameData;
 
 import net.minecraft.world.World;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.NonNullList;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.inventory.InventoryCrafting;
+import net.minecraft.potion.PotionUtils;
 import net.minecraft.init.Enchantments;
+import net.minecraft.init.Items;
+import net.minecraft.init.PotionTypes;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class ItemPoisonSenbon extends ElementsNarutomodMod.ModElement {
@@ -125,5 +135,77 @@ public class ItemPoisonSenbon extends ElementsNarutomodMod.ModElement {
 			entityarrow.setPoisened(true);
 			ItemSenbon.EntityArrowCustom.spawn(entityarrow);
 		}
+	}
+
+	public static class RecipePoisonSenbon extends net.minecraftforge.registries.IForgeRegistryEntry.Impl<IRecipe> implements IShapedRecipe {
+	    @Override
+	    public boolean matches(InventoryCrafting inv, World worldIn) {
+	        if (inv.getWidth() == 3 && inv.getHeight() == 3) {
+	            for (int i = 0; i < inv.getWidth(); ++i) {
+	                for (int j = 0; j < inv.getHeight(); ++j) {
+	                    ItemStack itemstack = inv.getStackInRowAndColumn(i, j);
+	                    if (itemstack.isEmpty()) {
+	                        return false;
+	                    }
+	                    Item item = itemstack.getItem();
+	                    if (i == 1 && j == 1) {
+	                        if (item != Items.LINGERING_POTION || PotionUtils.getPotionFromItem(itemstack) != PotionTypes.STRONG_POISON) {
+	                            return false;
+	                        }
+	                    } else if (item != ItemSenbon.block) {
+	                        return false;
+	                    }
+	                }
+	            }
+	            return true;
+	        } else {
+	            return false;
+	        }
+	    }
+	
+	    @Override
+	    public ItemStack getCraftingResult(InventoryCrafting inv) {
+	        ItemStack itemstack = inv.getStackInRowAndColumn(1, 1);
+	        if (itemstack.getItem() != Items.LINGERING_POTION || PotionUtils.getPotionFromItem(itemstack) != PotionTypes.STRONG_POISON) {
+	            return ItemStack.EMPTY;
+	        } else {
+	            return new ItemStack(block, 8);
+	        }
+	    }
+	
+	    @Override
+	    public ItemStack getRecipeOutput() {
+	        return ItemStack.EMPTY;
+	    }
+	
+	    @Override
+	    public NonNullList<ItemStack> getRemainingItems(InventoryCrafting inv) {
+	        return NonNullList.<ItemStack>withSize(inv.getSizeInventory(), ItemStack.EMPTY);
+	    }
+	
+	    @Override
+	    public boolean isDynamic() {
+	        return true;
+	    }
+	
+	    @Override
+	    public boolean canFit(int width, int height) {
+	        return width >= 2 && height >= 2;
+	    }
+
+	    @Override
+	    public int getRecipeWidth() {
+	    	return 3;
+	    }
+
+	    @Override
+	    public int getRecipeHeight() {
+	    	return 3;
+	    }
+	}
+
+	@Override
+	public void init(FMLInitializationEvent event) {
+		GameData.register_impl(new RecipePoisonSenbon().setRegistryName(new ResourceLocation("poisonsenbon")));
 	}
 }

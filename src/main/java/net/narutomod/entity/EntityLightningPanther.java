@@ -11,13 +11,10 @@ import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 
-import net.minecraft.world.biome.Biome;
 import net.minecraft.world.World;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.DamageSource;
-import net.minecraft.item.Item;
 import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.EnumCreatureAttribute;
 import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.Entity;
 import net.minecraft.client.renderer.entity.RenderLiving;
@@ -33,7 +30,6 @@ import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.entity.layers.LayerRenderer;
 import net.minecraft.client.Minecraft;
-import net.minecraft.pathfinding.PathNavigateFlying;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.network.datasync.DataSerializers;
@@ -45,6 +41,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.MathHelper;
 import java.util.Random;
+import net.minecraft.util.math.AxisAlignedBB;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityLightningPanther extends ElementsNarutomodMod.ModElement {
@@ -72,8 +69,8 @@ public class EntityLightningPanther extends ElementsNarutomodMod.ModElement {
 		private static final DataParameter<Float> POWER = EntityDataManager.<Float>createKey(EC.class, DataSerializers.FLOAT);
 		private final float ogWidth = 1.2F;
 		private final float ogHeight = 1.75F;
+		private final double ogSpeed = 2.0D;
 		private BlockPos destPos;
-		private int jumpTicks;
 
 		public EC(World world) {
 			super(world);
@@ -81,8 +78,7 @@ public class EntityLightningPanther extends ElementsNarutomodMod.ModElement {
 			this.isImmuneToFire = true;
 			this.stepHeight = 8f;
 			this.enablePersistence();
-			this.navigator = new PathNavigateFlying(this, world);
-			this.moveHelper = new EntityClone.AIFlyControl(this);
+			this.setNoGravity(true);
 		}
 
 		public EC(EntityPlayer player, float powerIn) {
@@ -123,12 +119,6 @@ public class EntityLightningPanther extends ElementsNarutomodMod.ModElement {
 		@Override
 		protected void initEntityAI() {
 			super.initEntityAI();
-			//this.targetTasks.addTask(1, new EntityAIOwnerHurtByTarget(this));
-			//this.targetTasks.addTask(2, new EntityAIOwnerHurtTarget(this));
-			//this.targetTasks.addTask(3, new EntityAIHurtByTarget(this, true));
-			//this.tasks.addTask(1, new AIMoveToOwnerLookPos(this, 1.6f));
-			//this.tasks.addTask(2, new EntityAILeapAtTarget(this, 1.0f));
-			//this.tasks.addTask(3, new EntityAIAttackMelee(this, 1.6f, true));
 			this.tasks.addTask(0, new EntityAISwimming(this));
 		}
 
@@ -156,9 +146,9 @@ public class EntityLightningPanther extends ElementsNarutomodMod.ModElement {
 		protected void applyEntityAttributes() {
 			super.applyEntityAttributes();
 			this.getAttributeMap().registerAttribute(SharedMonsterAttributes.FLYING_SPEED);
-			this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(1.6D);
 			this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(1000D);
-			this.getEntityAttribute(SharedMonsterAttributes.FLYING_SPEED).setBaseValue(1.6D);
+			this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(this.ogSpeed);
+			this.getEntityAttribute(SharedMonsterAttributes.FLYING_SPEED).setBaseValue(this.ogSpeed);
 		}
 
 		@Override
@@ -200,26 +190,36 @@ public class EntityLightningPanther extends ElementsNarutomodMod.ModElement {
 		protected void updateAITasks() {
 			super.updateAITasks();
 			if (this.ticksExisted % 10 == 0) {
-				BlockPos pos = this.findDestination();
-				if (pos != null) {
-					this.destPos = pos;
-				}
 				if (this.destPos != null) {
-					if ((double)this.destPos.getY() > this.posY + 1d) {
-						Vec3d vec = new Vec3d(this.destPos).subtract(this.getPositionVector()).normalize().scale(1.6d);
-						this.motionX = vec.x;
-						this.motionY = vec.y + 0.4d;
-						this.motionZ = vec.z;
-					}
-					this.getNavigator().tryMoveToXYZ((double)this.destPos.getX() + 0.5D, (double)this.destPos.getY(),
-					 (double)this.destPos.getZ() + 0.5D, ProcedureUtils.getModifiedSpeed(this));
+					Vec3d vec = new Vec3d(this.destPos).subtract(this.getPositionVector()).normalize().scale(this.ogSpeed);
+					this.motionX = vec.x;
+					this.motionY = vec.y + (this.onGround ? 0.08d : 0.0d);
+					this.motionZ = vec.z;
+                    this.rotationYaw = -((float)MathHelper.atan2(this.motionX, this.motionZ)) * (180F / (float)Math.PI);
+                    this.renderYawOffset = this.rotationYaw;
+				}
+				if (this.destPos == null || this.isDestOnPath()) {
+					this.destPos = this.findDestination();
 				}
 			}
+		}
+
+		private boolean isDestOnPath() {
+			Vec3d vec1 = this.getPositionVector().addVector(0d, 0.5d * this.height, 0d);
+			Vec3d vec2 = vec1.add(ProcedureUtils.getMotion(this));
+			AxisAlignedBB aabb = new AxisAlignedBB(this.destPos).grow(this.width * 0.5, this.height * 0.5, this.width * 0.5);
+			return aabb.calculateIntercept(vec1, vec2) != null;
 		}
 
 		@Override
 		public void onUpdate() {
 			super.onUpdate();
+			if (this.isInWater()) {
+				float f = this.getPower();
+				if (this.width < this.ogWidth * f * 4.0f) {
+					this.setSize(this.ogWidth * f * 4.0f, this.ogHeight * f * 3.0f);
+				}
+			}
 			if (!this.world.isRemote && this.ticksExisted == 1) {
 				this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:roar")), 5f, 1f);
 			}
@@ -284,7 +284,7 @@ public class EntityLightningPanther extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void doRender(EC entity, double x, double y, double z, float entityYaw, float partialTicks) {
 			GlStateManager.enableBlend();
-			GlStateManager.color(1f, 1f, 1f, Math.min((float)entity.ticksExisted/60f, 1f));
+			//GlStateManager.color(1f, 1f, 1f, Math.min((float)entity.ticksExisted/60f, 1f));
 			//GlStateManager.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE);
 			GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 			GlStateManager.disableLighting();
