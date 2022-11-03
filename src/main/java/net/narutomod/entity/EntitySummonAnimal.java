@@ -46,9 +46,10 @@ public class EntitySummonAnimal extends ElementsNarutomodMod.ModElement {
 
 	public static abstract class Base extends EntityCreature {
 		protected static final DataParameter<Float> SCALE = EntityDataManager.<Float>createKey(Base.class, DataSerializers.FLOAT);
+		protected static final DataParameter<Integer> AGE = EntityDataManager.<Integer>createKey(Base.class, DataSerializers.VARINT);
 		protected static final DataParameter<Optional<UUID>> OWNER_UNIQUE_ID = EntityDataManager.<Optional<UUID>>createKey(Base.class, DataSerializers.OPTIONAL_UNIQUE_ID);
-		protected int lifeSpan = 1200;
 		protected int ageTicks;
+		protected int lifeSpan = 1200;
 		protected float ogWidth;
 		protected float ogHeight;
 
@@ -70,6 +71,7 @@ public class EntitySummonAnimal extends ElementsNarutomodMod.ModElement {
 		public void entityInit() {
 			super.entityInit();
 			this.getDataManager().register(SCALE, Float.valueOf(1.0f));
+			this.getDataManager().register(AGE, Integer.valueOf(0));
 			this.getDataManager().register(OWNER_UNIQUE_ID, Optional.absent());
 		}
 
@@ -80,6 +82,15 @@ public class EntitySummonAnimal extends ElementsNarutomodMod.ModElement {
 
 		public float getScale() {
 			return ((Float)this.getDataManager().get(SCALE)).floatValue();
+		}
+
+		private void setAge(int age) {
+			this.getDataManager().set(AGE, Integer.valueOf(age));
+			this.ageTicks = age;
+		}
+
+		public int getAge() {
+			return this.world.isRemote ? ((Integer)this.getDataManager().get(AGE)).intValue() : this.ageTicks;
 		}
 
 		@Override
@@ -312,6 +323,7 @@ public class EntitySummonAnimal extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void onUpdate() {
 			super.onUpdate();
+			int age = this.getAge();
 			if (!this.world.isRemote) {
 				EntityLivingBase owner = this.getSummoner();
 				if (owner != null && owner.getHealth() <= 0.0f) {
@@ -320,24 +332,20 @@ public class EntitySummonAnimal extends ElementsNarutomodMod.ModElement {
 				if (this instanceof IMob && this.world.getDifficulty() == EnumDifficulty.PEACEFUL) {
 					this.setDead();
 				}
-				if (this.ageTicks > this.lifeSpan) {
+				if (age > this.lifeSpan) {
 					this.onDeathUpdate();
 				}
 			}
 			//if (this.isRiding()) {
 			//	this.rotationYaw = this.getRidingEntity().rotationYaw;
 			//}
-			++this.ageTicks;
-		}
-
-		public int getAge() {
-			return this.ageTicks;
+			this.setAge(age + 1);
 		}
 
 		@Override
 		public void readEntityFromNBT(NBTTagCompound compound) {
 			super.readEntityFromNBT(compound);
-			this.ageTicks = compound.getInteger("ageTicks");
+			this.setAge(compound.getInteger("ageTicks"));
 			this.lifeSpan = compound.getInteger("lifeSpan");
 			this.setScale(compound.getFloat("scale"));
 			String s = compound.getString("OwnerUUID");
@@ -349,7 +357,7 @@ public class EntitySummonAnimal extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void writeEntityToNBT(NBTTagCompound compound) {
 			super.writeEntityToNBT(compound);
-			compound.setInteger("ageTicks", this.ageTicks);
+			compound.setInteger("ageTicks", this.getAge());
 			compound.setInteger("lifeSpan", this.lifeSpan);
 			compound.setFloat("scale", this.getScale());
 			compound.setString("OwnerUUID", this.getOwnerId() == null ? "" : this.getOwnerId().toString());

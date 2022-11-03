@@ -179,15 +179,6 @@
       }
     ]
   },
-  "hirudora": {
-    "category": "master",
-    "sounds": [
-      {
-        "name": "narutomod:hirudora",
-        "stream": false
-      }
-    ]
-  },
   "howl_youth": {
     "category": "master",
     "sounds": [
@@ -931,6 +922,15 @@
     "sounds": [
       {
         "name": "narutomod:roar",
+        "stream": false
+      }
+    ]
+  },
+  "hirudora": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "narutomod:hirudora",
         "stream": false
       }
     ]

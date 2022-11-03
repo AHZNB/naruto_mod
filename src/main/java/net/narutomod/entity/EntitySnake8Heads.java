@@ -263,13 +263,14 @@ public class EntitySnake8Heads extends ElementsNarutomodMod.ModElement {
 		@Override
 		protected void updateAITasks() {
 			super.updateAITasks();
-			if (this.ageTicks < 20) {
+			int age = this.getAge();
+			if (age < 20) {
 				this.getPhaseManager().setPhase(EntitySnake.Phase.ROAMING);
 				//this.setAIMoveSpeed(1.0f);
 				Vec3d vec = Vec3d.fromPitchYaw(0.0f, this.rotationYaw).scale(0.08d);
 				this.motionX += vec.x;
 				this.motionZ += vec.z;
-				if (this.ageTicks == 1) {
+				if (age == 1) {
 					this.motionY = 2.5d;
 				}
 			} else if (this.target != null && this.target.isEntityAlive()) {
@@ -283,7 +284,7 @@ public class EntitySnake8Heads extends ElementsNarutomodMod.ModElement {
 		public void onUpdate() {
 			this.noClip = this.ticksExisted < 20;
 			super.onUpdate();
-			if (this.ageTicks == 1) {
+			if (this.getAge() == 1) {
 				this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:woodgrow")), 2f, 1f);
 			}
 		}

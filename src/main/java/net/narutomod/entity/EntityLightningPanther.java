@@ -42,6 +42,7 @@ import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.MathHelper;
 import java.util.Random;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.EntitySelectors;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityLightningPanther extends ElementsNarutomodMod.ModElement {
@@ -71,6 +72,7 @@ public class EntityLightningPanther extends ElementsNarutomodMod.ModElement {
 		private final float ogHeight = 1.75F;
 		private final double ogSpeed = 2.0D;
 		private BlockPos destPos;
+		private Vec3d startVec;
 
 		public EC(World world) {
 			super(world);
@@ -167,22 +169,23 @@ public class EntityLightningPanther extends ElementsNarutomodMod.ModElement {
 		}
 
 		private BlockPos findDestination() {
-			if (this.isTamed()) {
-				EntityLivingBase owner = this.getOwner();
-				if (owner != null) {
-					RayTraceResult rtr = ProcedureUtils.objectEntityLookingAt(owner, 50d, this);
-					if (rtr != null) {
-						if (rtr.entityHit != null) {
-							return new BlockPos(rtr.hitVec);
-						} else if (rtr.typeOfHit == RayTraceResult.Type.BLOCK) {
-							IBlockState state = this.world.getBlockState(rtr.getBlockPos());
-							if (state.isTopSolid() || state.getMaterial().isLiquid()) {
-								return rtr.getBlockPos().up();
-							}
+			EntityLivingBase owner = this.getOwner();
+			if (owner != null) {
+				RayTraceResult rtr = ProcedureUtils.objectEntityLookingAt(owner, 50d, this);
+				if (rtr != null) {
+					if (rtr.entityHit != null) {
+						this.startVec = this.getPositionVector();
+						return new BlockPos(rtr.hitVec);
+					} else if (rtr.typeOfHit == RayTraceResult.Type.BLOCK) {
+						IBlockState state = this.world.getBlockState(rtr.getBlockPos());
+						if (state.isTopSolid() || state.getMaterial().isLiquid()) {
+							this.startVec = this.getPositionVector();
+							return rtr.getBlockPos().up();
 						}
 					}
 				}
 			}
+			this.startVec = null;
 			return null;
 		}
 
@@ -205,38 +208,49 @@ public class EntityLightningPanther extends ElementsNarutomodMod.ModElement {
 		}
 
 		private boolean isDestOnPath() {
-			Vec3d vec1 = this.getPositionVector().addVector(0d, 0.5d * this.height, 0d);
-			Vec3d vec2 = vec1.add(ProcedureUtils.getMotion(this));
-			AxisAlignedBB aabb = new AxisAlignedBB(this.destPos).grow(this.width * 0.5, this.height * 0.5, this.width * 0.5);
-			return aabb.calculateIntercept(vec1, vec2) != null;
+			return this.startVec != null && this.destPos != null
+			 && this.getDistanceSq(this.startVec.x, this.startVec.y, this.startVec.z) > this.getDistanceSqToCenter(this.destPos);
 		}
 
 		@Override
 		public void onUpdate() {
 			super.onUpdate();
-			if (this.isInWater()) {
-				float f = this.getPower();
-				if (this.width < this.ogWidth * f * 4.0f) {
-					this.setSize(this.ogWidth * f * 4.0f, this.ogHeight * f * 3.0f);
+			if (!this.world.isRemote && (this.getOwner() == null || this.ticksExisted > (int)(this.getPower() * 100))) {
+				this.setDead();
+			} else {
+				if (this.isInWater()) {
+					float f = this.getPower();
+					if (this.width < this.ogWidth * f * 4.0f) {
+						this.setSize(this.ogWidth * f * 4.0f, this.ogHeight * f * 3.0f);
+					}
+				}
+				if (!this.world.isRemote && this.ticksExisted == 1) {
+					this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:roar")), 5f, 1f);
+				}
+				if (!this.world.isRemote && this.ticksExisted % 4 == 0 && this.isTamed()) {
+					this.world.spawnEntity(new EntityLightningArc.Base(this.world, this.getOwner().getPositionEyes(1f), 
+					 this.getPositionEyes(1f), 0x00000000, 0, 0f));
+				}
+				if (this.rand.nextInt(3) == 2) {
+					this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:electricity")),
+					  1f, this.rand.nextFloat() * 0.6f + 0.9f);
+				}
+				if (this.rand.nextFloat() <= 0.4f) {
+					EntityLightningArc.spawnAsParticle(this.world, this.posX + this.rand.nextGaussian() * this.width * 0.5d,
+					 this.posY + this.rand.nextDouble() * this.height, this.posZ + this.rand.nextGaussian() * this.width * 0.5d);
 				}
 			}
-			if (!this.world.isRemote && this.ticksExisted == 1) {
-				this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:roar")), 5f, 1f);
-			}
-			if (!this.world.isRemote && this.ticksExisted % 4 == 0 && this.isTamed()) {
-				this.world.spawnEntity(new EntityLightningArc.Base(this.world, this.getOwner().getPositionEyes(1f), 
-				 this.getPositionEyes(1f), 0x00000000, 0, 0f));
-			}
-			if (this.rand.nextInt(3) == 2) {
-				this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:electricity")),
-				  1f, this.rand.nextFloat() * 0.6f + 0.9f);
-			}
-			if (this.rand.nextFloat() <= 0.4f) {
-				EntityLightningArc.spawnAsParticle(this.world, this.posX + this.rand.nextGaussian() * this.width * 0.5d,
-				 this.posY + this.rand.nextDouble() * this.height, this.posZ + this.rand.nextGaussian() * this.width * 0.5d);
-			}
-			if (!this.world.isRemote && this.ticksExisted > (int)(this.getPower() * 100)) {
-				this.setDead();
+		}
+
+		@Override
+		protected void collideWithNearbyEntities() {
+			Vec3d vec1 = this.getPositionVector().addVector(0d, 0.5d * this.height, 0d);
+			Vec3d vec2 = vec1.add(ProcedureUtils.getMotion(this));
+			for (Entity entity : this.world.getEntitiesInAABBexcluding(this,
+			 this.getEntityBoundingBox().expand(this.motionX, this.motionY, this.motionZ), EntitySelectors.getTeamCollisionPredicate(this))) {
+				if (entity.getEntityBoundingBox().grow(this.width * 0.5, this.height * 0.5, this.width * 0.5).calculateIntercept(vec1, vec2) != null) {
+					this.collideWithEntity(entity);
+				}
 			}
 		}
 

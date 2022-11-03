@@ -167,7 +167,7 @@ public class ItemSummoningContract extends ElementsNarutomodMod.ModElement {
 		public void onUpdate() {
 			super.onUpdate();
 			EntityLivingBase owner = this.getSummoner();
-			if (owner != null && !owner.isRiding() && this.ageTicks == 1 && this.getScale() >= 4.0f) {
+			if (owner != null && !owner.isRiding() && this.getAge() == 1 && this.getScale() >= 4.0f) {
 				owner.startRiding(this);
 			}
 		}
@@ -210,7 +210,7 @@ public class ItemSummoningContract extends ElementsNarutomodMod.ModElement {
 		public void onUpdate() {
 			super.onUpdate();
 			EntityLivingBase owner = this.getSummoner();
-			if (owner != null && !owner.isRiding() && this.ageTicks == 1 && this.getScale() >= 4.0f) {
+			if (owner != null && !owner.isRiding() && this.getAge() == 1 && this.getScale() >= 4.0f) {
 				owner.startRiding(this);
 			}
 		}

@@ -27,6 +27,7 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.SoundEvent;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.item.ItemStack;
@@ -253,7 +254,7 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 						Entity bullet = new EntityNGDragon(entity);
 						//((EntityNGDragon) bullet).shoot(entity.getLookVec().x, entity.getLookVec().y, entity.getLookVec().z, 1.2F, 0.0F);
 						world.playSound(null, entity.posX, entity.posY, entity.posZ,
-						  net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:yagai")),
+						  SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:yagai")),
 						  SoundCategory.NEUTRAL, 2.0F, 1.0F);
 						world.spawnEntity(bullet);
 						if (!entity.isCreative()) {
@@ -277,7 +278,7 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 			EntityHirudora bullet = new EntityHirudora(attacker);
 			//bullet.shoot(x, y, z, 1.2F, 0.0F);
 			attacker.world.playSound(null, attacker.posX, attacker.posY, attacker.posZ,
-			 net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:hirudora")),
+			 SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:hirudora")),
 			 SoundCategory.NEUTRAL, 2.0F, 1.0F);
 			attacker.world.spawnEntity(bullet);
 		}
@@ -289,7 +290,7 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 				EntitySekizo bullet = new EntitySekizo(attacker);
 				bullet.shoot(30, (float) ProcedureUtils.getModifiedAttackDamage(attacker) * 1.0F * (float) Math.pow(2d, punchnum));
 				world.playSound(null, attacker.posX, attacker.posY, attacker.posZ,
-				 net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:sekizo")),
+				 SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:sekizo")),
 				 SoundCategory.NEUTRAL, 2.0F, 1.0F);
 				world.spawnEntity(bullet);
 				//this.setSekizoPunchNum(itemstack, attacker.ticksExisted);
@@ -451,17 +452,17 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 					}
 					if (gateOpened < 4f + increments) {
 						player.world.playSound(null, player.posX, player.posY, player.posZ, 
-						 net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:opengate")),
+						 SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:opengate")),
 						 SoundCategory.NEUTRAL, 1, 1);
 					}
 					if (gateOpened >= 8f - increments && gateOpened < 8f) {
 						player.world.playSound(null, player.posX, player.posY, player.posZ, 
-						 net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:eightgatesrelease")),
+						 SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:eightgatesrelease")),
 						 SoundCategory.NEUTRAL, 2f, 1f);
 					}
 					if (gateOpened >= 4f + increments && player.ticksExisted % 10 == 0) {
 						player.world.playSound(null, player.posX, player.posY, player.posZ, 
-						 net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:explosion")),
+						 SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:explosion")),
 						 SoundCategory.NEUTRAL, 0.1f, 0.9f - this.itemRand.nextFloat() * 0.3f);
 					}
 				}
@@ -665,13 +666,19 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 				if (this.ticksAlive <= NGD_SUSPEND_TIME) {
 					this.setWaitPosition();
 					this.setEntityScale(1.0F + (this.fullScale - 1f) * this.ticksAlive / (float) NGD_SUSPEND_TIME);
-				} else if (!this.isLaunched()) {
-					Vec3d vec = this.shootingEntity instanceof EntityLiving && ((EntityLiving)this.shootingEntity).getAttackTarget() != null
-					 ? ((EntityLiving)this.shootingEntity).getAttackTarget().getPositionVector().subtract(this.getPositionVector())
-					 : this.shootingEntity.getLookVec();
-					this.shoot(vec.x, vec.y, vec.z, 1.2f, 0f);
-				} else {
-					this.setEntityScale(this.getEntityScale() * 1.05f);
+				} else {
+					if (!this.isLaunched()) {
+						Vec3d vec = this.shootingEntity instanceof EntityLiving && ((EntityLiving)this.shootingEntity).getAttackTarget() != null
+						 ? ((EntityLiving)this.shootingEntity).getAttackTarget().getPositionVector().subtract(this.getPositionVector())
+						 : this.shootingEntity.getLookVec();
+						this.shoot(vec.x, vec.y, vec.z, 1.2f, 0f);
+					} else {
+						this.setEntityScale(this.getEntityScale() * 1.05f);
+					}
+					if (this.ticksInAir % 10 == 0) {
+						this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:roar")),
+						 2f, this.rand.nextFloat() * 0.4f + 0.7f);
+					}
 				}
 			}
 			if (!this.world.isRemote && (this.ticksInAir > 30 || this.shootingEntity == null || !this.shootingEntity.isEntityAlive()))
@@ -709,7 +716,6 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 
 	public static class EntityNGDragon extends EntityScalableProjectile.Base {
 		private float fullScale = 6f;
-		//private float realMotionFactor;
 		public float prevLimbSwingAmount;
 		public float limbSwingAmount;
 		public float limbSwing;
@@ -761,9 +767,8 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 						 ? ((EntityLiving)this.shootingEntity).getAttackTarget().getPositionVector().subtract(this.getPositionVector())
 						 : this.shootingEntity.getLookVec();
 						this.shoot(vec.x, vec.y, vec.z, 1.2f, 0f);
+						this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:dragon_roar")), 2f, 1f);
 					}
-					//if (this.motionFactor == 0.0F)
-					//	this.motionFactor = this.realMotionFactor;
 					this.shootingEntity.setPositionAndUpdate(this.posX, this.posY, this.posZ);
 				}
 			}

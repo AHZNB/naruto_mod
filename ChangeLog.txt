@@ -16,6 +16,7 @@ Jutsus:
  - added Transformation jutsu and scroll
  - added 4-symbols sealing jutsu and scroll
  - added lightning release: black panther and scroll
+ - added Earth release: Golem jutsu
  
 Items:
  - Bone drill can't be dropped into the world

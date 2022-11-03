@@ -83,7 +83,7 @@ public class EntityManda extends ElementsNarutomodMod.ModElement {
 		public void onUpdate() {
 			super.onUpdate();
 			EntityLivingBase summoner = this.getSummoner();
-			if (summoner != null && !summoner.isRiding() && this.ageTicks == 1) {
+			if (summoner != null && !summoner.isRiding() && this.getAge() == 1) {
 				summoner.startRiding(this);
 			}
 		}

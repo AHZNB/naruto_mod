@@ -245,7 +245,7 @@ public class EntitySlug extends ElementsNarutomodMod.ModElement {
 			this.fallDistance = 0.0f;
 			if (!this.world.isRemote) {
 				EntityLivingBase summoner = this.getSummoner();
-				if (summoner != null && !summoner.isRiding() && this.ageTicks == 1 && this.getScale() >= 4.0f) {
+				if (summoner != null && !summoner.isRiding() && this.getAge() == 1 && this.getScale() >= 4.0f) {
 					summoner.startRiding(this);
 				}
 				this.checkClimbing();

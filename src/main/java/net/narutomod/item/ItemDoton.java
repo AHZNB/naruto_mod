@@ -39,6 +39,7 @@ import net.minecraft.block.Block;
 import net.narutomod.entity.EntityEarthSpears;
 import net.narutomod.entity.EntitySwampPit;
 import net.narutomod.entity.EntityEarthSandwich;
+import net.narutomod.entity.EntityEarthGolem;
 import net.narutomod.creativetab.TabModTab;
 import net.narutomod.ElementsNarutomodMod;
 import net.narutomod.procedure.ProcedureUtils;
@@ -64,6 +65,7 @@ public class ItemDoton extends ElementsNarutomodMod.ModElement {
 	public static final ItemJutsu.JutsuEnum SANDWICH = new ItemJutsu.JutsuEnum(2, "earth_sandwich", 'B', 100d, new EntityEarthSandwich.EC.Jutsu());
 	public static final ItemJutsu.JutsuEnum SWAMPPIT = new ItemJutsu.JutsuEnum(3, "swamp_pit", 'A', 100d, new EntitySwampPit.EC.Jutsu());
 	public static final ItemJutsu.JutsuEnum SPEARS = new ItemJutsu.JutsuEnum(4, "earth_spears", 'C', 50d, new EntityEarthSpears.EC.Jutsu());
+	public static final ItemJutsu.JutsuEnum GOLEM = new ItemJutsu.JutsuEnum(5, "earth_golem", 'B', 100d, new EntityEarthGolem.EC.Jutsu());
 
 	public ItemDoton(ElementsNarutomodMod instance) {
 		super(instance, 378);
@@ -71,7 +73,7 @@ public class ItemDoton extends ElementsNarutomodMod.ModElement {
 
 	@Override
 	public void initElements() {
-		elements.items.add(() -> new RangedItem(HIDINGINROCK, EARTHWALL, SANDWICH, SWAMPPIT, SPEARS));
+		elements.items.add(() -> new RangedItem(HIDINGINROCK, EARTHWALL, SANDWICH, SWAMPPIT, SPEARS, GOLEM));
 		elements.entities.add(() -> EntityEntryBuilder.create().entity(EntityEarthWall.class)
 				.id(new ResourceLocation("narutomod", "entityearthwall"), ENTITYID).name("entityearthwall").tracker(64, 1, true).build());
 		elements.entities.add(() -> EntityEntryBuilder.create().entity(EntityHidingInRock.class)
@@ -97,17 +99,20 @@ public class ItemDoton extends ElementsNarutomodMod.ModElement {
 		@Override
 		protected float getPower(ItemStack stack, EntityLivingBase entity, int timeLeft) {
 			float base = 2f;
-			if (this.getCurrentJutsu(stack) == EARTHWALL) {
+			ItemJutsu.JutsuEnum jutsu = this.getCurrentJutsu(stack);
+			if (jutsu == EARTHWALL) {
 				return this.getPower(stack, entity, timeLeft, base, 15f);
 				//return Math.min(base + (float)(this.getMaxUseDuration() - timeLeft) / 10, this.getMaxPower(stack, entity));
-			} else if (this.getCurrentJutsu(stack) == SANDWICH) {
+			} else if (jutsu == SANDWICH) {
 				return this.getPower(stack, entity, timeLeft, base, 75f);
 				//return Math.min(base + (float)(this.getMaxUseDuration() - timeLeft) / 50, this.getMaxPower(stack, entity));
-			} else if (this.getCurrentJutsu(stack) == SWAMPPIT) {
+			} else if (jutsu == SWAMPPIT) {
 				return this.getPower(stack, entity, timeLeft, 1f, 30f);
 				//return MathHelper.floor(Math.min(1f + (float)(this.getMaxUseDuration() - timeLeft) / 20, this.getMaxPower(stack, entity)));
-			} else if (this.getCurrentJutsu(stack) == SPEARS) {
+			} else if (jutsu == SPEARS) {
 				return this.getPower(stack, entity, timeLeft, 0.5f, 150f);
+			} else if (jutsu == GOLEM) {
+				return this.getPower(stack, entity, timeLeft, 0.0f, 150f);
 			}
 			return base;
 		}

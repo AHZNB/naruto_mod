@@ -1,6 +1,7 @@
 
 package net.narutomod.entity;
 
+import net.narutomod.item.ItemJutsu;
 import net.narutomod.ElementsNarutomodMod;
 
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -9,7 +10,6 @@ import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 
-import net.minecraft.world.biome.Biome;
 import net.minecraft.world.World;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.BlockPos;
@@ -24,7 +24,6 @@ import net.minecraft.entity.ai.EntityAIWatchClosest;
 import net.minecraft.entity.ai.EntityAIWander;
 import net.minecraft.entity.ai.EntityAILookIdle;
 import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.EnumCreatureAttribute;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.client.renderer.entity.RenderLiving;
@@ -32,14 +31,22 @@ import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.model.ModelBox;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.block.Block;
-
-import java.util.Iterator;
-import java.util.ArrayList;
+import net.minecraft.entity.ai.EntityAIAttackMelee;
+import net.minecraft.util.SoundEvent;
+import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.init.SoundEvents;
+import javax.vecmath.Vector3f;
+import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.init.Blocks;
+import net.minecraft.world.WorldServer;
+import org.jline.reader.Widget;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityEarthGolem extends ElementsNarutomodMod.ModElement {
 	public static final int ENTITYID = 407;
 	public static final int ENTITYID_RANGED = 408;
+
 	public EntityEarthGolem(ElementsNarutomodMod instance) {
 		super(instance, 799);
 	}
@@ -47,153 +54,189 @@ public class EntityEarthGolem extends ElementsNarutomodMod.ModElement {
 	@Override
 	public void initElements() {
 		elements.entities
-				.add(() -> EntityEntryBuilder.create().entity(EntityCustom.class).id(new ResourceLocation("narutomod", "earth_golem"), ENTITYID)
+				.add(() -> EntityEntryBuilder.create().entity(EC.class).id(new ResourceLocation("narutomod", "earth_golem"), ENTITYID)
 						.name("earth_golem").tracker(64, 3, true).egg(-7835040, -11650001).build());
-	}
-
-	private Biome[] allbiomes(net.minecraft.util.registry.RegistryNamespaced<ResourceLocation, Biome> in) {
-		Iterator<Biome> itr = in.iterator();
-		ArrayList<Biome> ls = new ArrayList<Biome>();
-		while (itr.hasNext())
-			ls.add(itr.next());
-		return ls.toArray(new Biome[ls.size()]);
 	}
 
 	@SideOnly(Side.CLIENT)
 	@Override
 	public void preInit(FMLPreInitializationEvent event) {
-		RenderingRegistry.registerEntityRenderingHandler(EntityCustom.class, renderManager -> {
-			return new RenderLiving(renderManager, new ModelRockGolem(), 1f) {
-				protected ResourceLocation getEntityTexture(Entity entity) {
-					return new ResourceLocation("narutomod:textures/golem_rock.png");
-				}
-			};
-		});
+		RenderingRegistry.registerEntityRenderingHandler(EC.class, renderManager -> new RenderCustom(renderManager));
 	}
-	public static class EntityCustom extends EntityMob {
-		public EntityCustom(World world) {
-			super(world);
-			setSize(1f, 2.875f);
-			experienceValue = 10;
-			this.isImmuneToFire = false;
-			setNoAI(!true);
-			setCustomNameTag("Earth Golem");
-			setAlwaysRenderNameTag(true);
-			enablePersistence();
+
+	public static class EC extends EntitySummonAnimal.Base {
+		private final int growTime = 30;
+		private int attackTimer;
+		private int nextStepDistance;
+		private int deathTicks;
+		
+		public EC(World w) {
+			super(w);
+			this.setOGSize(1f, 2.875f);
+			this.isImmuneToFire = true;
+			this.postScaleFixup();
+		}
+
+		public EC(EntityLivingBase summonerIn, float size) {
+			super(summonerIn);
+			this.setOGSize(1f, 2.875f);
+			this.isImmuneToFire = true;
+			this.setScale(size);
+			this.setLocationAndAngles(summonerIn.posX + summonerIn.getLookVec().x, summonerIn.posY, summonerIn.posZ + summonerIn.getLookVec().z, summonerIn.rotationYaw, 0f);
+		}
+
+		@Override
+		protected void postScaleFixup() {
+			float f = this.getScale();
+			this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(10.0D * f);
+			this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(80.0D * f);
+			this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(15.0D * f);
+			this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(10.0D + 6.0D * f);
+			this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.4D + (f - 1F) * 0.1D);
+			super.postScaleFixup();
+			//this.setSize(this.ogWidth * f, this.ogHeight * f);
+			//this.setHealth(this.getMaxHealth());
+			this.experienceValue = (int)(f * 10);
+		}
+
+		@Override
+		protected void dontWander(boolean set) {
 		}
 
 		@Override
 		protected void initEntityAI() {
 			super.initEntityAI();
-			this.tasks.addTask(1, new EntityAIWander(this, 1));
-			this.tasks.addTask(2, new EntityAIWatchClosest(this, EntityPlayer.class, (float) 6));
-			this.tasks.addTask(3, new EntityAILookIdle(this));
-		}
-
-		@Override
-		public EnumCreatureAttribute getCreatureAttribute() {
-			return EnumCreatureAttribute.UNDEFINED;
-		}
-
-		@Override
-		protected boolean canDespawn() {
-			return false;
-		}
-
-		@Override
-		protected Item getDropItem() {
-			return null;
+			this.tasks.addTask(1, new EntityAIAttackMelee(this, 1.0d, true));
 		}
 
 		@Override
 		protected void playStepSound(BlockPos pos, Block blockIn) {
-			this.playSound(
-					(net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("entity.irongolem.step")),
-					0.15f, 1);
 		}
 
 		@Override
-		public net.minecraft.util.SoundEvent getAmbientSound() {
-			return (net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation(""));
+		public SoundEvent getAmbientSound() {
+			return null;
 		}
 
 		@Override
-		public net.minecraft.util.SoundEvent getHurtSound(DamageSource ds) {
-			return (net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation(""));
+		public SoundEvent getHurtSound(DamageSource ds) {
+			return null;
 		}
 
 		@Override
-		public net.minecraft.util.SoundEvent getDeathSound() {
-			return (net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation(""));
+		public SoundEvent getDeathSound() {
+			return null;
 		}
 
 		@Override
-		protected float getSoundVolume() {
-			return 1.0F;
+		public double getMountedYOffset() {
+			return (double)this.height - 0.35d;
 		}
 
 		@Override
-		public boolean attackEntityFrom(DamageSource source, float amount) {
-			if (source == DamageSource.LIGHTNING_BOLT)
-				return false;
-			return super.attackEntityFrom(source, amount);
+		protected boolean canFitPassenger(Entity passenger) {
+			return this.getScale() >= 2.0f && this.getPassengers().size() < 1;
 		}
 
 		@Override
-		public boolean processInteract(EntityPlayer entity, EnumHand hand) {
-			super.processInteract(entity, hand);
-			entity.startRiding(this);
-			int x = (int) this.posX;
-			int y = (int) this.posY;
-			int z = (int) this.posZ;
-			ItemStack itemstack = entity.getHeldItem(hand);
-			return true;
+		public boolean attackEntityAsMob(Entity entityIn) {
+			boolean ret = super.attackEntityAsMob(entityIn);
+			this.playSound(SoundEvents.ENTITY_IRONGOLEM_ATTACK, 1.0F, 1.0F);
+			this.attackTimer = 10;
+			this.world.setEntityState(this, (byte)4);
+			return ret;
 		}
 
-		@Override
-		protected void applyEntityAttributes() {
-			super.applyEntityAttributes();
-			if (this.getEntityAttribute(SharedMonsterAttributes.ARMOR) != null)
-				this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(15D);
-			if (this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED) != null)
-				this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.3D);
-			if (this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH) != null)
-				this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(150D);
-			if (this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE) != null)
-				this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(3D);
-		}
+	    @SideOnly(Side.CLIENT)
+	    @Override
+	    public void handleStatusUpdate(byte id) {
+	        if (id == 4) {
+	            this.attackTimer = 10;
+	            this.playSound(SoundEvents.ENTITY_IRONGOLEM_ATTACK, 1.0F, 1.0F);
+	        } else {
+	        	super.handleStatusUpdate(id);
+	        }
+	    }
+
+	    @SideOnly(Side.CLIENT)
+    	public int getAttackTimer() {
+    		return this.attackTimer;
+    	}
 
 		@Override
-		public void travel(float ti, float tj, float tk) {
-			Entity entity = this.getPassengers().isEmpty() ? null : (Entity) this.getPassengers().get(0);
-			if (this.isBeingRidden()) {
-				this.rotationYaw = entity.rotationYaw;
-				this.prevRotationYaw = this.rotationYaw;
-				this.rotationPitch = entity.rotationPitch * 0.5F;
-				this.setRotation(this.rotationYaw, this.rotationPitch);
-				this.jumpMovementFactor = this.getAIMoveSpeed() * 0.15F;
-				this.renderYawOffset = entity.rotationYaw;
-				this.rotationYawHead = entity.rotationYaw;
-				this.stepHeight = 1.0F;
-				if (entity instanceof EntityLivingBase) {
-					this.setAIMoveSpeed((float) this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).getAttributeValue());
-					float forward = ((EntityLivingBase) entity).moveForward;
-					float strafe = ((EntityLivingBase) entity).moveStrafing;
-					super.travel(strafe, 0, forward);
-				}
-				this.prevLimbSwingAmount = this.limbSwingAmount;
-				double d1 = this.posX - this.prevPosX;
-				double d0 = this.posZ - this.prevPosZ;
-				float f1 = MathHelper.sqrt(d1 * d1 + d0 * d0) * 4.0F;
-				if (f1 > 1.0F)
-					f1 = 1.0F;
-				this.limbSwingAmount += (f1 - this.limbSwingAmount) * 0.4F;
-				this.limbSwing += this.limbSwingAmount;
-				return;
+		protected void onDeathUpdate() {
+			if (!this.world.isRemote) {
+				this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:rocks")), 1.0F, 0.8F);
+				((WorldServer)this.world).spawnParticle(EnumParticleTypes.BLOCK_DUST, this.posX, this.posY + this.height * 0.5,
+				 this.posZ, (int)(this.getScale() * 1000), 0.2d * this.width, 0.3d * this.height, 0.2d * this.width,
+				 0.1d, Block.getIdFromBlock(Blocks.DIRT));
 			}
-			this.stepHeight = 0.5F;
-			this.jumpMovementFactor = 0.02F;
-			super.travel(ti, tj, tk);
+			this.setDead();
+		}
+
+    	@Override
+    	public void onLivingUpdate() {
+    		super.onLivingUpdate();
+    		if (this.getSummoner() == null) {
+    			this.onDeathUpdate();
+    		} else {
+	    		int age = this.getAge();
+	    		if (age == 1) {
+	    			this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:rocks")), 1.0F, 0.8F);
+	    		}
+	    		if (age <= this.growTime) {
+					for (int i = 0; i < (int)(this.getScale() * 20); i++) {
+						this.world.spawnParticle(EnumParticleTypes.BLOCK_DUST, this.posX, this.posY, this.posZ,
+						 (this.rand.nextDouble()-0.5d) * this.width * 0.25d, 0.15d,
+						 (this.rand.nextDouble()-0.5d) * this.width * 0.25d, Block.getIdFromBlock(Blocks.DIRT));
+					}
+	    		}
+	    		float f = this.distanceWalkedOnStepModified * this.ogHeight / this.height;
+	    		if (f > this.nextStepDistance && !this.world.isAirBlock(new BlockPos(this.posX, this.posY - 0.2d, this.posZ))) {
+	    			this.nextStepDistance = (int)f + 1;
+	    			if (!this.isInWater()) {
+	    				this.playSound(SoundEvents.ENTITY_IRONGOLEM_STEP, 1f, 1);
+	    			}
+	    		}
+    		}
+    		if (this.attackTimer > 0) {
+    			--this.attackTimer;
+    		}
+    	}
+
+		public static class Jutsu implements ItemJutsu.IJutsuCallback {
+			@Override
+			public boolean createJutsu(ItemStack stack, EntityLivingBase entity, float power) {
+				if (power >= 1.0f) {
+					entity.world.spawnEntity(new EC(entity, power));
+					return true;
+				}
+				return false;
+			}
+		}
+	}
+
+	@SideOnly(Side.CLIENT)
+	public class RenderCustom extends RenderLiving<EC> {
+		private final ResourceLocation texture = new ResourceLocation("narutomod:textures/golem_rock.png");
+
+		public RenderCustom(RenderManager renderManagerIn) {
+			super(renderManagerIn, new ModelRockGolem(), 0.5F);
+		}
+
+		@Override
+		protected ResourceLocation getEntityTexture(EC entity) {
+			return this.texture;
+		}
+
+		@Override
+		protected void applyRotations(EC entityLiving, float p_77043_2_, float rotationYaw, float partialTicks) {
+			super.applyRotations(entityLiving, p_77043_2_, rotationYaw, partialTicks);
+			if ((double)entityLiving.limbSwingAmount >= 0.01D) {
+				float f1 = entityLiving.limbSwing - entityLiving.limbSwingAmount * (1.0F - partialTicks) + 6.0F;
+				float f2 = (Math.abs(f1 % 13.0F - 6.5F) - 3.25F) / 3.25F;
+				GlStateManager.rotate(6.5F * f2, 0.0F, 0.0F, 1.0F);
+			}
 		}
 	}
 
@@ -217,6 +260,19 @@ public class EntityEarthGolem extends ElementsNarutomodMod.ModElement {
 		private final ModelRenderer ironGolemLeftLeg;
 		private final ModelRenderer left_leg;
 		private final ModelRenderer left_leg2;
+		private final Vector3f headStart = new Vector3f(0.0F, 34.0F, 0.0F);
+		private final Vector3f headEnd = new Vector3f(0.0F, -12.0F, 0.0F);
+		private final Vector3f bodyStart = new Vector3f(0.0F, 24.0F, 0.0F);
+		private final Vector3f bodyEnd = new Vector3f(0.0F, -12.0F, 0.0F);
+		private final Vector3f rightArmStart = new Vector3f(0.0F, 26.0F, 2.0F);
+		private final Vector3f rightArmEnd = new Vector3f(-8.0F, -10.0F, 0.0F);
+		private final Vector3f leftArmStart = new Vector3f(0.0F, 26.0F, 2.0F);
+		private final Vector3f leftArmEnd = new Vector3f(8.0F, -10.0F, 0.0F);
+		private final Vector3f rightLegStart = new Vector3f(-0.5F, 26.5F, 0.0F);
+		private final Vector3f rightLegEnd = new Vector3f(-3.5F, 5.5F, 0.0F);
+		private final Vector3f leftLegStart = new Vector3f(0.5F, 26.5F, 0.0F);
+		private final Vector3f leftLegEnd = new Vector3f(3.5F, 5.5F, 0.0F);
+
 		public ModelRockGolem() {
 			textureWidth = 128;
 			textureHeight = 128;
@@ -238,7 +294,7 @@ public class EntityEarthGolem extends ElementsNarutomodMod.ModElement {
 			ironGolemBody.cubeList.add(new ModelBox(ironGolemBody, 0, 0, -9.0F, 0.0F, -6.0F, 18, 13, 11, 0.0F, false));
 			ironGolemBody.cubeList.add(new ModelBox(ironGolemBody, 50, 52, -5.0F, 13.5F, -3.0F, 10, 8, 6, 0.5F, false));
 			ironGolemRightArm = new ModelRenderer(this);
-			ironGolemRightArm.setRotationPoint(-8.0F, -10.0F, -1.0F);
+			ironGolemRightArm.setRotationPoint(-8.0F, -10.0F, 0.0F);
 			right_arm = new ModelRenderer(this);
 			right_arm.setRotationPoint(0.0F, 1.0F, 0.0F);
 			ironGolemRightArm.addChild(right_arm);
@@ -252,7 +308,7 @@ public class EntityEarthGolem extends ElementsNarutomodMod.ModElement {
 			bone.cubeList.add(new ModelBox(bone, 48, 42, -2.0F, 0.0F, -6.0F, 4, 2, 6, 0.0F, false));
 			bone.cubeList.add(new ModelBox(bone, 0, 24, -4.0F, 2.0F, -7.0F, 8, 12, 8, 0.0F, false));
 			ironGolemLeftArm = new ModelRenderer(this);
-			ironGolemLeftArm.setRotationPoint(8.0F, -10.0F, -1.0F);
+			ironGolemLeftArm.setRotationPoint(8.0F, -10.0F, 0.0F);
 			left_arm = new ModelRenderer(this);
 			left_arm.setRotationPoint(0.0F, 1.0F, 0.0F);
 			ironGolemLeftArm.addChild(left_arm);
@@ -266,39 +322,44 @@ public class EntityEarthGolem extends ElementsNarutomodMod.ModElement {
 			bone2.cubeList.add(new ModelBox(bone2, 48, 42, -2.0F, 0.0F, -6.0F, 4, 2, 6, 0.0F, true));
 			bone2.cubeList.add(new ModelBox(bone2, 0, 24, -4.0F, 2.0F, -7.0F, 8, 12, 8, 0.0F, true));
 			ironGolemRightLeg = new ModelRenderer(this);
-			ironGolemRightLeg.setRotationPoint(-3.5F, 6.5F, 0.0F);
+			ironGolemRightLeg.setRotationPoint(-3.5F, 5.5F, 0.0F);		
 			right_leg = new ModelRenderer(this);
 			right_leg.setRotationPoint(0.0F, 0.0F, 0.0F);
 			ironGolemRightLeg.addChild(right_leg);
-			setRotationAngle(right_leg, -0.5236F, 0.5236F, 0.0F);
-			right_leg.cubeList.add(new ModelBox(right_leg, 58, 0, -5.5F, 0.0F, -3.0F, 6, 10, 6, 0.0F, false));
+			setRotationAngle(right_leg, -0.2618F, 0.2618F, 0.0F);
+			right_leg.cubeList.add(new ModelBox(right_leg, 58, 0, -5.5F, 0.0F, -3.0F, 6, 10, 6, -0.2F, false));
 			right_leg2 = new ModelRenderer(this);
 			right_leg2.setRotationPoint(-2.5F, 10.0F, -3.0F);
 			right_leg.addChild(right_leg2);
-			setRotationAngle(right_leg2, 0.5236F, 0.0F, 0.0F);
-			right_leg2.cubeList.add(new ModelBox(right_leg2, 0, 44, -3.0F, 0.0F, 0.0F, 6, 10, 6, 0.0F, false));
+			setRotationAngle(right_leg2, 0.2618F, 0.0F, 0.0F);
+			right_leg2.cubeList.add(new ModelBox(right_leg2, 0, 44, -3.0F, 0.0F, 0.0F, 6, 10, 6, 0.2F, false));
 			ironGolemLeftLeg = new ModelRenderer(this);
-			ironGolemLeftLeg.setRotationPoint(3.5F, 6.5F, 0.0F);
+			ironGolemLeftLeg.setRotationPoint(3.5F, 5.5F, 0.0F);
 			left_leg = new ModelRenderer(this);
 			left_leg.setRotationPoint(0.0F, 0.0F, 0.0F);
 			ironGolemLeftLeg.addChild(left_leg);
-			setRotationAngle(left_leg, -0.5236F, -0.5236F, 0.0F);
-			left_leg.cubeList.add(new ModelBox(left_leg, 58, 0, -0.5F, 0.0F, -3.0F, 6, 10, 6, 0.0F, true));
+			setRotationAngle(left_leg, -0.2618F, -0.2618F, 0.0F);
+			left_leg.cubeList.add(new ModelBox(left_leg, 58, 0, -0.5F, 0.0F, -3.0F, 6, 10, 6, -0.2F, true));
 			left_leg2 = new ModelRenderer(this);
 			left_leg2.setRotationPoint(2.5F, 10.0F, -3.0F);
 			left_leg.addChild(left_leg2);
-			setRotationAngle(left_leg2, 0.5236F, 0.0F, 0.0F);
-			left_leg2.cubeList.add(new ModelBox(left_leg2, 0, 44, -3.0F, 0.0F, 0.0F, 6, 10, 6, 0.0F, true));
+			setRotationAngle(left_leg2, 0.2618F, 0.0F, 0.0F);
+			left_leg2.cubeList.add(new ModelBox(left_leg2, 0, 44, -3.0F, 0.0F, 0.0F, 6, 10, 6, 0.2F, true));
 		}
 
 		@Override
 		public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
+			float scale = ((EC)entity).getScale();
+			GlStateManager.pushMatrix();
+			GlStateManager.translate(0.0F, 1.5F - 1.5F * scale, 0.0F);
+			GlStateManager.scale(scale, scale, scale);
 			ironGolemHead.render(f5);
 			ironGolemBody.render(f5);
 			ironGolemRightArm.render(f5);
 			ironGolemLeftArm.render(f5);
 			ironGolemRightLeg.render(f5);
 			ironGolemLeftLeg.render(f5);
+			GlStateManager.popMatrix();
 		}
 
 		public void setRotationAngle(ModelRenderer modelRenderer, float x, float y, float z) {
@@ -307,8 +368,41 @@ public class EntityEarthGolem extends ElementsNarutomodMod.ModElement {
 			modelRenderer.rotateAngleZ = z;
 		}
 
-		public void setRotationAngles(float f, float f1, float f2, float f3, float f4, float f5, Entity e) {
-			super.setRotationAngles(f, f1, f2, f3, f4, f5, e);
-		}
+	    @Override
+	    public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn) {
+	        limbSwing = limbSwing * ((EC)entityIn).ogHeight / entityIn.height;
+	        this.ironGolemHead.rotateAngleY = netHeadYaw * 0.017453292F;
+	        this.ironGolemHead.rotateAngleX = headPitch * 0.017453292F;
+	        this.ironGolemLeftLeg.rotateAngleX = -1.5F * this.triangleWave(limbSwing, 13.0F) * limbSwingAmount;
+	        this.ironGolemRightLeg.rotateAngleX = 1.5F * this.triangleWave(limbSwing, 13.0F) * limbSwingAmount;
+	        this.ironGolemLeftLeg.rotateAngleY = 0.0F;
+	        this.ironGolemRightLeg.rotateAngleY = 0.0F;
+	    }
+	
+	    @Override
+	    public void setLivingAnimations(EntityLivingBase entitylivingbaseIn, float limbSwing, float limbSwingAmount, float partialTickTime) {
+	        EC entity = (EC)entitylivingbaseIn;
+	        limbSwing = limbSwing * entity.ogHeight / entity.height;
+	        int age = entity.getAge();
+	        float f = MathHelper.clamp(((float)age + partialTickTime) / (float)entity.growTime, 0.0f, 1.0f);
+	        this.ironGolemHead.setRotationPoint(this.headStart.x + (this.headEnd.x - this.headStart.x) * f, this.headStart.y + (this.headEnd.y - this.headStart.y) * f, this.headStart.z + (this.headEnd.z - this.headStart.z) * f);
+	        this.ironGolemBody.setRotationPoint(this.bodyStart.x + (this.bodyEnd.x - this.bodyStart.x) * f, this.bodyStart.y + (this.bodyEnd.y - this.bodyStart.y) * f, this.bodyStart.z + (this.bodyEnd.z - this.bodyStart.z) * f);
+	        this.ironGolemRightArm.setRotationPoint(this.rightArmStart.x + (this.rightArmEnd.x - this.rightArmStart.x) * f, this.rightArmStart.y + (this.rightArmEnd.y - this.rightArmStart.y) * f, this.rightArmStart.z + (this.rightArmEnd.z - this.rightArmStart.z) * f);
+	        this.ironGolemLeftArm.setRotationPoint(this.leftArmStart.x + (this.leftArmEnd.x - this.leftArmStart.x) * f, this.leftArmStart.y + (this.leftArmEnd.y - this.leftArmStart.y) * f, this.leftArmStart.z + (this.leftArmEnd.z - this.leftArmStart.z) * f);
+	        this.ironGolemRightLeg.setRotationPoint(this.rightLegStart.x + (this.rightLegEnd.x - this.rightLegStart.x) * f, this.rightLegStart.y + (this.rightLegEnd.y - this.rightLegStart.y) * f, this.rightLegStart.z + (this.rightLegEnd.z - this.rightLegStart.z) * f);
+	        this.ironGolemLeftLeg.setRotationPoint(this.leftLegStart.x + (this.leftLegEnd.x - this.leftLegStart.x) * f, this.leftLegStart.y + (this.leftLegEnd.y - this.leftLegStart.y) * f, this.leftLegStart.z + (this.leftLegEnd.z - this.leftLegStart.z) * f);
+	        int i = entity.getAttackTimer();
+	        if (i > 0) {
+	            this.ironGolemRightArm.rotateAngleX = -2.0F + 1.5F * this.triangleWave((float)i - partialTickTime, 10.0F);
+	            this.ironGolemLeftArm.rotateAngleX = -2.0F + 1.5F * this.triangleWave((float)i - partialTickTime, 10.0F);
+	        } else {
+                this.ironGolemRightArm.rotateAngleX = (-0.2F + 1.5F * this.triangleWave(limbSwing, 13.0F)) * limbSwingAmount;
+                this.ironGolemLeftArm.rotateAngleX = (-0.2F - 1.5F * this.triangleWave(limbSwing, 13.0F)) * limbSwingAmount;
+	        }
+	    }
+	
+	    private float triangleWave(float p_78172_1_, float p_78172_2_) {
+	        return (Math.abs(p_78172_1_ % p_78172_2_ - p_78172_2_ * 0.5F) - p_78172_2_ * 0.25F) / (p_78172_2_ * 0.25F);
+	    }
 	}
 }
