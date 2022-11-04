@@ -16,6 +16,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.particle.ParticleBlockDust;
 import net.minecraft.client.particle.ParticleSimpleAnimated;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.IParticleFactory;
@@ -26,12 +27,15 @@ import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.potion.PotionEffect;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.Block;
 
 import net.narutomod.potion.PotionCorrosion;
 import net.narutomod.procedure.ProcedureUtils;
@@ -44,6 +48,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.ImmutableMap;
 import org.lwjgl.util.glu.Sphere;
 import org.lwjgl.util.glu.GLU;
+import javax.annotation.Nullable;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class Particles extends ElementsNarutomodMod.ModElement {
@@ -75,6 +80,7 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 		Minecraft.getMinecraft().effectRenderer.registerParticle(Types.SEAL_FORMULA.getID(), new SealFormula.Factory());
 		Minecraft.getMinecraft().effectRenderer.registerParticle(Types.ACID_SPIT.getID(), new AcidSpit.Factory());
 		Minecraft.getMinecraft().effectRenderer.registerParticle(Types.WHIRLPOOL.getID(), new Whirlpool.Factory());
+		Minecraft.getMinecraft().effectRenderer.registerParticle(Types.BLOCK_DUST.getID(), new BlockDust.Factory());
 	}
 
 	public static void spawnParticle(World world, Types type, double x, double y, double z, int count, 
@@ -1209,6 +1215,27 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
+	@SideOnly(Side.CLIENT)
+	public static class BlockDust extends ParticleBlockDust {
+	    protected BlockDust(World worldIn, double xCoordIn, double yCoordIn, double zCoordIn,
+	     double xSpeedIn, double ySpeedIn, double zSpeedIn, IBlockState state, float size) {
+	        super(worldIn, xCoordIn, yCoordIn, zCoordIn, xSpeedIn, ySpeedIn, zSpeedIn, state);
+	        this.particleScale *= size;
+	    }
+	
+	    @SideOnly(Side.CLIENT)
+	    public static class Factory implements IParticleFactory {
+	        @Nullable
+	        public Particle createParticle(int particleID, World worldIn, double xCoordIn, double yCoordIn, double zCoordIn,
+	         double xSpeedIn, double ySpeedIn, double zSpeedIn, int... params) {
+	            IBlockState iblockstate = Block.getStateById(params[0]);
+	            float arg1 = params.length > 1 ? (float)params[1] / 10f : 1f;
+	            return iblockstate.getRenderType() == EnumBlockRenderType.INVISIBLE ? null
+	             : (new BlockDust(worldIn, xCoordIn, yCoordIn, zCoordIn, xSpeedIn, ySpeedIn, zSpeedIn, iblockstate, arg1)).init();
+	        }
+	    }
+	}
+
 	public enum Types {
 		SMOKE("smoke_colored", 54678400, 6), 
 		SUSPENDED("suspended_colored", 54678401, 3), 
@@ -1221,7 +1248,8 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 		PORTAL_SPIRAL("portal_spiral", 54678408, 3),
 		SEAL_FORMULA("seal_formula", 54678409, 3),
 		ACID_SPIT("acid_spit", 54678410, 2),
-		WHIRLPOOL("whirlpool", 54678411, 4);
+		WHIRLPOOL("whirlpool", 54678411, 4),
+		BLOCK_DUST("whirlpool", 54678412, 2);
 		
 		private final String particleName;
 		private final int particleID;

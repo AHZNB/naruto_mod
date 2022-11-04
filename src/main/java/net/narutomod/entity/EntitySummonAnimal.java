@@ -181,7 +181,7 @@ public class EntitySummonAnimal extends ElementsNarutomodMod.ModElement {
 				if (target == null) {
 					target = owner.getLastAttackedEntity();
 				}
-				if (target != null) {
+				if (target != null && !target.equals(this)) {
 					this.setAttackTarget(target);
 				}
 				target = this.getAttackTarget();

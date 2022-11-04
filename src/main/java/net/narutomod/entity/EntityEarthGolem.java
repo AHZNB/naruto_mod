@@ -2,6 +2,7 @@
 package net.narutomod.entity;
 
 import net.narutomod.item.ItemJutsu;
+import net.narutomod.Particles;
 import net.narutomod.ElementsNarutomodMod;
 
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -14,33 +15,25 @@ import net.minecraft.world.World;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.EnumHand;
 import net.minecraft.util.DamageSource;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Item;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.monster.EntityMob;
-import net.minecraft.entity.ai.EntityAIWatchClosest;
-import net.minecraft.entity.ai.EntityAIWander;
-import net.minecraft.entity.ai.EntityAILookIdle;
+import net.minecraft.util.SoundEvent;
+import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.entity.ai.EntityAIAttackMelee;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderLiving;
+import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.model.ModelBox;
 import net.minecraft.client.model.ModelBase;
-import net.minecraft.block.Block;
-import net.minecraft.entity.ai.EntityAIAttackMelee;
-import net.minecraft.util.SoundEvent;
-import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.init.SoundEvents;
-import javax.vecmath.Vector3f;
-import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.init.Blocks;
-import net.minecraft.world.WorldServer;
-import org.jline.reader.Widget;
+import net.minecraft.init.SoundEvents;
+import net.minecraft.block.Block;
+
+import javax.vecmath.Vector3f;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityEarthGolem extends ElementsNarutomodMod.ModElement {
@@ -65,7 +58,7 @@ public class EntityEarthGolem extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static class EC extends EntitySummonAnimal.Base {
-		private final int growTime = 30;
+		private final int growTime = 40;
 		private int attackTimer;
 		private int nextStepDistance;
 		private int deathTicks;
@@ -94,8 +87,6 @@ public class EntityEarthGolem extends ElementsNarutomodMod.ModElement {
 			this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(10.0D + 6.0D * f);
 			this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.4D + (f - 1F) * 0.1D);
 			super.postScaleFixup();
-			//this.setSize(this.ogWidth * f, this.ogHeight * f);
-			//this.setHealth(this.getMaxHealth());
 			this.experienceValue = (int)(f * 10);
 		}
 
@@ -141,6 +132,9 @@ public class EntityEarthGolem extends ElementsNarutomodMod.ModElement {
 		@Override
 		public boolean attackEntityAsMob(Entity entityIn) {
 			boolean ret = super.attackEntityAsMob(entityIn);
+			if (ret) {
+				entityIn.motionY += 0.4D;
+			}
 			this.playSound(SoundEvents.ENTITY_IRONGOLEM_ATTACK, 1.0F, 1.0F);
 			this.attackTimer = 10;
 			this.world.setEntityState(this, (byte)4);
@@ -167,15 +161,16 @@ public class EntityEarthGolem extends ElementsNarutomodMod.ModElement {
 		protected void onDeathUpdate() {
 			if (!this.world.isRemote) {
 				this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:rocks")), 1.0F, 0.8F);
-				((WorldServer)this.world).spawnParticle(EnumParticleTypes.BLOCK_DUST, this.posX, this.posY + this.height * 0.5,
-				 this.posZ, (int)(this.getScale() * 1000), 0.2d * this.width, 0.3d * this.height, 0.2d * this.width,
-				 0.1d, Block.getIdFromBlock(Blocks.DIRT));
+				Particles.spawnParticle(this.world, Particles.Types.BLOCK_DUST, this.posX, this.posY + this.height * 0.5,
+				 this.posZ, (int)(this.getScale() * 1000), 0.5d * this.width, 0.3d * this.height, 0.5d * this.width,
+				 0d, 0d, 0d, Block.getIdFromBlock(Blocks.DIRT), 40);
 			}
 			this.setDead();
 		}
 
     	@Override
     	public void onLivingUpdate() {
+    		this.clearActivePotions();
     		super.onLivingUpdate();
     		if (this.getSummoner() == null) {
     			this.onDeathUpdate();
@@ -243,7 +238,8 @@ public class EntityEarthGolem extends ElementsNarutomodMod.ModElement {
 	// Made with Blockbench 4.4.3
 	// Exported for Minecraft version 1.7 - 1.12
 	// Paste this class into your mod and generate all required imports
-	public static class ModelRockGolem extends ModelBase {
+	@SideOnly(Side.CLIENT)
+	public class ModelRockGolem extends ModelBase {
 		private final ModelRenderer ironGolemHead;
 		private final ModelRenderer hornRight;
 		private final ModelRenderer hornLeft;
@@ -383,8 +379,7 @@ public class EntityEarthGolem extends ElementsNarutomodMod.ModElement {
 	    public void setLivingAnimations(EntityLivingBase entitylivingbaseIn, float limbSwing, float limbSwingAmount, float partialTickTime) {
 	        EC entity = (EC)entitylivingbaseIn;
 	        limbSwing = limbSwing * entity.ogHeight / entity.height;
-	        int age = entity.getAge();
-	        float f = MathHelper.clamp(((float)age + partialTickTime) / (float)entity.growTime, 0.0f, 1.0f);
+	        float f = MathHelper.clamp(((float)entity.getAge() + partialTickTime) / (float)entity.growTime, 0.0f, 1.0f);
 	        this.ironGolemHead.setRotationPoint(this.headStart.x + (this.headEnd.x - this.headStart.x) * f, this.headStart.y + (this.headEnd.y - this.headStart.y) * f, this.headStart.z + (this.headEnd.z - this.headStart.z) * f);
 	        this.ironGolemBody.setRotationPoint(this.bodyStart.x + (this.bodyEnd.x - this.bodyStart.x) * f, this.bodyStart.y + (this.bodyEnd.y - this.bodyStart.y) * f, this.bodyStart.z + (this.bodyEnd.z - this.bodyStart.z) * f);
 	        this.ironGolemRightArm.setRotationPoint(this.rightArmStart.x + (this.rightArmEnd.x - this.rightArmStart.x) * f, this.rightArmStart.y + (this.rightArmEnd.y - this.rightArmStart.y) * f, this.rightArmStart.z + (this.rightArmEnd.z - this.rightArmStart.z) * f);

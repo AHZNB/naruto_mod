@@ -120,11 +120,15 @@ public class ItemDoton extends ElementsNarutomodMod.ModElement {
 		@Override
 		protected float getMaxPower(ItemStack stack, EntityLivingBase entity) {
 			float f = super.getMaxPower(stack, entity);
-			if (this.getCurrentJutsu(stack) == EARTHWALL) {
+			ItemJutsu.JutsuEnum jutsu = this.getCurrentJutsu(stack);
+			if (jutsu == EARTHWALL) {
 				return Math.min(f, 50f);
 			}
-			if (this.getCurrentJutsu(stack) == SANDWICH) {
+			if (jutsu == SANDWICH) {
 				return Math.min(f, 8f);
+			}
+			if (jutsu == GOLEM) {
+				return Math.min(f, 5f);
 			}
 			return f;
 		}
