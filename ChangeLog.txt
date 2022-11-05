@@ -39,7 +39,7 @@ Items:
  - added Sound Gaunlet (WIP)
  - added Poison Bombs (WIP)
  - added Poison Senbons and recipe
- - added Cleaver
+ - added Cleaver sword and recipe: can imbue lightning chakra
  - added Curry of Life
  - added Curry and Rice
  - added Rice

@@ -1,8 +1,8 @@
 {
   "id_map": {
     "ENTITY": 410,
-    "DIMENSION": 13,
-    "GUI": 59
+    "GUI": 59,
+    "DIMENSION": 13
   },
   "mod_elements": [
     {
@@ -6516,7 +6516,7 @@
       "type": "tool",
       "sortid": 780,
       "compiles": true,
-      "locked_code": false,
+      "locked_code": true,
       "ids": {},
       "registry_name": "cleaver"
     },
@@ -6782,6 +6782,15 @@
       "locked_code": false,
       "ids": {},
       "registry_name": "scroll_lightning_panther"
+    },
+    {
+      "name": "CleaverRecipe",
+      "type": "recipe",
+      "sortid": 804,
+      "compiles": true,
+      "locked_code": false,
+      "ids": {},
+      "registry_name": "cleaver_recipe"
     }
   ],
   "variable_elements": [
@@ -7723,6 +7732,7 @@
       "entity.genjutsu.name": "Genjutsu",
       "tooltip.shakuton.scorchblast": "Super steam blast",
       "chattext.tentails.sealedintoplayer": "Sealing %s into %s\u0027s body",
+      "tooltip.cleaver.descr": "Lightning natured users can imbue this sword with lightning chakra to increase its lethality",
       "subtitles.waterblast": "",
       "item.ninja_armor_war_1helmet.name": "Facial Protector (Konoha)",
       "item.asuracanon.name": "Asura Canon",
@@ -8105,7 +8115,7 @@
       "tile.meteor.name": "Meteor",
       "item.ninja_armor_konohalegs.name": "Ninja pants (Konoha)",
       "item.scroll_hiding_in_mist.name": "Water Release - Hiding In Mist",
-      "item.claw.name": "Claw",
+      "item.claw.name": "Triple bladed claw",
       "advancements.openedgates.title": "Power of Youth!",
       "tile.explosive_tag.name": "Explosive Tag",
       "item.scroll_water_stream.name": "Water Release - Water Bullet",
@@ -8270,7 +8280,7 @@
       "key.mcreator.specialjutsu2": "Special Jutsu 2",
       "key.mcreator.specialjutsu3": "Special Jutsu 3",
       "item.scroll_genjutsu.name": "Genjutsu scroll",
-      "item.cleaver.name": "Cleaver"
+      "item.cleaver.name": "Cleaver Sword"
     }
   },
   "foldersRoot": {
