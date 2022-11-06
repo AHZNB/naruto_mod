@@ -142,6 +142,7 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 			this.enablePersistence();
 			this.setHealth(this.getMaxHealth());
 			this.deathTotalTicks = 100;
+			this.setMeleeAttackTasks();
 		}
 
 		public Base(EntityPlayer player) {
@@ -218,6 +219,19 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 			return super.getEntityAttribute(attribute == SharedMonsterAttributes.MAX_HEALTH ? ProcedureUtils.MAXHEALTH : attribute);
 		}
 
+		protected void setMeleeAttackTasks() {
+			this.tasks.addTask(0, new AILeapAtTarget(this, 24d, 2.0f));
+			this.tasks.addTask(1, new EntityAIAttackMelee(this, 1.2D, true) {
+				@Override
+				public boolean shouldExecute() {
+					return this.attacker.getAttackTarget() != null
+					 && this.attacker.getDistance(this.attacker.getAttackTarget()) <= ProcedureUtils.getFollowRange(this.attacker)
+					 && super.shouldExecute();
+				}
+			});
+			this.tasks.addTask(2, new EntityAIMoveTowardsTarget(this, 1.2D, (float)TARGET_RANGE * 0.5f));
+		}
+
 		@Override
 		protected void initEntityAI() {
 			super.initEntityAI();
@@ -247,7 +261,7 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 					return TARGET_RANGE * 0.5d;
 				}
 			});
-			this.tasks.addTask(0, new AILeapAtTarget(this, 24d, 2.0f));
+			/*this.tasks.addTask(0, new AILeapAtTarget(this, 24d, 2.0f));
 			this.tasks.addTask(1, new EntityAIAttackMelee(this, 1.2D, true) {
 				@Override
 				public boolean shouldExecute() {
@@ -256,7 +270,7 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 					 && super.shouldExecute();
 				}
 			});
-			this.tasks.addTask(2, new EntityAIMoveTowardsTarget(this, 1.2D, (float)TARGET_RANGE * 0.5f));
+			this.tasks.addTask(2, new EntityAIMoveTowardsTarget(this, 1.2D, (float)TARGET_RANGE * 0.5f));*/
 			this.tasks.addTask(3, new EntityAIAttackRanged(this, 1.5D, BIJUDAMA_CD, (float)TARGET_RANGE) {
 				@Override
 				public boolean shouldExecute() {

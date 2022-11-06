@@ -50,9 +50,8 @@ Items:
  - added flying thunder god kunai (WIP)
  - added madara's 1-bladed scythe (WIP)
  - added Sound Gaunlet (WIP)
- - added metal claw
+ - added metal claw and recipe
  - added Jiraiya's stone sword Ishiken (WIP)
- - added Earth Golem (WIP)
  - added Chakra Blades (WIP)
  
 Entities:

@@ -12,15 +12,19 @@
     },
     "toolType": "Sword",
     "harvestLevel": 0,
-    "efficiency": 9.0,
+    "efficiency": 6.0,
     "attackSpeed": 5.0,
     "enchantability": 0,
     "damageVsEntity": 8.0,
-    "usageCount": 100,
+    "usageCount": 250,
     "blocksAffected": [],
     "hasGlow": false,
-    "repairItems": [],
-    "immuneToFire": false,
+    "repairItems": [
+      {
+        "value": "Items.IRON_INGOT"
+      }
+    ],
+    "immuneToFire": true,
     "stayInGridWhenCrafting": false,
     "damageOnCrafting": false
   }

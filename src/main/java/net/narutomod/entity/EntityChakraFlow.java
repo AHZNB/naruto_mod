@@ -24,6 +24,7 @@ import net.minecraft.client.model.ModelBiped;
 import net.narutomod.ElementsNarutomodMod;
 import net.narutomod.procedure.ProcedureUtils;
 import net.minecraft.init.MobEffects;
+import net.minecraft.item.ItemStack;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityChakraFlow extends ElementsNarutomodMod.ModElement {
@@ -134,11 +135,22 @@ public class EntityChakraFlow extends ElementsNarutomodMod.ModElement {
 		public void doRender(T entity, double x, double y, double z, float entityYaw, float partialTicks) {
 			EntityLivingBase user = entity.getUser();
 			if (user != null && entity.isUserHoldingWeapon()) {
+				ItemStack stack = user.getHeldItemMainhand();
+				Vec3d startVec = stack.hasTagCompound() && stack.getTagCompound().hasKey("CustomChakraFlowStartVec", 10)
+				 ? new Vec3d(stack.getTagCompound().getCompoundTag("CustomChakraFlowStartVec").getDouble("x"),
+				             stack.getTagCompound().getCompoundTag("CustomChakraFlowStartVec").getDouble("y"),
+				             stack.getTagCompound().getCompoundTag("CustomChakraFlowStartVec").getDouble("z"))
+				 : new Vec3d(0d, -0.725d, 0.1d);
+				Vec3d endVec = stack.hasTagCompound() && stack.getTagCompound().hasKey("CustomChakraFlowEndVec", 10)
+				 ? new Vec3d(stack.getTagCompound().getCompoundTag("CustomChakraFlowEndVec").getDouble("x"),
+				             stack.getTagCompound().getCompoundTag("CustomChakraFlowEndVec").getDouble("y"),
+				             stack.getTagCompound().getCompoundTag("CustomChakraFlowEndVec").getDouble("z"))
+				 : new Vec3d(0d, -0.725d, 1.5d);
 				RenderLivingBase<?> renderer = (RenderLivingBase<?>)this.renderManager.getEntityRenderObject(user);
 				ModelRenderer armModel = ((ModelBiped)renderer.getMainModel()).bipedRightArm;
 				Vec3d armAngles = new Vec3d(armModel.rotateAngleX, armModel.rotateAngleY, armModel.rotateAngleZ);
-				Vec3d vec0 = this.transform3rdPerson(new Vec3d(0d, -0.725d, 0.1d), armAngles, user, partialTicks);
-				Vec3d vec1 = this.transform3rdPerson(new Vec3d(0d, -0.725d, 1.5d), armAngles, user, partialTicks);
+				Vec3d vec0 = this.transform3rdPerson(startVec, armAngles, user, partialTicks);
+				Vec3d vec1 = this.transform3rdPerson(endVec, armAngles, user, partialTicks);
 				this.spawnParticles(entity, vec0, vec1);
 			}
 		}

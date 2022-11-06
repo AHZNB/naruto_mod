@@ -98,7 +98,7 @@ public class ItemCleaver extends ElementsNarutomodMod.ModElement {
 
 			@Override
 			public boolean hitEntity(ItemStack stack, EntityLivingBase target, EntityLivingBase attacker) {
-				if (this.itemRand.nextInt(5) == 0) {
+				if (this.canUseRaiton(attacker) && this.itemRand.nextInt(5) == 0) {
 					EntityLightningArc.onStruck(target, ItemJutsu.causeJutsuDamage(attacker, attacker), 2f);
 				}
 				return true;

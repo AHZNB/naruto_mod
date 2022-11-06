@@ -15,6 +15,7 @@ import net.minecraft.item.ItemSword;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Item;
 import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.init.Items;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -23,6 +24,9 @@ import java.util.Set;
 import java.util.HashMap;
 
 import com.google.common.collect.Multimap;
+import net.minecraft.world.World;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.entity.Entity;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class ItemClaw extends ElementsNarutomodMod.ModElement {
@@ -34,7 +38,7 @@ public class ItemClaw extends ElementsNarutomodMod.ModElement {
 
 	@Override
 	public void initElements() {
-		elements.items.add(() -> new ItemSword(EnumHelper.addToolMaterial("CLAW", 0, 100, 9f, 4f, 0)) {
+		elements.items.add(() -> new ItemSword(EnumHelper.addToolMaterial("CLAW", 0, 250, 6f, 4f, 0)) {
 			@Override
 			public Multimap<String, AttributeModifier> getItemAttributeModifiers(EntityEquipmentSlot slot) {
 				Multimap<String, AttributeModifier> multimap = super.getItemAttributeModifiers(slot);
@@ -47,10 +51,38 @@ public class ItemClaw extends ElementsNarutomodMod.ModElement {
 				return multimap;
 			}
 
+			@Override
+			public void onUpdate(ItemStack stack, World worldIn, Entity entityIn, int itemSlot, boolean isSelected) {
+				NBTTagCompound compound = stack.getTagCompound();
+				if (compound == null) {
+					compound = new NBTTagCompound();
+					stack.setTagCompound(compound);
+				}
+				if (!compound.hasKey("CustomChakraFlowStartVec")) {
+					NBTTagCompound cmp1 = new NBTTagCompound();
+					cmp1.setDouble("x", 0d);
+					cmp1.setDouble("y", -0.875d);
+					cmp1.setDouble("z", 0d);
+					compound.setTag("CustomChakraFlowStartVec", cmp1);
+				}
+				if (!compound.hasKey("CustomChakraFlowEndVec")) {
+					NBTTagCompound cmp2 = new NBTTagCompound();
+					cmp2.setDouble("x", 0d);
+					cmp2.setDouble("y", -2d);
+					cmp2.setDouble("z", 0d);
+					compound.setTag("CustomChakraFlowEndVec", cmp2);
+				}
+			}
+
 			public Set<String> getToolClasses(ItemStack stack) {
 				HashMap<String, Integer> ret = new HashMap<String, Integer>();
 				ret.put("sword", 0);
 				return ret.keySet();
+			}
+
+			@Override
+			public boolean getIsRepairable(ItemStack toRepair, ItemStack repair) {
+				return (repair.getItem() == new ItemStack(Items.IRON_INGOT, (int) (1)).getItem());
 			}
 		}.setUnlocalizedName("claw").setRegistryName("claw").setCreativeTab(TabModTab.tab));
 	}

@@ -34,6 +34,7 @@ import net.minecraft.init.SoundEvents;
 import net.minecraft.block.Block;
 
 import javax.vecmath.Vector3f;
+import javax.annotation.Nullable;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityEarthGolem extends ElementsNarutomodMod.ModElement {
@@ -150,6 +151,11 @@ public class EntityEarthGolem extends ElementsNarutomodMod.ModElement {
 	        } else {
 	        	super.handleStatusUpdate(id);
 	        }
+	    }
+
+	    @Override
+	    public void setAttackTarget(@Nullable EntityLivingBase entitylivingbaseIn) {
+	    	super.setAttackTarget(this.getAge() > this.growTime ? entitylivingbaseIn : null);
 	    }
 
 	    @SideOnly(Side.CLIENT)
