@@ -1108,8 +1108,6 @@ public class EntityEightTails extends ElementsNarutomodMod.ModElement {
 		public void setRotationAngles(float f0, float f1, float f2, float f3, float f4, float f5, Entity e) {
 			super.setRotationAngles(f0 * 2.0F / e.height, f1, f2, f3, f4, f5, e);
 			bipedHead.rotationPointY += -19.5F;
-			this.copyModelAngles(bipedBody, bipedHeadwear);
-			this.copyModelAngles(bipedHead, eyes);
 			//bipedHeadwear.rotationPointY += 4.0F;
 			bipedRightArm.rotationPointZ += -5.0F;
 			bipedRightArm.rotationPointX += -2.0F;
@@ -1129,6 +1127,8 @@ public class EntityEightTails extends ElementsNarutomodMod.ModElement {
 			} else {
 				jaw.rotateAngleX = 0.0F;
 			}
+			this.copyModelAngles(bipedBody, bipedHeadwear);
+			this.copyModelAngles(bipedHead, eyes);
 		}
 	}
 }

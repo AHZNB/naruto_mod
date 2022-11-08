@@ -999,6 +999,9 @@ public class EntityTenTails extends ElementsNarutomodMod.ModElement {
 
 	@SideOnly(Side.CLIENT)
 	public class ModelTenTailsV1 extends ModelBiped {
+		//private final ModelRenderer bipedHeadwear;
+		private final ModelRenderer eyes;
+		//private final ModelRenderer bipedBody;
 		//private final ModelRenderer bipedHead;
 		private final ModelRenderer upperTeeth;
 		private final ModelRenderer jaw;
@@ -1009,8 +1012,6 @@ public class EntityTenTails extends ElementsNarutomodMod.ModElement {
 		private final ModelRenderer bone;
 		private final ModelRenderer bone3;
 		private final ModelRenderer bone10;
-		//private final ModelRenderer bipedHeadwear;
-		//private final ModelRenderer bipedBody;
 		private final ModelRenderer bone83;
 		private final ModelRenderer hump;
 		private final ModelRenderer spike19;
@@ -1092,7 +1093,7 @@ public class EntityTenTails extends ElementsNarutomodMod.ModElement {
 		//private final ModelRenderer bipedRightArm;
 		private final ModelRenderer cube_r17;
 		private final ModelRenderer cube_r16;
-		private final ModelRenderer RightHand;
+		private final ModelRenderer rightHand;
 		private final ModelRenderer bone143;
 		private final ModelRenderer bone144;
 		private final ModelRenderer bone18;
@@ -1106,7 +1107,7 @@ public class EntityTenTails extends ElementsNarutomodMod.ModElement {
 		//private final ModelRenderer bipedLeftArm;
 		private final ModelRenderer cube_r2;
 		private final ModelRenderer cube_r3;
-		private final ModelRenderer RightHand2;
+		private final ModelRenderer leftHand;
 		private final ModelRenderer bone24;
 		private final ModelRenderer bone25;
 		private final ModelRenderer bone26;
@@ -1126,8 +1127,22 @@ public class EntityTenTails extends ElementsNarutomodMod.ModElement {
 			textureWidth = 64;
 			textureHeight = 64;
 	
+			bipedHeadwear = new ModelRenderer(this);
+			bipedHeadwear.setRotationPoint(0.0F, 21.5F, 5.0F);
+			
+	
+			eyes = new ModelRenderer(this);
+			eyes.setRotationPoint(0.0F, -5.5F, -7.0F);
+			bipedHeadwear.addChild(eyes);
+			eyes.cubeList.add(new ModelBox(eyes, 0, 26, -1.5F, -3.5F, -6.05F, 3, 3, 0, 0.0F, false));
+	
+			bipedBody = new ModelRenderer(this);
+			bipedBody.setRotationPoint(0.0F, 21.5F, 5.0F);
+			
+	
 			bipedHead = new ModelRenderer(this);
-			bipedHead.setRotationPoint(0.0F, 16.0F, -2.0F);
+			bipedHead.setRotationPoint(0.0F, -5.5F, -7.0F);
+			bipedBody.addChild(bipedHead);
 			bipedHead.cubeList.add(new ModelBox(bipedHead, 45, 0, -1.5F, -3.5F, -6.0F, 3, 3, 6, 0.0F, false));
 	
 			upperTeeth = new ModelRenderer(this);
@@ -1139,8 +1154,7 @@ public class EntityTenTails extends ElementsNarutomodMod.ModElement {
 			jaw = new ModelRenderer(this);
 			jaw.setRotationPoint(-2.5F, -0.5F, -0.5F);
 			bipedHead.addChild(jaw);
-			//setRotationAngle(jaw, 0.5236F, 0.0F, 0.0F);
-			setRotationAngle(jaw, -0.3491F, 0.0F, 0.0F);
+			setRotationAngle(jaw, 0.5236F, 0.0F, 0.0F);
 			
 	
 			bone5 = new ModelRenderer(this);
@@ -1184,16 +1198,8 @@ public class EntityTenTails extends ElementsNarutomodMod.ModElement {
 			setRotationAngle(bone10, -0.5236F, 0.0F, 0.0F);
 			bone10.cubeList.add(new ModelBox(bone10, 24, 36, -3.5F, 0.134F, -0.5F, 5, 4, 3, 0.0F, false));
 	
-			bipedHeadwear = new ModelRenderer(this);
-			bipedHeadwear.setRotationPoint(0.0F, 16.0F, -2.0F);
-			bipedHeadwear.cubeList.add(new ModelBox(bipedHeadwear, 0, 26, -1.5F, -3.5F, -6.05F, 3, 3, 0, 0.0F, false));
-	
-			bipedBody = new ModelRenderer(this);
-			bipedBody.setRotationPoint(0.0F, 16.0F, 0.0F);
-			
-	
 			bone83 = new ModelRenderer(this);
-			bone83.setRotationPoint(0.0F, 0.0F, 0.0F);
+			bone83.setRotationPoint(0.0F, -5.5F, -5.0F);
 			bipedBody.addChild(bone83);
 			setRotationAngle(bone83, -0.5236F, 0.0F, 0.0F);
 			bone83.cubeList.add(new ModelBox(bone83, 0, 0, -3.5F, -2.5F, -3.0F, 7, 6, 7, 0.0F, false));
@@ -1661,7 +1667,8 @@ public class EntityTenTails extends ElementsNarutomodMod.ModElement {
 			bone34.cubeList.add(new ModelBox(bone34, 0, 13, 0.0F, -2.5F, 0.0F, 2, 5, 8, 0.0F, true));
 	
 			bipedRightArm = new ModelRenderer(this);
-			bipedRightArm.setRotationPoint(-5.5F, 16.5F, 0.5F);
+			bipedRightArm.setRotationPoint(-5.5F, -5.0F, -4.5F);
+			bipedBody.addChild(bipedRightArm);
 			
 	
 			cube_r17 = new ModelRenderer(this);
@@ -1676,16 +1683,16 @@ public class EntityTenTails extends ElementsNarutomodMod.ModElement {
 			setRotationAngle(cube_r16, 0.0F, 0.0F, -1.0472F);
 			cube_r16.cubeList.add(new ModelBox(cube_r16, 12, 36, 0.0F, 0.0F, -1.5F, 3, 6, 3, 0.0F, false));
 	
-			RightHand = new ModelRenderer(this);
-			RightHand.setRotationPoint(1.7F, 5.5F, 0.0F);
-			cube_r16.addChild(RightHand);
-			setRotationAngle(RightHand, 0.4363F, 0.0F, 0.0F);
-			RightHand.cubeList.add(new ModelBox(RightHand, 36, 36, -1.6F, 0.0F, -3.0F, 3, 1, 4, 0.0F, false));
-			RightHand.cubeList.add(new ModelBox(RightHand, 30, 23, -1.6F, 0.5F, -3.0F, 3, 1, 4, 0.0F, false));
+			rightHand = new ModelRenderer(this);
+			rightHand.setRotationPoint(1.7F, 5.5F, 0.0F);
+			cube_r16.addChild(rightHand);
+			setRotationAngle(rightHand, 0.4363F, 0.0F, 0.0F);
+			rightHand.cubeList.add(new ModelBox(rightHand, 36, 36, -1.6F, 0.0F, -3.0F, 3, 1, 4, 0.0F, false));
+			rightHand.cubeList.add(new ModelBox(rightHand, 30, 23, -1.6F, 0.5F, -3.0F, 3, 1, 4, 0.0F, false));
 	
 			bone143 = new ModelRenderer(this);
 			bone143.setRotationPoint(1.1F, 0.6F, -1.75F);
-			RightHand.addChild(bone143);
+			rightHand.addChild(bone143);
 			bone143.cubeList.add(new ModelBox(bone143, 0, 3, -0.5F, -0.5F, -2.05F, 1, 1, 2, 0.0F, false));
 	
 			bone144 = new ModelRenderer(this);
@@ -1696,7 +1703,7 @@ public class EntityTenTails extends ElementsNarutomodMod.ModElement {
 	
 			bone18 = new ModelRenderer(this);
 			bone18.setRotationPoint(1.1F, 0.6F, -0.75F);
-			RightHand.addChild(bone18);
+			rightHand.addChild(bone18);
 			setRotationAngle(bone18, 0.0F, -1.0472F, 0.0F);
 			bone18.cubeList.add(new ModelBox(bone18, 0, 3, -0.5F, -0.5F, -2.05F, 1, 1, 2, 0.0F, false));
 	
@@ -1708,7 +1715,7 @@ public class EntityTenTails extends ElementsNarutomodMod.ModElement {
 	
 			bone2 = new ModelRenderer(this);
 			bone2.setRotationPoint(-0.05F, 0.6F, -1.75F);
-			RightHand.addChild(bone2);
+			rightHand.addChild(bone2);
 			bone2.cubeList.add(new ModelBox(bone2, 0, 3, -0.5F, -0.5F, -2.05F, 1, 1, 2, 0.0F, false));
 	
 			bone6 = new ModelRenderer(this);
@@ -1719,7 +1726,7 @@ public class EntityTenTails extends ElementsNarutomodMod.ModElement {
 	
 			bone15 = new ModelRenderer(this);
 			bone15.setRotationPoint(-1.2F, 0.6F, -1.75F);
-			RightHand.addChild(bone15);
+			rightHand.addChild(bone15);
 			bone15.cubeList.add(new ModelBox(bone15, 0, 3, -0.5F, -0.5F, -2.05F, 1, 1, 2, 0.0F, false));
 	
 			bone17 = new ModelRenderer(this);
@@ -1730,7 +1737,7 @@ public class EntityTenTails extends ElementsNarutomodMod.ModElement {
 	
 			bone20 = new ModelRenderer(this);
 			bone20.setRotationPoint(-1.2F, 0.6F, -1.0F);
-			RightHand.addChild(bone20);
+			rightHand.addChild(bone20);
 			setRotationAngle(bone20, 0.0F, 0.4363F, 0.0F);
 			bone20.cubeList.add(new ModelBox(bone20, 0, 3, -0.5F, -0.5F, -2.05F, 1, 1, 2, 0.0F, false));
 	
@@ -1741,7 +1748,8 @@ public class EntityTenTails extends ElementsNarutomodMod.ModElement {
 			bone21.cubeList.add(new ModelBox(bone21, 0, 0, -0.5F, -0.5F, -1.8F, 1, 1, 2, -0.2F, false));
 	
 			bipedLeftArm = new ModelRenderer(this);
-			bipedLeftArm.setRotationPoint(5.5F, 16.5F, 0.5F);
+			bipedLeftArm.setRotationPoint(5.5F, -5.0F, -4.5F);
+			bipedBody.addChild(bipedLeftArm);
 			
 	
 			cube_r2 = new ModelRenderer(this);
@@ -1756,16 +1764,16 @@ public class EntityTenTails extends ElementsNarutomodMod.ModElement {
 			setRotationAngle(cube_r3, 0.0F, 0.0F, 1.0472F);
 			cube_r3.cubeList.add(new ModelBox(cube_r3, 12, 36, -3.0F, 0.0F, -1.5F, 3, 6, 3, 0.0F, true));
 	
-			RightHand2 = new ModelRenderer(this);
-			RightHand2.setRotationPoint(-1.7F, 5.5F, 0.0F);
-			cube_r3.addChild(RightHand2);
-			setRotationAngle(RightHand2, 0.4363F, 0.0F, 0.0F);
-			RightHand2.cubeList.add(new ModelBox(RightHand2, 36, 36, -1.4F, 0.0F, -3.0F, 3, 1, 4, 0.0F, true));
-			RightHand2.cubeList.add(new ModelBox(RightHand2, 30, 23, -1.4F, 0.5F, -3.0F, 3, 1, 4, 0.0F, true));
+			leftHand = new ModelRenderer(this);
+			leftHand.setRotationPoint(-1.7F, 5.5F, 0.0F);
+			cube_r3.addChild(leftHand);
+			setRotationAngle(leftHand, 0.4363F, 0.0F, 0.0F);
+			leftHand.cubeList.add(new ModelBox(leftHand, 36, 36, -1.4F, 0.0F, -3.0F, 3, 1, 4, 0.0F, true));
+			leftHand.cubeList.add(new ModelBox(leftHand, 30, 23, -1.4F, 0.5F, -3.0F, 3, 1, 4, 0.0F, true));
 	
 			bone24 = new ModelRenderer(this);
 			bone24.setRotationPoint(-1.1F, 0.6F, -1.75F);
-			RightHand2.addChild(bone24);
+			leftHand.addChild(bone24);
 			bone24.cubeList.add(new ModelBox(bone24, 0, 3, -0.5F, -0.5F, -2.05F, 1, 1, 2, 0.0F, true));
 	
 			bone25 = new ModelRenderer(this);
@@ -1776,7 +1784,7 @@ public class EntityTenTails extends ElementsNarutomodMod.ModElement {
 	
 			bone26 = new ModelRenderer(this);
 			bone26.setRotationPoint(-1.1F, 0.6F, -0.75F);
-			RightHand2.addChild(bone26);
+			leftHand.addChild(bone26);
 			setRotationAngle(bone26, 0.0F, 1.0472F, 0.0F);
 			bone26.cubeList.add(new ModelBox(bone26, 0, 3, -0.5F, -0.5F, -2.05F, 1, 1, 2, 0.0F, true));
 	
@@ -1788,7 +1796,7 @@ public class EntityTenTails extends ElementsNarutomodMod.ModElement {
 	
 			bone28 = new ModelRenderer(this);
 			bone28.setRotationPoint(0.05F, 0.6F, -1.75F);
-			RightHand2.addChild(bone28);
+			leftHand.addChild(bone28);
 			bone28.cubeList.add(new ModelBox(bone28, 0, 3, -0.5F, -0.5F, -2.05F, 1, 1, 2, 0.0F, true));
 	
 			bone29 = new ModelRenderer(this);
@@ -1799,7 +1807,7 @@ public class EntityTenTails extends ElementsNarutomodMod.ModElement {
 	
 			bone30 = new ModelRenderer(this);
 			bone30.setRotationPoint(1.2F, 0.6F, -1.75F);
-			RightHand2.addChild(bone30);
+			leftHand.addChild(bone30);
 			bone30.cubeList.add(new ModelBox(bone30, 0, 3, -0.5F, -0.5F, -2.05F, 1, 1, 2, 0.0F, true));
 	
 			bone31 = new ModelRenderer(this);
@@ -1810,7 +1818,7 @@ public class EntityTenTails extends ElementsNarutomodMod.ModElement {
 	
 			bone32 = new ModelRenderer(this);
 			bone32.setRotationPoint(1.2F, 0.6F, -1.0F);
-			RightHand2.addChild(bone32);
+			leftHand.addChild(bone32);
 			setRotationAngle(bone32, 0.0F, -0.4363F, 0.0F);
 			bone32.cubeList.add(new ModelBox(bone32, 0, 3, -0.5F, -0.5F, -2.05F, 1, 1, 2, 0.0F, true));
 	
@@ -2425,7 +2433,8 @@ public class EntityTenTails extends ElementsNarutomodMod.ModElement {
 			GlStateManager.pushMatrix();
 			GlStateManager.translate(0.0F, 1.5F - 1.5F * MODELSCALE, 0.375F * MODELSCALE);
 			GlStateManager.scale(MODELSCALE, MODELSCALE, MODELSCALE);
-			super.render(entity, f0, f1, f2, f3, f4, f5);
+			//super.render(entity, f0, f1, f2, f3, f4, f5);
+			bipedBody.render(f5);
 			for (int i = 0; i < 10; i++) {
 				Tail[i][0].render(f5);
 			}
@@ -2446,12 +2455,9 @@ public class EntityTenTails extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void setRotationAngles(float f0, float f1, float f2, float f3, float f4, float f5, Entity e) {
 			super.setRotationAngles(f0 * 2.0F / e.height, f1, f2, f3, f4, f5, e);
-			bipedHead.rotationPointY += 16.0F;
-			bipedHeadwear.rotationPointY += 16.0F;
-			bipedRightArm.rotationPointZ += 0.5F;
-			bipedRightArm.rotationPointX += -0.5F;
-			bipedLeftArm.rotationPointZ += 0.5F;
-			bipedLeftArm.rotationPointX += 0.5F;
+			bipedHead.rotationPointY += -5.5F;
+			bipedRightArm.setRotationPoint(-5.5F, -5.0F, -4.5F);
+			bipedLeftArm.setRotationPoint(5.5F, -5.0F, -4.5F);
 			for (int i = 0; i < 10; i++) {
 				for (int j = 1; j < 10; j++) {
 					Tail[i][j].rotateAngleX = (j < 8 ? 0.2618F : -0.1745F) + MathHelper.sin((f2 - j) * 0.1F) * tailSwayX[i][j];
@@ -2460,11 +2466,12 @@ public class EntityTenTails extends ElementsNarutomodMod.ModElement {
 			}
 			if (((EntityCustom)e).isShooting()) {
 				bipedHead.rotateAngleX -= 0.3491F;
-				bipedHeadwear.rotateAngleX -= 0.3491F;
 				jaw.rotateAngleX = 0.5236F;
 			} else {
 				jaw.rotateAngleX = -0.3491F;
 			}
+			this.copyModelAngles(bipedBody, bipedHeadwear);
+			this.copyModelAngles(bipedHead, eyes);
 		}
 	}
 }

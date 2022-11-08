@@ -1266,8 +1266,6 @@ public class EntityNineTails extends ElementsNarutomodMod.ModElement {
 			OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240.0F, 240.0F);
 			GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 			GlStateManager.disableLighting();
-			this.copyModelAngles(body, bipedHeadwear);
-			this.copyModelAngles(bipedHead, eyes);
 			bipedHeadwear.render(f5);
 			GlStateManager.enableLighting();
 			GlStateManager.popMatrix();
@@ -1326,6 +1324,8 @@ public class EntityNineTails extends ElementsNarutomodMod.ModElement {
 				snout.rotateAngleX = 0.0F;
 				jaw.rotateAngleX = 0.0F;
 			}
+			this.copyModelAngles(body, bipedHeadwear);
+			this.copyModelAngles(bipedHead, eyes);
 		}
 	}
 }

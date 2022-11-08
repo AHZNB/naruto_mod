@@ -227,17 +227,19 @@ public class EntityLightningPanther extends ElementsNarutomodMod.ModElement {
 				if (!this.world.isRemote && this.ticksExisted == 1) {
 					this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:roar")), 5f, 1f);
 				}
-				if (!this.world.isRemote && this.ticksExisted % 4 == 0 && this.isTamed()) {
-					this.world.spawnEntity(new EntityLightningArc.Base(this.world, this.getOwner().getPositionEyes(1f), 
+				if (!this.world.isRemote && this.isTamed()) {
+					this.world.spawnEntity(new EntityLightningArc.Base(this.world,
+					 this.getOwner().getPositionVector().addVector(0d, this.rand.nextDouble() * 1.5d, 0d), 
 					 this.getPositionEyes(1f), 0x00000000, 0, 0f));
 				}
 				if (this.rand.nextInt(3) == 2) {
 					this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:electricity")),
 					  1f, this.rand.nextFloat() * 0.6f + 0.9f);
 				}
-				if (this.rand.nextFloat() <= 0.4f) {
+				for (int i = 0; i < 5; i++) {
 					EntityLightningArc.spawnAsParticle(this.world, this.posX + this.rand.nextGaussian() * this.width * 0.5d,
-					 this.posY + this.rand.nextDouble() * this.height, this.posZ + this.rand.nextGaussian() * this.width * 0.5d);
+					 this.posY + this.rand.nextDouble() * this.height, this.posZ + this.rand.nextGaussian() * this.width * 0.5d,
+					 0.5d * this.width, 0d, 0.15d, 0d, 0);
 				}
 			}
 		}
@@ -831,7 +833,7 @@ public class EntityLightningPanther extends ElementsNarutomodMod.ModElement {
 			Joint7 = new ModelRenderer(this);
 			Joint7.setRotationPoint(0.0F, -2.0F, -1.0F);
 			leg1.addChild(Joint7);
-			setRotationAngle(Joint7, 0.1745F, 0.0F, 0.0F);
+			setRotationAngle(Joint7, 0.1745F, 0.0F, 0.1745F);
 			cube_r42 = new ModelRenderer(this);
 			cube_r42.setRotationPoint(2.0F, 12.0F, -11.25F);
 			Joint7.addChild(cube_r42);
@@ -840,13 +842,13 @@ public class EntityLightningPanther extends ElementsNarutomodMod.ModElement {
 			Joint8 = new ModelRenderer(this);
 			Joint8.setRotationPoint(-2.875F, 15.25F, 0.75F);
 			Joint7.addChild(Joint8);
-			setRotationAngle(Joint8, -0.5236F, 0.0F, 0.0F);
+			setRotationAngle(Joint8, -0.517F, -0.0869F, -0.1515F);
 			cube_r43 = new ModelRenderer(this);
 			cube_r43.setRotationPoint(4.375F, 5.75F, -14.75F);
 			Joint8.addChild(cube_r43);
 			cube_r43.cubeList.add(new ModelBox(cube_r43, 0, 82, -7.0F, -8.0F, 11.0F, 5, 10, 5, 0.0F, false));
 			Foot1 = new ModelRenderer(this);
-			Foot1.setRotationPoint(-0.125F, 5.9375F, 0.4375F);
+			Foot1.setRotationPoint(-0.125F, 6.1875F, 0.4375F);
 			Joint8.addChild(Foot1);
 			setRotationAngle(Foot1, 0.3491F, 0.0F, 0.0F);
 			cube_r44 = new ModelRenderer(this);
@@ -870,7 +872,7 @@ public class EntityLightningPanther extends ElementsNarutomodMod.ModElement {
 			Joint2 = new ModelRenderer(this);
 			Joint2.setRotationPoint(0.0F, -2.0F, -1.0F);
 			leg2.addChild(Joint2);
-			setRotationAngle(Joint2, 0.1745F, 0.0F, 0.0F);
+			setRotationAngle(Joint2, 0.1745F, 0.0F, -0.1745F);
 			cube_r48 = new ModelRenderer(this);
 			cube_r48.setRotationPoint(-2.0F, 12.0F, -11.25F);
 			Joint2.addChild(cube_r48);
@@ -879,13 +881,13 @@ public class EntityLightningPanther extends ElementsNarutomodMod.ModElement {
 			Joint5 = new ModelRenderer(this);
 			Joint5.setRotationPoint(2.875F, 15.25F, 0.75F);
 			Joint2.addChild(Joint5);
-			setRotationAngle(Joint5, -0.5236F, 0.0F, 0.0F);
+			setRotationAngle(Joint5, -0.517F, 0.0869F, 0.1515F);
 			cube_r49 = new ModelRenderer(this);
 			cube_r49.setRotationPoint(-4.375F, 5.75F, -14.75F);
 			Joint5.addChild(cube_r49);
 			cube_r49.cubeList.add(new ModelBox(cube_r49, 0, 82, 2.0F, -8.0F, 11.0F, 5, 10, 5, 0.0F, true));
 			Foot2 = new ModelRenderer(this);
-			Foot2.setRotationPoint(0.125F, 5.9375F, 0.4375F);
+			Foot2.setRotationPoint(0.125F, 6.1875F, 0.4375F);
 			Joint5.addChild(Foot2);
 			setRotationAngle(Foot2, 0.3491F, 0.0F, 0.0F);
 			cube_r50 = new ModelRenderer(this);

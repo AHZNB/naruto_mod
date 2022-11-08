@@ -11,6 +11,7 @@ import net.minecraftforge.common.util.EnumHelper;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 
+import net.minecraft.world.World;
 import net.minecraft.item.ItemSword;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Item;
@@ -18,15 +19,13 @@ import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.init.Items;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.Entity;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.nbt.NBTTagCompound;
 
 import java.util.Set;
-import java.util.HashMap;
-
+import java.util.HashMap;
 import com.google.common.collect.Multimap;
-import net.minecraft.world.World;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.entity.Entity;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class ItemClaw extends ElementsNarutomodMod.ModElement {
@@ -53,6 +52,11 @@ public class ItemClaw extends ElementsNarutomodMod.ModElement {
 
 			@Override
 			public void onUpdate(ItemStack stack, World worldIn, Entity entityIn, int itemSlot, boolean isSelected) {
+				super.onUpdate(stack, worldIn, entityIn, itemSlot, isSelected);
+				this.setCustomChakraFlowVecs(stack);
+			}
+				
+			private void setCustomChakraFlowVecs(ItemStack stack) {
 				NBTTagCompound compound = stack.getTagCompound();
 				if (compound == null) {
 					compound = new NBTTagCompound();
@@ -68,7 +72,7 @@ public class ItemClaw extends ElementsNarutomodMod.ModElement {
 				if (!compound.hasKey("CustomChakraFlowEndVec")) {
 					NBTTagCompound cmp2 = new NBTTagCompound();
 					cmp2.setDouble("x", 0d);
-					cmp2.setDouble("y", -2d);
+					cmp2.setDouble("y", -1.375d);
 					cmp2.setDouble("z", 0d);
 					compound.setTag("CustomChakraFlowEndVec", cmp2);
 				}

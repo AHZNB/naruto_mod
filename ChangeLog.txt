@@ -58,6 +58,7 @@ Entities:
  - changed Sanshouo puppet's health to 200, reduces projectile damage by 80%
  - changed kisame & zabuza's AI: no longer actively attacks players
  - potion effects don't affect shield based entities (like hiruko, sanshouo, wood golem, etc)
+ - setup tailed beast face down pose
  - added Hiruko puppet (health=100; reduces projectile damage by 60%; blocking with tail reduces damage by 80%)
  
 Structures:

@@ -139,6 +139,12 @@ public class ProcedureRenderView extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
+	public static void sendToPlayer(Entity entity, int cticks, int dticks, float r, float g, float b, float den) {
+		if (entity instanceof EntityPlayerMP) {
+			NarutomodMod.PACKET_HANDLER.sendTo(new Message(cticks, dticks, -1, r, g, b, den, 0f), (EntityPlayerMP)entity);
+		}
+	}
+
 	public static void changeFog(Entity entity, double range, boolean color, boolean density, float r, float g, float b, float den) {
 		changeFog(entity.dimension, entity.posX, entity.posY, entity.posZ, range, color, density, r, g, b, den);
 	}

@@ -123,6 +123,7 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 		private static final DataParameter<Integer> JINCHURIKI = EntityDataManager.<Integer>createKey(Base.class, DataSerializers.VARINT);
 		private static final DataParameter<Boolean> SHOOT = EntityDataManager.<Boolean>createKey(Base.class, DataSerializers.BOOLEAN);
 		private static final DataParameter<Boolean> CANSTEER = EntityDataManager.<Boolean>createKey(Base.class, DataSerializers.BOOLEAN);
+		private static final DataParameter<Boolean> FACEDOWN = EntityDataManager.<Boolean>createKey(Base.class, DataSerializers.BOOLEAN);
 		private final BossInfoServer bossInfo = new BossInfoServer(this.getDisplayName(), BossInfo.Color.RED, BossInfo.Overlay.PROGRESS);
 		public static final int BIJUDAMA_CD = 200;
 		protected final double TARGET_RANGE = 108.0D;
@@ -164,6 +165,7 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 			this.getDataManager().register(JINCHURIKI, Integer.valueOf(-1));
 			this.getDataManager().register(SHOOT, Boolean.valueOf(false));
 			this.getDataManager().register(CANSTEER, Boolean.valueOf(false));
+			this.getDataManager().register(FACEDOWN, Boolean.valueOf(false));
 		}
 
 		public int getAge() {
@@ -176,6 +178,14 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 
 		public void setLifeSpan(int lifespan) {
 			this.lifeSpan = lifespan;
+		}
+
+		protected boolean isFaceDown() {
+			return ((Boolean)this.getDataManager().get(FACEDOWN)).booleanValue();
+		}
+
+		public void setFaceDown(boolean down) {
+			this.getDataManager().set(FACEDOWN, Boolean.valueOf(down));
 		}
 
 		public abstract float getModelScale();

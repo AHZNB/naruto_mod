@@ -235,7 +235,7 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void onUpdate() {
 			super.onUpdate();
-			if (this.dragonEntity != null && !this.dragonEntity.isEntityAlive() && this.isAIDisabled()) {
+			if (this.isAIDisabled() && (this.dragonEntity == null || !this.dragonEntity.isEntityAlive())) {
 				this.setNoAI(false);
 			}
 		}
@@ -944,6 +944,13 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 
 		private void poseSit(boolean sitting) {
 			if (sitting) {
+				bipedHead.rotationPointY = 10.0F;
+				bipedHeadwear.rotationPointY = 10.0F;
+				bipedBody.rotationPointY = 10.0F;
+				bipedRightArm.rotationPointY = 12.0F;
+				bipedLeftArm.rotationPointY = 12.0F;
+				bipedRightLeg.rotationPointY = 22.0F;
+				bipedLeftLeg.rotationPointY = 22.0F;
 				setRotationAngle(rightUpperArm, -0.2618F, 0.0873F, 0.2618F);
 				setRotationAngle(leftUpperArm, -0.2618F, -0.0873F, -0.2618F);
 				setRotationAngle(rightThigh, -2.0944F, 0.1309F, -1.309F);
@@ -951,6 +958,13 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 				setRotationAngle(leftThigh, -2.0944F, -0.1309F, 1.309F);
 				setRotationAngle(leftShank, 1.5272F, 0.0F, 0.0F);
 			} else {
+				bipedHead.rotationPointY = 0.0F;
+				bipedHeadwear.rotationPointY = 0.0F;
+				bipedBody.rotationPointY = 0.0F;
+				bipedRightArm.rotationPointY = 2.0F;
+				bipedLeftArm.rotationPointY = 2.0F;
+				bipedRightLeg.rotationPointY = 12.0F;
+				bipedLeftLeg.rotationPointY = 12.0F;
 				setRotationAngle(rightUpperArm, 0.0F, -0.5236F, 0.2618F);
 				setRotationAngle(leftUpperArm, 0.0F, 0.5236F, -0.2618F);
 				setRotationAngle(rightThigh, -0.2618F, 0.2618F, 0.0F);

@@ -208,7 +208,7 @@ public class ItemFuton extends ElementsNarutomodMod.ModElement {
 		protected void spawnParticles(ChakraFlow entity, Vec3d startvec, Vec3d endvec) {
 			Vec3d vec = endvec.subtract(startvec).scale(0.2);
 			Particles.spawnParticle(entity.world, Particles.Types.SMOKE, startvec.x, startvec.y, startvec.z, 
-			  30, 0.05d, 0.05d, 0.05d, vec.x, vec.y, vec.z, 0x106AD1FF, 10, 5, 0xF0);
+			  10, 0.05d, 0.05d, 0.05d, vec.x, vec.y, vec.z, 0x086AD1FF, 10, 5, 0xF0);
 		}
 	}
 }
