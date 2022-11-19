@@ -131,7 +131,11 @@ public class EntitySummonAnimal extends ElementsNarutomodMod.ModElement {
 
 		protected void postScaleFixup() {
 			float f = this.getScale();
-			this.setSize(this.ogWidth * f, this.ogHeight * f);
+			float f1 = this.ogHeight * f;
+			this.setSize(this.ogWidth * f, f1);
+			if (f1 > 2.0f) {
+				this.getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(f1 - 2.0f);
+			}
 			this.setHealth(this.getMaxHealth());
 		}
 

@@ -135,6 +135,7 @@ public class ItemBijuCloak extends ElementsNarutomodMod.ModElement {
 				armorModel.isRiding = living.isRiding();
 				armorModel.isChild = living.isChild();
 				armorModel.bodyShine = getTails(stack) == 9 && getCloakLevel(stack) == 2 && getCloakXp(stack) >= 800;
+				armorModel.allTails.showModel = !armorModel.bodyShine;
 				armorModel.layerShine = true;
 				return armorModel;
 			}
@@ -414,6 +415,7 @@ public class ItemBijuCloak extends ElementsNarutomodMod.ModElement {
 		private final ModelRenderer earLeft[] = new ModelRenderer[6];
 		private final ModelRenderer earRight[] = new ModelRenderer[6];
 		//private final ModelRenderer bipedBody;
+		private final ModelRenderer allTails;
 		private final ModelRenderer tail[][] = new ModelRenderer[9][8];
 		//private final ModelRenderer bipedRightArm;
 		//private final ModelRenderer bipedLeftArm;
@@ -507,9 +509,11 @@ public class ItemBijuCloak extends ElementsNarutomodMod.ModElement {
 			bipedBody = new ModelRenderer(this);
 			bipedBody.setRotationPoint(0.0F, 0.0F, 0.0F);
 			bipedBody.cubeList.add(new ModelBox(bipedBody, 16, 16, -4.0F, 0.0F, -2.0F, 8, 12, 4, 0.6F, false));
+			allTails = new ModelRenderer(this);
+			bipedBody.addChild(allTails);
 			tail[0][0] = new ModelRenderer(this);
 			tail[0][0].setRotationPoint(0.0F, 10.5F, 2.0F);
-			bipedBody.addChild(tail[0][0]);
+			allTails.addChild(tail[0][0]);
 			setRotationAngle(tail[0][0], -1.0472F, 0.0F, 0.0F);
 			tail[0][0].cubeList.add(new ModelBox(tail[0][0], 16, 32, -2.0F, -5.5F, -2.0F, 4, 6, 4, 0.0F, false));
 			tail[0][1] = new ModelRenderer(this);
@@ -549,7 +553,7 @@ public class ItemBijuCloak extends ElementsNarutomodMod.ModElement {
 			tail[0][7].cubeList.add(new ModelBox(tail[0][7], 16, 32, -2.0F, -5.5F, -2.0F, 4, 6, 4, -1.0F, false));
 			tail[1][0] = new ModelRenderer(this);
 			tail[1][0].setRotationPoint(0.0F, 10.5F, 2.0F);
-			bipedBody.addChild(tail[1][0]);
+			allTails.addChild(tail[1][0]);
 			setRotationAngle(tail[1][0], -1.0472F, -0.5236F, -0.2618F);
 			tail[1][0].cubeList.add(new ModelBox(tail[1][0], 16, 32, -2.0F, -5.5F, -2.0F, 4, 6, 4, 0.0F, false));
 			tail[1][1] = new ModelRenderer(this);
@@ -589,7 +593,7 @@ public class ItemBijuCloak extends ElementsNarutomodMod.ModElement {
 			tail[1][7].cubeList.add(new ModelBox(tail[1][7], 16, 32, -2.0F, -5.5F, -2.0F, 4, 6, 4, -1.0F, false));
 			tail[2][0] = new ModelRenderer(this);
 			tail[2][0].setRotationPoint(0.0F, 10.5F, 2.0F);
-			bipedBody.addChild(tail[2][0]);
+			allTails.addChild(tail[2][0]);
 			setRotationAngle(tail[2][0], -1.0472F, 0.5236F, 0.2618F);
 			tail[2][0].cubeList.add(new ModelBox(tail[2][0], 16, 32, -2.0F, -5.5F, -2.0F, 4, 6, 4, 0.0F, false));
 			tail[2][1] = new ModelRenderer(this);
@@ -629,7 +633,7 @@ public class ItemBijuCloak extends ElementsNarutomodMod.ModElement {
 			tail[2][7].cubeList.add(new ModelBox(tail[2][7], 16, 32, -2.0F, -5.5F, -2.0F, 4, 6, 4, -1.0F, false));
 			tail[3][0] = new ModelRenderer(this);
 			tail[3][0].setRotationPoint(0.0F, 10.5F, 2.0F);
-			bipedBody.addChild(tail[3][0]);
+			allTails.addChild(tail[3][0]);
 			setRotationAngle(tail[3][0], -1.0472F, -1.0472F, -0.5236F);
 			tail[3][0].cubeList.add(new ModelBox(tail[3][0], 16, 32, -2.0F, -5.5F, -2.0F, 4, 6, 4, 0.0F, false));
 			tail[3][1] = new ModelRenderer(this);
@@ -669,7 +673,7 @@ public class ItemBijuCloak extends ElementsNarutomodMod.ModElement {
 			tail[3][7].cubeList.add(new ModelBox(tail[3][7], 16, 32, -2.0F, -5.5F, -2.0F, 4, 6, 4, -1.0F, false));
 			tail[4][0] = new ModelRenderer(this);
 			tail[4][0].setRotationPoint(0.0F, 10.5F, 2.0F);
-			bipedBody.addChild(tail[4][0]);
+			allTails.addChild(tail[4][0]);
 			setRotationAngle(tail[4][0], -1.0472F, 1.0472F, 0.5236F);
 			tail[4][0].cubeList.add(new ModelBox(tail[4][0], 16, 32, -2.0F, -5.5F, -2.0F, 4, 6, 4, 0.0F, false));
 			tail[4][1] = new ModelRenderer(this);
@@ -709,7 +713,7 @@ public class ItemBijuCloak extends ElementsNarutomodMod.ModElement {
 			tail[4][7].cubeList.add(new ModelBox(tail[4][7], 16, 32, -2.0F, -5.5F, -2.0F, 4, 6, 4, -1.0F, false));
 			tail[5][0] = new ModelRenderer(this);
 			tail[5][0].setRotationPoint(0.0F, 10.5F, 2.0F);
-			bipedBody.addChild(tail[5][0]);
+			allTails.addChild(tail[5][0]);
 			setRotationAngle(tail[5][0], -1.5718F, -0.2618F, 0.0F);
 			tail[5][0].cubeList.add(new ModelBox(tail[5][0], 16, 32, -2.0F, -5.5F, -2.0F, 4, 6, 4, 0.0F, false));
 			tail[5][1] = new ModelRenderer(this);
@@ -749,7 +753,7 @@ public class ItemBijuCloak extends ElementsNarutomodMod.ModElement {
 			tail[5][7].cubeList.add(new ModelBox(tail[5][7], 16, 32, -2.0F, -5.5F, -2.0F, 4, 6, 4, -1.0F, false));
 			tail[6][0] = new ModelRenderer(this);
 			tail[6][0].setRotationPoint(0.0F, 10.5F, 2.0F);
-			bipedBody.addChild(tail[6][0]);
+			allTails.addChild(tail[6][0]);
 			setRotationAngle(tail[6][0], -1.5718F, 0.2618F, 0.0F);
 			tail[6][0].cubeList.add(new ModelBox(tail[6][0], 16, 32, -2.0F, -5.5F, -2.0F, 4, 6, 4, 0.0F, false));
 			tail[6][1] = new ModelRenderer(this);
@@ -789,7 +793,7 @@ public class ItemBijuCloak extends ElementsNarutomodMod.ModElement {
 			tail[6][7].cubeList.add(new ModelBox(tail[6][7], 16, 32, -2.0F, -5.5F, -2.0F, 4, 6, 4, -1.0F, false));
 			tail[7][0] = new ModelRenderer(this);
 			tail[7][0].setRotationPoint(0.0F, 10.5F, 2.0F);
-			bipedBody.addChild(tail[7][0]);
+			allTails.addChild(tail[7][0]);
 			setRotationAngle(tail[7][0], -1.5718F, 0.7854F, 0.0F);
 			tail[7][0].cubeList.add(new ModelBox(tail[7][0], 16, 32, -2.0F, -5.5F, -2.0F, 4, 6, 4, 0.0F, false));
 			tail[7][1] = new ModelRenderer(this);
@@ -829,7 +833,7 @@ public class ItemBijuCloak extends ElementsNarutomodMod.ModElement {
 			tail[7][7].cubeList.add(new ModelBox(tail[7][7], 16, 32, -2.0F, -5.5F, -2.0F, 4, 6, 4, -1.0F, false));
 			tail[8][0] = new ModelRenderer(this);
 			tail[8][0].setRotationPoint(0.0F, 10.5F, 2.0F);
-			bipedBody.addChild(tail[8][0]);
+			allTails.addChild(tail[8][0]);
 			setRotationAngle(tail[8][0], -1.5718F, -0.7854F, 0.0F);
 			tail[8][0].cubeList.add(new ModelBox(tail[8][0], 16, 32, -2.0F, -5.5F, -2.0F, 4, 6, 4, 0.0F, false));
 			tail[8][1] = new ModelRenderer(this);

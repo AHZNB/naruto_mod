@@ -23,7 +23,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Item;
 import net.minecraft.item.EnumAction;
 import net.minecraft.inventory.EntityEquipmentSlot;
-import net.minecraft.entity.projectile.EntityTippedArrow;
 import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.EntityPlayer;
@@ -31,8 +30,13 @@ import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
-import net.minecraft.client.renderer.entity.RenderSnowball;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
+import net.minecraft.client.renderer.RenderItem;
+import net.minecraft.client.renderer.entity.Render;
+import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.Minecraft;
 
 import com.google.common.collect.Multimap;
@@ -42,6 +46,7 @@ public class ItemKunaiHiraishin extends ElementsNarutomodMod.ModElement {
 	@GameRegistry.ObjectHolder("narutomod:kunai_hiraishin")
 	public static final Item block = null;
 	public static final int ENTITYID = 402;
+
 	public ItemKunaiHiraishin(ElementsNarutomodMod instance) {
 		super(instance, 790);
 	}
@@ -64,10 +69,10 @@ public class ItemKunaiHiraishin extends ElementsNarutomodMod.ModElement {
 	@Override
 	public void preInit(FMLPreInitializationEvent event) {
 		RenderingRegistry.registerEntityRenderingHandler(EntityArrowCustom.class, renderManager -> {
-			return new RenderSnowball(renderManager, new ItemStack(ItemKunaiHiraishin.block, (int) (1)).getItem(),
-					Minecraft.getMinecraft().getRenderItem());
+			return new RenderCustom(renderManager);
 		});
 	}
+
 	public static class RangedItem extends Item {
 		public RangedItem() {
 			super();
@@ -133,7 +138,7 @@ public class ItemKunaiHiraishin extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-	public static class EntityArrowCustom extends EntityTippedArrow {
+	public static class EntityArrowCustom extends EntityArrow {
 		public EntityArrowCustom(World a) {
 			super(a);
 		}
@@ -153,6 +158,11 @@ public class ItemKunaiHiraishin extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
+		protected ItemStack getArrowStack() {
+			return new ItemStack(block);
+		}
+
+		/*@Override
 		public void onUpdate() {
 			super.onUpdate();
 			int x = (int) this.posX;
@@ -163,6 +173,49 @@ public class ItemKunaiHiraishin extends ElementsNarutomodMod.ModElement {
 			if (this.inGround) {
 				this.world.removeEntity(this);
 			}
+		}*/
+	}
+
+	@SideOnly(Side.CLIENT)
+	public class RenderCustom extends Render<EntityArrowCustom> {
+		protected final Item item;
+		private final RenderItem itemRenderer;
+
+		public RenderCustom(RenderManager renderManagerIn) {
+			super(renderManagerIn);
+			this.item = block;
+			this.itemRenderer = Minecraft.getMinecraft().getRenderItem();
 		}
+
+	    @Override
+	    public void doRender(EntityArrowCustom entity, double x, double y, double z, float entityYaw, float partialTicks) {
+	        GlStateManager.pushMatrix();
+	        GlStateManager.translate((float)x, (float)y, (float)z);
+	        GlStateManager.enableRescaleNormal();
+	        GlStateManager.rotate(entityYaw - 90.0F, 0.0F, 1.0F, 0.0F);
+	        GlStateManager.rotate(entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks, 0.0F, 0.0F, 1.0F);
+	        this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+	        if (this.renderOutlines) {
+	            GlStateManager.enableColorMaterial();
+	            GlStateManager.enableOutlineMode(this.getTeamColor(entity));
+	        }
+	        this.itemRenderer.renderItem(this.getStackToRender(entity), ItemCameraTransforms.TransformType.GROUND);
+	        if (this.renderOutlines) {
+	            GlStateManager.disableOutlineMode();
+	            GlStateManager.disableColorMaterial();
+	        }
+	        GlStateManager.disableRescaleNormal();
+	        GlStateManager.popMatrix();
+	        super.doRender(entity, x, y, z, entityYaw, partialTicks);
+	    }
+	
+	    public ItemStack getStackToRender(EntityArrowCustom entityIn) {
+	        return new ItemStack(this.item);
+	    }
+	
+		@Override
+	    protected ResourceLocation getEntityTexture(EntityArrowCustom entity) {
+	        return TextureMap.LOCATION_BLOCKS_TEXTURE;
+	    }
 	}
 }

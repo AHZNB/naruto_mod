@@ -66,116 +66,124 @@ public class ItemCleaver extends ElementsNarutomodMod.ModElement {
 
 	@Override
 	public void initElements() {
-		elements.items.add(() -> new ItemSword(EnumHelper.addToolMaterial("CLEAVER", 1, 0, 8f, 16f, 0)) {
-			@Override
-			public Multimap<String, AttributeModifier> getItemAttributeModifiers(EntityEquipmentSlot slot) {
-				Multimap<String, AttributeModifier> multimap = super.getItemAttributeModifiers(slot);
-				if (slot == EntityEquipmentSlot.MAINHAND) {
-					multimap.put(SharedMonsterAttributes.ATTACK_DAMAGE.getName(),
-							new AttributeModifier(ATTACK_DAMAGE_MODIFIER, "Weapon modifier", (double) this.getAttackDamage(), 0));
-					multimap.put(SharedMonsterAttributes.ATTACK_SPEED.getName(),
-							new AttributeModifier(ATTACK_SPEED_MODIFIER, "Weapon modifier", -3.2, 0));
-				}
-				return multimap;
-			}
-
-			public Set<String> getToolClasses(ItemStack stack) {
-				HashMap<String, Integer> ret = new HashMap<String, Integer>();
-				ret.put("sword", 1);
-				return ret.keySet();
-			}
-
-			@Override
-			public boolean getIsRepairable(ItemStack toRepair, ItemStack repair) {
-				return (repair.getItem() == new ItemStack(Items.IRON_INGOT, (int) (1)).getItem());
-			}
-
-			@Override
-			public void addInformation(ItemStack itemstack, World world, List<String> list, ITooltipFlag flag) {
-				super.addInformation(itemstack, world, list, flag);
-				list.add(net.minecraft.util.text.translation.I18n.translateToLocal("tooltip.cleaver.descr"));
-			}
-
-			@Override
-			public boolean hitEntity(ItemStack stack, EntityLivingBase target, EntityLivingBase attacker) {
-				if (this.canUseRaiton(attacker) && this.itemRand.nextInt(5) == 0) {
-					EntityLightningArc.onStruck(target, ItemJutsu.causeJutsuDamage(attacker, attacker), 2f);
-				}
-				return true;
-			}
-
-			private boolean canUseRaiton(EntityLivingBase entity) {
-				if (entity instanceof EntityPlayer) {
-					ItemStack stack = ProcedureUtils.getMatchingItemStack((EntityPlayer)entity, ItemRaiton.block);
-					return stack != null && (((EntityPlayer)entity).isCreative() || ((ItemJutsu.Base)stack.getItem()).canUseAnyJutsu(stack));
-				}
-				return false;
-			}
-	
-			@Override
-			public void onUpdate(ItemStack itemstack, World world, Entity entity, int par4, boolean par5) {
-				super.onUpdate(itemstack, world, entity, par4, par5);
-				if (!world.isRemote && entity instanceof EntityLivingBase) {
-					if (((EntityLivingBase)entity).getHeldItemMainhand().equals(itemstack)) {
-						boolean flag = this.canUseRaiton((EntityLivingBase)entity);
-						EntityCustom entity1 = this.getEntity(itemstack, world);
-						if (entity1 == null && flag) {
-							entity1 = new EntityCustom((EntityLivingBase)entity);
-							world.spawnEntity(entity1);
-							this.setEntity(itemstack, entity1);
-						} else if (entity1 != null && !flag) {
-							entity1.setDead();
-							this.setEntity(itemstack, null);
-						}
-					}
-				}
-			}
-
-			private void setEntity(ItemStack itemstack, @Nullable EntityCustom entity) {
-				if (!itemstack.hasTagCompound()) {
-					itemstack.setTagCompound(new NBTTagCompound());
-				}
-				if (entity == null) {
-					itemstack.getTagCompound().removeTag("BladeEntityId");
-				} else {
-					itemstack.getTagCompound().setInteger("BladeEntityId", entity.getEntityId());
-				}
-			}
-	
-			@Nullable
-			public EntityCustom getEntity(ItemStack itemstack, World world) {
-				if (itemstack.hasTagCompound()) {
-					Entity entity = world.getEntityByID(itemstack.getTagCompound().getInteger("BladeEntityId"));
-					return (entity instanceof EntityCustom && entity.isEntityAlive()) ? (EntityCustom) entity : null;
-				}
-				return null;
-			}
-	
-			@Override
-			public boolean isShield(ItemStack stack, EntityLivingBase entity) {
-				return stack.getItem() == block;
-			}
-	
-			@Override
-			public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer entity, EnumHand hand) {
-				entity.setActiveHand(hand);
-				return new ActionResult(EnumActionResult.SUCCESS, entity.getHeldItem(hand));
-			}
-	
-			@Override
-			public EnumAction getItemUseAction(ItemStack itemstack) {
-				return EnumAction.BLOCK;
-			}
-
-			@Override
-			public int getMaxItemUseDuration(ItemStack itemstack) {
-				return 72000;
-			}
-		}.setUnlocalizedName("cleaver").setRegistryName("cleaver").setCreativeTab(TabModTab.tab));
-
+		elements.items.add(() -> new ItemCustom());
 		elements.entities.add(() -> EntityEntryBuilder.create().entity(EntityCustom.class)
 				.id(new ResourceLocation("narutomod", "entity_cleaver"), ENTITYID).name("entity_cleaver").tracker(64, 1, true)
 				.build());
+	}
+
+	public static class ItemCustom extends ItemSword implements ItemOnBody.Interface {
+		public ItemCustom() {
+			super(EnumHelper.addToolMaterial("CLEAVER", 1, 1000, 8f, 16f, 0));
+			this.setUnlocalizedName("cleaver");
+			this.setRegistryName("cleaver");
+			this.setCreativeTab(TabModTab.tab);
+		}
+
+		@Override
+		public Multimap<String, AttributeModifier> getItemAttributeModifiers(EntityEquipmentSlot slot) {
+			Multimap<String, AttributeModifier> multimap = super.getItemAttributeModifiers(slot);
+			if (slot == EntityEquipmentSlot.MAINHAND) {
+				multimap.put(SharedMonsterAttributes.ATTACK_DAMAGE.getName(),
+						new AttributeModifier(ATTACK_DAMAGE_MODIFIER, "Weapon modifier", (double) this.getAttackDamage(), 0));
+				multimap.put(SharedMonsterAttributes.ATTACK_SPEED.getName(),
+						new AttributeModifier(ATTACK_SPEED_MODIFIER, "Weapon modifier", -3.2, 0));
+			}
+			return multimap;
+		}
+
+		public Set<String> getToolClasses(ItemStack stack) {
+			HashMap<String, Integer> ret = new HashMap<String, Integer>();
+			ret.put("sword", 1);
+			return ret.keySet();
+		}
+
+		@Override
+		public boolean getIsRepairable(ItemStack toRepair, ItemStack repair) {
+			return (repair.getItem() == new ItemStack(Items.IRON_INGOT, (int) (1)).getItem());
+		}
+
+		@Override
+		public void addInformation(ItemStack itemstack, World world, List<String> list, ITooltipFlag flag) {
+			super.addInformation(itemstack, world, list, flag);
+			list.add(net.minecraft.util.text.translation.I18n.translateToLocal("tooltip.cleaver.descr"));
+		}
+
+		@Override
+		public boolean hitEntity(ItemStack stack, EntityLivingBase target, EntityLivingBase attacker) {
+			if (this.canUseRaiton(attacker) && this.itemRand.nextInt(5) == 0) {
+				EntityLightningArc.onStruck(target, ItemJutsu.causeJutsuDamage(attacker, attacker), 2f);
+			}
+			return true;
+		}
+
+		private boolean canUseRaiton(EntityLivingBase entity) {
+			if (entity instanceof EntityPlayer) {
+				ItemStack stack = ProcedureUtils.getMatchingItemStack((EntityPlayer)entity, ItemRaiton.block);
+				return stack != null && (((EntityPlayer)entity).isCreative() || ((ItemJutsu.Base)stack.getItem()).canUseAnyJutsu(stack));
+			}
+			return false;
+		}
+	
+		@Override
+		public void onUpdate(ItemStack itemstack, World world, Entity entity, int par4, boolean par5) {
+			super.onUpdate(itemstack, world, entity, par4, par5);
+			if (!world.isRemote && entity instanceof EntityLivingBase) {
+				if (((EntityLivingBase)entity).getHeldItemMainhand().equals(itemstack)) {
+					boolean flag = this.canUseRaiton((EntityLivingBase)entity);
+					EntityCustom entity1 = this.getEntity(itemstack, world);
+					if (entity1 == null && flag) {
+						entity1 = new EntityCustom((EntityLivingBase)entity);
+						world.spawnEntity(entity1);
+						this.setEntity(itemstack, entity1);
+					} else if (entity1 != null && !flag) {
+						entity1.setDead();
+						this.setEntity(itemstack, null);
+					}
+				}
+			}
+		}
+
+		private void setEntity(ItemStack itemstack, @Nullable EntityCustom entity) {
+			if (!itemstack.hasTagCompound()) {
+				itemstack.setTagCompound(new NBTTagCompound());
+			}
+			if (entity == null) {
+				itemstack.getTagCompound().removeTag("BladeEntityId");
+			} else {
+				itemstack.getTagCompound().setInteger("BladeEntityId", entity.getEntityId());
+			}
+		}
+	
+		@Nullable
+		public EntityCustom getEntity(ItemStack itemstack, World world) {
+			if (itemstack.hasTagCompound()) {
+				Entity entity = world.getEntityByID(itemstack.getTagCompound().getInteger("BladeEntityId"));
+				return (entity instanceof EntityCustom && entity.isEntityAlive()) ? (EntityCustom) entity : null;
+			}
+			return null;
+		}
+	
+		@Override
+		public boolean isShield(ItemStack stack, EntityLivingBase entity) {
+			return stack.getItem() == block;
+		}
+	
+		@Override
+		public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer entity, EnumHand hand) {
+			entity.setActiveHand(hand);
+			return new ActionResult(EnumActionResult.SUCCESS, entity.getHeldItem(hand));
+		}
+	
+		@Override
+		public EnumAction getItemUseAction(ItemStack itemstack) {
+			return EnumAction.BLOCK;
+		}
+
+		@Override
+		public int getMaxItemUseDuration(ItemStack itemstack) {
+			return 72000;
+		}
 	}
 
 	@SideOnly(Side.CLIENT)

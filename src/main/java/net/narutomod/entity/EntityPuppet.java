@@ -42,6 +42,7 @@ import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.ElementsNarutomodMod;
 
 import javax.annotation.Nullable;
+import net.minecraft.util.EnumActionResult;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityPuppet extends ElementsNarutomodMod.ModElement {
@@ -67,7 +68,13 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 
 		public Base(EntityLivingBase ownerIn) {
 			this(ownerIn.world);
-			this.setOwner(ownerIn);
+			if (ownerIn instanceof EntityPlayer) {
+				ItemStack stack = ProcedureUtils.getMatchingItemStack((EntityPlayer)ownerIn, ItemNinjutsu.block);
+				if (stack != null && ((ItemNinjutsu.RangedItem)stack.getItem())
+				 .canActivateJutsu(stack, ItemNinjutsu.PUPPET, (EntityPlayer)ownerIn) == EnumActionResult.SUCCESS) {
+					this.setOwner(ownerIn);
+				}
+			}
 		}
 
 		@Override
