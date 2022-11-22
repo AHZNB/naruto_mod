@@ -1,8 +1,8 @@
 {
   "id_map": {
     "ENTITY": 410,
-    "DIMENSION": 13,
-    "GUI": 59
+    "GUI": 59,
+    "DIMENSION": 13
   },
   "mod_elements": [
     {
@@ -832,22 +832,6 @@
       "locked_code": true,
       "ids": {
         "0": 20
-      }
-    },
-    {
-      "name": "KunaiBulletHitsLivingEntity",
-      "type": "procedure",
-      "sortid": 159,
-      "compiles": true,
-      "locked_code": false,
-      "ids": {},
-      "metadata": {
-        "dependencies": [
-          {
-            "name": "sourceentity",
-            "type": "entity"
-          }
-        ]
       }
     },
     {

@@ -1,7 +1,6 @@
 
 package net.narutomod.item;
 
-import net.narutomod.procedure.ProcedureKunaiBulletHitsLivingEntity;
 import net.narutomod.creativetab.TabModTab;
 import net.narutomod.ElementsNarutomodMod;
 
@@ -35,9 +34,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.client.renderer.entity.RenderSnowball;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.Minecraft;
-
-import java.util.Map;
-import java.util.HashMap;
 
 import com.google.common.collect.Multimap;
 
@@ -154,16 +150,6 @@ public class ItemFumaShuriken extends ElementsNarutomodMod.ModElement {
 		protected void arrowHit(EntityLivingBase entity) {
 			super.arrowHit(entity);
 			entity.setArrowCountInEntity(entity.getArrowCountInEntity() - 1);
-			Entity sourceentity = this.shootingEntity;
-			int x = (int) this.posX;
-			int y = (int) this.posY;
-			int z = (int) this.posZ;
-			World world = this.world;
-			{
-				Map<String, Object> $_dependencies = new HashMap<>();
-				$_dependencies.put("sourceentity", sourceentity);
-				ProcedureKunaiBulletHitsLivingEntity.executeProcedure($_dependencies);
-			}
 		}
 
 		@Override

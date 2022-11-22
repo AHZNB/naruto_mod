@@ -40,7 +40,6 @@ import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.Minecraft;
 
-import net.narutomod.procedure.ProcedureKunaiBulletHitsLivingEntity;
 import net.narutomod.creativetab.TabModTab;
 import net.narutomod.ElementsNarutomodMod;
 
@@ -199,12 +198,7 @@ public class ItemKunaiExplosive extends ElementsNarutomodMod.ModElement {
 		@Override
 		protected void arrowHit(EntityLivingBase entity) {
 			super.arrowHit(entity);
-			Entity sourceentity = this.shootingEntity;
-			{
-				Map<String, Object> $_dependencies = new HashMap<>();
-				$_dependencies.put("sourceentity", sourceentity);
-				ProcedureKunaiBulletHitsLivingEntity.executeProcedure($_dependencies);
-			}
+			entity.setArrowCountInEntity(entity.getArrowCountInEntity() - 1);
 		}
 
 		@Override

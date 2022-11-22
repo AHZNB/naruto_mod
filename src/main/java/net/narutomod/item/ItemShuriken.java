@@ -34,7 +34,6 @@ import net.minecraft.util.math.Vec3d;
 
 import net.narutomod.entity.EntitySusanooBase;
 import net.narutomod.procedure.ProcedureShurikenBulletHitsBlock;
-import net.narutomod.procedure.ProcedureKunaiBulletHitsLivingEntity;
 import net.narutomod.creativetab.TabModTab;
 import net.narutomod.ElementsNarutomodMod;
 
@@ -164,16 +163,6 @@ public class ItemShuriken extends ElementsNarutomodMod.ModElement {
 		protected void arrowHit(EntityLivingBase entity) {
 			super.arrowHit(entity);
 			entity.setArrowCountInEntity(entity.getArrowCountInEntity() - 1);
-			Entity sourceentity = this.shootingEntity;
-			int x = (int) this.posX;
-			int y = (int) this.posY;
-			int z = (int) this.posZ;
-			World world = this.world;
-			{
-				Map<String, Object> $_dependencies = new HashMap<>();
-				$_dependencies.put("sourceentity", sourceentity);
-				ProcedureKunaiBulletHitsLivingEntity.executeProcedure($_dependencies);
-			}
 		}
 
 		@Override

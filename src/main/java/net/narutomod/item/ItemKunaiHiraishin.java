@@ -106,7 +106,7 @@ public class ItemKunaiHiraishin extends ElementsNarutomodMod.ModElement {
 				entityarrow.setSilent(true);
 				entityarrow.setIsCritical(false);
 				entityarrow.setDamage(5);
-				entityarrow.setKnockbackStrength(5);
+				entityarrow.setKnockbackStrength(1);
 				itemstack.damageItem(1, entity);
 				int x = (int) entity.posX;
 				int y = (int) entity.posY;

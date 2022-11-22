@@ -45,7 +45,9 @@ public class ProcedureDeathAnimations extends ElementsNarutomodMod.ModElement {
 			if (world instanceof WorldServer)
 				((WorldServer) world).spawnParticle(EnumParticleTypes.SMOKE_NORMAL, (entity.posX), ((entity.posY) + (h)), (entity.posZ), (int) 20,
 						((w) * 0.5), ((h) * 0.5), ((w) * 0.5), 0, new int[0]);
-			PlayerRender.setColorMultiplier((EntityPlayer) entity, 0x30000000);
+			if ((entity instanceof EntityPlayer)) {
+				PlayerRender.setColorMultiplier((EntityPlayer) entity, 0x30000000);
+			}
 		}
 	}
 }

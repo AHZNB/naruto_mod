@@ -32,9 +32,6 @@
       "value": "CUSTOM:FumaShuriken"
     },
     "bulletModel": "Default",
-    "customBulletModelTexture": "",
-    "onBulletHitsEntity": {
-      "name": "KunaiBulletHitsLivingEntity"
-    }
+    "customBulletModelTexture": ""
   }
 }
