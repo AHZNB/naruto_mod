@@ -1,8 +1,8 @@
 {
   "id_map": {
-    "ENTITY": 410,
     "GUI": 59,
-    "DIMENSION": 13
+    "DIMENSION": 13,
+    "ENTITY": 410
   },
   "mod_elements": [
     {
@@ -110,50 +110,6 @@
       }
     },
     {
-      "name": "Meteor",
-      "type": "block",
-      "sortid": 30,
-      "compiles": true,
-      "locked_code": false,
-      "ids": {}
-    },
-    {
-      "name": "Meteorite",
-      "type": "block",
-      "sortid": 34,
-      "compiles": true,
-      "locked_code": false,
-      "ids": {}
-    },
-    {
-      "name": "MeteorBlockDestroyedByExplosion",
-      "type": "procedure",
-      "sortid": 35,
-      "compiles": true,
-      "locked_code": false,
-      "ids": {},
-      "metadata": {
-        "dependencies": [
-          {
-            "name": "x",
-            "type": "number"
-          },
-          {
-            "name": "y",
-            "type": "number"
-          },
-          {
-            "name": "z",
-            "type": "number"
-          },
-          {
-            "name": "world",
-            "type": "world"
-          }
-        ]
-      }
-    },
-    {
       "name": "Updateworldtick",
       "type": "procedure",
       "sortid": 36,
@@ -180,34 +136,6 @@
           {
             "name": "itemstack",
             "type": "itemstack"
-          },
-          {
-            "name": "world",
-            "type": "world"
-          }
-        ]
-      }
-    },
-    {
-      "name": "MeteorBlockAdded",
-      "type": "procedure",
-      "sortid": 41,
-      "compiles": true,
-      "locked_code": false,
-      "ids": {},
-      "metadata": {
-        "dependencies": [
-          {
-            "name": "x",
-            "type": "number"
-          },
-          {
-            "name": "y",
-            "type": "number"
-          },
-          {
-            "name": "z",
-            "type": "number"
           },
           {
             "name": "world",
@@ -1342,34 +1270,6 @@
       "ids": {
         "0": 42,
         "1": 43
-      }
-    },
-    {
-      "name": "MeteoriteUpdateTick",
-      "type": "procedure",
-      "sortid": 233,
-      "compiles": true,
-      "locked_code": false,
-      "ids": {},
-      "metadata": {
-        "dependencies": [
-          {
-            "name": "x",
-            "type": "number"
-          },
-          {
-            "name": "y",
-            "type": "number"
-          },
-          {
-            "name": "z",
-            "type": "number"
-          },
-          {
-            "name": "world",
-            "type": "world"
-          }
-        ]
       }
     },
     {
@@ -7951,7 +7851,6 @@
       "item.yagura_staff.name": "Yagura Staff",
       "item.scythe_hidan.name": "Scythe 3-blade",
       "entity.rantoncloud.name": "Thunder Cloud Void Wave",
-      "tile.meteorite.name": "Meteorite",
       "fluid.mud": "Mud",
       "item.jutsu.name": "Jutsu",
       "tile.light_source.name": "Light Source",
@@ -8105,7 +8004,6 @@
       "entity.suiton_shark.name": "Water Shark Bomb",
       "item.biju_cloaklegs.name": "Biju Cloak Leggings",
       "item.ranton.name": "Storm Release",
-      "tile.meteor.name": "Meteor",
       "item.ninja_armor_konohalegs.name": "Ninja pants (Konoha)",
       "item.scroll_hiding_in_mist.name": "Water Release - Hiding In Mist",
       "item.claw.name": "Triple bladed claw",

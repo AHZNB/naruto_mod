@@ -72,6 +72,10 @@ General:
  - reach effect: targeting fuzziness increases with reach, i.e. fuzziness = targetBoundingBox +- reach * 0.1
  - chakra: force sync to client on next tick on player respawn/changeDimension
  - ninjaxp: force sync to client on next tick on player respawn/changeDimension
+ - hitting entities with a kunai or shuriken no longers gains extra ninjaxp
+ 
+Blocks:
+ - removed meteor block
 
 0.2.9-beta ================================================================================
 

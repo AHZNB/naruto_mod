@@ -112,7 +112,7 @@ public class EntitySandBullet extends ElementsNarutomodMod.ModElement {
 		public void renderParticles() {
 			if (!this.world.isRemote) {
 				Particles.spawnParticle(this. world, Particles.Types.SUSPENDED, this.posX, this.posY+0.1d, this.posZ,
-				 100, 0.03d, 0.03d, 0.03d, 0d, 0d, 0d, this.color, 10, 2);
+				 100, 0.03d, 0.03d, 0.03d, 0d, 0d, 0d, this.color, 10, 5);
 			}
 		}
 

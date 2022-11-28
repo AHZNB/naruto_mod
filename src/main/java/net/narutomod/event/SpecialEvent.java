@@ -33,7 +33,7 @@ public abstract class SpecialEvent {
 		.put(EnumEventType.SPHERICAL_EXPLOSION.getIndex(), EventSphericalExplosion.class)
 		.put(EnumEventType.DELAYED_SPAWN.getIndex(), EventDelayedSpawn.class)
 		.put(EnumEventType.VILLAGE_SIEGE.getIndex(), EventVillageSiege.class)
-		.put(EnumEventType.METEOR_SHOWER.getIndex(), EventMeteorShower.class)
+		//.put(EnumEventType.METEOR_SHOWER.getIndex(), EventMeteorShower.class)
 		.put(EnumEventType.SET_BLOCKS.getIndex(), EventSetBlocks.class)
 		.put(EnumEventType.VANILLA_EXPLOSION.getIndex(), EventVanillaExplosion.class)
 		.put(EnumEventType.DELAYED_CALLBACK.getIndex(), EventDelayedCallback.class)
@@ -73,7 +73,7 @@ public abstract class SpecialEvent {
 		}
 	}
 	
-	public static void setMeteorShowerEvent(World worldIn, int centerX, int centerY, int centerZ, long startTime, int radius, 
+	/*public static void setMeteorShowerEvent(World worldIn, int centerX, int centerY, int centerZ, long startTime, int radius, 
 			int strikeInterval, int duration) {
 		if (!worldIn.isRemote) {
 			new EventMeteorShower(worldIn, centerX, centerY, centerZ, startTime, radius, strikeInterval, duration);
@@ -84,7 +84,7 @@ public abstract class SpecialEvent {
 		if (!worldIn.isRemote) {
 			new EventMeteorShower(worldIn, centerAround, startTime, radius, strikeInterval, duration);
 		}
-	}
+	}*/
 
 	protected EnumEventType type = EnumEventType.NO_EVENT;
 	protected int id;

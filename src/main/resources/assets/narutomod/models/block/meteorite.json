@@ -1,8 +1,0 @@
-{
-  "parent": "narutomod:custom/meteor",
-  "textures": {
-    "all": "narutomod:blocks/texture",
-    "particle": "narutomod:blocks/texture",
-    "0": "narutomod:blocks/texture"
-  }
-}

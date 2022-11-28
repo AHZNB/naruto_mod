@@ -63,7 +63,7 @@ public class ItemJiton extends ElementsNarutomodMod.ModElement {
 	public static final Item block = null;
 	public static final int ENTITYID = 201;
 	public static final ItemJutsu.JutsuEnum SANDSHIELD = new ItemJutsu.JutsuEnum(0, "entityjitonshield", 'S', 150, 20d, new EntitySandShield.Jutsu());
-	public static final ItemJutsu.JutsuEnum SANDBULLET = new ItemJutsu.JutsuEnum(1, "sand_bullet", 'S', 100, 20d, new EntitySandBullet.EC.Jutsu());
+	public static final ItemJutsu.JutsuEnum SANDBULLET = new ItemJutsu.JutsuEnum(1, "sand_bullet", 'S', 100, 10d, new EntitySandBullet.EC.Jutsu());
 	public static final ItemJutsu.JutsuEnum SANDBIND = new ItemJutsu.JutsuEnum(2, "sand_bind", 'S', 200, 100d, new EntitySandBind.EC.Jutsu());
 	public static final ItemJutsu.JutsuEnum SANDFLY = new ItemJutsu.JutsuEnum(3, "sand_levitation", 'S', 200, 0.25d, new EntitySandLevitation.EC.Jutsu());
 
