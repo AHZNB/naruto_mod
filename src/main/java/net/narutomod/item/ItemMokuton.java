@@ -360,9 +360,9 @@ public class ItemMokuton extends ElementsNarutomodMod.ModElement {
 		public void doRender(WoodSegment entity, double x, double y, double z, float entityYaw, float pt) {
 			if (entity.getParent() != null) {
 				entity.setPositionAndRotationFromParent(pt);
-				x = entity.posX - this.getRenderManager().viewerPosX;
-				y = entity.posY - this.getRenderManager().viewerPosY;
-				z = entity.posZ - this.getRenderManager().viewerPosZ;
+				x = entity.posX - this.renderManager.viewerPosX;
+				y = entity.posY - this.renderManager.viewerPosY;
+				z = entity.posZ - this.renderManager.viewerPosZ;
 				this.bindEntityTexture(entity);
 				GlStateManager.pushMatrix();
 				GlStateManager.translate(x, y, z);

@@ -8,6 +8,7 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.init.MobEffects;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.block.material.Material;
@@ -32,6 +33,9 @@ public class ProcedureBasicNinjaSkills extends ElementsNarutomodMod.ModElement {
 		Entity entity = (Entity) dependencies.get("entity");
 		World world = (World) dependencies.get("world");
 		boolean f1 = false;
+		if (((EntityPlayer) entity).isSpectator()) {
+			return;
+		}
 		if ((!(world.isRemote))) {
 			if (entity instanceof EntityLivingBase)
 				((EntityLivingBase) entity).addPotionEffect(new PotionEffect(MobEffects.SPEED, (int) 2, (int) 1, (false), (false)));

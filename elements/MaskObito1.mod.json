@@ -3,7 +3,7 @@
   "_type": "armor",
   "definition": {
     "enableHelmet": true,
-    "textureHelmet": "anbumask1_item",
+    "textureHelmet": "mask_obito1_item",
     "enableBody": false,
     "textureBody": "",
     "enableLeggings": false,
@@ -14,7 +14,7 @@
       "value": "CUSTOM:ModTab"
     },
     "armorTextureFile": "sasuke_",
-    "helmetName": "Anbu Mask 1",
+    "helmetName": "Mask Obito",
     "bodyName": "",
     "leggingsName": "",
     "bootsName": "",
@@ -24,7 +24,7 @@
     "bootsSpecialInfo": [],
     "helmetModelName": "ModelAnbuMask",
     "helmetModelPart": "bipedHead",
-    "helmetModelTexture": "anbumask1.png",
+    "helmetModelTexture": "mask_obito1.png",
     "bodyModelName": "Default",
     "bodyModelPart": "Body",
     "armsModelPartL": "Arms L",

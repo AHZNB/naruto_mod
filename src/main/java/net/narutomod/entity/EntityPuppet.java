@@ -208,8 +208,8 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 						this.entity.motionY = d1 / d3 * f;
 						this.entity.motionZ = d2 / d3 * f;
 						float f1 = -((float)MathHelper.atan2(this.entity.motionX, this.entity.motionZ)) * (180F / (float)Math.PI);
-						this.entity.rotationYaw = this.limitAngle(this.entity.rotationYaw, f1, 10.0F);
-						this.entity.renderYawOffset = this.entity.rotationYaw;
+						//this.entity.rotationYaw = this.limitAngle(this.entity.rotationYaw, f1, 10.0F);
+						this.entity.renderYawOffset = this.entity.rotationYaw = f1;
 					}
 				}
 			}
@@ -313,9 +313,8 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 				double dz = owner.lastTickPosZ + (owner.posZ - owner.lastTickPosZ) * pt - (entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * pt);
 				double dxz = MathHelper.sqrt(dx * dx + dz * dz);
 				double max_l = MathHelper.sqrt(dx * dx + dy * dy + dz * dz);
-				float rot_y = (float) -Math.atan2(dx, dz) * 180.0F / (float) Math.PI;
+				float rot_y = (float) -Math.atan2(dx, dz) * 180.0F / (float) Math.PI - ProcedureUtils.interpolateRotation(entity.prevRenderYawOffset, entity.renderYawOffset, pt);
 				float rot_x = (float) -Math.atan2(dy, dxz) * 180.0F / (float) Math.PI;
-				rot_y = MathHelper.wrapDegrees(rot_y - entity.renderYawOffset);
 				this.renderer.bindTexture(FUUIN_TEXTURE);
 				GlStateManager.pushMatrix();
 				GlStateManager.translate(0.0F, -offset + 0.5F, 0.0F);

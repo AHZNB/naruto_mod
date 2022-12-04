@@ -9,7 +9,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 
-import net.minecraft.world.biome.Biome;
+import net.minecraft.init.Biomes;
 import net.minecraft.world.World;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.DamageSource;
@@ -58,30 +58,11 @@ public class EntityWhiteZetsu extends ElementsNarutomodMod.ModElement {
 
 	@Override
 	public void init(FMLInitializationEvent event) {
-		Biome[] spawnBiomes = {Biome.REGISTRY.getObject(new ResourceLocation("extreme_hills")),
-				Biome.REGISTRY.getObject(new ResourceLocation("forest")), Biome.REGISTRY.getObject(new ResourceLocation("taiga")),
-				Biome.REGISTRY.getObject(new ResourceLocation("swampland")), Biome.REGISTRY.getObject(new ResourceLocation("beaches")),
-				Biome.REGISTRY.getObject(new ResourceLocation("desert_hills")), Biome.REGISTRY.getObject(new ResourceLocation("forest_hills")),
-				Biome.REGISTRY.getObject(new ResourceLocation("taiga_hills")), Biome.REGISTRY.getObject(new ResourceLocation("jungle")),
-				Biome.REGISTRY.getObject(new ResourceLocation("jungle_hills")), Biome.REGISTRY.getObject(new ResourceLocation("jungle_edge")),
-				Biome.REGISTRY.getObject(new ResourceLocation("birch_forest")), Biome.REGISTRY.getObject(new ResourceLocation("birch_forest_hills")),
-				Biome.REGISTRY.getObject(new ResourceLocation("roofed_forest")), Biome.REGISTRY.getObject(new ResourceLocation("redwood_taiga")),
-				Biome.REGISTRY.getObject(new ResourceLocation("redwood_taiga_hills")),
-				Biome.REGISTRY.getObject(new ResourceLocation("extreme_hills_with_trees")), Biome.REGISTRY.getObject(new ResourceLocation("savanna")),
-				Biome.REGISTRY.getObject(new ResourceLocation("mesa")), Biome.REGISTRY.getObject(new ResourceLocation("mesa_rock")),
-				Biome.REGISTRY.getObject(new ResourceLocation("mesa_clear_rock")),
-				Biome.REGISTRY.getObject(new ResourceLocation("mutated_extreme_hills")),
-				Biome.REGISTRY.getObject(new ResourceLocation("mutated_forest")), Biome.REGISTRY.getObject(new ResourceLocation("mutated_taiga")),
-				Biome.REGISTRY.getObject(new ResourceLocation("mutated_swampland")), Biome.REGISTRY.getObject(new ResourceLocation("mutated_jungle")),
-				Biome.REGISTRY.getObject(new ResourceLocation("mutated_jungle_edge")),
-				Biome.REGISTRY.getObject(new ResourceLocation("mutated_birch_forest")),
-				Biome.REGISTRY.getObject(new ResourceLocation("mutated_birch_forest_hills")),
-				Biome.REGISTRY.getObject(new ResourceLocation("mutated_roofed_forest")),
-				Biome.REGISTRY.getObject(new ResourceLocation("mutated_redwood_taiga")),
-				Biome.REGISTRY.getObject(new ResourceLocation("mutated_redwood_taiga_hills")),
-				Biome.REGISTRY.getObject(new ResourceLocation("mutated_extreme_hills_with_trees")),
-				Biome.REGISTRY.getObject(new ResourceLocation("mutated_savanna")),};
-		EntityRegistry.addSpawn(EntityCustom.class, 10, 1, 1, EnumCreatureType.MONSTER, spawnBiomes);
+		EntityRegistry.addSpawn(EntityCustom.class, 5, 1, 1, EnumCreatureType.MONSTER, 
+			Biomes.EXTREME_HILLS, Biomes.FOREST, Biomes.TAIGA, Biomes.SWAMPLAND, Biomes.BEACH, Biomes.JUNGLE,
+			Biomes.BIRCH_FOREST, Biomes.ROOFED_FOREST, Biomes.REDWOOD_TAIGA, Biomes.SAVANNA, Biomes.MESA,
+			Biomes.MUTATED_FOREST, Biomes.MUTATED_TAIGA, Biomes.MUTATED_SWAMPLAND, Biomes.MUTATED_JUNGLE,
+			Biomes.MUTATED_BIRCH_FOREST, Biomes.MUTATED_ROOFED_FOREST, Biomes.MUTATED_REDWOOD_TAIGA, Biomes.MUTATED_SAVANNA);
 	}
 
 	@SideOnly(Side.CLIENT)

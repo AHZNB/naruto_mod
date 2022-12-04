@@ -13,6 +13,7 @@ Jutsus:
  - kagebunshin: fixed ninjaxp not reseting after death of original (when player is a bunshin)
  - Adamantine sealing chains: no longer seals the biju in the player
  - Adamantine sealing chains: added chakra drain on target entity (drain amount based on player's chakra)
+ - changed Earth sandwich jutsu animation and mechanics
  - added Transformation jutsu and scroll
  - added 4-symbols sealing jutsu and scroll
  - added lightning release: black panther and scroll
@@ -53,6 +54,7 @@ Items:
  - added metal claw and recipe
  - added Jiraiya's stone sword Ishiken (WIP)
  - added Chakra Blades (WIP)
+ - added some new anbu and obito masks
  
 Entities:
  - changed Sanshouo puppet's health to 200, reduces projectile damage by 80%
