@@ -63,7 +63,7 @@ public class ItemJiton extends ElementsNarutomodMod.ModElement {
 	public static final Item block = null;
 	public static final int ENTITYID = 201;
 	public static final ItemJutsu.JutsuEnum SANDSHIELD = new ItemJutsu.JutsuEnum(0, "entityjitonshield", 'S', 150, 20d, new EntitySandShield.Jutsu());
-	public static final ItemJutsu.JutsuEnum SANDBULLET = new ItemJutsu.JutsuEnum(1, "sand_bullet", 'S', 100, 10d, new EntitySandBullet.EC.Jutsu());
+	public static final ItemJutsu.JutsuEnum SANDBULLET = new ItemJutsu.JutsuEnum(1, "sand_bullet", 'S', 100, 20d, new EntitySandBullet.EC.Jutsu());
 	public static final ItemJutsu.JutsuEnum SANDBIND = new ItemJutsu.JutsuEnum(2, "sand_bind", 'S', 200, 100d, new EntitySandBind.EC.Jutsu());
 	public static final ItemJutsu.JutsuEnum SANDFLY = new ItemJutsu.JutsuEnum(3, "sand_levitation", 'S', 200, 0.25d, new EntitySandLevitation.EC.Jutsu());
 
@@ -123,6 +123,9 @@ public class ItemJiton extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		protected float getPower(ItemStack stack, EntityLivingBase entity, int timeLeft) {
+			if (this.getCurrentJutsu(stack) == SANDBULLET) {
+				return this.getPower(stack, entity, timeLeft, 0.0f, 50f);
+			}
 			return 1f;
 		}
 
@@ -134,6 +137,14 @@ public class ItemJiton extends ElementsNarutomodMod.ModElement {
 				return super.onItemRightClick(world, entity, hand);
 			}
 			return new ActionResult<ItemStack>(EnumActionResult.FAIL, entity.getHeldItem(hand));
+		}
+
+		@Override
+		public void onUsingTick(ItemStack stack, EntityLivingBase player, int timeLeft) {
+			super.onUsingTick(stack, player, timeLeft);
+			if (!player.world.isRemote && this.getCurrentJutsu(stack) == SANDBULLET) {
+				EntitySandBullet.addPos(stack, player, this.getPower(stack, player, timeLeft));
+			}
 		}
 
 		@Override
@@ -149,6 +160,10 @@ public class ItemJiton extends ElementsNarutomodMod.ModElement {
 						ItemGourd.setMaterial(stack, getSandType(itemstack));
 						ItemHandlerHelper.giveItemToPlayer(player, stack);
 					}
+				}
+				if (player.getItemStackFromSlot(EntityEquipmentSlot.CHEST).getItem() == ItemGourd.body
+				 && this.getCurrentJutsu(itemstack) == SANDBULLET) {
+					EntitySandBullet.updateSwarms(itemstack);
 				}
 			}
 		}
@@ -429,7 +444,8 @@ public class ItemJiton extends ElementsNarutomodMod.ModElement {
 			for (int i = 0; this.spawned < this.total && i < 50; i++, this.spawned++) {
 				Entity p = this.createParticle(this.startPos.x, this.startPos.y, this.startPos.z,
 				 (this.rand.nextDouble()-0.5d) * 2d * this.spawnMotion.x, this.spawnMotion.y,
-				 (this.rand.nextDouble()-0.5d) * 2d * this.spawnMotion.z, this.color, this.scale, 6000);
+				 (this.rand.nextDouble()-0.5d) * 2d * this.spawnMotion.z, this.color,
+				 this.scale + (this.rand.nextFloat()-0.5f) * this.scale * 0.2f, 6000);
 				this.world.spawnEntity(p);
 				this.particles.add(p);
 			}
@@ -538,7 +554,7 @@ public class ItemJiton extends ElementsNarutomodMod.ModElement {
 			return this.ticks;
 		}
 
-		private Vec3d getTargetPos() {
+		public Vec3d getTargetPos() {
 			return this.randomPosOnBB(this.targetBB);
 		}
 

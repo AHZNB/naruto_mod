@@ -14,6 +14,7 @@ Jutsus:
  - Adamantine sealing chains: no longer seals the biju in the player
  - Adamantine sealing chains: added chakra drain on target entity (drain amount based on player's chakra)
  - changed Earth sandwich jutsu animation and mechanics
+ - changed Sand bullet barrage mechanics
  - added Transformation jutsu and scroll
  - added 4-symbols sealing jutsu and scroll
  - added lightning release: black panther and scroll
@@ -62,6 +63,7 @@ Entities:
  - potion effects don't affect shield based entities (like hiruko, sanshouo, wood golem, etc)
  - setup tailed beast face down pose
  - added Hiruko puppet (health=100; reduces projectile damage by 60%; blocking with tail reduces damage by 80%)
+ - updated white zetsu spawn parameters
  
 Structures:
  - rebuilt the 4 pillar wood house to match anime
