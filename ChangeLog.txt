@@ -15,6 +15,7 @@ Jutsus:
  - Adamantine sealing chains: added chakra drain on target entity (drain amount based on player's chakra)
  - changed Earth sandwich jutsu animation and mechanics
  - changed Sand bullet barrage mechanics
+ - lava release melting jutsu created obsidian blocks will disappear after 1 minute
  - added Transformation jutsu and scroll
  - added 4-symbols sealing jutsu and scroll
  - added lightning release: black panther and scroll

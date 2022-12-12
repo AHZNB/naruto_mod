@@ -175,18 +175,18 @@ public class EntitySandBullet extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static void addPos(ItemStack stack, EntityLivingBase entity, float power) {
-		List<ItemJiton.SwarmTarget> list = posMap.get(stack);
+		List<ItemJiton.SwarmTarget> list = getStartPosList(stack);
 		if (list == null) {
 			list = Lists.newArrayList();
 			posMap.put(stack, list);
 		}
 		list.add(new ItemJiton.SwarmTarget(entity.world, 10, ItemGourd.getMouthPos(entity), 
 		 new Vec3d(entity.posX + (entity.getRNG().nextDouble()-0.5d) * power * 2, entity.posY + entity.getEyeHeight() + (entity.getRNG().nextDouble()-0.5d) * 2d, entity.posZ + (entity.getRNG().nextDouble()-0.5d) * power * 2),
-		 new Vec3d(0.1d, 0.2d, 0.1d), 0.5f, 0.02f, false, 1f, ItemJiton.getSandType(stack).getColor()));
+		 new Vec3d(0.1d, 0.2d, 0.1d), 0.5f, 0.01f, false, 0.5f, ItemJiton.getSandType(stack).getColor()));
 	}
 
 	public static void updateSwarms(ItemStack stack) {
-		List<ItemJiton.SwarmTarget> list = posMap.get(stack);
+		List<ItemJiton.SwarmTarget> list = getStartPosList(stack);
 		if (list != null && !list.isEmpty()) {
 			for (ItemJiton.SwarmTarget st : list) {
 				st.onUpdate();

@@ -169,7 +169,7 @@ public class EntityHakkeshoKeiten extends ElementsNarutomodMod.ModElement {
 				if (this.world.getBlockState(pos).getMaterial().isLiquid()) {
 					this.world.setBlockToAir(pos);
 				} else if (summoner instanceof EntityPlayer && ((EntityPlayer)summoner).experienceLevel >= 45) {
-					ProcedureUtils.breakBlockAndDropWithChance(this.world, pos, 5.0F, 1.0F, 0.3F);
+					ProcedureUtils.breakBlockAndDropWithChance(this.world, pos, 5.0F, 1.0F, 0.1F);
 				}
 			}
 		}

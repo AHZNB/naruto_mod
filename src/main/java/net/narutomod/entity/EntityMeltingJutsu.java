@@ -32,6 +32,7 @@ import net.narutomod.ElementsNarutomodMod;
 
 import java.util.List;
 import com.google.common.collect.Lists;
+import com.google.common.collect.ImmutableMap;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityMeltingJutsu extends ElementsNarutomodMod.ModElement {
@@ -86,7 +87,9 @@ public class EntityMeltingJutsu extends ElementsNarutomodMod.ModElement {
 
 		private void solidifyLava(BlockPos pos) {
 			if (this.world.getBlockState(pos).getMaterial() == Material.LAVA) {
-				this.world.setBlockState(pos, Blocks.OBSIDIAN.getDefaultState(), 3);
+				new net.narutomod.event.EventSetBlocks(this.world, ImmutableMap.of(pos, Blocks.OBSIDIAN.getDefaultState()),
+				 0, 1200, false, false);
+				//this.world.setBlockState(pos, Blocks.OBSIDIAN.getDefaultState(), 3);
 				this.solidifyLava(pos.down());
 				//this.solidifyLava(pos.east());
 				//this.solidifyLava(pos.west());

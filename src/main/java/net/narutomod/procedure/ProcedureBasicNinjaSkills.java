@@ -33,7 +33,7 @@ public class ProcedureBasicNinjaSkills extends ElementsNarutomodMod.ModElement {
 		Entity entity = (Entity) dependencies.get("entity");
 		World world = (World) dependencies.get("world");
 		boolean f1 = false;
-		if (((EntityPlayer) entity).isSpectator()) {
+		if (((entity instanceof EntityPlayer) && ((EntityPlayer) entity).isSpectator())) {
 			return;
 		}
 		if ((!(world.isRemote))) {
