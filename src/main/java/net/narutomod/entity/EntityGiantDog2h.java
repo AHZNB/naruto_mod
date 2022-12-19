@@ -107,7 +107,7 @@ public class EntityGiantDog2h extends ElementsNarutomodMod.ModElement {
 		}
 
 		public EntityCustom(EntityPlayer player) {
-			this(player, 500d);
+			this(player, 400d);
 		}
 
 		@Override
@@ -193,6 +193,7 @@ public class EntityGiantDog2h extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void setDead() {
 			super.setDead();
+			this.poof();
 			if (!this.world.isRemote && this.child != null) {
 				this.child.setDead();
 			}
@@ -200,9 +201,8 @@ public class EntityGiantDog2h extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		protected void onDeathUpdate() {
-			if (this.getMaxHealth() < 50f) {
+			if (this.getMaxHealth() <= 50.0f) {
 				//super.onDeathUpdate();
-				this.poof();
 				this.setDead();
 			} else if (!this.world.isRemote) {
 				++this.splitTicks;
@@ -219,7 +219,7 @@ public class EntityGiantDog2h extends ElementsNarutomodMod.ModElement {
 					}
 				}
 			}
-System.out.println(">>> maxHealth:"+getMaxHealth()+", curHealth:"+getHealth()+", splitTicks:"+splitTicks+", "+this);
+//System.out.println(">>> maxHealth:"+getMaxHealth()+", curHealth:"+getHealth()+", splitTicks:"+splitTicks+", "+this);
 		}
 
 		private void poof() {

@@ -38,6 +38,7 @@ import net.narutomod.item.ItemJutsu;
 
 import java.util.UUID;
 import java.util.List;
+import java.util.Iterator;
 import com.google.common.collect.Lists;
 
 @ElementsNarutomodMod.ModElement.Tag
@@ -113,8 +114,12 @@ public class PlayerTracker extends ElementsNarutomodMod.ModElement {
 		}
 
 		public static void log(EntityPlayer entity) {
-			if (deadPlayers.contains(entity)) {
-				deadPlayers.remove(entity);
+			Iterator<Deaths> iter = deadPlayers.iterator();
+			while (iter.hasNext()) {
+				Deaths death = iter.next();
+				if (death.playerId.equals(entity.getUniqueID())) {
+					iter.remove();
+				}
 			}
 			deadPlayers.add(new Deaths(entity));
 			if (!entity.world.getGameRules().getBoolean(KEEPXP_RULE)) {
@@ -211,6 +216,7 @@ public class PlayerTracker extends ElementsNarutomodMod.ModElement {
 				if (event.player.getEntityData().getBoolean(FORCE_SEND)) {
 					event.player.getEntityData().removeTag(FORCE_SEND);
 					sendBattleXPToSelf((EntityPlayerMP)event.player);
+//System.out.println("+++ FORCE_SEND: ninjaxp:"+getBattleXp(event.player)+", "+event.player);
 				}
 				if (event.player.getEntityData().getBoolean(UPDATE_HEALTH)) {
 					event.player.getEntityData().removeTag(UPDATE_HEALTH);
@@ -275,11 +281,10 @@ public class PlayerTracker extends ElementsNarutomodMod.ModElement {
 
 		@SubscribeEvent
 		public void onClone(net.minecraftforge.event.entity.player.PlayerEvent.Clone event) {
-			//if (!event.isWasDeath()) {
-				EntityPlayer newPlayer = event.getEntityPlayer();
-				newPlayer.getEntityData().setDouble(BATTLEXP, getBattleXp(event.getOriginal()));
-				newPlayer.getEntityData().setBoolean(FORCE_SEND, true);
-			//}
+			EntityPlayer newPlayer = event.getEntityPlayer();
+			newPlayer.getEntityData().setDouble(BATTLEXP, getBattleXp(event.getOriginal()));
+			newPlayer.getEntityData().setBoolean(FORCE_SEND, true);
+//System.out.println(">>> ninjaxp:"+getBattleXp(newPlayer)+", "+newPlayer);
 		}
 
 		@SubscribeEvent

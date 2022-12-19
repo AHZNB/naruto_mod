@@ -103,9 +103,10 @@ public class ItemBakuton extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		protected float getPower(ItemStack stack, EntityLivingBase entity, int timeLeft) {
-			if (this.getCurrentJutsu(stack) == JIRAIKEN) {
-				return this.getPower(stack, entity, timeLeft, 0.2f, 150f);
-			} else if (this.getCurrentJutsu(stack) == CLAY) {
+			ItemJutsu.JutsuEnum jutsu = this.getCurrentJutsu(stack);
+			if (jutsu == JIRAIKEN) {
+				return this.getPower(stack, entity, timeLeft, 0.2f, 200f);
+			} else if (jutsu == CLAY) {
 				return (float)Math.floor(this.getPower(stack, entity, timeLeft, 1f, 150f));
 			}
 			return 1f;
@@ -141,9 +142,9 @@ public class ItemBakuton extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void onUpdate(ItemStack itemstack, World world, Entity entity, int par4, boolean par5) {
 			super.onUpdate(itemstack, world, entity, par4, par5);
-			if (entity instanceof EntityLivingBase && JIRAIKEN.jutsu.isActivated(itemstack)) {
+			if (entity.ticksExisted % 10 == 2 && entity instanceof EntityLivingBase && JIRAIKEN.jutsu.isActivated(itemstack)) {
 				((EntityLivingBase)entity).addPotionEffect(new PotionEffect(
-				 PotionChakraEnhancedStrength.potion, 2, (int)(((Jiraiken)JIRAIKEN.jutsu).getPower(itemstack) * 19), false, false));
+				 PotionChakraEnhancedStrength.potion, 12, (int)(((Jiraiken)JIRAIKEN.jutsu).getPower(itemstack) * 19), false, false));
 			}
 		}
 

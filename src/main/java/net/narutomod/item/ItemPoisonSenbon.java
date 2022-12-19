@@ -206,6 +206,6 @@ public class ItemPoisonSenbon extends ElementsNarutomodMod.ModElement {
 
 	@Override
 	public void init(FMLInitializationEvent event) {
-		GameData.register_impl(new RecipePoisonSenbon().setRegistryName(new ResourceLocation("poisonsenbon")));
+		GameData.register_impl(new RecipePoisonSenbon().setRegistryName(new ResourceLocation("narutomod", "poisonsenbon")));
 	}
 }

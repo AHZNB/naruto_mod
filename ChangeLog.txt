@@ -16,6 +16,7 @@ Jutsus:
  - changed Earth sandwich jutsu animation and mechanics
  - changed Sand bullet barrage mechanics
  - lava release melting jutsu created obsidian blocks will disappear after 1 minute
+ - explosion release landmine fist and chakra enhanced strength now only works on direct physical attacks
  - added Transformation jutsu and scroll
  - added 4-symbols sealing jutsu and scroll
  - added lightning release: black panther and scroll

@@ -106,6 +106,15 @@ public class ItemYooton extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
+		protected float getMaxPower(ItemStack stack, EntityLivingBase entity) {
+			float mp = super.getMaxPower(stack, entity);
+			if (this.getCurrentJutsu(stack) == ROCKS) {
+				return Math.min(mp, 50f);
+			}
+			return mp;
+		}
+
+		@Override
 		public void onUpdate(ItemStack itemstack, World world, Entity entity, int par4, boolean par5) {
 			super.onUpdate(itemstack, world, entity, par4, par5);
 			if (!world.isRemote && entity instanceof EntityLivingBase) {

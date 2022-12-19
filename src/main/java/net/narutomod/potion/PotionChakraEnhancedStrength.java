@@ -152,7 +152,7 @@ public class PotionChakraEnhancedStrength extends ElementsNarutomodMod.ModElemen
 		public void onLivingHurt(LivingHurtEvent event) {
 			if (event.getSource().getTrueSource() instanceof EntityLivingBase) {
 				EntityLivingBase attacker = (EntityLivingBase)event.getSource().getTrueSource();
-				if (attacker.isPotionActive(potion)) {
+				if (attacker.isPotionActive(potion) && event.getSource().getImmediateSource() == attacker) {
 					int amplifier = attacker.getActivePotionEffect(potion).getAmplifier();
 					if (Chakra.pathway(attacker).consume((double)amplifier)) {
 						EntityLivingBase target = event.getEntityLiving();

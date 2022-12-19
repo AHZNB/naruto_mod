@@ -5,12 +5,13 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityFallingBlock;
 import net.minecraft.entity.item.EntityItem;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.block.Block;
 
 import net.narutomod.ElementsNarutomodMod;
 import net.narutomod.item.ItemJutsu;
@@ -49,7 +50,8 @@ public class ProcedureHakkeKusho extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		protected EntityItem processAffectedBlock(EntityLivingBase player, BlockPos pos, EnumFacing facing) {
-			if (player.world.isAirBlock(pos.up())) {
+			if (player.world.getGameRules().getBoolean("mobGriefing") && player.world.getBlockState(pos).isFullBlock()
+			 && player.world.getBlockState(pos.up()).getCollisionBoundingBox(player.world, pos.up()) == Block.NULL_AABB) {
 				EntityFallingBlock entity = new EntityFallingBlock(player.world, 0.5d+pos.getX(), pos.getY(), 0.5d+pos.getZ(), player.world.getBlockState(pos));
 				entity.motionY = 0.45d;
 				player.world.spawnEntity(entity);
@@ -59,7 +61,8 @@ public class ProcedureHakkeKusho extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		protected float getBreakChance(BlockPos pos, EntityLivingBase player, double range) {
-			return (player instanceof EntityPlayer && ((EntityPlayer)player).experienceLevel >= XP_REQUIRED + 15)
+			return player.world.getGameRules().getBoolean("mobGriefing")
+			 && player instanceof EntityPlayer && ((EntityPlayer)player).experienceLevel >= XP_REQUIRED + 15
 					? (1.0F - (float) ((Math.sqrt(player.getDistanceSqToCenter(pos)) - 4.0D) / MathHelper.clamp(range, 0.0D, 30.0D)))
 					: 0.0F;
 		}
