@@ -121,6 +121,8 @@ public class ItemYoton extends ElementsNarutomodMod.ModElement {
 			double d = MathHelper.sqrt((4d * scaleIn * scaleIn) + (this.height * this.height));
 			this.getEntityAttribute(EntityPlayer.REACH_DISTANCE).applyModifier(new AttributeModifier("biggerme.reach", d, 0));
 			this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).applyModifier(new AttributeModifier("biggerme.damage", scaleIn * scaleIn, 0));
+			this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(user.getHealth() * scaleIn);
+			this.setHealth(this.getMaxHealth());
 			this.addPotionEffect(new PotionEffect(MobEffects.JUMP_BOOST, 999999, (int)scaleIn, false, false));
 			user.startRiding(this);
 		}

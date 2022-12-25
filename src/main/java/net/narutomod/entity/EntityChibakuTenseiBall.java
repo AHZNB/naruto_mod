@@ -317,6 +317,14 @@ public class EntityChibakuTenseiBall extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
+		public void onUpdate() {
+			super.onUpdate();
+			if (!this.world.isRemote && this.getTicksAlive() > 1200) {
+				this.setDead();
+			}
+		}
+
+		@Override
 		protected void onImpact() {
 			if (!this.world.isRemote) {
 				if (!this.explosionSet) {
@@ -336,6 +344,11 @@ public class EntityChibakuTenseiBall extends ElementsNarutomodMod.ModElement {
 				//}
 			}
 			super.onImpact();
+		}
+
+		@Override
+		public boolean griefingAllowed() {
+			return this.getTicksAlive() == 1 ? true : super.griefingAllowed();
 		}
 	}
 

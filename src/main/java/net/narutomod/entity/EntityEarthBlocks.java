@@ -3,6 +3,7 @@ package net.narutomod.entity;
 
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
@@ -230,6 +231,10 @@ public class EntityEarthBlocks extends ElementsNarutomodMod.ModElement {
 	    	return net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.world, null);
 	    }
 
+	    public int getTicksAlive() {
+	    	return this.ticksAlive;
+	    }
+
 		@SideOnly(Side.CLIENT)
 		public void handleServerPacket(ProcedureSync.SPacketEarthBlocks packet) {
 			this.blocksTotal = packet.blocks;
@@ -378,13 +383,12 @@ public class EntityEarthBlocks extends ElementsNarutomodMod.ModElement {
 		           	if (this.breakOnImpact) {
 		           		if (this.rand.nextFloat() <= 0.3f) {
 							this.world.setBlockState(pos, entry.getValue(), 3);
-			           		EntityFallingBlock entity = new EntityFallingBlock(this.world, vec.x, vec.y, vec.z, entry.getValue()) {
-								{	this.shouldDropItem = flag; }
-			           		};
+			           		EntityFallingBlock entity = new EntityFallingBlock(this.world, vec.x, vec.y, vec.z, entry.getValue());
 			           		this.world.spawnEntity(entity);
 			           		entity.motionX = entry.getKey().x * (0.1d + this.rand.nextDouble() * 0.2d);
 		           			entity.motionY = entry.getKey().y * (0.1d + this.rand.nextDouble() * 0.2d);
 			           		entity.motionZ = entry.getKey().z * (0.1d + this.rand.nextDouble() * 0.2d);
+			           		ReflectionHelper.setPrivateValue(EntityFallingBlock.class, entity, !flag, 3);
 		           		}
 		           	} else {
 						((WorldServer)this.world).spawnParticle(EnumParticleTypes.BLOCK_DUST, vec.x, vec.y+0.5d, vec.z,
