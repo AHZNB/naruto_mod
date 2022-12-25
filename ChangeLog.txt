@@ -17,6 +17,8 @@ Jutsus:
  - changed Sand bullet barrage mechanics
  - lava release melting jutsu created obsidian blocks will disappear after 1 minute
  - explosion release landmine fist and chakra enhanced strength now only works on direct physical attacks
+ - chikabutensei moon falls after 1 minute, improved mechanics when griefing turned off
+ - multi-size jutsu giant's health is based on the size
  - added Transformation jutsu and scroll
  - added 4-symbols sealing jutsu and scroll
  - added lightning release: black panther and scroll
