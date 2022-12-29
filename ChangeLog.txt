@@ -29,6 +29,8 @@ Items:
  - Amegakure headband+mask can breathe under water and immune to poison & wither
  - re-positioned the dojutsus lower on the face
  - white zetsu flesh when eaten gives you instant damage effect level 1~2 for 10 secs if you're not wearing mangekyo sharingan
+ - jutsu scrolls are now one-time use
+ - summoning contract on /give: use datatag {Type:toad|snake|slug} to specify which animal to summon
  - added Konoha facial protector (tobirama/yamato style) and recipe
  - added 1st Ninja war armor and recipe
  - added samurai armor and recipe

@@ -74,7 +74,7 @@ public class EntityGroundShock extends ElementsNarutomodMod.ModElement {
 						double d0 = pos.getX() - blockpos.getX();
 						double d1 = pos.getZ() - blockpos.getZ();
 						double d2 = MathHelper.sqrt(d0 * d0 + d1 * d1);
-						if ((int)d2 == i && state.isTopSolid() && this.world.isAirBlock(pos1)) {
+						if ((int)d2 == i && state.isFullBlock() && this.world.isAirBlock(pos1)) {
 							for (Entity entity1 : this.world.getEntitiesWithinAABBExcludingEntity(this, new AxisAlignedBB(pos1))) {
 								if (!(entity1 instanceof EntityFallingBlock) && !this.entitylist.contains(entity1)) {
 									this.entitylist.add(entity1);

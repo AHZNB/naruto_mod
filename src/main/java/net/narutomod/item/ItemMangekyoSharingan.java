@@ -72,6 +72,7 @@ public class ItemMangekyoSharingan extends ElementsNarutomodMod.ModElement {
 			public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
 				super.addInformation(stack, worldIn, tooltip, flagIn);
 				tooltip.add(I18n.translateToLocal("key.mcreator.specialjutsu1") + ": " + I18n.translateToLocal("tooltip.mangekyo.amaterasu.jutsu1"));
+				tooltip.add(I18n.translateToLocal("key.mcreator.specialjutsu2") + ": " + I18n.translateToLocal("entity.susanooclothed.name"));
 			}
 
 			@Override

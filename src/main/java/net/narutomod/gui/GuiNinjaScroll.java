@@ -5,6 +5,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.input.Keyboard;
 
 import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
@@ -32,7 +33,6 @@ import java.util.Map;
 import java.util.HashMap;
 import java.io.IOException;
 import com.google.common.collect.Maps;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class GuiNinjaScroll extends ElementsNarutomodMod.ModElement {
@@ -72,21 +72,25 @@ public class GuiNinjaScroll extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public boolean canInteractWith(EntityPlayer player) {
-			return internal.isUsableByPlayer(player);
+			return this.internal.isUsableByPlayer(player);
 		}
 
 		@Override
 		public void onContainerClosed(EntityPlayer playerIn) {
 			super.onContainerClosed(playerIn);
-			if ((internal instanceof InventoryBasic) && (playerIn instanceof EntityPlayerMP)) {
-				this.clearContainer(playerIn, playerIn.world, internal);
+			if ((this.internal instanceof InventoryBasic) && (playerIn instanceof EntityPlayerMP)) {
+				this.clearContainer(playerIn, playerIn.world, this.internal);
 			}
 		}
 
 		protected void handleButtonAction(EntityPlayer player, int buttonID) {
-			if (player instanceof EntityPlayerMP 
-			 && !ProcedureUtils.advancementAchieved((EntityPlayerMP)player, "narutomod:learned_1st_jutsu")) {
-				ProcedureUtils.grantAdvancement((EntityPlayerMP)player, "narutomod:learned_1st_jutsu", true);
+			if (player instanceof EntityPlayerMP) {
+				if (!player.getHeldItemMainhand().isEmpty()) {
+					player.getHeldItemMainhand().shrink(1);
+				}
+				if (!ProcedureUtils.advancementAchieved((EntityPlayerMP)player, "narutomod:learned_1st_jutsu")) {
+					ProcedureUtils.grantAdvancement((EntityPlayerMP)player, "narutomod:learned_1st_jutsu", true);
+				}
 			}
 		}
 	}

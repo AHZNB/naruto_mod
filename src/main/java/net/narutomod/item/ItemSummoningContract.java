@@ -135,6 +135,17 @@ public class ItemSummoningContract extends ElementsNarutomodMod.ModElement {
 			return super.onLeftClickEntity(itemstack, attacker, target);
 		}
 
+		@Override
+		public void onUpdate(ItemStack itemstack, World world, Entity entity, int par4, boolean par5) {
+			super.onUpdate(itemstack, world, entity, par4, par5);
+			if (!this.isAnyJutsuEnabled(itemstack) && itemstack.hasTagCompound() && itemstack.getTagCompound().hasKey("Type", 8)) {
+				String type = itemstack.getTagCompound().getString("Type");
+				this.enableJutsu(itemstack, SUMMONTOAD, type.equals("toad"));
+				this.enableJutsu(itemstack, SUMMONSNAKE, type.equals("snake"));
+				this.enableJutsu(itemstack, SUMMONSLUG, type.equals("slug"));
+			}
+		}
+
 		@SideOnly(Side.CLIENT)
 		@Override
 		public void addInformation(ItemStack itemstack, World world, List<String> list, ITooltipFlag flag) {
