@@ -116,7 +116,7 @@ public class ItemSenjutsu extends ElementsNarutomodMod.ModElement {
 			this.setUnlocalizedName("senjutsu");
 			this.setRegistryName("senjutsu");
 			this.setCreativeTab(TabModTab.tab);
-			this.defaultCooldownMap[SAGEMODE.index] = 0;
+			//this.defaultCooldownMap[SAGEMODE.index] = 0;
 		}
 
 		public void setSageType(ItemStack stack, Type type) {
@@ -157,15 +157,19 @@ public class ItemSenjutsu extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public void onUpdate(ItemStack itemstack, World world, Entity entity, int par4, boolean par5) {
-			if (this.getSageType(itemstack) == Type.NONE) {
-				if (entity instanceof EntityPlayer && ((EntityPlayer)entity).isCreative()) {
-					this.setSageType(itemstack, Type.random());
-				} else {
-					return;
-				}
-			}
 			super.onUpdate(itemstack, world, entity, par4, par5);
 			if (!world.isRemote && entity instanceof EntityLivingBase) {
+				if (this.getSageType(itemstack) == Type.NONE) {
+					Type forcedType = itemstack.hasTagCompound() && itemstack.getTagCompound().hasKey("Type", 8)
+					 ? Type.getTypeFromName(itemstack.getTagCompound().getString("Type")) 
+					 : entity instanceof EntityPlayer && ((EntityPlayer)entity).isCreative() ? Type.random() : Type.NONE;
+					if (forcedType != Type.NONE) {
+						this.setSageType(itemstack, forcedType);
+						this.enableJutsu(itemstack, SAGEMODE, true);
+					} else {
+						return;
+					}
+				}
 				EntityLivingBase living = (EntityLivingBase)entity;
 				boolean flag = isSageModeActivated(itemstack);
 				boolean flag1 = living.getEntityAttribute(EntityPlayer.REACH_DISTANCE).hasModifier(ItemSageModeArmor.buffMap.get(EntityPlayer.REACH_DISTANCE));
@@ -260,8 +264,11 @@ public class ItemSenjutsu extends ElementsNarutomodMod.ModElement {
 		@SideOnly(Side.CLIENT)
 		@Override
 		public void addInformation(ItemStack itemstack, World world, List<String> list, ITooltipFlag flag) {
-			list.add(TextFormatting.BLUE + new TextComponentTranslation("tooltip.senjutsu.type").getUnformattedComponentText()
-			 + this.getSageType(itemstack).getName() + TextFormatting.RESET);
+			Type type = this.getSageType(itemstack);
+			if (type != Type.NONE) {
+				list.add(TextFormatting.BLUE + new TextComponentTranslation("tooltip.senjutsu.type").getUnformattedComponentText()
+				 + type.getLocalizedName() + TextFormatting.RESET);
+			}
 			super.addInformation(itemstack, world, list, flag);
 		}
 
@@ -383,17 +390,20 @@ public class ItemSenjutsu extends ElementsNarutomodMod.ModElement {
 
 	public enum Type {
 		NONE("none", 0),
-		TOAD("entity.toad.name", 1),
-		SNAKE("entity.snake.name", 2),
-		SLUG("entity.slug.name", 3);
+		TOAD("toad", 1),
+		SNAKE("snake", 2),
+		SLUG("slug", 3);
 
 		private final String name;
 		private final int id;
-		private static final Map<Integer, Type> TYPES = Maps.newHashMap();
+		private static final Map<Integer, Type> TYPES_BY_ID = Maps.newHashMap();
+		private static final Map<String, Type> TYPES_BY_NAME = Maps.newHashMap();
 
 		static {
-			for (Type type : values())
-				TYPES.put(Integer.valueOf(type.getID()), type);
+			for (Type type : values()) {
+				TYPES_BY_ID.put(Integer.valueOf(type.getID()), type);
+				TYPES_BY_NAME.put(type.name, type);
+			}
 		}
 		
 		Type(String s, int i) {
@@ -401,8 +411,8 @@ public class ItemSenjutsu extends ElementsNarutomodMod.ModElement {
 			this.id = i;
 		}
 
-		public String getName() {
-			return new TextComponentTranslation(this.name).getUnformattedComponentText();
+		public String getLocalizedName() {
+			return new TextComponentTranslation("entity."+this.name+".name").getUnformattedComponentText();
 		}
 
 		public int getID() {
@@ -414,7 +424,11 @@ public class ItemSenjutsu extends ElementsNarutomodMod.ModElement {
 		}
 
 		public static Type getTypeFromId(int id) {
-			return TYPES.get(Integer.valueOf(id));
+			return TYPES_BY_ID.containsKey(Integer.valueOf(id)) ? TYPES_BY_ID.get(Integer.valueOf(id)) : Type.NONE;
+		}
+
+		public static Type getTypeFromName(String s) {
+			return TYPES_BY_NAME.containsKey(s) ? TYPES_BY_NAME.get(s) : Type.NONE;
 		}
 	}
 

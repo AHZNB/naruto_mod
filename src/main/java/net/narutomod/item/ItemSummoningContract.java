@@ -140,9 +140,9 @@ public class ItemSummoningContract extends ElementsNarutomodMod.ModElement {
 			super.onUpdate(itemstack, world, entity, par4, par5);
 			if (!this.isAnyJutsuEnabled(itemstack) && itemstack.hasTagCompound() && itemstack.getTagCompound().hasKey("Type", 8)) {
 				String type = itemstack.getTagCompound().getString("Type");
-				this.enableJutsu(itemstack, SUMMONTOAD, type.equals("toad"));
-				this.enableJutsu(itemstack, SUMMONSNAKE, type.equals("snake"));
-				this.enableJutsu(itemstack, SUMMONSLUG, type.equals("slug"));
+				this.enableJutsu(itemstack, SUMMONTOAD, type.equalsIgnoreCase("toad"));
+				this.enableJutsu(itemstack, SUMMONSNAKE, type.equalsIgnoreCase("snake"));
+				this.enableJutsu(itemstack, SUMMONSLUG, type.equalsIgnoreCase("slug"));
 			}
 		}
 
