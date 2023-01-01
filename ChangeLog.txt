@@ -42,7 +42,7 @@ Items:
  - added Yaguras Staff: 4th Mizukage's staff (WIP)
  - added Staff of Sage of Six Paths (WIP)
  - added 3rd Hokage's Staff (WIP)
- - added Hidan's Scythe (WIP)
+ - added Hidan's Scythe (WIP) - Now throwable
  - added Fuma Shuriken (WIP)
  - added Sound Gaunlet (WIP)
  - added Poison Bombs (WIP)

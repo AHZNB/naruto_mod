@@ -84,7 +84,7 @@ public class ItemFumaShuriken extends ElementsNarutomodMod.ModElement {
 			Multimap<String, AttributeModifier> multimap = super.getItemAttributeModifiers(slot);
 			if (slot == EntityEquipmentSlot.MAINHAND) {
 				multimap.put(SharedMonsterAttributes.ATTACK_DAMAGE.getName(),
-						new AttributeModifier(ATTACK_DAMAGE_MODIFIER, "Ranged item modifier", (double) -2, 0));
+						new AttributeModifier(ATTACK_DAMAGE_MODIFIER, "Ranged item modifier", (double) -1, 0));
 				multimap.put(SharedMonsterAttributes.ATTACK_SPEED.getName(),
 						new AttributeModifier(ATTACK_SPEED_MODIFIER, "Ranged item modifier", -2.4, 0));
 			}
@@ -95,12 +95,12 @@ public class ItemFumaShuriken extends ElementsNarutomodMod.ModElement {
 		public void onPlayerStoppedUsing(ItemStack itemstack, World world, EntityLivingBase entityLivingBase, int timeLeft) {
 			if (!world.isRemote && entityLivingBase instanceof EntityPlayerMP) {
 				EntityPlayerMP entity = (EntityPlayerMP) entityLivingBase;
-				float power = 1.5f;
+				float power = 1.2f;
 				EntityArrowCustom entityarrow = new EntityArrowCustom(world, entity);
 				entityarrow.shoot(entity.getLookVec().x, entity.getLookVec().y, entity.getLookVec().z, power * 2, 0);
 				entityarrow.setSilent(true);
 				entityarrow.setIsCritical(false);
-				entityarrow.setDamage(12);
+				entityarrow.setDamage(13);
 				entityarrow.setKnockbackStrength(0);
 				itemstack.damageItem(1, entity);
 				int x = (int) entity.posX;
