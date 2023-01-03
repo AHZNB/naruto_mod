@@ -272,7 +272,7 @@ public class ItemDoton extends ElementsNarutomodMod.ModElement {
 				BlockPos pos = new BlockPos(ProcedureUtils.BB.getCenter(aabb));
 				if (autoIn) {
 					RayTraceResult r = aabb.grow(thickness, this.wallHeight, thickness).calculateIntercept(vec3d, vec3d1);
-					if (r != null && this.isNeighborEarthenMaterial(pos) && !this.world.getBlockState(pos.up()).isTopSolid()) {
+					if (r != null && this.isNeighborEarthenMaterial(pos) && this.world.isAirBlock(pos.up())) {
 						this.affectedList.add(pos);
 					}
 				} else {
@@ -324,29 +324,32 @@ public class ItemDoton extends ElementsNarutomodMod.ModElement {
 					this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation(("narutomod:rocks"))), 
 					 5.0f, (this.rand.nextFloat() * 0.5f) + 0.3f);
 				}
+				BlockPos.PooledMutableBlockPos pos = BlockPos.PooledMutableBlockPos.retain();
 				for (int i = 0; i < this.blockChunk && this.vindex < (int)this.wallHeight; ) {
 					Iterator<BlockPos> iter = this.affectedList.iterator();
 					while (i < this.blockChunk && iter.hasNext()) {
-						BlockPos pos = iter.next().up();
+						pos.setPos(iter.next().up());
 						iter.remove();
-						if (pos.getY() < 255 && (this.world.isAirBlock(pos) || this.isBlockBreakable(pos))) {
+						this.tempList.add(pos.toImmutable());
+						if (pos.getY() < 255 && this.world.isAirBlock(pos)) {
 							this.moveUpEntitiesInAABB(new AxisAlignedBB(pos), 1d);
 							IBlockState state = this.getNeightborEarthenBlock(pos.down());
 							((WorldServer)this.world).spawnParticle(EnumParticleTypes.BLOCK_DUST,
 							 pos.getX()+0.5d, pos.getY(), pos.getZ()+0.5d, 5, 0D, 0D, 0D, 0.15D,
 							 Block.getIdFromBlock(state.getBlock()));
 							this.world.setBlockState(pos, state, 3);
-							this.tempList.add(pos);
+							this.allBlocks.add(pos.toImmutable());
 							++i;
 						}
 					}
 					if (this.affectedList.isEmpty()) {
 						this.affectedList = Lists.newArrayList(this.tempList);
-						this.allBlocks.addAll(this.tempList);
+						//this.allBlocks.addAll(this.tempList);
 						this.tempList.clear();
 						++this.vindex;
 					}
 				}
+				pos.release();
 				if (this.vindex >= (int)this.wallHeight) {
 					this.affectedList.clear();
 					//this.removeTime = this.ticksExisted + 1200;

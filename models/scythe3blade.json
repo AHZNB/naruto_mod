@@ -454,7 +454,7 @@
 			"scale": [1.15, 1, 1.15]
 		},
 		"ground": {
-			"rotation": [180, 0, 0],
+			"rotation": [180, 180, 0],
 			"translation": [0, 18, 0],
 			"scale": [1.15, 1, 1.15]
 		},

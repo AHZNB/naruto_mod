@@ -140,8 +140,7 @@ public class ProcedureSharinganHelmetTickEvent extends ElementsNarutomodMod.ModE
 				}
 			}
 			if ((((itemstack).getItem() == new ItemStack(ItemSharingan.helmet, (int) (1)).getItem())
-					&& ((((entity instanceof EntityPlayer) ? ((EntityPlayer) entity).experienceLevel : 0) > 30)
-							&& ((entity.getEntityData().getDouble((NarutomodModVariables.BATTLEXP))) > 600)))) {
+					&& ((entity.getEntityData().getDouble((NarutomodModVariables.BATTLEXP))) >= 1000))) {
 				if ((PlayerTracker.Deaths.hasRecentNearby((EntityPlayer) entity, 40D, 6000D) && (!(world.isRemote)))) {
 					if ((Math.random() < 0.5)) {
 						mangekyo = new ItemStack(ItemMangekyoSharingan.helmet, (int) (1));

@@ -14,6 +14,7 @@ Jutsus:
  - Adamantine sealing chains: no longer seals the biju in the player
  - Adamantine sealing chains: added chakra drain on target entity (drain amount based on player's chakra)
  - changed Earth sandwich jutsu animation and mechanics
+ - updated earth wall jutsu block placement
  - changed Sand bullet barrage mechanics
  - lava release melting jutsu created obsidian blocks will disappear after 1 minute
  - explosion release landmine fist and chakra enhanced strength now only works on direct physical attacks
@@ -31,6 +32,7 @@ Items:
  - white zetsu flesh when eaten gives you instant damage effect level 1~2 for 10 secs if you're not wearing mangekyo sharingan
  - jutsu scrolls are now one-time use
  - summoning contract and senjutsu on /give: use datatag {Type:toad|snake|slug} to specify which type
+ - evolving into mangekyo now requires 1000 ninjaxp and no vanilla xp requirement
  - added Konoha facial protector (tobirama/yamato style) and recipe
  - added 1st Ninja war armor and recipe
  - added samurai armor and recipe
@@ -83,6 +85,7 @@ General:
  - chakra: force sync to client on next tick on player respawn/changeDimension
  - ninjaxp: force sync to client on next tick on player respawn/changeDimension
  - hitting entities with a kunai or shuriken no longers gains extra ninjaxp
+ - changed ninjaxp sync on respawn
  
 Blocks:
  - removed meteor block

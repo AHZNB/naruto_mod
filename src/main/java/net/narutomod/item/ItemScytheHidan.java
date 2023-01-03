@@ -347,7 +347,7 @@ public class ItemScytheHidan extends ElementsNarutomodMod.ModElement {
 			Vec3d vec0 = new Vec3d(this.lastTickPosX + (this.posX - this.lastTickPosX) * pt, this.lastTickPosY + (this.posY - this.lastTickPosY) * pt, this.lastTickPosZ + (this.posZ - this.lastTickPosZ) * pt);
 			float f0 = this.prevRotationYaw + (this.rotationYaw - this.prevRotationYaw) * pt;
 			float f1 = -this.prevRotationPitch - (this.rotationPitch - this.prevRotationPitch) * pt - 90F;
-			return new Vec3d(0d, 2.08d, 0d).rotatePitch(-f1 * (float)Math.PI / 180F).rotateYaw(f0 * (float)Math.PI / 180F).add(vec0);
+			return new Vec3d(0d, 2.5d, 0d).rotatePitch(-f1 * (float)Math.PI / 180F).rotateYaw(f0 * (float)Math.PI / 180F).add(vec0);
 		}
 
 		public void retrieve(double x, double y, double z, float speed) {
@@ -764,7 +764,7 @@ public class ItemScytheHidan extends ElementsNarutomodMod.ModElement {
 			float pitch = (float) (-MathHelper.atan2(vec3d.y, MathHelper.sqrt(vec3d.x * vec3d.x + vec3d.z * vec3d.z)) * (180d / Math.PI));
 			GlStateManager.pushMatrix();
 			GlStateManager.disableTexture2D();
-			GlStateManager.glLineWidth(1.0f);
+			GlStateManager.glLineWidth(5.0f);
 			GlStateManager.translate(from.x - this.renderManager.viewerPosX, from.y - this.renderManager.viewerPosY, from.z - this.renderManager.viewerPosZ);
 			GlStateManager.rotate(yaw, 0.0F, 1.0F, 0.0F);
 			GlStateManager.rotate(pitch, 1.0F, 0.0F, 0.0F);
@@ -773,8 +773,12 @@ public class ItemScytheHidan extends ElementsNarutomodMod.ModElement {
 			BufferBuilder bufferbuilder = tessellator.getBuffer();
 			GlStateManager.disableLighting();
 			bufferbuilder.begin(1, DefaultVertexFormats.POSITION_COLOR);
-			bufferbuilder.pos(0.0D, 0.0D, 0.0D).color(150, 150, 150, 100).endVertex();
-			bufferbuilder.pos(0.0D, 0.0D, d).color(150, 150, 150, 100).endVertex();
+			for (double d1 = 0.0d; d1 < d; d1 += 0.2d) {
+				bufferbuilder.pos(0.0D, 0.0D, d1).color(0.3f, 0.3f, 0.3f, 1.0f).endVertex();
+				bufferbuilder.pos(0.0D, 0.0D, d1 + 0.1d).color(0.3f, 0.3f, 0.3f, 1.0f).endVertex();
+				bufferbuilder.pos(0.0D, 0.0D, d1 + 0.1d).color(0.5f, 0.5f, 0.5f, 1.0f).endVertex();
+				bufferbuilder.pos(0.0D, 0.0D, d1 + 0.2d).color(0.5f, 0.5f, 0.5f, 1.0f).endVertex();
+			}
 			tessellator.draw();
 			GlStateManager.enableLighting();
 			GlStateManager.enableTexture2D();

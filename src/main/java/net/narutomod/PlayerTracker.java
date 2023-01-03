@@ -40,6 +40,8 @@ import java.util.UUID;
 import java.util.List;
 import java.util.Iterator;
 import com.google.common.collect.Lists;
+import java.util.Map;
+import com.google.common.collect.Maps;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class PlayerTracker extends ElementsNarutomodMod.ModElement {
@@ -198,6 +200,8 @@ public class PlayerTracker extends ElementsNarutomodMod.ModElement {
 	}
 
 	public class PlayerHook {
+		private final Map<Integer, Double> forceSendMap = Maps.newHashMap();
+		
 		@SubscribeEvent
 		public void onTick(TickEvent.PlayerTickEvent event) {
 			if (event.phase == TickEvent.Phase.END && event.player instanceof EntityPlayerMP) {
@@ -280,11 +284,19 @@ public class PlayerTracker extends ElementsNarutomodMod.ModElement {
 		}
 
 		@SubscribeEvent
+		public void onRespawn(PlayerEvent.PlayerRespawnEvent event) {
+			Integer i = Integer.valueOf(event.player.getEntityId());
+			if (this.forceSendMap.containsKey(i)) {
+				event.player.getEntityData().setDouble(BATTLEXP, this.forceSendMap.get(i));
+				event.player.getEntityData().setBoolean(FORCE_SEND, true);
+				this.forceSendMap.remove(i);
+			}
+		}
+
+		@SubscribeEvent
 		public void onClone(net.minecraftforge.event.entity.player.PlayerEvent.Clone event) {
-			EntityPlayer newPlayer = event.getEntityPlayer();
-			newPlayer.getEntityData().setDouble(BATTLEXP, getBattleXp(event.getOriginal()));
-			newPlayer.getEntityData().setBoolean(FORCE_SEND, true);
-//System.out.println(">>> ninjaxp:"+getBattleXp(newPlayer)+", "+newPlayer);
+			EntityPlayer oldPlayer = event.getOriginal();
+			this.forceSendMap.put(Integer.valueOf(oldPlayer.getEntityId()), Double.valueOf(getBattleXp(oldPlayer)));
 		}
 
 		@SubscribeEvent
