@@ -14,24 +14,28 @@ import net.minecraftforge.event.entity.living.LivingSetAttackTargetEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.common.MinecraftForge;
 
+import net.minecraft.init.Blocks;
 import net.minecraft.init.MobEffects;
 import net.minecraft.world.World;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.EnumActionResult;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Item;
+import net.minecraft.entity.item.EntityFallingBlock;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.util.EnumParticleTypes;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.init.Blocks;
-import net.minecraft.entity.item.EntityFallingBlock;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.PotionEffect;
 
@@ -46,6 +50,7 @@ import net.narutomod.entity.EntityPuppet;
 import net.narutomod.entity.EntityKikaichu;
 import net.narutomod.entity.EntityTransformationJutsu;
 import net.narutomod.procedure.ProcedureUtils;
+import net.narutomod.procedure.ProcedureOnLivingUpdate;
 import net.narutomod.Chakra;
 
 import javax.annotation.Nullable;
@@ -65,6 +70,7 @@ public class ItemNinjutsu extends ElementsNarutomodMod.ModElement {
 	public static final ItemJutsu.JutsuEnum BUGSWARM = new ItemJutsu.JutsuEnum(6, "bugball", 'C', 100d, new EntityKikaichu.EC.Jutsu());
 	public static final ItemJutsu.JutsuEnum INVISABILITY = new ItemJutsu.JutsuEnum(7, "tooltip.ninjutsu.hidingincamouflage", 'A', 20d, new HidingWithCamouflage());
 	public static final ItemJutsu.JutsuEnum TRANSFORM = new ItemJutsu.JutsuEnum(8, "transformation_jutsu", 'D', 50d, new EntityTransformationJutsu.EC.Jutsu());
+	public static final ItemJutsu.JutsuEnum AMENOTEJIKARA = new ItemJutsu.JutsuEnum(9, "item.ninjutsu.amenotejikara", 'S', 50d, new Amenotejikara());
 
 	public ItemNinjutsu(ElementsNarutomodMod instance) {
 		super(instance, 377);
@@ -72,7 +78,7 @@ public class ItemNinjutsu extends ElementsNarutomodMod.ModElement {
 	
 	@Override
 	public void initElements() {
-		elements.items.add(() -> new RangedItem(REPLACEMENT, KAGEBUNSHIN, RASENGAN, LIMBOCLONE, SEALINGCHAIN, PUPPET, BUGSWARM, INVISABILITY, TRANSFORM));
+		elements.items.add(() -> new RangedItem(REPLACEMENT, KAGEBUNSHIN, RASENGAN, LIMBOCLONE, SEALINGCHAIN, PUPPET, BUGSWARM, INVISABILITY, TRANSFORM, AMENOTEJIKARA));
 		elements.entities.add(() -> EntityEntryBuilder.create().entity(EntityReplacementClone.class)
 			.id(new ResourceLocation("narutomod", "replacementclone"), ENTITYID).name("replacementclone")
 			.tracker(64, 1, true).build());
@@ -98,10 +104,6 @@ public class ItemNinjutsu extends ElementsNarutomodMod.ModElement {
 			this.setUnlocalizedName("ninjutsu");
 			this.setRegistryName("ninjutsu");
 			this.setCreativeTab(TabModTab.tab);
-			//this.defaultCooldownMap[REPLACEMENT.index] = 0;
-			//this.defaultCooldownMap[KAGEBUNSHIN.index] = 0;
-			//this.defaultCooldownMap[RASENGAN.index] = 0;
-			//this.defaultCooldownMap[LIMBOCLONE.index] = 0;
 		}
 
 		@Override
@@ -122,6 +124,16 @@ public class ItemNinjutsu extends ElementsNarutomodMod.ModElement {
 				return this.getPower(stack, entity, timeLeft, 0.0f, 100f);
 			}
 			return 1f;
+		}
+
+		@Override
+		public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer entity, EnumHand hand) {
+			ActionResult<ItemStack> ares = super.onItemRightClick(world, entity, hand);
+			ItemStack stack = entity.getHeldItem(hand);
+			if (!world.isRemote && ares.getType() == EnumActionResult.SUCCESS && this.getCurrentJutsu(stack) == AMENOTEJIKARA) {
+				Amenotejikara.setTarget(stack, ProcedureUtils.objectEntityLookingAt(entity, 40d).entityHit);
+			}
+			return ares;
 		}
 
 		@Override
@@ -276,6 +288,60 @@ public class ItemNinjutsu extends ElementsNarutomodMod.ModElement {
 					}
 				}
 			}
+		}
+	}
+
+	public static class Amenotejikara implements ItemJutsu.IJutsuCallback {
+		@Override
+		public boolean createJutsu(ItemStack stack, EntityLivingBase entity, float power) {
+			RayTraceResult rtr = ProcedureUtils.objectEntityLookingAt(entity, 40d);
+			if (rtr.typeOfHit == RayTraceResult.Type.BLOCK) {
+				BlockPos pos = entity.world.isAirBlock(rtr.getBlockPos().up()) && entity.world.isAirBlock(rtr.getBlockPos().up(2))
+				 ? rtr.getBlockPos().up() : rtr.getBlockPos().offset(rtr.sideHit);
+				Entity target = getTarget(stack, entity.world);
+				if (target == null) {
+					target = entity;
+				}
+				ProcedureOnLivingUpdate.setUntargetable(target, 20);
+				target.setPositionAndUpdate(0.5d + pos.getX(), pos.getY(), 0.5d + pos.getZ());
+				setTarget(stack, null);
+				return true;
+			} else if (rtr.entityHit != null) {
+				Entity target = getTarget(stack, entity.world);
+				if (target == null || target.equals(rtr.entityHit)) {
+					target = entity;
+				}
+				double x = target.posX;
+				double y = target.posY;
+				double z = target.posZ;
+				ProcedureOnLivingUpdate.setUntargetable(target, 20);
+				ProcedureOnLivingUpdate.setUntargetable(rtr.entityHit, 20);
+				target.setPositionAndUpdate(rtr.entityHit.posX, rtr.entityHit.posY, rtr.entityHit.posZ);
+				rtr.entityHit.setPositionAndUpdate(x, y, z);
+				setTarget(stack, null);
+				return true;
+			}
+			setTarget(stack, null);
+			return false;
+		}
+
+		public static void setTarget(ItemStack stack, @Nullable Entity entity) {
+			if (!stack.hasTagCompound()) {
+				stack.setTagCompound(new NBTTagCompound());
+			}
+			if (entity == null) {
+				stack.getTagCompound().removeTag("amenotejikaraTarget");
+			} else {
+				stack.getTagCompound().setInteger("amenotejikaraTarget", entity.getEntityId());
+			}
+		}
+
+		@Nullable
+		public static Entity getTarget(ItemStack stack, World world) {
+			if (stack.hasTagCompound() && stack.getTagCompound().hasKey("amenotejikaraTarget")) {
+				return world.getEntityByID(stack.getTagCompound().getInteger("amenotejikaraTarget"));
+			}
+			return null;
 		}
 	}
 

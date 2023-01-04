@@ -16,6 +16,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
 
+import net.narutomod.item.ItemJutsu;
 import net.narutomod.ElementsNarutomodMod;
 
 import java.util.List;
@@ -37,11 +38,13 @@ public class ProcedureAoeCommand extends ElementsNarutomodMod.ModElement {
 	//private static List<Entity> excludedEntities = Lists.newArrayList();
 	private static List<Entity> entitiesList = Lists.newArrayList();
 	private static ProcedureAoeCommand Instance;
-	private static final Predicate<Entity> MIN_DISTANCE = Predicates.and(EntitySelectors.NOT_SPECTATING, (p) -> {
+	/*private static final Predicate<Entity> MIN_DISTANCE = Predicates.and(EntitySelectors.NOT_SPECTATING, (p) -> {
 		return p.isEntityAlive() && !p.getEntityData().getBoolean("kamui_intangible")
 			&& p.getDistanceSq(centerX, centerY, centerZ) >= minRange*minRange;
-			//&& !excludedEntities.contains(p);
-	});
+			//&& !excludedEntities.contains(p);*/
+	private static final Predicate<Entity> MIN_DISTANCE = (p) -> {
+		return ItemJutsu.canTarget(p) && p.getDistanceSq(centerX, centerY, centerZ) >= minRange*minRange;
+	};
 	
 	public ProcedureAoeCommand(ElementsNarutomodMod instance) {
 		super(instance, 169);

@@ -24,6 +24,7 @@ Jutsus:
  - added 4-symbols sealing jutsu and scroll
  - added lightning release: black panther and scroll
  - added Earth release: Golem jutsu
+ - added amenotejikara, rinnegan gives either limbo or amenotejikara randomly
  
 Items:
  - Bone drill can't be dropped into the world

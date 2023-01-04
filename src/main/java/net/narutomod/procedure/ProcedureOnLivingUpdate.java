@@ -135,7 +135,8 @@ public class ProcedureOnLivingUpdate extends ElementsNarutomodMod.ModElement {
 				}
 			}
 		}
-		if (!world.isRemote && entity.getEntityData().getDouble(NarutomodModVariables.DeathAnimationTime) > 0.0D) {
+		double d = entity.getEntityData().getDouble(NarutomodModVariables.DeathAnimationTime);
+		if (!world.isRemote && d > 0.0D) {
 			event.setCanceled(true);
 			{
 				java.util.HashMap<String, Object> $_dependencies = new java.util.HashMap<>();
@@ -143,8 +144,9 @@ public class ProcedureOnLivingUpdate extends ElementsNarutomodMod.ModElement {
 				$_dependencies.put("world", world);
 				ProcedureDeathAnimations.executeProcedure($_dependencies);
 			}
-			entity.getEntityData().setDouble(NarutomodModVariables.DeathAnimationTime, entity.getEntityData().getDouble(NarutomodModVariables.DeathAnimationTime) - 1.0D);
-			if (entity.getEntityData().getDouble(NarutomodModVariables.DeathAnimationTime) <= 0.0D) {
+			d -= 1.0D;
+			entity.getEntityData().setDouble(NarutomodModVariables.DeathAnimationTime, d);
+			if (d <= 0.0D) {
 				if (entity.getEntityData().getDouble("deathAnimationType") == 2d) {
 					entity.setHealth(0f);
 				} else {
@@ -152,18 +154,25 @@ public class ProcedureOnLivingUpdate extends ElementsNarutomodMod.ModElement {
 				}
 			}
 		}
-		if (entity.getEntityData().getDouble(NarutomodModVariables.InvulnerableTime) > 0D) {
-			entity.getEntityData().setDouble(NarutomodModVariables.InvulnerableTime, entity.getEntityData().getDouble(NarutomodModVariables.InvulnerableTime) - 1d);
+		d = entity.getEntityData().getDouble(NarutomodModVariables.InvulnerableTime);
+		if (d > 0D) {
+			entity.getEntityData().setDouble(NarutomodModVariables.InvulnerableTime, d - 1d);
 		}
-		if (entity.getEntityData().getInteger("FearEffect") > 0) {
-			entity.getEntityData().setInteger("FearEffect", entity.getEntityData().getInteger("FearEffect") - 1);
+		int i = entity.getEntityData().getInteger("FearEffect");
+		if (i > 0) {
+			entity.getEntityData().setInteger("FearEffect", i - 1);
 		}
-		if (entity.getEntityData().getInteger("ForceExtinguish") > 0) {
-			entity.getEntityData().setInteger("ForceExtinguish", entity.getEntityData().getInteger("ForceExtinguish") - 1);
+		i = entity.getEntityData().getInteger("ForceExtinguish");
+		if (i > 0) {
+			entity.getEntityData().setInteger("ForceExtinguish", i - 1);
 			entity.extinguish();
 		}
+		i = entity.getEntityData().getInteger("UntargetableTicks");
+		if (i > 0) {
+			entity.getEntityData().setInteger("UntargetableTicks", i - 1);
+		}
 		if (entity.getEntityData().hasKey("GlowingTicks")) {
-			int i = entity.getEntityData().getInteger("GlowingTicks");
+			i = entity.getEntityData().getInteger("GlowingTicks");
 			entity.setGlowing(i > 0);
 			if (i > 0) {
 				setGlowingFor(entity, i - 1);
@@ -181,6 +190,14 @@ public class ProcedureOnLivingUpdate extends ElementsNarutomodMod.ModElement {
 
 	public static void setGlowingFor(Entity entity, int ticks) {
 		entity.getEntityData().setInteger("GlowingTicks", ticks);
+	}
+
+	public static void setUntargetable(Entity entity, int ticks) {
+		entity.getEntityData().setInteger("UntargetableTicks", ticks);
+	}
+
+	public static boolean isUntargetable(Entity entity) {
+		return entity.getEntityData().getInteger("UntargetableTicks") > 0;
 	}
 
 	@SideOnly(Side.CLIENT)

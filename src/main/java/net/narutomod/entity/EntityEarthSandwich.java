@@ -138,8 +138,8 @@ public class EntityEarthSandwich extends ElementsNarutomodMod.ModElement {
 				if (age == this.growTime / 2) {
 					for (EntityLivingBase entity : this.world.getEntitiesWithinAABB(EntityLivingBase.class, this.getEntityBoundingBox())) {
 						if (this.getEntityBoundingBox().intersect(entity.getEntityBoundingBox()).equals(entity.getEntityBoundingBox())
-						 && !entity.getEntityData().getBoolean("kamui_intangible")
-						 && (!(entity instanceof EntityPlayer) || !((EntityPlayer)entity).isSpectator())) {
+						 && ItemJutsu.canTarget(entity)) {
+						 //&& (!(entity instanceof EntityPlayer) || !((EntityPlayer)entity).isSpectator())) {
 							this.caughtEntities.put(entity, entity.getPositionVector());
 						}
 					}

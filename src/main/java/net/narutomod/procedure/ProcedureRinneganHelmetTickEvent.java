@@ -106,8 +106,10 @@ public class ProcedureRinneganHelmetTickEvent extends ElementsNarutomodMod.ModEl
 				}
 			} else {
 				stack1 = ProcedureUtils.getMatchingItemStack((EntityPlayer) entity, ItemNinjutsu.block);
-				if ((stack1 != null && !((ItemNinjutsu.RangedItem) stack1.getItem()).isJutsuEnabled(stack1, ItemNinjutsu.LIMBOCLONE))) {
-					((ItemNinjutsu.RangedItem) stack1.getItem()).enableJutsu(stack1, ItemNinjutsu.LIMBOCLONE, true);
+				if ((stack1 != null && (!((ItemNinjutsu.RangedItem) stack1.getItem()).isJutsuEnabled(stack1, ItemNinjutsu.LIMBOCLONE)
+						&& !((ItemNinjutsu.RangedItem) stack1.getItem()).isJutsuEnabled(stack1, ItemNinjutsu.AMENOTEJIKARA)))) {
+					((ItemNinjutsu.RangedItem) stack1.getItem()).enableJutsu(stack1,
+							world.rand.nextBoolean() ? ItemNinjutsu.LIMBOCLONE : ItemNinjutsu.AMENOTEJIKARA, true);
 				}
 				if (entity instanceof EntityLivingBase)
 					((EntityLivingBase) entity).addPotionEffect(new PotionEffect(MobEffects.RESISTANCE, (int) 2, (int) 2, (false), (false)));

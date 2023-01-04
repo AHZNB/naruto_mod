@@ -151,7 +151,7 @@ public class ItemSharingan extends ElementsNarutomodMod.ModElement {
 		public void onAttacked(LivingAttackEvent event) {
 			EntityLivingBase entity = event.getEntityLiving();
 			Entity attacker = event.getSource().getTrueSource();
-			if (wearingAny(entity) && attacker instanceof EntityLivingBase && !attacker.world.isRemote) {
+			if (wearingAny(entity) && ItemJutsu.canTarget(entity) && attacker instanceof EntityLivingBase && !attacker.world.isRemote) {
 			 	if (entity.getRNG().nextFloat() < 0.5f) {
 			 		event.setCanceled(true);
 			 		Vec3d vec = entity.getPositionVector().subtract(attacker.getPositionVector()).normalize()

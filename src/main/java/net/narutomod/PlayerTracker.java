@@ -287,7 +287,7 @@ public class PlayerTracker extends ElementsNarutomodMod.ModElement {
 		public void onRespawn(PlayerEvent.PlayerRespawnEvent event) {
 			Integer i = Integer.valueOf(event.player.getEntityId());
 			if (this.forceSendMap.containsKey(i)) {
-				event.player.getEntityData().setDouble(BATTLEXP, this.forceSendMap.get(i));
+				event.player.getEntityData().setDouble(BATTLEXP, this.forceSendMap.get(i).doubleValue());
 				event.player.getEntityData().setBoolean(FORCE_SEND, true);
 				this.forceSendMap.remove(i);
 			}

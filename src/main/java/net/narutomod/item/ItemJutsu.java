@@ -28,6 +28,7 @@ import net.minecraft.util.ResourceLocation;
 
 import net.narutomod.ElementsNarutomodMod;
 import net.narutomod.procedure.ProcedureUtils;
+import net.narutomod.procedure.ProcedureOnLivingUpdate;
 import net.narutomod.Chakra;
 import net.narutomod.Particles;
 import net.narutomod.PlayerTracker;
@@ -63,7 +64,9 @@ public class ItemJutsu extends ElementsNarutomodMod.ModElement {
 
 	public static boolean canTarget(@Nullable Entity targetIn) {
 		return targetIn != null && targetIn.isEntityAlive() 
-		 && !targetIn.getEntityData().getBoolean("kamui_intangible");
+		 && !targetIn.getEntityData().getBoolean("kamui_intangible")
+		 && !ProcedureOnLivingUpdate.isUntargetable(targetIn)
+		 && (!(targetIn instanceof EntityPlayer) || !((EntityPlayer)targetIn).isSpectator());
 	}
 
 	public static void setCurrentJutsuCooldown(ItemStack stack, EntityPlayer player, long cd) {

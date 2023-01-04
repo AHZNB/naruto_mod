@@ -111,7 +111,7 @@ public class EntitySandBind extends ElementsNarutomodMod.ModElement {
 
 		private boolean isTargetCaptured() {
 			boolean flag = false;
-			if (!this.targetEntity.getEntityData().getBoolean("kamui_intangible")
+			if (ItemJutsu.canTarget(this.targetEntity)
 			 && this.getEntityBoundingBox().intersects(this.targetEntity.getEntityBoundingBox())) {
 				double d = this.getEntityBoundingBox().intersect(this.targetEntity.getEntityBoundingBox()).getAverageEdgeLength();
 				flag = d > this.targetEntity.getEntityBoundingBox().getAverageEdgeLength() * 0.5d 
