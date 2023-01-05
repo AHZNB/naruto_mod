@@ -9,7 +9,9 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Item;
@@ -23,6 +25,7 @@ import net.minecraft.entity.ai.EntityMoveHelper;
 import net.minecraft.entity.ai.EntityAISwimming;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.ai.EntityAITarget;
+import net.minecraft.pathfinding.PathNavigateFlying;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.network.datasync.DataParameter;
@@ -42,7 +45,6 @@ import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.ElementsNarutomodMod;
 
 import javax.annotation.Nullable;
-import net.minecraft.util.EnumActionResult;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityPuppet extends ElementsNarutomodMod.ModElement {
@@ -62,8 +64,8 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 			this.experienceValue = 0;
 			this.enablePersistence();
 			this.setNoAI(true);
-			//this.navigator = new PathNavigateFlying(this, worldIn);
-			//this.moveHelper = new FlyHelper(this);
+			this.navigator = new PathNavigateFlying(this, worldIn);
+			this.moveHelper = new FlyHelper(this);
 		}
 
 		public Base(EntityLivingBase ownerIn) {
@@ -107,6 +109,7 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 		protected void initEntityAI() {
 			super.initEntityAI();
 			this.tasks.addTask(0, new EntityAISwimming(this));
+			this.tasks.addTask(3, new AIStayInFrontOfOwner(this, 0d, 0d, 4d));
 			this.targetTasks.addTask(0, new AICopyOwnerTarget(this));
 		}
 
@@ -154,7 +157,7 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 			ItemStack stack = player.getHeldItem(hand);
 			if (!this.world.isRemote && stack.getItem() == ItemNinjutsu.block 
 			 && ItemNinjutsu.getCurrentJutsu(stack) == ItemNinjutsu.PUPPET) {
-				this.setOwner(player);
+				this.setOwner(player.equals(this.getOwner()) ? null : player);
 				return true;
 			}
 			return false;
@@ -165,12 +168,27 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 	    	this.setAge(this.getAge() + 1);
 	    	this.fallDistance = 0f;
 	    	this.clearActivePotions();
+	    	
 	    	super.onUpdate();
+
+	    	EntityLivingBase owner = this.getOwner();
+	    	this.setNoGravity(owner != null);
+			if (owner != null && this.getVelocity() > 0.1d && this.ticksExisted % 2 == 0) {
+				this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation(("narutomod:wood_click"))), 
+				 0.6f, this.rand.nextFloat() * 0.6f + 0.6f);
+			}
+	    	if (!this.world.isRemote && owner != null && this.getDistanceSq(owner) > 1600d) {
+	    		this.setOwner(null);
+	    	}
 	    }
 
 		@Override
 		public Vec3d getLookVec() {
 			return this.getVectorForRotation(this.rotationPitch, this.rotationYawHead);
+		}
+
+		public double getVelocity() {
+			return MathHelper.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
 		}
 
 		@Override
@@ -204,9 +222,10 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 						float f = this.entity.onGround 
 						 ? (float)(this.speed * this.entity.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).getAttributeValue())
 						 : (float)(this.speed * this.entity.getEntityAttribute(SharedMonsterAttributes.FLYING_SPEED).getAttributeValue());
-						this.entity.motionX = d0 / d3 * f;
-						this.entity.motionY = d1 / d3 * f;
-						this.entity.motionZ = d2 / d3 * f;
+						f *= 0.1f;
+						this.entity.motionX += d0 / d3 * f;
+						this.entity.motionY += d1 / d3 * f;
+						this.entity.motionZ += d2 / d3 * f;
 						float f1 = -((float)MathHelper.atan2(this.entity.motionX, this.entity.motionZ)) * (180F / (float)Math.PI);
 						//this.entity.rotationYaw = this.limitAngle(this.entity.rotationYaw, f1, 10.0F);
 						this.entity.renderYawOffset = this.entity.rotationYaw = f1;
@@ -214,6 +233,60 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 				}
 			}
 		}
+
+	    public class AIStayInFrontOfOwner extends EntityAIBase {
+	    	private final Base entity;
+	    	private EntityLivingBase owner;
+	    	private final Vec3d offsetVec;
+	    	
+	        public AIStayInFrontOfOwner(Base entityIn, double offX, double offY, double offZ) {
+	        	this.entity = entityIn;
+	        	this.offsetVec = new Vec3d(offX, offY, offZ);
+	            this.setMutexBits(3);
+	        }
+
+	        @Override
+	        public boolean shouldExecute() {
+	        	EntityLivingBase entitylb = this.entity.getOwner();
+		        if (entitylb == null) {
+		            return false;
+		        } else if (entitylb instanceof EntityPlayer && ((EntityPlayer)entitylb).isSpectator()) {
+		            return false;
+		        } else if (this.entity.getDistanceSq(entitylb) > 1600d) {
+		            return false;
+		        } else {
+		            this.owner = entitylb;
+		            return true;
+		        }
+	        }
+
+			@Override
+		    public boolean shouldContinueExecuting() {
+		        return this.owner != null && this.entity.getDistanceSq(this.owner) <= 1600d;
+		    }
+
+			@Override
+		    public void resetTask() {
+		        this.owner = null;
+		    }
+
+	        @Override
+	        public void updateTask() {
+	        	if (this.owner != null) {
+	        		Vec3d vec = this.offsetVec.rotateYaw(-this.owner.rotationYaw * (float)Math.PI / 180F).add(this.owner.getPositionVector());
+	        		BlockPos pos = new BlockPos(vec);
+	        		for (int i = 0; i < 4 && !this.isOpenPath(this.entity.world, pos.up(i)); i++) {
+	        			vec = vec.addVector(0d, 1.01d, 0d);
+	        		}
+       				this.entity.getMoveHelper().setMoveTo(vec.x, vec.y, vec.z, this.entity.getDistance(vec.x, vec.y, vec.z));
+	        	}
+	        }
+
+	        private boolean isOpenPath(World world, BlockPos pos) {
+        		return world.getBlockState(pos).getCollisionBoundingBox(world, pos) == null
+        		 && world.getBlockState(pos.up()).getCollisionBoundingBox(world, pos.up()) == null;
+	        }
+	    }
 
 	    public class AIChargeAttack extends EntityAIBase {
 	    	private Base attacker;
@@ -244,10 +317,6 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 	            Vec3d vec3d = entitylivingbase.getPositionEyes(1.0F);
 	            this.attacker.moveHelper.setMoveTo(vec3d.x, vec3d.y, vec3d.z, 2.0D);
 	        }
-	
-	        //@Override
-	        //public void resetTask() {
-	        //}
 	
 	        @Override
 	        public void updateTask() {

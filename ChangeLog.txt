@@ -34,6 +34,7 @@ Items:
  - jutsu scrolls are now one-time use
  - summoning contract and senjutsu on /give: use datatag {Type:toad|snake|slug} to specify which type
  - evolving into mangekyo now requires 1000 ninjaxp and no vanilla xp requirement
+ - using someone else's mangekyo now drains 3x durability
  - added Konoha facial protector (tobirama/yamato style) and recipe
  - added 1st Ninja war armor and recipe
  - added samurai armor and recipe
@@ -71,6 +72,7 @@ Entities:
  - changed kisame & zabuza's AI: no longer actively attacks players
  - potion effects don't affect shield based entities (like hiruko, sanshouo, wood golem, etc)
  - setup tailed beast face down pose
+ - puppets now tries to stay in front of user when not attacking, max range 40
  - added Hiruko puppet (health=100; reduces projectile damage by 60%; blocking with tail reduces damage by 80%)
  - updated white zetsu spawn parameters
  

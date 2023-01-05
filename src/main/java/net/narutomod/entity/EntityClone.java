@@ -427,7 +427,6 @@ public class EntityClone extends ElementsNarutomodMod.ModElement {
 		@Override
 	    public void updateTask() {
 	        if (this.followingEntity != null) {
-	            this.entity.getLookHelper().setLookPositionWithEntity(this.followingEntity, 10.0F, (float)this.entity.getVerticalFaceSpeed());
 	            if (--this.timeToRecalcPath <= 0) {
 	                this.timeToRecalcPath = 10;
 	                double d = this.entity.getDistance(this.followingEntity);
@@ -442,6 +441,7 @@ public class EntityClone extends ElementsNarutomodMod.ModElement {
 	                    }
 	                }
 	            }
+	            this.entity.getLookHelper().setLookPositionWithEntity(this.followingEntity, 10.0F, (float)this.entity.getVerticalFaceSpeed());
 	        }
 	    }
 

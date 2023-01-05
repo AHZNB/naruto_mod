@@ -48,10 +48,6 @@ public class ItemMangekyoSharinganEternal extends ElementsNarutomodMod.ModElemen
 					entity.addPotionEffect(new PotionEffect(MobEffects.SPEED, 2, 2, false, false));
 					entity.capabilities.allowFlying = entity.isCreative() || entity.dimension == WorldKamuiDimension.DIMID;
 					entity.sendPlayerAbilities();
-					//if (entity.getEntityData().getBoolean("amaterasu_active") || entity.getEntityData().getBoolean("kamui_teleport")
-					// || entity.getEntityData().getBoolean("susanoo_activated")) {
-					//	itemstack.damageItem(this.isOwner(itemstack, entity) ? 1 : 2, entity);
-					//}
 					if (entity.getEntityData().getBoolean("kamui_teleport")) {
 						Chakra.pathway(entity).consume(ItemMangekyoSharinganObito.getTeleportChakraUsage(entity));
 					}

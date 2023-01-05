@@ -66,12 +66,6 @@ public class ItemMangekyoSharinganObito extends ElementsNarutomodMod.ModElement 
 						entity.capabilities.allowFlying = flag;
 						entity.sendPlayerAbilities();
 					}
-					if ((entity.getEntityData().getBoolean("kamui_teleport") || entity.getEntityData().getBoolean("susanoo_activated"))
-					 && entity.ticksExisted % (this.isOwner(itemstack, entity) ? 2 : 1) == 0) {
-					 	((ItemSharingan.Base)itemstack.getItem()).canDamage = true;
-						itemstack.damageItem(1, entity);
-						((ItemSharingan.Base)itemstack.getItem()).canDamage = false;
-					}
 					if (entity.getEntityData().getBoolean("kamui_teleport")) {
 						Chakra.pathway(entity).consume(getTeleportChakraUsage(entity));
 					}

@@ -17,11 +17,8 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.entity.IRangedAttackMob;
 import net.minecraft.entity.ai.EntityAIAttackRanged;
-import net.minecraft.init.SoundEvents;
-import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.pathfinding.PathNavigateFlying;
 
 //import net.narutomod.procedure.ProcedureUtils;
 //import net.narutomod.item.ItemKunai;
@@ -62,8 +59,6 @@ public class EntityPuppetKarasu extends ElementsNarutomodMod.ModElement {
 		public EntityCustom(World worldIn) {
 			super(worldIn);
 			this.setSize(0.6f, 2.0f);
-			this.navigator = new PathNavigateFlying(this, worldIn);
-			this.moveHelper = new EntityPuppet.Base.FlyHelper(this);
 		}
 
 		public EntityCustom(EntityLivingBase ownerIn) {
@@ -72,8 +67,6 @@ public class EntityPuppetKarasu extends ElementsNarutomodMod.ModElement {
 			Vec3d vec = ownerIn.getLookVec();
 			vec = ownerIn.getPositionVector().addVector(vec.x, 1d, vec.z);
 			this.setLocationAndAngles(vec.x, vec.y, vec.z, ownerIn.rotationYaw, 0f);
-			this.navigator = new PathNavigateFlying(this, ownerIn.world);
-			this.moveHelper = new EntityPuppet.Base.FlyHelper(this);
 		}
 
 		@Override
@@ -93,22 +86,12 @@ public class EntityPuppetKarasu extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
-		public void onUpdate() {
-			super.onUpdate();
-	    	this.setNoGravity(this.getOwner() != null);
-			if (this.getOwner() != null && this.getVelocity() > 0.01d && this.ticksExisted % 2 == 0) {
-				this.playSound((SoundEvent)SoundEvent.REGISTRY.getObject(new ResourceLocation(("narutomod:wood_click"))), 
-				 1f, this.rand.nextFloat() * 0.6f + 0.6f);
-			}
-		}
-
-		@Override
 		public void setSwingingArms(boolean swingingArms) {
 		}
 
 		@Override
 		public void attackEntityWithRangedAttack(EntityLivingBase target, float flval) {
-			Vec3d vec = target.getPositionVector().addVector(0d, 0.5d * target.height, 0d);
+			Vec3d vec = target.getPositionEyes(1f);
 			for (int i = 0; i < 10; i++) {
 				ItemSenbon.spawnArrow(this, vec);
 			}
@@ -119,10 +102,6 @@ public class EntityPuppetKarasu extends ElementsNarutomodMod.ModElement {
 			kunai.setKnockbackStrength(0);
 			this.playSound(SoundEvents.ENTITY_ARROW_SHOOT, 1, 1f / (this.rand.nextFloat() * 0.5f + 1f) + 0.25f);
 			this.world.spawnEntity(kunai);*/
-		}
-
-		public double getVelocity() {
-			return MathHelper.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
 		}
 	}
 

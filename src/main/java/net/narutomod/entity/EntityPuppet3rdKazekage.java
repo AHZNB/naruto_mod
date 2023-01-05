@@ -14,9 +14,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.pathfinding.PathNavigateFlying;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.entity.IEntityLivingData;
@@ -59,8 +57,6 @@ public class EntityPuppet3rdKazekage extends ElementsNarutomodMod.ModElement {
 		public EntityCustom(World worldIn) {
 			super(worldIn);
 			this.setSize(0.6f, 2.0f);
-			this.navigator = new PathNavigateFlying(this, worldIn);
-			this.moveHelper = new EntityPuppet.Base.FlyHelper(this);
 		}
 
 		public EntityCustom(EntityLivingBase ownerIn) {
@@ -69,8 +65,6 @@ public class EntityPuppet3rdKazekage extends ElementsNarutomodMod.ModElement {
 			Vec3d vec = ownerIn.getLookVec();
 			vec = ownerIn.getPositionVector().addVector(vec.x, 1d, vec.z);
 			this.setLocationAndAngles(vec.x, vec.y, vec.z, ownerIn.rotationYaw, 0f);
-			this.navigator = new PathNavigateFlying(this, ownerIn.world);
-			this.moveHelper = new EntityPuppet.Base.FlyHelper(this);
 		}
 
 		@Override
@@ -93,21 +87,7 @@ public class EntityPuppet3rdKazekage extends ElementsNarutomodMod.ModElement {
 		protected void initEntityAI() {
 			super.initEntityAI();
 			//this.tasks.addTask(1, new EntityAIAttackRanged(this, 1.0d, 20, 48f));
-			this.tasks.addTask(2, new EntityPuppet.Base.AIChargeAttack(this));
-		}
-
-		@Override
-		public void onUpdate() {
-			super.onUpdate();
-	    	this.setNoGravity(this.getOwner() != null);
-			if (this.getOwner() != null && this.getVelocity() > 0.01d && this.ticksExisted % 2 == 0) {
-				this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation(("narutomod:wood_click"))), 
-				 1f, this.rand.nextFloat() * 0.6f + 0.6f);
-			}
-		}
-
-		public double getVelocity() {
-			return MathHelper.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
+			this.tasks.addTask(1, new EntityPuppet.Base.AIChargeAttack(this));
 		}
 	}
 

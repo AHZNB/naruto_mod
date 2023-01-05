@@ -54,12 +54,6 @@ public class ItemMangekyoSharingan extends ElementsNarutomodMod.ModElement {
 				super.onArmorTick(world, entity, itemstack);
 				if (!world.isRemote) {
 					entity.addPotionEffect(new PotionEffect(MobEffects.SPEED, 2, 2, false, false));
-					if ((entity.getEntityData().getBoolean("amaterasu_active") || entity.getEntityData().getBoolean("susanoo_activated"))
-					 && entity.ticksExisted % (this.isOwner(itemstack, entity) ? 2 : 1) == 0) {
-					 	((ItemSharingan.Base)itemstack.getItem()).canDamage = true;
-						itemstack.damageItem(1, entity);
-						((ItemSharingan.Base)itemstack.getItem()).canDamage = false;
-					}
 				}
 			}
 

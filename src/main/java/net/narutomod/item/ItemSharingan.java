@@ -78,6 +78,14 @@ public class ItemSharingan extends ElementsNarutomodMod.ModElement {
 				$_dependencies.put("world", world);
 				ProcedureSharinganHelmetTickEvent.executeProcedure((HashMap) $_dependencies);
 			}
+			if (!world.isRemote && itemstack.getItem() != ItemMangekyoSharinganEternal.helmet
+			 && (entity.getEntityData().getBoolean("amaterasu_active")
+			  || entity.getEntityData().getBoolean("susanoo_activated") || entity.getEntityData().getBoolean("kamui_teleport"))
+			 && entity.ticksExisted % 6 == 1) {
+			 	((Base)itemstack.getItem()).canDamage = true;
+				itemstack.damageItem(this.isOwner(itemstack, entity) ? 3 : 9, entity);
+				((Base)itemstack.getItem()).canDamage = false;
+			}
 		}
 
 		@Override
