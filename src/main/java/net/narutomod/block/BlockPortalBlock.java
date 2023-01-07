@@ -42,16 +42,19 @@ public class BlockPortalBlock extends ElementsNarutomodMod.ModElement {
 		super(instance, 276);
 	}
 
+	@Override
 	public void initElements() {
 		this.elements.blocks.add(() -> new BlockCustom());
 		this.elements.items.add(() -> new ItemBlock(block).setRegistryName(block.getRegistryName()));
 	}
 
+	@Override
 	public void init(FMLInitializationEvent event) {
 		GameRegistry.registerTileEntity(TileEntityCustom.class, "narutomod:tileentityportalblock");
 	}
 
 	@SideOnly(Side.CLIENT)
+	@Override
 	public void registerModels(ModelRegistryEvent event) {
 		ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(block), 0,
 				new ModelResourceLocation("narutomod:portalblock", "inventory"));

@@ -328,8 +328,7 @@ public class ItemBijuCloak extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static void setWearingTicks(Entity entity, int ticks) {
-		entity.getEntityData().setInteger("WearingBijuCloakTicks", ticks);
-		ProcedureSync.EntityNBTTag.sendToTracking(entity, "WearingBijuCloakTicks", ticks);
+		ProcedureSync.EntityNBTTag.setAndSync(entity, "WearingBijuCloakTicks", ticks);
 	}
 
 	public static int getWearingTicks(Entity entity) {

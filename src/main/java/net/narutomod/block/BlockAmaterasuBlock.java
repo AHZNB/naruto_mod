@@ -4,6 +4,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 
@@ -14,9 +15,11 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.Item;
 import net.minecraft.init.Blocks;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.Minecraft;
+import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.material.MapColor;
@@ -24,13 +27,13 @@ import net.minecraft.block.material.EnumPushReaction;
 import net.minecraft.block.BlockTNT;
 import net.minecraft.block.BlockFire;
 import net.minecraft.block.Block;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.potion.PotionEffect;
 
-import net.narutomod.procedure.ProcedureAmaterasuEntityCollidesInTheBlock;
+import net.narutomod.potion.PotionAmaterasuFlame;
 import net.narutomod.ElementsNarutomodMod;
 
 import java.util.Random;
-import net.minecraft.block.ITileEntityProvider;
-import net.minecraft.tileentity.TileEntity;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class BlockAmaterasuBlock extends ElementsNarutomodMod.ModElement {
@@ -48,13 +51,25 @@ public class BlockAmaterasuBlock extends ElementsNarutomodMod.ModElement {
 		this.elements.items.add(() -> new ItemBlock(block).setRegistryName(block.getRegistryName()));
 	}
 
+	@Override
+	public void init(FMLInitializationEvent event) {
+		GameRegistry.registerTileEntity(TileEntityCustom.class, "narutomod:tileentityamaterasublock");
+	}
+
 	@SideOnly(Side.CLIENT)
 	public void registerModels(final ModelRegistryEvent event) {
 		ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(block), 0,
 				new ModelResourceLocation("narutomod:amaterasublock", "inventory"));
 	}
 
-	public static class BlockCustom extends BlockFire {
+	public static void placeBlock(World world, BlockPos pos, int strength) {
+		if (world.isAirBlock(pos)) {
+			world.setBlockState(pos, block.getDefaultState(), 3);
+			BlockCustom.setLevel(world, pos, strength);
+		}
+	}
+
+	public static class BlockCustom extends BlockFire implements ITileEntityProvider {
 		private final Material altMaterial;
 		private BlockPos blockPos;
 		private World world;
@@ -382,11 +397,11 @@ public class BlockAmaterasuBlock extends ElementsNarutomodMod.ModElement {
 			if (!worldIn.getGameRules().getBoolean("doFireTick")) {
 				return;
 			}
-			this.tryCatchFire(worldIn, pos.east(), 300, rand, i, EnumFacing.WEST);
-			this.tryCatchFire(worldIn, pos.west(), 300, rand, i, EnumFacing.EAST);
-			this.tryCatchFire(worldIn, pos.up(), 250, rand, i, EnumFacing.DOWN);
-			this.tryCatchFire(worldIn, pos.north(), 300, rand, i, EnumFacing.SOUTH);
-			this.tryCatchFire(worldIn, pos.south(), 300, rand, i, EnumFacing.NORTH);
+			this.tryCatchFire(worldIn, pos, pos.east(), 300, rand, i, EnumFacing.WEST);
+			this.tryCatchFire(worldIn, pos, pos.west(), 300, rand, i, EnumFacing.EAST);
+			this.tryCatchFire(worldIn, pos, pos.up(), 250, rand, i, EnumFacing.DOWN);
+			this.tryCatchFire(worldIn, pos, pos.north(), 300, rand, i, EnumFacing.SOUTH);
+			this.tryCatchFire(worldIn, pos, pos.south(), 300, rand, i, EnumFacing.NORTH);
 			for (int k = -1; k <= 1; ++k) {
 				for (int l = -1; l <= 1; ++l) {
 					for (int i2 = 0; i2 <= 4; ++i2) {
@@ -405,6 +420,7 @@ public class BlockAmaterasuBlock extends ElementsNarutomodMod.ModElement {
 										i3 = 15;
 									}
 									worldIn.setBlockState(blockpos, state.withProperty(AGE, Integer.valueOf(i3)), 3);
+									setLevel(worldIn, blockpos, this.getLevel(worldIn, pos));
 								}
 							}
 						}
@@ -418,15 +434,16 @@ public class BlockAmaterasuBlock extends ElementsNarutomodMod.ModElement {
 			return false;
 		}
 
-		private void tryCatchFire(World worldIn, BlockPos pos, int chance, Random random, int age, EnumFacing face) {
-			int i = this.getFlammability(worldIn.getBlockState(pos).getBlock());
+		private void tryCatchFire(World worldIn, BlockPos ogPos, BlockPos atPos, int chance, Random random, int age, EnumFacing face) {
+			int i = this.getFlammability(worldIn.getBlockState(atPos).getBlock());
 			if (random.nextInt(chance) < i) {
-				IBlockState iblockstate = worldIn.getBlockState(pos);
+				IBlockState iblockstate = worldIn.getBlockState(atPos);
 				int j = age + random.nextInt(AGING_DELAY+1) / AGING_DELAY;
 				if (j > 15) j = 15;
-				worldIn.setBlockState(pos, this.getDefaultState().withProperty(AGE, Integer.valueOf(j)), 3);
+				worldIn.setBlockState(atPos, this.getDefaultState().withProperty(AGE, Integer.valueOf(j)), 3);
+				setLevel(worldIn, atPos, this.getLevel(worldIn, ogPos));
 				if (iblockstate.getBlock() == Blocks.TNT) {
-					Blocks.TNT.onBlockDestroyedByPlayer(worldIn, pos, iblockstate.withProperty(BlockTNT.EXPLODE, Boolean.valueOf(true)));
+					Blocks.TNT.onBlockDestroyedByPlayer(worldIn, atPos, iblockstate.withProperty(BlockTNT.EXPLODE, Boolean.valueOf(true)));
 				}
 			}
 		}
@@ -466,14 +483,49 @@ public class BlockAmaterasuBlock extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public void onEntityWalk(World worldIn, BlockPos pos, Entity entityIn) {
-			java.util.HashMap<String, Object> $_dependencies = new java.util.HashMap<>();
-			$_dependencies.put("entity", entityIn);
-			ProcedureAmaterasuEntityCollidesInTheBlock.executeProcedure($_dependencies);
+			if (!worldIn.isRemote && entityIn instanceof EntityLivingBase) {
+				int amp = this.getLevel(worldIn, pos);
+				((EntityLivingBase)entityIn).addPotionEffect(new PotionEffect(PotionAmaterasuFlame.potion, 10000, amp, false, false));
+			}
+			entityIn.setFire(500);
 		}
 
 		@Override
 		public void onEntityCollidedWithBlock(World worldIn, BlockPos pos, IBlockState state, Entity entityIn) {
 			this.onEntityWalk(worldIn, pos, entityIn);
+		}
+
+		@Override
+		public TileEntity createNewTileEntity(World worldIn, int meta) {
+			return new TileEntityCustom();
+		}
+
+		public static void setLevel(World worldIn, BlockPos pos, int level) {
+			TileEntity tileEntity = worldIn.getTileEntity(pos);
+			if (tileEntity instanceof TileEntityCustom) {
+				((TileEntityCustom)tileEntity).setLevel(level);
+			}
+		}
+
+		public int getLevel(World worldIn, BlockPos pos) {
+			TileEntity tileEntity = worldIn.getTileEntity(pos);
+			return tileEntity instanceof TileEntityCustom ? ((TileEntityCustom)tileEntity).getLevel() : 0;
+		}
+	}
+
+	public static class TileEntityCustom extends TileEntity {
+		private int level;
+
+		public void setLevel(int l) {
+			this.level = l;
+			this.getTileData().setInteger("amaterasuLevel", l);
+		}
+
+		public int getLevel() {
+			if (this.level == 0) {
+				this.level = this.getTileData().getInteger("amaterasuLevel");
+			}
+			return this.level;
 		}
 	}
 

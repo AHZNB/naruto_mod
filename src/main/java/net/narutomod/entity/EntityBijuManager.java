@@ -332,7 +332,7 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 					return;
 				}
 				this.cloakCD = l;
-				cp.consume(-5000d, true);
+				cp.consume(-5000d - this.getCloakXp(), true);
 				if (this.jinchurikiPlayer.inventory.armorInventory.get(3).getItem() != ItemBijuCloak.helmet) {
 					ItemStack stack = new ItemStack(ItemBijuCloak.helmet);
 					stack.setTagCompound(new NBTTagCompound());

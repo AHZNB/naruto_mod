@@ -1,8 +1,8 @@
 {
   "id_map": {
     "ENTITY": 414,
-    "DIMENSION": 13,
-    "GUI": 60
+    "GUI": 60,
+    "DIMENSION": 13
   },
   "mod_elements": [
     {
@@ -114,10 +114,15 @@
       "type": "procedure",
       "sortid": 36,
       "compiles": true,
-      "locked_code": false,
+      "locked_code": true,
       "ids": {},
       "metadata": {
-        "dependencies": []
+        "dependencies": [
+          {
+            "name": "world",
+            "type": "world"
+          }
+        ]
       }
     },
     {
@@ -348,22 +353,6 @@
           {
             "name": "world",
             "type": "world"
-          }
-        ]
-      }
-    },
-    {
-      "name": "AmaterasuEntityCollidesInTheBlock",
-      "type": "procedure",
-      "sortid": 79,
-      "compiles": true,
-      "locked_code": false,
-      "ids": {},
-      "metadata": {
-        "dependencies": [
-          {
-            "name": "entity",
-            "type": "entity"
           }
         ]
       }
@@ -1173,34 +1162,6 @@
           {
             "name": "entity",
             "type": "entity"
-          },
-          {
-            "name": "world",
-            "type": "world"
-          }
-        ]
-      }
-    },
-    {
-      "name": "AmaterasuPlaceBlock",
-      "type": "procedure",
-      "sortid": 227,
-      "compiles": true,
-      "locked_code": false,
-      "ids": {},
-      "metadata": {
-        "dependencies": [
-          {
-            "name": "x",
-            "type": "number"
-          },
-          {
-            "name": "y",
-            "type": "number"
-          },
-          {
-            "name": "z",
-            "type": "number"
           },
           {
             "name": "world",
@@ -7632,33 +7593,33 @@
   ],
   "language_map": {
     "en_us": {
-      "entity.crow.name": "Crow",
       "item.kiba_blades.name": "Kiba Blades",
+      "entity.crow.name": "Crow",
       "entity.tenten.name": "Tenten",
       "item.futton.name": "Boil Release",
       "item.scroll_water_prison.name": "Water Release - Water Prison jutsu",
       "subtitles.sando_no_jutsi": "",
       "item.steam_armorlegs.name": "Steam Armor Leggings",
-      "subtitles.sando_no_jutsu": "",
       "item.futon.name": "Wind Release",
+      "subtitles.sando_no_jutsu": "",
       "subtitles.laser": "",
       "item.ryo_100.name": "100 Ryo",
-      "item.summoning_contract.name": "Summoning Contract",
       "tooltip.samehada.general": "Samehada is a sentient sword utilised by the Seven Ninja Swordsmen of the Mist and is regarded as the most terrifying out of all the Seven Swordsmen\u0027s blades.",
+      "item.summoning_contract.name": "Summoning Contract",
       "item.shuriken.name": "Shuriken",
       "entity.cellular_activation.name": "Cellular Activation",
       "entity.entityasakujaku.name": "Asakujaku (Morning Peacock)",
       "item.scroll_water_dragon.name": "Water Release - Water Dragon Bullet",
       "tooltip.kekkeimora.expansivetsb": "Expansive Truth Seeking Ball",
-      "entity.tailed_beast.name": "Tailed Beast",
       "item.gunbai.name": "Gunbai",
+      "entity.tailed_beast.name": "Tailed Beast",
       "item.scroll_rasenshuriken.name": "Wind Release - Rasenshuriken",
-      "item.scroll_lightning_panther.name": "Lightning Release: Black Panther",
       "entity.itachi.name": "Uchiha Itachi",
+      "item.scroll_lightning_panther.name": "Lightning Release: Black Panther",
       "entity.jinchuriki_clone.name": "Tail beast cloak",
       "tipped_arrow.effect.paralysis": "Arrow of Paralysis",
-      "tipped_arrow.effect.reach": "Arrow of Reach",
       "item.byakurinnesharinganhelmet.name": "Fake Rinne Sharingan",
+      "tipped_arrow.effect.reach": "Arrow of Reach",
       "chattext.medicalgui.notmedninja": "You don\u0027t know any medical ninjutsu.",
       "tooltip.shikotsumyaku.dancelarch": "Larch Dance",
       "entity.tensei_baku_silver.name": "Silver wheel Rebirth Blast",
@@ -7696,8 +7657,8 @@
       "entity.kankuro.name": "Kankuro",
       "subtitles.shinsusenju": "",
       "entity.genjutsu.name": "Genjutsu",
-      "tooltip.shakuton.scorchblast": "Super steam blast",
       "chattext.tentails.sealedintoplayer": "Sealing %s into %s\u0027s body",
+      "tooltip.shakuton.scorchblast": "Super steam blast",
       "tooltip.cleaver.descr": "Lightning natured users can imbue this sword with lightning chakra to increase its lethality",
       "subtitles.waterblast": "",
       "item.ninja_armor_war_1helmet.name": "Facial Protector (Konoha)",

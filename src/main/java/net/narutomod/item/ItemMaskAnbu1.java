@@ -23,6 +23,7 @@ import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.model.ModelBox;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.model.ModelBase;
+import net.minecraft.world.World;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class ItemMaskAnbu1 extends ElementsNarutomodMod.ModElement {
@@ -48,6 +49,14 @@ public class ItemMaskAnbu1 extends ElementsNarutomodMod.ModElement {
 				return armorModel;
 			}
 
+			@Override
+			public void onUpdate(ItemStack itemstack, World world, Entity entity, int par4, boolean par5) {
+				super.onUpdate(itemstack, world, entity, par4, par5);
+				if (entity.ticksExisted % 10 == 6 && entity instanceof EntityLivingBase) {
+					entity.setAlwaysRenderNameTag(!((EntityLivingBase)entity).getItemStackFromSlot(EntityEquipmentSlot.HEAD).equals(itemstack));
+				}
+			}
+			
 			@Override
 			public String getArmorTexture(ItemStack stack, Entity entity, EntityEquipmentSlot slot, String type) {
 				return "narutomod:textures/mask_anbu1.png";
