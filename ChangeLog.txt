@@ -21,6 +21,7 @@ Jutsus:
  - chikabutensei moon falls after 1 minute, improved mechanics when griefing turned off
  - multi-size jutsu giant's health is based on the size
  - ice release all killing ice spikes charging and chakra usage change
+ - improved rasenshuriken model and particles
  - added Transformation jutsu and scroll
  - added 4-symbols sealing jutsu and scroll
  - added lightning release: black panther and scroll
@@ -96,6 +97,7 @@ Blocks:
 
 General:
  - reach effect: targeting fuzziness increases with reach, i.e. fuzziness = targetBoundingBox +- reach * 0.1
+ - kill ninja if chakra exceeds 4x max chakra
  - chakra: force sync to client on next tick on player respawn/changeDimension
  - ninjaxp: force sync to client on next tick on player respawn/changeDimension
  - hitting entities with a kunai or shuriken no longers gains extra ninjaxp

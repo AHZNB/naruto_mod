@@ -40,7 +40,7 @@ public class ProcedureOnItemTossed extends ElementsNarutomodMod.ModElement {
 			}
 			if (itemstack.getItem() instanceof ItemJutsu.Base) {
 				event.setCanceled(true);
-				ItemHandlerHelper.giveItemToPlayer(entity, itemstack);
+				ItemHandlerHelper.giveItemToPlayer(entity, itemstack.copy());
 			}
 		}
 	}

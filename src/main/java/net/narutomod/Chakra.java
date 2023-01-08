@@ -150,16 +150,16 @@ public class Chakra extends ElementsNarutomodMod.ModElement {
 		}
 
 		protected void onUpdate() {
-			/*if (this.amount < 0d || this.amount > this.getMax() * 3) {
-				this.player.setHealth(0);
-				return;
-			}*/
 			double d = this.getAmount();
 			double d1 = this.getMax();
+			if (d > d1 * 4d) {
+				this.user.setHealth(0f);
+				return;
+			}
 			if (d > d1 && this.user.ticksExisted % 20 == 0) {
 				this.consume(10.0d);
 			}
-			if (d < 10.0d && d1 > 0.0d && this.getMax() > 150.0d
+			if (d < 10.0d && d1 > 150.0d
 			 && (!(this.user instanceof EntityPlayer) || !((EntityPlayer)this.user).isCreative())) {
 				this.user.addPotionEffect(new PotionEffect(MobEffects.WEAKNESS, 100, 3));
 				this.user.addPotionEffect(new PotionEffect(MobEffects.SLOWNESS, 100, 3));

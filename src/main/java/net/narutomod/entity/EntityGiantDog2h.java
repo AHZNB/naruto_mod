@@ -201,7 +201,7 @@ public class EntityGiantDog2h extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		protected void onDeathUpdate() {
-			if (this.getMaxHealth() <= 50.0f) {
+			if (this.getMaxHealth() <= 100.0f) {
 				//super.onDeathUpdate();
 				this.setDead();
 			} else if (!this.world.isRemote) {
@@ -234,7 +234,7 @@ public class EntityGiantDog2h extends ElementsNarutomodMod.ModElement {
 		public void onEntityUpdate() {
 			if (this.isTamed()) {
 				EntityLivingBase owner = this.getOwner();
-				if (owner.getHealth() <= 0.0f) {
+				if (owner == null || owner.getHealth() <= 0.0f) {
 					this.setDead();
 				}
 			//} else if (!this.world.isRemote) {

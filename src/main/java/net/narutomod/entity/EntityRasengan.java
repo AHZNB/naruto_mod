@@ -315,6 +315,7 @@ public class EntityRasengan extends ElementsNarutomodMod.ModElement {
 		public void doRender(EC entity, double x, double y, double z, float f, float partialTicks) {
 			this.bindEntityTexture(entity);
 			EntityLivingBase owner = entity.getOwner();
+			float scale = entity.getEntityScale();
             GlStateManager.pushMatrix();
             if (owner != null) {
 				Entity viewer = Minecraft.getMinecraft().getRenderViewEntity();
@@ -336,7 +337,7 @@ public class EntityRasengan extends ElementsNarutomodMod.ModElement {
 		            model.postRenderArm(0.0625F * 0.9375F, EnumHandSide.RIGHT);
 		            GlStateManager.translate(-0.125F, entity.height - 0.025F, 0.0F);
 	            } else {
-					this.renderParticles(entity.world, ballVec.addVector(0.0d, entity.height/2, 0.0d));
+					this.renderParticles(entity.world, ballVec.addVector(0.0d, entity.height/2, 0.0d), scale);
 					x = owner.lastTickPosX + (owner.posX - owner.lastTickPosX) * partialTicks - this.renderManager.viewerPosX;
 					y = owner.lastTickPosY + (owner.posY - owner.lastTickPosY) * partialTicks - this.renderManager.viewerPosY;
 					z = owner.lastTickPosZ + (owner.posZ - owner.lastTickPosZ) * partialTicks - this.renderManager.viewerPosZ;
@@ -350,7 +351,6 @@ public class EntityRasengan extends ElementsNarutomodMod.ModElement {
 		            GlStateManager.translate(-0.05F, entity.height + 0.125F, 0.0F);
 	            }
 			}
-			float scale = entity.getEntityScale();
 			GlStateManager.translate(0f, 0.5F - 0.175F * scale, 0f);
 			GlStateManager.scale(scale, scale, scale);
 			GlStateManager.rotate(entity.ticksExisted * 30.0F, 1.0F, 1.0F, 0.0F);
@@ -381,11 +381,11 @@ public class EntityRasengan extends ElementsNarutomodMod.ModElement {
 			model.bipedRightArm.rotateAngleX = -((float)Math.PI / 2F) + f7;
 		}
 
-		private void renderParticles(World worldIn, Vec3d vec) {
-			for (int i = 0; i < 30; i++) {
+		private void renderParticles(World worldIn, Vec3d vec, float size) {
+			for (int i = 0; i < 10; i++) {
 				Particles.spawnParticle(worldIn, Particles.Types.SMOKE, vec.x, vec.y, vec.z,
 				 1, 0d, 0.02d, 0d, 0.2d * worldIn.rand.nextGaussian(), 0.2d * worldIn.rand.nextGaussian(), 
-				 0.2d * worldIn.rand.nextGaussian(), 0x10FFFFFF, 5, 0);
+				 0.2d * worldIn.rand.nextGaussian(), 0x10FFFFFF, (int)(size * 5), 0);
 			}
 		}
 
