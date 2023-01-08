@@ -182,14 +182,7 @@ public class EntityChibakuTenseiBall extends ElementsNarutomodMod.ModElement {
 				while (iter1.hasNext()) {
 					Entity ent = iter1.next();
 					if (ItemJutsu.canTarget(ent)) {
-						Vec3d vec = this.getCenter();
-						double d = ent.getDistance(vec.x, vec.y, vec.z);
-						vec = vec.subtract(ent.posX, ent.posY + ent.height/2, ent.posZ).normalize().scale(0.1d);
-						//if (d < this.width / 2 && !(ent instanceof EntityLivingBase)) {
-						//	vec = vec.scale(d * 0.016666667d);
-						//}
-						//ProcedureUtils.setVelocity(ent, vec.x, vec.y, vec.z);
-						//ent.isAirBorne = true;
+						Vec3d vec = this.getCenter().subtract(ent.posX, ent.posY + ent.height/2, ent.posZ).normalize().scale(0.1d);
 						ent.addVelocity(vec.x, vec.y, vec.z);
 						ent.velocityChanged = true;
 					} else {
@@ -239,10 +232,12 @@ public class EntityChibakuTenseiBall extends ElementsNarutomodMod.ModElement {
 		}
 
 		protected void collideWithNearbyEntities() {
-			for (Entity entity : this.world.getEntitiesWithinAABBExcludingEntity(this, this.getEntityBoundingBox().grow(1d))) {
-				Vec3d vec = this.getCenter();
-				if (!(entity instanceof EntityLivingBase) || entity.getDistance(vec.x, vec.y, vec.z) <= this.width / 2) {
-					this.applyEntityCollision(entity);
+			for (Entity entity : this.world.getEntitiesWithinAABBExcludingEntity(this, this.getEntityBoundingBox().grow(6d))) {
+				if (entity.getEntityBoundingBox().intersects(this.getEntityBoundingBox())) {
+					Vec3d vec = this.getCenter();
+					if (!(entity instanceof EntityLivingBase) || entity.getDistance(vec.x, vec.y, vec.z) <= this.width / 2) {
+						this.applyEntityCollision(entity);
+					}
 				}
 			}
 		}

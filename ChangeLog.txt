@@ -36,6 +36,7 @@ Items:
  - summoning contract and senjutsu on /give: use datatag {Type:toad|snake|slug} to specify which type
  - evolving into mangekyo now requires 1000 ninjaxp and no vanilla xp requirement
  - using someone else's mangekyo now drains 3x durability
+ - prevent drag dropping nature release items out of inventory
  - added Konoha facial protector (tobirama/yamato style) and recipe
  - added 1st Ninja war armor and recipe
  - added samurai armor and recipe
@@ -86,6 +87,8 @@ Commands:
  
 World:
  - force total world time sync across all dimensions (magma fix)
+ - jinchurikies keep their bijus after death if keepInventory is on
+ - added gamerule "forceDojutsuDropOnDeath" (only for byakugan/sharingan/mangekyo)
 
 Blocks:
  - removed meteor block
