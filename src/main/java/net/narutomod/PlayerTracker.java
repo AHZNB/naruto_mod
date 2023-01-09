@@ -83,12 +83,13 @@ public class PlayerTracker extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-	public static void logBattleExp(EntityPlayer entity, double xp) {
+	private static void logBattleExp(EntityPlayer entity, double xp) {
 		if (entity instanceof EntityPlayerMP 
 		 && ProcedureUtils.advancementAchieved((EntityPlayerMP)entity, "narutomod:ninjaachievement")) {
 			addBattleXp((EntityPlayerMP)entity, xp);
 			ItemEightGates.logBattleXP(entity);
 			ItemJutsu.logBattleXP(entity);
+			EntityTracker.getOrCreate(entity).lastLoggedXpTime = entity.ticksExisted;
 		}
 	}
 
@@ -244,13 +245,15 @@ public class PlayerTracker extends ElementsNarutomodMod.ModElement {
 			Entity sourceEntity = event.getSource().getTrueSource();
 			float amount = event.getAmount();
 			if (!targetEntity.equals(sourceEntity) && amount > 0f) {
-				if (targetEntity instanceof EntityPlayer && amount < ((EntityPlayer)targetEntity).getHealth()) {
+				int i = targetEntity.ticksExisted - EntityTracker.getOrCreate(targetEntity).lastLoggedXpTime;
+				if ((i < 0 || i > 20) && targetEntity instanceof EntityPlayer && amount < ((EntityPlayer)targetEntity).getHealth()) {
 					double bxp = getBattleXp((EntityPlayer)targetEntity);
 					logBattleExp((EntityPlayer)targetEntity, bxp < 1d ? 1d : (amount / MathHelper.sqrt(MathHelper.sqrt(bxp))));
 				}
 				if (sourceEntity instanceof EntityPlayer) {
-					double xp = 1d;
-					if (targetEntity instanceof EntityLivingBase) {
+					double xp = 0.0d;
+					i = sourceEntity.ticksExisted - EntityTracker.getOrCreate(sourceEntity).lastLoggedXpTime;
+					if (targetEntity instanceof EntityLivingBase && (i < 0 || i > 20)) {
 						EntityLivingBase target = (EntityLivingBase)targetEntity;
 						int resistance = target.isPotionActive(MobEffects.RESISTANCE) 
 						 ? target.getActivePotionEffect(MobEffects.RESISTANCE).getAmplifier() : 1;

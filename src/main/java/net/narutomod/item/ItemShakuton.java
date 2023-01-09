@@ -277,7 +277,7 @@ public class ItemShakuton extends ElementsNarutomodMod.ModElement {
 				if (!this.world.isRemote) {
 					for (EntityLivingBase entity : this.world.getEntitiesWithinAABB(EntityLivingBase.class, this.getEntityBoundingBox())) {
 						if (!entity.equals(this.shootingEntity) && !entity.equals(this)) {
-							entity.hurtResistantTime = 0;
+							entity.hurtResistantTime = 10;
 							entity.attackEntityFrom(ItemJutsu.NINJUTSU_DAMAGE, 1f);
 							this.scorchEffects(entity.posX, entity.posY+entity.height/2, entity.posZ, entity.width/2, entity.height/2);
 						}

@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.Collection;
 import com.google.common.collect.Maps;
 import io.netty.buffer.ByteBuf;
+import net.minecraft.util.DamageSource;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class Chakra extends ElementsNarutomodMod.ModElement {
@@ -153,7 +154,7 @@ public class Chakra extends ElementsNarutomodMod.ModElement {
 			double d = this.getAmount();
 			double d1 = this.getMax();
 			if (d > d1 * 4d) {
-				this.user.setHealth(0f);
+				this.user.attackEntityFrom(DamageSource.CRAMMING, Float.MAX_VALUE);
 				return;
 			}
 			if (d > d1 && this.user.ticksExisted % 20 == 0) {

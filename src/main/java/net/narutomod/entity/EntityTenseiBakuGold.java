@@ -120,7 +120,7 @@ public class EntityTenseiBakuGold extends ElementsNarutomodMod.ModElement {
 			
 			@Override
 			protected void attackEntityFrom(EntityLivingBase player, Entity target) {
-				target.hurtResistantTime = 0;
+				target.hurtResistantTime = 10;
 				target.attackEntityFrom(DamageSource.causeIndirectMagicDamage(EC.this, player), EC.this.power * 0.6f);
 			}
 

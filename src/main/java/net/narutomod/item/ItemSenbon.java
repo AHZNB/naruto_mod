@@ -175,7 +175,7 @@ public class ItemSenbon extends ElementsNarutomodMod.ModElement {
 		@Override
 		protected void onHit(RayTraceResult rtr) {
 			if (rtr.entityHit != null) {
-				rtr.entityHit.hurtResistantTime = 0;
+				rtr.entityHit.hurtResistantTime = 10;
 			}
 			if (!this.world.isRemote) {
 				this.world.playSound(null, rtr.hitVec.x, rtr.hitVec.y, rtr.hitVec.z,

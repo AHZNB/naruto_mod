@@ -83,13 +83,12 @@ public class EntityWoodBurial extends ElementsNarutomodMod.ModElement {
 				this.playSound(net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation(("narutomod:woodgrow"))),
 				 1.0f, this.rand.nextFloat() * 0.4f + 0.6f);
 			}
-			Entity parent = this.getParent();
-			if (parent != null && parent.isEntityAlive() && this.ticksExisted < this.lifespan) {
+			if (this.getParent() != null && this.ticksExisted < this.lifespan) {
 				if (!this.world.isRemote && this.getIndex() == 0 && this.ticksExisted == 1 && this.hasLivingTarget()) {
-					for (int i = 0; i < (int)Math.max(this.target.width * 10, 6f); i++) {
-						Vec3d vec = new Vec3d((this.rand.nextDouble()-0.5d) * 2d, 0d, (this.rand.nextDouble()-0.5d) * 2d);
-						ProcedureUtils.Vec2f vec2f = ProcedureUtils.getYawPitchFromVec(this.targetVec.subtract(this.getPositionVector().add(vec)));
-						EC segment = new EC(this, vec.x, vec.y, vec.z, vec2f.x + ((this.rand.nextFloat()-0.5f) * 160f), 80f);
+					for (int i = 0; i < (int)MathHelper.clamp(this.target.width * 5f, 6f, 22f); i++) {
+						Vec3d vec = new Vec3d((this.rand.nextDouble()-0.5d) * this.target.width * 2.5d, 0d, (this.rand.nextDouble()-0.5d) * this.target.width * 2.5d);
+						float f = ProcedureUtils.getYawFromVec(this.targetVec.subtract(this.getPositionVector().add(vec)));
+						EC segment = new EC(this, vec.x, vec.y, vec.z, f + ((this.rand.nextFloat()-0.5f) * 160f), 80f);
 						segment.setLifespan(this.lifespan - this.ticksExisted * 2);
 						segment.prevSegment = segment;
 						this.world.spawnEntity(segment);
@@ -99,9 +98,9 @@ public class EntityWoodBurial extends ElementsNarutomodMod.ModElement {
 					float yaw = (this.rand.nextFloat()-0.5f) * 30f;
 					int i = this.prevSegment.getIndex();
 					if (this.hasLivingTarget() && i > 1) {
-						ProcedureUtils.Vec2f vec2f = ProcedureUtils.getYawPitchFromVec(this.targetVec.subtract(this.prevSegment.getPositionVector()));
-						yaw = MathHelper.wrapDegrees(vec2f.x - this.prevSegment.rotationYaw);
-						yaw *= 1.0f / (this.target.width + Math.max(4.4f - (float)i * 0.1f, 1f));
+						yaw = MathHelper.wrapDegrees(ProcedureUtils.getYawFromVec(this.targetVec
+						 .subtract(this.prevSegment.getPositionVector())) - this.prevSegment.rotationYaw);
+						yaw /= this.target.width + Math.max(4.4f - (float)i * 0.075f, 1f);
 					}
 					this.prevSegment = new EC(this.prevSegment, yaw, -0.5f);
 					this.prevSegment.setLifespan(this.lifespan - this.ticksExisted * 2);

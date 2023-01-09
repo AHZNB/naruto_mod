@@ -108,7 +108,7 @@ public class EntitySandBullet extends ElementsNarutomodMod.ModElement {
 				if (result.entityHit instanceof EntityLivingBase) {
 					this.playSound((net.minecraft.util.SoundEvent)net.minecraft.util.SoundEvent.REGISTRY
 					 .getObject(new ResourceLocation("narutomod:bullet_impact")), 1f, 0.4f + this.rand.nextFloat() * 0.6f);
-					result.entityHit.hurtResistantTime = 0;
+					result.entityHit.hurtResistantTime = 10;
 					result.entityHit.attackEntityFrom(ItemJutsu.causeJutsuDamage(this, this.shootingEntity).setProjectile(), 10f);
 					ProcedureUtils.pushEntity(this, result.entityHit, 10d, 3.0f);
 				}

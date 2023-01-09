@@ -8,35 +8,26 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 
 import net.minecraft.world.World;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.EnumDifficulty;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.DamageSource;
-import net.minecraft.item.Item;
-import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.SoundEvent;
 import net.minecraft.entity.ai.EntityAILookIdle;
 import net.minecraft.entity.ai.EntityAILeapAtTarget;
-import net.minecraft.entity.ai.EntityAIHurtByTarget;
 import net.minecraft.entity.ai.EntityAIAttackMelee;
 import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.EnumCreatureAttribute;
-import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.monster.IMob;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.client.renderer.entity.RenderLiving;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.model.ModelBox;
 import net.minecraft.client.model.ModelBase;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.util.EnumHand;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.passive.EntityTameable;
-import net.minecraft.entity.EntityAgeable;
-import net.minecraft.entity.ai.EntityAIOwnerHurtByTarget;
-import net.minecraft.entity.ai.EntityAIOwnerHurtTarget;
-import net.minecraft.entity.monster.IMob;
-import net.minecraft.world.EnumDifficulty;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.SoundEvent;
 
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.Particles;
@@ -73,73 +64,67 @@ public class EntityGiantDog2h extends ElementsNarutomodMod.ModElement {
 		});
 	}
 
-	public static class EntityCustom extends EntityTameable implements IMob {
-		private static final float ACTUAL_HEIGHT = 0.85f * ENTITY_SCALE;
+	public static class EntityCustom extends EntitySummonAnimal.Base implements IMob {
 		private int splitTicks;
 		private EntityCustom child;
 
 		public EntityCustom(World world) {
 			super(world);
-			this.setSize(0.6f * ENTITY_SCALE, ACTUAL_HEIGHT);
+			this.setOGSize(0.6f, 0.85f);
 			this.experienceValue = 5000;
-			this.isImmuneToFire = false;
 			this.stepHeight = this.height / 3;
-			this.setNoAI(!true);
-			this.enablePersistence();
+			this.postScaleFixup();
 		}
 
-		public EntityCustom(EntityPlayer player, double maxHealth) {
-			super(player.world);
+		public EntityCustom(EntityLivingBase player, double maxHealth) {
+			super(player);
+			this.setOGSize(0.6f, 0.85f);
 			this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(maxHealth);
-			this.setSize(0.6f * ENTITY_SCALE, ACTUAL_HEIGHT);
 			this.experienceValue = 5000;
-			this.isImmuneToFire = false;
 			this.stepHeight = this.height / 3;
-			this.setNoAI(false);
-			//this.enablePersistence();
 			RayTraceResult res = ProcedureUtils.raytraceBlocks(player, 4.0);
 			double x = res.getBlockPos().getX();
 			double z = res.getBlockPos().getZ();
 			this.setPosition(x + 0.5, player.posY, z + 0.5);
 			this.rotationYaw = player.rotationYaw - 180.0f;
 			this.rotationYawHead = this.rotationYaw;
-			this.setTamedBy(player);
+			this.postScaleFixup();
 		}
 
-		public EntityCustom(EntityPlayer player) {
+		public EntityCustom(EntityLivingBase player) {
 			this(player, 400d);
+		}
+
+		@Override
+		public float getScale() {
+			return ENTITY_SCALE;
 		}
 
 		@Override
 		protected void initEntityAI() {
 			super.initEntityAI();
-			this.targetTasks.addTask(1, new EntityAIOwnerHurtByTarget(this));
-			this.targetTasks.addTask(2, new EntityAIOwnerHurtTarget(this));
-			this.targetTasks.addTask(3, new EntityAIHurtByTarget(this, true));
-			//this.targetTasks.addTask(4, new EntityAINearestAttackableTarget(this, EntityLiving.class, false, false));
-			this.tasks.addTask(3, new EntityAILeapAtTarget(this, 1.0f));
-			this.tasks.addTask(4, new EntityAIAttackMelee(this, 1.4f, true));
-			this.tasks.addTask(5, new EntityAILookIdle(this));
+			this.tasks.addTask(1, new EntityAILeapAtTarget(this, 1.0f));
+			this.tasks.addTask(2, new EntityAIAttackMelee(this, 1.4f, true));
+			this.tasks.addTask(3, new EntityAILookIdle(this));
 		}
 
 		@Override
-		protected Item getDropItem() {
-			return null;
+		protected void dontWander(boolean set) {
 		}
 
 		@Override
-		public net.minecraft.util.SoundEvent getAmbientSound() {
-			return (net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("entity.wolf.growl"));
+		public SoundEvent getAmbientSound() {
+			return SoundEvent.REGISTRY.getObject(new ResourceLocation("entity.wolf.growl"));
 		}
 
 		@Override
-		public net.minecraft.util.SoundEvent getHurtSound(DamageSource ds) {
-			return (net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("entity.wolf.hurt"));
+		public SoundEvent getHurtSound(DamageSource ds) {
+			return SoundEvent.REGISTRY.getObject(new ResourceLocation("entity.wolf.hurt"));
 		}
 
 		@Override
-		public net.minecraft.util.SoundEvent getDeathSound() {
-			return (net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("entity.wolf.death"));
+		public SoundEvent getDeathSound() {
+			return SoundEvent.REGISTRY.getObject(new ResourceLocation("entity.wolf.death"));
 		}
 
 		@Override
@@ -150,10 +135,10 @@ public class EntityGiantDog2h extends ElementsNarutomodMod.ModElement {
 		@Override
 		protected void applyEntityAttributes() {
 			super.applyEntityAttributes();
-			this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(100D);
+			//this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(10D);
 			this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.6D);
 			//this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(1000D);
-			this.getAttributeMap().registerAttribute(SharedMonsterAttributes.ATTACK_DAMAGE);
+			//this.getAttributeMap().registerAttribute(SharedMonsterAttributes.ATTACK_DAMAGE);
 			this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(30D);
 			this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(64.0);
 		}
@@ -161,7 +146,7 @@ public class EntityGiantDog2h extends ElementsNarutomodMod.ModElement {
 		@Override
 		public boolean processInteract(EntityPlayer entity, EnumHand hand) {
 			super.processInteract(entity, hand);
-			if (this.isOwner(entity)) {
+			if (this.isSummoner(entity)) {
 				entity.startRiding(this);
 				return true;
 			}
@@ -201,21 +186,24 @@ public class EntityGiantDog2h extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		protected void onDeathUpdate() {
-			if (this.getMaxHealth() <= 100.0f) {
-				//super.onDeathUpdate();
-				this.setDead();
-			} else if (!this.world.isRemote) {
-				++this.splitTicks;
-				if (this.splitTicks < 20) {
-					this.setNoAI(true);
+			if (!this.world.isRemote) {
+				if (this.getMaxHealth() <= 100.0f) {
+					this.setDead();
 				} else {
-					this.setHealth(this.getMaxHealth() * 0.5f);
-					this.setNoAI(false);
-					this.child = this.createChild(this);
-					if (this.child != null) {
-						this.child.copyLocationAndAnglesFrom(this);
-						this.child.rotationYawHead = this.rotationYawHead;
-						this.world.spawnEntity(this.child);
+					++this.splitTicks;
+					if (this.splitTicks < 20) {
+						this.setNoAI(true);
+					} else {
+						float maxhp = this.getMaxHealth() * 0.5f;
+						this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(maxhp);
+						this.setHealth(maxhp);
+						this.setNoAI(false);
+						this.child = this.createChild(maxhp);
+						if (this.child != null) {
+							this.child.copyLocationAndAnglesFrom(this);
+							this.child.rotationYawHead = this.rotationYawHead;
+							this.world.spawnEntity(this.child);
+						}
 					}
 				}
 			}
@@ -232,13 +220,9 @@ public class EntityGiantDog2h extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public void onEntityUpdate() {
-			if (this.isTamed()) {
-				EntityLivingBase owner = this.getOwner();
-				if (owner == null || owner.getHealth() <= 0.0f) {
-					this.setDead();
-				}
-			//} else if (!this.world.isRemote) {
-			//	this.setDead();
+			EntityLivingBase owner = this.getSummoner();
+			if (owner != null && owner.getHealth() <= 0.0f) {
+				this.setDead();
 			}
 			super.onEntityUpdate();
 		}
@@ -254,16 +238,21 @@ public class EntityGiantDog2h extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		protected void collideWithEntity(Entity entity) {
-			if (!this.world.isRemote && entity instanceof EntityLivingBase && !this.isOwner((EntityLivingBase)entity)) {
+			if (!this.world.isRemote && entity instanceof EntityLivingBase && !this.isSummoner((EntityLivingBase)entity)) {
 				entity.attackEntityFrom(DamageSource.causeMobDamage(this), 5f);
 			}
 			super.collideWithEntity(entity);
 		}
 		
-		@Override
 		@Nullable
-		public EntityCustom createChild(EntityAgeable ageable) {
-			return !this.world.isRemote && this.isTamed() ? new EntityCustom((EntityPlayer)this.getOwner(), this.getMaxHealth() * 0.5f) : null;
+		private EntityCustom createChild(float health) {
+			if (!this.world.isRemote) {
+				EntityLivingBase summoner = this.getSummoner();
+				if (summoner != null) {
+					return new EntityCustom(summoner, health);
+				}
+			}
+			return null;
 		}
 	}
 

@@ -236,7 +236,7 @@ public class EntityLightningArc extends ElementsNarutomodMod.ModElement {
 				  .expand(this.ogEndVec.x - this.posX, this.ogEndVec.y - this.posY, this.ogEndVec.z - this.posZ).grow(1))) {
 					if (entity.getEntityBoundingBox().calculateIntercept(new Vec3d(this.posX, this.posY, this.posZ), this.ogEndVec) != null) {
 						if (this.resetHurtResistantTime) {
-							entity.hurtResistantTime = 0;
+							entity.hurtResistantTime = 10;
 						}
 						onStruck(entity, this.damageSource, this.damageAmount);
 					}

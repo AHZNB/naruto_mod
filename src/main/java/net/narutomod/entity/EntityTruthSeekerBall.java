@@ -392,7 +392,7 @@ public class EntityTruthSeekerBall extends ElementsNarutomodMod.ModElement {
 	            double d1 = entityIn.posZ - this.posZ;
                 entityIn.addVelocity(d0 * 0.15D, 0.0D, d1 * 0.15D);
                 if (this.target != null) {
-					entityIn.hurtResistantTime = 0;
+					entityIn.hurtResistantTime = 10;
 	                if (entityIn instanceof EntityLivingBase) {
 						entityIn.attackEntityFrom(ItemJutsu.SENJUTSU_DAMAGE, 10.0f);
 	                } else if (!(entityIn instanceof EntityCustom)

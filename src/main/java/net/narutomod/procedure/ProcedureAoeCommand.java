@@ -164,7 +164,7 @@ public class ProcedureAoeCommand extends ElementsNarutomodMod.ModElement {
 	public ProcedureAoeCommand resetHurtResistanceTime() {
 		if (!entitiesList.isEmpty())
 			for (Entity entity : entitiesList) {
-				entity.hurtResistantTime = 0;
+				entity.hurtResistantTime = 10;
 			}
 		return this;
 	}

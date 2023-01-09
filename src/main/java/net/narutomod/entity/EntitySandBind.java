@@ -148,7 +148,7 @@ public class EntitySandBind extends ElementsNarutomodMod.ModElement {
 			// && ((MultiPartEntityPart)this.targetEntity).parent instanceof Entity) {
 			//	((Entity)((MultiPartEntityPart)this.targetEntity).parent).hurtResistantTime = 0;
 			//} else {
-				this.targetEntity.hurtResistantTime = 0;
+				this.targetEntity.hurtResistantTime = 10;
 			//}
 			this.targetEntity.attackEntityFrom(ItemJutsu.causeJutsuDamage(this, this.user)
 			 .setDamageBypassesArmor(), amount);

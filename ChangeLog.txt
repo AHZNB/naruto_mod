@@ -78,6 +78,7 @@ Entities:
  - puppets now tries to stay in front of user when not attacking, max range 40
  - added Hiruko puppet (health=100; reduces projectile damage by 60%; blocking with tail reduces damage by 80%)
  - updated white zetsu spawn parameters
+ - fixed giant 2 head dog not dying bug
  
 Structures:
  - rebuilt the 4 pillar wood house to match anime
@@ -98,6 +99,7 @@ Blocks:
 General:
  - reach effect: targeting fuzziness increases with reach, i.e. fuzziness = targetBoundingBox +- reach * 0.1
  - kill ninja if chakra exceeds 4x max chakra
+ - added 1 second cooldown on ninjaxp/jutsuxp logging
  - chakra: force sync to client on next tick on player respawn/changeDimension
  - ninjaxp: force sync to client on next tick on player respawn/changeDimension
  - hitting entities with a kunai or shuriken no longers gains extra ninjaxp

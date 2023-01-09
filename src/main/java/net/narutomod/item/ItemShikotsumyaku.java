@@ -238,7 +238,7 @@ public class ItemShikotsumyaku extends ElementsNarutomodMod.ModElement {
 				for (EntityLivingBase entity : 
 				 this.world.getEntitiesWithinAABB(EntityLivingBase.class, this.getEntityBoundingBox().grow(1d, 0d, 1d))) {
 					if (!entity.equals(this.shootingEntity)) {
-						entity.hurtResistantTime = 0;
+						entity.hurtResistantTime = 10;
 						entity.attackEntityFrom(ItemJutsu.causeJutsuDamage(this, this.shootingEntity), this.damage);
 					}
 				}

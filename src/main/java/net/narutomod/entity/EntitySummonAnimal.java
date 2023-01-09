@@ -111,6 +111,10 @@ public class EntitySummonAnimal extends ElementsNarutomodMod.ModElement {
 	        this.dataManager.set(OWNER_UNIQUE_ID, Optional.fromNullable(p_184754_1_));
 	    }
 
+	    public boolean hasSummoner() {
+	    	return this.getOwnerId() != null;
+	    }
+
 		protected void setOGSize(float width, float height) {
 			this.ogWidth = width;
 			this.ogHeight = height;
@@ -157,13 +161,13 @@ public class EntitySummonAnimal extends ElementsNarutomodMod.ModElement {
 	        }
 	    }
 
-	    public boolean isSummoner(EntityLivingBase entityIn) {
-	        return entityIn == this.getSummoner();
+	    public boolean isSummoner(Entity entityIn) {
+	        return entityIn.equals(this.getSummoner());
 	    }
 
 	    @Override
 	    public boolean isOnSameTeam(Entity entityIn) {
-	    	return entityIn == this.getSummoner() || super.isOnSameTeam(entityIn);
+	    	return this.isSummoner(entityIn) || super.isOnSameTeam(entityIn);
 	    }
 
 		@Override

@@ -180,7 +180,7 @@ public class ItemKekkeiMora extends ElementsNarutomodMod.ModElement {
 					}
 					if (result.entityHit instanceof EntityLivingBase) {
 						//result.entityHit.onKillCommand();
-						result.entityHit.hurtResistantTime = 0;
+						result.entityHit.hurtResistantTime = 10;
 						result.entityHit.attackEntityFrom(DamageSource.causeIndirectDamage(this, this.shootingEntity), 500f);
 					}
 				}

@@ -120,7 +120,7 @@ public class ItemHyoton extends ElementsNarutomodMod.ModElement {
 		public void onUpdate(ItemStack itemstack, World world, Entity entity, int par4, boolean par5) {
 			super.onUpdate(itemstack, world, entity, par4, par5);
 			BlockPos pos = new BlockPos(entity);
-			EntityTracker.DataHolder edh = EntityTracker.getOrCreate(entity);
+			EntityTracker.SessionDataHolder edh = EntityTracker.getOrCreate(entity);
 			if (!world.isRemote && entity instanceof EntityLivingBase) {
 				((EntityLivingBase)entity).addPotionEffect(new PotionEffect(MobEffects.SPEED, 2, 3, false, false));
 				((EntityLivingBase)entity).extinguish();
@@ -177,7 +177,7 @@ public class ItemHyoton extends ElementsNarutomodMod.ModElement {
 				for (EntityLivingBase entity : 
 				 this.world.getEntitiesWithinAABB(EntityLivingBase.class, this.getEntityBoundingBox().grow(1d, 0d, 1d))) {
 					if (!entity.equals(this.user)) {
-						entity.hurtResistantTime = 0;
+						entity.hurtResistantTime = 10;
 						entity.attackEntityFrom(DamageSource.causeIndirectDamage(this, this.user), 30f);
 					}
 				}
