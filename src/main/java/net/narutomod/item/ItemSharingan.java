@@ -48,7 +48,7 @@ public class ItemSharingan extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static class Base extends ItemDojutsu.Base {
-		protected boolean canDamage;
+		private boolean canDamage;
 
 		public Base(ItemArmor.ArmorMaterial material) {
 			super(material);
@@ -78,10 +78,10 @@ public class ItemSharingan extends ElementsNarutomodMod.ModElement {
 				$_dependencies.put("world", world);
 				ProcedureSharinganHelmetTickEvent.executeProcedure((HashMap) $_dependencies);
 			}
-			if (!world.isRemote && itemstack.getItem() != ItemMangekyoSharinganEternal.helmet
+			if (!world.isRemote && entity.ticksExisted % 6 == 1
+			 && (itemstack.getItem() != ItemMangekyoSharinganEternal.helmet || !this.isOwner(itemstack, entity))
 			 && (entity.getEntityData().getBoolean("amaterasu_active")
-			  || entity.getEntityData().getBoolean("susanoo_activated") || entity.getEntityData().getBoolean("kamui_teleport"))
-			 && entity.ticksExisted % 6 == 1) {
+			  || entity.getEntityData().getBoolean("susanoo_activated") || entity.getEntityData().getBoolean("kamui_teleport"))) {
 			 	((Base)itemstack.getItem()).canDamage = true;
 				itemstack.damageItem(this.isOwner(itemstack, entity) ? 3 : 9, entity);
 				((Base)itemstack.getItem()).canDamage = false;

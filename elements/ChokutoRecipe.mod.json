@@ -13,28 +13,28 @@
         "value": ""
       },
       {
+        "value": "Blocks.IRON_BLOCK"
+      },
+      {
+        "value": ""
+      },
+      {
         "value": ""
       },
       {
         "value": "Blocks.IRON_BLOCK"
+      },
+      {
+        "value": ""
       },
       {
         "value": "Blocks.WOOL#0"
       },
       {
-        "value": "Blocks.IRON_BLOCK"
-      },
-      {
-        "value": ""
-      },
-      {
-        "value": "Blocks.IRON_BLOCK"
+        "value": "Items.STICK"
       },
       {
         "value": "Items.STRING"
-      },
-      {
-        "value": ""
       }
     ],
     "recipeReturnStack": {

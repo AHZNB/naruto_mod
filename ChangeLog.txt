@@ -8,8 +8,8 @@ Jutsus:
  - using chidori with a weapon in hand no longer lunges at target
  - improved rasengan impact particles rendering
  - biju cloak 2 requires 800 jutsuXp to master
- - full Kurama mode: change Kurama texture to KCM texture
  - Mind transfer/shadow imitation: improved mouse sensitivity when controlling mobs
+ - Mind transfer only works on entities with AI and players
  - kagebunshin: fixed ninjaxp not reseting after death of original (when player is a bunshin)
  - Adamantine sealing chains: no longer seals the biju in the player
  - Adamantine sealing chains: added chakra drain on target entity (drain amount based on player's chakra)
@@ -36,8 +36,12 @@ Items:
  - jutsu scrolls are now one-time use
  - summoning contract and senjutsu on /give: use datatag {Type:toad|snake|slug} to specify which type
  - evolving into mangekyo now requires 1000 ninjaxp and no vanilla xp requirement
- - using someone else's mangekyo now drains 3x durability
+ - when awakening mangekyo, achievement goes to and is bounded to original sharingan owner
+ - using someone else's mangekyo jutsus now drains 3x durability
+ - foreign eternal mangekyo jutsus will drain durability at 3x
  - prevent drag dropping nature release items out of inventory
+ - eating white zetsu flesh gives mokuton only if user has suiton and doton
+ - medical ninja is checked only once, either you get it (25%) when first becoming a ninja or never will
  - added Konoha facial protector (tobirama/yamato style) and recipe
  - added 1st Ninja war armor and recipe
  - added samurai armor and recipe
@@ -69,8 +73,11 @@ Items:
  - added Jiraiya's stone sword Ishiken (WIP)
  - added Chakra Blades (WIP)
  - added some new anbu and obito masks
+ - added partial sand cloak texture
+ - added KCM2 texture
  
 Entities:
+ - full Kurama mode: change Kurama texture to KCM texture
  - changed Sanshouo puppet's health to 200, reduces projectile damage by 80%
  - changed kisame & zabuza's AI: no longer actively attacks players
  - potion effects don't affect shield based entities (like hiruko, sanshouo, wood golem, etc)
@@ -103,7 +110,6 @@ General:
  - chakra: force sync to client on next tick on player respawn/changeDimension
  - ninjaxp: force sync to client on next tick on player respawn/changeDimension
  - hitting entities with a kunai or shuriken no longers gains extra ninjaxp
- - changed ninjaxp sync on respawn
 
 0.2.9-beta ================================================================================
 

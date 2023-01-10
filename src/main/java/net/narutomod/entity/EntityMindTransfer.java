@@ -39,6 +39,7 @@ import net.narutomod.ElementsNarutomodMod;
 
 import javax.annotation.Nullable;
 import javax.management.remote.TargetedNotification;
+import net.minecraft.entity.EntityLiving;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityMindTransfer extends ElementsNarutomodMod.ModElement {
@@ -231,7 +232,7 @@ public class EntityMindTransfer extends ElementsNarutomodMod.ModElement {
 					entity1.setDead();
 				} else {
 					RayTraceResult res = ProcedureUtils.objectEntityLookingAt(entity, 30d);
-					if (res != null && res.entityHit instanceof EntityLivingBase) {
+					if (res != null && (res.entityHit instanceof EntityLiving || res.entityHit instanceof EntityPlayer)) {
 						entity1 = new EC(entity, (EntityLivingBase)res.entityHit, ItemInton.MBTRANSFER.chakraUsage * 0.005d);
 						entity.world.spawnEntity(entity1);
 						entity.getEntityData().setInteger(ECENTITYID, entity1.getEntityId());

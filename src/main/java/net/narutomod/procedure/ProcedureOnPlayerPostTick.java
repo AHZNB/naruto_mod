@@ -89,6 +89,7 @@ public class ProcedureOnPlayerPostTick extends ElementsNarutomodMod.ModElement {
 		ItemStack stack = ItemStack.EMPTY;
 		double rand = 0;
 		double rngbase = 0;
+		boolean achievedMedical = false;
 		if (((((entity instanceof EntityPlayer) ? ((EntityPlayer) entity).experienceLevel : 0) >= 10)
 				&& ((entity.getEntityData().getDouble((NarutomodModVariables.BATTLEXP))) > 0))) {
 			if (((!(world.isRemote)) && (!(entity.getEntityData().getBoolean((NarutomodModVariables.FirstGotNinjutsu)))))) {
@@ -307,32 +308,37 @@ public class ProcedureOnPlayerPostTick extends ElementsNarutomodMod.ModElement {
 						}
 					}
 				}
-				if (((!((entity instanceof EntityPlayer)
+				if ((!((entity instanceof EntityPlayer)
 						? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemIryoJutsu.block, (int) (1)))
-						: false))
-						&& ((((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
-								? ((EntityPlayerMP) entity).getAdvancements()
-										.getProgress(((WorldServer) (entity).world).getAdvancementManager()
-												.getAdvancement(new ResourceLocation("narutomod:achievementmedicalgenin")))
-										.isDone()
-								: false) || (Math.random() <= 0.25)))) {
-					if (entity instanceof EntityPlayer) {
-						ItemStack _setstack = new ItemStack(ItemIryoJutsu.block, (int) (1));
-						_setstack.setCount(1);
-						ItemHandlerHelper.giveItemToPlayer(((EntityPlayer) entity), _setstack);
-					}
-					if (entity instanceof EntityPlayerMP) {
-						Advancement _adv = ((MinecraftServer) ((EntityPlayerMP) entity).mcServer).getAdvancementManager()
-								.getAdvancement(new ResourceLocation("narutomod:achievementmedicalgenin"));
-						AdvancementProgress _ap = ((EntityPlayerMP) entity).getAdvancements().getProgress(_adv);
-						if (!_ap.isDone()) {
-							Iterator _iterator = _ap.getRemaningCriteria().iterator();
-							while (_iterator.hasNext()) {
-								String _criterion = (String) _iterator.next();
-								((EntityPlayerMP) entity).getAdvancements().grantCriterion(_adv, _criterion);
+						: false))) {
+					achievedMedical = (boolean) (((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
+							? ((EntityPlayerMP) entity).getAdvancements()
+									.getProgress(((WorldServer) (entity).world).getAdvancementManager()
+											.getAdvancement(new ResourceLocation("narutomod:achievementmedicalgenin")))
+									.isDone()
+							: false);
+					if (((achievedMedical) || ((!(entity.getEntityData().getBoolean("MedicalNinjaChecked"))) && (Math.random() <= 0.25)))) {
+						if (entity instanceof EntityPlayer) {
+							ItemStack _setstack = new ItemStack(ItemIryoJutsu.block, (int) (1));
+							_setstack.setCount(1);
+							ItemHandlerHelper.giveItemToPlayer(((EntityPlayer) entity), _setstack);
+						}
+						if ((!(achievedMedical))) {
+							if (entity instanceof EntityPlayerMP) {
+								Advancement _adv = ((MinecraftServer) ((EntityPlayerMP) entity).mcServer).getAdvancementManager()
+										.getAdvancement(new ResourceLocation("narutomod:achievementmedicalgenin"));
+								AdvancementProgress _ap = ((EntityPlayerMP) entity).getAdvancements().getProgress(_adv);
+								if (!_ap.isDone()) {
+									Iterator _iterator = _ap.getRemaningCriteria().iterator();
+									while (_iterator.hasNext()) {
+										String _criterion = (String) _iterator.next();
+										((EntityPlayerMP) entity).getAdvancements().grantCriterion(_adv, _criterion);
+									}
+								}
 							}
 						}
 					}
+					entity.getEntityData().setBoolean("MedicalNinjaChecked", (true));
 				}
 			}
 			{

@@ -147,7 +147,7 @@ public class ProcedureSharinganHelmetTickEvent extends ElementsNarutomodMod.ModE
 					} else {
 						mangekyo = new ItemStack(ItemMangekyoSharinganObito.helmet, (int) (1));
 					}
-					((ItemDojutsu.Base) mangekyo.getItem()).setOwner(mangekyo, (EntityLivingBase) entity);
+					((ItemDojutsu.Base) mangekyo.getItem()).copyOwner(mangekyo, itemstack);
 					if (entity instanceof EntityPlayer) {
 						ItemStack _setstack = (mangekyo);
 						_setstack.setCount(1);
@@ -155,6 +155,7 @@ public class ProcedureSharinganHelmetTickEvent extends ElementsNarutomodMod.ModE
 					}
 					if (entity instanceof EntityPlayer)
 						((EntityPlayer) entity).inventory.clearMatchingItems((itemstack).getItem(), -1, (int) 1, null);
+					entity = ((ItemDojutsu.Base) itemstack.getItem()).getOwner(itemstack, world);
 					if ((!(((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
 							? ((EntityPlayerMP) entity).getAdvancements()
 									.getProgress(((WorldServer) (entity).world).getAdvancementManager()
@@ -173,8 +174,10 @@ public class ProcedureSharinganHelmetTickEvent extends ElementsNarutomodMod.ModE
 								}
 							}
 						}
-						world.playSound((EntityPlayer) null, x, y, z, (net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY
-								.getObject(new ResourceLocation("ui.toast.challenge_complete")), SoundCategory.NEUTRAL, (float) 1, (float) 1);
+						world.playSound((EntityPlayer) null, (entity.posX), (entity.posY), (entity.posZ),
+								(net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY
+										.getObject(new ResourceLocation("ui.toast.challenge_complete")),
+								SoundCategory.NEUTRAL, (float) 1, (float) 1);
 					}
 				}
 			}

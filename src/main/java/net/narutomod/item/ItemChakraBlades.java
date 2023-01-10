@@ -23,6 +23,7 @@ import java.util.Set;
 import java.util.HashMap;
 
 import com.google.common.collect.Multimap;
+import com.google.common.collect.HashMultimap;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class ItemChakraBlades extends ElementsNarutomodMod.ModElement {
@@ -34,15 +35,15 @@ public class ItemChakraBlades extends ElementsNarutomodMod.ModElement {
 
 	@Override
 	public void initElements() {
-		elements.items.add(() -> new ItemSword(EnumHelper.addToolMaterial("CHAKRA_BLADES", 0, 0, 10f, 8f, 0)) {
+		elements.items.add(() -> new ItemSword(EnumHelper.addToolMaterial("CHAKRA_BLADES", 0, 500, 4f, 4f, 0)) {
 			@Override
 			public Multimap<String, AttributeModifier> getItemAttributeModifiers(EntityEquipmentSlot slot) {
-				Multimap<String, AttributeModifier> multimap = super.getItemAttributeModifiers(slot);
+				Multimap<String, AttributeModifier> multimap = HashMultimap.<String, AttributeModifier>create();
 				if (slot == EntityEquipmentSlot.MAINHAND) {
 					multimap.put(SharedMonsterAttributes.ATTACK_DAMAGE.getName(),
 							new AttributeModifier(ATTACK_DAMAGE_MODIFIER, "Weapon modifier", (double) this.getAttackDamage(), 0));
 					multimap.put(SharedMonsterAttributes.ATTACK_SPEED.getName(),
-							new AttributeModifier(ATTACK_SPEED_MODIFIER, "Weapon modifier", 6, 0));
+							new AttributeModifier(ATTACK_SPEED_MODIFIER, "Weapon modifier", -1.5, 0));
 				}
 				return multimap;
 			}

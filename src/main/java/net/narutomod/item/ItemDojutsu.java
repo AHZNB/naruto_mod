@@ -25,6 +25,7 @@ import net.narutomod.NarutomodModVariables;
 import net.narutomod.ElementsNarutomodMod;
 
 import java.util.UUID;
+import javax.annotation.Nullable;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class ItemDojutsu extends ElementsNarutomodMod.ModElement {
@@ -68,6 +69,17 @@ public class ItemDojutsu extends ElementsNarutomodMod.ModElement {
 			return ProcedureUtils.isOriginalOwner(entity, stack);
 		}
 
+		@Nullable
+		public EntityLivingBase getOwner(ItemStack stack, World world) {
+			Entity entity = ProcedureUtils.getEntityFromUUID(world, ProcedureUtils.getOwnerId(stack));
+			return entity instanceof EntityLivingBase ? (EntityLivingBase)entity : null;
+		}
+
+		public void copyOwner(ItemStack toStack, ItemStack fromStack) {
+			ProcedureUtils.setOriginalOwner(toStack, ProcedureUtils.getOwnerId(fromStack));
+			toStack.setStackDisplayName(fromStack.getDisplayName());
+		}
+		
 		public void setOwner(ItemStack stack, EntityLivingBase entityIn) {
 			ProcedureUtils.setOriginalOwner(entityIn, stack);
 			stack.setStackDisplayName(entityIn.getName() + "'s " + stack.getDisplayName());

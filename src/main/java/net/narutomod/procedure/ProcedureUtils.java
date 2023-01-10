@@ -142,11 +142,14 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 		return null;
 	}
 
-	public static void setOriginalOwner(EntityLivingBase entity, ItemStack stack) {
+	public static void setOriginalOwner(ItemStack stack, UUID uuid) {
 		if (!stack.hasTagCompound())
 			stack.setTagCompound(new NBTTagCompound());
-		//stack.getTagCompound().setDouble("player_id", name2Id(entity.getDisplayName().getFormattedText()));
-		stack.getTagCompound().setUniqueId("player_id", entity.getUniqueID());
+		stack.getTagCompound().setUniqueId("player_id", uuid);
+	}
+
+	public static void setOriginalOwner(EntityLivingBase entity, ItemStack stack) {
+		setOriginalOwner(stack, entity.getUniqueID());
 	}
 
 	public static UUID getOwnerId(ItemStack stack) {

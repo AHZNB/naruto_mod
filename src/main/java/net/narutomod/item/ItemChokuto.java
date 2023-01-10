@@ -49,7 +49,7 @@ public class ItemChokuto extends ElementsNarutomodMod.ModElement {
 
 	public static class ItemCustom extends ItemSword implements ItemOnBody.Interface {
 		public ItemCustom() {
-			super(EnumHelper.addToolMaterial("CHOKUTO", 1, 2000, 4f, 8f, 2));
+			super(EnumHelper.addToolMaterial("CHOKUTO", 1, 2000, 4f, 5f, 2));
 		}
 
 		@Override

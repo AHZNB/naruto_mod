@@ -103,7 +103,7 @@ public class ProcedureWhiteZetsuFleshFoodEaten extends ElementsNarutomodMod.ModE
 			if ((((((entity instanceof EntityPlayer)
 					? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemSuiton.block, (int) (1)))
 					: false)
-					|| ((entity instanceof EntityPlayer)
+					&& ((entity instanceof EntityPlayer)
 							? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemDoton.block, (int) (1)))
 							: false))
 					&& (!((entity instanceof EntityPlayer)
@@ -114,24 +114,6 @@ public class ProcedureWhiteZetsuFleshFoodEaten extends ElementsNarutomodMod.ModE
 					ItemStack _setstack = new ItemStack(ItemMokuton.block, (int) (1));
 					_setstack.setCount(1);
 					ItemHandlerHelper.giveItemToPlayer(((EntityPlayer) entity), _setstack);
-				}
-				if ((!((entity instanceof EntityPlayer)
-						? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemSuiton.block, (int) (1)))
-						: false))) {
-					if (entity instanceof EntityPlayer) {
-						ItemStack _setstack = new ItemStack(ItemSuiton.block, (int) (1));
-						_setstack.setCount(1);
-						ItemHandlerHelper.giveItemToPlayer(((EntityPlayer) entity), _setstack);
-					}
-				}
-				if ((!((entity instanceof EntityPlayer)
-						? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemDoton.block, (int) (1)))
-						: false))) {
-					if (entity instanceof EntityPlayer) {
-						ItemStack _setstack = new ItemStack(ItemDoton.block, (int) (1));
-						_setstack.setCount(1);
-						ItemHandlerHelper.giveItemToPlayer(((EntityPlayer) entity), _setstack);
-					}
 				}
 				if (((entity instanceof EntityPlayer)
 						? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemNinjutsu.block, (int) (1)))
