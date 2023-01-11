@@ -98,6 +98,8 @@ public class ItemFuton extends ElementsNarutomodMod.ModElement {
 				return Math.min(f, 2.0f);
 			} else if (jutsu == VACUUMS) {
 				return Math.min(f, 50.0f);
+			} else if (jutsu == BIGBLOW) {
+				return Math.min(f, 100.0f);
 			}
 			return f;
 		}

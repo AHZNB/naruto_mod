@@ -26,6 +26,7 @@ import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.network.datasync.DataSerializers;
 
+import net.narutomod.item.ItemIryoJutsu;
 import net.narutomod.item.ItemJutsu;
 import net.narutomod.Particles;
 import net.narutomod.Chakra;
@@ -63,7 +64,7 @@ public class EntityCellularActivation extends ElementsNarutomodMod.ModElement {
 	public static class EC extends Entity {
 		private static final DataParameter<Integer> USER_ID = EntityDataManager.<Integer>createKey(EC.class, DataSerializers.VARINT);
 		private static final DataParameter<Integer> REDUCTION = EntityDataManager.<Integer>createKey(EC.class, DataSerializers.VARINT);
-		private final double chakraBurn = 5.0d;
+		private final double chakraBurn = ItemIryoJutsu.MEDMODE.chakraUsage;
 
 		public EC(World worldIn) {
 			super(worldIn);
@@ -136,8 +137,9 @@ public class EntityCellularActivation extends ElementsNarutomodMod.ModElement {
 						reduction *= (float)(cp.getAmount() / chakrausage);
 						chakrausage = cp.getAmount();
 					}
-					event.setAmount(event.getAmount() - reduction);
-					cp.consume(chakrausage);
+					if (reduction > 0f && cp.consume(chakrausage)) {
+						event.setAmount(event.getAmount() - reduction);
+					}
 				}
 			}
 		}

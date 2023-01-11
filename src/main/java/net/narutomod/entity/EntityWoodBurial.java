@@ -24,6 +24,7 @@ import net.narutomod.ElementsNarutomodMod;
 import com.google.common.base.Predicate;
 import javax.annotation.Nullable;
 import com.google.common.collect.ImmutableMap;
+import net.minecraft.entity.player.EntityPlayer;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityWoodBurial extends ElementsNarutomodMod.ModElement {
@@ -143,6 +144,7 @@ public class EntityWoodBurial extends ElementsNarutomodMod.ModElement {
 				});
 				if (res != null && res.entityHit != null) {
 					entity.world.spawnEntity(new EC(res.entityHit));
+					((ItemJutsu.Base)stack.getItem()).setCurrentJutsuCooldown(stack, 300);
 					return true;
 				}
 				return false;

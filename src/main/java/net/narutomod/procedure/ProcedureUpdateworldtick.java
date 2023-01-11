@@ -16,7 +16,7 @@ import java.util.Map;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class ProcedureUpdateworldtick extends ElementsNarutomodMod.ModElement {
-	public static long TOTAL_WORLD_TIME;
+	private static long TOTAL_WORLD_TIME;
 	
 	public ProcedureUpdateworldtick(ElementsNarutomodMod instance) {
 		super(instance, 36);
@@ -39,6 +39,10 @@ public class ProcedureUpdateworldtick extends ElementsNarutomodMod.ModElement {
 		if (l % 40 == 0) {
 			EntityTracker.clearRemovedData();
 		}
+	}
+
+	public static long getTotalWorldTime() {
+		return TOTAL_WORLD_TIME;
 	}
 
 	@SubscribeEvent

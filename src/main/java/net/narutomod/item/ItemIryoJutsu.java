@@ -45,7 +45,7 @@ public class ItemIryoJutsu extends ElementsNarutomodMod.ModElement {
 	public static final int ENTITYID = 210;
 	public static final ItemJutsu.JutsuEnum HEALING = new ItemJutsu.JutsuEnum(0, "healingjutsu", 'A', 0.25d, new HealingJutsu());
 	public static final ItemJutsu.JutsuEnum POISONMIST = new ItemJutsu.JutsuEnum(1, "poison_mist", 'B', 20d, new EntityPoisonMist.EC.Jutsu());
-	public static final ItemJutsu.JutsuEnum MEDMODE = new ItemJutsu.JutsuEnum(2, "cellular_activation", 'A', new EntityCellularActivation.EC.Jutsu());
+	public static final ItemJutsu.JutsuEnum MEDMODE = new ItemJutsu.JutsuEnum(2, "cellular_activation", 'A', 20d, new EntityCellularActivation.EC.Jutsu());
 	public static final ItemJutsu.JutsuEnum POWERMODE = new ItemJutsu.JutsuEnum(3, "enhanced_strength", 'A', 30d, new ChakraEnhancedStrength());
 
 	public ItemIryoJutsu(ElementsNarutomodMod instance) {

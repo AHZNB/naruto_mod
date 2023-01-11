@@ -83,6 +83,9 @@ public class EntityChibakuTenseiBall extends ElementsNarutomodMod.ModElement {
 		private List<BlockPos> blockList;
 		private boolean maxSizeReached;
 		private int dropTime;
+		private double stationaryX;
+		private double stationaryY;
+		private double stationaryZ;
 
 		public EntityCustom(World world) {
 			super(world);
@@ -212,8 +215,17 @@ public class EntityChibakuTenseiBall extends ElementsNarutomodMod.ModElement {
 				if (this.ticksAlive < this.launchTime) {
 					this.motionY += 0.03d;
 					this.setEntityScale(Math.max(this.maxScale * 0.2f * this.ticksAlive / this.launchTime, 1f));
-				} else {
-					this.motionY = 0;
+				} else if (!this.maxSizeReached || this.dropTime > 0) {
+					this.motionX = 0d;
+					this.motionY = 0d;
+					this.motionZ = 0d;
+					if (this.ticksAlive == this.launchTime) {
+						this.stationaryX = this.posX;
+						this.stationaryY = this.posY;
+						this.stationaryZ = this.posZ;
+					} else {
+						this.setPosition(this.stationaryX, this.stationaryY, this.stationaryZ);
+					}
 					if (!this.world.isRemote) {
 						if (this.blockList == null) {
 							this.createEntitiesAndBlocksList();
@@ -223,9 +235,11 @@ public class EntityChibakuTenseiBall extends ElementsNarutomodMod.ModElement {
 							this.collideWithNearbyEntities();
 						}
 					}
-				}
-				if (this.maxSizeReached && --this.dropTime <= 0) {
+				} else {
 					this.shoot(0, 0, 0, 0, 0);
+				}
+				if (this.dropTime > 0) {
+					--this.dropTime;
 				}
 				this.motionY *= 0.98d;
 			//}

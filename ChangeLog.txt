@@ -22,6 +22,8 @@ Jutsus:
  - multi-size jutsu giant's health is based on the size
  - ice release all killing ice spikes charging and chakra usage change
  - improved rasenshuriken model and particles
+ - wood permanent burial now has a 15 second cooldown
+ - cellular acvtivation now uses 4x more chakra on hit than before
  - added Transformation jutsu and scroll
  - added 4-symbols sealing jutsu and scroll
  - added lightning release: black panther and scroll
@@ -33,6 +35,7 @@ Items:
  - Amegakure headband+mask can breathe under water and immune to poison & wither
  - re-positioned the dojutsus lower on the face
  - white zetsu flesh when eaten gives you instant damage effect level 1~2 for 10 secs if you're not wearing mangekyo sharingan
+ - eating white zetsu flesh gives mokuton only if user has suiton and doton
  - jutsu scrolls are now one-time use
  - summoning contract and senjutsu on /give: use datatag {Type:toad|snake|slug} to specify which type
  - evolving into mangekyo now requires 1000 ninjaxp and no vanilla xp requirement
@@ -40,7 +43,6 @@ Items:
  - using someone else's mangekyo jutsus now drains 3x durability
  - foreign eternal mangekyo jutsus will drain durability at 3x
  - prevent drag dropping nature release items out of inventory
- - eating white zetsu flesh gives mokuton only if user has suiton and doton
  - medical ninja is checked only once, either you get it (25%) when first becoming a ninja or never will
  - added Konoha facial protector (tobirama/yamato style) and recipe
  - added 1st Ninja war armor and recipe

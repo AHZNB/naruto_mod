@@ -29,6 +29,7 @@ import net.minecraft.util.ResourceLocation;
 import net.narutomod.ElementsNarutomodMod;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.procedure.ProcedureOnLivingUpdate;
+import net.narutomod.procedure.ProcedureUpdateworldtick;
 import net.narutomod.Chakra;
 import net.narutomod.Particles;
 import net.narutomod.PlayerTracker;
@@ -299,8 +300,7 @@ public class ItemJutsu extends ElementsNarutomodMod.ModElement {
 
 		private void setJutsuCooldown(ItemStack stack, int index, long cd) {
 			this.validateMapTags(stack, index);
-			stack.getTagCompound().setLong(CDMAP_KEY+index, 
-			  FMLCommonHandler.instance().getMinecraftServerInstance().getWorld(0).getTotalWorldTime() + cd);
+			stack.getTagCompound().setLong(CDMAP_KEY+index, ProcedureUpdateworldtick.getTotalWorldTime() + cd);
 		}
 
 		protected void setJutsuCooldown(ItemStack stack, JutsuEnum jutsuIn, long cd) {
