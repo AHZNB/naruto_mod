@@ -95,6 +95,7 @@ public class EntityFutonGreatBreakthrough extends ElementsNarutomodMod.ModElemen
 		public static class AirPunch extends ProcedureAirPunch {
 			public AirPunch() {
 				this.blockHardnessLimit = 1.0f;
+				this.particlesDuring = null;
 			}
 
 			@Override

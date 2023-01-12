@@ -62,6 +62,7 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 	@Override
 	public void preInit(FMLPreInitializationEvent event) {
 		this.elements.addNetworkMessage(Message.Handler.class, Message.class, Side.CLIENT);
+		this.elements.addNetworkMessage(ParticleRenderer.Message.Handler.class, ParticleRenderer.Message.class, Side.CLIENT);
 		this.elements.addNetworkMessage(BurningAsh.Message.Handler.class, BurningAsh.Message.class, Side.SERVER);
 		this.elements.addNetworkMessage(AcidSpit.Message.Handler.class, AcidSpit.Message.class, Side.SERVER);
 	}
@@ -131,7 +132,7 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 				x /= this.msgQueue.size();
 				y /= this.msgQueue.size();
 				z /= this.msgQueue.size();
-				NarutomodMod.PACKET_HANDLER.sendToAllAround(new Message(this.msgQueue),
+				NarutomodMod.PACKET_HANDLER.sendToAllAround(new ParticleRenderer.Message(this.msgQueue),
 				  new NetworkRegistry.TargetPoint(this.world.provider.getDimension(), x, y, z, this.renderDistance));
 			}
 		}
