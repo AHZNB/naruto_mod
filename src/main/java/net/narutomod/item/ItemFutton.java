@@ -87,10 +87,21 @@ public class ItemFutton extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		protected float getPower(ItemStack stack, EntityLivingBase entity, int timeLeft) {
-			//if (this.getCurrentJutsu(stack) == MIST) {
-				return this.getPower(stack, entity, timeLeft, 0.1f, 20f);
-			//}
-			//return 1.0f;
+			ItemJutsu.JutsuEnum jutsu = this.getCurrentJutsu(stack);
+			if (jutsu == MIST) {
+				return this.getPower(stack, entity, timeLeft, 0.1f, 30f);
+			}
+			return this.getPower(stack, entity, timeLeft, 0.1f, 20f);
+		}
+
+		@Override
+		protected float getMaxPower(ItemStack stack, EntityLivingBase entity) {
+			ItemJutsu.JutsuEnum jutsu = this.getCurrentJutsu(stack);
+			float f = super.getMaxPower(stack, entity);
+			if (jutsu == MIST) {
+				return Math.min(f, 30.0f);
+			}
+			return f;
 		}
 
 		@Override
@@ -162,14 +173,16 @@ public class ItemFutton extends ElementsNarutomodMod.ModElement {
 			protected void preExecuteParticles(EntityLivingBase player) {
 				Vec3d vec0 = player.getLookVec();
 				Vec3d vec = vec0.scale(2d).addVector(player.posX, player.posY + 1.5d, player.posZ);
+				Particles.Renderer particles = new Particles.Renderer(player.world);
 				for (int i = 1; i <= 50; i++) {
 					Vec3d vec1 = vec0.scale(((EntityBoilingMist.this.rand.nextDouble() * 0.8d) + 0.2d) * this.getRange(0) * 0.06d);
-					Particles.spawnParticle(player.world, Particles.Types.SMOKE, vec.x, vec.y, vec.z, 1, 0d, 0d, 0d, 
+					particles.spawnParticles(Particles.Types.SMOKE, vec.x, vec.y, vec.z, 1, 0d, 0d, 0d, 
 					 vec1.x + (EntityBoilingMist.this.rand.nextDouble()-0.5d) * this.getFarRadius(0) * 0.15d,
 					 vec1.y + (EntityBoilingMist.this.rand.nextDouble()-0.5d) * this.getFarRadius(0) * 0.15d,
 					 vec1.z + (EntityBoilingMist.this.rand.nextDouble()-0.5d) * this.getFarRadius(0) * 0.15d,
 					 0x20FFFFFF, 80 + EntityBoilingMist.this.rand.nextInt(20), 0, 0, -1, 0);
 				}
+				particles.send();
 			}
 
 			@Override

@@ -193,7 +193,7 @@ public class EntityWaterPrison extends ElementsNarutomodMod.ModElement {
 			}
 
 			public Entity createJutsu(EntityLivingBase entity, EntityLivingBase target, int duration) {
-				if (entity.getDistance(target) <= 4.0d) {
+				if (entity.getDistance(target) <= 4.0d && target.width <= 2.0f && target.height <= 3.0f) {
 					entity.world.playSound(null, entity.posX, entity.posY, entity.posZ,
 					  net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:suironojutsu")),
 					  SoundCategory.NEUTRAL, 1, 1f);

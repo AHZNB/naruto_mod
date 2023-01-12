@@ -209,7 +209,7 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 			public Message() {}
 
 			public Message(List<MessageContents> listIn) {
-				this.messages = list.size();
+				this.messages = listIn.size();
 				this.list = listIn;
 			}
 
