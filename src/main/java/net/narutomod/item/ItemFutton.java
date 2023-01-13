@@ -173,16 +173,16 @@ public class ItemFutton extends ElementsNarutomodMod.ModElement {
 			protected void preExecuteParticles(EntityLivingBase player) {
 				Vec3d vec0 = player.getLookVec();
 				Vec3d vec = vec0.scale(2d).addVector(player.posX, player.posY + 1.5d, player.posZ);
-				Particles.Renderer particles = new Particles.Renderer(player.world);
+				//Particles.Renderer particles = new Particles.Renderer(player.world);
 				for (int i = 1; i <= 50; i++) {
 					Vec3d vec1 = vec0.scale(((EntityBoilingMist.this.rand.nextDouble() * 0.8d) + 0.2d) * this.getRange(0) * 0.06d);
-					particles.spawnParticles(Particles.Types.SMOKE, vec.x, vec.y, vec.z, 1, 0d, 0d, 0d, 
+					Particles.spawnParticle(player.world, Particles.Types.SMOKE, vec.x, vec.y, vec.z, 1, 0d, 0d, 0d, 
 					 vec1.x + (EntityBoilingMist.this.rand.nextDouble()-0.5d) * this.getFarRadius(0) * 0.15d,
 					 vec1.y + (EntityBoilingMist.this.rand.nextDouble()-0.5d) * this.getFarRadius(0) * 0.15d,
 					 vec1.z + (EntityBoilingMist.this.rand.nextDouble()-0.5d) * this.getFarRadius(0) * 0.15d,
 					 0x20FFFFFF, 80 + EntityBoilingMist.this.rand.nextInt(20), 0, 0, -1, 0);
 				}
-				particles.send();
+				//particles.send();
 			}
 
 			@Override

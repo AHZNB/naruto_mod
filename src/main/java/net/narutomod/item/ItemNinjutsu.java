@@ -298,7 +298,7 @@ public class ItemNinjutsu extends ElementsNarutomodMod.ModElement {
 			if (rtr.typeOfHit == RayTraceResult.Type.BLOCK) {
 				BlockPos pos = entity.world.isAirBlock(rtr.getBlockPos().up()) && entity.world.isAirBlock(rtr.getBlockPos().up(2))
 				 ? rtr.getBlockPos().up() : rtr.getBlockPos().offset(rtr.sideHit);
-				Entity target = getTarget(stack, entity.world);
+				Entity target = this.getTarget(stack, entity.world);
 				if (target == null) {
 					target = entity;
 				}
@@ -307,7 +307,7 @@ public class ItemNinjutsu extends ElementsNarutomodMod.ModElement {
 				setTarget(stack, null);
 				return true;
 			} else if (rtr.entityHit != null) {
-				Entity target = getTarget(stack, entity.world);
+				Entity target = this.getTarget(stack, entity.world);
 				if (target == null || target.equals(rtr.entityHit)) {
 					target = entity;
 				}
@@ -337,7 +337,7 @@ public class ItemNinjutsu extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Nullable
-		public static Entity getTarget(ItemStack stack, World world) {
+		private Entity getTarget(ItemStack stack, World world) {
 			if (stack.hasTagCompound() && stack.getTagCompound().hasKey("amenotejikaraTarget")) {
 				return world.getEntityByID(stack.getTagCompound().getInteger("amenotejikaraTarget"));
 			}

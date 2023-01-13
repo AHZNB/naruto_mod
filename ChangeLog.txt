@@ -44,6 +44,7 @@ Items:
  - foreign eternal mangekyo jutsus will drain durability at 3x
  - prevent drag dropping nature release items out of inventory
  - medical ninja is checked only once, either you get it (25%) when first becoming a ninja or never will
+ - increased ninja armor durability
  - added Konoha facial protector (tobirama/yamato style) and recipe
  - added 1st Ninja war armor and recipe
  - added samurai armor and recipe

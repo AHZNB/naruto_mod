@@ -38,7 +38,7 @@ public class ItemSamuraiArmor extends ElementsNarutomodMod.ModElement {
 	@Override
 	public void initElements() {
 		ItemArmor.ArmorMaterial enuma = EnumHelper.addArmorMaterial("SAMURAI_ARMOR", "narutomod:sasuke_",
-		 30, new int[]{2, 5, 8, 2}, 9, SoundEvents.ITEM_ARMOR_EQUIP_IRON, 0f);
+		 30, new int[]{2, 5, 8, 3}, 9, SoundEvents.ITEM_ARMOR_EQUIP_IRON, 0f);
 
 		elements.items.add(() -> new ItemNinjaArmor.Base(ItemNinjaArmor.Type.SAMURAI, enuma, EntityEquipmentSlot.HEAD) {
 			@Override

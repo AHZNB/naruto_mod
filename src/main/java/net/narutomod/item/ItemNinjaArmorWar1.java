@@ -8,6 +8,7 @@ import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.common.util.EnumHelper;
 
+import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.Item;
 import net.minecraft.inventory.EntityEquipmentSlot;
@@ -29,6 +30,8 @@ public class ItemNinjaArmorWar1 extends ElementsNarutomodMod.ModElement {
 
 	@Override
 	public void initElements() {
+		ItemArmor.ArmorMaterial enuma = EnumHelper.addArmorMaterial("SAMURAI_ARMOR", "narutomod:sasuke_",
+		 30, new int[]{2, 5, 7, 2}, 9, SoundEvents.ITEM_ARMOR_EQUIP_IRON, 0f);
 		elements.items.add(() -> new ItemNinjaArmor.Base(ItemNinjaArmor.Type.WAR1, EntityEquipmentSlot.HEAD) {
 			@Override
 			protected ItemNinjaArmor.ArmorData setArmorData(ItemNinjaArmor.Type type, EntityEquipmentSlot slotIn) {
@@ -49,7 +52,7 @@ public class ItemNinjaArmorWar1 extends ElementsNarutomodMod.ModElement {
 				}
 			}
 		}.setUnlocalizedName("ninja_armor_war_1helmet").setRegistryName("ninja_armor_war_1helmet").setCreativeTab(TabModTab.tab));
-		elements.items.add(() -> new ItemNinjaArmor.Base(ItemNinjaArmor.Type.WAR1, EntityEquipmentSlot.CHEST) {
+		elements.items.add(() -> new ItemNinjaArmor.Base(ItemNinjaArmor.Type.WAR1, enuma, EntityEquipmentSlot.CHEST) {
 			@Override
 			protected ItemNinjaArmor.ArmorData setArmorData(ItemNinjaArmor.Type type, EntityEquipmentSlot slotIn) {
 				return new Armor4Slot();

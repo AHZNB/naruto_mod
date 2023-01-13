@@ -25,6 +25,7 @@ import net.narutomod.creativetab.TabModTab;
 import net.narutomod.ElementsNarutomodMod;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
+import net.minecraft.init.SoundEvents;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class ItemAkatsukiRobe extends ElementsNarutomodMod.ModElement {
@@ -39,8 +40,8 @@ public class ItemAkatsukiRobe extends ElementsNarutomodMod.ModElement {
 
 	@Override
 	public void initElements() {
-		ItemArmor.ArmorMaterial enuma = EnumHelper.addArmorMaterial("AKATSUKI_ROBE", "narutomod:sasuke_", 5, new int[]{1, 2, 3, 1}, 9,
-				(net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("")), 0f);
+		ItemArmor.ArmorMaterial enuma = EnumHelper.addArmorMaterial("AKATSUKI_ROBE", "narutomod:sasuke_",
+		 100, new int[]{1, 2, 3, 1}, 9, SoundEvents.ITEM_ARMOR_EQUIP_LEATHER, 0f);
 		elements.items.add(() -> new ItemArmor(enuma, 0, EntityEquipmentSlot.HEAD) {
 			@Override
 			@SideOnly(Side.CLIENT)

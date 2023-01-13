@@ -149,6 +149,7 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 			public MessageContents(Types typeIn, double xIn, double yIn, double zIn, int countIn,
 			 double xOff, double yOff, double zOff, double xSpeed, double ySpeed, double zSpeed, int... argsIn) {
 				this.type = typeIn;
+				this.count = countIn;
 				this.x = xIn;
 				this.y = yIn;
 				this.z = zIn;
@@ -201,6 +202,11 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 				for (int j = 0; j < i; j++)
 					this.parms[j] = buf.readInt();
 			}
+
+			@Override
+			public String toString() {
+				return ""+this.type+", "+count+", ("+x+", "+y+", "+z+"), ("+ox+", "+oy+", "+oz+"), ("+speedx+", "+speedy+", "+speedz+"), "+parms;
+			}
 		}
 		
 		public static class Message implements IMessage {
@@ -237,6 +243,7 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 				public IMessage onMessage(Message message, MessageContext context) {
 					Minecraft.getMinecraft().addScheduledTask(() -> {
 						Renderer render = new Renderer();
+//System.out.println(">>> "+message.list);
 						for (MessageContents msgc : message.list) {
 							render.spawnParticles(msgc.type, msgc.x, msgc.y, msgc.z,
 							 msgc.count, msgc.ox, msgc.oy, msgc.oz, msgc.speedx, msgc.speedy, msgc.speedz, msgc.parms);
@@ -254,7 +261,7 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 		}
 
 		public Renderer(World worldIn) {
-			super(worldIn, 64d);
+			this(worldIn, 64d);
 		}
 
 		public Renderer(World worldIn, double renderDistanceIn) {
