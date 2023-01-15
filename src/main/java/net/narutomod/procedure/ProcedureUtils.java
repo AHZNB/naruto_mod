@@ -483,7 +483,7 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 			Entity entity1 = list.get(j);
 			if (entity1.getLowestRidingEntity() == entity.getLowestRidingEntity())
 				continue;
-			AxisAlignedBB axisalignedbb = entity1.getEntityBoundingBox().grow(bbGrow);
+			AxisAlignedBB axisalignedbb = entity1.getEntityBoundingBox().grow(bbGrow * entity1.getDistance(vec3d.x, vec3d.y, vec3d.z) / 32d);
 			RayTraceResult raytraceresult = axisalignedbb.calculateIntercept(vec3d, vec3d2);
 			if (axisalignedbb.contains(vec3d)) {
 				if (d2 >= 0.0) {
@@ -646,6 +646,7 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
                 for (int j4 = j3; j4 < k3; ++j4) {
 					if (world.isAirBlock(pos.setPos(l3, i4, j4))) {
 						list.add(pos.toImmutable());
+						//list.add(new BlockPos.MutableBlockPos(pos));
 					}
                 }
             }

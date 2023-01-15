@@ -61,7 +61,6 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 
 	@Override
 	public void preInit(FMLPreInitializationEvent event) {
-		this.elements.addNetworkMessage(Message.Handler.class, Message.class, Side.CLIENT);
 		this.elements.addNetworkMessage(ParticleRenderer.Message.Handler.class, ParticleRenderer.Message.class, Side.CLIENT);
 		this.elements.addNetworkMessage(BurningAsh.Message.Handler.class, BurningAsh.Message.class, Side.SERVER);
 		this.elements.addNetworkMessage(AcidSpit.Message.Handler.class, AcidSpit.Message.class, Side.SERVER);
@@ -92,15 +91,12 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 
 	public static void spawnParticle(World world, Types type, double x, double y, double z, int count, 
 	 double xOff, double yOff, double zOff, double xSpeed, double ySpeed, double zSpeed, double renderDistance, int... args) {
-		if (world.isRemote) {
-			new Renderer().spawnParticles(type, x, y, z, count, xOff, yOff, zOff, xSpeed, ySpeed, zSpeed, args);
-		} else {
-			NarutomodMod.PACKET_HANDLER.sendToAllAround(new Message(type, x, y, z, count, xOff, yOff, zOff, xSpeed, ySpeed, zSpeed, args),
-			  new NetworkRegistry.TargetPoint(world.provider.getDimension(), x, y, z, renderDistance));
-		}
+		Renderer pr = new Renderer(world, renderDistance);
+		pr.spawnParticles(type, x, y, z, count, xOff, yOff, zOff, xSpeed, ySpeed, zSpeed, args);
+		pr.send();
 	}
 
-	public static class ParticleRenderer {
+	public static abstract class ParticleRenderer {
 		private final List<MessageContents> msgQueue = Lists.newArrayList();
 		protected final World world;
 		protected final double renderDistance;
@@ -243,7 +239,6 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 				public IMessage onMessage(Message message, MessageContext context) {
 					Minecraft.getMinecraft().addScheduledTask(() -> {
 						Renderer render = new Renderer();
-//System.out.println(">>> "+message.list);
 						for (MessageContents msgc : message.list) {
 							render.spawnParticles(msgc.type, msgc.x, msgc.y, msgc.z,
 							 msgc.count, msgc.ox, msgc.oy, msgc.oz, msgc.speedx, msgc.speedy, msgc.speedz, msgc.parms);
@@ -284,84 +279,6 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 				Minecraft.getMinecraft().renderGlobal.spawnParticle(type.getID(), true, x + d1, y + d2, z + d3, xSpeed, ySpeed, zSpeed, args);
 				//world.spawnAlwaysVisibleParticle(type.getID(), x + d1, y + d2, z + d3, xSpeed, ySpeed, zSpeed, args);
 			}
-		}
-	}
-	
-	public static class Message implements IMessage {
-		Types type;
-		int count;
-		double x, y, z;
-		double ox, oy, oz;
-		double speedx, speedy, speedz;
-		int args;
-		int[] parms;
-		
-		public Message() {
-		}
-
-		public Message(Types t, double cx, double cy, double cz, int num, double offx, double offy, double offz, 
-		 double sx, double sy, double sz, int... p) {
-			this.type = t;
-			this.count = num;
-			this.x = cx;
-			this.y = cy;
-			this.z = cz;
-			this.ox = offx;
-			this.oy = offy;
-			this.oz = offz;
-			this.speedx = sx;
-			this.speedy = sy;
-			this.speedz = sz;
-			this.args = p.length;
-			this.parms = p;
-		}
-
-		public static class Handler implements IMessageHandler<Message, IMessage> {
-			@SideOnly(Side.CLIENT)
-			@Override
-			public IMessage onMessage(Message message, MessageContext context) {
-				Minecraft.getMinecraft().addScheduledTask(() -> {
-					new Renderer().spawnParticles(message.type, message.x, message.y, message.z,
-					 message.count, message.ox, message.oy, message.oz, message.speedx, message.speedy, message.speedz, message.parms);
-				});
-				return null;
-			}
-		}
-
-		public void toBytes(ByteBuf buf) {
-			buf.writeInt(this.type.getID());
-			buf.writeInt(this.count);
-			buf.writeDouble(this.x);
-			buf.writeDouble(this.y);
-			buf.writeDouble(this.z);
-			buf.writeDouble(this.ox);
-			buf.writeDouble(this.oy);
-			buf.writeDouble(this.oz);
-			buf.writeDouble(this.speedx);
-			buf.writeDouble(this.speedy);
-			buf.writeDouble(this.speedz);
-			buf.writeInt(this.args);
-			for (int j = 0; j < this.type.getArgsCount() && j < this.args; j++)
-				buf.writeInt(this.parms[j]);
-		}
-
-		public void fromBytes(ByteBuf buf) {
-			this.type = Types.getTypeFromId(buf.readInt());
-			this.count = buf.readInt();
-			this.x = buf.readDouble();
-			this.y = buf.readDouble();
-			this.z = buf.readDouble();
-			this.ox = buf.readDouble();
-			this.oy = buf.readDouble();
-			this.oz = buf.readDouble();
-			this.speedx = buf.readDouble();
-			this.speedy = buf.readDouble();
-			this.speedz = buf.readDouble();
-			this.args = buf.readInt();
-			int i = Math.min(this.type.getArgsCount(), this.args);
-			this.parms = new int[i];
-			for (int j = 0; j < i; j++)
-				this.parms[j] = buf.readInt();
 		}
 	}
 

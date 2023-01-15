@@ -70,7 +70,7 @@ public class ProcedureOnEntitySpawn extends ElementsNarutomodMod.ModElement {
 				}
 			}
 		}
-		if ((entity instanceof EntityPlayerMP)) {
+		if (((entity instanceof EntityPlayerMP) && ((world.provider.getDimension()) == (0)))) {
 			if (entity instanceof EntityPlayer && !entity.world.isRemote) {
 				((EntityPlayer) entity).sendStatusMessage(
 						new TextComponentString("Check out the latest updates on our official server! IP: NarutoRepublic.com."), (false));

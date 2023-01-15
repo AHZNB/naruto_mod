@@ -1037,8 +1037,12 @@ public class ProcedureOnPlayerPostTick extends ElementsNarutomodMod.ModElement {
 						} else {
 							stack = new ItemStack(Blocks.AIR, (int) (1));
 							if (((rngbase) > 105)) {
-								if (EntityBijuManager.setPlayerAsJinchurikiByTails((EntityPlayer) entity,
-										EntityBijuManager.getRandomAvailableBiju())) {
+								int tails = EntityBijuManager.getRandomAvailableBiju();
+								if (EntityBijuManager.setPlayerAsJinchurikiByTails((EntityPlayer) entity, tails)) {
+									Entity bijuEntity = EntityBijuManager.getEntityByTails(tails);
+									if (bijuEntity != null) {
+										bijuEntity.setDead();
+									}
 									{
 										MinecraftServer mcserv = FMLCommonHandler.instance().getMinecraftServerInstance();
 										if (mcserv != null)

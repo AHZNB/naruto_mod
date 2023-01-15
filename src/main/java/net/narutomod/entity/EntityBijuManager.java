@@ -109,6 +109,11 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 		return false;
 	}
 
+	public static boolean isBijuAddedToWorld(int tails) {
+		EntityBijuManager bm = mapByTailnum.get(tails);
+		return bm != null && bm.isAddedToWorld();
+	}
+
 	public static void unsetPlayerAsJinchuriki(EntityPlayer player) {
 		EntityBijuManager bm = getBijuManagerFrom(player);
 		if (bm != null) {

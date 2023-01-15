@@ -156,7 +156,7 @@ public class EntityTenTails extends ElementsNarutomodMod.ModElement {
 			super.applyEntityAttributes();
 			this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(100.0D);
 			this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.8D);
-			this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(200000.0D);
+			this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(100000.0D);
 			this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(1000.0D);
 			//this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(24.0D);
 			this.getEntityAttribute(EntityPlayer.REACH_DISTANCE).setBaseValue(30.0D);

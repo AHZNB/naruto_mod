@@ -24,6 +24,7 @@ Jutsus:
  - improved rasenshuriken model and particles
  - wood permanent burial now has a 15 second cooldown
  - cellular acvtivation now uses 4x more chakra on hit than before
+ - substitution jutsu now has 10 second cooldown between activations
  - added Transformation jutsu and scroll
  - added 4-symbols sealing jutsu and scroll
  - added lightning release: black panther and scroll
@@ -89,6 +90,7 @@ Entities:
  - added Hiruko puppet (health=100; reduces projectile damage by 60%; blocking with tail reduces damage by 80%)
  - updated white zetsu spawn parameters
  - fixed giant 2 head dog not dying bug
+ - biju is removed from world when a player becomes its junchuriki naturally
  
 Structures:
  - rebuilt the 4 pillar wood house to match anime

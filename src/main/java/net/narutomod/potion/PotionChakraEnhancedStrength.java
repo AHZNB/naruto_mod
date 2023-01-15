@@ -123,8 +123,7 @@ public class PotionChakraEnhancedStrength extends ElementsNarutomodMod.ModElemen
 					 (this.rand.nextDouble() - 0.5d) * this.getFarRadius(0) * 0.12d, 
 					 (this.rand.nextDouble() - 0.5d) * this.getFarRadius(0) * 0.12d);
 					Particles.spawnParticle(player.world, Particles.Types.SMOKE, vec1.x, vec1.y, vec1.z,
-					 1, 0d, 0d, 0d, vec3.x, vec3.y, vec3.z, 0x40ffffff, (int)this.getRange(0) * 2 + this.rand.nextInt(21),
-					 (int)(8.0D / (this.rand.nextDouble() * 0.8D + 0.2D)));
+					 1, 0d, 0d, 0d, vec3.x, vec3.y, vec3.z, 0x40ffffff, (int)this.getRange(0) * 2 + this.rand.nextInt(21), 16);
 				}
 			}
 

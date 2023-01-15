@@ -19,22 +19,22 @@
         "value": ""
       },
       {
-        "value": "Blocks.WOOL#15"
+        "value": "Items.IRON_INGOT"
       },
       {
         "value": "Items.IRON_HELMET"
       },
       {
-        "value": "Blocks.WOOL#15"
-      },
-      {
-        "value": ""
+        "value": "Items.IRON_INGOT"
       },
       {
         "value": "Items.IRON_INGOT"
       },
       {
-        "value": ""
+        "value": "Blocks.WOOL#15"
+      },
+      {
+        "value": "Items.IRON_INGOT"
       }
     ],
     "recipeReturnStack": {

@@ -42,6 +42,7 @@ public class EntityFutonGreatBreakthrough extends ElementsNarutomodMod.ModElemen
 	}
 
 	public static class EC extends Entity {
+		public static final float MAX_RANGE = 64.0f;
 		private final AirPunch airPunch = new AirPunch();
 		private EntityLivingBase user;
 		private float power;
@@ -94,8 +95,12 @@ public class EntityFutonGreatBreakthrough extends ElementsNarutomodMod.ModElemen
 
 		public static class AirPunch extends ProcedureAirPunch {
 			public AirPunch() {
-				this.blockHardnessLimit = 1.0f;
 				this.particlesDuring = null;
+			}
+
+			public void execute(EntityLivingBase player, double range, double radius) {
+				this.blockHardnessLimit = (float)range / MAX_RANGE;
+				super.execute(player, range, radius);
 			}
 
 			@Override

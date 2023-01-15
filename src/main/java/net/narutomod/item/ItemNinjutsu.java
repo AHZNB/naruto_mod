@@ -28,6 +28,7 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Item;
 import net.minecraft.entity.item.EntityFallingBlock;
@@ -207,17 +208,21 @@ public class ItemNinjutsu extends ElementsNarutomodMod.ModElement {
 
 		public static class Jutsu implements ItemJutsu.IJutsuCallback {
 			private static final String JUTSULASTUSEKEY = "ReplacementJutsuLastUse";
-			private static final int COOLDOWN = 100;
+			private static final int COOLDOWN = 200;
 
 			@Override
 			public boolean createJutsu(ItemStack stack, EntityLivingBase entity, float power) {
 				if (!stack.hasTagCompound()) {
 					stack.setTagCompound(new NBTTagCompound());
 				}
-				if (!stack.getTagCompound().hasKey(JUTSULASTUSEKEY)) {
+				boolean flag = stack.getTagCompound().hasKey(JUTSULASTUSEKEY);
+				if (!flag) {
 					stack.getTagCompound().setLong(JUTSULASTUSEKEY, entity.world.getTotalWorldTime());
 				} else {
 					stack.getTagCompound().removeTag(JUTSULASTUSEKEY);
+				}
+				if (entity instanceof EntityPlayer && !entity.world.isRemote) {
+					((EntityPlayer)entity).sendStatusMessage(new TextComponentString(flag ? "Off" : "On"), true);
 				}
 				return false;
 			}

@@ -79,7 +79,7 @@ public class EntityEarthBlocks extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static class Base extends Entity {
-		private List<BlockPos> ogList;
+		private List<? extends BlockPos> ogList;
 		private final Map<Vec3d, IBlockState> blocksMap = Maps.newHashMap();
 		private final Map<Entity, Vec3d> entityMap = Maps.newHashMap();
 		private int fallTime = 600;
@@ -93,7 +93,7 @@ public class EntityEarthBlocks extends ElementsNarutomodMod.ModElement {
 			this.isImmuneToFire = true;
 		}
 
-		public Base(World world, List<BlockPos> list) {
+		public Base(World world, List<? extends BlockPos> list) {
 			this(world);
 			if (list.isEmpty()) {
 				return;
@@ -121,7 +121,7 @@ public class EntityEarthBlocks extends ElementsNarutomodMod.ModElement {
 					this.entityMap.put(entity, entity.getPositionVector().subtract(this.getPositionVector()));
 				}
 			}
-			this.ogList = new ArrayList<BlockPos>(list);
+			this.ogList = new ArrayList(list);
 		}
 
 		private boolean isAirOrLiquid(IBlockState blockstate, BlockPos pos) {
@@ -223,7 +223,7 @@ public class EntityEarthBlocks extends ElementsNarutomodMod.ModElement {
 	    	return this.blocksMap;
 	    }
 
-	    public List<BlockPos> getBlockposList() {
+	    public List<? extends BlockPos> getBlockposList() {
 	    	return this.ogList;
 	    }
 

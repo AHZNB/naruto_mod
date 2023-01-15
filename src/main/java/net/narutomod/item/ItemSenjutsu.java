@@ -253,7 +253,7 @@ public class ItemSenjutsu extends ElementsNarutomodMod.ModElement {
 		@Override
 		public boolean onLeftClickEntity(ItemStack itemstack, EntityPlayer attacker, Entity target) {
 			if (attacker.equals(target) && this.getSageType(itemstack) == Type.TOAD && isSageModeActivated(itemstack)) {
-				target = ProcedureUtils.objectEntityLookingAt(attacker, ProcedureUtils.getReachDistance(attacker), 2d).entityHit;
+				target = ProcedureUtils.objectEntityLookingAt(attacker, ProcedureUtils.getReachDistance(attacker), 3d).entityHit;
 				if (target != null) {
 					attacker.attackTargetEntityWithCurrentItem(target);
 				}

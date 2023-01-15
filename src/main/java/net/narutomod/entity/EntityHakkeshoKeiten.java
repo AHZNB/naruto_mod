@@ -163,7 +163,7 @@ public class EntityHakkeshoKeiten extends ElementsNarutomodMod.ModElement {
 			}
 		}
 
-		private void breakBlocks(List<BlockPos> list) {
+		private void breakBlocks(List<? extends BlockPos> list) {
 			EntityLivingBase summoner = this.getSummoner();
 			for (BlockPos pos : list) {
 				if (this.world.getBlockState(pos).getMaterial().isLiquid()) {

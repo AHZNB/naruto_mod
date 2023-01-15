@@ -137,7 +137,7 @@ public class EntityWoodBurial extends ElementsNarutomodMod.ModElement {
 		public static class Jutsu implements ItemJutsu.IJutsuCallback {
 			@Override
 			public boolean createJutsu(ItemStack stack, EntityLivingBase entity, float power) {
-				RayTraceResult res = ProcedureUtils.objectEntityLookingAt(entity, 20d, 1.0d, false, false, new Predicate<Entity>() {
+				RayTraceResult res = ProcedureUtils.objectEntityLookingAt(entity, 20d, 1.6d, false, false, new Predicate<Entity>() {
 					public boolean apply(@Nullable Entity p_apply_1_) {
 						return p_apply_1_ instanceof EntityLivingBase;
 					}
