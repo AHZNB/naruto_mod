@@ -1,0 +1,6 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "narutomod:items/robe_raikage_het_item"
+  }
+}

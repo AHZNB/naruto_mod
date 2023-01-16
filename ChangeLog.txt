@@ -79,6 +79,7 @@ Items:
  - added some new anbu and obito masks
  - added partial sand cloak texture
  - added KCM2 texture
+ - added Kage hats and robe
  
 Entities:
  - full Kurama mode: change Kurama texture to KCM texture
