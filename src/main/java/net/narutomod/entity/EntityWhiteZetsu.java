@@ -128,17 +128,24 @@ public class EntityWhiteZetsu extends ElementsNarutomodMod.ModElement {
 		@Override
 		protected void initEntityAI() {
 			super.initEntityAI();
-			// modified 6-27-2020 ------------------------------------------------------------------
 			this.tasks.addTask(1, new EntityAIWatchClosest(this, EntityPlayer.class, (float) 50) {
 				@Override
 				public void updateTask() {
 					super.updateTask();
-					if (EntityCustom.this.getPlayerId() < 0 && this.closestEntity != null && !((EntityPlayer)this.closestEntity).isCreative()) {
-						EntityCustom.this.setPlayerId(this.closestEntity.getEntityId());
-						this.entity.setCustomNameTag(this.closestEntity.getName());
+					World world = this.entity.world;
+					if (EntityCustom.this.getPlayerId() < 0 && this.closestEntity instanceof EntityPlayer
+					 && !((EntityPlayer)this.closestEntity).isCreative() && world.playerEntities.size() > 1) {
+						for (int i = 0; i < 10; i++) {
+							EntityPlayer entity1 = world.playerEntities.get(rand.nextInt(world.playerEntities.size()));
+							if (!entity1.equals(this.closestEntity)) {
+								EntityCustom.this.setPlayerId(entity1.getEntityId());
+								this.entity.setCustomNameTag(entity1.getName());
+								return;
+							}
+						}
 					}
 				}
-			}); // ---------------------------------------------------------------------------------
+			});
 			this.targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, EntityPlayer.class, false, false));
 			this.tasks.addTask(3, new EntityAIAttackMelee(this, 1, true));
 			this.tasks.addTask(4, new EntityAIWander(this, 0.5));

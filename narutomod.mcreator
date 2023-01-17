@@ -1,8 +1,8 @@
 {
   "id_map": {
     "DIMENSION": 13,
-    "GUI": 60,
-    "ENTITY": 414
+    "ENTITY": 414,
+    "GUI": 62
   },
   "mod_elements": [
     {
@@ -6793,6 +6793,46 @@
         "eb": false,
         "ec": false
       }
+    },
+    {
+      "name": "ScrollKirinGui",
+      "type": "gui",
+      "sortid": 821,
+      "compiles": true,
+      "locked_code": true,
+      "ids": {
+        "0": 61
+      },
+      "registry_name": "scroll_kirin_gui"
+    },
+    {
+      "name": "ScrollKirin",
+      "type": "item",
+      "sortid": 822,
+      "compiles": true,
+      "locked_code": false,
+      "ids": {},
+      "registry_name": "scroll_kirin"
+    },
+    {
+      "name": "ScrollEarthGolemGui",
+      "type": "gui",
+      "sortid": 823,
+      "compiles": true,
+      "locked_code": true,
+      "ids": {
+        "0": 62
+      },
+      "registry_name": "scroll_earth_golem_gui"
+    },
+    {
+      "name": "ScrollEarthGolem",
+      "type": "item",
+      "sortid": 824,
+      "compiles": true,
+      "locked_code": false,
+      "ids": {},
+      "registry_name": "scroll_earth_golem"
     }
   ],
   "variable_elements": [
@@ -8002,6 +8042,7 @@
       "advancements.byakuganopened.descr": "Byakugan is regarded as one of the \"Three Great D¨­jutsu\", the others being the Sharingan and the Rinnegan.",
       "subtitles.dingding": "",
       "chattext.specialevent.villagesiege": "Event alert: A siege is coming!",
+      "item.scroll_earth_golem.name": "Earth Release: Golem Jutsu",
       "entity.false_darkness.name": "False Darkness",
       "entity.jintoncube.name": "Dust Release: Boundary Dismantling Jutsu - cube",
       "entity.explosive_clone.name": "Explosive Clone",
@@ -8096,6 +8137,7 @@
       "tooltip.zabuzasword.general": "One of the legendary swords belonging to the Seven Ninja Swordsmen of the Mist this sword is passed down from generation to generation amongst the group\u0027s members.",
       "entity.biju_manager.name": "Biju Manager",
       "item.ninja_armor_konohabody.name": "Flak jacket (Konoha)",
+      "item.scroll_kirin.name": "Kirin",
       "entity.five_tails.name": "Kokuo",
       "item.eightgates.name": "Eight Gates Release",
       "tooltip.sharingan.descr": "50% chance to evade attacks",

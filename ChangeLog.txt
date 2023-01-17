@@ -92,6 +92,8 @@ Entities:
  - updated white zetsu spawn parameters
  - fixed giant 2 head dog not dying bug
  - biju is removed from world when a player becomes its junchuriki naturally
+ - white zetsu changes skin to random player instead of the closest player
+ - white zetsu has a 40% chance to drop a kunai
  
 Structures:
  - rebuilt the 4 pillar wood house to match anime

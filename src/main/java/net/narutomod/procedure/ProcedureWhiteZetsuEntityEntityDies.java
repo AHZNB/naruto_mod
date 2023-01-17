@@ -1,6 +1,7 @@
 package net.narutomod.procedure;
 
 import net.narutomod.item.ItemWhiteZetsuFlesh;
+import net.narutomod.item.ItemKunai;
 import net.narutomod.ElementsNarutomodMod;
 
 import net.minecraft.world.gen.feature.WorldGenAbstractTree;
@@ -41,24 +42,35 @@ public class ProcedureWhiteZetsuEntityEntityDies extends ElementsNarutomodMod.Mo
 		int y = (int) dependencies.get("y");
 		int z = (int) dependencies.get("z");
 		World world = (World) dependencies.get("world");
-		if ((Math.random() <= 0.1)) {
+		double rand = 0;
+		rand = (double) Math.random();
+		if (((rand) <= 0.1)) {
 			if (!world.isRemote) {
 				EntityItem entityToSpawn = new EntityItem(world, x, y, z, new ItemStack(ItemWhiteZetsuFlesh.block, (int) (1)));
 				entityToSpawn.setPickupDelay(10);
 				world.spawnEntity(entityToSpawn);
 			}
 		}
-		if ((!((world.isAirBlock(new BlockPos((int) x, (int) (y - 1), (int) z)))
-				|| ((world.getBlockState(new BlockPos((int) x, (int) (y - 1), (int) z))).getBlock() == Blocks.BEDROCK.getDefaultState()
-						.getBlock())))) {
-			if ((!((world.getBlockState(new BlockPos((int) x, (int) (y - 1), (int) z))).getMaterial() == Material.GRASS))) {
-				world.setBlockState(new BlockPos((int) x, (int) (y - 1), (int) z), Blocks.GRASS.getDefaultState(), 3);
+		if (((rand) >= 0.6)) {
+			if (!world.isRemote) {
+				EntityItem entityToSpawn = new EntityItem(world, x, y, z, new ItemStack(ItemKunai.block, (int) (1)));
+				entityToSpawn.setPickupDelay(10);
+				world.spawnEntity(entityToSpawn);
 			}
-			Random random = new Random();
-			WorldGenAbstractTree worldgenabstracttree = world.getBiome(new BlockPos(x, y, z)).getRandomTreeFeature(random);
-			if (worldgenabstracttree != null) {
-				worldgenabstracttree.setDecorationDefaults();
-				worldgenabstracttree.generate(world, random, new BlockPos(x, y, z));
+		}
+		if (((!(world.isRemote)) && net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(world, null))) {
+			if ((!((world.isAirBlock(new BlockPos((int) x, (int) (y - 1), (int) z)))
+					|| ((world.getBlockState(new BlockPos((int) x, (int) (y - 1), (int) z))).getBlock() == Blocks.BEDROCK.getDefaultState()
+							.getBlock())))) {
+				if ((!((world.getBlockState(new BlockPos((int) x, (int) (y - 1), (int) z))).getMaterial() == Material.GRASS))) {
+					world.setBlockState(new BlockPos((int) x, (int) (y - 1), (int) z), Blocks.GRASS.getDefaultState(), 3);
+				}
+				Random random = new Random();
+				WorldGenAbstractTree worldgenabstracttree = world.getBiome(new BlockPos(x, y, z)).getRandomTreeFeature(random);
+				if (worldgenabstracttree != null) {
+					worldgenabstracttree.setDecorationDefaults();
+					worldgenabstracttree.generate(world, random, new BlockPos(x, y, z));
+				}
 			}
 		}
 	}

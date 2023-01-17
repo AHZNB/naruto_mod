@@ -43,7 +43,7 @@ public class ItemUchiha extends ElementsNarutomodMod.ModElement {
 
 	@Override
 	public void initElements() {
-		ItemArmor.ArmorMaterial enuma = EnumHelper.addArmorMaterial("UCHIHA", "narutomod:sasuke_", 50, new int[]{2, 5, 6, 2}, 9, null, 0f)
+		ItemArmor.ArmorMaterial enuma = EnumHelper.addArmorMaterial("UCHIHA", "narutomod:sasuke_", 100, new int[]{2, 5, 6, 2}, 9, null, 0f)
 			.setRepairItem(new ItemStack(Items.LEATHER));
 		elements.items.add(() -> new ItemArmor(enuma, 0, EntityEquipmentSlot.CHEST) {
 			@Override
