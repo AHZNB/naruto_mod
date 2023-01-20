@@ -66,14 +66,18 @@ public class EntityLightningArc extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static boolean onStruck(Entity entity, DamageSource source, float damage) {
+		return onStruck(entity, source, damage, 100);
+	}
+
+	public static boolean onStruck(Entity entity, DamageSource source, float damage, int paralysisTicks) {
 		boolean retval = entity.attackEntityFrom(source, damage);
 		boolean flag = entity.isBurning();
 		entity.onStruckByLightning(new EntityLightningBolt(entity.world, 0, 0, 0, true));
 		if (!flag) {
 			entity.extinguish();
 		}
-		if (entity instanceof EntityLivingBase) {
-			((EntityLivingBase)entity).addPotionEffect(new PotionEffect(PotionParalysis.potion, 100, 2 + (int)(damage * 0.1f), false, false));
+		if (entity instanceof EntityLivingBase && paralysisTicks > 0) {
+			((EntityLivingBase)entity).addPotionEffect(new PotionEffect(PotionParalysis.potion, paralysisTicks, 2 + (int)(damage * 0.1f), false, false));
 		}
 		return retval;
 	}
@@ -234,11 +238,18 @@ public class EntityLightningArc extends ElementsNarutomodMod.ModElement {
 			if (this.damageAmount > 0f) {
 				for (Entity entity : this.world.getEntitiesWithinAABBExcludingEntity(this.excludeEntity, this.getEntityBoundingBox()
 				  .expand(this.ogEndVec.x - this.posX, this.ogEndVec.y - this.posY, this.ogEndVec.z - this.posZ).grow(1))) {
-					if (entity.getEntityBoundingBox().calculateIntercept(new Vec3d(this.posX, this.posY, this.posZ), this.ogEndVec) != null) {
+					if (entity.getEntityBoundingBox().calculateIntercept(this.getPositionVector(), this.ogEndVec) != null) {
 						if (this.resetHurtResistantTime) {
 							entity.hurtResistantTime = 10;
 						}
 						onStruck(entity, this.damageSource, this.damageAmount);
+						if (entity.isInWater()) {
+							for (EntityLivingBase entity1 : this.world.getEntitiesWithinAABB(EntityLivingBase.class, entity.getEntityBoundingBox().grow(10d))) {
+								if (entity1.isInWater()) {
+									onStruck(entity1, this.damageSource, this.damageAmount * (float)entity1.getDistance(entity) / 10f);
+								}
+							}
+						}
 					}
 				}
 			}

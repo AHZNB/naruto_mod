@@ -25,6 +25,7 @@ Jutsus:
  - wood permanent burial now has a 15 second cooldown
  - cellular acvtivation now uses 4x more chakra on hit than before
  - substitution jutsu now has 10 second cooldown between activations
+ - lava release jutsus damage increased
  - added Transformation jutsu and scroll
  - added 4-symbols sealing jutsu and scroll
  - added lightning release: black panther and scroll
@@ -80,6 +81,7 @@ Items:
  - added partial sand cloak texture
  - added KCM2 texture
  - added Kage hats and robe
+ - added sound village ninja suit
  
 Entities:
  - full Kurama mode: change Kurama texture to KCM texture

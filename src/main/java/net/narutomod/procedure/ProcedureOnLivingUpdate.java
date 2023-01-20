@@ -14,6 +14,7 @@ import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.common.MinecraftForge;
 
 import net.minecraft.world.World;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.EntityLiving;
@@ -21,7 +22,6 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.math.BlockPos;
 
 //import net.narutomod.item.ItemMangekyoSharinganObito;
 //import net.narutomod.item.ItemMangekyoSharinganEternal;

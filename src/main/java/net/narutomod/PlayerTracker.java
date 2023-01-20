@@ -239,21 +239,24 @@ public class PlayerTracker extends ElementsNarutomodMod.ModElement {
 			}
 		}
 
+		private boolean isOffCooldown(Entity entity) {
+			int i = entity.ticksExisted - EntityTracker.getOrCreate(entity).lastLoggedXpTime;
+			return i < 0 || i > 20;
+		}
+
 		@SubscribeEvent(priority = EventPriority.LOW)
 		public void onDamaged(LivingDamageEvent event) {
 			Entity targetEntity = event.getEntity();
 			Entity sourceEntity = event.getSource().getTrueSource();
 			float amount = event.getAmount();
 			if (!targetEntity.equals(sourceEntity) && amount > 0f) {
-				int i = targetEntity.ticksExisted - EntityTracker.getOrCreate(targetEntity).lastLoggedXpTime;
-				if ((i < 0 || i > 20) && targetEntity instanceof EntityPlayer && amount < ((EntityPlayer)targetEntity).getHealth()) {
+				if (this.isOffCooldown(targetEntity) && targetEntity instanceof EntityPlayer && amount < ((EntityPlayer)targetEntity).getHealth()) {
 					double bxp = getBattleXp((EntityPlayer)targetEntity);
 					logBattleExp((EntityPlayer)targetEntity, bxp < 1d ? 1d : (amount / MathHelper.sqrt(MathHelper.sqrt(bxp))));
 				}
 				if (sourceEntity instanceof EntityPlayer) {
 					double xp = 0.0d;
-					i = sourceEntity.ticksExisted - EntityTracker.getOrCreate(sourceEntity).lastLoggedXpTime;
-					if (targetEntity instanceof EntityLivingBase && (i < 0 || i > 20)) {
+					if (targetEntity instanceof EntityLivingBase && this.isOffCooldown(sourceEntity)) {
 						EntityLivingBase target = (EntityLivingBase)targetEntity;
 						int resistance = target.isPotionActive(MobEffects.RESISTANCE) 
 						 ? target.getActivePotionEffect(MobEffects.RESISTANCE).getAmplifier() : 1;

@@ -991,7 +991,7 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 		private static final ResourceLocation TEXTURE = new ResourceLocation("narutomod:textures/white_square.png");
 		private int sphereIdOutside;
 		private int sphereIdInside;
-		private final Sphere sphere;
+		private Sphere sphere;
 		private final TextureManager textureManager;
 
 		protected ExpandingSphere(TextureManager textureManagerIn, World worldIn, double x, double y, double z,
@@ -1006,21 +1006,6 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 			this.particleScale = size;
 			this.particleMaxAge = life;
 			this.textureManager = textureManagerIn;
-			this.sphere = new Sphere();
-			this.sphere.setDrawStyle(GLU.GLU_FILL);
-			this.sphere.setNormals(GLU.GLU_SMOOTH);
-			this.sphere.setOrientation(GLU.GLU_OUTSIDE);
-			this.sphereIdOutside = GLAllocation.generateDisplayLists(1);
-			GlStateManager.glNewList(this.sphereIdOutside, org.lwjgl.opengl.GL11.GL_COMPILE);
-			textureManagerIn.bindTexture(TEXTURE);
-			this.sphere.draw(1.0F, 32, 32);
-			GlStateManager.glEndList();	
-			this.sphere.setOrientation(GLU.GLU_INSIDE);
-			this.sphereIdInside = GLAllocation.generateDisplayLists(1);
-			GlStateManager.glNewList(this.sphereIdInside, org.lwjgl.opengl.GL11.GL_COMPILE);
-			textureManagerIn.bindTexture(TEXTURE);
-			this.sphere.draw(1.0F, 32, 32);
-			GlStateManager.glEndList();
 		}
 
 		@Override
@@ -1034,6 +1019,24 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 			this.move(this.motionX, this.motionY, this.motionZ);
 		}
 
+		private void compileDisplayList() {
+			this.sphere = new Sphere();
+			this.sphere.setDrawStyle(GLU.GLU_FILL);
+			this.sphere.setNormals(GLU.GLU_SMOOTH);
+			this.sphere.setOrientation(GLU.GLU_OUTSIDE);
+			this.sphereIdOutside = GLAllocation.generateDisplayLists(1);
+			GlStateManager.glNewList(this.sphereIdOutside, org.lwjgl.opengl.GL11.GL_COMPILE);
+			this.textureManager.bindTexture(TEXTURE);
+			this.sphere.draw(1.0F, 32, 32);
+			GlStateManager.glEndList();	
+			this.sphere.setOrientation(GLU.GLU_INSIDE);
+			this.sphereIdInside = GLAllocation.generateDisplayLists(1);
+			GlStateManager.glNewList(this.sphereIdInside, org.lwjgl.opengl.GL11.GL_COMPILE);
+			this.textureManager.bindTexture(TEXTURE);
+			this.sphere.draw(1.0F, 32, 32);
+			GlStateManager.glEndList();
+		}
+
 		@Override
 		public void renderParticle(BufferBuilder buffer, Entity entityIn, float partialTicks, 
 		 float rotationX, float rotationZ, float rotationYZ, float rotationXY, float rotationXZ) {
@@ -1044,7 +1047,9 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 			if (this.particleAge > 0.8f * this.particleMaxAge) {
 				f1 = 1.0f - (this.particleAge - 0.8f * this.particleMaxAge) / (0.2f * this.particleMaxAge);
 			}
-			//this.textureManager.bindTexture(TEXTURE);
+			if (this.sphere == null) {
+				this.compileDisplayList();
+			}
 			GlStateManager.enableAlpha();
 			GlStateManager.alphaFunc(0x204, 0.0f);
 			GlStateManager.enableBlend();

@@ -343,7 +343,7 @@ public class EntityTruthSeekerBall extends ElementsNarutomodMod.ModElement {
 				return;
 			if (!this.world.isRemote) {
 				float radius = this.getEntityScale() * 4f + 15f;
-				Particles.spawnParticle(this. world, Particles.Types.EXPANDING_SPHERE, this.posX, this.posY, this.posZ, 1,
+				Particles.spawnParticle(this.world, Particles.Types.EXPANDING_SPHERE, this.posX, this.posY, this.posZ, 1,
 				 0d, 0d, 0d, 0d, 0d, 0d, 192d, (int)(radius * 10f), (int)(radius * 4), 0);
 				//EntitySpecialEffect.spawn(this.world, EntitySpecialEffect.Type.EXPANDING_SPHERES_FADE_TO_BLACK,
 				// radius, (int)(radius * 2), this.posX, this.posY, this.posZ);

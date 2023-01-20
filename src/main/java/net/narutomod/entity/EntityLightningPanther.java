@@ -57,7 +57,7 @@ public class EntityLightningPanther extends ElementsNarutomodMod.ModElement {
 	public void initElements() {
 		elements.entities
 				.add(() -> EntityEntryBuilder.create().entity(EC.class).id(new ResourceLocation("narutomod", "lightning_panther"), ENTITYID)
-						.name("lightning_panther").tracker(64, 3, true).egg(-1, -1).build());
+						.name("lightning_panther").tracker(64, 3, true).build());
 	}
 
 	@SideOnly(Side.CLIENT)

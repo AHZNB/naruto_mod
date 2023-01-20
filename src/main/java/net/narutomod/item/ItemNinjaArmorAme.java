@@ -23,6 +23,8 @@ import net.minecraft.init.MobEffects;
 public class ItemNinjaArmorAme extends ElementsNarutomodMod.ModElement {
 	@GameRegistry.ObjectHolder("narutomod:ninja_armor_amehelmet")
 	public static final Item helmet = null;
+	@GameRegistry.ObjectHolder("narutomod:ninja_armor_amelegs")
+	public static final Item legs = null;
 
 	public ItemNinjaArmorAme(ElementsNarutomodMod instance) {
 		super(instance, 749);
@@ -55,11 +57,37 @@ public class ItemNinjaArmorAme extends ElementsNarutomodMod.ModElement {
 				}
 			}
 		}.setUnlocalizedName("ninja_armor_amehelmet").setRegistryName("ninja_armor_amehelmet").setCreativeTab(TabModTab.tab));
+		elements.items.add(() -> new ItemNinjaArmor.Base(ItemNinjaArmor.Type.AME, EntityEquipmentSlot.LEGS) {
+			@Override
+			protected ItemNinjaArmor.ArmorData setArmorData(ItemNinjaArmor.Type type, EntityEquipmentSlot slotIn) {
+				return new Armor4Slot();
+			}
+
+			class Armor4Slot extends ItemNinjaArmor.ArmorData {
+				@SideOnly(Side.CLIENT)
+				@Override
+				protected void init() {
+					ItemNinjaArmor.ModelNinjaArmor model1 = new ItemNinjaArmor.ModelNinjaArmor(ItemNinjaArmor.Type.AME);
+					model1.vest.showModel = false;
+					model1.rightArmVestLayer.showModel = false;
+					model1.leftArmVestLayer.showModel = false;
+					this.model = model1;
+					this.texture = "narutomod:textures/amearmor.png";
+				}
+				@SideOnly(Side.CLIENT)
+				@Override
+				public void setSlotVisible() {
+					this.model.bipedRightArm.showModel = true;
+					this.model.bipedLeftArm.showModel = true;
+				}
+			}
+		}.setUnlocalizedName("ninja_armor_amelegs").setRegistryName("ninja_armor_amelegs").setCreativeTab(TabModTab.tab));
 	}
 
 	@SideOnly(Side.CLIENT)
 	@Override
 	public void registerModels(ModelRegistryEvent event) {
 		ModelLoader.setCustomModelResourceLocation(helmet, 0, new ModelResourceLocation("narutomod:ninja_armor_amehelmet", "inventory"));
+		ModelLoader.setCustomModelResourceLocation(legs, 0, new ModelResourceLocation("narutomod:ninja_armor_amelegs", "inventory"));
 	}
 }

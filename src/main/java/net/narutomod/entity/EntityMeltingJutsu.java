@@ -9,6 +9,11 @@ import net.minecraftforge.fml.client.registry.RenderingRegistry;
 
 import net.minecraft.world.World;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.SoundEvent;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.model.ModelBox;
@@ -17,17 +22,14 @@ import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.SoundEvent;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.block.material.Material;
 
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.item.ItemJutsu;
+import net.narutomod.Particles;
 import net.narutomod.ElementsNarutomodMod;
 
 import java.util.List;
@@ -144,7 +146,7 @@ public class EntityMeltingJutsu extends ElementsNarutomodMod.ModElement {
 					this.setEntityScale(0.5F + 3.5F * (float)this.ticksInAir / this.growTime);
 				}
 				if (this.ticksInAir == this.rand.nextInt(99) + 1) {
-					this.playSound((SoundEvent)SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:movement")),
+					this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:movement")),
 					 0.8f, this.rand.nextFloat() * 0.4f + 0.8f);
 				}
 			}
@@ -159,6 +161,13 @@ public class EntityMeltingJutsu extends ElementsNarutomodMod.ModElement {
 				if (result.entityHit instanceof EC) {
 					return;
 				}
+				if (result.entityHit != null) {
+					result.entityHit.hurtResistantTime = 10;
+					result.entityHit.attackEntityFrom(ItemJutsu.causeJutsuDamage(this, this.shootingEntity), 4f);
+				}
+				Particles.spawnParticle(this.world, Particles.Types.SMOKE, result.hitVec.x, result.hitVec.y, result.hitVec.z,
+				 100, this.width, 0.0d, this.width, 0d, 0d, 0d, 0xB0202020, 20 + this.rand.nextInt(30));
+				this.playSound(SoundEvents.BLOCK_LAVA_AMBIENT, 1f, this.rand.nextFloat() * 0.4f + 0.8f);
 				BlockPos pos = result.typeOfHit == RayTraceResult.Type.BLOCK 
 				 ? result.getBlockPos().offset(result.sideHit) : new BlockPos(result.hitVec);
 				if (this.world.isAirBlock(pos)) {

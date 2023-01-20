@@ -49,7 +49,7 @@ public class EntityEarthGolem extends ElementsNarutomodMod.ModElement {
 	public void initElements() {
 		elements.entities
 				.add(() -> EntityEntryBuilder.create().entity(EC.class).id(new ResourceLocation("narutomod", "earth_golem"), ENTITYID)
-						.name("earth_golem").tracker(64, 3, true).egg(-7835040, -11650001).build());
+						.name("earth_golem").tracker(64, 3, true).build());
 	}
 
 	@SideOnly(Side.CLIENT)

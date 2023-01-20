@@ -81,8 +81,9 @@ public class ItemNinjaArmor extends ElementsNarutomodMod.ModElement {
 	@SideOnly(Side.CLIENT)
 	public static class ModelNinjaArmor extends ModelBiped {
 		//private final ModelRenderer bipedHead;
+		public final ModelRenderer headwear;
 		//private final ModelRenderer bipedHeadwear;
-		private final ModelRenderer mask;
+		//private final ModelRenderer mask;
 		public final ModelRenderer collar;
 		//private final ModelRenderer bipedBody;
 		public final ModelRenderer shirt;
@@ -107,7 +108,7 @@ public class ItemNinjaArmor extends ElementsNarutomodMod.ModElement {
 		//private final ModelRenderer headbandLeftArm;
 		//private final ModelRenderer bipedRightLeg;
 		public final ModelRenderer rightLegLayer;
-		public final ModelRenderer StoneCloth;
+		public final ModelRenderer stoneCloth;
 		public final ModelRenderer rightLegPad;
 		//private final ModelRenderer headbandRightLeg;
 		//private final ModelRenderer bipedLeftLeg;
@@ -126,31 +127,33 @@ public class ItemNinjaArmor extends ElementsNarutomodMod.ModElement {
 			bipedHead = new ModelRenderer(this);
 			bipedHead.setRotationPoint(0.0F, 0.0F, 0.0F);
 			bipedHead.cubeList.add(new ModelBox(bipedHead, 0, 0, -4.0F, -8.0F, -4.0F, 8, 8, 8, 0.25F, false));
-			bipedHead.cubeList.add(new ModelBox(bipedHead, 0, 48, -4.0F, -8.0F, -4.0F, 8, 8, 8, 0.15F, false));
 	
-			mask = new ModelRenderer(this);
+			headwear = new ModelRenderer(this);
 			if (type == Type.AME) {
-				mask.setRotationPoint(0.0F, -1.125F, -4.4F);
-				bipedHead.addChild(mask);
-				setRotationAngle(mask, 0.0873F, 0.0F, 0.0F);
-				mask.cubeList.add(new ModelBox(mask, 39, 9, -2.0F, -1.6F, -0.9F, 4, 3, 2, -0.2F, false));
+				headwear.setRotationPoint(0.0F, -1.125F, -4.4F);
+				bipedHead.addChild(headwear);
+				setRotationAngle(headwear, 0.0873F, 0.0F, 0.0F);
+				headwear.cubeList.add(new ModelBox(headwear, 39, 9, -2.0F, -1.6F, -0.9F, 4, 3, 2, -0.2F, false));
 				ModelRenderer bone2 = new ModelRenderer(this);
 				bone2.setRotationPoint(-2.1645F, -0.6361F, -0.2913F);
-				mask.addChild(bone2);
+				headwear.addChild(bone2);
 				setRotationAngle(bone2, -0.2618F, 0.0F, 0.1309F);
 				bone2.cubeList.add(new ModelBox(bone2, 50, 11, -0.5F, -0.1F, -0.5F, 1, 2, 1, -0.1F, false));
 				bone2.cubeList.add(new ModelBox(bone2, 54, 11, -0.5F, 1.7F, -0.5F, 1, 2, 1, 0.2F, false));
 			} else if (type == Type.SAMURAI) {
-				mask.setRotationPoint(0.0F, -0.775F, -3.175F);
-				bipedHead.addChild(mask);
-				setRotationAngle(mask, 0.6109F, 0.0F, 0.0F);				
+				headwear.setRotationPoint(0.0F, -0.775F, -3.175F);
+				bipedHead.addChild(headwear);
+				setRotationAngle(headwear, 0.6109F, 0.0F, 0.0F);				
 				ModelRenderer cube_r1 = new ModelRenderer(this);
 				cube_r1.setRotationPoint(0.7071F, 0.0F, 0.0F);
-				mask.addChild(cube_r1);
+				headwear.addChild(cube_r1);
 				setRotationAngle(cube_r1, 0.0F, 0.0F, -0.7854F);
 				cube_r1.cubeList.add(new ModelBox(cube_r1, 28, 0, -2.0F, -1.975F, -0.975F, 3, 3, 2, 0.3F, false));
+			} else if (type == Type.SUNA || type == Type.IWA || type == Type.KUMO) {
+				bipedHead.addChild(headwear);
+				headwear.cubeList.add(new ModelBox(headwear, 0, 48, -4.0F, -8.0F, -4.0F, 8, 8, 8, 0.15F, false));
 			} else {
-				mask.showModel = false;
+				headwear.showModel = false;
 			}
 
 			bipedHeadwear = new ModelRenderer(this);
@@ -158,9 +161,9 @@ public class ItemNinjaArmor extends ElementsNarutomodMod.ModElement {
 			
 			collar = new ModelRenderer(this);
 			if (type == Type.KONOHA || type == Type.SUNA || type == Type.WAR1) {
-				collar.setRotationPoint(0.0F, 24.0F, 0.0F);
+				collar.setRotationPoint(0.0F, 0.0F, 0.0F);
 				bipedHeadwear.addChild(collar);
-				collar.cubeList.add(new ModelBox(collar, 34, 8, -4.0F, -25.1F, -3.1F, 8, 1, 7, 0.8F, false));
+				collar.cubeList.add(new ModelBox(collar, 32, 7, -4.0F, -1.1F, -4.0F, 8, 1, 8, 0.8F, false));
 			} else {
 				collar.showModel = false;
 			}
@@ -325,14 +328,14 @@ public class ItemNinjaArmor extends ElementsNarutomodMod.ModElement {
 			rightLegLayer.cubeList.add(new ModelBox(rightLegLayer, 0, 32, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.2F, false));
 			rightLegLayer.cubeList.add(new ModelBox(rightLegLayer, 0, 0, -2.6F, 1.0F, -1.0F, 1, 4, 2, 0.0F, false));
 	
-			StoneCloth = new ModelRenderer(this);
+			stoneCloth = new ModelRenderer(this);
 			if (type == Type.IWA) {
-				StoneCloth.setRotationPoint(0.0F, 6.0F, 0.0F);
-				bipedRightLeg.addChild(StoneCloth);
-				setRotationAngle(StoneCloth, 0.0F, 0.0F, 0.1745F);
-				StoneCloth.cubeList.add(new ModelBox(StoneCloth, 36, 0, -3.2F, -6.8F, -2.0F, 4, 7, 4, 0.25F, false));
+				stoneCloth.setRotationPoint(0.0F, 6.0F, 0.0F);
+				bipedRightLeg.addChild(stoneCloth);
+				setRotationAngle(stoneCloth, 0.0F, 0.0F, 0.1745F);
+				stoneCloth.cubeList.add(new ModelBox(stoneCloth, 36, 0, -3.2F, -6.8F, -2.0F, 4, 7, 4, 0.25F, false));
 			} else {
-				StoneCloth.showModel = false;
+				stoneCloth.showModel = false;
 			}
 	
 			rightLegPad = new ModelRenderer(this);

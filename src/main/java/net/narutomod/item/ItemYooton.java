@@ -44,8 +44,9 @@ import net.narutomod.entity.EntityScalableProjectile;
 import net.narutomod.entity.EntityMeltingJutsu;
 import net.narutomod.entity.EntityLavaChakraMode;
 import net.narutomod.procedure.ProcedureUtils;
-import net.narutomod.Particles;
 import net.narutomod.creativetab.TabModTab;
+import net.narutomod.Particles;
+import net.narutomod.PlayerTracker;
 import net.narutomod.NarutomodModVariables;
 import net.narutomod.ElementsNarutomodMod;
 
@@ -56,8 +57,8 @@ public class ItemYooton extends ElementsNarutomodMod.ModElement {
 	@GameRegistry.ObjectHolder("narutomod:yooton")
 	public static final Item block = null;
 	public static final int ENTITYID = 270;
-	public static final ItemJutsu.JutsuEnum ROCKS = new ItemJutsu.JutsuEnum(0, "magmaball", 'S', 200, 30d, new EntityMagmaBall.Jutsu());
-	public static final ItemJutsu.JutsuEnum STREAM = new ItemJutsu.JutsuEnum(1, "melting_jutsu", 'S', 200, 30d, new EntityMeltingJutsu.EC.Jutsu());
+	public static final ItemJutsu.JutsuEnum ROCKS = new ItemJutsu.JutsuEnum(0, "magmaball", 'S', 200, 40d, new EntityMagmaBall.Jutsu());
+	public static final ItemJutsu.JutsuEnum STREAM = new ItemJutsu.JutsuEnum(1, "melting_jutsu", 'S', 200, 50d, new EntityMeltingJutsu.EC.Jutsu());
 	public static final ItemJutsu.JutsuEnum CHAKRAMODE = new ItemJutsu.JutsuEnum(2, "lava_chakra_mode", 'S', 250, 10d, new EntityLavaChakraMode.EC.Jutsu());
 
 	public ItemYooton(ElementsNarutomodMod instance) {
@@ -102,14 +103,23 @@ public class ItemYooton extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		protected float getPower(ItemStack stack, EntityLivingBase entity, int timeLeft) {
-			return this.getPower(stack, entity, timeLeft, 1f, this.getCurrentJutsu(stack) == ROCKS ? 15f : 30f);
+			ItemJutsu.JutsuEnum jutsu = this.getCurrentJutsu(stack);
+			if (jutsu == ROCKS) {
+				return this.getPower(stack, entity, timeLeft, 0.5f, 50f);
+			} else if (jutsu == STREAM) {
+				return this.getPower(stack, entity, timeLeft, 1.0f, 200f);
+			}
+			return 1f;
 		}
 
 		@Override
 		protected float getMaxPower(ItemStack stack, EntityLivingBase entity) {
 			float mp = super.getMaxPower(stack, entity);
-			if (this.getCurrentJutsu(stack) == ROCKS) {
-				return Math.min(mp, 50f);
+			ItemJutsu.JutsuEnum jutsu = this.getCurrentJutsu(stack);
+			if (jutsu == ROCKS) {
+				return Math.min(mp, 20f);
+			} else if (jutsu == STREAM) {
+				return Math.min(mp, 10f);
 			}
 			return mp;
 		}
@@ -165,7 +175,7 @@ public class ItemYooton extends ElementsNarutomodMod.ModElement {
 			this.setOGSize(1.0F, 1.0F);
 			this.setEntityScale(scale);
 			this.explosionSize = Math.max((int)scale - 1, 0);
-			this.damage = scale * 0.1f * (shooter instanceof EntityPlayer ? ((EntityPlayer)shooter).experienceLevel : 5);
+			this.damage = scale * 20f;
 			Vec3d vec3d = shooter.getLookVec();
 			this.setPosition(shooter.posX + vec3d.x, shooter.posY + 1.2D + vec3d.y, shooter.posZ + vec3d.z);
 		}
