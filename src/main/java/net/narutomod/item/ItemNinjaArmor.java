@@ -160,7 +160,7 @@ public class ItemNinjaArmor extends ElementsNarutomodMod.ModElement {
 			bipedHeadwear.setRotationPoint(0.0F, 0.0F, 0.0F);
 			
 			collar = new ModelRenderer(this);
-			if (type == Type.KONOHA || type == Type.SUNA || type == Type.WAR1) {
+			if (type == Type.KONOHA || type == Type.SUNA || type == Type.WAR1 || type == Type.OBITOWAR) {
 				collar.setRotationPoint(0.0F, 0.0F, 0.0F);
 				bipedHeadwear.addChild(collar);
 				collar.cubeList.add(new ModelBox(collar, 32, 7, -4.0F, -1.1F, -4.0F, 8, 1, 8, 0.8F, false));
@@ -223,6 +223,25 @@ public class ItemNinjaArmor extends ElementsNarutomodMod.ModElement {
 					vestGroup.addChild(flapLeft);
 					setRotationAngle(flapLeft, 0.0F, 0.0F, 1.309F);
 					flapLeft.cubeList.add(new ModelBox(flapLeft, 25, 50, 0.3F, 0.425F, -2.0F, 7, 1, 4, 0.31F, false));
+					break;
+				case OTO:
+					ModelRenderer neckwear = new ModelRenderer(this);
+					neckwear.setRotationPoint(0.0F, 0.0F, 0.0F);
+					vest.addChild(neckwear);
+					setRotationAngle(neckwear, 0.0873F, 0.0F, 0.0F);
+					neckwear.cubeList.add(new ModelBox(neckwear, 32, 6, -4.0F, -0.25F, -3.0F, 8, 2, 6, 0.5F, false));
+				case OBITOWAR:
+					vest.addChild(vestGroup);
+					ModelRenderer bone = new ModelRenderer(this);
+					bone.setRotationPoint(0.0F, 10.75F, -2.35F);
+					vestGroup.addChild(bone);
+					setRotationAngle(bone, -0.2793F, 0.0F, 0.0F);
+					bone.cubeList.add(new ModelBox(bone, 24, 52, -4.0F, 0.5F, 0.5F, 8, 8, 4, 0.5F, false));
+					ModelRenderer bone3 = new ModelRenderer(this);
+					bone3.setRotationPoint(0.0F, 10.75F, 2.35F);
+					vestGroup.addChild(bone3);
+					setRotationAngle(bone3, 0.2793F, 0.0F, 0.0F);
+					bone3.cubeList.add(new ModelBox(bone3, 0, 52, -4.0F, 0.5F, -4.5F, 8, 8, 4, 0.5F, false));
 					break;
 				default:
 					vestGroup.showModel = false;
@@ -434,6 +453,8 @@ public class ItemNinjaArmor extends ElementsNarutomodMod.ModElement {
 		FISHNET,
 		AME,
 		WAR1,
-		SAMURAI
+		SAMURAI,
+		OTO,
+		OBITOWAR
 	}
 }

@@ -26,6 +26,7 @@ Jutsus:
  - cellular acvtivation now uses 4x more chakra on hit than before
  - substitution jutsu now has 10 second cooldown between activations
  - lava release jutsus damage increased
+ - wood prison now only forms the sides and top, max size 40
  - added Transformation jutsu and scroll
  - added 4-symbols sealing jutsu and scroll
  - added lightning release: black panther and scroll
@@ -81,7 +82,8 @@ Items:
  - added partial sand cloak texture
  - added KCM2 texture
  - added Kage hats and robe
- - added sound village ninja suit
+ - added rain/sound village clothes
+ - added Obito 4th ninja war mask and clothes
  
 Entities:
  - full Kurama mode: change Kurama texture to KCM texture

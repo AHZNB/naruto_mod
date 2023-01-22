@@ -29,6 +29,7 @@ import net.minecraft.world.World;
 public class ItemMaskAnbu1 extends ElementsNarutomodMod.ModElement {
 	@GameRegistry.ObjectHolder("narutomod:mask_anbu_1helmet")
 	public static final Item helmet = null;
+	public static ItemArmor.ArmorMaterial ENUMA = EnumHelper.addArmorMaterial("NINJA_MASK", "narutomod:sasuke_", 25, new int[]{2, 5, 6, 2}, 0, null, 0f);
 
 	public ItemMaskAnbu1(ElementsNarutomodMod instance) {
 		super(instance, 809);
@@ -36,9 +37,7 @@ public class ItemMaskAnbu1 extends ElementsNarutomodMod.ModElement {
 
 	@Override
 	public void initElements() {
-		ItemArmor.ArmorMaterial enuma = EnumHelper.addArmorMaterial("MASK_ANBU_1", "narutomod:sasuke_", 25, new int[]{2, 5, 6, 2}, 0,
-				(net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("")), 0f);
-		elements.items.add(() -> new ItemArmor(enuma, 0, EntityEquipmentSlot.HEAD) {
+		elements.items.add(() -> new ItemArmor(ENUMA, 0, EntityEquipmentSlot.HEAD) {
 			@Override
 			@SideOnly(Side.CLIENT)
 			public ModelBiped getArmorModel(EntityLivingBase living, ItemStack stack, EntityEquipmentSlot slot, ModelBiped defaultModel) {

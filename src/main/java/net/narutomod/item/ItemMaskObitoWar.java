@@ -20,17 +20,16 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.model.ModelBiped;
-import net.minecraft.world.World;
 
 @ElementsNarutomodMod.ModElement.Tag
-public class ItemMaskObito1 extends ElementsNarutomodMod.ModElement {
-	@GameRegistry.ObjectHolder("narutomod:mask_obito_1helmet")
+public class ItemMaskObitoWar extends ElementsNarutomodMod.ModElement {
+	@GameRegistry.ObjectHolder("narutomod:mask_obito_warhelmet")
 	public static final Item helmet = null;
 	@SideOnly(Side.CLIENT)
 	private ModelBiped maskModel;
 
-	public ItemMaskObito1(ElementsNarutomodMod instance) {
-		super(instance, 813);
+	public ItemMaskObitoWar(ElementsNarutomodMod instance) {
+		super(instance, 827);
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -45,7 +44,7 @@ public class ItemMaskObito1 extends ElementsNarutomodMod.ModElement {
 			@Override
 			@SideOnly(Side.CLIENT)
 			public ModelBiped getArmorModel(EntityLivingBase living, ItemStack stack, EntityEquipmentSlot slot, ModelBiped defaultModel) {
-				ModelBiped armorModel = ItemMaskObito1.this.maskModel;
+				ModelBiped armorModel = ItemMaskObitoWar.this.maskModel;
 				armorModel.isSneak = living.isSneaking();
 				armorModel.isRiding = living.isRiding();
 				armorModel.isChild = living.isChild();
@@ -53,23 +52,15 @@ public class ItemMaskObito1 extends ElementsNarutomodMod.ModElement {
 			}
 
 			@Override
-			public void onUpdate(ItemStack itemstack, World world, Entity entity, int par4, boolean par5) {
-				super.onUpdate(itemstack, world, entity, par4, par5);
-				if (entity.ticksExisted % 10 == 6 && entity instanceof EntityLivingBase) {
-					entity.setAlwaysRenderNameTag(!((EntityLivingBase)entity).getItemStackFromSlot(EntityEquipmentSlot.HEAD).equals(itemstack));
-				}
-			}
-			
-			@Override
 			public String getArmorTexture(ItemStack stack, Entity entity, EntityEquipmentSlot slot, String type) {
-				return "narutomod:textures/mask_obito1.png";
+				return "narutomod:textures/mask_obito3.png";
 			}
-		}.setUnlocalizedName("mask_obito_1helmet").setRegistryName("mask_obito_1helmet").setCreativeTab(TabModTab.tab));
+		}.setUnlocalizedName("mask_obito_warhelmet").setRegistryName("mask_obito_warhelmet").setCreativeTab(TabModTab.tab));
 	}
 
 	@SideOnly(Side.CLIENT)
 	@Override
 	public void registerModels(ModelRegistryEvent event) {
-		ModelLoader.setCustomModelResourceLocation(helmet, 0, new ModelResourceLocation("narutomod:mask_obito_1helmet", "inventory"));
+		ModelLoader.setCustomModelResourceLocation(helmet, 0, new ModelResourceLocation("narutomod:mask_obito_warhelmet", "inventory"));
 	}
 }
