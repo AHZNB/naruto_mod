@@ -202,7 +202,7 @@ public class PlayerTracker extends ElementsNarutomodMod.ModElement {
 	}
 
 	public class PlayerHook {
-		private final Map<Integer, Double> forceSendMap = Maps.newHashMap();
+		private final Map<Integer, Map<String, Object>> persistentDataMap = Maps.newHashMap();
 		
 		@SubscribeEvent
 		public void onTick(TickEvent.PlayerTickEvent event) {
@@ -293,17 +293,32 @@ public class PlayerTracker extends ElementsNarutomodMod.ModElement {
 		@SubscribeEvent
 		public void onRespawn(PlayerEvent.PlayerRespawnEvent event) {
 			Integer i = Integer.valueOf(event.player.getEntityId());
-			if (this.forceSendMap.containsKey(i)) {
-				event.player.getEntityData().setDouble(BATTLEXP, this.forceSendMap.get(i).doubleValue());
-				event.player.getEntityData().setBoolean(FORCE_SEND, true);
-				this.forceSendMap.remove(i);
+			if (this.persistentDataMap.containsKey(i)) {
+				Map<String, Object> map = this.persistentDataMap.get(i);
+				for (Map.Entry<String, Object> entry : map.entrySet()) {
+					if (entry.getValue() instanceof Boolean) {
+						event.player.getEntityData().setBoolean(entry.getKey(), ((Boolean)entry.getValue()).booleanValue());
+					} else if (entry.getValue() instanceof Integer) {
+						event.player.getEntityData().setInteger(entry.getKey(), ((Integer)entry.getValue()).intValue());
+					} else if (entry.getValue() instanceof Float) {
+						event.player.getEntityData().setFloat(entry.getKey(), ((Float)entry.getValue()).floatValue());
+					} else if (entry.getValue() instanceof Double) {
+						event.player.getEntityData().setDouble(entry.getKey(), ((Double)entry.getValue()).doubleValue());
+					}
+				}
+				this.persistentDataMap.remove(i);
 			}
 		}
 
 		@SubscribeEvent
 		public void onClone(net.minecraftforge.event.entity.player.PlayerEvent.Clone event) {
 			EntityPlayer oldPlayer = event.getOriginal();
-			this.forceSendMap.put(Integer.valueOf(oldPlayer.getEntityId()), Double.valueOf(getBattleXp(oldPlayer)));
+			Map<String, Object> map = Maps.newHashMap();
+			map.put(BATTLEXP, Double.valueOf(getBattleXp(oldPlayer)));
+			map.put(FORCE_SEND, Boolean.valueOf(true));
+			map.put("MedicalNinjaChecked", Boolean.valueOf(oldPlayer.getEntityData().getBoolean("MedicalNinjaChecked")));
+			map.put("ForceExtinguish", Integer.valueOf(5));
+			this.persistentDataMap.put(Integer.valueOf(oldPlayer.getEntityId()), map);
 		}
 
 		@SubscribeEvent

@@ -27,6 +27,7 @@ Jutsus:
  - substitution jutsu now has 10 second cooldown between activations
  - lava release jutsus damage increased
  - wood prison now only forms the sides and top, max size 40
+ - changed lighting paralysis effect: entity is slowed but can still move
  - added Transformation jutsu and scroll
  - added 4-symbols sealing jutsu and scroll
  - added lightning release: black panther and scroll
@@ -82,7 +83,7 @@ Items:
  - added partial sand cloak texture
  - added KCM2 texture
  - added Kage hats and robe
- - added rain/sound village clothes
+ - added rain/sound village and anbu clothes
  - added Obito 4th ninja war mask and clothes
  
 Entities:

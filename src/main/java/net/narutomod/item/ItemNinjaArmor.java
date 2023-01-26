@@ -455,6 +455,7 @@ public class ItemNinjaArmor extends ElementsNarutomodMod.ModElement {
 		WAR1,
 		SAMURAI,
 		OTO,
-		OBITOWAR
+		OBITOWAR,
+		OTHER
 	}
 }

@@ -91,9 +91,16 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 
 	public static void spawnParticle(World world, Types type, double x, double y, double z, int count, 
 	 double xOff, double yOff, double zOff, double xSpeed, double ySpeed, double zSpeed, double renderDistance, int... args) {
-		Renderer pr = new Renderer(world, renderDistance);
-		pr.spawnParticles(type, x, y, z, count, xOff, yOff, zOff, xSpeed, ySpeed, zSpeed, args);
-		pr.send();
+		if (world.isRemote) {
+			new Renderer().spawnParticles(type, x, y, z, count, xOff, yOff, zOff, xSpeed, ySpeed, zSpeed, args);
+		} else {
+			NarutomodMod.PACKET_HANDLER.sendToAllAround(new ParticleRenderer.Message(
+			 new ParticleRenderer.MessageContents(type, x, y, z, count, xOff, yOff, zOff, xSpeed, ySpeed, zSpeed, args)),
+			 new NetworkRegistry.TargetPoint(world.provider.getDimension(), x, y, z, renderDistance));
+		}
+		//Renderer pr = new Renderer(world, renderDistance);
+		//pr.spawnParticles(type, x, y, z, count, xOff, yOff, zOff, xSpeed, ySpeed, zSpeed, args);
+		//pr.send();
 	}
 
 	public static abstract class ParticleRenderer {
@@ -116,7 +123,7 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 		}
 
 		public void send() {
-			if (!this.world.isRemote && !this.msgQueue.isEmpty()) {
+			if (this.world instanceof WorldServer && !this.msgQueue.isEmpty()) {
 				double x = 0d;
 				double y = 0d;
 				double z = 0d;
@@ -128,7 +135,7 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 				x /= this.msgQueue.size();
 				y /= this.msgQueue.size();
 				z /= this.msgQueue.size();
-				NarutomodMod.PACKET_HANDLER.sendToAllAround(new ParticleRenderer.Message(this.msgQueue),
+				NarutomodMod.PACKET_HANDLER.sendToAllAround(new Message(this.msgQueue),
 				  new NetworkRegistry.TargetPoint(this.world.provider.getDimension(), x, y, z, this.renderDistance));
 			}
 		}
@@ -201,7 +208,11 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 
 			@Override
 			public String toString() {
-				return ""+this.type+", "+count+", ("+x+", "+y+", "+z+"), ("+ox+", "+oy+", "+oz+"), ("+speedx+", "+speedy+", "+speedz+"), "+parms;
+				String s = "";
+				for (int i = 0; i < parms.length; i++) {
+					s += parms[i] + ", ";
+				}
+				return ""+this.type+", "+count+", ("+x+", "+y+", "+z+"), ("+ox+", "+oy+", "+oz+"), ("+speedx+", "+speedy+", "+speedz+"), "+s;
 			}
 		}
 		
@@ -210,6 +221,11 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 			List<MessageContents> list;
 
 			public Message() {}
+
+			public Message(MessageContents msgcontents) {
+				this.messages = 1;
+				this.list = Lists.newArrayList(msgcontents);
+			}
 
 			public Message(List<MessageContents> listIn) {
 				this.messages = listIn.size();
@@ -267,17 +283,20 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void spawnParticles(Particles.Types type, double x, double y, double z, int count, 
 		 double xOff, double yOff, double zOff, double xSpeed, double ySpeed, double zSpeed, int... args) {
-			for (int i = 0; i < count; i++) {
-				double d1 = rand.nextGaussian() * xOff;
-				double d2 = rand.nextGaussian() * yOff;
-				double d3 = rand.nextGaussian() * zOff;
-				if (count > 5) {
-					xSpeed *= rand.nextDouble() * 0.3d + 0.85d;
-					ySpeed *= rand.nextDouble() * 0.3d + 0.85d;
-					zSpeed *= rand.nextDouble() * 0.3d + 0.85d;
+			if (this.world instanceof WorldServer) {
+				super.spawnParticles(type, x, y, z, count, xOff, yOff, zOff, xSpeed, ySpeed, zSpeed, args);
+			} else {
+				for (int i = 0; i < count; i++) {
+					double d1 = rand.nextGaussian() * xOff;
+					double d2 = rand.nextGaussian() * yOff;
+					double d3 = rand.nextGaussian() * zOff;
+					if (count > 5) {
+						xSpeed *= rand.nextDouble() * 0.3d + 0.85d;
+						ySpeed *= rand.nextDouble() * 0.3d + 0.85d;
+						zSpeed *= rand.nextDouble() * 0.3d + 0.85d;
+					}
+					Minecraft.getMinecraft().renderGlobal.spawnParticle(type.getID(), true, x + d1, y + d2, z + d3, xSpeed, ySpeed, zSpeed, args);
 				}
-				Minecraft.getMinecraft().renderGlobal.spawnParticle(type.getID(), true, x + d1, y + d2, z + d3, xSpeed, ySpeed, zSpeed, args);
-				//world.spawnAlwaysVisibleParticle(type.getID(), x + d1, y + d2, z + d3, xSpeed, ySpeed, zSpeed, args);
 			}
 		}
 	}

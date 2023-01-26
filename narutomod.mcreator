@@ -1,8 +1,8 @@
 {
   "id_map": {
-    "GUI": 62,
     "ENTITY": 414,
-    "DIMENSION": 13
+    "DIMENSION": 13,
+    "GUI": 62
   },
   "mod_elements": [
     {
@@ -6878,6 +6878,21 @@
         "eb": false,
         "ec": false
       }
+    },
+    {
+      "name": "AnbuRobe",
+      "type": "armor",
+      "sortid": 828,
+      "compiles": true,
+      "locked_code": true,
+      "ids": {},
+      "registry_name": "anbu_robe",
+      "metadata": {
+        "eh": false,
+        "el": false,
+        "eb": false,
+        "ec": true
+      }
     }
   ],
   "variable_elements": [
@@ -7886,6 +7901,7 @@
       "subtitles.spiked": "",
       "tooltip.shikotsumyaku.danceclementisflower": "Clematis Dance: Flower",
       "item.zzz.name": "Zzz",
+      "item.anbu_robelegs.name": "Anbu Robe Leggings",
       "item.ninja_armor_kirilegs.name": "Ninja Pants (Kirigakure)",
       "entity.zabuza_momochi.name": "Zabuza Momochi",
       "entity.earth_golem.name": "Earth Golem",
@@ -8202,6 +8218,7 @@
       "item.samurai_armorhelmet.name": "Samurai Helmet",
       "item.ishiken.name": "Ishiken",
       "subtitles.mokujin_no_jutsu": "",
+      "item.anbu_robehelmet.name": "Anbu Robe Helmet",
       "splash_potion.effect.corrosion": "Splash Corrosion",
       "entity.melting_jutsu.name": "Lava Melting Jutsu",
       "item.ice_senbon.name": "Ice Senbon",
@@ -8296,6 +8313,7 @@
       "entity.entityearthwall.name": "Earth-style Wall jutsu",
       "entity.inton_raiha.name": "Sage Art: Yin Release Lightning Dispatch",
       "item.scroll_body_replacement.name": "Body Replacement jutsu",
+      "item.anbu_robebody.name": "Anbu Robe Body",
       "entity.tensei_baku_gold.name": "Golden Wheel Rebirth Blast",
       "subtitles.makyohyosho": "",
       "item.kusanagi_sword.name": "Kusanagi Sword",
@@ -8347,6 +8365,7 @@
       "advancements.rinneganawakened.descr": "It is said that in times of disorder, one who wields the Rinnegan is sent down from the heavens to become either a \"God of Creation\" who will calm the world or a \"God of Destruction\" who will reduce everything to nothingness.",
       "tipped_arrow.effect.heaviness": "Arrow of Heaviness",
       "subtitles.woodgrow": "",
+      "item.anbu_robeboots.name": "Anbu Robe Boots",
       "subtitles.suikodannojutsu": "",
       "item.scroll_water_shark.name": "Water Release - Water Shark Bullet jutsu",
       "item.ninja_armor_otobody.name": "Ninja outfit (Otogakure)",

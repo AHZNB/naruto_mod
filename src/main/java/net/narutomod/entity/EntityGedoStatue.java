@@ -9,9 +9,12 @@ import net.minecraftforge.fml.client.registry.RenderingRegistry;
 
 import net.minecraft.world.World;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntitySelectors;
+import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.MathHelper;
@@ -33,17 +36,18 @@ import net.minecraft.client.model.ModelBox;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
-//import net.minecraft.network.datasync.DataParameter;
-//import net.minecraft.network.datasync.EntityDataManager;
-//import net.minecraft.network.datasync.DataSerializers;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.Block;
 
 import net.narutomod.procedure.ProcedureUtils;
+import net.narutomod.Particles;
 import net.narutomod.ElementsNarutomodMod;
 
+import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
 import java.util.List;
-import com.google.common.base.Predicate;
 import javax.annotation.Nullable;
+import java.util.UUID;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
@@ -52,6 +56,7 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 	private static final float MODEL_SCALE = 10.0F;
 	private static EntityCustom thisEntity = null;
 	private static boolean[] bijuSealed = new boolean[9];
+	private static final UUID GEDOMAZO_UUID = UUID.fromString("7048f36c-9838-4637-9935-9c4965e75b9a");
 
 	public EntityGedoStatue(ElementsNarutomodMod instance) {
 		super(instance, 683);
@@ -106,9 +111,12 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 		//private static final DataParameter<Integer> AGE = EntityDataManager.<Integer>createKey(EntityCustom.class, DataSerializers.VARINT);
 		private EntityPurpleDragon dragonEntity;
 		private List<EntityLivingBase> dragonTargetList;
+		private List<BlockPos> particleArea;
+		private final int riseTime = 40;
 
 		public EntityCustom(World world) {
 			super(world);
+			this.setUniqueId(GEDOMAZO_UUID);
 			this.setOGSize(0.5f, 1.9f);
 			this.experienceValue = 100;
 			this.isImmuneToFire = true;
@@ -117,6 +125,7 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 
 		public EntityCustom(EntityLivingBase summonerIn) {
 			super(summonerIn);
+			this.setUniqueId(GEDOMAZO_UUID);
 			this.setOGSize(0.5f, 1.9f);
 			this.experienceValue = 100;
 			this.isImmuneToFire = true;
@@ -235,6 +244,36 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void onUpdate() {
 			super.onUpdate();
+			if (this.getAge() <= this.riseTime) {
+				if (this.particleArea == null) {
+					this.particleArea = ProcedureUtils.getNonAirBlocks(this.world, 
+					 this.getEntityBoundingBox().offset(0d, -0.5d * this.height, 0d));
+				}
+				Particles.Renderer particles = new Particles.Renderer(this.world, 96d);
+				for (int i = 0; i < 100; i++) {
+					particles.spawnParticles(Particles.Types.SMOKE, this.posX, this.posY, this.posZ,
+					 1, 0.5d * this.width, 0d, 0.5d * this.width, (this.rand.nextDouble()-0.5d) * 2.0d,
+					 this.rand.nextDouble() * 0.6d + 0.4d, (this.rand.nextDouble()-0.5d) * 2.0d, 0xD06F6F6F, 60);
+				}
+				particles.send();
+				if (this.particleArea != null) {
+					for (BlockPos pos : this.particleArea) {
+						IBlockState state = this.world.getBlockState(pos);
+						if (state.isFullCube() && this.world.isAirBlock(pos.up())) {
+							for (int i = 0; i < 10; i++) {
+								this.world.spawnParticle(EnumParticleTypes.BLOCK_DUST, 0.5d + pos.getX(),
+								 1d + pos.getY(), 0.5d + pos.getZ(),
+								 this.rand.nextGaussian() * 0.15d, this.rand.nextGaussian() * 0.15d, this.rand.nextGaussian() * 0.15d,
+								 Block.getIdFromBlock(state.getBlock()));
+							}
+						}
+					}
+				}
+				this.world.playSound(null, this.posX + (this.rand.nextDouble()-0.5d) * this.width * 5, this.posY,
+				 this.posZ + (this.rand.nextDouble()-0.5d) * this.width * 5,
+				 SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:woodspawn")),
+				 SoundCategory.BLOCKS, 2f, this.rand.nextFloat() * 0.6f + 0.6f);
+			}
 			if (this.isAIDisabled() && (this.dragonEntity == null || !this.dragonEntity.isEntityAlive())) {
 				this.setNoAI(false);
 			}
@@ -733,11 +772,12 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 			bipedHead = new ModelRenderer(this);
 			bipedHead.setRotationPoint(0.0F, 0.0F, 0.0F);
 			bipedHead.cubeList.add(new ModelBox(bipedHead, 0, 0, -3.0F, -6.0F, -4.0F, 6, 6, 6, -0.1F, false));
+			bipedHead.cubeList.add(new ModelBox(bipedHead, 0, 1, -3.0F, -5.0F, -4.0F, 6, 2, 6, 0.1F, false));
 			bipedHead.cubeList.add(new ModelBox(bipedHead, 50, 0, -2.0F, -0.2F, -4.0F, 4, 2, 2, -0.1F, false));
 	
 			bipedHeadwear = new ModelRenderer(this);
 			bipedHeadwear.setRotationPoint(0.0F, 0.0F, 0.0F);
-			bipedHeadwear.cubeList.add(new ModelBox(bipedHeadwear, 24, 0, -3.0F, -6.0F, -4.0F, 6, 6, 6, 0.0F, false));
+			bipedHeadwear.cubeList.add(new ModelBox(bipedHeadwear, 24, 0, -3.0F, -6.0F, -4.0F, 6, 6, 6, 0.2F, false));
 	
 			bipedBody = new ModelRenderer(this);
 			bipedBody.setRotationPoint(0.0F, 0.0F, 0.0F);
@@ -924,7 +964,7 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
 			GlStateManager.pushMatrix();
-			GlStateManager.translate(0.0F, 1.5F - 1.5F * MODEL_SCALE, 0.0F);
+			GlStateManager.translate(0.0F, 1.5F - 1.5F * MODEL_SCALE * Math.min(f2 / ((EntityCustom)entity).riseTime, 1.0f), 0.0F);
 			GlStateManager.scale(MODEL_SCALE, MODEL_SCALE, MODEL_SCALE);
 			super.render(entity, f, f1, f2, f3, f4, f5);
 			GlStateManager.popMatrix();

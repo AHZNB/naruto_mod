@@ -94,8 +94,8 @@ public class EntityLaserCircus extends ElementsNarutomodMod.ModElement {
 			if (this.summoner != null && this.summoner.isEntityAlive() && this.ticksExisted <= this.duration) {
 				this.setIdlePosition();
 				if (this.ticksExisted % 10 == 0) {
-					this.playSound((SoundEvent)SoundEvent.REGISTRY
-					 .getObject(new ResourceLocation(("narutomod:electricity"))), 1.0f, this.rand.nextFloat() * 0.6f + 0.6f);
+					this.playSound(SoundEvent.REGISTRY
+					 .getObject(new ResourceLocation("narutomod:electricity")), 1.0f, this.rand.nextFloat() * 0.6f + 0.6f);
 				}
 				RayTraceResult res = ProcedureUtils.objectEntityLookingAt(this.summoner, 25d);
 				if (res != null) {
@@ -120,8 +120,8 @@ public class EntityLaserCircus extends ElementsNarutomodMod.ModElement {
 		}
 
 		private float getDamage() {
-			return this.rand.nextFloat() * 0.05f * 
-			 ((ItemJutsu.Base)this.rantonstack.getItem()).getJutsuXp(this.rantonstack, ItemRanton.LASERCIRCUS);
+			float f = Math.max(((ItemJutsu.Base)this.rantonstack.getItem()).getXpRatio(this.rantonstack, ItemRanton.LASERCIRCUS), 1f);
+			return this.rand.nextFloat() * f * 20f;
 		}
 
 		@Override

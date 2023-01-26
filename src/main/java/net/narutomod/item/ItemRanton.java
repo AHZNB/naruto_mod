@@ -159,7 +159,8 @@ public class ItemRanton extends ElementsNarutomodMod.ModElement {
 		}
 
 		private float getDamage() {
-			return this.rand.nextFloat() * 0.05f * ((ItemJutsu.Base)this.rantonstack.getItem()).getJutsuXp(this.rantonstack, CLOUD);
+			float f = Math.max(((ItemJutsu.Base)this.rantonstack.getItem()).getXpRatio(this.rantonstack, CLOUD), 1f);
+			return this.rand.nextFloat() * f * 10f;
 		}
 
 		@Override
