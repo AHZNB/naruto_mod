@@ -1265,7 +1265,7 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 	 		}
 	 		if (compound.hasUniqueId("JinchurikiUUID")) {
 	 			this.jinchurikiUuid = compound.getUniqueId("JinchurikiUUID");
-	 			this.getBijuManager().setJinchurikiUuid(this.jinchurikiUuid);
+	 			this.getBijuManager().setVesselUuid(this.jinchurikiUuid);
 	 			this.getBijuManager().setCloakXPs(compound.getIntArray("JinchurikiCloakXp"));
 	 			this.getBijuManager().setCloakCD(compound.getLong("JinchurikiCloakCD"));
 	 			Entity entity = FMLCommonHandler.instance().getMinecraftServerInstance().getEntityFromUuid(this.jinchurikiUuid);

@@ -27,13 +27,14 @@ import java.util.List;
 import com.google.common.collect.Lists;
 import java.util.Collection;
 import java.util.Random;
+import net.minecraft.client.renderer.chunk.SetVisibility;
 
 @ElementsNarutomodMod.ModElement.Tag
 public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 	private static final Map<Class<? extends EntityTailedBeast.Base>, EntityBijuManager> mapByClass = Maps.newHashMap();
 	private static final Map<Integer, EntityBijuManager> mapByTailnum = Maps.newHashMap();
 	private static final int[] ZERO = {0, 0, 0};
-	private UUID jinchurikiUuid;
+	private UUID vesselUuid;
 	private EntityPlayer jinchurikiPlayer;
 	private T entity;
 	private final Class<T> entityClass;
@@ -243,11 +244,11 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 	}
 
 	public boolean hasJinchuriki() {
-		return this.jinchurikiUuid != null;
+		return this.vesselUuid != null;
 	}
 
-	public void setJinchurikiUuid(@Nullable UUID uuid) {
-		this.jinchurikiUuid = uuid;
+	public void setVesselUuid(@Nullable UUID uuid) {
+		this.vesselUuid = uuid;
 	}
 
 	@Nullable
@@ -261,13 +262,13 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 
 	public void setJinchurikiPlayer(@Nullable EntityPlayer player, boolean dirty) {
 		if (player == null) {
-			this.setJinchurikiUuid(null);
+			this.setVesselUuid(null);
 			if (this.getCloakLevel() != 0) {
 				this.toggleBijuCloak();
 			}
 			this.setCloakXPs(ZERO);
 		} else {
-			this.setJinchurikiUuid(player.getUniqueID());
+			this.setVesselUuid(player.getUniqueID());
 		}
 		this.jinchurikiPlayer = player;
 		if (dirty) {
@@ -276,7 +277,7 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 	}
 
 	public void verifyJinchuriki(EntityPlayer player) {
-		if (player.getUniqueID().equals(this.jinchurikiUuid)) {
+		if (player.getUniqueID().equals(this.vesselUuid)) {
 			this.setJinchurikiPlayer(player, true);
 			System.out.println(this.toString());
 		}
@@ -434,7 +435,7 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 
 	public String toString() {
 		EntityPlayer jinchuriki = this.getJinchurikiPlayer();
-		return " >>>> " + (jinchuriki != null ? jinchuriki.getName() : this.jinchurikiUuid) + " is the " + this.getEntityLocalizedName() + " jinchuriki.";
+		return " >>>> " + (jinchuriki != null ? jinchuriki.getName() : this.vesselUuid) + " is the " + this.getEntityLocalizedName() + " jinchuriki.";
 	}
 
 	public interface ITailBeast {

@@ -158,13 +158,13 @@ public class ItemByakugan extends ElementsNarutomodMod.ModElement {
 				if (isRinnesharinganActivated(stack)) {
 					tooltip.add(TextFormatting.RED + I18n.translateToLocal("advancements.rinnesharinganactivated.title") + TextFormatting.WHITE);
 				}
-				tooltip.add(I18n.translateToLocal("key.mcreator.specialjutsu1") + ": " + I18n.translateToLocal("tooltip.byakugan.jutsu1") + " (L15)");
+				tooltip.add(I18n.translateToLocal("key.mcreator.specialjutsu1") + ": " + I18n.translateToLocal("tooltip.byakugan.jutsu1") + " (NXP:500)");
 				if (isRinnesharinganActivated(stack)) {
 					tooltip.add(I18n.translateToLocal("key.mcreator.specialjutsu2") + ": " + I18n.translateToLocal("tooltip.byakurinnesharingan.jutsu2"));
 				} else {
-					tooltip.add(I18n.translateToLocal("key.mcreator.specialjutsu2") + ": " + I18n.translateToLocal("tooltip.byakugan.jutsu2") + " (L20)");
+					tooltip.add(I18n.translateToLocal("key.mcreator.specialjutsu2") + ": " + I18n.translateToLocal("tooltip.byakugan.jutsu2") + " (NXP:1000)");
 				}
-				tooltip.add(I18n.translateToLocal("key.mcreator.specialjutsu3") + ": " + I18n.translateToLocal("entity.hakkeshokeiten.name") + " (L30)");
+				tooltip.add(I18n.translateToLocal("key.mcreator.specialjutsu3") + ": " + I18n.translateToLocal("entity.hakkeshokeiten.name") + " (NXP:1500)");
 				if (stack.hasTagCompound()) {
 					double d = stack.getTagCompound().getDouble(TENSEIGANEVOLVEDTIME);
 					if (d > 0.0d) {

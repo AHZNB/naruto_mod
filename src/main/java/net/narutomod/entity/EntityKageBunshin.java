@@ -166,6 +166,7 @@ public class EntityKageBunshin extends ElementsNarutomodMod.ModElement {
 					Jutsu.updateClones(summoner, false);
 					//Chakra.pathway(summoner).consume(-this.chakra * (double)(this.getHealth() / this.getMaxHealth()), true);
 					Chakra.pathway(summoner).consume(-this.chakra * 0.8d, false);
+					summoner.setHealth(summoner.getHealth() + this.getHealth());
 				}
 			}
 		}
@@ -251,16 +252,20 @@ public class EntityKageBunshin extends ElementsNarutomodMod.ModElement {
 				}
 				Chakra.Pathway chakra = entity instanceof EntityPlayer ? Chakra.pathway((EntityPlayer)entity) : null;
 				if (add1) {
-					Entity newClone = new EC(entity);
+					EC newClone = new EC(entity);
 					entity.world.spawnEntity(newClone);
 					clones.add(newClone.getEntityId());
 					if (chakra != null) {
-						chakra.consume(chakra.getAmount() / (clones.size()+1));
+						double d = chakra.getAmount() / (clones.size()+1);
+						chakra.consume(d);
+						newClone.chakra = d;
 					}
 				}
 				entity.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).removeModifier(MAXHEALTH);
-				entity.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH)
-				  .applyModifier(new AttributeModifier(MAXHEALTH, "maxhealth.modifier", 1d / (clones.size()+1) - 1d, 2));
+				if (clones.size() > 0) {
+					entity.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH)
+					  .applyModifier(new AttributeModifier(MAXHEALTH, "maxhealth.modifier", 1d / (clones.size()+1) - 1d, 2));
+				}
 				if (entity.getHealth() > entity.getMaxHealth()) {
 					entity.setHealth(entity.getMaxHealth());
 				}
@@ -269,8 +274,6 @@ public class EntityKageBunshin extends ElementsNarutomodMod.ModElement {
 						EC e = (EC)entity.world.getEntityByID(i.intValue());
 						e.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(entity.getHealth());
 						e.setHealth(e.getMaxHealth());
-						if (chakra != null)
-							e.chakra = chakra.getAmount();
 					}
 				}
 				entity.getEntityData().setIntArray(ID_KEY, Ints.toArray(clones));

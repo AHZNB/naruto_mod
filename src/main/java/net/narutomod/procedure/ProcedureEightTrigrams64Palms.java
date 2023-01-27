@@ -2,6 +2,7 @@ package net.narutomod.procedure;
 
 import net.narutomod.item.ItemByakugan;
 import net.narutomod.entity.EntityEightTrigrams;
+import net.narutomod.PlayerTracker;
 import net.narutomod.NarutomodModVariables;
 import net.narutomod.ElementsNarutomodMod;
 import net.narutomod.Chakra;
@@ -44,7 +45,7 @@ public class ProcedureEightTrigrams64Palms extends ElementsNarutomodMod.ModEleme
 		helmetstack = ((entity instanceof EntityPlayer) ? ((EntityPlayer) entity).inventory.armorInventory.get(3) : ItemStack.EMPTY);
 		f1 = ProcedureUtils.isOriginalOwner((EntityPlayer) entity, helmetstack);
 		if (((!(world.isRemote)) && (((entity instanceof EntityPlayer) ? ((EntityPlayer) entity).capabilities.isCreativeMode : false)
-				|| ((((entity instanceof EntityPlayer) ? ((EntityPlayer) entity).experienceLevel : 0) >= 20) && (f1))))) {
+				|| ((PlayerTracker.getBattleXp((EntityPlayer) entity) >= 1000) && (f1))))) {
 			cooldown = (double) ((helmetstack).hasTagCompound() ? (helmetstack).getTagCompound().getDouble("HakkeRokujuuyonshouCD") : -1);
 			if ((((entity instanceof EntityPlayer) ? ((EntityPlayer) entity).capabilities.isCreativeMode : false)
 					|| (((NarutomodModVariables.world_tick) > (cooldown)) || ((NarutomodModVariables.world_tick) < ((cooldown) - 1200))))) {

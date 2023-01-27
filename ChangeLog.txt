@@ -28,6 +28,7 @@ Jutsus:
  - lava release jutsus damage increased
  - wood prison now only forms the sides and top, max size 40
  - changed lighting paralysis effect: entity is slowed but can still move
+ - updated byakugan jutsu usage requirements from vanilla experience to ninjaXp
  - added Transformation jutsu and scroll
  - added 4-symbols sealing jutsu and scroll
  - added lightning release: black panther and scroll
@@ -80,7 +81,7 @@ Items:
  - added Jiraiya's stone sword Ishiken (WIP)
  - added Chakra Blades (WIP)
  - added some new anbu and obito masks
- - added partial sand cloak texture
+ - added partial sand cloak texture, updated the tail texture
  - added KCM2 texture
  - added Kage hats and robe
  - added rain/sound village and anbu clothes

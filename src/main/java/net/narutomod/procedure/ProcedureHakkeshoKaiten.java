@@ -2,6 +2,7 @@ package net.narutomod.procedure;
 
 import net.narutomod.item.ItemByakugan;
 import net.narutomod.entity.EntityHakkeshoKeiten;
+import net.narutomod.PlayerTracker;
 import net.narutomod.Particles;
 import net.narutomod.NarutomodModVariables;
 import net.narutomod.ElementsNarutomodMod;
@@ -72,7 +73,7 @@ public class ProcedureHakkeshoKaiten extends ElementsNarutomodMod.ModElement {
 		} else {
 			f1 = ProcedureUtils.isOriginalOwner((EntityPlayer) entity, helmetstack);
 			if ((!(((entity instanceof EntityPlayer) ? ((EntityPlayer) entity).capabilities.isCreativeMode : false)
-					|| ((f1) && (((entity instanceof EntityPlayer) ? ((EntityPlayer) entity).experienceLevel : 0) >= 30))))) {
+					|| ((f1) && (PlayerTracker.getBattleXp((EntityPlayer) entity) >= 1500))))) {
 				return;
 			}
 			if ((is_pressed)) {
