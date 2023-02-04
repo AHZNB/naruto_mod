@@ -91,6 +91,14 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 		return RNG.nextBoolean();
 	}
 
+	public static int rngInt(int bound) {
+		return RNG.nextInt(bound);
+	}
+
+	public static Random rng() {
+		return RNG;
+	}
+
 	public static double name2Id(String string) {
 		long id = 0L;
 		for (int i = 0; i < string.length() - 2 && i < 8; ++i) {
@@ -431,6 +439,10 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 
 	public static RayTraceResult objectEntityLookingAt(Entity entity, double range, double bbGrow) {
 		return objectEntityLookingAt(entity, range, bbGrow, false, false, (Predicate)null);
+	}
+
+	public static RayTraceResult objectEntityLookingAt(Entity entity, double range, double bbGrow, boolean trackall) {
+		return objectEntityLookingAt(entity, range, bbGrow, trackall, false, (Predicate)null);
 	}
 
 	public static RayTraceResult objectEntityLookingAt(Entity entity, double range, @Nullable Entity excludeEntity) {
@@ -925,6 +937,23 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 		MinecraftServer mcserv = FMLCommonHandler.instance().getMinecraftServerInstance();
 		if (mcserv != null) {
 			mcserv.getPlayerList().sendMessage(new TextComponentString(string));
+		}
+	}
+
+	public static void sendMessageToAllNear(String string, double x, double y, double z, double radius, int dimension) {
+		MinecraftServer mcserv = FMLCommonHandler.instance().getMinecraftServerInstance();
+		if (mcserv != null) {
+	        for (int i = 0; i < mcserv.getPlayerList().getCurrentPlayerCount(); ++i) {
+	            EntityPlayerMP entityplayermp = mcserv.getPlayerList().getPlayers().get(i);
+	            if (entityplayermp.dimension == dimension) {
+	                double d0 = x - entityplayermp.posX;
+	                double d1 = y - entityplayermp.posY;
+	                double d2 = z - entityplayermp.posZ;
+	                if (d0 * d0 + d1 * d1 + d2 * d2 < radius * radius) {
+	                    entityplayermp.sendMessage(new TextComponentString(string));
+	                }
+	            }
+	        }
 		}
 	}
 

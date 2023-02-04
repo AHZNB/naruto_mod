@@ -92,7 +92,7 @@ public class EntityPuppetKarasu extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void attackEntityWithRangedAttack(EntityLivingBase target, float flval) {
 			Vec3d vec = target.getPositionEyes(1f);
-			for (int i = 0; i < 10; i++) {
+			for (int i = 0; i < 8; i++) {
 				ItemSenbon.spawnArrow(this, vec);
 			}
 			/*ItemKunai.EntityArrowCustom kunai = new ItemKunai.EntityArrowCustom(this.world, this);

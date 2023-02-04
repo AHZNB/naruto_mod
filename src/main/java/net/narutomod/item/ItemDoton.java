@@ -64,7 +64,7 @@ public class ItemDoton extends ElementsNarutomodMod.ModElement {
 	public static final ItemJutsu.JutsuEnum EARTHWALL = new ItemJutsu.JutsuEnum(1, "entityearthwall", 'B', 20d, new EntityEarthWall.Jutsu());
 	public static final ItemJutsu.JutsuEnum SANDWICH = new ItemJutsu.JutsuEnum(2, "earth_sandwich", 'B', 100d, new EntityEarthSandwich.EC.Jutsu());
 	public static final ItemJutsu.JutsuEnum SWAMPPIT = new ItemJutsu.JutsuEnum(3, "swamp_pit", 'A', 100d, new EntitySwampPit.EC.Jutsu());
-	public static final ItemJutsu.JutsuEnum SPEARS = new ItemJutsu.JutsuEnum(4, "earth_spears", 'C', 50d, new EntityEarthSpears.EC.Jutsu());
+	public static final ItemJutsu.JutsuEnum SPEARS = new ItemJutsu.JutsuEnum(4, "earth_spears", 'C', 20d, new EntityEarthSpears.EC.Jutsu());
 	public static final ItemJutsu.JutsuEnum GOLEM = new ItemJutsu.JutsuEnum(5, "earth_golem", 'B', 100d, new EntityEarthGolem.EC.Jutsu());
 
 	public ItemDoton(ElementsNarutomodMod instance) {
@@ -110,7 +110,7 @@ public class ItemDoton extends ElementsNarutomodMod.ModElement {
 				return this.getPower(stack, entity, timeLeft, 1f, 30f);
 				//return MathHelper.floor(Math.min(1f + (float)(this.getMaxUseDuration() - timeLeft) / 20, this.getMaxPower(stack, entity)));
 			} else if (jutsu == SPEARS) {
-				return this.getPower(stack, entity, timeLeft, 0.5f, 150f);
+				return this.getPower(stack, entity, timeLeft, 0.5f, 20f);
 			} else if (jutsu == GOLEM) {
 				return this.getPower(stack, entity, timeLeft, 0.0f, 150f);
 			}

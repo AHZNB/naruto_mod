@@ -45,8 +45,8 @@ public class ItemGourd extends ElementsNarutomodMod.ModElement {
 
 	@Override
 	public void initElements() {
-		ItemArmor.ArmorMaterial enuma = EnumHelper.addArmorMaterial("GOURD", "narutomod:sasuke_", 1024, new int[]{2, 5, 1024, 2}, 0,
-				(net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("")), 5f);
+		ItemArmor.ArmorMaterial enuma = EnumHelper.addArmorMaterial("GOURD", "narutomod:sasuke_", 20,
+		 new int[]{2, 5, 20, 2}, 0, net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("")), 5f);
 		elements.items.add(() -> new ItemArmor(enuma, 0, EntityEquipmentSlot.CHEST) {
 			@Override
 			@SideOnly(Side.CLIENT)
@@ -73,8 +73,8 @@ public class ItemGourd extends ElementsNarutomodMod.ModElement {
 			public void onArmorTick(World world, EntityPlayer entity, ItemStack itemstack) {
 				if (!world.isRemote && ProcedureUtils.hasItemInInventory(entity, ItemJiton.block)) {
 					entity.extinguish();
-					entity.addPotionEffect(new PotionEffect(MobEffects.RESISTANCE, 2, 2, false, false));
-					if (entity.ticksExisted % 20 == 0) {
+					if (entity.ticksExisted % 20 == 3) {
+						entity.addPotionEffect(new PotionEffect(MobEffects.RESISTANCE, 22, 2, false, false));
 						itemstack.setItemDamage(itemstack.getItemDamage() - 1);
 					}
 					//if (!itemstack.hasTagCompound())

@@ -27,8 +27,9 @@ Jutsus:
  - substitution jutsu now has 10 second cooldown between activations
  - lava release jutsus damage increased
  - wood prison now only forms the sides and top, max size 40
- - changed lighting paralysis effect: entity is slowed but can still move
+ - changed lightning paralysis effect: entity is slowed but can still move
  - updated byakugan jutsu usage requirements from vanilla experience to ninjaXp
+ - updated shadow clone jutsu health and chakra transfers from clone to user
  - added Transformation jutsu and scroll
  - added 4-symbols sealing jutsu and scroll
  - added lightning release: black panther and scroll
@@ -39,7 +40,7 @@ Items:
  - Bone drill can't be dropped into the world
  - Amegakure headband+mask can breathe under water and immune to poison & wither
  - re-positioned the dojutsus lower on the face
- - white zetsu flesh when eaten gives you instant damage effect level 1~2 for 10 secs if you're not wearing mangekyo sharingan
+ - white zetsu flesh when eaten damages eater 20~240 instantly if not wearing mangekyo sharingan
  - eating white zetsu flesh gives mokuton only if user has suiton and doton
  - jutsu scrolls are now one-time use
  - summoning contract and senjutsu on /give: use datatag {Type:toad|snake|slug} to specify which type
@@ -124,6 +125,7 @@ General:
  - chakra: force sync to client on next tick on player respawn/changeDimension
  - ninjaxp: force sync to client on next tick on player respawn/changeDimension
  - hitting entities with a kunai or shuriken no longers gains extra ninjaxp
+ - updated the balancing such as susanoo hp, gourd/bone armor durability
 
 0.2.9-beta ================================================================================
 

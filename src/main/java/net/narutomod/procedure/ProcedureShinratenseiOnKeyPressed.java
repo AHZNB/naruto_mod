@@ -85,11 +85,12 @@ public class ProcedureShinratenseiOnKeyPressed extends ElementsNarutomodMod.ModE
 			} else {
 				if ((entity.getEntityData().getBoolean("was_pressed"))) {
 					entity.getEntityData().setBoolean("was_pressed", (false));
-					if (((power) >= 5)) {
+					if ((((power) >= 5) && cp.consume(power * ItemRinnegan.getShinratenseiChakraUsage((EntityLivingBase) entity)))) {
 						entity.getEntityData().setDouble((NarutomodModVariables.InvulnerableTime), 60);
 						for (int index0 = 0; index0 < (int) (1000); index0++) {
 							Particles.spawnParticle(world, Particles.Types.SMOKE, entity.posX, entity.posY + 1.4d, entity.posZ, 1, 1d, 0d, 1d,
-									ProcedureUtils.rngGaussian(), ProcedureUtils.rngGaussian(), ProcedureUtils.rngGaussian(), 0x10FFFFFF, 30, 0);
+									(ProcedureUtils.rng().nextDouble() - 0.5d) * 2, (ProcedureUtils.rng().nextDouble() - 0.5d) * 2,
+									(ProcedureUtils.rng().nextDouble() - 0.5d) * 2, 0x10FFFFFF, 25 + ProcedureUtils.rngInt(25), 0);
 						}
 						if (((power) >= 20)) {
 							world.playSound((EntityPlayer) null, x, y, z, (net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY
@@ -109,7 +110,6 @@ public class ProcedureShinratenseiOnKeyPressed extends ElementsNarutomodMod.ModE
 								.noGravity(false);
 						ProcedureUtils.purgeHarmfulEffects((EntityLivingBase) entity);
 						(entity).extinguish();
-						cp.consume(power * ItemRinnegan.getShinratenseiChakraUsage((EntityLivingBase) entity));
 						cd_modifier = Chakra.getChakraModifier((EntityLivingBase) entity);
 						entity.getEntityData().setDouble("shinratenseicd", ((NarutomodModVariables.world_tick) + (((power) * 10) * (cd_modifier))));
 					}

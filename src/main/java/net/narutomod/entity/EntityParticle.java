@@ -63,6 +63,7 @@ public class EntityParticle extends ElementsNarutomodMod.ModElement {
 		private int idleTime;
 		private int texU;
 		private int texV;
+		private int deathTicks;
 
 		public Base(World worldIn) {
 			super(worldIn);
@@ -202,8 +203,14 @@ public class EntityParticle extends ElementsNarutomodMod.ModElement {
 			int age = this.getAge() + 1;
 			this.setAge(age);
 			this.setParticleTextureOffset(this.texU + (d > 0.01d ? 1 : 0) % 8);
-			if (!this.world.isRemote && (age > this.getMaxAge() || this.idleTime > 1000)) {
-				this.setDead();
+			if (this.deathTicks > 0) {
+				if (this.deathTicks >= 20 && !this.world.isRemote) {
+					this.setDead();
+				}
+				this.motionY -= 0.05d;
+				++this.deathTicks;
+			} else if (age > this.getMaxAge() || this.idleTime > 1000) {
+				this.deathTicks = 1;
 			}
 		}
 

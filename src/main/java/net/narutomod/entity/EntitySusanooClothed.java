@@ -112,7 +112,7 @@ public class EntitySusanooClothed extends ElementsNarutomodMod.ModElement {
 				this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(ItemTotsukaSword.block));
 			} else {
 				this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH)
-				 .applyModifier(new AttributeModifier("susanoo.maxhealth", 1.0d + (this.hasLegs() ? 2d : 0d), 2));
+				 .applyModifier(new AttributeModifier("susanoo.maxhealth", this.hasLegs() ? 10d : 3d, 2));
 				this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE)
 				 .setBaseValue(Math.min(this.playerXp, this.hasLegs() ? EntitySusanooBase.BXP_REQUIRED_L4 : EntitySusanooBase.BXP_REQUIRED_L3) * 0.005d);
 			}

@@ -13,6 +13,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.model.ModelBox;
+import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.entity.AbstractClientPlayer;
 
@@ -115,6 +116,7 @@ public class ItemNinjaArmor extends ElementsNarutomodMod.ModElement {
 		public final ModelRenderer leftLegLayer;
 		public final ModelRenderer leftLegPad;
 		//private final ModelRenderer headbandLeftLeg;
+		private ModelBiped wearerModel;
 	
 		public ModelNinjaArmor() {
 			this(Type.KUMO);
@@ -163,7 +165,7 @@ public class ItemNinjaArmor extends ElementsNarutomodMod.ModElement {
 			if (type == Type.KONOHA || type == Type.SUNA || type == Type.WAR1 || type == Type.OBITOWAR) {
 				collar.setRotationPoint(0.0F, 0.0F, 0.0F);
 				bipedHeadwear.addChild(collar);
-				collar.cubeList.add(new ModelBox(collar, 32, 7, -4.0F, -1.1F, -4.0F, 8, 1, 8, 0.8F, false));
+				collar.cubeList.add(new ModelBox(collar, 32, 7, -4.0F, -1.5F, -4.0F, 8, 1, 8, 0.8F, false));
 			} else {
 				collar.showModel = false;
 			}
@@ -433,12 +435,24 @@ public class ItemNinjaArmor extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
+		public void setModelAttributes(ModelBase model) {
+			super.setModelAttributes(model);
+			if (model instanceof ModelBiped) {
+				this.wearerModel = (ModelBiped)model;
+			}
+		}
+
+		@Override
 		public void setRotationAngles(float f, float f1, float f2, float f3, float f4, float f5, Entity entity) {
 			if (entity instanceof AbstractClientPlayer && ((AbstractClientPlayer)entity).getSkinType().equals("slim")) {
 				this.bipedLeftArm.setRotationPoint(5.0F, 2.5F, 0.0F);
 				this.bipedRightArm.setRotationPoint(-5.0F, 2.5F, 0.0F);
 			}
 			super.setRotationAngles(f, f1, f2, f3, f4, f5, entity);
+			if (this.wearerModel != null) {
+				copyModelAngles(this.wearerModel.bipedLeftArm, this.bipedLeftArm);
+				copyModelAngles(this.wearerModel.bipedRightArm, this.bipedRightArm);
+			}
 		}
 	}
 

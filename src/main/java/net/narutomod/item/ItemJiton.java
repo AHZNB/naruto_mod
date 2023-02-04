@@ -243,7 +243,7 @@ public class ItemJiton extends ElementsNarutomodMod.ModElement {
 		public EntitySandShield(EntityLivingBase user, Type sandType) {
 			super(user);
 			this.setSize(3.0F, 3.0F);
-			double d = user instanceof EntityPlayer ? (5d * PlayerTracker.getNinjaLevel((EntityPlayer)user)) : 100d;
+			double d = user instanceof EntityPlayer ? (2.5d * PlayerTracker.getNinjaLevel((EntityPlayer)user)) : 100d;
 			this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(d);
 			this.setHealth(this.getMaxHealth());
 			this.color = sandType.getColor();
@@ -445,7 +445,7 @@ public class ItemJiton extends ElementsNarutomodMod.ModElement {
 				Entity p = this.createParticle(this.startPos.x, this.startPos.y, this.startPos.z,
 				 (this.rand.nextDouble()-0.5d) * 2d * this.spawnMotion.x, this.spawnMotion.y,
 				 (this.rand.nextDouble()-0.5d) * 2d * this.spawnMotion.z, this.color,
-				 this.scale + (this.rand.nextFloat()-0.5f) * this.scale * 0.2f, 6000);
+				 this.scale + (this.rand.nextFloat()-0.5f) * this.scale * 0.2f, 3600);
 				this.world.spawnEntity(p);
 				this.particles.add(p);
 			}

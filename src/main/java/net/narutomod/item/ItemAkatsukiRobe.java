@@ -260,13 +260,13 @@ public class ItemAkatsukiRobe extends ElementsNarutomodMod.ModElement {
 			bone.setRotationPoint(0.0F, 0.0F, 0.0F);
 			bipedBody.addChild(bone);
 			setRotationAngle(bone, 0.1222F, 0.0F, 0.0F);
-			bone.cubeList.add(new ModelBox(bone, 40, 32, -4.0F, 0.0F, -2.0F, 8, 20, 4, 0.5F, false));
+			bone.cubeList.add(new ModelBox(bone, 40, 32, -4.0F, 0.0F, -2.0F, 8, 20, 4, 0.6F, false));
 	
 			bone8 = new ModelRenderer(this);
 			bone8.setRotationPoint(0.0F, 0.0F, 0.0F);
 			bipedBody.addChild(bone8);
 			setRotationAngle(bone8, -0.1222F, 0.0F, 0.0F);
-			bone8.cubeList.add(new ModelBox(bone8, 16, 32, -4.0F, 0.0F, -2.0F, 8, 20, 4, 0.5F, false));
+			bone8.cubeList.add(new ModelBox(bone8, 16, 32, -4.0F, 0.0F, -2.0F, 8, 20, 4, 0.6F, false));
 	
 			collar = new ModelRenderer(this);
 			collar.setRotationPoint(0.0F, 0.0F, -1.8F);

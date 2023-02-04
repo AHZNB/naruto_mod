@@ -38,6 +38,7 @@ import net.narutomod.Chakra;
 
 import java.util.List;
 import java.util.UUID;
+import javax.annotation.Nullable;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityKageBunshin extends ElementsNarutomodMod.ModElement {
@@ -57,7 +58,17 @@ public class EntityKageBunshin extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static boolean isPlayerClone(EntityPlayer player) {
-		return player.getEntityData().getInteger(OGCLONE_KEY) > 0;
+		return getOriginalClone(player) != null;
+	}
+
+	@Nullable
+	public static EC getOriginalClone(EntityLivingBase player) {
+		Entity entity = player.world.getEntityByID(player.getEntityData().getInteger(OGCLONE_KEY));
+		if (!(entity instanceof EC)) {
+			player.getEntityData().removeTag(OGCLONE_KEY);
+			return null;
+		}
+		return (EC)entity;
 	}
 
 	public static class EC extends EntityClone.Base {
@@ -79,12 +90,11 @@ public class EntityKageBunshin extends ElementsNarutomodMod.ModElement {
 			 .setBaseValue(user.getEntityAttribute(SharedMonsterAttributes.ARMOR).getAttributeValue());
 		}
 
+		@Nullable
 		private EC getOriginal() {
 			EntityLivingBase summoner = this.getSummoner();
 			if (summoner != null) {
-				Entity entity = this.world.getEntityByID(summoner.getEntityData().getInteger(OGCLONE_KEY));
-				if (entity instanceof EC)
-					return (EC)entity;
+				return getOriginalClone(summoner);
 			}
 			return null;
 		}
@@ -129,18 +139,7 @@ public class EntityKageBunshin extends ElementsNarutomodMod.ModElement {
 		}
 
 		private void poof(Entity entity) {
-			//Random rand = new Random();
 			ProcedureUtils.poofWithSmoke(entity);
-			/*} else {
-		        for (int k = 0; k < 200; ++k) {
-		       		double d2 = rand.nextGaussian() * 0.02D;
-				    double d0 = rand.nextGaussian() * 0.02D;
-				    double d1 = rand.nextGaussian() * 0.02D;
-				    entity.world.spawnParticle(EnumParticleTypes.EXPLOSION_NORMAL, 
-				      entity.posX + rand.nextGaussian() * 0.5d * entity.width, entity.posY + rand.nextDouble() * entity.height, 
-				      entity.posZ + rand.nextGaussian() * 0.5d * entity.width, d2, d0, d1);
-				}
-			}*/
 		}
 
 		@Override
@@ -178,7 +177,7 @@ public class EntityKageBunshin extends ElementsNarutomodMod.ModElement {
 		}
 
 		private void cancelCloneControl() {
-			this.getSummoner().getEntityData().setInteger(OGCLONE_KEY, 0);
+			this.getSummoner().getEntityData().removeTag(OGCLONE_KEY);
 			this.isOriginal = false;
 			this.shouldDefendSummoner = true;
 		}
@@ -227,6 +226,7 @@ public class EntityKageBunshin extends ElementsNarutomodMod.ModElement {
 			public boolean createJutsu(ItemStack stack, EntityLivingBase entity, float power) {
 				if (entity instanceof EntityPlayer && entity.isSneaking()) {
 					if (isPlayerClone((EntityPlayer)entity)) {
+						entity.getEntityData().setFloat("HealthB4Kill", entity.getHealth());
 						entity.onKillCommand();
 					} else {
 						this.removeAllClones(entity);
@@ -264,7 +264,9 @@ public class EntityKageBunshin extends ElementsNarutomodMod.ModElement {
 				entity.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).removeModifier(MAXHEALTH);
 				if (clones.size() > 0) {
 					entity.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH)
-					  .applyModifier(new AttributeModifier(MAXHEALTH, "maxhealth.modifier", 1d / (clones.size()+1) - 1d, 2));
+					// .applyModifier(new AttributeModifier(MAXHEALTH, "maxhealth.modifier", 1d / (clones.size()+1) - 1d, 2));
+					 .applyModifier(new AttributeModifier(MAXHEALTH, "maxhealth.modifier",
+					 entity.getHealth() * (clones.size() + (add1 ? 0 : 2)) / (clones.size()+1) - entity.getMaxHealth(), 0));
 				}
 				if (entity.getHealth() > entity.getMaxHealth()) {
 					entity.setHealth(entity.getMaxHealth());
@@ -273,7 +275,9 @@ public class EntityKageBunshin extends ElementsNarutomodMod.ModElement {
 					for (Integer i : clones) {
 						EC e = (EC)entity.world.getEntityByID(i.intValue());
 						e.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(entity.getHealth());
-						e.setHealth(e.getMaxHealth());
+						if (e.ticksExisted < 2 || e.getHealth() > e.getMaxHealth()) {
+							e.setHealth(e.getMaxHealth());
+						}
 					}
 				}
 				entity.getEntityData().setIntArray(ID_KEY, Ints.toArray(clones));
@@ -301,16 +305,19 @@ public class EntityKageBunshin extends ElementsNarutomodMod.ModElement {
 		public void onDeath(LivingDeathEvent event) {
 			EntityLivingBase entity = event.getEntityLiving();
 			if (entity instanceof EntityPlayer && isPlayerClone((EntityPlayer)entity)) {
-				Entity clone = entity.world.getEntityByID(entity.getEntityData().getInteger(OGCLONE_KEY));
-				if (clone instanceof EC && clone.isEntityAlive()) {
+				EC clone = getOriginalClone(entity);
+				if (clone != null && clone.isEntityAlive()) {
 					clone.setDead();
 					event.setCanceled(true);
 					entity.isDead = false;
-					entity.setHealth(((EC)clone).getHealth());
+					if (entity.getEntityData().hasKey("HealthB4Kill")) {
+						entity.setHealth(entity.getHealth() + entity.getEntityData().getFloat("HealthB4Kill"));
+						entity.getEntityData().removeTag("HealthB4Kill");
+					}
 					entity.clearActivePotions();
 					entity.getEntityData().setInteger("ForceExtinguish", 3);
 				}
-				entity.getEntityData().setInteger(OGCLONE_KEY, 0);
+				entity.getEntityData().removeTag(OGCLONE_KEY);
 			}
 		}
 

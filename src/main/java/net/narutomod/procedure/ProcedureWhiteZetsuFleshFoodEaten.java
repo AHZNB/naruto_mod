@@ -15,6 +15,7 @@ import net.minecraft.world.WorldServer;
 import net.minecraft.world.World;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.DamageSource;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.item.ItemStack;
@@ -50,11 +51,9 @@ public class ProcedureWhiteZetsuFleshFoodEaten extends ElementsNarutomodMod.ModE
 		if ((!(world.isRemote))) {
 			if (ProcedureUtils.isWearingMangekyo((EntityLivingBase) entity)) {
 				if (entity instanceof EntityLivingBase)
-					((EntityLivingBase) entity).addPotionEffect(new PotionEffect(MobEffects.INSTANT_HEALTH, (int) 10, (int) 0, (false), (false)));
+					((EntityLivingBase) entity).addPotionEffect(new PotionEffect(MobEffects.INSTANT_HEALTH, (int) 10, (int) 4, (false), (false)));
 			} else {
-				if (entity instanceof EntityLivingBase)
-					((EntityLivingBase) entity).addPotionEffect(
-							new PotionEffect(MobEffects.INSTANT_DAMAGE, (int) 200, (int) ((Math.random() * 2) + 0), (false), (false)));
+				entity.attackEntityFrom(DamageSource.STARVE, (float) ((Math.random() * 220) + 20));
 				if (entity instanceof EntityLivingBase)
 					((EntityLivingBase) entity).addPotionEffect(new PotionEffect(MobEffects.HUNGER, (int) 300, (int) 1, (false), (false)));
 			}

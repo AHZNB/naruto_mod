@@ -71,8 +71,8 @@ public class EntityOneTail extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
-		public void setJinchurikiPlayer(@Nullable EntityPlayer player) {
-			super.setJinchurikiPlayer(player);
+		public void setJinchurikiPlayer(@Nullable EntityPlayer player, boolean dirty) {
+			super.setJinchurikiPlayer(player, dirty);
 			if (player != null && !ProcedureUtils.hasItemInInventory(player, ItemJiton.block)) {
 				ItemStack stack = new ItemStack(ItemJiton.block);
 				ItemJiton.setSandType(stack, ItemJiton.Type.SAND);
