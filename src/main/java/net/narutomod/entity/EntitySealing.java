@@ -105,7 +105,7 @@ public class EntitySealing extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public boolean processInitialInteract(EntityPlayer player, EnumHand hand) {
-			if (!EntityBijuManager.isJinchuriki(player)) {
+			if (!this.world.isRemote && !EntityBijuManager.isJinchuriki(player)) {
 				AxisAlignedBB bb = this.tableBB.offset(this.posX, this.posY, this.posZ);
 				Vec3d vec = player.getPositionEyes(1f);
 				if (bb.calculateIntercept(vec, vec.add(player.getLookVec().scale(4d))) != null) {

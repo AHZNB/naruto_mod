@@ -42,7 +42,7 @@ public class EntityTenTails extends ElementsNarutomodMod.ModElement {
 	public static final int ENTITYID_RANGED = 180;
 	private static final float MODELSCALE = 36.0F;
 	private static final double TARGET_RANGE = 108.0D;
-	private static final TailBeastManager tailBeastManager = new TailBeastManager();
+	private static final TailBeastManager BIJU_MANAGER = new TailBeastManager();
 
 	public EntityTenTails(ElementsNarutomodMod instance) {
 		super(instance, 444);
@@ -62,7 +62,7 @@ public class EntityTenTails extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static TailBeastManager getBijuManager() {
-		return tailBeastManager;
+		return BIJU_MANAGER;
 	}
 
 	public static class TailBeastManager extends EntityBijuManager<EntityCustom> {
@@ -113,7 +113,7 @@ public class EntityTenTails extends ElementsNarutomodMod.ModElement {
 
 	 	@Override
 	 	protected EntityBijuManager getBijuManager() {
-	 		return tailBeastManager;
+	 		return BIJU_MANAGER;
 	 	}
 
 	 	@Override
@@ -148,7 +148,7 @@ public class EntityTenTails extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public EntityBijuManager getBijuManager() {
-			return tailBeastManager;
+			return BIJU_MANAGER;
 		}
 
 		@Override
@@ -197,7 +197,7 @@ public class EntityTenTails extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void onEntityUpdate() {
 			super.onEntityUpdate();
-			EntityPlayer jinchuriki = tailBeastManager.getJinchurikiPlayer();
+			EntityPlayer jinchuriki = this.getBijuManager().getJinchurikiPlayer();
 			if (!this.world.isRemote && this.isBeingRidden() && this.getControllingPassenger().equals(jinchuriki)
 			 && !ItemRinnegan.wearingRinnesharingan(jinchuriki)) {
 				this.setDead();

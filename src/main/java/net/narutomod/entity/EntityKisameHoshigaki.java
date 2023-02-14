@@ -214,8 +214,8 @@ public class EntityKisameHoshigaki extends ElementsNarutomodMod.ModElement {
 					return 5.3d + attackTarget.width;
 				}
 			});
-			this.tasks.addTask(4, new EntityAIWander(this, 0.5));
-			this.tasks.addTask(5, new EntityAIWatchClosest2(this, EntityPlayer.class, 15.0F, 1.0F));
+			this.tasks.addTask(4, new EntityAIWatchClosest2(this, EntityPlayer.class, 15.0F, 1.0F));
+			this.tasks.addTask(5, new EntityAIWander(this, 0.5));
 			this.tasks.addTask(6, new EntityAIWatchClosest(this, EntityMob.class, 8.0F));
 		}
 
@@ -251,12 +251,16 @@ public class EntityKisameHoshigaki extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public boolean attackEntityFrom(DamageSource source, float amount) {
-			if (!this.isAIDisabled() && source instanceof EntityDamageSource && !((EntityDamageSource)source).getIsThornsDamage()
-			 && !this.getHeldItemMainhand().isEmpty() && !this.isActiveItemStackBlocking()
-			 && this.ticksExisted > this.lastBlockTime + this.BLOCKING_CD) {
-				this.setActiveHand(EnumHand.MAIN_HAND);
-				this.activeItemStackUseCount = this.getActiveItemStack().getMaxItemUseDuration() - 5;
-				this.lastBlockTime = this.ticksExisted;
+			if (!this.isAIDisabled() && source instanceof EntityDamageSource && !((EntityDamageSource)source).getIsThornsDamage()) {
+				if (this.getHeldItemMainhand().isEmpty()) {
+					this.swapWithInventory(EntityEquipmentSlot.MAINHAND, 0);
+				}
+			 	if (!this.getHeldItemMainhand().isEmpty() && !this.isActiveItemStackBlocking()
+				 && this.ticksExisted > this.lastBlockTime + this.BLOCKING_CD) {
+					this.setActiveHand(EnumHand.MAIN_HAND);
+					this.activeItemStackUseCount = this.getActiveItemStack().getMaxItemUseDuration() - 5;
+					this.lastBlockTime = this.ticksExisted;
+				}
 			}
 			//if (this.useAltModel() && source.getTrueSource() instanceof EntityLivingBase) {
 				//EntityLivingBase attacker = (EntityLivingBase)source.getTrueSource();

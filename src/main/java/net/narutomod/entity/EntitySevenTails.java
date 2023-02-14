@@ -76,11 +76,11 @@ public class EntitySevenTails extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
-		public void setJinchurikiPlayer(@Nullable EntityPlayer player) {
-			super.setJinchurikiPlayer(player);
-			if (player != null) {
-				player.capabilities.allowFlying = true;
-				player.sendPlayerAbilities();
+		public void setVesselEntity(@Nullable Entity player) {
+			super.setVesselEntity(player);
+			if (player instanceof EntityPlayer) {
+				((EntityPlayer)player).capabilities.allowFlying = true;
+				((EntityPlayer)player).sendPlayerAbilities();
 			}
 		}
 

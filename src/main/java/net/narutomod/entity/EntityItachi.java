@@ -34,6 +34,7 @@ import net.minecraft.entity.ai.EntityAIHurtByTarget;
 import net.minecraft.entity.ai.EntityAIAttackMelee;
 import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
 import net.minecraft.entity.ai.EntityAISwimming;
+import net.minecraft.entity.ai.EntityAIWatchClosest2;
 import net.minecraft.entity.IEntityLivingData;
 import net.minecraft.entity.IRangedAttackMob;
 import net.minecraft.entity.monster.IMob;
@@ -126,7 +127,7 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 		private EntitySusanooClothed.EntityCustom susanooEntity;
 
 		public EntityCustom(World world) {
-			super(world, 80, 4000d);
+			super(world, 100, 5000d);
 			//this.setItemToInventory(kunaiStack);
 			this.isImmuneToFire = true;
 			this.setIsReal(this.rand.nextInt(5) == 0);
@@ -191,8 +192,9 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 					}
 				}
 			});
-			this.tasks.addTask(4, new EntityAIWander(this, 0.3));
-			this.tasks.addTask(5, new EntityAILookIdle(this));
+			this.tasks.addTask(4, new EntityAIWatchClosest2(this, EntityPlayer.class, 15.0F, 1.0F));
+			this.tasks.addTask(5, new EntityAIWander(this, 0.3));
+			this.tasks.addTask(6, new EntityAILookIdle(this));
 			this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, false));
 			this.targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, EntityPlayer.class, 10, true, false, 
 				new Predicate<EntityPlayer>() {

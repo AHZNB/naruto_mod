@@ -92,7 +92,7 @@ public class EntityChidori extends ElementsNarutomodMod.ModElement {
 
 		public EC(World a) {
 			super(a);
-			this.setSize(0.01f, 0.01f);
+			this.setSize(0.1f, 0.1f);
 		}
 
 		protected EC(EntityLivingBase summonerIn, double chakraBurnPerSec, int durationIn) {
@@ -142,8 +142,7 @@ public class EntityChidori extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void setDead() {
 			super.setDead();
-			if (!this.world.isRemote && this.summoner instanceof EntityPlayer) {
-				//PlayerRender.forceBowPose((EntityPlayer)this.summoner, EnumHandSide.RIGHT, false);
+			if (!this.world.isRemote && this.summoner != null) {
 				ProcedureSync.EntityNBTTag.removeAndSync(this.summoner, NarutomodModVariables.forceBowPose);
 			}
 		}
@@ -151,9 +150,7 @@ public class EntityChidori extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void onUpdate() {
 			boolean flag = this.isHoldingWeapon(EnumHand.MAIN_HAND);
-			if (!this.world.isRemote && this.summoner instanceof EntityPlayer
-			 //&& this.isHoldingWeapon(EnumHand.MAIN_HAND) != (PlayerRender.poseForcedArm((EntityPlayer)this.summoner) == null)) {
-				//PlayerRender.forceBowPose((EntityPlayer)this.summoner, EnumHandSide.RIGHT, !this.isHoldingWeapon(EnumHand.MAIN_HAND));
+			if (!this.world.isRemote && this.summoner != null
 			 && flag != !this.summoner.getEntityData().getBoolean(NarutomodModVariables.forceBowPose)) {
 				ProcedureSync.EntityNBTTag.setAndSync(this.summoner, NarutomodModVariables.forceBowPose, !flag);
 			}
@@ -166,7 +163,7 @@ public class EntityChidori extends ElementsNarutomodMod.ModElement {
 			}
 			float f = this.getGrowth();
 			if (this.rand.nextFloat() <= f * 0.3f) {
-				this.playSound((SoundEvent)SoundEvent.REGISTRY.getObject(new ResourceLocation(("narutomod:electricity"))),
+				this.playSound((SoundEvent)SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:electricity")),
 				  f * 0.5f, this.rand.nextFloat() * 2.0f + 1.0f);
 			}
 			if (this.ticksExisted > this.growTime / 2) {
@@ -211,8 +208,11 @@ public class EntityChidori extends ElementsNarutomodMod.ModElement {
 		}
 
 		protected void setPositionToSummoner() {
-			EntityLivingBase entity = this.summoner;
-			this.setPosition(entity.posX, entity.posY + 1.4d, entity.posZ);
+			if (this.handPos != null) {
+				this.setPosition(this.handPos.x, this.handPos.y - this.height * 0.5, this.handPos.z);
+			} else {
+				this.setPosition(this.summoner.posX, this.summoner.posY + 1.4d, this.summoner.posZ);
+			}
 		}
 
 		public float getCooledAttackStrength() {
@@ -285,7 +285,6 @@ public class EntityChidori extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void onUpdate() {
 			if (!this.world.isRemote && this.ticksExisted == 1 && this.summoner instanceof EntityPlayer) {
-				//PlayerRender.forceBowPose((EntityPlayer)this.summoner, EnumHandSide.RIGHT, true);
 				ProcedureSync.EntityNBTTag.setAndSync(this.summoner, NarutomodModVariables.forceBowPose, true);
 			}
 			if (this.summoner != null) {

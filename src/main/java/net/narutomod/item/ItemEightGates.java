@@ -7,9 +7,11 @@ import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.event.ForgeEventFactory;
-import net.minecraftforge.common.property.Properties;
+import net.minecraftforge.event.entity.living.LivingAttackEvent;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 
@@ -35,6 +37,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.EnumAction;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.init.MobEffects;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.entity.projectile.EntitySmallFireball;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
@@ -115,6 +118,7 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 
 	@Override
 	public void init(FMLInitializationEvent event) {
+		MinecraftForge.EVENT_BUS.register(new RangedItem.AttackHook());
 		ProcedureOnLeftClickEmpty.addQualifiedItem(block, EnumHand.MAIN_HAND);
 		ProcedureOnLeftClickEmpty.addQualifiedItem(block, EnumHand.OFF_HAND);
 	}
@@ -348,9 +352,9 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 				float gateOpened = this.getGateOpened(itemstack);
 				switch ((int) gateOpened) {
 					case 8 :
-						int i = this.attackSekizo(itemstack, attacker);
-						if (i >= 0) {
-							attacker.sendStatusMessage(new TextComponentString(I18n.translateToLocalFormatted("entity.entitysekizo.name", i+1)), true);
+						int k = this.attackSekizo(itemstack, attacker);
+						if (k >= 0) {
+							attacker.sendStatusMessage(new TextComponentString(I18n.translateToLocalFormatted("entity.entitysekizo.name", k+1)), true);
 						} else {
 							return true;
 						}
@@ -360,13 +364,40 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 						attacker.sendStatusMessage(new TextComponentString(I18n.translateToLocal("entity.entityasakujaku.name")), true);
 						break;
 					default :
-						if (gateOpened >= 2f && !target.equals(attacker)) {
-							ProcedureUtils.pushEntity(attacker, target, 10, gateOpened * 0.2f + 2f);
-							//ProcedureUtils.setVelocity(target, target.motionX, 1.5d, target.motionZ);
+						if (!target.equals(attacker)) {
+							if (gateOpened >= 2f) {
+								ProcedureUtils.pushEntity(attacker, target, 10, gateOpened * 0.2f + 2f);
+							}
 						}
 				}
 			}
 			return super.onLeftClickEntity(itemstack, attacker, target);
+		}
+
+		public static class AttackHook {
+			@SubscribeEvent
+			public void onLivingAttack(LivingAttackEvent event) {
+				if (event.getSource().getTrueSource() instanceof EntityPlayer
+				 && event.getSource().getTrueSource() == event.getSource().getImmediateSource()) {
+					EntityPlayer player = (EntityPlayer)event.getSource().getTrueSource();
+					ItemStack stack = player.getHeldItemMainhand();
+					if (stack.getItem() != block) {
+						stack = player.getHeldItemOffhand();
+					}
+					if (stack.getItem() == block && (int)((RangedItem)stack.getItem()).getGateOpened(stack) == 7) {
+						EntityLivingBase target = event.getEntityLiving();
+						target.world.playSound(null, target.posX, target.posY, target.posZ,
+						 SoundEvents.ENTITY_GENERIC_EXPLODE, SoundCategory.NEUTRAL, 1.0F, target.getRNG().nextFloat() * 0.5F + 0.5F);
+						Vec3d vec = player.getPositionVector().subtract(target.getPositionVector()).normalize();
+						for (int i = 1, j = 25; i <= j; i++) {
+							Vec3d vec1 = vec.scale(0.06d * i);
+							Particles.spawnParticle(player.world, Particles.Types.SONIC_BOOM, target.posX, target.posY+1.4d, target.posZ,
+							 1, 0d, 0d, 0d, vec1.x, vec1.y, vec1.z, 0x00ffffff | ((int)((1f-(float)i/j)*0x40)<<24),
+							 i * 2, (int)(5f * (1f + ((float)i/j) * 0.5f)));
+						}
+					}
+				}
+			}
 		}
 
 		//private float getMaxOpenableGate(EntityLivingBase entity) {

@@ -71,15 +71,15 @@ public class EntityFiveTails extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
-		public void setJinchurikiPlayer(@Nullable EntityPlayer player) {
-			super.setJinchurikiPlayer(player);
-			if (player != null && !ProcedureUtils.hasItemInInventory(player, ItemFutton.block)) {
-				ItemHandlerHelper.giveItemToPlayer(player, new ItemStack(ItemFutton.block));
-				if (!ProcedureUtils.hasItemInInventory(player, ItemKaton.block)) {
-					ItemHandlerHelper.giveItemToPlayer(player, new ItemStack(ItemKaton.block));
+		public void setVesselEntity(@Nullable Entity player) {
+			super.setVesselEntity(player);
+			if (player instanceof EntityPlayer && !ProcedureUtils.hasItemInInventory((EntityPlayer)player, ItemFutton.block)) {
+				ItemHandlerHelper.giveItemToPlayer((EntityPlayer)player, new ItemStack(ItemFutton.block));
+				if (!ProcedureUtils.hasItemInInventory((EntityPlayer)player, ItemKaton.block)) {
+					ItemHandlerHelper.giveItemToPlayer((EntityPlayer)player, new ItemStack(ItemKaton.block));
 				}
-				if (!ProcedureUtils.hasItemInInventory(player, ItemSuiton.block)) {
-					ItemHandlerHelper.giveItemToPlayer(player, new ItemStack(ItemSuiton.block));
+				if (!ProcedureUtils.hasItemInInventory((EntityPlayer)player, ItemSuiton.block)) {
+					ItemHandlerHelper.giveItemToPlayer((EntityPlayer)player, new ItemStack(ItemSuiton.block));
 				}
 			}
 		}

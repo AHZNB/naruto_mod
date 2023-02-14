@@ -10,20 +10,19 @@ import net.minecraftforge.event.entity.EntityTravelToDimensionEvent;
 import net.minecraftforge.common.MinecraftForge;
 
 import net.minecraft.world.World;
+import net.minecraft.world.GameType;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-//import net.minecraft.entity.player.InventoryPlayer;
-//import net.minecraft.inventory.ContainerPlayer;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.SoundEvent;
-import net.minecraft.world.GameType;
+import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.Entity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.init.MobEffects;
 
@@ -33,13 +32,12 @@ import net.narutomod.item.ItemJutsu;
 import net.narutomod.item.ItemInton;
 import net.narutomod.PlayerInput;
 import net.narutomod.PlayerRender;
+import net.narutomod.PlayerTracker;
 import net.narutomod.Chakra;
 import net.narutomod.NarutomodModVariables;
 import net.narutomod.ElementsNarutomodMod;
 
 import javax.annotation.Nullable;
-import javax.management.remote.TargetedNotification;
-import net.minecraft.entity.EntityLiving;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityMindTransfer extends ElementsNarutomodMod.ModElement {
@@ -233,7 +231,18 @@ public class EntityMindTransfer extends ElementsNarutomodMod.ModElement {
 				} else {
 					RayTraceResult res = ProcedureUtils.objectEntityLookingAt(entity, 30d);
 					if (res != null && (res.entityHit instanceof EntityLiving || res.entityHit instanceof EntityPlayer)) {
-						entity1 = new EC(entity, (EntityLivingBase)res.entityHit, ItemInton.MBTRANSFER.chakraUsage * 0.005d);
+						double d = 1.0d;
+						if (entity instanceof EntityPlayer) {
+							double d1 = PlayerTracker.getNinjaLevel((EntityPlayer)entity);
+							if (res.entityHit instanceof EntityPlayer) {
+								d = Math.max(PlayerTracker.getNinjaLevel((EntityPlayer)res.entityHit) / d1, 1.0d);
+							} else if (res.entityHit instanceof EntityNinjaMob.Base) {
+								d = Math.max(((EntityNinjaMob.Base)res.entityHit).getNinjaLevel() / d1, 1.0d);
+							} else {
+								d = Math.max(((EntityLivingBase)res.entityHit).getHealth() / entity.getHealth(), 1.0d);
+							}
+						}
+						entity1 = new EC(entity, (EntityLivingBase)res.entityHit, ItemInton.MBTRANSFER.chakraUsage * d * 0.005d);
 						entity.world.spawnEntity(entity1);
 						entity.getEntityData().setInteger(ECENTITYID, entity1.getEntityId());
 						return true;

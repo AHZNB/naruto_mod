@@ -71,17 +71,17 @@ public class EntityOneTail extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
-		public void setJinchurikiPlayer(@Nullable EntityPlayer player, boolean dirty) {
-			super.setJinchurikiPlayer(player, dirty);
-			if (player != null && !ProcedureUtils.hasItemInInventory(player, ItemJiton.block)) {
+		public void setVesselEntity(@Nullable Entity player, boolean dirty) {
+			super.setVesselEntity(player, dirty);
+			if (player instanceof EntityPlayer && !ProcedureUtils.hasItemInInventory((EntityPlayer)player, ItemJiton.block)) {
 				ItemStack stack = new ItemStack(ItemJiton.block);
 				ItemJiton.setSandType(stack, ItemJiton.Type.SAND);
-				ItemHandlerHelper.giveItemToPlayer(player, stack);
-				if (!ProcedureUtils.hasItemInInventory(player, ItemFuton.block)) {
-					ItemHandlerHelper.giveItemToPlayer(player, new ItemStack(ItemFuton.block));
+				ItemHandlerHelper.giveItemToPlayer((EntityPlayer)player, stack);
+				if (!ProcedureUtils.hasItemInInventory((EntityPlayer)player, ItemFuton.block)) {
+					ItemHandlerHelper.giveItemToPlayer((EntityPlayer)player, new ItemStack(ItemFuton.block));
 				}
-				if (!ProcedureUtils.hasItemInInventory(player, ItemDoton.block)) {
-					ItemHandlerHelper.giveItemToPlayer(player, new ItemStack(ItemDoton.block));
+				if (!ProcedureUtils.hasItemInInventory((EntityPlayer)player, ItemDoton.block)) {
+					ItemHandlerHelper.giveItemToPlayer((EntityPlayer)player, new ItemStack(ItemDoton.block));
 				}
 			}
 		}

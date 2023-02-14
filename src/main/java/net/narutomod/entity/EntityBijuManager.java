@@ -36,6 +36,7 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 	private static final int[] ZERO = {0, 0, 0};
 	private UUID vesselUuid;
 	private EntityPlayer jinchurikiPlayer;
+	private String vesselName = "";
 	private T entity;
 	private final Class<T> entityClass;
 	private final int tails;
@@ -118,14 +119,14 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 	public static void unsetPlayerAsJinchuriki(EntityPlayer player) {
 		EntityBijuManager bm = getBijuManagerFrom(player);
 		if (bm != null) {
-			bm.setJinchurikiPlayer(null, true);
+			bm.setVesselEntity(null, true);
 		}
 	}
 
 	public static boolean setPlayerAsJinchurikiByTails(EntityPlayer player, int tailnum) {
 		EntityBijuManager bm = mapByTailnum.get(tailnum);
 		if (bm != null && !bm.isSealed()) {
-			bm.setJinchurikiPlayer(player, true);
+			bm.setVesselEntity(player, true);
 			return true;
 		}
 		return false;
@@ -134,13 +135,13 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 	public static void revokeJinchurikiByTails(int tailnum) {
 		EntityBijuManager bm = mapByTailnum.get(tailnum);
 		if (bm != null) {
-			bm.setJinchurikiPlayer(null, true);
+			bm.setVesselEntity(null, true);
 		}
 	}
 
 	public static void revokeAllJinchuriki() {
 		for (EntityBijuManager bm : mapByClass.values()) {
-			bm.setJinchurikiPlayer(null, true);
+			bm.setVesselEntity(null, true);
 		}
 	}
 
@@ -240,15 +241,29 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 	}
 
 	public boolean isSealed() {
-		return this.hasJinchuriki();
-	}
-
-	public boolean hasJinchuriki() {
 		return this.vesselUuid != null;
 	}
 
+	public boolean hasJinchuriki() {
+		return this.vesselUuid != null && !this.vesselUuid.equals(EntityGedoStatue.GEDOMAZO_UUID);
+	}
+
+	@Nullable
+	public UUID getVesselUuid() {
+		return this.vesselUuid;
+	}
+	
 	public void setVesselUuid(@Nullable UUID uuid) {
 		this.vesselUuid = uuid;
+		EntityGedoStatue.setBijuSealed(this.tails - 1, EntityGedoStatue.GEDOMAZO_UUID.equals(uuid));
+	}
+
+	public String getVesselName() {
+		return this.vesselName;
+	}
+	
+	public void setVesselName(String name) {
+		this.vesselName = name;
 	}
 
 	@Nullable
@@ -256,29 +271,31 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 		return this.jinchurikiPlayer;
 	}
 
-	public void setJinchurikiPlayer(@Nullable EntityPlayer player) {
-		this.setJinchurikiPlayer(player, true);
+	public void setVesselEntity(@Nullable Entity entityIn) {
+		this.setVesselEntity(entityIn, true);
 	}
 
-	public void setJinchurikiPlayer(@Nullable EntityPlayer player, boolean dirty) {
-		if (player == null) {
+	public void setVesselEntity(@Nullable Entity entityIn, boolean dirty) {
+		if (entityIn == null) {
 			this.setVesselUuid(null);
 			if (this.getCloakLevel() != 0) {
 				this.toggleBijuCloak();
 			}
 			this.setCloakXPs(ZERO);
+			this.vesselName = "";
 		} else {
-			this.setVesselUuid(player.getUniqueID());
+			this.setVesselUuid(entityIn.getUniqueID());
+			this.vesselName = entityIn.getName();
 		}
-		this.jinchurikiPlayer = player;
+		this.jinchurikiPlayer = entityIn instanceof EntityPlayer ? (EntityPlayer)entityIn : null;
 		if (dirty) {
 			this.markDirty();
 		}
 	}
 
-	public void verifyJinchuriki(EntityPlayer player) {
-		if (player.getUniqueID().equals(this.vesselUuid)) {
-			this.setJinchurikiPlayer(player, true);
+	public void verifyVesselEntity(Entity entityIn) {
+		if (entityIn.getUniqueID().equals(this.vesselUuid)) {
+			this.setVesselEntity(entityIn, true);
 			System.out.println(this.toString());
 		}
 	}
@@ -435,7 +452,7 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 
 	public String toString() {
 		EntityPlayer jinchuriki = this.getJinchurikiPlayer();
-		return " >>>> " + (jinchuriki != null ? jinchuriki.getName() : this.vesselUuid) + " is the " + this.getEntityLocalizedName() + " jinchuriki.";
+		return " >>>> " + (jinchuriki != null ? jinchuriki.getName() : this.vesselName) + " is the " + this.getEntityLocalizedName() + " jinchuriki.";
 	}
 
 	public interface ITailBeast {

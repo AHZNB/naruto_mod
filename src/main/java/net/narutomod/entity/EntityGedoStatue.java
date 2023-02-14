@@ -38,6 +38,9 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.block.Block;
+import net.minecraft.network.datasync.DataParameter;
+import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraft.network.datasync.DataSerializers;
 
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.Particles;
@@ -46,8 +49,8 @@ import net.narutomod.ElementsNarutomodMod;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
 import java.util.List;
-import javax.annotation.Nullable;
 import java.util.UUID;
+import javax.annotation.Nullable;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
@@ -55,8 +58,8 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 	public static final int ENTITYID_RANGED = 331;
 	private static final float MODEL_SCALE = 10.0F;
 	private static EntityCustom thisEntity = null;
-	private static boolean[] bijuSealed = new boolean[9];
-	private static final UUID GEDOMAZO_UUID = UUID.fromString("7048f36c-9838-4637-9935-9c4965e75b9a");
+	private static final boolean[] BIJU_SEALED = new boolean[9];
+	protected static final UUID GEDOMAZO_UUID = UUID.fromString("7048f36c-9838-4637-9935-9c4965e75b9a");
 
 	public EntityGedoStatue(ElementsNarutomodMod instance) {
 		super(instance, 683);
@@ -107,8 +110,14 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 		return null;
 	}
 
+	public static void setBijuSealed(int tails, boolean sealed) {
+		if (tails >= 0 && tails < 9) {
+			BIJU_SEALED[tails] = sealed;
+		}
+	}
+
 	public static class EntityCustom extends EntitySummonAnimal.Base {
-		//private static final DataParameter<Integer> AGE = EntityDataManager.<Integer>createKey(EntityCustom.class, DataSerializers.VARINT);
+		private static final DataParameter<Boolean> SIT = EntityDataManager.<Boolean>createKey(EntityCustom.class, DataSerializers.BOOLEAN);
 		private EntityPurpleDragon dragonEntity;
 		private List<EntityLivingBase> dragonTargetList;
 		private List<BlockPos> particleArea;
@@ -132,19 +141,19 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 			this.postScaleFixup();
 		}
 
-		/*@Override
-		protected void entityInit() {
+		@Override
+		public void entityInit() {
 			super.entityInit();
-			this.getDataManager().register(AGE, Integer.valueOf(0));
+			this.getDataManager().register(SIT, Boolean.valueOf(false));
 		}
 
-		public int getAge() {
-			return ((Integer) this.getDataManager().get(AGE)).intValue();
+		public boolean isSitting() {
+			return ((Boolean)this.getDataManager().get(SIT)).booleanValue();
 		}
 
-		protected void setAge(int age) {
-			this.getDataManager().set(AGE, Integer.valueOf(age));
-		}*/
+		protected void setSitting(boolean sit) {
+			this.getDataManager().set(SIT, Boolean.valueOf(sit));
+		}
 
 		@Override
 		public float getScale() {
@@ -153,7 +162,7 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public SoundEvent getAmbientSound() {
-			return SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:MonsterGrowl"));
+			return this.isSitting() ? null : SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:MonsterGrowl"));
 		}
 
 		@Override
@@ -244,7 +253,9 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void onUpdate() {
 			super.onUpdate();
-			if (this.getAge() <= this.riseTime) {
+			int age = this.getAge();
+			if (age <= this.riseTime) {
+				//this.setSitting(age != this.riseTime);
 				if (this.particleArea == null) {
 					this.particleArea = ProcedureUtils.getNonAirBlocks(this.world, 
 					 this.getEntityBoundingBox().offset(0d, -0.5d * this.height, 0d));
@@ -253,7 +264,8 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 				for (int i = 0; i < 100; i++) {
 					particles.spawnParticles(Particles.Types.SMOKE, this.posX, this.posY, this.posZ,
 					 1, 0.5d * this.width, 0d, 0.5d * this.width, (this.rand.nextDouble()-0.5d) * 2.0d,
-					 this.rand.nextDouble() * 0.6d + 0.4d, (this.rand.nextDouble()-0.5d) * 2.0d, 0xD06F6F6F, 60);
+					 this.rand.nextDouble() * 0.6d + 0.4d, (this.rand.nextDouble()-0.5d) * 2.0d, 0xD06F6F6F,
+					 50 + this.rand.nextInt(30));
 				}
 				particles.send();
 				if (this.particleArea != null) {
@@ -262,8 +274,8 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 						if (state.isFullCube() && this.world.isAirBlock(pos.up())) {
 							for (int i = 0; i < 10; i++) {
 								this.world.spawnParticle(EnumParticleTypes.BLOCK_DUST, 0.5d + pos.getX(),
-								 1d + pos.getY(), 0.5d + pos.getZ(),
-								 this.rand.nextGaussian() * 0.15d, this.rand.nextGaussian() * 0.15d, this.rand.nextGaussian() * 0.15d,
+								 1d + pos.getY(), 0.5d + pos.getZ(), this.rand.nextGaussian() * 0.15d,
+								 this.rand.nextGaussian() * 0.15d, this.rand.nextGaussian() * 0.15d,
 								 Block.getIdFromBlock(state.getBlock()));
 							}
 						}
@@ -274,7 +286,12 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 				 SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:woodspawn")),
 				 SoundCategory.BLOCKS, 2f, this.rand.nextFloat() * 0.6f + 0.6f);
 			}
-			if (this.isAIDisabled() && (this.dragonEntity == null || !this.dragonEntity.isEntityAlive())) {
+			if (this.isSitting()) {
+				if (!this.isAIDisabled()) {
+					this.setNoAI(true);
+				}
+			} else if (this.isAIDisabled()
+			 && (this.dragonEntity == null || !this.dragonEntity.isEntityAlive() || this.dragonEntity.ticksAlive > 40)) {
 				this.setNoAI(false);
 			}
 		}
@@ -292,14 +309,14 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 
 		public EntityPurpleDragon(World w) {
 			super(w);
-			this.setOGSize(1.25F, 1.25F);
-			this.setEntityScale(1.5f);
+			this.setOGSize(1.5F, 1.5F);
+			this.setEntityScale(1.6f);
 		}
 
 		public EntityPurpleDragon(EntityCustom shooter) {
 			super(shooter);
-			this.setOGSize(1.25F, 1.25F);
-			this.setEntityScale(1.5f);
+			this.setOGSize(1.5F, 1.5F);
+			this.setEntityScale(1.6f);
 			this.targetList = shooter.dragonTargetList;
 			this.setLocationAndAngles(shooter.posX, shooter.posY + 1.4375d * MODEL_SCALE, shooter.posZ,
 			 shooter.rotationYawHead, shooter.rotationPitch);
@@ -310,14 +327,14 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 		private void setWaitPosition() {
 			if (this.shootingEntity != null) {
 				Vec3d vec = Vec3d.fromPitchYaw(this.shootingEntity.rotationPitch, this.shootingEntity.rotationYawHead).scale(0.01d);
-				this.motionX += vec.x;
-				this.motionY += vec.y;
-				this.motionZ += vec.z;
+				this.motionX += vec.x + this.rand.nextGaussian() * this.ticksAlive * 0.001d;
+				this.motionY += vec.y + this.rand.nextGaussian() * this.ticksAlive * 0.001d;
+				this.motionZ += vec.z + this.rand.nextGaussian() * this.ticksAlive * 0.001d;
 			}
 		}
 
-		private void shoot(double x, double y, double z) {
-			this.shoot(x, y, z, 0.95f, 0f, false);
+		private void shoot(Vec3d vec) {
+			this.shoot(vec.x, vec.y, vec.z, 0.95f, 0f, false);
 		}
 
 		@Override
@@ -334,8 +351,7 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 					}
 					this.setWaitPosition();
 				} else if (this.targetList != null && !this.targetList.isEmpty()) {
-					Vec3d vec = this.targetList.get(0).getPositionVector().subtract(this.getPositionVector());
-					this.shoot(vec.x, vec.y, vec.z);
+					this.shoot(this.targetList.get(0).getPositionVector().subtract(this.getPositionVector()));
 				}
 				this.updateSegments();
 				this.prevHeadYaw = this.rotationYaw;
@@ -753,9 +769,33 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 		//private final ModelRenderer bipedRightArm;
 		private final ModelRenderer rightUpperArm;
 		private final ModelRenderer rightForeArm;
+		private final ModelRenderer rightHand;
+		private final ModelRenderer rightCuff;
+		private final ModelRenderer rightThumb;
+		private final ModelRenderer bone19;
+		private final ModelRenderer rightFinger1;
+		private final ModelRenderer bone144;
+		private final ModelRenderer rightFinger2;
+		private final ModelRenderer bone21;
+		private final ModelRenderer rightFinger3;
+		private final ModelRenderer bone24;
+		private final ModelRenderer rightFinger4;
+		private final ModelRenderer bone28;
 		//private final ModelRenderer bipedLeftArm;
 		private final ModelRenderer leftUpperArm;
 		private final ModelRenderer leftForeArm;
+		private final ModelRenderer leftHand;
+		private final ModelRenderer leftCuff;
+		private final ModelRenderer leftThumb;
+		private final ModelRenderer bone32;
+		private final ModelRenderer leftFinger1;
+		private final ModelRenderer bone34;
+		private final ModelRenderer leftFinger2;
+		private final ModelRenderer bone36;
+		private final ModelRenderer leftFinger3;
+		private final ModelRenderer bone38;
+		private final ModelRenderer leftFinger4;
+		private final ModelRenderer bone40;
 		//private final ModelRenderer bipedRightLeg;
 		private final ModelRenderer bone30;
 		private final ModelRenderer rightThigh;
@@ -894,9 +934,78 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 			rightForeArm.setRotationPoint(-0.5F, 5.0F, 2.0F);
 			rightUpperArm.addChild(rightForeArm);
 			setRotationAngle(rightForeArm, -0.5236F, 0.0F, 0.0F);
-			rightForeArm.cubeList.add(new ModelBox(rightForeArm, 40, 16, -1.5F, 0.0F, -4.0F, 3, 7, 4, 0.0F, false));
-			rightForeArm.cubeList.add(new ModelBox(rightForeArm, 40, 37, -1.5F, 0.0F, -4.0F, 3, 7, 4, 0.25F, false));
+			rightForeArm.cubeList.add(new ModelBox(rightForeArm, 40, 16, -1.5F, 0.0F, -4.0F, 3, 4, 4, -0.1F, false));
 	
+			rightHand = new ModelRenderer(this);
+			rightHand.setRotationPoint(0.1F, 4.5F, -2.0F);
+			rightForeArm.addChild(rightHand);
+			setRotationAngle(rightHand, 1.5708F, 1.5708F, 0.0F);
+			rightHand.cubeList.add(new ModelBox(rightHand, 40, 27, -1.6F, -1.0F, -2.25F, 3, 1, 3, 0.0F, false));
+			rightHand.cubeList.add(new ModelBox(rightHand, 36, 28, -1.6F, -0.25F, -2.25F, 3, 1, 3, 0.0F, false));
+	
+			rightCuff = new ModelRenderer(this);
+			rightCuff.setRotationPoint(-0.1F, 0.0F, 0.45F);
+			rightHand.addChild(rightCuff);
+			setRotationAngle(rightCuff, -1.5708F, 0.0F, 1.5708F);
+			rightCuff.cubeList.add(new ModelBox(rightCuff, 40, 40, -1.5F, -1.0F, -2.0F, 3, 2, 4, -0.15F, false));
+	
+			rightThumb = new ModelRenderer(this);
+			rightThumb.setRotationPoint(1.1F, -0.15F, -0.75F);
+			rightHand.addChild(rightThumb);
+			setRotationAngle(rightThumb, 0.0F, -0.5236F, 0.5236F);
+			rightThumb.cubeList.add(new ModelBox(rightThumb, 6, 3, -0.5F, -0.5F, -2.05F, 1, 1, 2, 0.0F, false));
+	
+			bone19 = new ModelRenderer(this);
+			bone19.setRotationPoint(0.0F, 0.0F, -1.9F);
+			rightThumb.addChild(bone19);
+			setRotationAngle(bone19, 0.5236F, 0.0F, 0.0F);
+			bone19.cubeList.add(new ModelBox(bone19, 6, 0, -0.5F, -0.5F, -1.8F, 1, 1, 2, -0.2F, false));
+	
+			rightFinger1 = new ModelRenderer(this);
+			rightFinger1.setRotationPoint(1.1F, -0.15F, -1.75F);
+			rightHand.addChild(rightFinger1);
+			rightFinger1.cubeList.add(new ModelBox(rightFinger1, 6, 3, -0.5F, -0.5F, -2.05F, 1, 1, 2, -0.05F, false));
+	
+			bone144 = new ModelRenderer(this);
+			bone144.setRotationPoint(0.0F, 0.0F, -1.9F);
+			rightFinger1.addChild(bone144);
+			setRotationAngle(bone144, 0.5236F, 0.0F, 0.0F);
+			bone144.cubeList.add(new ModelBox(bone144, 6, 0, -0.5F, -0.5F, -1.8F, 1, 1, 2, -0.2F, false));
+	
+			rightFinger2 = new ModelRenderer(this);
+			rightFinger2.setRotationPoint(-0.05F, -0.15F, -1.75F);
+			rightHand.addChild(rightFinger2);
+			rightFinger2.cubeList.add(new ModelBox(rightFinger2, 6, 3, -0.5F, -0.5F, -2.05F, 1, 1, 2, -0.05F, false));
+	
+			bone21 = new ModelRenderer(this);
+			bone21.setRotationPoint(0.0F, 0.0F, -1.9F);
+			rightFinger2.addChild(bone21);
+			setRotationAngle(bone21, 0.5236F, 0.0F, 0.0F);
+			bone21.cubeList.add(new ModelBox(bone21, 6, 0, -0.5F, -0.5F, -1.8F, 1, 1, 2, -0.2F, false));
+	
+			rightFinger3 = new ModelRenderer(this);
+			rightFinger3.setRotationPoint(-1.2F, -0.15F, -1.75F);
+			rightHand.addChild(rightFinger3);
+			rightFinger3.cubeList.add(new ModelBox(rightFinger3, 6, 3, -0.5F, -0.5F, -2.05F, 1, 1, 2, -0.05F, false));
+	
+			bone24 = new ModelRenderer(this);
+			bone24.setRotationPoint(0.0F, 0.0F, -1.9F);
+			rightFinger3.addChild(bone24);
+			setRotationAngle(bone24, 0.5236F, 0.0F, 0.0F);
+			bone24.cubeList.add(new ModelBox(bone24, 6, 0, -0.5F, -0.5F, -1.8F, 1, 1, 2, -0.2F, false));
+	
+			rightFinger4 = new ModelRenderer(this);
+			rightFinger4.setRotationPoint(-1.2F, -0.15F, -1.0F);
+			rightHand.addChild(rightFinger4);
+			setRotationAngle(rightFinger4, 0.0F, 0.4363F, 0.0F);
+			rightFinger4.cubeList.add(new ModelBox(rightFinger4, 6, 3, -0.5F, -0.5F, -2.05F, 1, 1, 2, -0.05F, false));
+	
+			bone28 = new ModelRenderer(this);
+			bone28.setRotationPoint(0.0F, 0.0F, -1.9F);
+			rightFinger4.addChild(bone28);
+			setRotationAngle(bone28, 0.5236F, 0.0F, 0.0F);
+			bone28.cubeList.add(new ModelBox(bone28, 6, 0, -0.5F, -0.5F, -1.8F, 1, 1, 2, -0.2F, false));
+
 			bipedLeftArm = new ModelRenderer(this);
 			bipedLeftArm.setRotationPoint(5.0F, 2.0F, 0.0F);
 			
@@ -911,9 +1020,78 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 			leftForeArm.setRotationPoint(0.5F, 5.0F, 2.0F);
 			leftUpperArm.addChild(leftForeArm);
 			setRotationAngle(leftForeArm, -0.5236F, 0.0F, 0.0F);
-			leftForeArm.cubeList.add(new ModelBox(leftForeArm, 40, 16, -1.5F, 0.0F, -4.0F, 3, 7, 4, 0.0F, true));
-			leftForeArm.cubeList.add(new ModelBox(leftForeArm, 40, 37, -1.5F, 0.0F, -4.0F, 3, 7, 4, 0.25F, true));
+			leftForeArm.cubeList.add(new ModelBox(leftForeArm, 40, 16, -1.5F, 0.0F, -4.0F, 3, 4, 4, -0.1F, true));
 	
+			leftHand = new ModelRenderer(this);
+			leftHand.setRotationPoint(-0.1F, 4.5F, -2.0F);
+			leftForeArm.addChild(leftHand);
+			setRotationAngle(leftHand, 1.5708F, -1.5708F, 0.0F);
+			leftHand.cubeList.add(new ModelBox(leftHand, 40, 27, -1.4F, -1.0F, -2.25F, 3, 1, 3, 0.0F, true));
+			leftHand.cubeList.add(new ModelBox(leftHand, 36, 28, -1.4F, -0.25F, -2.25F, 3, 1, 3, 0.0F, true));
+	
+			leftCuff = new ModelRenderer(this);
+			leftCuff.setRotationPoint(0.1F, 0.0F, 0.45F);
+			leftHand.addChild(leftCuff);
+			setRotationAngle(leftCuff, -1.5708F, 0.0F, -1.5708F);
+			leftCuff.cubeList.add(new ModelBox(leftCuff, 40, 40, -1.5F, -1.0F, -2.0F, 3, 2, 4, -0.15F, true));
+	
+			leftThumb = new ModelRenderer(this);
+			leftThumb.setRotationPoint(-1.1F, -0.15F, -0.75F);
+			leftHand.addChild(leftThumb);
+			setRotationAngle(leftThumb, 0.0F, 0.5236F, -0.5236F);
+			leftThumb.cubeList.add(new ModelBox(leftThumb, 6, 3, -0.5F, -0.5F, -2.05F, 1, 1, 2, 0.0F, true));
+	
+			bone32 = new ModelRenderer(this);
+			bone32.setRotationPoint(0.0F, 0.0F, -1.9F);
+			leftThumb.addChild(bone32);
+			setRotationAngle(bone32, 0.5236F, 0.0F, 0.0F);
+			bone32.cubeList.add(new ModelBox(bone32, 6, 0, -0.5F, -0.5F, -1.8F, 1, 1, 2, -0.2F, true));
+	
+			leftFinger1 = new ModelRenderer(this);
+			leftFinger1.setRotationPoint(-1.1F, -0.15F, -1.75F);
+			leftHand.addChild(leftFinger1);
+			leftFinger1.cubeList.add(new ModelBox(leftFinger1, 6, 3, -0.5F, -0.5F, -2.05F, 1, 1, 2, -0.05F, true));
+	
+			bone34 = new ModelRenderer(this);
+			bone34.setRotationPoint(0.0F, 0.0F, -1.9F);
+			leftFinger1.addChild(bone34);
+			setRotationAngle(bone34, 0.5236F, 0.0F, 0.0F);
+			bone34.cubeList.add(new ModelBox(bone34, 6, 0, -0.5F, -0.5F, -1.8F, 1, 1, 2, -0.2F, true));
+	
+			leftFinger2 = new ModelRenderer(this);
+			leftFinger2.setRotationPoint(0.05F, -0.15F, -1.75F);
+			leftHand.addChild(leftFinger2);
+			leftFinger2.cubeList.add(new ModelBox(leftFinger2, 6, 3, -0.5F, -0.5F, -2.05F, 1, 1, 2, -0.05F, true));
+	
+			bone36 = new ModelRenderer(this);
+			bone36.setRotationPoint(0.0F, 0.0F, -1.9F);
+			leftFinger2.addChild(bone36);
+			setRotationAngle(bone36, 0.5236F, 0.0F, 0.0F);
+			bone36.cubeList.add(new ModelBox(bone36, 6, 0, -0.5F, -0.5F, -1.8F, 1, 1, 2, -0.2F, true));
+	
+			leftFinger3 = new ModelRenderer(this);
+			leftFinger3.setRotationPoint(1.2F, -0.15F, -1.75F);
+			leftHand.addChild(leftFinger3);
+			leftFinger3.cubeList.add(new ModelBox(leftFinger3, 6, 3, -0.5F, -0.5F, -2.05F, 1, 1, 2, -0.05F, true));
+	
+			bone38 = new ModelRenderer(this);
+			bone38.setRotationPoint(0.0F, 0.0F, -1.9F);
+			leftFinger3.addChild(bone38);
+			setRotationAngle(bone38, 0.5236F, 0.0F, 0.0F);
+			bone38.cubeList.add(new ModelBox(bone38, 6, 0, -0.5F, -0.5F, -1.8F, 1, 1, 2, -0.2F, true));
+	
+			leftFinger4 = new ModelRenderer(this);
+			leftFinger4.setRotationPoint(1.2F, -0.15F, -1.0F);
+			leftHand.addChild(leftFinger4);
+			setRotationAngle(leftFinger4, 0.0F, -0.4363F, 0.0F);
+			leftFinger4.cubeList.add(new ModelBox(leftFinger4, 6, 3, -0.5F, -0.5F, -2.05F, 1, 1, 2, -0.05F, true));
+	
+			bone40 = new ModelRenderer(this);
+			bone40.setRotationPoint(0.0F, 0.0F, -1.9F);
+			leftFinger4.addChild(bone40);
+			setRotationAngle(bone40, 0.5236F, 0.0F, 0.0F);
+			bone40.cubeList.add(new ModelBox(bone40, 6, 0, -0.5F, -0.5F, -1.8F, 1, 1, 2, -0.2F, true));
+
 			bipedRightLeg = new ModelRenderer(this);
 			bipedRightLeg.setRotationPoint(-1.9F, 12.0F, 0.0F);
 			
@@ -980,6 +1158,7 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 		public void setRotationAngles(float f, float f1, float f2, float f3, float f4, float f5, Entity e) {
 			f = f * 2.0F / e.height;
 			super.setRotationAngles(f, f1, f2, f3, f4, f5, e);
+			this.poseSit(((EntityCustom)e).isSitting());
 		}
 
 		private void poseSit(boolean sitting) {
@@ -991,8 +1170,21 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 				bipedLeftArm.rotationPointY = 12.0F;
 				bipedRightLeg.rotationPointY = 22.0F;
 				bipedLeftLeg.rotationPointY = 22.0F;
-				setRotationAngle(rightUpperArm, -0.2618F, 0.0873F, 0.2618F);
-				setRotationAngle(leftUpperArm, -0.2618F, -0.0873F, -0.2618F);
+				
+				setRotationAngle(bipedRightArm, 0.0F, 0.0F, 0.0F);
+				setRotationAngle(rightUpperArm, -0.2618F, -0.2618F, 0.5236F);
+				rightForeArm.setRotationPoint(-0.5F, 5.0F, 0.0F);
+				setRotationAngle(rightForeArm, -1.309F, 0.0F, 0.0F);
+				rightHand.setRotationPoint(0.0F, 4.5F, -2.0F);
+				setRotationAngle(rightHand, 1.8326F, -2.7053F, 0.0F);
+				
+				setRotationAngle(bipedLeftArm, 0.0F, 0.0F, 0.0F);
+				setRotationAngle(leftUpperArm, -0.2618F, 0.2618F, -0.5236F);
+				leftForeArm.setRotationPoint(0.5F, 5.0F, 0.0F);
+				setRotationAngle(leftForeArm, -1.309F, 0.0F, 0.0F);
+				leftHand.setRotationPoint(0.0F, 4.5F, -2.0F);
+				setRotationAngle(leftHand, 1.8326F, 2.7053F, 0.0F);
+				
 				setRotationAngle(rightThigh, -2.0944F, 0.1309F, -1.309F);
 				setRotationAngle(rightShank, 1.5272F, 0.0F, 0.0F);
 				setRotationAngle(leftThigh, -2.0944F, -0.1309F, 1.309F);
@@ -1005,8 +1197,19 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 				bipedLeftArm.rotationPointY = 2.0F;
 				bipedRightLeg.rotationPointY = 12.0F;
 				bipedLeftLeg.rotationPointY = 12.0F;
+				
 				setRotationAngle(rightUpperArm, 0.0F, -0.5236F, 0.2618F);
+				rightForeArm.setRotationPoint(-0.5F, 5.0F, 2.0F);
+				setRotationAngle(rightForeArm, -0.5236F, 0.0F, 0.0F);
+				rightHand.setRotationPoint(0.1F, 4.5F, -2.0F);
+				setRotationAngle(rightHand, 1.5708F, 1.5708F, 0.0F);
+
 				setRotationAngle(leftUpperArm, 0.0F, 0.5236F, -0.2618F);
+				leftForeArm.setRotationPoint(0.5F, 5.0F, 2.0F);
+				setRotationAngle(leftForeArm, -0.5236F, 0.0F, 0.0F);
+				leftHand.setRotationPoint(-0.1F, 4.5F, -2.0F);
+				setRotationAngle(leftHand, 1.5708F, -1.5708F, 0.0F);
+				
 				setRotationAngle(rightThigh, -0.2618F, 0.2618F, 0.0F);
 				setRotationAngle(rightShank, 0.2618F, 0.0F, 0.0F);
 				setRotationAngle(leftThigh, -0.2618F, -0.2618F, 0.0F);

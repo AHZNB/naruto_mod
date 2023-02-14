@@ -120,7 +120,7 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 
 	public static abstract class Base extends EntityMob implements IRangedAttackMob, EntityBijuManager.ITailBeast {
 		private static final DataParameter<Integer> AGE = EntityDataManager.<Integer>createKey(Base.class, DataSerializers.VARINT);
-		private static final DataParameter<Integer> JINCHURIKI = EntityDataManager.<Integer>createKey(Base.class, DataSerializers.VARINT);
+		private static final DataParameter<Integer> VESSEL = EntityDataManager.<Integer>createKey(Base.class, DataSerializers.VARINT);
 		private static final DataParameter<Boolean> SHOOT = EntityDataManager.<Boolean>createKey(Base.class, DataSerializers.BOOLEAN);
 		private static final DataParameter<Boolean> CANSTEER = EntityDataManager.<Boolean>createKey(Base.class, DataSerializers.BOOLEAN);
 		private static final DataParameter<Boolean> FACEDOWN = EntityDataManager.<Boolean>createKey(Base.class, DataSerializers.BOOLEAN);
@@ -162,7 +162,7 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 		protected void entityInit() {
 			super.entityInit();
 			this.getDataManager().register(AGE, Integer.valueOf(0));
-			this.getDataManager().register(JINCHURIKI, Integer.valueOf(-1));
+			this.getDataManager().register(VESSEL, Integer.valueOf(-1));
 			this.getDataManager().register(SHOOT, Boolean.valueOf(false));
 			this.getDataManager().register(CANSTEER, Boolean.valueOf(false));
 			this.getDataManager().register(FACEDOWN, Boolean.valueOf(false));
@@ -191,13 +191,13 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 		public abstract float getModelScale();
 
 		@Nullable
-		private EntityPlayer getJinchuriki() {
-			Entity entity = this.world.getEntityByID(((Integer)this.getDataManager().get(JINCHURIKI)).intValue());
+		private Entity getTargetVessel() {
+			Entity entity = this.world.getEntityByID(((Integer)this.getDataManager().get(VESSEL)).intValue());
 			return entity instanceof EntityPlayer ? (EntityPlayer)entity : null;
 		}
 
-		private void setJinchuriki(@Nullable EntityPlayer player) {
-			this.getDataManager().set(JINCHURIKI, Integer.valueOf(player != null ? player.getEntityId() : -1));
+		private void setTargetVessel(@Nullable Entity player) {
+			this.getDataManager().set(VESSEL, Integer.valueOf(player != null ? player.getEntityId() : -1));
 		}
 
 		public void setAngerLevel(int i) {
@@ -483,10 +483,10 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void fuuinIntoPlayer(EntityPlayer player, int fuuinTime) {
 			if (!this.getBijuManager().isSealed() && !EntityBijuManager.isJinchuriki(player)) {
-				if (!player.equals(this.getJinchuriki())) {
+				if (!player.equals(this.getTargetVessel())) {
 					this.deathTicks = 0;
 				}
-				this.setJinchuriki(player);
+				this.setTargetVessel(player);
 				this.setHealth(0.0F);
 				this.deathTotalTicks = fuuinTime;
 			}
@@ -494,20 +494,20 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public boolean isFuuinInProgress() {
-			return this.getJinchuriki() != null && this.deathTicks > 0;
+			return this.getTargetVessel() != null && this.deathTicks > 0;
 		}
 
 		@Override
 		public void cancelFuuin() {
 			this.setHealth(this.getMaxHealth() * 0.09f);
-			this.setJinchuriki(null);
+			this.setTargetVessel(null);
 			this.deathTicks = 0;
 			this.deathTotalTicks = 100;
 		}
 
 		@Override
 		public void incFuuinProgress(int i) {
-			if (this.getJinchuriki() != null) {
+			if (this.getTargetVessel() != null) {
 				this.deathTicks += i;
 			}
 		}
@@ -521,11 +521,11 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 		protected void onDeathUpdate() {
 			this.deathTicks++;
 			if (!this.world.isRemote) {
-				EntityPlayer jinchuriki = this.getJinchuriki();
+				Entity jinchuriki = this.getTargetVessel();
 				if (jinchuriki != null) {
 					if (this.getBijuManager().isSealed() && this.deathTicks == 1) {
 						jinchuriki = null;
-						this.setJinchuriki(null);
+						this.setTargetVessel(null);
 						this.deathTotalTicks = 100;
 					}
 				}
@@ -538,7 +538,7 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 				}
 				if (this.deathTicks > this.deathTotalTicks) {
 					if (jinchuriki != null) {
-						this.getBijuManager().setJinchurikiPlayer(jinchuriki);
+						this.getBijuManager().setVesselEntity(jinchuriki);
 						ProcedureUtils.sendChatAll(I18n.translateToLocalFormatted("chattext.tentails.sealedintoplayer", this.getName(), jinchuriki.getName()));
 					}
 					this.setDead();
@@ -1030,7 +1030,7 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 
 	@SideOnly(Side.CLIENT)
 	public static class LayerEntityDeath implements LayerRenderer<Base> {
-		private final ResourceLocation FUUIN_TEXTURE = new ResourceLocation("narutomod:textures/fuuin_beam.png");
+		private final ResourceLocation texture = new ResourceLocation("narutomod:textures/fuuin_beam.png");
 		private final RenderLiving renderer;
 
 		public LayerEntityDeath(RenderLiving rendererIn) {
@@ -1039,12 +1039,12 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 
 	 	@Override
 		public void doRenderLayer(Base entity, float _1, float _2, float partialTicks, float _3, float _4, float _5, float _6) {
-			EntityPlayer jinchuriki = entity.getJinchuriki();
+			Entity jinchuriki = entity.getTargetVessel();
 			if (entity.deathTicks > 1 && jinchuriki != null) {
 				float f = ((float) entity.deathTicks + partialTicks) * 0.01F;
 				float offset = entity.height * 2.0F / 3.0F;
 				double d0 = jinchuriki.lastTickPosX + (jinchuriki.posX - jinchuriki.lastTickPosX) * partialTicks;
-				double d1 = jinchuriki.lastTickPosY + (jinchuriki.posY - jinchuriki.lastTickPosY) * partialTicks;
+				double d1 = jinchuriki.lastTickPosY + (jinchuriki.posY - jinchuriki.lastTickPosY) * partialTicks + jinchuriki.getEyeHeight();
 				double d2 = jinchuriki.lastTickPosZ + (jinchuriki.posZ - jinchuriki.lastTickPosZ) * partialTicks;
 				double dx = d0 - entity.posX;
 				double dy = d1 - (entity.posY + offset);
@@ -1054,9 +1054,9 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 				float rot_y = (float) -Math.atan2(dx, dz) * 180.0F / (float) Math.PI;
 				float rot_x = (float) -Math.atan2(dy, dxz) * 180.0F / (float) Math.PI;
 				rot_y = MathHelper.wrapDegrees(rot_y - entity.renderYawOffset);
-				this.renderer.bindTexture(FUUIN_TEXTURE);
+				this.renderer.bindTexture(this.texture);
 				GlStateManager.pushMatrix();
-				GlStateManager.translate(0.0F, -offset, 0.0F);
+				GlStateManager.translate(0.0F, -offset + 1.6F, 0.0F);
 				GlStateManager.rotate(-90.0F, 1.0F, 0.0F, 0.0F);
 				GlStateManager.rotate(rot_y, 0.0F, 0.0F, 1.0F);
 				GlStateManager.rotate(rot_x - 90.0F, 1.0F, 0.0F, 0.0F);
@@ -1065,7 +1065,7 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 				RenderHelper.disableStandardItemLighting();
 				GlStateManager.enableBlend();
 				GlStateManager.disableCull();
-				GlStateManager.shadeModel(7425);
+				GlStateManager.shadeModel(0x1D01);
 				float f5 = 0.0F - f;
 				float f6 = (float) max_l / 32.0F - f;
 				bufferbuilder.begin(5, DefaultVertexFormats.POSITION_TEX_COLOR);
@@ -1079,7 +1079,7 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 				tessellator.draw();
 				GlStateManager.enableCull();
 				GlStateManager.disableBlend();
-				GlStateManager.shadeModel(7424);
+				GlStateManager.shadeModel(0x1D00);
 				RenderHelper.enableStandardItemLighting();
 				GlStateManager.popMatrix();
 			}
@@ -1244,8 +1244,6 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static abstract class SaveBase extends WorldSavedData implements SaveData.ISaveData {
-		protected UUID jinchurikiUuid;
-
 		public SaveBase(String name) {
 			super(name);
 		}
@@ -1264,13 +1262,14 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 	 			}
 	 		}
 	 		if (compound.hasUniqueId("JinchurikiUUID")) {
-	 			this.jinchurikiUuid = compound.getUniqueId("JinchurikiUUID");
-	 			this.getBijuManager().setVesselUuid(this.jinchurikiUuid);
+	 			UUID vesseluuid = compound.getUniqueId("JinchurikiUUID");
+	 			this.getBijuManager().setVesselUuid(vesseluuid);
+	 			this.getBijuManager().setVesselName(compound.getString("VesselName"));
 	 			this.getBijuManager().setCloakXPs(compound.getIntArray("JinchurikiCloakXp"));
 	 			this.getBijuManager().setCloakCD(compound.getLong("JinchurikiCloakCD"));
-	 			Entity entity = FMLCommonHandler.instance().getMinecraftServerInstance().getEntityFromUuid(this.jinchurikiUuid);
-	 			if (entity instanceof EntityPlayer) {
-	 				this.getBijuManager().setJinchurikiPlayer((EntityPlayer)entity, false);
+	 			Entity entity = FMLCommonHandler.instance().getMinecraftServerInstance().getEntityFromUuid(vesseluuid);
+	 			if (entity != null) {
+	 				this.getBijuManager().setVesselEntity(entity, false);
 	 			}
 	 		}
 	 	}
@@ -1283,10 +1282,10 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 		 		compound.setInteger("dimension", entity.dimension);
 		 		entity.writeToNBT(compound);
 	 		}
-	 		EntityPlayer jinchuriki = this.getBijuManager().getJinchurikiPlayer();
-	 		if (jinchuriki != null) {
-	 			this.jinchurikiUuid = jinchuriki.getUniqueID();
-	 			compound.setUniqueId("JinchurikiUUID", this.jinchurikiUuid);
+	 		UUID vesseluuid = this.getBijuManager().getVesselUuid();
+	 		if (vesseluuid != null) {
+	 			compound.setUniqueId("JinchurikiUUID", vesseluuid);
+	 			compound.setString("VesselName", this.getBijuManager().getVesselName());
 	 			compound.setIntArray("JinchurikiCloakXp", this.getBijuManager().getCloakXPs());
 	 			compound.setLong("JinchurikiCloakCD", this.getBijuManager().getCloakCD());
 	 		} else {
@@ -1312,7 +1311,7 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 		@SubscribeEvent
 		public void onPlayerJoin(PlayerEvent.PlayerLoggedInEvent event) {
 			for (EntityBijuManager bm : EntityBijuManager.getBMList()) {
-				bm.verifyJinchuriki(event.player);
+				bm.verifyVesselEntity(event.player);
 			}
 		}
 

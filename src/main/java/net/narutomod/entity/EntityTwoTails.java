@@ -75,14 +75,14 @@ public class EntityTwoTails extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
-		public void setJinchurikiPlayer(@Nullable EntityPlayer player) {
-			super.setJinchurikiPlayer(player);
-			if (player != null) {
-				ItemStack stack = ProcedureUtils.getMatchingItemStack(player, ItemKaton.block);
+		public void setVesselEntity(@Nullable Entity player) {
+			super.setVesselEntity(player);
+			if (player instanceof EntityPlayer) {
+				ItemStack stack = ProcedureUtils.getMatchingItemStack((EntityPlayer)player, ItemKaton.block);
 				if (stack == null) {
 					stack = new ItemStack(ItemKaton.block);
-					((ItemKaton.RangedItem)stack.getItem()).setOwner(stack, player);
-					ItemHandlerHelper.giveItemToPlayer(player, stack);
+					((ItemKaton.RangedItem)stack.getItem()).setOwner(stack, (EntityPlayer)player);
+					ItemHandlerHelper.giveItemToPlayer((EntityPlayer)player, stack);
 				}
 				if (stack != null) {
 					((ItemKaton.RangedItem)stack.getItem()).enableJutsu(stack, ItemKaton.GREATFIREBALL, true);

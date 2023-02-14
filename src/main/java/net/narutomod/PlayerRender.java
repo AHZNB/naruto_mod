@@ -58,7 +58,6 @@ import java.util.UUID;
 import java.util.Iterator;
 import javax.annotation.Nullable;
 import com.google.common.collect.Maps;
-import net.minecraft.client.model.ModelPlayer;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class PlayerRender extends ElementsNarutomodMod.ModElement {
@@ -66,7 +65,6 @@ public class PlayerRender extends ElementsNarutomodMod.ModElement {
 	private static final String CLONETARGETLAYERS = "SkinCloningRenderTargetLayers";
 	private static final String PLAYERTRANSPARENT = "PlayerRenderTransparent";
 	private static final String COLORMULTIPLIER = "SkinColorMultiplier";
-	//private static final String FORCEBOWPOSE = "PlayerForcedBowPoseSide";
 	private RenderPlayer playerRenderer;
 	/**
 	 * Do not remove this constructor
@@ -142,27 +140,6 @@ public class PlayerRender extends ElementsNarutomodMod.ModElement {
 	public static int getColorMultiplier(EntityPlayer entity) {
 		return entity.getEntityData().hasKey(COLORMULTIPLIER) ? entity.getEntityData().getInteger(COLORMULTIPLIER) : 0;
 	}
-
-	/*public static void forceBowPose(EntityPlayer entity, EnumHandSide side, boolean force) {
-		if (force) {
-			if (side == EnumHandSide.LEFT) {
-				entity.getEntityData().setInteger(FORCEBOWPOSE, 2);
-				ProcedureSync.EntityNBTTag.sendToTracking(entity, FORCEBOWPOSE, 2);
-			} else {
-				entity.getEntityData().setInteger(FORCEBOWPOSE, 1);
-				ProcedureSync.EntityNBTTag.sendToTracking(entity, FORCEBOWPOSE, 1);
-			}
-		} else {
-			entity.getEntityData().removeTag(FORCEBOWPOSE);
-			ProcedureSync.EntityNBTTag.sendToTracking(entity, FORCEBOWPOSE);
-		}
-	}
-
-	@Nullable
-	public static EnumHandSide poseForcedArm(EntityPlayer entity) {
-		return entity.getEntityData().hasKey(FORCEBOWPOSE) ? entity.getEntityData().getInteger(FORCEBOWPOSE) == 1 
-		 ? EnumHandSide.RIGHT : EnumHandSide.LEFT : null;
-	}*/
 
 	private static boolean shouldNarutoRun(EntityPlayer player) {
 		return !player.capabilities.isFlying 

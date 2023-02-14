@@ -495,7 +495,7 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 			Entity entity1 = list.get(j);
 			if (entity1.getLowestRidingEntity() == entity.getLowestRidingEntity())
 				continue;
-			AxisAlignedBB axisalignedbb = entity1.getEntityBoundingBox().grow(bbGrow * entity1.getDistance(vec3d.x, vec3d.y, vec3d.z) / 32d);
+			AxisAlignedBB axisalignedbb = entity1.getEntityBoundingBox().grow(bbGrow * vec3d.distanceTo(entity1.getPositionVector()) / 32d);
 			RayTraceResult raytraceresult = axisalignedbb.calculateIntercept(vec3d, vec3d2);
 			if (axisalignedbb.contains(vec3d)) {
 				if (d2 >= 0.0) {

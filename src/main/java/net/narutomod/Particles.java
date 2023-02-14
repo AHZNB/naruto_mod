@@ -81,6 +81,7 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 		Minecraft.getMinecraft().effectRenderer.registerParticle(Types.SEAL_FORMULA.getID(), new SealFormula.Factory());
 		Minecraft.getMinecraft().effectRenderer.registerParticle(Types.ACID_SPIT.getID(), new AcidSpit.Factory());
 		Minecraft.getMinecraft().effectRenderer.registerParticle(Types.WHIRLPOOL.getID(), new Whirlpool.Factory());
+		Minecraft.getMinecraft().effectRenderer.registerParticle(Types.SONIC_BOOM.getID(), new SonicBoom.Factory());
 		Minecraft.getMinecraft().effectRenderer.registerParticle(Types.BLOCK_DUST.getID(), new BlockDust.Factory());
 	}
 
@@ -1319,6 +1320,36 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
+	public static class SonicBoom extends TextureAsParticle {
+		private static final ResourceLocation TEXTURE = new ResourceLocation("narutomod:textures/sonicboom.png");
+
+		protected SonicBoom(TextureManager textureManagerIn, World worldIn, double x, double y, double z, 
+		 double speedX, double speedY, double speedZ, int color, float scale, int maxAge, int brightness) {
+			super(textureManagerIn, worldIn, x, y, z, speedX, speedY, speedZ, color, scale, maxAge, brightness);
+			this.rotateX = ProcedureUtils.getPitchFromVec(this.motionX, this.motionY, this.motionZ);
+			this.rotateY = ProcedureUtils.getYawFromVec(this.motionX, this.motionZ);
+			this.rotateZ = this.rand.nextFloat() * 360.0F;
+		}
+
+		@Override
+		protected ResourceLocation getTexture() {
+			return TEXTURE;
+		}
+
+		@SideOnly(Side.CLIENT)
+		public static class Factory implements IParticleFactory {
+			public Particle createParticle(int particleID, World worldIn, double x, double y, double z, double xSpeedIn,
+					double ySpeedIn, double zSpeedIn, int... parameters) {
+				int arg3 = parameters.length > 3 ? parameters[3] : 0;
+				int arg2 = parameters.length > 2 ? parameters[2] : 0;
+				float arg1 = parameters.length > 1 ? (float)parameters[1] / 10f : 1.0f;
+				int arg0 = parameters.length > 0 ? parameters[0] : -1;
+				return new SonicBoom(Minecraft.getMinecraft().getTextureManager(), worldIn, x, y, z, 
+				 xSpeedIn, ySpeedIn, zSpeedIn, arg0, arg1, arg2, arg3);
+			}
+		}
+	}
+
 	@SideOnly(Side.CLIENT)
 	public static class BlockDust extends ParticleBlockDust {
 	    protected BlockDust(World worldIn, double xCoordIn, double yCoordIn, double zCoordIn,
@@ -1353,7 +1384,8 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 		SEAL_FORMULA("seal_formula", 54678409, 3),
 		ACID_SPIT("acid_spit", 54678410, 2),
 		WHIRLPOOL("whirlpool", 54678411, 4),
-		BLOCK_DUST("whirlpool", 54678412, 2);
+		BLOCK_DUST("whirlpool", 54678412, 2),
+		SONIC_BOOM("sonic_boom", 54678413, 4);
 		
 		private final String particleName;
 		private final int particleID;

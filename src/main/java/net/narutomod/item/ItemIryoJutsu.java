@@ -112,9 +112,10 @@ public class ItemIryoJutsu extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void onUpdate(ItemStack itemstack, World world, Entity entity, int par4, boolean par5) {
 			super.onUpdate(itemstack, world, entity, par4, par5);
-			if (!world.isRemote && entity instanceof EntityPlayer && POWERMODE.jutsu.isActivated(itemstack)) {
+			if (!world.isRemote && entity instanceof EntityPlayer && POWERMODE.jutsu.isActivated(itemstack)
+			 && entity.ticksExisted % 10 == 2) {
 				((EntityPlayer)entity).addPotionEffect(new PotionEffect(PotionChakraEnhancedStrength.potion,
-				 2, (int)Chakra.getLevel((EntityPlayer)entity) / 2, true, false));
+				 12, (int)Chakra.getLevel((EntityPlayer)entity) / 2, true, false));
 			}
 		}
 	}

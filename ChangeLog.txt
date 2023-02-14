@@ -10,6 +10,7 @@ Jutsus:
  - biju cloak 2 requires 800 jutsuXp to master
  - Mind transfer/shadow imitation: improved mouse sensitivity when controlling mobs
  - Mind transfer only works on entities with AI and players
+ - Mind transfer chakra usage based on target ninja level or health if not ninja
  - kagebunshin: fixed ninjaxp not reseting after death of original (when player is a bunshin)
  - Adamantine sealing chains: no longer seals the biju in the player
  - Adamantine sealing chains: added chakra drain on target entity (drain amount based on player's chakra)
@@ -30,6 +31,7 @@ Jutsus:
  - changed lightning paralysis effect: entity is slowed but can still move
  - updated byakugan jutsu usage requirements from vanilla experience to ninjaXp
  - updated shadow clone jutsu health and chakra transfers from clone to user
+ - added sonic boom effect on chakra enhanced strength and gate 7
  - added Transformation jutsu and scroll
  - added 4-symbols sealing jutsu and scroll
  - added lightning release: black panther and scroll
@@ -126,6 +128,7 @@ General:
  - ninjaxp: force sync to client on next tick on player respawn/changeDimension
  - hitting entities with a kunai or shuriken no longers gains extra ninjaxp
  - updated the balancing such as susanoo hp, gourd/bone armor durability
+ - revised biju management system to seal entities other than players as vessels
 
 0.2.9-beta ================================================================================
 
