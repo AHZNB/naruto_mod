@@ -49,7 +49,6 @@ import net.narutomod.item.ItemJutsu;
 import net.narutomod.item.ItemRaiton;
 import net.narutomod.item.ItemNinjutsu;
 
-//import io.netty.buffer.ByteBuf;
 import javax.annotation.Nullable;
 import java.util.List;
 
@@ -99,7 +98,6 @@ public class EntityChidori extends ElementsNarutomodMod.ModElement {
 			this(summonerIn.world);
 			this.setOwner(summonerIn);
 			this.chakraBurn = chakraBurnPerSec;
-			//this.duration = summonerIn instanceof EntityPlayer ? PlayerTracker.getNinjaLevel((EntityPlayer)summonerIn) * 10d *  : 300;
 			this.duration = durationIn;
 			this.setPositionToSummoner();
 			this.setAlwaysRenderNameTag(false);
@@ -134,7 +132,7 @@ public class EntityChidori extends ElementsNarutomodMod.ModElement {
 		public boolean canUse() {
 			if (this.getOwner() != null) {
 				ItemStack item = this.getOwner().getHeldItemMainhand();
-				return item.isEmpty() || item.getItem() instanceof ItemRaiton.RangedItem || this.isHoldingWeapon(EnumHand.MAIN_HAND);
+				return item.isEmpty() || item.getItem() instanceof ItemJutsu.Base || this.isHoldingWeapon(EnumHand.MAIN_HAND);
 			}
 			return false;
 		}
@@ -144,6 +142,14 @@ public class EntityChidori extends ElementsNarutomodMod.ModElement {
 			super.setDead();
 			if (!this.world.isRemote && this.summoner != null) {
 				ProcedureSync.EntityNBTTag.removeAndSync(this.summoner, NarutomodModVariables.forceBowPose);
+				if (this.summoner instanceof EntityPlayer) {
+					ItemStack stack = ProcedureUtils.getMatchingItemStack((EntityPlayer)this.summoner, ItemRaiton.block);
+					if (stack != null) {
+						ItemJutsu.Base item = (ItemJutsu.Base)stack.getItem();
+						item.setJutsuCooldown(stack, ItemRaiton.CHIDORI, (long)((float)this.ticksExisted * item.getModifier(stack, this.summoner)));
+						stack.getTagCompound().removeTag(Jutsu.ID_KEY);
+					}
+				}
 			}
 		}
 
@@ -247,23 +253,30 @@ public class EntityChidori extends ElementsNarutomodMod.ModElement {
 			private static final String ID_KEY = "ChidoriEntityIdKey";
 			@Override
 			public boolean createJutsu(ItemStack stack, EntityLivingBase entity, float power) {
-				Entity entity1 = entity.world.getEntityByID(entity.getEntityData().getInteger(ID_KEY));
-				if (entity1 instanceof EC) {
+				Entity entity1 = entity.world.getEntityByID(stack.getTagCompound().getInteger(ID_KEY));
+				if (!(entity instanceof EntityKageBunshin.EC) && entity1 instanceof EC) {
 					entity1.setDead();
 					entity.world.spawnEntity(new Spear(entity, CHAKRA_BURN));
 					return true;
 				} else {
 					entity.world.playSound(null, entity.posX, entity.posY, entity.posZ,
-					 SoundEvent.REGISTRY.getObject(new ResourceLocation(("narutomod:chidori"))), 
+					 SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:chidori")), 
 					 SoundCategory.PLAYERS, 1.0F, 1.0F);
-					double ninjalevel = entity instanceof EntityPlayer ? PlayerTracker.getNinjaLevel((EntityPlayer)entity)
-					 : entity instanceof EntityNinjaMob.Base ? ((EntityNinjaMob.Base)entity).getNinjaLevel() : 0d;
-					float f = ((ItemJutsu.Base)stack.getItem()).getCurrentJutsuXpModifier(stack, entity);
+					EntityLivingBase entity2 = entity instanceof EntityKageBunshin.EC
+					 ? ((EntityKageBunshin.EC)entity).getSummoner() : entity;
+					double ninjalevel = entity2 instanceof EntityPlayer ? PlayerTracker.getNinjaLevel((EntityPlayer)entity2)
+					 : entity2 instanceof EntityNinjaMob.Base ? ((EntityNinjaMob.Base)entity2).getNinjaLevel() : 0d;
+					float f = ((ItemJutsu.Base)stack.getItem()).getCurrentJutsuXpModifier(stack, entity2);
 					entity1 = new EC(entity, CHAKRA_BURN, (int)(ninjalevel * 5d / f));
 					entity.world.spawnEntity(entity1);
-					entity.getEntityData().setInteger(ID_KEY, entity1.getEntityId());
+					stack.getTagCompound().setInteger(ID_KEY, entity1.getEntityId());
 					return true;
 				}
+			}
+
+			@Override
+			public boolean isActivated(ItemStack stack) {
+				return stack.getTagCompound().hasKey(ID_KEY);
 			}
 		}
 	}

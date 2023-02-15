@@ -203,6 +203,7 @@ public class PlayerTracker extends ElementsNarutomodMod.ModElement {
 
 	public class PlayerHook {
 		private final Map<Integer, Map<String, Object>> persistentDataMap = Maps.newHashMap();
+		private final UUID hp_uuid = UUID.fromString("84d6711b-c26d-4dfa-b0c5-1ff54395f4de");
 		
 		@SubscribeEvent
 		public void onTick(TickEvent.PlayerTickEvent event) {
@@ -210,12 +211,12 @@ public class PlayerTracker extends ElementsNarutomodMod.ModElement {
 				double d = getBattleXp(event.player) * 0.005d;
 				if (d > 0d) {
 					IAttributeInstance maxHealthAttr = event.player.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH);
-					AttributeModifier attr = maxHealthAttr.getModifier(EntityNinjaMob.NINJA_HEALTH);
+					AttributeModifier attr = maxHealthAttr.getModifier(hp_uuid);
 					if (attr == null || (int)attr.getAmount() / 2 != (int)d / 2) {
 						if (attr != null) {
-							maxHealthAttr.removeModifier(EntityNinjaMob.NINJA_HEALTH);
+							maxHealthAttr.removeModifier(hp_uuid);
 						}
-						maxHealthAttr.applyModifier(new AttributeModifier(EntityNinjaMob.NINJA_HEALTH, "ninja.maxhealth", d, 0));
+						maxHealthAttr.applyModifier(new AttributeModifier(hp_uuid, "ninja.maxhealth", d, 0));
 						event.player.setHealth(event.player.getHealth() + 0.1f);
 					}
 				}

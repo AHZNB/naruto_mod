@@ -70,9 +70,10 @@ public class ItemJutsu extends ElementsNarutomodMod.ModElement {
 		 && (!(targetIn instanceof EntityPlayer) || !((EntityPlayer)targetIn).isSpectator());
 	}
 
-	public static void setCurrentJutsuCooldown(ItemStack stack, EntityPlayer player, long cd) {
-		if (stack.getItem() instanceof Base)
-			((ItemJutsu.Base)stack.getItem()).setCurrentJutsuCooldown(stack, (long)ProcedureUtils.modifiedCooldown((double)cd, player));
+	public static void setCurrentJutsuCooldown(ItemStack stack, EntityLivingBase player, long cd) {
+		if (stack.getItem() instanceof Base) {
+			((Base)stack.getItem()).setCurrentJutsuCooldown(stack, (long)((double)cd * ((Base)stack.getItem()).getModifier(stack, player)));
+		}
 	}
 
 	public static void logBattleXP(EntityPlayer player) {
@@ -308,7 +309,7 @@ public class ItemJutsu extends ElementsNarutomodMod.ModElement {
 			stack.getTagCompound().setLong(CDMAP_KEY+index, ProcedureUpdateworldtick.getTotalWorldTime() + cd);
 		}
 
-		protected void setJutsuCooldown(ItemStack stack, JutsuEnum jutsuIn, long cd) {
+		public void setJutsuCooldown(ItemStack stack, JutsuEnum jutsuIn, long cd) {
 			if (this.jutsuList.contains(jutsuIn) && this.isJutsuEnabled(stack, jutsuIn.index)) {
 				this.setJutsuCooldown(stack, jutsuIn.index, cd);
 			}

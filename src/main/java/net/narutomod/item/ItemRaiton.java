@@ -211,12 +211,11 @@ public class ItemRaiton extends ElementsNarutomodMod.ModElement {
 		private void setNewCooldown() {
 			if (this.usingItemstack != null && this.summoner != null) {
 				ItemStack stack = this.summoner instanceof EntityPlayer
-				 ? ProcedureUtils.getItemStackIgnoreDurability(((EntityPlayer)this.summoner).inventory, this.usingItemstack)
+				 ? ProcedureUtils.getMatchingItemStack((EntityPlayer)this.summoner, this.usingItemstack)
 				 : this.usingItemstack;
 				if (stack != null) {
 					ItemJutsu.Base item = (ItemJutsu.Base)stack.getItem();
-					long newcd = (long)((float)this.ticksExisted * item.getModifier(stack, this.summoner));
-					item.setJutsuCooldown(stack, CHAKRAMODE, newcd);
+					item.setJutsuCooldown(stack, CHAKRAMODE, (long)((float)this.ticksExisted * item.getModifier(stack, this.summoner)));
 				}
 			}
 		}

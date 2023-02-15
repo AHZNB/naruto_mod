@@ -95,7 +95,6 @@ public class EntityKageBunshin extends ElementsNarutomodMod.ModElement {
 		//private final NonNullList<ItemStack> inventory = NonNullList.<ItemStack>withSize(36, ItemStack.EMPTY);
 		//private InventoryPlayer summonerInventory;
 		private boolean isOriginal;
-		private double chakra;
 		private DamageSource deathCause;
 
 		public EC(World world) {
@@ -183,8 +182,7 @@ public class EntityKageBunshin extends ElementsNarutomodMod.ModElement {
 				}
 				if (flag && summoner != null) {
 					Jutsu.updateClones(summoner, false);
-					//Chakra.pathway(summoner).consume(-this.chakra * (double)(this.getHealth() / this.getMaxHealth()), true);
-					Chakra.pathway(summoner).consume(-this.chakra * 0.9d, false);
+					Chakra.pathway(summoner).consume(-Chakra.pathway(this).getAmount() * 0.9d, false);
 					summoner.setHealth(summoner.getHealth() + this.getHealth());
 				}
 			}
@@ -253,11 +251,19 @@ public class EntityKageBunshin extends ElementsNarutomodMod.ModElement {
 	    @Override
 	    public void onUpdate() {
 	    	super.onUpdate();
-	    	ItemStack stack = this.getHeldItemMainhand();
-	    	if (!this.world.isRemote && this.ticksExisted == 1 && stack.getItem() instanceof ItemJutsu.Base) {
-	    		for (ItemJutsu.JutsuEnum je : ((ItemJutsu.Base)stack.getItem()).getActivatedJutsus(stack)) {
-	    			je.jutsu.createJutsu(stack, this, je.jutsu.getPower(stack));
-	    		}
+	    	if (!this.world.isRemote && this.ticksExisted == 1) {
+		    	ItemStack stack = this.getHeldItemMainhand();
+		    	if (stack.getItem() instanceof ItemJutsu.Base) {
+		    		for (ItemJutsu.JutsuEnum je : ((ItemJutsu.Base)stack.getItem()).getActivatedJutsus(stack)) {
+		    			je.jutsu.createJutsu(stack, this, je.jutsu.getPower(stack));
+		    		}
+		    	}
+		    	stack = this.getHeldItemOffhand();
+		    	if (stack.getItem() instanceof ItemJutsu.Base) {
+		    		for (ItemJutsu.JutsuEnum je : ((ItemJutsu.Base)stack.getItem()).getActivatedJutsus(stack)) {
+		    			je.jutsu.createJutsu(stack, this, je.jutsu.getPower(stack));
+		    		}
+		    	}
 	    	}
 	    }
 
@@ -293,16 +299,14 @@ public class EntityKageBunshin extends ElementsNarutomodMod.ModElement {
 					if (ec != null && ec.isEntityAlive())
 						clones.add(ids[i]);
 				}
-				Chakra.Pathway chakra = entity instanceof EntityPlayer ? Chakra.pathway((EntityPlayer)entity) : null;
 				if (add1) {
 					EC newClone = new EC(entity);
 					entity.world.spawnEntity(newClone);
 					clones.add(newClone.getEntityId());
-					if (chakra != null) {
-						double d = chakra.getAmount() / (clones.size()+1);
-						chakra.consume(d);
-						newClone.chakra = d;
-					}
+					Chakra.Pathway chakra = Chakra.pathway(entity);
+					double d = chakra.getAmount() / (clones.size()+1);
+					chakra.consume(d);
+					Chakra.pathway(newClone).setMax(d).consume(-d);
 				}
 				entity.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).removeModifier(MAXHEALTH);
 				if (clones.size() > 0) {

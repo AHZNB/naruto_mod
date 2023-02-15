@@ -40,6 +40,7 @@ import net.minecraft.entity.ai.EntityAITarget;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.init.SoundEvents;
@@ -66,14 +67,11 @@ import net.narutomod.NarutomodMod;
 import io.netty.buffer.ByteBuf;
 import java.util.List;
 import java.util.Arrays;
-import java.util.UUID;
-import net.minecraft.network.PacketBuffer;
 import com.google.common.collect.Lists;
 import java.io.IOException;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
-	public static final UUID NINJA_HEALTH = UUID.fromString("84d6711b-c26d-4dfa-b0c5-1ff54395f4de");
 	public static final List<Class <? extends Base>> TeamKonoha = Arrays.asList(EntityTenten.EntityCustom.class, EntitySakuraHaruno.EntityCustom.class, EntityIrukaSensei.EntityCustom.class, EntityMightGuy.EntityCustom.class);
 	public static final List<Class <? extends Base>> TeamZabuza = Arrays.asList(EntityZabuzaMomochi.EntityCustom.class, EntityHaku.EntityCustom.class);
 	public static final List<Class <? extends Base>> TeamItachi = Arrays.asList(EntityItachi.EntityCustom.class, EntityKisameHoshigaki.EntityCustom.class);
@@ -101,8 +99,8 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 			this.setCustomNameTag(this.getName());
 			this.setAlwaysRenderNameTag(true);
 			this.chakraPathway = new PathwayNinjaMob(this, chakraAmountIn);
-			this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH)
-			 .applyModifier(new AttributeModifier(NINJA_HEALTH, "ninja.maxhealth", 0.005d * level * level, 0));
+			this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(50d + 0.005d * level * level);
+			// .applyModifier(new AttributeModifier(NINJA_HEALTH, "ninja.maxhealth", 0.005d * level * level, 0));
 			this.setHealth(this.getMaxHealth());
 		}
 
@@ -118,7 +116,7 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 			super.applyEntityAttributes();
 			this.getAttributeMap().registerAttribute(SharedMonsterAttributes.ATTACK_DAMAGE);
 			this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(10D);
-			this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(50D);
+			//this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(50D);
 			this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(48D);
 		}
 
@@ -360,9 +358,9 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 			}
 
 			@Override
-			public void setMax(double d) {
+			public Chakra.Pathway<Base> setMax(double d) {
 				Base.this.getDataManager().set(Base.CHAKRA_MAX, Float.valueOf((float)d));
-				super.setMax(d);
+				return super.setMax(d);
 			}
 
 			private void fixOnClientSpawn() {

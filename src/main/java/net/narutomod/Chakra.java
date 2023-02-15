@@ -3,7 +3,6 @@ package net.narutomod;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -12,17 +11,19 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.common.MinecraftForge;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.client.Minecraft;
+import net.minecraft.world.WorldServer;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.DamageSource;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.Entity;
+import net.minecraft.client.Minecraft;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.init.MobEffects;
-import net.minecraft.world.WorldServer;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.util.math.MathHelper;
 
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.entity.EntityNinjaMob;
@@ -33,7 +34,6 @@ import java.util.Map;
 import java.util.Collection;
 import com.google.common.collect.Maps;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.util.DamageSource;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class Chakra extends ElementsNarutomodMod.ModElement {
@@ -109,8 +109,9 @@ public class Chakra extends ElementsNarutomodMod.ModElement {
 			return this.max;
 		}
 
-		public void setMax(double maxIn) {
+		public Pathway<T> setMax(double maxIn) {
 			this.max = maxIn;
+			return this;
 		}
 
 		protected void set(double amountIn) {
@@ -341,8 +342,7 @@ public class Chakra extends ElementsNarutomodMod.ModElement {
 					Minecraft.getMinecraft().addScheduledTask(() -> {
 						EntityPlayer player = Minecraft.getMinecraft().player;
 						if (player != null) {
-							pathway(player).setMax(message.max);
-							pathway(player).set(message.amount);
+							pathway(player).setMax(message.max).set(message.amount);
 						}
 					});
 					return null;

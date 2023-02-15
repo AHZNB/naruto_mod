@@ -191,6 +191,21 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 		return null;
 	}
 
+	public static ItemStack getMatchingItemStack(EntityPlayer player, ItemStack itemStackIn) {
+		List<NonNullList<ItemStack>> allInv = Arrays.<NonNullList<ItemStack>>asList(player.inventory.mainInventory,
+		 player.inventory.armorInventory, player.inventory.offHandInventory);
+		for (List<ItemStack> list : allInv) {
+			Iterator iterator = list.iterator();
+			while (iterator.hasNext()) {
+				ItemStack itemstack = (ItemStack) iterator.next();
+				if (!itemstack.isEmpty() && ItemStack.areItemStacksEqual(itemstack, itemStackIn)) {
+					return itemstack;
+				}
+			}
+		}
+		return null;
+	}
+
 	public static boolean hasAnyItemOfSubtype(EntityPlayer player, Class<? extends Item> itemType) {
 		List<NonNullList<ItemStack>> allInv = Arrays.<NonNullList<ItemStack>>asList(player.inventory.mainInventory, 
 		 player.inventory.armorInventory, player.inventory.offHandInventory);
