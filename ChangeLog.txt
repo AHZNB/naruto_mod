@@ -11,8 +11,10 @@ Jutsus:
  - Mind transfer/shadow imitation: improved mouse sensitivity when controlling mobs
  - Mind transfer only works on entities with AI and players
  - Mind transfer chakra usage based on target ninja level or health if not ninja
- - kagebunshin: fixed ninjaxp not reseting after death of original (when player is a bunshin)
- - Adamantine sealing chains: no longer seals the biju in the player
+ - shadow clone jutsu: fixed ninjaxp not reseting after death of original (when player is a bunshin)
+ - shadow clone jutsu: updated health and chakra transfers from clone to user
+ - Adamantine sealing chains: moved to Yang release
+ - Adamantine sealing chains: no longer seals the biju in the player in survival mode
  - Adamantine sealing chains: added chakra drain on target entity (drain amount based on player's chakra)
  - changed Earth sandwich jutsu animation and mechanics
  - updated earth wall jutsu block placement
@@ -30,7 +32,6 @@ Jutsus:
  - wood prison now only forms the sides and top, max size 40
  - changed lightning paralysis effect: entity is slowed but can still move
  - updated byakugan jutsu usage requirements from vanilla experience to ninjaXp
- - updated shadow clone jutsu health and chakra transfers from clone to user
  - added sonic boom effect on chakra enhanced strength and gate 7
  - added Transformation jutsu and scroll
  - added 4-symbols sealing jutsu and scroll
@@ -89,6 +90,7 @@ Items:
  - added Kage hats and robe
  - added rain/sound village and anbu clothes
  - added Obito 4th ninja war mask and clothes
+ - added Adamantin sealing chains scroll
  
 Entities:
  - full Kurama mode: change Kurama texture to KCM texture

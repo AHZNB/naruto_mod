@@ -51,6 +51,7 @@ import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.UUID;
 import javax.annotation.Nullable;
+import net.minecraft.util.EnumHand;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
@@ -122,6 +123,11 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 		private List<EntityLivingBase> dragonTargetList;
 		private List<BlockPos> particleArea;
 		private final int riseTime = 40;
+		private final Vec3d[] sitPos = {
+			new Vec3d(5.5d, 10d, 6.5d), new Vec3d(-4.5d, 10d, 6.5d), new Vec3d(5.0d, 19.25d, 3.5d), new Vec3d(-5.0d, 19.25d, 3.5d),
+			new Vec3d(2.5d, 4d, 4.5d), new Vec3d(-2.5d, 4d, 4.5d), new Vec3d(4.5d, 21d, -1.5d), new Vec3d(-4.5d, 21d, -1.5d),
+			new Vec3d(1.5d, 19.9d, 1.5d), new Vec3d(-1.5d, 19.9d, 1.5d)
+		};
 
 		public EntityCustom(World world) {
 			super(world);
@@ -230,12 +236,13 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 			super.updateAITasks();
 			if (this.rand.nextInt(100) == 0) {
 				if (this.dragonTargetList == null || this.dragonTargetList.size() < 5) {
-					this.dragonTargetList = this.world.getEntitiesWithinAABB(EntityLivingBase.class, this.getEntityBoundingBox().grow(20d, 7d, 20d), new Predicate<EntityLivingBase>() {
+					this.dragonTargetList = this.world.getEntitiesWithinAABB(EntityLivingBase.class, this.getEntityBoundingBox().grow(30d, 7d, 30d), new Predicate<EntityLivingBase>() {
 						@Override
 						public boolean apply(@Nullable EntityLivingBase p_apply_1_) {
 							EntityLivingBase summoner = EntityCustom.this.getSummoner();
 							boolean flag = summoner != null ? p_apply_1_.isOnSameTeam(summoner) : false;
 							return p_apply_1_ != null && !p_apply_1_.equals(EntityCustom.this) && !flag
+							 && p_apply_1_.isEntityAlive()
 							 && p_apply_1_.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE) != null
 							 && EntitySelectors.CAN_AI_TARGET.apply(p_apply_1_);
 						}
@@ -295,14 +302,55 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 				this.setNoAI(false);
 			}
 		}
+
+		@Override
+		public boolean processInteract(EntityPlayer entity, EnumHand hand) {
+			if (!this.world.isRemote && this.isSitting()) {
+				return entity.startRiding(this);
+			}
+			return super.processInteract(entity, hand);
+		}
+
+		@Override
+		public boolean shouldRiderSit() {
+			return false;
+		}
+	
+		@Override
+		public double getMountedYOffset() {
+			return 29.9f * 0.0625f * MODEL_SCALE;
+		}
+
+		@Override
+		protected boolean canFitPassenger(Entity passenger) {
+			return this.getPassengers().size() < (this.isSitting() ? 10 : 1);
+		}
+
+		@Override
+		public void updatePassenger(Entity passenger) {
+			if (this.isSitting()) {
+				if (this.isPassenger(passenger)) {
+					int i = this.getPassengers().indexOf(passenger);
+					Vec3d vec2 = new Vec3d(this.sitPos[i].x, 0d, this.sitPos[i].z).rotateYaw(-this.rotationYaw * 0.017453292F)
+					 .addVector(0d, this.sitPos[i].y, 0d).scale(0.0625f * MODEL_SCALE);
+					passenger.setPosition(this.posX + vec2.x, this.posY + vec2.y, this.posZ + vec2.z);
+				}
+			} else {
+				super.updatePassenger(passenger);
+			}
+		}
 	}
 
 	public static class EntityPurpleDragon extends EntityScalableProjectile.Base {
 		private final int wait = 40;
+		private float startYaw;
+		private float startPitch;
 		private float prevHeadYaw;
 		private float prevHeadPitch;
 		private Vec3d lastVec;
 		private List<EntityLivingBase> targetList;
+		private boolean fuuinTarget;
+		private EntityTailedBeast.Base fuuinBiju;
 		private final List<ProcedureUtils.Vec2f> partRot = Lists.newArrayList(
 			new ProcedureUtils.Vec2f(0.0f, 0.0f)
 		);
@@ -317,19 +365,37 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 			super(shooter);
 			this.setOGSize(1.5F, 1.5F);
 			this.setEntityScale(1.6f);
+			this.startYaw = (this.rand.nextFloat()-0.5f) * 90.0f * (float)Math.PI / 180.0f;
+			this.startPitch = (this.rand.nextFloat()-0.5f) * 90.0f * (float)Math.PI / 180.0f;
 			this.targetList = shooter.dragonTargetList;
 			this.setLocationAndAngles(shooter.posX, shooter.posY + 1.4375d * MODEL_SCALE, shooter.posZ,
 			 shooter.rotationYawHead, shooter.rotationPitch);
-			this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation(("narutomod:dragon_roar"))),
+			this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:dragon_roar")),
 			 100f, this.rand.nextFloat() * 0.4f + 0.6f);
+		}
+
+		public EntityPurpleDragon(EntityCustom shooter, EntityLivingBase target) {
+			super(shooter);
+			this.setOGSize(1.5F, 1.5F);
+			this.setEntityScale(1.6f);
+			this.startYaw = (this.rand.nextFloat()-0.5f) * 90.0f * (float)Math.PI / 180.0f;
+			this.startPitch = (this.rand.nextFloat()-0.5f) * 90.0f * (float)Math.PI / 180.0f;
+			this.targetList = Lists.newArrayList(target);
+			this.setLocationAndAngles(shooter.posX, shooter.posY + 1.4375d * MODEL_SCALE, shooter.posZ,
+			 shooter.rotationYawHead, shooter.rotationPitch);
+			this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:dragon_roar")),
+			 100f, this.rand.nextFloat() * 0.4f + 0.6f);
+			this.fuuinTarget = true;
 		}
 
 		private void setWaitPosition() {
 			if (this.shootingEntity != null) {
-				Vec3d vec = Vec3d.fromPitchYaw(this.shootingEntity.rotationPitch, this.shootingEntity.rotationYawHead).scale(0.01d);
-				this.motionX += vec.x + this.rand.nextGaussian() * this.ticksAlive * 0.001d;
-				this.motionY += vec.y + this.rand.nextGaussian() * this.ticksAlive * 0.001d;
-				this.motionZ += vec.z + this.rand.nextGaussian() * this.ticksAlive * 0.001d;
+				Vec3d vec = Vec3d.fromPitchYaw(this.shootingEntity.rotationPitch, this.shootingEntity.rotationYawHead)
+				 .rotatePitch(this.startPitch * this.ticksAlive / this.wait)
+				 .rotateYaw(this.startYaw * this.ticksAlive / this.wait).scale(0.25d);
+				this.motionX = vec.x;
+				this.motionY = vec.y;
+				this.motionZ = vec.z;
 			}
 		}
 
@@ -385,11 +451,17 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 		protected void onImpact(RayTraceResult result) {
 			if (result.entityHit != null && result.entityHit.equals(this.shootingEntity))
 				return;
-			if (!this.world.isRemote && result.entityHit instanceof EntityLivingBase) {
-				result.entityHit.onKillCommand();
-				if (this.targetList.contains(result.entityHit)) {
-					this.targetList.remove(result.entityHit);
-					this.targetList.sort(new ProcedureUtils.EntitySorter(this));
+			if (!this.world.isRemote && result.entityHit instanceof EntityLivingBase
+			 && (!(result.entityHit instanceof EntityPlayer) || !((EntityPlayer)result.entityHit).isCreative())) {
+				if (this.fuuinTarget) {
+					
+				} else {
+					net.narutomod.Chakra.pathway((EntityLivingBase)result.entityHit).consume(1.0f);
+					result.entityHit.onKillCommand();
+					if (this.targetList.contains(result.entityHit)) {
+						this.targetList.remove(result.entityHit);
+						this.targetList.sort(new ProcedureUtils.EntitySorter(this));
+					}
 				}
 			}
 			//this.haltMotion();
@@ -470,7 +542,7 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		protected ResourceLocation getEntityTexture(EntityPurpleDragon entity) {
-			return texture;
+			return this.texture;
 		}
 	}
 

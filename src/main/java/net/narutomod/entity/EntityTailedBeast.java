@@ -192,8 +192,9 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 
 		@Nullable
 		private Entity getTargetVessel() {
-			Entity entity = this.world.getEntityByID(((Integer)this.getDataManager().get(VESSEL)).intValue());
-			return entity instanceof EntityPlayer ? (EntityPlayer)entity : null;
+			//Entity entity = this.world.getEntityByID(((Integer)this.getDataManager().get(VESSEL)).intValue());
+			//return entity instanceof EntityPlayer ? (EntityPlayer)entity : null;
+			return this.world.getEntityByID(((Integer)this.getDataManager().get(VESSEL)).intValue());
 		}
 
 		private void setTargetVessel(@Nullable Entity player) {
@@ -481,12 +482,13 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
-		public void fuuinIntoPlayer(EntityPlayer player, int fuuinTime) {
-			if (!this.getBijuManager().isSealed() && !EntityBijuManager.isJinchuriki(player)) {
-				if (!player.equals(this.getTargetVessel())) {
+		public void fuuinIntoVessel(Entity vessel, int fuuinTime) {
+			if (!this.getBijuManager().isSealed()
+			 && (!(vessel instanceof EntityPlayer) || !EntityBijuManager.isJinchuriki((EntityPlayer)vessel))) {
+				if (!vessel.equals(this.getTargetVessel())) {
 					this.deathTicks = 0;
 				}
-				this.setTargetVessel(player);
+				this.setTargetVessel(vessel);
 				this.setHealth(0.0F);
 				this.deathTotalTicks = fuuinTime;
 			}
@@ -593,8 +595,12 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 			if (this.isBeingRidden()) {
 				this.clampMotion(0.05D);
 			}
-			if (this.ticksExisted % 100 == 0 && this.getHealth() > 0f && this.getHealth() < this.getMaxHealth()) {
-				this.setHealth(this.getHealth() + 100f);
+			if (this.ticksExisted % 100 == 0) {
+				float hp = this.getHealth();
+				float maxhp = this.getMaxHealth();
+				if (hp >= maxhp * 0.1f && hp < maxhp) {
+					this.setHealth(hp + 100f * hp / maxhp);
+				}
 			}
 			if (this.tailBeastBallTime > 0) {
 				--this.tailBeastBallTime;
@@ -817,7 +823,7 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 			if (user == null) {
 				user = summonerIn;
 			}
-			if ((user instanceof Base && ((Base)user).consumeHealthAsChakra((float)chakraUsage * 0.5f))
+			if ((user instanceof Base && ((Base)user).consumeHealthAsChakra((float)chakraUsage))
 			 || (user != null && net.narutomod.Chakra.pathway(user).consume(chakraUsage))) {
 				return summonerIn.world.spawnEntity(new EntityTailBeastBall(summonerIn, maxscale, maxdamage));
 			}
@@ -1070,11 +1076,11 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 				float f6 = (float) max_l / 32.0F - f;
 				bufferbuilder.begin(5, DefaultVertexFormats.POSITION_TEX_COLOR);
 				for (int j = 0; j <= 8; j++) {
-					float f7 = MathHelper.sin((j % 8) * ((float) Math.PI * 2F) / 8.0F) * 0.75F;
-					float f8 = MathHelper.cos((j % 8) * ((float) Math.PI * 2F) / 8.0F) * 0.75F;
+					float f7 = MathHelper.sin((j % 8) * ((float) Math.PI * 2F) / 8.0F);
+					float f8 = MathHelper.cos((j % 8) * ((float) Math.PI * 2F) / 8.0F);
 					float f9 = (j % 8) / 8.0F;
-					bufferbuilder.pos(f7, f8, 0.0D).tex(f9, f5).color(0, 0, 0, 128).endVertex();
-					bufferbuilder.pos(f7 * 0.5F, f8 * 0.5F, (float) max_l).tex(f9, f6).color(255, 255, 255, 192).endVertex();
+					bufferbuilder.pos(f7 * 1.5F, f8 * 1.5F, 0.0D).tex(f9, f5).color(0, 0, 0, 128).endVertex();
+					bufferbuilder.pos(f7 * 0.3F, f8 * 0.3F, (float) max_l).tex(f9, f6).color(255, 255, 255, 192).endVertex();
 				}
 				tessellator.draw();
 				GlStateManager.enableCull();

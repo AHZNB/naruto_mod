@@ -15,6 +15,7 @@ import net.narutomod.gui.GuiScrollWaterDragonGui;
 import net.narutomod.gui.GuiScrollTransformationGui;
 import net.narutomod.gui.GuiScrollSwampPitGui;
 import net.narutomod.gui.GuiScrollShadowImitationGui;
+import net.narutomod.gui.GuiScrollSealingChainsGui;
 import net.narutomod.gui.GuiScrollSealing4SymbolsGui;
 import net.narutomod.gui.GuiScrollRasenshurikenGui;
 import net.narutomod.gui.GuiScrollRasenganGui;
@@ -427,6 +428,8 @@ public class ElementsNarutomodMod implements IFuelHandler, IWorldGenerator {
 				return new GuiScrollKirinGui.GuiContainerMod(world, x, y, z, player);
 			if (id == GuiScrollEarthGolemGui.GUIID)
 				return new GuiScrollEarthGolemGui.GuiContainerMod(world, x, y, z, player);
+			if (id == GuiScrollSealingChainsGui.GUIID)
+				return new GuiScrollSealingChainsGui.GuiContainerMod(world, x, y, z, player);
 			return null;
 		}
 
@@ -520,6 +523,8 @@ public class ElementsNarutomodMod implements IFuelHandler, IWorldGenerator {
 				return new GuiScrollKirinGui.GuiWindow(world, x, y, z, player);
 			if (id == GuiScrollEarthGolemGui.GUIID)
 				return new GuiScrollEarthGolemGui.GuiWindow(world, x, y, z, player);
+			if (id == GuiScrollSealingChainsGui.GUIID)
+				return new GuiScrollSealingChainsGui.GuiWindow(world, x, y, z, player);
 			return null;
 		}
 	}

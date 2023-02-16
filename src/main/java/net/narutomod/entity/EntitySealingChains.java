@@ -167,11 +167,10 @@ public class EntitySealingChains extends ElementsNarutomodMod.ModElement {
 						target.addVelocity(vec.x, vec.y, vec.z);
 						target.velocityChanged = true;
 					}
-					//if (target instanceof EntityBijuManager.ITailBeast && this.shootingEntity instanceof EntityPlayer
-					// && (((EntityPlayer)this.shootingEntity).isCreative() || target.getHealth() < target.getMaxHealth() * 0.1f)
-					// && ProcedureUtils.getModifiedSpeed(target) < 0.05d) {
-					//	((EntityBijuManager.ITailBeast)target).fuuinIntoPlayer((EntityPlayer)this.shootingEntity, 400);
-					//}
+					if (target instanceof EntityBijuManager.ITailBeast && this.shootingEntity instanceof EntityPlayer
+					 && ((EntityPlayer)this.shootingEntity).isCreative() && ProcedureUtils.getModifiedSpeed(target) < 0.05d) {
+						((EntityBijuManager.ITailBeast)target).fuuinIntoVessel(this.shootingEntity, 400);
+					}
 			 	} else if (--this.retractTime < 0) {
 			 		this.setDead();
 			 	}

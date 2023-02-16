@@ -37,6 +37,7 @@ import net.minecraft.init.MobEffects;
 
 import net.narutomod.entity.EntityClone;
 import net.narutomod.entity.EntitySealing;
+import net.narutomod.entity.EntitySealingChains;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.creativetab.TabModTab;
 import net.narutomod.ElementsNarutomodMod;
@@ -49,6 +50,7 @@ public class ItemYoton extends ElementsNarutomodMod.ModElement {
 	public static final int ENTITYID = 149;
 	public static final ItemJutsu.JutsuEnum MULTISIZE = new ItemJutsu.JutsuEnum(0, "biggerme", 'B', 50d, new EntityBiggerMe.Jutsu());
 	public static final ItemJutsu.JutsuEnum FUUIN = new ItemJutsu.JutsuEnum(1, "sealing", 'S', 100d, new EntitySealing.EC.Jutsu());
+	public static final ItemJutsu.JutsuEnum SEALINGCHAIN = new ItemJutsu.JutsuEnum(2, "sealing_chains", 'A', 50d, new EntitySealingChains.EC.Jutsu());
 
 	public ItemYoton(ElementsNarutomodMod instance) {
 		super(instance, 406);
@@ -56,7 +58,7 @@ public class ItemYoton extends ElementsNarutomodMod.ModElement {
 
 	@Override
 	public void initElements() {
-		elements.items.add(() -> new RangedItem(MULTISIZE, FUUIN));
+		elements.items.add(() -> new RangedItem(MULTISIZE, FUUIN, SEALINGCHAIN));
 		elements.entities.add(() -> EntityEntryBuilder.create().entity(EntityBiggerMe.class)
 				.id(new ResourceLocation("narutomod", "biggerme"), ENTITYID).name("biggerme").tracker(64, 1, true).build());
 	}

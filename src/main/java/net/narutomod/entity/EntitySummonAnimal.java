@@ -204,7 +204,7 @@ public class EntitySummonAnimal extends ElementsNarutomodMod.ModElement {
 		@Override
 		public boolean processInteract(EntityPlayer entity, EnumHand hand) {
 			super.processInteract(entity, hand);
-			if (this.isSummoner(entity)) {
+			if (!this.world.isRemote && this.isSummoner(entity)) {
 				return this.canSitOnShoulder() ? this.startRiding(entity) : entity.startRiding(this);
 			}
 			return false;
@@ -217,6 +217,11 @@ public class EntitySummonAnimal extends ElementsNarutomodMod.ModElement {
 		@Override
 		public boolean shouldDismountInWater(Entity rider) {
 			return false;
+		}
+
+		@Nullable
+		public Entity getControllingPassenger() {
+			return this.getPassengers().isEmpty() ? null : (Entity)this.getPassengers().get(0);
 		}
 
 		@Override

@@ -456,7 +456,7 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 	}
 
 	public interface ITailBeast {
-		void fuuinIntoPlayer(EntityPlayer player, int fuuinTime);
+		void fuuinIntoVessel(Entity vessel, int fuuinTime);
 		boolean isFuuinInProgress();
 		void cancelFuuin();
 		void incFuuinProgress(int i);

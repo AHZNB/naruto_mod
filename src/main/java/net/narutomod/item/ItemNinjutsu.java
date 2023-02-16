@@ -66,12 +66,11 @@ public class ItemNinjutsu extends ElementsNarutomodMod.ModElement {
 	public static final ItemJutsu.JutsuEnum KAGEBUNSHIN = new ItemJutsu.JutsuEnum(1, "kage_bunshin", 'B', new EntityKageBunshin.EC.Jutsu());
 	public static final ItemJutsu.JutsuEnum RASENGAN = new ItemJutsu.JutsuEnum(2, "rasengan", 'A', 150d, new EntityRasengan.EC.Jutsu());
 	public static final ItemJutsu.JutsuEnum LIMBOCLONE = new ItemJutsu.JutsuEnum(3, "limbo_clone", 'S', EntityLimboClone.CHAKRA_USAGE, new EntityLimboClone.EC.Jutsu());
-	public static final ItemJutsu.JutsuEnum SEALINGCHAIN = new ItemJutsu.JutsuEnum(4, "sealing_chains", 'A', 50d, new EntitySealingChains.EC.Jutsu());
+	public static final ItemJutsu.JutsuEnum AMENOTEJIKARA = new ItemJutsu.JutsuEnum(4, "item.ninjutsu.amenotejikara", 'S', 50d, new Amenotejikara());
 	public static final ItemJutsu.JutsuEnum PUPPET = new ItemJutsu.JutsuEnum(5, "tooltip.ninjutsu.puppetjutsu", 'C', 0.25d, new PuppetJutsu());
 	public static final ItemJutsu.JutsuEnum BUGSWARM = new ItemJutsu.JutsuEnum(6, "bugball", 'C', 100d, new EntityKikaichu.EC.Jutsu());
 	public static final ItemJutsu.JutsuEnum INVISABILITY = new ItemJutsu.JutsuEnum(7, "tooltip.ninjutsu.hidingincamouflage", 'A', 20d, new HidingWithCamouflage());
 	public static final ItemJutsu.JutsuEnum TRANSFORM = new ItemJutsu.JutsuEnum(8, "transformation_jutsu", 'D', 50d, new EntityTransformationJutsu.EC.Jutsu());
-	public static final ItemJutsu.JutsuEnum AMENOTEJIKARA = new ItemJutsu.JutsuEnum(9, "item.ninjutsu.amenotejikara", 'S', 50d, new Amenotejikara());
 
 	public ItemNinjutsu(ElementsNarutomodMod instance) {
 		super(instance, 377);
@@ -79,7 +78,7 @@ public class ItemNinjutsu extends ElementsNarutomodMod.ModElement {
 	
 	@Override
 	public void initElements() {
-		elements.items.add(() -> new RangedItem(REPLACEMENT, KAGEBUNSHIN, RASENGAN, LIMBOCLONE, SEALINGCHAIN, PUPPET, BUGSWARM, INVISABILITY, TRANSFORM, AMENOTEJIKARA));
+		elements.items.add(() -> new RangedItem(REPLACEMENT, KAGEBUNSHIN, RASENGAN, LIMBOCLONE, AMENOTEJIKARA, PUPPET, BUGSWARM, INVISABILITY, TRANSFORM));
 		elements.entities.add(() -> EntityEntryBuilder.create().entity(EntityReplacementClone.class)
 			.id(new ResourceLocation("narutomod", "replacementclone"), ENTITYID).name("replacementclone")
 			.tracker(64, 1, true).build());

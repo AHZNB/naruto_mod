@@ -8,17 +8,17 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 
-import net.narutomod.item.ItemNinjutsu;
+import net.narutomod.item.ItemYoton;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.PlayerTracker;
 import net.narutomod.ElementsNarutomodMod;
 
 @ElementsNarutomodMod.ModElement.Tag
-public class GuiScrollKageBunshinGui extends ElementsNarutomodMod.ModElement {
-	public static int GUIID = 29;
+public class GuiScrollSealingChainsGui extends ElementsNarutomodMod.ModElement {
+	public static int GUIID = 63;
 
-	public GuiScrollKageBunshinGui(ElementsNarutomodMod instance) {
-		super(instance, 492);
+	public GuiScrollSealingChainsGui(ElementsNarutomodMod instance) {
+		super(instance, 831);
 	}
 
 	public static class GuiContainerMod extends GuiNinjaScroll.GuiContainerMod {
@@ -31,14 +31,14 @@ public class GuiScrollKageBunshinGui extends ElementsNarutomodMod.ModElement {
 			// security measure to prevent arbitrary chunk generation
 			if (player.world.isRemote || !player.world.isBlockLoaded(new BlockPos(this.x, this.y, this.z)))
 				return;
-			ItemStack stack = ProcedureUtils.getMatchingItemStack(player, ItemNinjutsu.block);
+			ItemStack stack = ProcedureUtils.getMatchingItemStack(player, ItemYoton.block);
 			if (stack == null && PlayerTracker.isNinja(player)) {
-				stack = new ItemStack(ItemNinjutsu.block, 1);
-				((ItemNinjutsu.RangedItem)stack.getItem()).setOwner(stack, player);
+				stack = new ItemStack(ItemYoton.block, 1);
+				((ItemYoton.RangedItem)stack.getItem()).setOwner(stack, player);
 				ItemHandlerHelper.giveItemToPlayer(player, stack);
 			}
 			if (stack != null) {
-				((ItemNinjutsu.RangedItem)stack.getItem()).enableJutsu(stack, ItemNinjutsu.KAGEBUNSHIN, true);
+				((ItemYoton.RangedItem)stack.getItem()).enableJutsu(stack, ItemYoton.SEALINGCHAIN, true);
 				super.handleButtonAction(player, buttonID);
 			}
 		}
@@ -52,15 +52,13 @@ public class GuiScrollKageBunshinGui extends ElementsNarutomodMod.ModElement {
 		@Override
 		protected void drawGuiContainerBackgroundLayer(float par1, int par2, int par3) {
 			super.drawGuiContainerBackgroundLayer(par1, par2, par3);
-			this.mc.renderEngine.bindTexture(new ResourceLocation("narutomod:textures/blocks/ninjutsu.png"));
+			this.mc.renderEngine.bindTexture(new ResourceLocation("narutomod:textures/blocks/yoton.png"));
 			this.drawModalRectWithCustomSizedTexture(this.guiLeft + 89, this.guiTop + 49, 0, 0, 48, 48, 48, 48);
-			this.mc.renderEngine.bindTexture(new ResourceLocation("narutomod:textures/handseal_clone.png"));
-			this.drawModalRectWithCustomSizedTexture(this.guiLeft + 96, this.guiTop + 114, 0, 0, 44, 44, 44, 44);
 		}
 
 		@Override
 		protected void drawGuiContainerForegroundLayer(int par1, int par2) {
-			this.fontRenderer.drawString(ItemNinjutsu.KAGEBUNSHIN.getName(), 38, 13, -16777216);
+			this.fontRenderer.drawString(ItemYoton.SEALINGCHAIN.getName(), 0, 13, -16777216);
 		}
 	}
 }
