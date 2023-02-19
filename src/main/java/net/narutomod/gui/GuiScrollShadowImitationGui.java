@@ -31,14 +31,8 @@ public class GuiScrollShadowImitationGui extends ElementsNarutomodMod.ModElement
 			// security measure to prevent arbitrary chunk generation
 			if (player.world.isRemote || !player.world.isBlockLoaded(new BlockPos(this.x, this.y, this.z)))
 				return;
-			ItemStack stack = ProcedureUtils.getMatchingItemStack(player, ItemInton.block);
-			if (stack == null && PlayerTracker.isNinja(player)) {
-				stack = new ItemStack(ItemInton.block, 1);
-				((ItemInton.RangedItem)stack.getItem()).setOwner(stack, player);
-				ItemHandlerHelper.giveItemToPlayer(player, stack);
-			}
+			ItemStack stack = GuiNinjaScroll.enableJutsu(player, (ItemInton.RangedItem)ItemInton.block, ItemInton.SHADOW_IMITATION, true);
 			if (stack != null) {
-				((ItemInton.RangedItem)stack.getItem()).enableJutsu(stack, ItemInton.SHADOW_IMITATION, true);
 				super.handleButtonAction(player, buttonID);
 			}
 		}

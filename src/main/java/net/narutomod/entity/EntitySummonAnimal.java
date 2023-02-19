@@ -282,7 +282,8 @@ public class EntitySummonAnimal extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		protected boolean canFitPassenger(Entity passenger) {
-			return this.getScale() < 4.0f ? false : super.canFitPassenger(passenger);
+			EntityLivingBase owner = this.getSummoner();
+			return this.getScale() >= 4.0f && this.getPassengers().size() < 1 && owner != null && passenger.isOnSameTeam(owner);
 		}
 
 		@Override
@@ -318,12 +319,18 @@ public class EntitySummonAnimal extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
-		protected void onDeathUpdate() {
+		public void setDead() {
+			super.setDead();
 			if (!this.world.isRemote) {
 				this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:poof")), 2.0F, 1.0F);
-				Particles.spawnParticle(this.world, Particles.Types.SMOKE, this.posX, this.posY+this.height/2, this.posZ, 300,
-				 this.width * 0.5d, this.height * 0.3d, this.width * 0.5d, 0d, 0d, 0d, 0xD0FFFFFF, 20 + (int)(this.getScale() * 5));
+				Particles.spawnParticle(this.world, Particles.Types.SMOKE, this.posX, this.posY+this.height/2, this.posZ,
+				 300, this.width * 0.5d, this.height * 0.3d, this.width * 0.5d, 0d, 0d, 0d, 0xD0FFFFFF,
+				 15 + (int)(this.getScale() * 5) + this.rand.nextInt(16));
 			}
+		}
+		
+		@Override
+		protected void onDeathUpdate() {
 			this.setDead();
 		}
 

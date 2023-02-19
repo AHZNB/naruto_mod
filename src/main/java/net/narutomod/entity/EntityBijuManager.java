@@ -27,7 +27,7 @@ import java.util.List;
 import com.google.common.collect.Lists;
 import java.util.Collection;
 import java.util.Random;
-import net.minecraft.client.renderer.chunk.SetVisibility;
+import com.google.common.collect.ImmutableList;
 
 @ElementsNarutomodMod.ModElement.Tag
 public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
@@ -47,11 +47,11 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 	private static final Random rand = new Random();
 
 	public static Collection<EntityBijuManager> getBMList() {
-		return mapByClass.values();
+		return ImmutableList.copyOf(mapByClass.values());
 	}
 	
 	@Nullable
-	private static EntityBijuManager getBijuManagerFrom(EntityPlayer player) {
+	protected static EntityBijuManager getBijuManagerFrom(EntityPlayer player) {
 		for (EntityBijuManager bm : mapByClass.values()) {
 			if (player.equals(bm.getJinchurikiPlayer())) {
 				return bm;
@@ -404,15 +404,10 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 			this.jinchurikiPlayer.inventory.clearMatchingItems(ItemBijuCloak.helmet, -1, -1, null);
 			this.jinchurikiPlayer.inventory.clearMatchingItems(ItemBijuCloak.body, -1, -1, null);
 			this.jinchurikiPlayer.inventory.clearMatchingItems(ItemBijuCloak.legs, -1, -1, null);
-			try {
-				T biju = this.entityClass.getConstructor(EntityPlayer.class).newInstance(this.jinchurikiPlayer);
-				biju.forceSpawn = true;
+			T biju = this.spawnEntity(this.jinchurikiPlayer);
+			if (biju != null) {
 				biju.setLifeSpan(this.cloakXp[2] * 5 + 200);
-				this.jinchurikiPlayer.world.spawnEntity(biju);
-				biju.forceSpawn = false;
-			} catch (Exception exception) {
-	            throw new Error(exception);
-	        }
+			}
 		}
 		return this.cloakLevel;
 	}
@@ -428,6 +423,32 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 
 	public int getTails() {
 		return this.tails;
+	}
+
+	public T spawnEntity(World world, double x, double y, double z, float yaw) {
+		try {
+			T biju = this.entityClass.getConstructor(World.class).newInstance(world);
+			biju.forceSpawn = true;
+			biju.rotationYawHead = yaw;
+			biju.setLocationAndAngles(x, y, z, yaw, 0f);
+			world.spawnEntity(biju);
+			biju.forceSpawn = false;
+			return biju;
+		} catch (Exception exception) {
+			throw new Error(exception);
+		}
+	}
+
+	private T spawnEntity(EntityPlayer jinchuriki) {
+		try {
+			T biju = this.entityClass.getConstructor(EntityPlayer.class).newInstance(jinchuriki);
+			biju.forceSpawn = true;
+			jinchuriki.world.spawnEntity(biju);
+			biju.forceSpawn = false;
+			return biju;
+		} catch (Exception exception) {
+			throw new Error(exception);
+		}
 	}
 
 	@Nullable

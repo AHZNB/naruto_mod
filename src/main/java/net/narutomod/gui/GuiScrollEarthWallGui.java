@@ -31,14 +31,8 @@ public class GuiScrollEarthWallGui extends ElementsNarutomodMod.ModElement {
 			// security measure to prevent arbitrary chunk generation
 			if (player.world.isRemote || !player.world.isBlockLoaded(new BlockPos(this.x, this.y, this.z)))
 				return;
-			ItemStack stack = ProcedureUtils.getMatchingItemStack(player, ItemDoton.block);
-			if (stack == null && PlayerTracker.isNinja(player)) {
-				stack = new ItemStack(ItemDoton.block, 1);
-				((ItemDoton.RangedItem)stack.getItem()).setOwner(stack, player);
-				ItemHandlerHelper.giveItemToPlayer(player, stack);
-			}
+			ItemStack stack = GuiNinjaScroll.enableJutsu(player, (ItemDoton.RangedItem)ItemDoton.block, ItemDoton.EARTHWALL, true);
 			if (stack != null) {
-				((ItemDoton.RangedItem)stack.getItem()).enableJutsu(stack, ItemDoton.EARTHWALL, true);
 				super.handleButtonAction(player, buttonID);
 			}
 		}

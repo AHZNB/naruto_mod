@@ -1,15 +1,19 @@
 package net.narutomod.procedure;
 
 import net.narutomod.potion.PotionFlight;
+import net.narutomod.item.ItemYoton;
 import net.narutomod.item.ItemTenseiganChakraMode;
 import net.narutomod.item.ItemTenseigan;
 import net.narutomod.item.ItemSixPathSenjutsu;
 import net.narutomod.item.ItemRinnegan;
 import net.narutomod.item.ItemNinjutsu;
+import net.narutomod.item.ItemJutsu;
 import net.narutomod.item.ItemBlackReceiver;
 import net.narutomod.item.ItemAsuraPathArmor;
 import net.narutomod.item.ItemAsuraCanon;
+import net.narutomod.gui.GuiNinjaScroll;
 import net.narutomod.entity.EntityTenTails;
+import net.narutomod.PlayerTracker;
 import net.narutomod.NarutomodModVariables;
 import net.narutomod.ElementsNarutomodMod;
 
@@ -105,53 +109,55 @@ public class ProcedureRinneganHelmetTickEvent extends ElementsNarutomodMod.ModEl
 					}
 				}
 			} else {
-				stack1 = ProcedureUtils.getMatchingItemStack((EntityPlayer) entity, ItemNinjutsu.block);
-				if ((stack1 != null && (!((ItemNinjutsu.RangedItem) stack1.getItem()).isJutsuEnabled(stack1, ItemNinjutsu.LIMBOCLONE)
-						&& !((ItemNinjutsu.RangedItem) stack1.getItem()).isJutsuEnabled(stack1, ItemNinjutsu.AMENOTEJIKARA)))) {
-					if ((((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
-							? ((EntityPlayerMP) entity).getAdvancements()
-									.getProgress(((WorldServer) (entity).world).getAdvancementManager()
-											.getAdvancement(new ResourceLocation("narutomod:rinneganawakened")))
-									.isDone()
-							: false)) {
+				if ((((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
+						? ((EntityPlayerMP) entity).getAdvancements()
+								.getProgress(((WorldServer) (entity).world).getAdvancementManager()
+										.getAdvancement(new ResourceLocation("narutomod:rinneganawakened")))
+								.isDone()
+						: false)) {
+					stack1 = ProcedureUtils.getMatchingItemStack((EntityPlayer) entity, ItemNinjutsu.block);
+					if ((stack1 != null && (!((ItemNinjutsu.RangedItem) stack1.getItem()).isJutsuEnabled(stack1, ItemNinjutsu.LIMBOCLONE)
+							&& !((ItemNinjutsu.RangedItem) stack1.getItem()).isJutsuEnabled(stack1, ItemNinjutsu.AMENOTEJIKARA)))) {
 						((ItemNinjutsu.RangedItem) stack1.getItem()).enableJutsu(stack1,
 								ProcedureUtils.rngBoolean() ? ItemNinjutsu.LIMBOCLONE : ItemNinjutsu.AMENOTEJIKARA, true);
+					}
+					stack1 = ProcedureUtils.getMatchingItemStack((EntityPlayer) entity, ItemYoton.block);
+					if ((stack1 == null || !((ItemYoton.RangedItem) stack1.getItem()).isJutsuEnabled(stack1, ItemYoton.SEALING9D))) {
+						GuiNinjaScroll.enableJutsu((EntityPlayer) entity, (ItemJutsu.Base) ItemYoton.block, ItemYoton.SEALING9D, true);
 					}
 				}
 				if (entity instanceof EntityLivingBase)
 					((EntityLivingBase) entity).addPotionEffect(new PotionEffect(MobEffects.RESISTANCE, (int) 2, (int) 2, (false), (false)));
 				f1 = entity.equals(EntityTenTails.getBijuManager().getJinchurikiPlayer());
-				if (((f1) && (((entity instanceof EntityPlayer) ? ((EntityPlayer) entity).experienceLevel : 0) >= 180))) {
+				if (((f1) && (PlayerTracker.getNinjaLevel((EntityPlayer) entity) >= 180))) {
 					{
 						ItemStack _stack = (itemstack);
 						if (!_stack.hasTagCompound())
 							_stack.setTagCompound(new NBTTagCompound());
 						_stack.getTagCompound().setBoolean((NarutomodModVariables.RINNESHARINGAN_ACTIVATED), (true));
 					}
-					if ((entity instanceof EntityPlayer)) {
-						if ((!(((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
-								? ((EntityPlayerMP) entity).getAdvancements()
-										.getProgress(((WorldServer) (entity).world).getAdvancementManager()
-												.getAdvancement(new ResourceLocation("narutomod:rinnesharinganactivated")))
-										.isDone()
-								: false))) {
-							if (entity instanceof EntityPlayerMP) {
-								Advancement _adv = ((MinecraftServer) ((EntityPlayerMP) entity).mcServer).getAdvancementManager()
-										.getAdvancement(new ResourceLocation("narutomod:rinnesharinganactivated"));
-								AdvancementProgress _ap = ((EntityPlayerMP) entity).getAdvancements().getProgress(_adv);
-								if (!_ap.isDone()) {
-									Iterator _iterator = _ap.getRemaningCriteria().iterator();
-									while (_iterator.hasNext()) {
-										String _criterion = (String) _iterator.next();
-										((EntityPlayerMP) entity).getAdvancements().grantCriterion(_adv, _criterion);
-									}
+					if ((!(((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
+							? ((EntityPlayerMP) entity).getAdvancements()
+									.getProgress(((WorldServer) (entity).world).getAdvancementManager()
+											.getAdvancement(new ResourceLocation("narutomod:rinnesharinganactivated")))
+									.isDone()
+							: false))) {
+						if (entity instanceof EntityPlayerMP) {
+							Advancement _adv = ((MinecraftServer) ((EntityPlayerMP) entity).mcServer).getAdvancementManager()
+									.getAdvancement(new ResourceLocation("narutomod:rinnesharinganactivated"));
+							AdvancementProgress _ap = ((EntityPlayerMP) entity).getAdvancements().getProgress(_adv);
+							if (!_ap.isDone()) {
+								Iterator _iterator = _ap.getRemaningCriteria().iterator();
+								while (_iterator.hasNext()) {
+									String _criterion = (String) _iterator.next();
+									((EntityPlayerMP) entity).getAdvancements().grantCriterion(_adv, _criterion);
 								}
 							}
-							world.playSound((EntityPlayer) null, (entity.posX), (entity.posY), (entity.posZ),
-									(net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY
-											.getObject(new ResourceLocation("ui.toast.challenge_complete")),
-									SoundCategory.NEUTRAL, (float) 1, (float) 1);
 						}
+						world.playSound((EntityPlayer) null, (entity.posX), (entity.posY), (entity.posZ),
+								(net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY
+										.getObject(new ResourceLocation("ui.toast.challenge_complete")),
+								SoundCategory.NEUTRAL, (float) 1, (float) 1);
 					}
 				} else {
 					if ((((itemstack).getItem() == new ItemStack(ItemTenseigan.helmet, (int) (1)).getItem())

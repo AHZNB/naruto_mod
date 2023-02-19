@@ -31,14 +31,8 @@ public class GuiScrollFutonVacuumGui extends ElementsNarutomodMod.ModElement {
 			// security measure to prevent arbitrary chunk generation
 			if (player.world.isRemote || !player.world.isBlockLoaded(new BlockPos(this.x, this.y, this.z)))
 				return;
-			ItemStack stack = ProcedureUtils.getMatchingItemStack(player, ItemFuton.block);
-			if (stack == null && PlayerTracker.isNinja(player)) {
-				stack = new ItemStack(ItemFuton.block, 1);
-				((ItemFuton.RangedItem)stack.getItem()).setOwner(stack, player);
-				ItemHandlerHelper.giveItemToPlayer(player, stack);
-			}
+			ItemStack stack = GuiNinjaScroll.enableJutsu(player, (ItemFuton.RangedItem)ItemFuton.block, ItemFuton.VACUUMS, true);
 			if (stack != null) {
-				((ItemFuton.RangedItem)stack.getItem()).enableJutsu(stack, ItemFuton.VACUUMS, true);
 				super.handleButtonAction(player, buttonID);
 			}
 		}

@@ -6,17 +6,24 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.event.ModelRegistryEvent;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.common.MinecraftForge;
 
 import net.minecraft.world.World;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.EnumActionResult;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.DamageSource;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Item;
 import net.minecraft.entity.player.EntityPlayer;
@@ -30,15 +37,8 @@ import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.init.SoundEvents;
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.DamageSource;
+import net.minecraft.init.SoundEvents;
 
 import net.narutomod.entity.EntityScalableProjectile;
 import net.narutomod.entity.EntityMeltingJutsu;
@@ -238,17 +238,17 @@ public class ItemYooton extends ElementsNarutomodMod.ModElement {
 
 	@SideOnly(Side.CLIENT)
 	public class RenderCustom extends Render<EntityMagmaBall> {
-		private final ResourceLocation TEXTURE = new ResourceLocation("narutomod:textures/magmaball.png");
+		private final ResourceLocation texture = new ResourceLocation("narutomod:textures/magmaball.png");
 
 		public RenderCustom(RenderManager renderManager) {
 			super(renderManager);
-			shadowSize = 0.1f;
+			this.shadowSize = 0.1f;
 		}
 
 		@Override
 		public void doRender(EntityMagmaBall entity, double x, double y, double z, float entityYaw, float partialTicks) {
-			GlStateManager.pushMatrix();
 			this.bindEntityTexture(entity);
+			GlStateManager.pushMatrix();
 			float scale = entity.getEntityScale();
 			GlStateManager.translate(x, y + 0.5d * scale, z);
 			GlStateManager.enableRescaleNormal();
@@ -273,7 +273,7 @@ public class ItemYooton extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		protected ResourceLocation getEntityTexture(EntityMagmaBall entity) {
-			return TEXTURE;
+			return this.texture;
 		}
 	}
 }

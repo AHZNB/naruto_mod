@@ -31,15 +31,8 @@ public class GuiScrollGreatFireballGui extends ElementsNarutomodMod.ModElement {
 			// security measure to prevent arbitrary chunk generation
 			if (player.world.isRemote || !player.world.isBlockLoaded(new BlockPos(this.x, this.y, this.z)))
 				return;
-			ItemStack stack = ProcedureUtils.getMatchingItemStack(player, ItemKaton.block);
-			if (stack == null && PlayerTracker.isNinja(player)) {
-				stack = new ItemStack(ItemKaton.block, 1);
-				((ItemKaton.RangedItem)stack.getItem()).setOwner(stack, player);
-				ItemHandlerHelper.giveItemToPlayer(player, stack);
-				//stack = ProcedureUtils.getMatchingItemStack(player, ItemKaton.block);
-			}
+			ItemStack stack = GuiNinjaScroll.enableJutsu(player, (ItemKaton.RangedItem)ItemKaton.block, ItemKaton.GREATFIREBALL, true);
 			if (stack != null) {
-				((ItemKaton.RangedItem)stack.getItem()).enableJutsu(stack, ItemKaton.GREATFIREBALL, true);
 				super.handleButtonAction(player, buttonID);
 			}
 		}

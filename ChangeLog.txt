@@ -38,6 +38,7 @@ Jutsus:
  - added lightning release: black panther and scroll
  - added Earth release: Golem jutsu
  - added amenotejikara, rinnegan gives either limbo or amenotejikara randomly
+ - added 9 dragons sealing jutsu in Yang release, enabled when rinnegan achieved
  
 Items:
  - Bone drill can't be dropped into the world

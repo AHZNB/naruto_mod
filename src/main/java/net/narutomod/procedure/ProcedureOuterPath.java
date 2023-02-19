@@ -9,12 +9,11 @@ import net.narutomod.NarutomodModVariables;
 import net.narutomod.ElementsNarutomodMod;
 import net.narutomod.Chakra;
 
-import net.minecraft.world.WorldServer;
 import net.minecraft.world.World;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.EnumHand;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.EntityLivingBase;
@@ -82,7 +81,8 @@ public class ProcedureOuterPath extends ElementsNarutomodMod.ModElement {
 					(entityToSpawn).world.removeEntity(entityToSpawn);
 				} else if (Chakra.pathway((EntityLivingBase) entity).consume(ItemRinnegan.getOuterPathChakraUsage((EntityLivingBase) entity))) {
 					entityToSpawn = new EntityGedoStatue.EntityCustom((EntityLivingBase) entity);
-					entityToSpawn.setPosition(x, y, z);
+					entityToSpawn.rotationYawHead = entity.rotationYaw;
+					entityToSpawn.setLocationAndAngles(x, world.getTopSolidOrLiquidBlock(new BlockPos(x, y, z)).getY(), z, entity.rotationYaw, 0f);
 					if (world.spawnEntity(entityToSpawn)) {
 						entity.getEntityData().setDouble((NarutomodModVariables.InvulnerableTime), 100);
 						world.playSound((EntityPlayer) null, x, y, z,
@@ -95,10 +95,6 @@ public class ProcedureOuterPath extends ElementsNarutomodMod.ModElement {
 						Chakra.pathway((EntityPlayer) entity).warningDisplay();
 					}
 					return;
-				}
-				h = (double) entityToSpawn.height;
-				if (world instanceof WorldServer) {
-					((WorldServer) world).spawnParticle(EnumParticleTypes.EXPLOSION_HUGE, x, y + (h / 2), z, 300, 5, h, 5, 1, new int[0]);
 				}
 			} else {
 				if (entity instanceof EntityPlayer && !entity.world.isRemote) {

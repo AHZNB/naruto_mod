@@ -38,16 +38,7 @@ public class GuiScrollGenjutsuGui extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static ItemStack giveGenjutsu(EntityPlayer player) {
-		ItemStack stack = ProcedureUtils.getMatchingItemStack(player, ItemInton.block);
-		if (stack == null && PlayerTracker.isNinja(player)) {
-			stack = new ItemStack(ItemInton.block, 1);
-			((ItemInton.RangedItem)stack.getItem()).setOwner(stack, player);
-			ItemHandlerHelper.giveItemToPlayer(player, stack);
-		}
-		if (stack != null) {
-			((ItemInton.RangedItem)stack.getItem()).enableJutsu(stack, ItemInton.GENJUTSU, true);
-		}
-		return stack;
+		return GuiNinjaScroll.enableJutsu(player, (ItemInton.RangedItem)ItemInton.block, ItemInton.GENJUTSU, true);
 	}
 
 	public static class GuiWindow extends GuiNinjaScroll.GuiWindow {

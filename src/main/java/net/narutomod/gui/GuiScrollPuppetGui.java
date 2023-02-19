@@ -31,14 +31,8 @@ public class GuiScrollPuppetGui extends ElementsNarutomodMod.ModElement {
 			// security measure to prevent arbitrary chunk generation
 			if (player.world.isRemote || !player.world.isBlockLoaded(new BlockPos(this.x, this.y, this.z)))
 				return;
-			ItemStack stack = ProcedureUtils.getMatchingItemStack(player, ItemNinjutsu.block);
-			if (stack == null && PlayerTracker.isNinja(player)) {
-				stack = new ItemStack(ItemNinjutsu.block, 1);
-				((ItemNinjutsu.RangedItem)stack.getItem()).setOwner(stack, player);
-				ItemHandlerHelper.giveItemToPlayer(player, stack);
-			}
+			ItemStack stack = GuiNinjaScroll.enableJutsu(player, (ItemNinjutsu.RangedItem)ItemNinjutsu.block, ItemNinjutsu.PUPPET, true);
 			if (stack != null) {
-				((ItemNinjutsu.RangedItem)stack.getItem()).enableJutsu(stack, ItemNinjutsu.PUPPET, true);
 				super.handleButtonAction(player, buttonID);
 			}
 		}

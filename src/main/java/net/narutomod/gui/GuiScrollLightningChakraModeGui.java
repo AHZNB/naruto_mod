@@ -31,14 +31,8 @@ public class GuiScrollLightningChakraModeGui extends ElementsNarutomodMod.ModEle
 			// security measure to prevent arbitrary chunk generation
 			if (player.world.isRemote || !player.world.isBlockLoaded(new BlockPos(this.x, this.y, this.z)))
 				return;
-			ItemStack stack = ProcedureUtils.getMatchingItemStack(player, ItemRaiton.block);
-			if (stack == null && PlayerTracker.isNinja(player)) {
-				stack = new ItemStack(ItemRaiton.block, 1);
-				((ItemRaiton.RangedItem)stack.getItem()).setOwner(stack, player);
-				ItemHandlerHelper.giveItemToPlayer(player, stack);
-			}
+			ItemStack stack = GuiNinjaScroll.enableJutsu(player, (ItemRaiton.RangedItem)ItemRaiton.block, ItemRaiton.CHAKRAMODE, true);
 			if (stack != null) {
-				((ItemRaiton.RangedItem)stack.getItem()).enableJutsu(stack, ItemRaiton.CHAKRAMODE, true);
 				super.handleButtonAction(player, buttonID);
 			}
 		}

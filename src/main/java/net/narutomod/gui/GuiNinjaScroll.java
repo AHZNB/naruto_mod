@@ -10,6 +10,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.items.ItemHandlerHelper;
 
 import net.minecraft.world.World;
 import net.minecraft.util.math.BlockPos;
@@ -18,13 +19,17 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.inventory.InventoryBasic;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Container;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiButton;
 
+import net.narutomod.item.ItemJutsu;
 import net.narutomod.procedure.ProcedureUtils;
+import net.narutomod.PlayerTracker;
 import net.narutomod.NarutomodMod;
 import net.narutomod.ElementsNarutomodMod;
 
@@ -174,7 +179,19 @@ public class GuiNinjaScroll extends ElementsNarutomodMod.ModElement {
 		public boolean doesGuiPauseGame() {
 			return false;
 		}
+	}
 
+	public static ItemStack enableJutsu(EntityPlayer player, ItemJutsu.Base item, ItemJutsu.JutsuEnum jutsu, boolean enable) {
+		ItemStack stack = ProcedureUtils.getMatchingItemStack(player, item);
+		if (stack == null && PlayerTracker.isNinja(player) && enable) {
+			stack = new ItemStack(item, 1);
+			((ItemJutsu.Base)stack.getItem()).setOwner(stack, player);
+			ItemHandlerHelper.giveItemToPlayer(player, stack);
+		}
+		if (stack != null) {
+			((ItemJutsu.Base)stack.getItem()).enableJutsu(stack, jutsu, enable);
+		}
+		return stack;
 	}
 
 	public static class GUIButtonPressedMessage implements IMessage {

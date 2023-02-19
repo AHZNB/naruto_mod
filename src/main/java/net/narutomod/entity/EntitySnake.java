@@ -497,8 +497,8 @@ public class EntitySnake extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
-		protected void onDeathUpdate() {
-			super.onDeathUpdate();
+		public void setDead() {
+			super.setDead();
 			if (!this.world.isRemote) {
 				for (int i = 0; i < this.parts.length; i++) {
 					Particles.spawnParticle(this.world, Particles.Types.SMOKE,
@@ -508,7 +508,7 @@ public class EntitySnake extends ElementsNarutomodMod.ModElement {
 				}
 			}
 		}
-
+		
 		@Override
 		public void readEntityFromNBT(NBTTagCompound compound) {
 			super.readEntityFromNBT(compound);

@@ -31,14 +31,8 @@ public class GuiScrollMultiSizeGui extends ElementsNarutomodMod.ModElement {
 			// security measure to prevent arbitrary chunk generation
 			if (player.world.isRemote || !player.world.isBlockLoaded(new BlockPos(this.x, this.y, this.z)))
 				return;
-			ItemStack stack = ProcedureUtils.getMatchingItemStack(player, ItemYoton.block);
-			if (stack == null && PlayerTracker.isNinja(player)) {
-				stack = new ItemStack(ItemYoton.block, 1);
-				((ItemYoton.RangedItem)stack.getItem()).setOwner(stack, player);
-				ItemHandlerHelper.giveItemToPlayer(player, stack);
-			}
+			ItemStack stack = GuiNinjaScroll.enableJutsu(player, (ItemYoton.RangedItem)ItemYoton.block, ItemYoton.MULTISIZE, true);
 			if (stack != null) {
-				((ItemYoton.RangedItem)stack.getItem()).enableJutsu(stack, ItemYoton.MULTISIZE, true);
 				super.handleButtonAction(player, buttonID);
 			}
 		}

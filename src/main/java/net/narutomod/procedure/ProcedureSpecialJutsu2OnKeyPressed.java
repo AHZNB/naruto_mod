@@ -145,17 +145,15 @@ public class ProcedureSpecialJutsu2OnKeyPressed extends ElementsNarutomodMod.Mod
 						$_dependencies.put("is_pressed", is_pressed);
 						$_dependencies.put("entity", entity);
 						$_dependencies.put("world", world);
-						$_dependencies
-								.put("x",
-										(entity.world.rayTraceBlocks(entity.getPositionEyes(1f), entity.getPositionEyes(1f).addVector(
-												entity.getLook(1f).x * 10, entity.getLook(1f).y * 10, entity.getLook(1f).z * 10), false, false, true)
-												.getBlockPos().getX()));
+						$_dependencies.put("x",
+								(entity.world.rayTraceBlocks(entity.getPositionEyes(1f), entity.getPositionEyes(1f)
+										.addVector(entity.getLook(1f).x * 5, entity.getLook(1f).y * 5, entity.getLook(1f).z * 5), false, false, true)
+										.getBlockPos().getX()));
 						$_dependencies.put("y", y);
-						$_dependencies
-								.put("z",
-										(entity.world.rayTraceBlocks(entity.getPositionEyes(1f), entity.getPositionEyes(1f).addVector(
-												entity.getLook(1f).x * 10, entity.getLook(1f).y * 10, entity.getLook(1f).z * 10), false, false, true)
-												.getBlockPos().getZ()));
+						$_dependencies.put("z",
+								(entity.world.rayTraceBlocks(entity.getPositionEyes(1f), entity.getPositionEyes(1f)
+										.addVector(entity.getLook(1f).x * 5, entity.getLook(1f).y * 5, entity.getLook(1f).z * 5), false, false, true)
+										.getBlockPos().getZ()));
 						ProcedureOuterPath.executeProcedure($_dependencies);
 					}
 				}

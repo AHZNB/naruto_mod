@@ -38,6 +38,7 @@ import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelBox;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
+import javax.annotation.Nullable;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntitySealing extends ElementsNarutomodMod.ModElement {
@@ -64,7 +65,7 @@ public class EntitySealing extends ElementsNarutomodMod.ModElement {
 		private final EntitySittingCircle[] parts = new EntitySittingCircle[4];
 		private final AxisAlignedBB tableBB = new AxisAlignedBB(-1.3d, 0.0d, -1.3d, 1.3d, 0.9d, 1.3d);
 		private EntityTailedBeast.Base bijuEntity;
-		private EntityPlayer jinchurikiEntity;
+		//private EntityPlayer jinchurikiEntity;
 		private int ticks2Death = 600;
 
 		public EC(World world) {
@@ -109,7 +110,7 @@ public class EntitySealing extends ElementsNarutomodMod.ModElement {
 				AxisAlignedBB bb = this.tableBB.offset(this.posX, this.posY, this.posZ);
 				Vec3d vec = player.getPositionEyes(1f);
 				if (bb.calculateIntercept(vec, vec.add(player.getLookVec().scale(4d))) != null) {
-					this.jinchurikiEntity = player;
+					//this.jinchurikiEntity = player;
 					return player.startRiding(this);
 				}
 			}
@@ -119,6 +120,11 @@ public class EntitySealing extends ElementsNarutomodMod.ModElement {
 		@Override
 		public double getMountedYOffset() {
 			return 0.7d;
+		}
+
+		@Override @Nullable
+		public Entity getControllingPassenger() {
+			return this.getPassengers().isEmpty() ? null : this.getPassengers().get(0);
 		}
 
 		@Override
@@ -149,14 +155,14 @@ public class EntitySealing extends ElementsNarutomodMod.ModElement {
 			if (!this.world.isRemote && this.bijuEntity != null) {
 				if (this.bijuEntity.getBijuManager().isSealed()) {
 					this.ticks2Death = 0;
-				} else if (this.jinchurikiEntity != null && this.getSealersCount() > 0) {
+				} else if (this.isBeingRidden() && this.getSealersCount() > 0) {
 					if (!this.bijuEntity.isFuuinInProgress()) {
-						this.bijuEntity.fuuinIntoVessel(this.jinchurikiEntity, 36000);
+						this.bijuEntity.fuuinIntoVessel(this.getControllingPassenger(), 36000);
 					} else {
 						this.bijuEntity.incFuuinProgress(this.getSealersCount() - 1);
+						this.sendSealingProgress(this.bijuEntity.getFuuinProgress());
+						this.ticks2Death = 600;
 					}
-					this.ticks2Death = 600;
-					this.sendSealingProgress(this.bijuEntity.getFuuinProgress());
 				} else if (this.bijuEntity.isFuuinInProgress()) {
 					this.bijuEntity.cancelFuuin();
 					this.ticks2Death = 0;
