@@ -286,6 +286,9 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 		} else {
 			this.setVesselUuid(entityIn.getUniqueID());
 			this.vesselName = entityIn.getName();
+			if (this.entity != null) {
+				this.entity.setDead();
+			}
 		}
 		this.jinchurikiPlayer = entityIn instanceof EntityPlayer ? (EntityPlayer)entityIn : null;
 		if (dirty) {

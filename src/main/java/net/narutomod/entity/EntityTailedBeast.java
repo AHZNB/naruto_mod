@@ -361,6 +361,10 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 			 .scale(this.width * 1.5).add(this.getPositionEyes(1.0f));
 		}
 
+		public float getFuuinBeamHeight() {
+			return 0.5833f * this.height;
+		}
+
 		@Override
 		public boolean processInteract(EntityPlayer entity, EnumHand hand) {
 			super.processInteract(entity, hand);
@@ -399,9 +403,7 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		protected boolean canFitPassenger(Entity passenger) {
-			return super.canFitPassenger(passenger) 
-			 && (passenger.equals(this.getBijuManager().getJinchurikiPlayer()) || passenger.equals(this.summoningPlayer)
-			  || (passenger instanceof EntityPlayer && ((EntityPlayer)passenger).isCreative()));
+			return super.canFitPassenger(passenger) && this.canBeRidden(passenger);
 		}
 
 		@Override
@@ -589,7 +591,7 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 					this.setDead();
 				}
 			}
-			if ((jinchuriki == null || jinchuriki.getHealth() <= 0.0F) && this.isAIDisabled()) {
+			if (jinchuriki != null && jinchuriki.getHealth() <= 0.0F && this.isAIDisabled()) {
 				this.setNoAI(false);
 			}
 			if (this.isBeingRidden()) {
@@ -1045,13 +1047,13 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 
 	 	@Override
 		public void doRenderLayer(Base entity, float _1, float _2, float partialTicks, float _3, float _4, float _5, float _6) {
-			Entity jinchuriki = entity.getTargetVessel();
-			if (entity.deathTicks > 1 && jinchuriki != null) {
+			Entity vessel = entity.getTargetVessel();
+			if (entity.deathTicks > 1 && vessel != null) {
 				float f = ((float) entity.deathTicks + partialTicks) * 0.01F;
-				float offset = entity.height * 2.0F / 3.0F;
-				double d0 = jinchuriki.lastTickPosX + (jinchuriki.posX - jinchuriki.lastTickPosX) * partialTicks;
-				double d1 = jinchuriki.lastTickPosY + (jinchuriki.posY - jinchuriki.lastTickPosY) * partialTicks + jinchuriki.getEyeHeight();
-				double d2 = jinchuriki.lastTickPosZ + (jinchuriki.posZ - jinchuriki.lastTickPosZ) * partialTicks;
+				float offset = entity.getFuuinBeamHeight();
+				double d0 = vessel.lastTickPosX + (vessel.posX - vessel.lastTickPosX) * partialTicks;
+				double d1 = vessel.lastTickPosY + (vessel.posY - vessel.lastTickPosY) * partialTicks + vessel.getEyeHeight();
+				double d2 = vessel.lastTickPosZ + (vessel.posZ - vessel.lastTickPosZ) * partialTicks;
 				double dx = d0 - entity.posX;
 				double dy = d1 - (entity.posY + offset);
 				double dz = d2 - entity.posZ;
@@ -1062,7 +1064,7 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 				rot_y = MathHelper.wrapDegrees(rot_y - entity.renderYawOffset);
 				this.renderer.bindTexture(this.texture);
 				GlStateManager.pushMatrix();
-				GlStateManager.translate(0.0F, -offset + 1.6F, 0.0F);
+				GlStateManager.translate(0.0F, -offset + (vessel instanceof EntityPlayer ? 1.501F : 0F), 0.0F);
 				GlStateManager.rotate(-90.0F, 1.0F, 0.0F, 0.0F);
 				GlStateManager.rotate(rot_y, 0.0F, 0.0F, 1.0F);
 				GlStateManager.rotate(rot_x - 90.0F, 1.0F, 0.0F, 0.0F);

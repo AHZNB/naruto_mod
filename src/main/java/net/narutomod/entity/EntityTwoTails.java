@@ -192,6 +192,11 @@ public class EntityTwoTails extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
+		public float getFuuinBeamHeight() {
+			return this.isFaceDown() ? 8.0f * 0.0625f * MODELSCALE : super.getFuuinBeamHeight();
+		}
+
+		@Override
 		public net.minecraft.util.SoundEvent getAmbientSound() {
 			return (net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation(""));
 		}
@@ -1975,6 +1980,16 @@ public class EntityTwoTails extends ElementsNarutomodMod.ModElement {
 			} else {
 				jaw.rotateAngleX = 0.0F;
 				jaw2.rotateAngleX = 0.0F;
+			}
+			if (((EntityCustom)e).isFaceDown()) {
+				body.rotationPointY = 12.0F;
+				head.rotateAngleX = 0.3491F;
+				leg1.rotateAngleX = -0.8727F;
+				leg2.rotateAngleX = -0.8727F;
+				leg3.rotateAngleX = 1.5708F;
+				leg4.rotateAngleX = 1.5708F;
+			} else {
+				body.rotationPointY = 3.0F;
 			}
 			this.copyModelAngles(body, highlight);
 			this.copyModelAngles(body, bodyFlamed);

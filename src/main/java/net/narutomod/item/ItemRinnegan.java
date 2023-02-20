@@ -33,6 +33,7 @@ import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.world.WorldServer;
 
+import net.narutomod.gui.GuiNinjaScroll;
 import net.narutomod.entity.EntityKingOfHell;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.procedure.ProcedureRinneganHelmetTickEvent;
@@ -147,6 +148,10 @@ public class ItemRinnegan extends ElementsNarutomodMod.ModElement {
 						if (!(koh instanceof EntityKingOfHell.EntityCustom) || !koh.isEntityAlive()) {
 							ProcedureUtils.removeUniqueIdTag(itemstack, "KoH_id");
 						}
+					}
+					if (entity instanceof EntityPlayer) {
+						GuiNinjaScroll.enableJutsu((EntityPlayer)entity, (ItemJutsu.Base)ItemYoton.block, ItemYoton.SEALING9D,
+						 ((EntityPlayer)entity).getItemStackFromSlot(EntityEquipmentSlot.HEAD).getItem() == helmet);
 					}
 				}
 			}

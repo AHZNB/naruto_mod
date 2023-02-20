@@ -186,6 +186,11 @@ public class EntityFiveTails extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
+		public float getFuuinBeamHeight() {
+			return this.isFaceDown() ? 3.0f * 0.0625f * MODELSCALE : super.getFuuinBeamHeight();
+		}
+
+		@Override
 		public net.minecraft.util.SoundEvent getAmbientSound() {
 			return (net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation(""));
 		}
@@ -273,22 +278,22 @@ public class EntityFiveTails extends ElementsNarutomodMod.ModElement {
 		private final ModelRenderer hoof_r5;
 		private final ModelRenderer hoof_r6;
 		//private final ModelRenderer leg3;
-		private final ModelRenderer cube_r26;
-		private final ModelRenderer cube_r27;
-		private final ModelRenderer cube_r28;
+		private final ModelRenderer bone6;
+		private final ModelRenderer bone7;
+		private final ModelRenderer bone8;
 		private final ModelRenderer Foot3;
 		private final ModelRenderer hoof_r7;
 		private final ModelRenderer hoof_r8;
 		private final ModelRenderer hoof_r9;
 		//private final ModelRenderer leg4;
-		private final ModelRenderer cube_r29;
-		private final ModelRenderer cube_r30;
-		private final ModelRenderer cube_r31;
+		private final ModelRenderer bone9;
+		private final ModelRenderer bone10;
+		private final ModelRenderer bone11;
 		private final ModelRenderer Foot4;
 		private final ModelRenderer hoof_r10;
 		private final ModelRenderer hoof_r11;
 		private final ModelRenderer hoof_r12;
-		private final ModelRenderer[][] Tail = new ModelRenderer[5][8];
+		private final ModelRenderer[][] tail = new ModelRenderer[5][8];
 		private final float tailSwayX[][] = new float[5][8];
 		private final float tailSwayY[][] = new float[5][8];
 		private final float tailSwayZ[][] = new float[5][8];
@@ -619,43 +624,44 @@ public class EntityFiveTails extends ElementsNarutomodMod.ModElement {
 			setRotationAngle(leg3, 0.0F, 0.0F, 0.0873F);
 			
 	
-			cube_r26 = new ModelRenderer(this);
-			cube_r26.setRotationPoint(-0.5989F, 6.5567F, 0.2F);
-			leg3.addChild(cube_r26);
-			setRotationAngle(cube_r26, -0.3054F, 0.0F, 0.0F);
-			cube_r26.cubeList.add(new ModelBox(cube_r26, 10, 35, -0.5F, -2.4F, -1.0F, 2, 3, 2, -0.1F, false));
+			bone6 = new ModelRenderer(this);
+			bone6.setRotationPoint(0.0F, 0.0F, 0.0F);
+			leg3.addChild(bone6);
+			setRotationAngle(bone6, -0.2618F, 0.0F, 0.0F);
+			bone6.cubeList.add(new ModelBox(bone6, 28, 28, -1.5989F, -2.3433F, -0.6F, 3, 5, 3, 0.3F, false));
 	
-			cube_r27 = new ModelRenderer(this);
-			cube_r27.setRotationPoint(-0.0989F, 3.8567F, -0.1F);
-			leg3.addChild(cube_r27);
-			setRotationAngle(cube_r27, 0.1745F, 0.0F, 0.0F);
-			cube_r27.cubeList.add(new ModelBox(cube_r27, 31, 13, -1.5F, -1.8F, -1.2F, 3, 3, 3, -0.1F, false));
+			bone7 = new ModelRenderer(this);
+			bone7.setRotationPoint(-0.0989F, 3.1067F, -0.35F);
+			bone6.addChild(bone7);
+			setRotationAngle(bone7, 0.4363F, 0.0F, 0.0F);
+			bone7.cubeList.add(new ModelBox(bone7, 31, 13, -1.5F, -0.55F, -0.2F, 3, 3, 3, -0.1F, false));
 	
-			cube_r28 = new ModelRenderer(this);
-			cube_r28.setRotationPoint(0.7011F, -0.9433F, 0.4F);
-			leg3.addChild(cube_r28);
-			setRotationAngle(cube_r28, -0.2618F, 0.0F, 0.0F);
-			cube_r28.cubeList.add(new ModelBox(cube_r28, 28, 28, -2.3F, -1.4F, -1.0F, 3, 5, 3, 0.3F, false));
+			bone8 = new ModelRenderer(this);
+			bone8.setRotationPoint(0.0F, 2.3F, 2.45F);
+			bone7.addChild(bone8);
+			setRotationAngle(bone8, -0.4363F, 0.0F, 0.0F);
+			bone8.cubeList.add(new ModelBox(bone8, 10, 35, -1.0F, -0.25F, -1.9F, 2, 3, 2, -0.1F, false));
 	
 			Foot3 = new ModelRenderer(this);
-			Foot3.setRotationPoint(-1.0163F, 8.1936F, -0.7375F);
-			leg3.addChild(Foot3);
+			Foot3.setRotationPoint(0.0827F, 2.5369F, -1.7875F);
+			bone8.addChild(Foot3);
+			setRotationAngle(Foot3, 0.2618F, 0.0F, 0.0F);
 			
 	
 			hoof_r7 = new ModelRenderer(this);
-			hoof_r7.setRotationPoint(1.7173F, 0.4631F, -0.2625F);
+			hoof_r7.setRotationPoint(0.7173F, 1.9631F, -0.2625F);
 			Foot3.addChild(hoof_r7);
 			setRotationAngle(hoof_r7, -1.0908F, 0.0F, -0.0873F);
 			hoof_r7.cubeList.add(new ModelBox(hoof_r7, 8, 47, -1.78F, -2.15F, -0.8F, 2, 3, 1, -0.1F, true));
 	
 			hoof_r8 = new ModelRenderer(this);
-			hoof_r8.setRotationPoint(0.7173F, -0.5369F, 0.7375F);
+			hoof_r8.setRotationPoint(-0.2827F, 0.9631F, 0.7375F);
 			Foot3.addChild(hoof_r8);
 			setRotationAngle(hoof_r8, 0.0436F, 0.0F, -0.0087F);
 			hoof_r8.cubeList.add(new ModelBox(hoof_r8, 0, 52, -0.8F, -1.1F, -0.8F, 2, 2, 2, -0.1F, true));
 	
 			hoof_r9 = new ModelRenderer(this);
-			hoof_r9.setRotationPoint(1.7173F, 0.4631F, -0.2625F);
+			hoof_r9.setRotationPoint(0.7173F, 1.9631F, -0.2625F);
 			Foot3.addChild(hoof_r9);
 			setRotationAngle(hoof_r9, -1.5708F, 0.0F, -0.0873F);
 			hoof_r9.cubeList.add(new ModelBox(hoof_r9, 0, 47, -1.78F, -2.4F, -0.55F, 2, 3, 1, -0.05F, true));
@@ -666,286 +672,287 @@ public class EntityFiveTails extends ElementsNarutomodMod.ModElement {
 			setRotationAngle(leg4, 0.0F, 0.0F, -0.0873F);
 			
 	
-			cube_r29 = new ModelRenderer(this);
-			cube_r29.setRotationPoint(0.5989F, 6.5567F, 0.2F);
-			leg4.addChild(cube_r29);
-			setRotationAngle(cube_r29, -0.3054F, 0.0F, 0.0F);
-			cube_r29.cubeList.add(new ModelBox(cube_r29, 10, 35, -1.5F, -2.3F, -1.2F, 2, 3, 2, -0.1F, true));
+			bone9 = new ModelRenderer(this);
+			bone9.setRotationPoint(0.0F, 0.0F, 0.0F);
+			leg4.addChild(bone9);
+			setRotationAngle(bone9, -0.2618F, 0.0F, 0.0F);
+			bone9.cubeList.add(new ModelBox(bone9, 28, 28, -1.4011F, -2.3433F, -0.6F, 3, 5, 3, 0.3F, true));
 	
-			cube_r30 = new ModelRenderer(this);
-			cube_r30.setRotationPoint(0.0989F, 3.8567F, -0.1F);
-			leg4.addChild(cube_r30);
-			setRotationAngle(cube_r30, 0.1745F, 0.0F, 0.0F);
-			cube_r30.cubeList.add(new ModelBox(cube_r30, 31, 13, -1.5F, -1.8F, -1.2F, 3, 3, 3, -0.1F, true));
+			bone10 = new ModelRenderer(this);
+			bone10.setRotationPoint(0.0989F, 3.1067F, -0.35F);
+			bone9.addChild(bone10);
+			setRotationAngle(bone10, 0.4363F, 0.0F, 0.0F);
+			bone10.cubeList.add(new ModelBox(bone10, 31, 13, -1.5F, -0.55F, -0.2F, 3, 3, 3, -0.1F, true));
 	
-			cube_r31 = new ModelRenderer(this);
-			cube_r31.setRotationPoint(-0.7011F, -0.9433F, 0.4F);
-			leg4.addChild(cube_r31);
-			setRotationAngle(cube_r31, -0.2618F, 0.0F, 0.0F);
-			cube_r31.cubeList.add(new ModelBox(cube_r31, 28, 28, -0.7F, -1.4F, -1.0F, 3, 5, 3, 0.3F, true));
+			bone11 = new ModelRenderer(this);
+			bone11.setRotationPoint(0.0F, 2.3F, 2.45F);
+			bone10.addChild(bone11);
+			setRotationAngle(bone11, -0.4363F, 0.0F, 0.0F);
+			bone11.cubeList.add(new ModelBox(bone11, 10, 35, -1.0F, -0.25F, -1.9F, 2, 3, 2, -0.1F, true));
 	
 			Foot4 = new ModelRenderer(this);
-			Foot4.setRotationPoint(1.0163F, 8.1936F, -0.7375F);
-			leg4.addChild(Foot4);
+			Foot4.setRotationPoint(-0.0827F, 2.5369F, -1.7875F);
+			bone11.addChild(Foot4);
+			setRotationAngle(Foot4, 0.2618F, 0.0F, 0.0F);
 			
 	
 			hoof_r10 = new ModelRenderer(this);
-			hoof_r10.setRotationPoint(-0.7173F, -0.5369F, 0.7375F);
+			hoof_r10.setRotationPoint(-0.7173F, 1.9631F, -0.2625F);
 			Foot4.addChild(hoof_r10);
-			setRotationAngle(hoof_r10, 0.0436F, 0.0F, 0.0436F);
-			hoof_r10.cubeList.add(new ModelBox(hoof_r10, 0, 52, -1.2F, -1.0F, -1.0F, 2, 2, 2, -0.1F, true));
+			setRotationAngle(hoof_r10, -1.0908F, 0.0F, 0.0873F);
+			hoof_r10.cubeList.add(new ModelBox(hoof_r10, 8, 47, -0.22F, -2.15F, -0.8F, 2, 3, 1, -0.1F, false));
 	
 			hoof_r11 = new ModelRenderer(this);
-			hoof_r11.setRotationPoint(-0.7173F, 0.4631F, -0.2625F);
+			hoof_r11.setRotationPoint(0.2827F, 0.9631F, 0.7375F);
 			Foot4.addChild(hoof_r11);
-			setRotationAngle(hoof_r11, -1.0908F, 0.0F, 0.0873F);
-			hoof_r11.cubeList.add(new ModelBox(hoof_r11, 8, 47, -1.2F, -2.0F, -0.9F, 2, 3, 1, -0.1F, true));
+			setRotationAngle(hoof_r11, 0.0436F, 0.0F, 0.0087F);
+			hoof_r11.cubeList.add(new ModelBox(hoof_r11, 0, 52, -1.2F, -1.1F, -0.8F, 2, 2, 2, -0.1F, false));
 	
 			hoof_r12 = new ModelRenderer(this);
-			hoof_r12.setRotationPoint(-0.7173F, 0.4631F, -0.2625F);
+			hoof_r12.setRotationPoint(-0.7173F, 1.9631F, -0.2625F);
 			Foot4.addChild(hoof_r12);
 			setRotationAngle(hoof_r12, -1.5708F, 0.0F, 0.0873F);
-			hoof_r12.cubeList.add(new ModelBox(hoof_r12, 0, 47, -1.2F, -2.17F, -0.45F, 2, 3, 1, -0.05F, true));
+			hoof_r12.cubeList.add(new ModelBox(hoof_r12, 0, 47, -0.22F, -2.4F, -0.55F, 2, 3, 1, -0.05F, false));
 	
-			Tail[0][0] = new ModelRenderer(this);
-			Tail[0][0].setRotationPoint(0.0F, 0.5F, 10.5F);
-			body.addChild(Tail[0][0]);
-			setRotationAngle(Tail[0][0], -0.7854F, 0.0F, 0.0F);
-			Tail[0][0].cubeList.add(new ModelBox(Tail[0][0], 33, 36, -1.0F, -2.5F, -1.0F, 2, 3, 2, 0.0F, false));
+			tail[0][0] = new ModelRenderer(this);
+			tail[0][0].setRotationPoint(0.0F, 0.5F, 10.5F);
+			body.addChild(tail[0][0]);
+			setRotationAngle(tail[0][0], -0.7854F, 0.0F, 0.0F);
+			tail[0][0].cubeList.add(new ModelBox(tail[0][0], 33, 36, -1.0F, -2.5F, -1.0F, 2, 3, 2, 0.0F, false));
 	
-			Tail[0][1] = new ModelRenderer(this);
-			Tail[0][1].setRotationPoint(0.0F, -2.0F, 0.0F);
-			Tail[0][0].addChild(Tail[0][1]);
-			setRotationAngle(Tail[0][1], -0.2618F, 0.0F, 0.0F);
-			Tail[0][1].cubeList.add(new ModelBox(Tail[0][1], 33, 36, -1.0F, -2.5F, -1.0F, 2, 3, 2, 0.0F, false));
+			tail[0][1] = new ModelRenderer(this);
+			tail[0][1].setRotationPoint(0.0F, -2.0F, 0.0F);
+			tail[0][0].addChild(tail[0][1]);
+			setRotationAngle(tail[0][1], -0.2618F, 0.0F, 0.0F);
+			tail[0][1].cubeList.add(new ModelBox(tail[0][1], 33, 36, -1.0F, -2.5F, -1.0F, 2, 3, 2, 0.0F, false));
 	
-			Tail[0][2] = new ModelRenderer(this);
-			Tail[0][2].setRotationPoint(0.0F, -2.0F, 0.0F);
-			Tail[0][1].addChild(Tail[0][2]);
-			setRotationAngle(Tail[0][2], -0.2618F, 0.0F, 0.0F);
-			Tail[0][2].cubeList.add(new ModelBox(Tail[0][2], 33, 36, -1.0F, -2.5F, -1.0F, 2, 3, 2, 0.0F, false));
+			tail[0][2] = new ModelRenderer(this);
+			tail[0][2].setRotationPoint(0.0F, -2.0F, 0.0F);
+			tail[0][1].addChild(tail[0][2]);
+			setRotationAngle(tail[0][2], -0.2618F, 0.0F, 0.0F);
+			tail[0][2].cubeList.add(new ModelBox(tail[0][2], 33, 36, -1.0F, -2.5F, -1.0F, 2, 3, 2, 0.0F, false));
 	
-			Tail[0][3] = new ModelRenderer(this);
-			Tail[0][3].setRotationPoint(0.0F, -2.0F, 0.0F);
-			Tail[0][2].addChild(Tail[0][3]);
-			setRotationAngle(Tail[0][3], -0.2618F, 0.0F, 0.0F);
-			Tail[0][3].cubeList.add(new ModelBox(Tail[0][3], 33, 36, -1.0F, -2.5F, -1.0F, 2, 3, 2, 0.0F, false));
+			tail[0][3] = new ModelRenderer(this);
+			tail[0][3].setRotationPoint(0.0F, -2.0F, 0.0F);
+			tail[0][2].addChild(tail[0][3]);
+			setRotationAngle(tail[0][3], -0.2618F, 0.0F, 0.0F);
+			tail[0][3].cubeList.add(new ModelBox(tail[0][3], 33, 36, -1.0F, -2.5F, -1.0F, 2, 3, 2, 0.0F, false));
 	
-			Tail[0][4] = new ModelRenderer(this);
-			Tail[0][4].setRotationPoint(0.0F, -2.0F, 0.0F);
-			Tail[0][3].addChild(Tail[0][4]);
-			setRotationAngle(Tail[0][4], 0.2618F, 0.0F, 0.0F);
-			Tail[0][4].cubeList.add(new ModelBox(Tail[0][4], 33, 36, -1.0F, -2.5F, -1.0F, 2, 3, 2, -0.1F, false));
+			tail[0][4] = new ModelRenderer(this);
+			tail[0][4].setRotationPoint(0.0F, -2.0F, 0.0F);
+			tail[0][3].addChild(tail[0][4]);
+			setRotationAngle(tail[0][4], 0.2618F, 0.0F, 0.0F);
+			tail[0][4].cubeList.add(new ModelBox(tail[0][4], 33, 36, -1.0F, -2.5F, -1.0F, 2, 3, 2, -0.1F, false));
 	
-			Tail[0][5] = new ModelRenderer(this);
-			Tail[0][5].setRotationPoint(0.0F, -2.0F, 0.0F);
-			Tail[0][4].addChild(Tail[0][5]);
-			setRotationAngle(Tail[0][5], 0.2618F, 0.0F, 0.0F);
-			Tail[0][5].cubeList.add(new ModelBox(Tail[0][5], 33, 42, -1.0F, -2.5F, -1.0F, 2, 3, 2, -0.2F, false));
+			tail[0][5] = new ModelRenderer(this);
+			tail[0][5].setRotationPoint(0.0F, -2.0F, 0.0F);
+			tail[0][4].addChild(tail[0][5]);
+			setRotationAngle(tail[0][5], 0.2618F, 0.0F, 0.0F);
+			tail[0][5].cubeList.add(new ModelBox(tail[0][5], 33, 42, -1.0F, -2.5F, -1.0F, 2, 3, 2, -0.2F, false));
 	
-			Tail[0][6] = new ModelRenderer(this);
-			Tail[0][6].setRotationPoint(0.0F, -2.0F, 0.0F);
-			Tail[0][5].addChild(Tail[0][6]);
-			setRotationAngle(Tail[0][6], 0.2618F, 0.0F, 0.0F);
-			Tail[0][6].cubeList.add(new ModelBox(Tail[0][6], 42, 42, -1.0F, -2.5F, -1.0F, 2, 3, 2, -0.4F, false));
+			tail[0][6] = new ModelRenderer(this);
+			tail[0][6].setRotationPoint(0.0F, -2.0F, 0.0F);
+			tail[0][5].addChild(tail[0][6]);
+			setRotationAngle(tail[0][6], 0.2618F, 0.0F, 0.0F);
+			tail[0][6].cubeList.add(new ModelBox(tail[0][6], 42, 42, -1.0F, -2.5F, -1.0F, 2, 3, 2, -0.4F, false));
 	
-			Tail[0][7] = new ModelRenderer(this);
-			Tail[0][7].setRotationPoint(0.0F, -2.0F, 0.0F);
-			Tail[0][6].addChild(Tail[0][7]);
-			setRotationAngle(Tail[0][7], 0.2618F, 0.0F, 0.0F);
-			Tail[0][7].cubeList.add(new ModelBox(Tail[0][7], 42, 42, -1.0F, -2.5F, -1.0F, 2, 3, 2, -0.6F, false));
+			tail[0][7] = new ModelRenderer(this);
+			tail[0][7].setRotationPoint(0.0F, -2.0F, 0.0F);
+			tail[0][6].addChild(tail[0][7]);
+			setRotationAngle(tail[0][7], 0.2618F, 0.0F, 0.0F);
+			tail[0][7].cubeList.add(new ModelBox(tail[0][7], 42, 42, -1.0F, -2.5F, -1.0F, 2, 3, 2, -0.6F, false));
 	
-			Tail[1][0] = new ModelRenderer(this);
-			Tail[1][0].setRotationPoint(-1.0F, 0.5F, 10.5F);
-			body.addChild(Tail[1][0]);
-			setRotationAngle(Tail[1][0], -1.0472F, -0.2618F, 0.0F);
-			Tail[1][0].cubeList.add(new ModelBox(Tail[1][0], 33, 36, -1.0F, -2.5F, -1.0F, 2, 3, 2, 0.0F, false));
+			tail[1][0] = new ModelRenderer(this);
+			tail[1][0].setRotationPoint(-1.0F, 0.5F, 10.5F);
+			body.addChild(tail[1][0]);
+			setRotationAngle(tail[1][0], -1.0472F, -0.2618F, 0.0F);
+			tail[1][0].cubeList.add(new ModelBox(tail[1][0], 33, 36, -1.0F, -2.5F, -1.0F, 2, 3, 2, 0.0F, false));
 	
-			Tail[1][1] = new ModelRenderer(this);
-			Tail[1][1].setRotationPoint(0.0F, -2.0F, 0.0F);
-			Tail[1][0].addChild(Tail[1][1]);
-			setRotationAngle(Tail[1][1], -0.2618F, 0.0F, 0.0F);
-			Tail[1][1].cubeList.add(new ModelBox(Tail[1][1], 33, 36, -1.0F, -2.5F, -1.0F, 2, 3, 2, 0.0F, false));
+			tail[1][1] = new ModelRenderer(this);
+			tail[1][1].setRotationPoint(0.0F, -2.0F, 0.0F);
+			tail[1][0].addChild(tail[1][1]);
+			setRotationAngle(tail[1][1], -0.2618F, 0.0F, 0.0F);
+			tail[1][1].cubeList.add(new ModelBox(tail[1][1], 33, 36, -1.0F, -2.5F, -1.0F, 2, 3, 2, 0.0F, false));
 	
-			Tail[1][2] = new ModelRenderer(this);
-			Tail[1][2].setRotationPoint(0.0F, -2.0F, 0.0F);
-			Tail[1][1].addChild(Tail[1][2]);
-			setRotationAngle(Tail[1][2], -0.2618F, 0.0F, 0.0F);
-			Tail[1][2].cubeList.add(new ModelBox(Tail[1][2], 33, 36, -1.0F, -2.5F, -1.0F, 2, 3, 2, 0.0F, false));
+			tail[1][2] = new ModelRenderer(this);
+			tail[1][2].setRotationPoint(0.0F, -2.0F, 0.0F);
+			tail[1][1].addChild(tail[1][2]);
+			setRotationAngle(tail[1][2], -0.2618F, 0.0F, 0.0F);
+			tail[1][2].cubeList.add(new ModelBox(tail[1][2], 33, 36, -1.0F, -2.5F, -1.0F, 2, 3, 2, 0.0F, false));
 	
-			Tail[1][3] = new ModelRenderer(this);
-			Tail[1][3].setRotationPoint(0.0F, -2.0F, 0.0F);
-			Tail[1][2].addChild(Tail[1][3]);
-			setRotationAngle(Tail[1][3], -0.2618F, 0.0F, 0.0F);
-			Tail[1][3].cubeList.add(new ModelBox(Tail[1][3], 33, 36, -1.0F, -2.5F, -1.0F, 2, 3, 2, 0.0F, false));
+			tail[1][3] = new ModelRenderer(this);
+			tail[1][3].setRotationPoint(0.0F, -2.0F, 0.0F);
+			tail[1][2].addChild(tail[1][3]);
+			setRotationAngle(tail[1][3], -0.2618F, 0.0F, 0.0F);
+			tail[1][3].cubeList.add(new ModelBox(tail[1][3], 33, 36, -1.0F, -2.5F, -1.0F, 2, 3, 2, 0.0F, false));
 	
-			Tail[1][4] = new ModelRenderer(this);
-			Tail[1][4].setRotationPoint(0.0F, -2.0F, 0.0F);
-			Tail[1][3].addChild(Tail[1][4]);
-			setRotationAngle(Tail[1][4], 0.2618F, 0.0F, 0.0F);
-			Tail[1][4].cubeList.add(new ModelBox(Tail[1][4], 24, 42, -1.0F, -2.5F, -1.0F, 2, 3, 2, -0.1F, false));
+			tail[1][4] = new ModelRenderer(this);
+			tail[1][4].setRotationPoint(0.0F, -2.0F, 0.0F);
+			tail[1][3].addChild(tail[1][4]);
+			setRotationAngle(tail[1][4], 0.2618F, 0.0F, 0.0F);
+			tail[1][4].cubeList.add(new ModelBox(tail[1][4], 24, 42, -1.0F, -2.5F, -1.0F, 2, 3, 2, -0.1F, false));
 	
-			Tail[1][5] = new ModelRenderer(this);
-			Tail[1][5].setRotationPoint(0.0F, -2.0F, 0.0F);
-			Tail[1][4].addChild(Tail[1][5]);
-			setRotationAngle(Tail[1][5], 0.2618F, 0.0F, 0.0F);
-			Tail[1][5].cubeList.add(new ModelBox(Tail[1][5], 33, 42, -1.0F, -2.5F, -1.0F, 2, 3, 2, -0.2F, false));
+			tail[1][5] = new ModelRenderer(this);
+			tail[1][5].setRotationPoint(0.0F, -2.0F, 0.0F);
+			tail[1][4].addChild(tail[1][5]);
+			setRotationAngle(tail[1][5], 0.2618F, 0.0F, 0.0F);
+			tail[1][5].cubeList.add(new ModelBox(tail[1][5], 33, 42, -1.0F, -2.5F, -1.0F, 2, 3, 2, -0.2F, false));
 	
-			Tail[1][6] = new ModelRenderer(this);
-			Tail[1][6].setRotationPoint(0.0F, -2.0F, 0.0F);
-			Tail[1][5].addChild(Tail[1][6]);
-			setRotationAngle(Tail[1][6], 0.2618F, 0.0F, 0.0F);
-			Tail[1][6].cubeList.add(new ModelBox(Tail[1][6], 42, 42, -1.0F, -2.5F, -1.0F, 2, 3, 2, -0.4F, false));
+			tail[1][6] = new ModelRenderer(this);
+			tail[1][6].setRotationPoint(0.0F, -2.0F, 0.0F);
+			tail[1][5].addChild(tail[1][6]);
+			setRotationAngle(tail[1][6], 0.2618F, 0.0F, 0.0F);
+			tail[1][6].cubeList.add(new ModelBox(tail[1][6], 42, 42, -1.0F, -2.5F, -1.0F, 2, 3, 2, -0.4F, false));
 	
-			Tail[1][7] = new ModelRenderer(this);
-			Tail[1][7].setRotationPoint(0.0F, -2.0F, 0.0F);
-			Tail[1][6].addChild(Tail[1][7]);
-			setRotationAngle(Tail[1][7], 0.2618F, 0.0F, 0.0F);
-			Tail[1][7].cubeList.add(new ModelBox(Tail[1][7], 42, 42, -1.0F, -2.5F, -1.0F, 2, 3, 2, -0.6F, false));
+			tail[1][7] = new ModelRenderer(this);
+			tail[1][7].setRotationPoint(0.0F, -2.0F, 0.0F);
+			tail[1][6].addChild(tail[1][7]);
+			setRotationAngle(tail[1][7], 0.2618F, 0.0F, 0.0F);
+			tail[1][7].cubeList.add(new ModelBox(tail[1][7], 42, 42, -1.0F, -2.5F, -1.0F, 2, 3, 2, -0.6F, false));
 	
-			Tail[2][0] = new ModelRenderer(this);
-			Tail[2][0].setRotationPoint(1.0F, 0.5F, 10.5F);
-			body.addChild(Tail[2][0]);
-			setRotationAngle(Tail[2][0], -1.5708F, 0.2618F, 0.0F);
-			Tail[2][0].cubeList.add(new ModelBox(Tail[2][0], 33, 36, -1.0F, -2.5F, -1.0F, 2, 3, 2, 0.0F, false));
+			tail[2][0] = new ModelRenderer(this);
+			tail[2][0].setRotationPoint(1.0F, 0.5F, 10.5F);
+			body.addChild(tail[2][0]);
+			setRotationAngle(tail[2][0], -1.5708F, 0.2618F, 0.0F);
+			tail[2][0].cubeList.add(new ModelBox(tail[2][0], 33, 36, -1.0F, -2.5F, -1.0F, 2, 3, 2, 0.0F, false));
 	
-			Tail[2][1] = new ModelRenderer(this);
-			Tail[2][1].setRotationPoint(0.0F, -2.0F, 0.0F);
-			Tail[2][0].addChild(Tail[2][1]);
-			setRotationAngle(Tail[2][1], -0.2618F, 0.0F, 0.0F);
-			Tail[2][1].cubeList.add(new ModelBox(Tail[2][1], 33, 36, -1.0F, -2.5F, -1.0F, 2, 3, 2, 0.0F, false));
+			tail[2][1] = new ModelRenderer(this);
+			tail[2][1].setRotationPoint(0.0F, -2.0F, 0.0F);
+			tail[2][0].addChild(tail[2][1]);
+			setRotationAngle(tail[2][1], -0.2618F, 0.0F, 0.0F);
+			tail[2][1].cubeList.add(new ModelBox(tail[2][1], 33, 36, -1.0F, -2.5F, -1.0F, 2, 3, 2, 0.0F, false));
 	
-			Tail[2][2] = new ModelRenderer(this);
-			Tail[2][2].setRotationPoint(0.0F, -2.0F, 0.0F);
-			Tail[2][1].addChild(Tail[2][2]);
-			setRotationAngle(Tail[2][2], -0.2618F, 0.0F, 0.0F);
-			Tail[2][2].cubeList.add(new ModelBox(Tail[2][2], 33, 36, -1.0F, -2.5F, -1.0F, 2, 3, 2, 0.0F, false));
+			tail[2][2] = new ModelRenderer(this);
+			tail[2][2].setRotationPoint(0.0F, -2.0F, 0.0F);
+			tail[2][1].addChild(tail[2][2]);
+			setRotationAngle(tail[2][2], -0.2618F, 0.0F, 0.0F);
+			tail[2][2].cubeList.add(new ModelBox(tail[2][2], 33, 36, -1.0F, -2.5F, -1.0F, 2, 3, 2, 0.0F, false));
 	
-			Tail[2][3] = new ModelRenderer(this);
-			Tail[2][3].setRotationPoint(0.0F, -2.0F, 0.0F);
-			Tail[2][2].addChild(Tail[2][3]);
-			setRotationAngle(Tail[2][3], -0.2618F, 0.0F, 0.0F);
-			Tail[2][3].cubeList.add(new ModelBox(Tail[2][3], 33, 36, -1.0F, -2.5F, -1.0F, 2, 3, 2, 0.0F, false));
+			tail[2][3] = new ModelRenderer(this);
+			tail[2][3].setRotationPoint(0.0F, -2.0F, 0.0F);
+			tail[2][2].addChild(tail[2][3]);
+			setRotationAngle(tail[2][3], -0.2618F, 0.0F, 0.0F);
+			tail[2][3].cubeList.add(new ModelBox(tail[2][3], 33, 36, -1.0F, -2.5F, -1.0F, 2, 3, 2, 0.0F, false));
 	
-			Tail[2][4] = new ModelRenderer(this);
-			Tail[2][4].setRotationPoint(0.0F, -2.0F, 0.0F);
-			Tail[2][3].addChild(Tail[2][4]);
-			setRotationAngle(Tail[2][4], 0.2618F, 0.0F, 0.0F);
-			Tail[2][4].cubeList.add(new ModelBox(Tail[2][4], 24, 42, -1.0F, -2.5F, -1.0F, 2, 3, 2, -0.1F, false));
+			tail[2][4] = new ModelRenderer(this);
+			tail[2][4].setRotationPoint(0.0F, -2.0F, 0.0F);
+			tail[2][3].addChild(tail[2][4]);
+			setRotationAngle(tail[2][4], 0.2618F, 0.0F, 0.0F);
+			tail[2][4].cubeList.add(new ModelBox(tail[2][4], 24, 42, -1.0F, -2.5F, -1.0F, 2, 3, 2, -0.1F, false));
 	
-			Tail[2][5] = new ModelRenderer(this);
-			Tail[2][5].setRotationPoint(0.0F, -2.0F, 0.0F);
-			Tail[2][4].addChild(Tail[2][5]);
-			setRotationAngle(Tail[2][5], 0.2618F, 0.0F, 0.0F);
-			Tail[2][5].cubeList.add(new ModelBox(Tail[2][5], 33, 42, -1.0F, -2.5F, -1.0F, 2, 3, 2, -0.2F, false));
+			tail[2][5] = new ModelRenderer(this);
+			tail[2][5].setRotationPoint(0.0F, -2.0F, 0.0F);
+			tail[2][4].addChild(tail[2][5]);
+			setRotationAngle(tail[2][5], 0.2618F, 0.0F, 0.0F);
+			tail[2][5].cubeList.add(new ModelBox(tail[2][5], 33, 42, -1.0F, -2.5F, -1.0F, 2, 3, 2, -0.2F, false));
 	
-			Tail[2][6] = new ModelRenderer(this);
-			Tail[2][6].setRotationPoint(0.0F, -2.0F, 0.0F);
-			Tail[2][5].addChild(Tail[2][6]);
-			setRotationAngle(Tail[2][6], 0.2618F, 0.0F, 0.0F);
-			Tail[2][6].cubeList.add(new ModelBox(Tail[2][6], 42, 42, -1.0F, -2.5F, -1.0F, 2, 3, 2, -0.4F, false));
+			tail[2][6] = new ModelRenderer(this);
+			tail[2][6].setRotationPoint(0.0F, -2.0F, 0.0F);
+			tail[2][5].addChild(tail[2][6]);
+			setRotationAngle(tail[2][6], 0.2618F, 0.0F, 0.0F);
+			tail[2][6].cubeList.add(new ModelBox(tail[2][6], 42, 42, -1.0F, -2.5F, -1.0F, 2, 3, 2, -0.4F, false));
 	
-			Tail[2][7] = new ModelRenderer(this);
-			Tail[2][7].setRotationPoint(0.0F, -2.0F, 0.0F);
-			Tail[2][6].addChild(Tail[2][7]);
-			setRotationAngle(Tail[2][7], 0.2618F, 0.0F, 0.0F);
-			Tail[2][7].cubeList.add(new ModelBox(Tail[2][7], 42, 42, -1.0F, -2.5F, -1.0F, 2, 3, 2, -0.6F, false));
+			tail[2][7] = new ModelRenderer(this);
+			tail[2][7].setRotationPoint(0.0F, -2.0F, 0.0F);
+			tail[2][6].addChild(tail[2][7]);
+			setRotationAngle(tail[2][7], 0.2618F, 0.0F, 0.0F);
+			tail[2][7].cubeList.add(new ModelBox(tail[2][7], 42, 42, -1.0F, -2.5F, -1.0F, 2, 3, 2, -0.6F, false));
 	
-			Tail[3][0] = new ModelRenderer(this);
-			Tail[3][0].setRotationPoint(-2.0F, 0.5F, 10.5F);
-			body.addChild(Tail[3][0]);
-			setRotationAngle(Tail[3][0], -1.3963F, -0.5236F, 0.0F);
-			Tail[3][0].cubeList.add(new ModelBox(Tail[3][0], 33, 36, -1.0F, -2.5F, -1.0F, 2, 3, 2, 0.0F, false));
+			tail[3][0] = new ModelRenderer(this);
+			tail[3][0].setRotationPoint(-2.0F, 0.5F, 10.5F);
+			body.addChild(tail[3][0]);
+			setRotationAngle(tail[3][0], -1.3963F, -0.5236F, 0.0F);
+			tail[3][0].cubeList.add(new ModelBox(tail[3][0], 33, 36, -1.0F, -2.5F, -1.0F, 2, 3, 2, 0.0F, false));
 	
-			Tail[3][1] = new ModelRenderer(this);
-			Tail[3][1].setRotationPoint(0.0F, -2.0F, 0.0F);
-			Tail[3][0].addChild(Tail[3][1]);
-			setRotationAngle(Tail[3][1], -0.2618F, 0.0F, 0.0F);
-			Tail[3][1].cubeList.add(new ModelBox(Tail[3][1], 33, 36, -1.0F, -2.5F, -1.0F, 2, 3, 2, 0.0F, false));
+			tail[3][1] = new ModelRenderer(this);
+			tail[3][1].setRotationPoint(0.0F, -2.0F, 0.0F);
+			tail[3][0].addChild(tail[3][1]);
+			setRotationAngle(tail[3][1], -0.2618F, 0.0F, 0.0F);
+			tail[3][1].cubeList.add(new ModelBox(tail[3][1], 33, 36, -1.0F, -2.5F, -1.0F, 2, 3, 2, 0.0F, false));
 	
-			Tail[3][2] = new ModelRenderer(this);
-			Tail[3][2].setRotationPoint(0.0F, -2.0F, 0.0F);
-			Tail[3][1].addChild(Tail[3][2]);
-			setRotationAngle(Tail[3][2], -0.2618F, 0.0F, 0.0F);
-			Tail[3][2].cubeList.add(new ModelBox(Tail[3][2], 33, 36, -1.0F, -2.5F, -1.0F, 2, 3, 2, 0.0F, false));
+			tail[3][2] = new ModelRenderer(this);
+			tail[3][2].setRotationPoint(0.0F, -2.0F, 0.0F);
+			tail[3][1].addChild(tail[3][2]);
+			setRotationAngle(tail[3][2], -0.2618F, 0.0F, 0.0F);
+			tail[3][2].cubeList.add(new ModelBox(tail[3][2], 33, 36, -1.0F, -2.5F, -1.0F, 2, 3, 2, 0.0F, false));
 	
-			Tail[3][3] = new ModelRenderer(this);
-			Tail[3][3].setRotationPoint(0.0F, -2.0F, 0.0F);
-			Tail[3][2].addChild(Tail[3][3]);
-			setRotationAngle(Tail[3][3], -0.2618F, 0.0F, 0.0F);
-			Tail[3][3].cubeList.add(new ModelBox(Tail[3][3], 33, 36, -1.0F, -2.5F, -1.0F, 2, 3, 2, 0.0F, false));
+			tail[3][3] = new ModelRenderer(this);
+			tail[3][3].setRotationPoint(0.0F, -2.0F, 0.0F);
+			tail[3][2].addChild(tail[3][3]);
+			setRotationAngle(tail[3][3], -0.2618F, 0.0F, 0.0F);
+			tail[3][3].cubeList.add(new ModelBox(tail[3][3], 33, 36, -1.0F, -2.5F, -1.0F, 2, 3, 2, 0.0F, false));
 	
-			Tail[3][4] = new ModelRenderer(this);
-			Tail[3][4].setRotationPoint(0.0F, -2.0F, 0.0F);
-			Tail[3][3].addChild(Tail[3][4]);
-			setRotationAngle(Tail[3][4], 0.2618F, 0.0F, 0.0F);
-			Tail[3][4].cubeList.add(new ModelBox(Tail[3][4], 24, 42, -1.0F, -2.5F, -1.0F, 2, 3, 2, -0.1F, false));
+			tail[3][4] = new ModelRenderer(this);
+			tail[3][4].setRotationPoint(0.0F, -2.0F, 0.0F);
+			tail[3][3].addChild(tail[3][4]);
+			setRotationAngle(tail[3][4], 0.2618F, 0.0F, 0.0F);
+			tail[3][4].cubeList.add(new ModelBox(tail[3][4], 24, 42, -1.0F, -2.5F, -1.0F, 2, 3, 2, -0.1F, false));
 	
-			Tail[3][5] = new ModelRenderer(this);
-			Tail[3][5].setRotationPoint(0.0F, -2.0F, 0.0F);
-			Tail[3][4].addChild(Tail[3][5]);
-			setRotationAngle(Tail[3][5], 0.2618F, 0.0F, 0.0F);
-			Tail[3][5].cubeList.add(new ModelBox(Tail[3][5], 33, 42, -1.0F, -2.5F, -1.0F, 2, 3, 2, -0.2F, false));
+			tail[3][5] = new ModelRenderer(this);
+			tail[3][5].setRotationPoint(0.0F, -2.0F, 0.0F);
+			tail[3][4].addChild(tail[3][5]);
+			setRotationAngle(tail[3][5], 0.2618F, 0.0F, 0.0F);
+			tail[3][5].cubeList.add(new ModelBox(tail[3][5], 33, 42, -1.0F, -2.5F, -1.0F, 2, 3, 2, -0.2F, false));
 	
-			Tail[3][6] = new ModelRenderer(this);
-			Tail[3][6].setRotationPoint(0.0F, -2.0F, 0.0F);
-			Tail[3][5].addChild(Tail[3][6]);
-			setRotationAngle(Tail[3][6], 0.2618F, 0.0F, 0.0F);
-			Tail[3][6].cubeList.add(new ModelBox(Tail[3][6], 42, 42, -1.0F, -2.5F, -1.0F, 2, 3, 2, -0.4F, false));
+			tail[3][6] = new ModelRenderer(this);
+			tail[3][6].setRotationPoint(0.0F, -2.0F, 0.0F);
+			tail[3][5].addChild(tail[3][6]);
+			setRotationAngle(tail[3][6], 0.2618F, 0.0F, 0.0F);
+			tail[3][6].cubeList.add(new ModelBox(tail[3][6], 42, 42, -1.0F, -2.5F, -1.0F, 2, 3, 2, -0.4F, false));
 	
-			Tail[3][7] = new ModelRenderer(this);
-			Tail[3][7].setRotationPoint(0.0F, -2.0F, 0.0F);
-			Tail[3][6].addChild(Tail[3][7]);
-			setRotationAngle(Tail[3][7], 0.2618F, 0.0F, 0.0F);
-			Tail[3][7].cubeList.add(new ModelBox(Tail[3][7], 42, 42, -1.0F, -2.5F, -1.0F, 2, 3, 2, -0.6F, false));
+			tail[3][7] = new ModelRenderer(this);
+			tail[3][7].setRotationPoint(0.0F, -2.0F, 0.0F);
+			tail[3][6].addChild(tail[3][7]);
+			setRotationAngle(tail[3][7], 0.2618F, 0.0F, 0.0F);
+			tail[3][7].cubeList.add(new ModelBox(tail[3][7], 42, 42, -1.0F, -2.5F, -1.0F, 2, 3, 2, -0.6F, false));
 	
-			Tail[4][0] = new ModelRenderer(this);
-			Tail[4][0].setRotationPoint(2.0F, 0.5F, 10.5F);
-			body.addChild(Tail[4][0]);
-			setRotationAngle(Tail[4][0], -1.2217F, 0.5236F, 0.0F);
-			Tail[4][0].cubeList.add(new ModelBox(Tail[4][0], 33, 36, -1.0F, -2.5F, -1.0F, 2, 3, 2, 0.0F, false));
+			tail[4][0] = new ModelRenderer(this);
+			tail[4][0].setRotationPoint(2.0F, 0.5F, 10.5F);
+			body.addChild(tail[4][0]);
+			setRotationAngle(tail[4][0], -1.2217F, 0.5236F, 0.0F);
+			tail[4][0].cubeList.add(new ModelBox(tail[4][0], 33, 36, -1.0F, -2.5F, -1.0F, 2, 3, 2, 0.0F, false));
 	
-			Tail[4][1] = new ModelRenderer(this);
-			Tail[4][1].setRotationPoint(0.0F, -2.0F, 0.0F);
-			Tail[4][0].addChild(Tail[4][1]);
-			setRotationAngle(Tail[4][1], -0.2618F, 0.0F, 0.0F);
-			Tail[4][1].cubeList.add(new ModelBox(Tail[4][1], 33, 36, -1.0F, -2.5F, -1.0F, 2, 3, 2, 0.0F, false));
+			tail[4][1] = new ModelRenderer(this);
+			tail[4][1].setRotationPoint(0.0F, -2.0F, 0.0F);
+			tail[4][0].addChild(tail[4][1]);
+			setRotationAngle(tail[4][1], -0.2618F, 0.0F, 0.0F);
+			tail[4][1].cubeList.add(new ModelBox(tail[4][1], 33, 36, -1.0F, -2.5F, -1.0F, 2, 3, 2, 0.0F, false));
 	
-			Tail[4][2] = new ModelRenderer(this);
-			Tail[4][2].setRotationPoint(0.0F, -2.0F, 0.0F);
-			Tail[4][1].addChild(Tail[4][2]);
-			setRotationAngle(Tail[4][2], -0.2618F, 0.0F, 0.0F);
-			Tail[4][2].cubeList.add(new ModelBox(Tail[4][2], 33, 36, -1.0F, -2.5F, -1.0F, 2, 3, 2, 0.0F, false));
+			tail[4][2] = new ModelRenderer(this);
+			tail[4][2].setRotationPoint(0.0F, -2.0F, 0.0F);
+			tail[4][1].addChild(tail[4][2]);
+			setRotationAngle(tail[4][2], -0.2618F, 0.0F, 0.0F);
+			tail[4][2].cubeList.add(new ModelBox(tail[4][2], 33, 36, -1.0F, -2.5F, -1.0F, 2, 3, 2, 0.0F, false));
 	
-			Tail[4][3] = new ModelRenderer(this);
-			Tail[4][3].setRotationPoint(0.0F, -2.0F, 0.0F);
-			Tail[4][2].addChild(Tail[4][3]);
-			setRotationAngle(Tail[4][3], -0.2618F, 0.0F, 0.0F);
-			Tail[4][3].cubeList.add(new ModelBox(Tail[4][3], 33, 36, -1.0F, -2.5F, -1.0F, 2, 3, 2, 0.0F, false));
+			tail[4][3] = new ModelRenderer(this);
+			tail[4][3].setRotationPoint(0.0F, -2.0F, 0.0F);
+			tail[4][2].addChild(tail[4][3]);
+			setRotationAngle(tail[4][3], -0.2618F, 0.0F, 0.0F);
+			tail[4][3].cubeList.add(new ModelBox(tail[4][3], 33, 36, -1.0F, -2.5F, -1.0F, 2, 3, 2, 0.0F, false));
 	
-			Tail[4][4] = new ModelRenderer(this);
-			Tail[4][4].setRotationPoint(0.0F, -2.0F, 0.0F);
-			Tail[4][3].addChild(Tail[4][4]);
-			setRotationAngle(Tail[4][4], 0.2618F, 0.0F, 0.0F);
-			Tail[4][4].cubeList.add(new ModelBox(Tail[4][4], 33, 36, -1.0F, -2.5F, -1.0F, 2, 3, 2, -0.1F, false));
+			tail[4][4] = new ModelRenderer(this);
+			tail[4][4].setRotationPoint(0.0F, -2.0F, 0.0F);
+			tail[4][3].addChild(tail[4][4]);
+			setRotationAngle(tail[4][4], 0.2618F, 0.0F, 0.0F);
+			tail[4][4].cubeList.add(new ModelBox(tail[4][4], 33, 36, -1.0F, -2.5F, -1.0F, 2, 3, 2, -0.1F, false));
 	
-			Tail[4][5] = new ModelRenderer(this);
-			Tail[4][5].setRotationPoint(0.0F, -2.0F, 0.0F);
-			Tail[4][4].addChild(Tail[4][5]);
-			setRotationAngle(Tail[4][5], 0.2618F, 0.0F, 0.0F);
-			Tail[4][5].cubeList.add(new ModelBox(Tail[4][5], 33, 42, -1.0F, -2.5F, -1.0F, 2, 3, 2, -0.2F, false));
+			tail[4][5] = new ModelRenderer(this);
+			tail[4][5].setRotationPoint(0.0F, -2.0F, 0.0F);
+			tail[4][4].addChild(tail[4][5]);
+			setRotationAngle(tail[4][5], 0.2618F, 0.0F, 0.0F);
+			tail[4][5].cubeList.add(new ModelBox(tail[4][5], 33, 42, -1.0F, -2.5F, -1.0F, 2, 3, 2, -0.2F, false));
 	
-			Tail[4][6] = new ModelRenderer(this);
-			Tail[4][6].setRotationPoint(0.0F, -2.0F, 0.0F);
-			Tail[4][5].addChild(Tail[4][6]);
-			setRotationAngle(Tail[4][6], 0.2618F, 0.0F, 0.0F);
-			Tail[4][6].cubeList.add(new ModelBox(Tail[4][6], 42, 42, -1.0F, -2.5F, -1.0F, 2, 3, 2, -0.4F, false));
+			tail[4][6] = new ModelRenderer(this);
+			tail[4][6].setRotationPoint(0.0F, -2.0F, 0.0F);
+			tail[4][5].addChild(tail[4][6]);
+			setRotationAngle(tail[4][6], 0.2618F, 0.0F, 0.0F);
+			tail[4][6].cubeList.add(new ModelBox(tail[4][6], 42, 42, -1.0F, -2.5F, -1.0F, 2, 3, 2, -0.4F, false));
 	
-			Tail[4][7] = new ModelRenderer(this);
-			Tail[4][7].setRotationPoint(0.0F, -2.0F, 0.0F);
-			Tail[4][6].addChild(Tail[4][7]);
-			setRotationAngle(Tail[4][7], 0.2618F, 0.0F, 0.0F);
-			Tail[4][7].cubeList.add(new ModelBox(Tail[4][7], 42, 42, -1.0F, -2.5F, -1.0F, 2, 3, 2, -0.6F, false));
+			tail[4][7] = new ModelRenderer(this);
+			tail[4][7].setRotationPoint(0.0F, -2.0F, 0.0F);
+			tail[4][6].addChild(tail[4][7]);
+			setRotationAngle(tail[4][7], 0.2618F, 0.0F, 0.0F);
+			tail[4][7].cubeList.add(new ModelBox(tail[4][7], 42, 42, -1.0F, -2.5F, -1.0F, 2, 3, 2, -0.6F, false));
 
 			for (int i = 0; i < 5; i++) {
 				for (int j = 1; j < 8; j++) {
@@ -984,9 +991,9 @@ public class EntityFiveTails extends ElementsNarutomodMod.ModElement {
 			body.rotateAngleX = 0.0F;
 			for (int i = 0; i < 5; i++) {
 				for (int j = 1; j < 8; j++) {
-					Tail[i][j].rotateAngleX = MathHelper.sin((f2 - j) * 0.2F) * tailSwayX[i][j];
-					Tail[i][j].rotateAngleZ = MathHelper.cos((f2 - j) * 0.2F) * tailSwayZ[i][j];
-					//Tail[i][j].rotateAngleY = MathHelper.sin((f2 - j) * 0.1F) * tailSwayY[i][j];
+					tail[i][j].rotateAngleX = MathHelper.sin((f2 - j) * 0.2F) * tailSwayX[i][j];
+					tail[i][j].rotateAngleZ = MathHelper.cos((f2 - j) * 0.2F) * tailSwayZ[i][j];
+					//tail[i][j].rotateAngleY = MathHelper.sin((f2 - j) * 0.1F) * tailSwayY[i][j];
 				}
 			}
 			if (((EntityCustom)e).isShooting()) {
@@ -994,6 +1001,15 @@ public class EntityFiveTails extends ElementsNarutomodMod.ModElement {
 				Jaw.rotateAngleX = 0.7854F;
 			} else {
 				Jaw.rotateAngleX = 0.0F;
+			}
+			if (((EntityCustom)e).isFaceDown()) {
+				body.rotationPointY = 19.0F;
+				leg1.rotateAngleX = -0.9599F;
+				leg2.rotateAngleX = -0.9599F;
+				leg3.rotateAngleX = 1.1345F;
+				leg4.rotateAngleX = 1.1345F;
+			} else {
+				body.rotationPointY = 13.0F;
 			}
 			this.copyModelAngles(body, eyesHighlight);
 			this.copyModelAngles(head, headsync);

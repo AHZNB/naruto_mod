@@ -1,17 +1,14 @@
 package net.narutomod.procedure;
 
 import net.narutomod.potion.PotionFlight;
-import net.narutomod.item.ItemYoton;
 import net.narutomod.item.ItemTenseiganChakraMode;
 import net.narutomod.item.ItemTenseigan;
 import net.narutomod.item.ItemSixPathSenjutsu;
 import net.narutomod.item.ItemRinnegan;
 import net.narutomod.item.ItemNinjutsu;
-import net.narutomod.item.ItemJutsu;
 import net.narutomod.item.ItemBlackReceiver;
 import net.narutomod.item.ItemAsuraPathArmor;
 import net.narutomod.item.ItemAsuraCanon;
-import net.narutomod.gui.GuiNinjaScroll;
 import net.narutomod.entity.EntityTenTails;
 import net.narutomod.PlayerTracker;
 import net.narutomod.NarutomodModVariables;
@@ -120,10 +117,6 @@ public class ProcedureRinneganHelmetTickEvent extends ElementsNarutomodMod.ModEl
 							&& !((ItemNinjutsu.RangedItem) stack1.getItem()).isJutsuEnabled(stack1, ItemNinjutsu.AMENOTEJIKARA)))) {
 						((ItemNinjutsu.RangedItem) stack1.getItem()).enableJutsu(stack1,
 								ProcedureUtils.rngBoolean() ? ItemNinjutsu.LIMBOCLONE : ItemNinjutsu.AMENOTEJIKARA, true);
-					}
-					stack1 = ProcedureUtils.getMatchingItemStack((EntityPlayer) entity, ItemYoton.block);
-					if ((stack1 == null || !((ItemYoton.RangedItem) stack1.getItem()).isJutsuEnabled(stack1, ItemYoton.SEALING9D))) {
-						GuiNinjaScroll.enableJutsu((EntityPlayer) entity, (ItemJutsu.Base) ItemYoton.block, ItemYoton.SEALING9D, true);
 					}
 				}
 				if (entity instanceof EntityLivingBase)

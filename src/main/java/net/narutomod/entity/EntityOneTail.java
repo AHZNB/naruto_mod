@@ -188,6 +188,11 @@ public class EntityOneTail extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
+		public float getFuuinBeamHeight() {
+			return this.isFaceDown() ? 3.0f * 0.0625f * MODELSCALE : super.getFuuinBeamHeight();
+		}
+
+		@Override
 		public net.minecraft.util.SoundEvent getAmbientSound() {
 			return (net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation(""));
 		}
@@ -718,6 +723,22 @@ public class EntityOneTail extends ElementsNarutomodMod.ModElement {
 				jaw.rotateAngleX = 0.7854F;
 			} else {
 				jaw.rotateAngleX = 0.0F;
+			}
+			if (((EntityCustom)e).isFaceDown()) {
+				bipedBody.rotationPointZ = 10.0F;
+				bipedBody.rotateAngleX = 0.8727F;
+				bipedHead.rotateAngleX = -0.2618F;
+				bipedRightArm.rotateAngleX = -1.3963F;
+				bipedLeftArm.rotateAngleX = -1.3963F;
+				bipedRightLeg.rotateAngleX = 0.8727F;
+				bipedLeftLeg.rotateAngleX = 0.8727F;
+				tail[0].rotationPointZ = 10.0F;
+				tail[0].rotateAngleX = -1.7453F;
+			} else {
+				bipedBody.rotationPointZ = 3.0F;
+				bipedBody.rotateAngleX = 0.0F;
+				tail[0].rotationPointZ = 3.0F;
+				tail[0].rotateAngleX = -1.0472F;
 			}
 			this.copyModelAngles(bipedBody, bipedHeadwear);
 			this.copyModelAngles(bipedHead, eyes);

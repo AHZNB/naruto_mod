@@ -25,14 +25,11 @@ import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderManager;
-//import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.network.datasync.DataSerializers;
 
-//import net.narutomod.item.ItemBijuCloak;
-//import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.ElementsNarutomodMod;
 
 import java.util.Random;
@@ -139,6 +136,7 @@ public class EntityNineTails extends ElementsNarutomodMod.ModElement {
 			this.setSize(MODELSCALE * 0.6F, MODELSCALE * 2.1F);
 			this.experienceValue = 12000;
 			this.stepHeight = this.height / 3.0F;
+			//this.setFaceDown(true);
 		}
 
 		public EntityCustom(EntityPlayer player) {
@@ -194,6 +192,11 @@ public class EntityNineTails extends ElementsNarutomodMod.ModElement {
 		@Override
 		public boolean shouldRiderSit() {
 			return false;
+		}
+
+		@Override
+		public float getFuuinBeamHeight() {
+			return this.isFaceDown() ? 6.0f * 0.0625f * MODELSCALE : super.getFuuinBeamHeight();
 		}
 
 		@Override
@@ -255,7 +258,7 @@ public class EntityNineTails extends ElementsNarutomodMod.ModElement {
 	public class ModelNineTails extends ModelBiped {
 		//private final ModelRenderer bipedHeadwear;
 		private final ModelRenderer eyes;
-		private final ModelRenderer bone32;
+		private final ModelRenderer bone;
 		private final ModelRenderer body;
 		//private final ModelRenderer bipedHead;
 		private final ModelRenderer snout;
@@ -347,11 +350,11 @@ public class EntityNineTails extends ElementsNarutomodMod.ModElement {
 			eyes.setRotationPoint(0.0F, -25.0F, -4.0F);
 			bipedHeadwear.addChild(eyes);
 	
-			bone32 = new ModelRenderer(this);
-			bone32.setRotationPoint(0.0F, -5.25F, -4.35F);
-			eyes.addChild(bone32);
-			setRotationAngle(bone32, 0.2618F, 0.0F, 0.0F);
-			bone32.cubeList.add(new ModelBox(bone32, 0, 9, -4.0F, -1.0F, 0.1F, 8, 2, 0, 0.0F, false));
+			bone = new ModelRenderer(this);
+			bone.setRotationPoint(0.0F, -5.25F, -4.35F);
+			eyes.addChild(bone);
+			setRotationAngle(bone, 0.2618F, 0.0F, 0.0F);
+			bone.cubeList.add(new ModelBox(bone, 0, 9, -4.0F, -1.0F, 0.1F, 8, 2, 0, 0.0F, false));
 	
 			body = new ModelRenderer(this);
 			body.setRotationPoint(0.0F, 24.0F, 0.0F);
@@ -1323,6 +1326,18 @@ public class EntityNineTails extends ElementsNarutomodMod.ModElement {
 			} else {
 				snout.rotateAngleX = 0.0F;
 				jaw.rotateAngleX = 0.0F;
+			}
+			if (((EntityCustom)e).isFaceDown()) {
+				body.rotationPointZ = 24.0F;
+				body.rotateAngleX = 1.0472F;
+				bipedHead.rotateAngleX += -0.2618F;
+				bipedRightArm.rotateAngleX = -1.8326F;
+				bipedLeftArm.rotateAngleX = -1.8326F;
+				tails.rotateAngleX = -1.5708F;
+			} else {
+				body.rotationPointZ = 0.0F;
+				body.rotateAngleX = 0.0F;
+				tails.rotateAngleX = 0.0F;
 			}
 			this.copyModelAngles(body, bipedHeadwear);
 			this.copyModelAngles(bipedHead, eyes);

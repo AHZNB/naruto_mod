@@ -125,8 +125,9 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 			RayTraceResult res = ProcedureUtils.objectEntityLookingAt(entity, 20d);
 			if (res != null && (res.entityHit instanceof EntityTailedBeast.Base
 			 || (res.entityHit instanceof EntityPlayer && EntityBijuManager.isJinchuriki((EntityPlayer)res.entityHit)))) {
-				entity.world.spawnEntity(new EntityGedoStatue.EntityCustom(entity, (EntityLivingBase)res.entityHit));
-				return true;
+				if (entity.world.spawnEntity(new EntityGedoStatue.EntityCustom(entity, (EntityLivingBase)res.entityHit))) {
+					return true;
+				}
 			}
 			return false;
 		}
@@ -328,8 +329,10 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 						if (this.fuuinTarget instanceof EntityPlayer && EntityBijuManager.isJinchuriki((EntityPlayer)this.fuuinTarget)) {
 							EntityBijuManager bmgr = EntityBijuManager.getBijuManagerFrom((EntityPlayer)this.fuuinTarget);
 							bmgr.setVesselEntity(null);
-							this.fuuinTarget = bmgr.spawnEntity(this.world, this.fuuinTarget.posX, this.fuuinTarget.posY - 10d,
+							this.fuuinTarget = bmgr.spawnEntity(this.world, this.fuuinTarget.posX, this.fuuinTarget.posY,
 							 this.fuuinTarget.posZ, this.fuuinTarget.rotationYaw);
+							((EntityTailedBeast.Base)this.fuuinTarget).setNoAI(true);
+							((EntityTailedBeast.Base)this.fuuinTarget).setFaceDown(true);
 						}
 						if (this.fuuinTarget instanceof EntityTailedBeast.Base) {
 							EntityTailedBeast.Base biju = (EntityTailedBeast.Base)this.fuuinTarget;

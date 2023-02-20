@@ -201,6 +201,11 @@ public class EntitySevenTails extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
+		public float getFuuinBeamHeight() {
+			return this.isFaceDown() ? 3.0f * 0.0625f * MODELSCALE : super.getFuuinBeamHeight();
+		}
+
+		@Override
 		public SoundEvent getAmbientSound() {
 			return null;
 		}
@@ -1150,8 +1155,6 @@ public class EntitySevenTails extends ElementsNarutomodMod.ModElement {
 		public void setRotationAngles(float f0, float f1, float f2, float f3, float f4, float f5, Entity e) {
 			super.setRotationAngles(f0 * 2.0F / e.height, f1, f2, f3, f4, f5, e);
 			bipedHead.rotationPointY += -19.0F;
-			this.copyModelAngles(bipedBody, bipedHeadwear);
-			this.copyModelAngles(bipedHead, eyes);
 			bipedRightArm.setRotationPoint(-2.25F, -17.65F, 4.15F);
 			bipedLeftArm.setRotationPoint(2.25F, -17.65F, 4.15F);
 			tail[0].rotateAngleY = MathHelper.sin(f2) * 0.0873F;
@@ -1165,6 +1168,18 @@ public class EntitySevenTails extends ElementsNarutomodMod.ModElement {
 				tail6[i].rotateAngleZ = MathHelper.cos((f2 - i) * 0.05F) * tailSwayZ[i];
 				tail6[i].rotateAngleY = MathHelper.sin((f2 - i) * 0.05F) * tailSwayY[i];
 			}
+			if (((EntityCustom)e).isFaceDown()) {
+				bipedBody.rotationPointZ = 15.0F;
+				bipedBody.rotateAngleX = 1.4835F;
+				bipedHead.rotateAngleX = -0.2618F;
+				tail6[0].rotateAngleX = 0.0F;
+			} else {
+				bipedBody.rotationPointZ = -3.4F;
+				bipedBody.rotateAngleX = 0.0F;
+				tail6[0].rotateAngleX = 1.309F;
+			}
+			this.copyModelAngles(bipedBody, bipedHeadwear);
+			this.copyModelAngles(bipedHead, eyes);
 		}
 	}
 }
