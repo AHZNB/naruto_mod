@@ -147,6 +147,7 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 			new Vec3d(1.5d, 19.9d, 1.5d), new Vec3d(-1.5d, 19.9d, 1.5d)
 		};
 		private EntityLivingBase fuuinTarget;
+		private EntityPlayer ogJinchuriki;
 
 		public EntityCustom(World world) {
 			super(world);
@@ -327,14 +328,16 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 				if (!this.world.isRemote && this.fuuinTarget != null) {
 					if (age > this.riseTime + 200) {
 						if (this.fuuinTarget instanceof EntityPlayer && EntityBijuManager.isJinchuriki((EntityPlayer)this.fuuinTarget)) {
-							EntityBijuManager bmgr = EntityBijuManager.getBijuManagerFrom((EntityPlayer)this.fuuinTarget);
+							this.ogJinchuriki = (EntityPlayer)this.fuuinTarget;
+							EntityBijuManager bmgr = EntityBijuManager.getBijuManagerFrom(this.ogJinchuriki);
 							bmgr.setVesselEntity(null);
 							this.fuuinTarget = bmgr.spawnEntity(this.world, this.fuuinTarget.posX, this.fuuinTarget.posY,
-							 this.fuuinTarget.posZ, this.fuuinTarget.rotationYaw);
-							((EntityTailedBeast.Base)this.fuuinTarget).setNoAI(true);
-							((EntityTailedBeast.Base)this.fuuinTarget).setFaceDown(true);
+							 this.fuuinTarget.posZ, this.rotationYaw - 180f);
+							this.fuuinTarget.setHealth(90.0f);
+							this.ogJinchuriki.startRiding(this.fuuinTarget, true);
+							((EntityTailedBeast.Base)this.fuuinTarget).canPassengerDismount = false;
 						}
-						if (this.fuuinTarget instanceof EntityTailedBeast.Base) {
+						if (this.fuuinTarget instanceof EntityTailedBeast.Base && age > this.riseTime + 201) {
 							EntityTailedBeast.Base biju = (EntityTailedBeast.Base)this.fuuinTarget;
 							int passengers = this.getPassengers().size();
 							if (biju.getBijuManager().isSealed()) {
@@ -352,6 +355,7 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 								biju.cancelFuuin();
 								this.fuuinTarget = null;
 								this.lifeSpan = age + 40;
+								biju.getBijuManager().setVesselEntity(this.ogJinchuriki);
 							}
 						}
 					} else if (age > this.riseTime && age < this.riseTime + 100) {

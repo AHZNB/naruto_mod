@@ -159,6 +159,12 @@ public class EntityOneTail extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
+		public void setFaceDown(boolean down) {
+			super.setFaceDown(down);
+			this.setSize(this.width, MODELSCALE * (down ? 0.625F : 1.1F));
+		}
+
+		@Override
 		protected void applyEntityAttributes() {
 			super.applyEntityAttributes();
 			this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(100.0D);
@@ -174,7 +180,7 @@ public class EntityOneTail extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public double getMountedYOffset() {
-			return (double)this.height + 0.35D;
+			return this.isFaceDown() ? 3.0d * 0.0625d * MODELSCALE : (double)this.height + 0.35D;
 		}
 
 		@Override

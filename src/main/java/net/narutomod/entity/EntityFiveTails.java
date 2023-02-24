@@ -10,9 +10,13 @@ import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 
 import net.minecraft.world.World;
+import net.minecraft.world.storage.MapStorage;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.Entity;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.model.ModelBox;
@@ -20,14 +24,8 @@ import net.minecraft.client.model.ModelQuadruped;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.world.storage.MapStorage;
-//import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
 
-//import net.narutomod.item.ItemBijuCloak;
 import net.narutomod.item.ItemFutton;
 import net.narutomod.item.ItemKaton;
 import net.narutomod.item.ItemSuiton;
@@ -157,6 +155,12 @@ public class EntityFiveTails extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
+		public void setFaceDown(boolean down) {
+			super.setFaceDown(down);
+			this.setSize(this.width, MODELSCALE * (down ? 0.5F : 0.7F));
+		}
+
+		@Override
 		protected void applyEntityAttributes() {
 			super.applyEntityAttributes();
 			this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(100.0D);
@@ -172,7 +176,7 @@ public class EntityFiveTails extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public double getMountedYOffset() {
-			return (double)this.height + 0.35D;
+			return this.isFaceDown() ? 3.0d * 0.0625d * MODELSCALE : (double)this.height + 0.35D;
 		}
 
 		@Override

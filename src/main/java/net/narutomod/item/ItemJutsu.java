@@ -485,10 +485,6 @@ public class ItemJutsu extends ElementsNarutomodMod.ModElement {
 				}
 				long cd = this.getJutsuCooldown(stack, jutsuIn.index);
 				if (cd > entity.world.getTotalWorldTime()) {
-					if (!entity.world.isRemote) {
-						entity.sendStatusMessage(new TextComponentTranslation("chattext.cooldown.formatted", 
-						 (cd - entity.world.getTotalWorldTime()) / 20), true);
-					}
 					return EnumActionResult.PASS;
 				} else if (cd < 0) {
 					return EnumActionResult.FAIL;
@@ -500,28 +496,14 @@ public class ItemJutsu extends ElementsNarutomodMod.ModElement {
 		@Override
 		public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer entity, EnumHand hand) {
 			ItemStack stack = entity.getHeldItem(hand);
-			if (!entity.isCreative()) {
-				if (!this.canUseCurrentJutsu(stack, entity)) {
-					return new ActionResult<ItemStack>(EnumActionResult.FAIL, stack);
-				}
-				//if (entity.experienceLevel < this.getCurrentJutsu(stack).requiredXP 
-				if (this.getCurrentJutsuXp(stack) < this.getCurrentJutsuRequiredXp(stack)
-				 || !PlayerTracker.isNinja(entity)) {
-					return new ActionResult<ItemStack>(EnumActionResult.FAIL, stack);
-				}
-				long cd = this.getCurrentJutsuCooldown(stack);
-				if (cd > world.getTotalWorldTime()) {
-					if (!world.isRemote) {
-						entity.sendStatusMessage(new TextComponentTranslation("chattext.cooldown.formatted", 
-						 (cd - world.getTotalWorldTime()) / 20), true);
-					}
-					return new ActionResult<ItemStack>(EnumActionResult.PASS, stack);
-				} else if (cd < 0) {
-					return new ActionResult<ItemStack>(EnumActionResult.FAIL, stack);
-				}
+			EnumActionResult res = this.canActivateJutsu(stack, this.getCurrentJutsu(stack), entity);
+			if (res == EnumActionResult.PASS && !world.isRemote) {
+				entity.sendStatusMessage(new TextComponentTranslation("chattext.cooldown.formatted", 
+				 (this.getCurrentJutsuCooldown(stack) - world.getTotalWorldTime()) / 20), true);
+			} else if (res == EnumActionResult.SUCCESS) {
+				entity.setActiveHand(hand);
 			}
-			entity.setActiveHand(hand);
-			return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, stack);
+			return new ActionResult<ItemStack>(res, stack);
 		}
 
 		@Override

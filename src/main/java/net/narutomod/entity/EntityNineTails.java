@@ -136,7 +136,6 @@ public class EntityNineTails extends ElementsNarutomodMod.ModElement {
 			this.setSize(MODELSCALE * 0.6F, MODELSCALE * 2.1F);
 			this.experienceValue = 12000;
 			this.stepHeight = this.height / 3.0F;
-			//this.setFaceDown(true);
 		}
 
 		public EntityCustom(EntityPlayer player) {
@@ -171,6 +170,12 @@ public class EntityNineTails extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
+		public void setFaceDown(boolean down) {
+			super.setFaceDown(down);
+			this.setSize(this.width, MODELSCALE * (down ? 0.9F : 2.1F));
+		}
+
+		@Override
 		protected void applyEntityAttributes() {
 			super.applyEntityAttributes();
 			this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(100.0D);
@@ -186,7 +191,7 @@ public class EntityNineTails extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public double getMountedYOffset() {
-			return 1.5625d * MODELSCALE;
+			return (this.isFaceDown() ? 0.25d : 1.5625d) * MODELSCALE;
 		}
 
 		@Override
@@ -1328,7 +1333,7 @@ public class EntityNineTails extends ElementsNarutomodMod.ModElement {
 				jaw.rotateAngleX = 0.0F;
 			}
 			if (((EntityCustom)e).isFaceDown()) {
-				body.rotationPointZ = 24.0F;
+				body.rotationPointZ = 20.0F;
 				body.rotateAngleX = 1.0472F;
 				bipedHead.rotateAngleX += -0.2618F;
 				bipedRightArm.rotateAngleX = -1.8326F;

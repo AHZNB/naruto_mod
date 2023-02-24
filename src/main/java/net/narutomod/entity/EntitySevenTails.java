@@ -34,7 +34,6 @@ import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.item.ItemStack;
 import net.minecraft.pathfinding.PathNavigateFlying;
 
-//import net.narutomod.item.ItemBijuCloak;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.ElementsNarutomodMod;
 
@@ -160,6 +159,12 @@ public class EntitySevenTails extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
+		public void setFaceDown(boolean down) {
+			super.setFaceDown(down);
+			this.setSize(this.width, MODELSCALE * (down ? 0.625F : 1.6F));
+		}
+
+		@Override
 		protected void applyEntityAttributes() {
 			super.applyEntityAttributes();
 			this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(100.0D);
@@ -182,7 +187,7 @@ public class EntitySevenTails extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public double getMountedYOffset() {
-			return (double)this.height - 5.0D;
+			return this.isFaceDown() ? 3.0d * 0.0625d * MODELSCALE : ((double)this.height - 5.0D);
 		}
 
 		@Override

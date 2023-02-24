@@ -26,11 +26,8 @@ import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderManager;
-//import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 
-//import net.narutomod.item.ItemBijuCloak;
-//import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.ElementsNarutomodMod;
 
 import java.util.Random;
@@ -154,6 +151,12 @@ public class EntityThreeTails extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
+		public void setFaceDown(boolean down) {
+			super.setFaceDown(down);
+			this.setSize(this.width, MODELSCALE * (down ? 0.625F : 0.7F));
+		}
+
+		@Override
 		protected void applyEntityAttributes() {
 			super.applyEntityAttributes();
 			this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(100.0D);
@@ -169,7 +172,7 @@ public class EntityThreeTails extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public double getMountedYOffset() {
-			return (double)this.height + 0.35D;
+			return this.isFaceDown() ? 2.0d * 0.0625d * MODELSCALE : (double)this.height + 0.35D;
 		}
 
 		@Override
@@ -1948,13 +1951,17 @@ public class EntityThreeTails extends ElementsNarutomodMod.ModElement {
 				Jaw.rotateAngleX = 0.0F;
 			}
 			if (((EntityCustom)e).isFaceDown()) {
+				bipedBody.rotationPointZ = 11.0F;
 				bipedBody.rotateAngleX = 0.4363F;
 				bipedHead.rotateAngleX = -0.2618F;
 				bipedRightArm.rotateAngleX = -0.8727F;
 				bipedLeftArm.rotateAngleX = -0.8727F;
+				tails.rotationPointZ = 11.0F;
 				tails.rotateAngleX = -0.8727F;
 			} else {
+				bipedBody.rotationPointZ = 7.5F;
 				bipedBody.rotateAngleX = 0.0F;
+				tails.rotationPointZ = 7.5F;
 				tails.rotateAngleX = 0.0F;
 			}
 			this.copyModelAngles(bipedBody, bipedHeadwear);

@@ -104,6 +104,7 @@ Entities:
  - updated white zetsu spawn parameters
  - fixed giant 2 head dog not dying bug
  - biju is removed from world when a player becomes its junchuriki
+ - biju can't be sealed unless health less than 1000
  - added face down pose for bijus
  - white zetsu changes skin to random player instead of the closest player
  - white zetsu has a 40% chance to drop a kunai

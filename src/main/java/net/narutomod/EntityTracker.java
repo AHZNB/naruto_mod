@@ -19,12 +19,12 @@ package net.narutomod;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.AxisAlignedBB;
 
 import java.util.Map;
-import com.google.common.collect.Maps;
-import net.minecraft.util.math.AxisAlignedBB;
 import java.util.UUID;
 import java.util.Iterator;
+import com.google.common.collect.Maps;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityTracker extends ElementsNarutomodMod.ModElement {
