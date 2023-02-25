@@ -205,13 +205,13 @@ public class PlayerRender extends ElementsNarutomodMod.ModElement {
 		}
 
 		private void doNarutoRunPre() {
-			ModelBiped model = (ModelBiped)this.getMainModel();
+			ModelBiped model = this.getMainModel();
 			model.bipedRightArm.showModel = false;
 			model.bipedLeftArm.showModel = false;
 		}
 
 		private void doNarutoRunPost(float scale) {
-			ModelBiped model = (ModelBiped)this.getMainModel();
+			ModelBiped model = this.getMainModel();
 			model.bipedRightArm.showModel = true;
 			model.bipedLeftArm.showModel = true;
 			model.bipedRightArm.rotateAngleX = 1.3963f;
@@ -224,7 +224,7 @@ public class PlayerRender extends ElementsNarutomodMod.ModElement {
 		protected void applyRotations(AbstractClientPlayer entityLiving, float p_77043_2_, float rotationYaw, float partialTicks) {
 			super.applyRotations(entityLiving, p_77043_2_, rotationYaw, partialTicks);
 			if (shouldNarutoRun(entityLiving)) {
-				((ModelBiped)this.getMainModel()).isSneak = true;
+				this.getMainModel().isSneak = true;
 			}
 		}
 
@@ -304,6 +304,7 @@ public class PlayerRender extends ElementsNarutomodMod.ModElement {
 						resourcelocation = new ResourceLocation(s);
 						ARMOR_TEXTURE_RES_MAP.put(s, resourcelocation);
 					}
+					model.isSneak = this.playerRenderer.getMainModel().isSneak;
 					model.setLivingAnimations(entityIn, limbSwing, limbSwingAmount, partialTicks);
 					this.playerRenderer.bindTexture(resourcelocation);
 					model.render(entityIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale);

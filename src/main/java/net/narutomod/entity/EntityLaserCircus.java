@@ -90,7 +90,7 @@ public class EntityLaserCircus extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public void onUpdate() {
-			super.onUpdate();
+			//super.onUpdate();
 			if (this.summoner != null && this.summoner.isEntityAlive() && this.ticksExisted <= this.duration) {
 				this.setIdlePosition();
 				if (this.ticksExisted % 10 == 0) {

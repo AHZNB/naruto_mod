@@ -9,6 +9,11 @@ import net.minecraftforge.fml.client.registry.RenderingRegistry;
 
 import net.minecraft.world.World;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.client.model.ModelRenderer;
@@ -17,11 +22,6 @@ import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.network.datasync.DataParameter;
@@ -66,17 +66,19 @@ public class EntitySpike extends ElementsNarutomodMod.ModElement {
 
 	public static class Base extends EntityScalableProjectile.Base {
 		private static final DataParameter<Integer> COLOR = EntityDataManager.<Integer>createKey(Base.class, DataSerializers.VARINT);
-		private Vec3d tipOffset = Vec3d.ZERO;
+		private Vec3d tipOffset = new Vec3d(0d, 1.82d, 0d);
 
 		public Base(World worldIn) {
 			super(worldIn);
 			this.setOGSize(0.5f, 1.82f);
+			this.maxInGroundTime = 400;
 			//this.setNoGravity(true);
 		}
 
 		public Base(EntityLivingBase userIn) {
 			super(userIn);
 			this.setOGSize(0.5f, 1.82f);
+			this.maxInGroundTime = 400;
 			//this.setNoGravity(false);
 		}
 
@@ -113,7 +115,7 @@ public class EntitySpike extends ElementsNarutomodMod.ModElement {
 			super.shoot(x, y, z, speed, inaccuracy);
 			this.rotationPitch = MathHelper.wrapDegrees(this.rotationPitch + 90f);
 			this.prevRotationPitch = this.rotationPitch;
-			this.tipOffset = new Vec3d(0d, 1.82d, 0d);
+			//this.tipOffset = new Vec3d(0d, 1.82d, 0d);
 		}
 
 		@Override

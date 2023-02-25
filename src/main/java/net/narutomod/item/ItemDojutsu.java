@@ -128,11 +128,11 @@ public class ItemDojutsu extends ElementsNarutomodMod.ModElement {
 				this.bipedHeadwear.cubeList.add(new ModelBox(this.bipedHeadwear, 32, 0, -4.0F, -8.0F, -4.0F, 8, 8, 8, 0.2F, false));
 				this.highlight = new ModelRenderer(this);
 				this.highlight.setRotationPoint(0.0F, 0.0F, 0.0F);
-				this.highlight.cubeList.add(new ModelBox(this.highlight, 24, 0, -4.0F, -8.0F, -4.15F, 8, 8, 0, 0.0F, false));
+				this.highlight.cubeList.add(new ModelBox(this.highlight, 24, 0, -4.0F, -8.0F, -4.2F, 8, 8, 0, 0.0F, false));
 				//this.bipedHead.addChild(this.highlight);
 				this.forehead = new ModelRenderer(this);
 				this.forehead.setRotationPoint(0.0F, 0.0F, 0.0F);
-				this.forehead.cubeList.add(new ModelBox(this.forehead, 0, 0, -2.0F, -8.0F, -4.25F, 4, 4, 0, 0.0F, false));
+				this.forehead.cubeList.add(new ModelBox(this.forehead, 0, 0, -1.94F, -6.62F, -4.25F, 4, 4, 0, 0.0F, false));
 			}
 	
 			/*@Override

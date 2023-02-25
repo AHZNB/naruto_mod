@@ -124,12 +124,12 @@ public class ItemRanton extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public void onUpdate() {
-			super.onUpdate();
+			//super.onUpdate();
 			if (this.summoner != null && this.summoner.isEntityAlive() && Chakra.pathway(this.summoner).consume(this.chakrUsage)) {
 				this.setPosition(this.summoner.posX, this.summoner.posY, this.summoner.posZ);
 				if (this.rand.nextInt(20) == 0) {
-					this.playSound((SoundEvent)SoundEvent.REGISTRY
-					 .getObject(new ResourceLocation(("narutomod:electricity"))), 0.1f, this.rand.nextFloat() * 0.6f + 0.3f);
+					this.playSound(SoundEvent.REGISTRY
+					 .getObject(new ResourceLocation("narutomod:electricity")), 0.1f, this.rand.nextFloat() * 0.6f + 0.3f);
 				}
 				EntityLightningArc.spawnAsParticle(this.world, this.posX + (this.rand.nextDouble()-0.5d) * 2.0d,
 				  this.posY + this.rand.nextDouble() * 1.6d, this.posZ + (this.rand.nextDouble()-0.5d) * 2.0d, 1.2d, 0d, 0d, 0d);

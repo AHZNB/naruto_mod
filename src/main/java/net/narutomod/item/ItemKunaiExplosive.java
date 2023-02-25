@@ -190,9 +190,11 @@ public class ItemKunaiExplosive extends ElementsNarutomodMod.ModElement {
 		@Override
 		protected void onHit(RayTraceResult raytraceResultIn) {
 			super.onHit(raytraceResultIn);
-			boolean flag = net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.world, this.shootingEntity);
-			this.world.newExplosion(null, raytraceResultIn.hitVec.x, raytraceResultIn.hitVec.y, raytraceResultIn.hitVec.z, 4f, flag, flag);
-			this.setDead();
+			if (!this.world.isRemote) {
+				boolean flag = net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.world, this.shootingEntity);
+				this.world.newExplosion(null, raytraceResultIn.hitVec.x, raytraceResultIn.hitVec.y, raytraceResultIn.hitVec.z, 4f, flag, flag);
+				this.setDead();
+			}
 		}
 
 		@Override

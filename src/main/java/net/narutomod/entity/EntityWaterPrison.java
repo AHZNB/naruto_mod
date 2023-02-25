@@ -21,7 +21,9 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.item.ItemStack;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockBush;
 
+import net.narutomod.block.BlockAmaterasuBlock;
 import net.narutomod.block.BlockWaterStill;
 import net.narutomod.item.ItemSuiton;
 import net.narutomod.item.ItemJutsu;
@@ -91,10 +93,19 @@ public class EntityWaterPrison extends ElementsNarutomodMod.ModElement {
 			int minY = (int) Math.floor(targetIn.getEntityBoundingBox().minY - 0.5d);
 			int maxY = (int) Math.ceil(targetIn.getEntityBoundingBox().maxY + 0.5d);
 			this.realBB = new AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ);
-			for (BlockPos pos : ProcedureUtils.getAllAirBlocks(this.world, this.realBB)) {
-				this.world.setBlockState(pos, BlockWaterStill.block.getDefaultState(), 3);
-				++this.totalWaterBlocks;
+			for (BlockPos pos : BlockPos.getAllInBoxMutable(minX, minY, minZ, maxX, maxY, maxZ)) {
+				IBlockState blockstate = this.world.getBlockState(pos);
+				if (blockstate.getMaterial() == Material.AIR
+				 || (blockstate.getMaterial() == Material.FIRE && blockstate.getBlock() != BlockAmaterasuBlock.block)
+				 || blockstate.getBlock() instanceof BlockBush) {
+					this.world.setBlockState(pos, BlockWaterStill.block.getDefaultState(), 3);
+					++this.totalWaterBlocks;
+				}
 			}
+			//for (BlockPos pos : ProcedureUtils.getAllAirBlocks(this.world, this.realBB)) {
+			//	this.world.setBlockState(pos, BlockWaterStill.block.getDefaultState(), 3);
+			//	++this.totalWaterBlocks;
+			//}
 			trappedMap.put(userIn, targetIn);
 		}
 

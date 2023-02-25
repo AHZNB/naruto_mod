@@ -32,6 +32,7 @@ import net.minecraft.potion.PotionEffect;
 
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.ElementsNarutomodMod;
+import net.minecraft.util.EntityDamageSource;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class ItemBoneArmor extends ElementsNarutomodMod.ModElement {
@@ -134,7 +135,8 @@ public class ItemBoneArmor extends ElementsNarutomodMod.ModElement {
 			DamageSource source = event.getSource();
 			EntityLivingBase target = event.getEntityLiving();
 			if (!target.world.isRemote && isLarchActive(target.getItemStackFromSlot(EntityEquipmentSlot.CHEST))
-			 && source.getImmediateSource() instanceof EntityLivingBase && !source.isExplosion()) {
+			 && source.getImmediateSource() instanceof EntityLivingBase
+			 && !source.isExplosion() && !((EntityDamageSource)source).getIsThornsDamage()) {
 				source.getImmediateSource().attackEntityFrom(DamageSource.causeThornsDamage(target), event.getAmount() * 0.7f);
 			}
 		}

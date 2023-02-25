@@ -222,6 +222,7 @@ public class EntitySandLevitation extends ElementsNarutomodMod.ModElement {
 					float forward = rider.moveForward;
 					this.moveRelative(strafe, up, forward, rider.isSprinting() ? 0.1f : 0.04f);
 					this.move(MoverType.SELF, this.motionX, this.motionY, this.motionZ);
+					rider.fallDistance = 0.0f;
 				} else {
 					rider.dismountRidingEntity();
 				}

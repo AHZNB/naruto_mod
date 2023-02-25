@@ -456,6 +456,11 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public boolean attackEntityFrom(DamageSource source, float amount) {
+			if (source.getTrueSource() instanceof EntityLivingBase) {
+				float hp = this.getHealth();
+				float maxhp = this.getMaxHealth();
+				this.setAngerLevel(hp < 0.5f * maxhp ? 2 : hp < maxhp - 500f ? 1 : 0);
+			}
 			if (source.getTrueSource() instanceof EntityPlayer && source.getTrueSource().equals(this.getControllingPassenger()))
 				return false;
 			if (source.getImmediateSource() instanceof net.minecraft.entity.projectile.EntityPotion)
@@ -518,6 +523,9 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 				this.setTargetVessel(vessel);
 				this.setHealth(0.0F);
 				this.deathTotalTicks = fuuinTime;
+			}
+			if (this.angerLevel == 0) {
+				this.setAngerLevel(1);
 			}
 		}
 
@@ -626,6 +634,9 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 				}
 				if (this.ticksExisted % 100 == 0 && hp > 0.0f && hp < maxhp) {
 					this.setHealth(hp + 100f * Math.max(hp / maxhp, 0.1f));
+				}
+				if (this.angerLevel > 0 && this.ticksExisted - this.getRevengeTimer() > 6000) {
+					this.setAngerLevel(0);
 				}
 			}
 			if (this.isBeingRidden()) {
