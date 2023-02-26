@@ -7,40 +7,40 @@
     "cookingTime": 200,
     "recipeRetstackSize": 1,
     "group": "",
-    "recipeShapeless": false,
+    "recipeShapeless": true,
     "recipeSlots": [
       {
         "value": ""
       },
       {
-        "value": "Items.PAPER"
+        "value": ""
       },
       {
         "value": ""
       },
       {
-        "value": "Items.PAPER"
+        "value": ""
       },
       {
-        "value": "Items.GUNPOWDER"
+        "value": "CUSTOM:SmokeBomb"
       },
       {
-        "value": "Items.PAPER"
+        "value": "Items.LINGERING_POTION"
       },
       {
         "value": ""
       },
       {
-        "value": "Items.PAPER"
+        "value": ""
       },
       {
         "value": ""
       }
     ],
     "recipeReturnStack": {
-      "value": "CUSTOM:SmokeBomb"
+      "value": "CUSTOM:Poisonbomb"
     },
-    "name": "smoke_bomb_recipe",
+    "name": "poison_bomb_recipe",
     "namespace": "mod"
   }
 }

@@ -1384,7 +1384,7 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 		SEAL_FORMULA("seal_formula", 54678409, 3),
 		ACID_SPIT("acid_spit", 54678410, 2),
 		WHIRLPOOL("whirlpool", 54678411, 4),
-		BLOCK_DUST("whirlpool", 54678412, 2),
+		BLOCK_DUST("block_dust", 54678412, 2),
 		SONIC_BOOM("sonic_boom", 54678413, 4);
 		
 		private final String particleName;

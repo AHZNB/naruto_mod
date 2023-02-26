@@ -45,14 +45,14 @@ public class KeyBindingSpecialJutsu1 extends ElementsNarutomodMod.ModElement {
 	@SideOnly(Side.CLIENT)
 	@Override
 	public void init(FMLInitializationEvent event) {
-		keys = new KeyBinding("key.mcreator.specialjutsu1", Keyboard.KEY_R, "key.mcreator.category");
-		ClientRegistry.registerKeyBinding(keys);
+		this.keys = new KeyBinding("key.mcreator.specialjutsu1", Keyboard.KEY_R, "key.mcreator.category");
+		ClientRegistry.registerKeyBinding(this.keys);
 		MinecraftForge.EVENT_BUS.register(this);
 	}
 
 	@SubscribeEvent
 	@SideOnly(Side.CLIENT)
-	public void OnClientPostTick(TickEvent.ClientTickEvent event) {
+	public void onClientPostTick(TickEvent.ClientTickEvent event) {
 		if (event.phase == TickEvent.Phase.END) {
 			this.processKeyBind();
 		}
@@ -63,7 +63,10 @@ public class KeyBindingSpecialJutsu1 extends ElementsNarutomodMod.ModElement {
 		boolean isKeyDown = this.keys.isKeyDown();
 		if (isKeyDown || this.wasKeyDown) {
 			NarutomodMod.PACKET_HANDLER.sendToServer(new KeyBindingPressedMessage(isKeyDown));
-			pressAction(Minecraft.getMinecraft().player, isKeyDown);
+			EntityPlayer player = Minecraft.getMinecraft().player;
+			if (player != null) {
+				pressAction(player, isKeyDown);
+			}
 		}
 		this.wasKeyDown = isKeyDown;
 	}

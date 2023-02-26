@@ -12,7 +12,7 @@
     },
     "stackSize": 16,
     "ammoItem": {
-      "value": ""
+      "value": "CUSTOM:SmokeBomb"
     },
     "shootConstantly": false,
     "usageCount": 0,

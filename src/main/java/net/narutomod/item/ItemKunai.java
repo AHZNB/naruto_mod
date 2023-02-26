@@ -51,6 +51,7 @@ public class ItemKunai extends ElementsNarutomodMod.ModElement {
 	@GameRegistry.ObjectHolder("narutomod:kunai")
 	public static final Item block = null;
 	public static final int ENTITYID = 20;
+
 	public ItemKunai(ElementsNarutomodMod instance) {
 		super(instance, 158);
 	}
@@ -218,7 +219,7 @@ public class ItemKunai extends ElementsNarutomodMod.ModElement {
 	}
 
 	@SideOnly(Side.CLIENT)
-	public class RenderCustom extends Render<EntityArrowCustom> {
+	public static class RenderCustom extends Render<EntityArrowCustom> {
 		protected final Item item;
 		private final RenderItem itemRenderer;
 

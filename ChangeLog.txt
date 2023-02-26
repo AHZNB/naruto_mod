@@ -69,7 +69,7 @@ Items:
  - added Hidan's Scythe (WIP) - Now throwable
  - added Fuma Shuriken (WIP)
  - added Sound Gaunlet (WIP)
- - added Poison Bombs (WIP)
+ - added Poison Bombs and recipe
  - added Poison Senbons and recipe
  - added Cleaver sword and recipe: can imbue lightning chakra
  - added Curry of Life
@@ -134,6 +134,7 @@ General:
  - hitting entities with a kunai or shuriken no longers gains extra ninjaxp
  - updated the balancing such as susanoo hp, gourd/bone armor durability
  - revised biju management system to seal entities other than players as vessels
+ - added Japanese localization
 
 0.2.9-beta ================================================================================
 

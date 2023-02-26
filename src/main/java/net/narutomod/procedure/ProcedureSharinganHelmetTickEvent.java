@@ -155,7 +155,7 @@ public class ProcedureSharinganHelmetTickEvent extends ElementsNarutomodMod.ModE
 					}
 					if (entity instanceof EntityPlayer)
 						((EntityPlayer) entity).inventory.clearMatchingItems((itemstack).getItem(), -1, (int) 1, null);
-					entity = ((ItemDojutsu.Base) itemstack.getItem()).getOwner(itemstack, world);
+					entity = ((ItemDojutsu.Base) mangekyo.getItem()).getOwner(mangekyo, world);
 					if ((!(((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
 							? ((EntityPlayerMP) entity).getAdvancements()
 									.getProgress(((WorldServer) (entity).world).getAdvancementManager()

@@ -12,7 +12,7 @@
     },
     "stackSize": 1,
     "ammoItem": {
-      "value": ""
+      "value": "CUSTOM:Poisonbomb"
     },
     "shootConstantly": false,
     "usageCount": 1,
@@ -32,6 +32,12 @@
       "value": "CUSTOM:Poisonbomb"
     },
     "bulletModel": "Default",
-    "customBulletModelTexture": ""
+    "customBulletModelTexture": "",
+    "onBulletHitsBlock": {
+      "name": "PoisonbombBulletHitsBlock"
+    },
+    "onBulletHitsEntity": {
+      "name": "PoisonbombBulletHitsBlock"
+    }
   }
 }

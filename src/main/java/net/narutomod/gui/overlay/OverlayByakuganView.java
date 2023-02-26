@@ -31,6 +31,7 @@ import net.narutomod.ElementsNarutomodMod;
 import java.util.List;
 import io.netty.buffer.ByteBuf;
 import com.google.common.collect.Lists;
+import net.minecraftforge.client.event.MouseEvent;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class OverlayByakuganView extends ElementsNarutomodMod.ModElement {
@@ -171,6 +172,17 @@ public class OverlayByakuganView extends ElementsNarutomodMod.ModElement {
 				}
 				mc.gameSettings.renderDistanceChunks = this.prevRenderDistance;
 				this.first_on = true;
+			}
+		}
+
+		@SubscribeEvent
+		@SideOnly(Side.CLIENT)
+		public void onMouseEvent(MouseEvent event) {
+			if ((event.getButton() == 0 || event.getButton() == 1) && event.isButtonstate()) {
+				Minecraft mc = Minecraft.getMinecraft();
+				if (mc.objectMouseOver.entityHit instanceof EntityPlayer && mc.objectMouseOver.entityHit.equals(mc.player)) {
+					event.setCanceled(true);
+				}
 			}
 		}
 	}

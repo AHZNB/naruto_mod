@@ -89,7 +89,8 @@ public class PlayerTracker extends ElementsNarutomodMod.ModElement {
 			addBattleXp((EntityPlayerMP)entity, xp);
 			ItemEightGates.logBattleXP(entity);
 			ItemJutsu.logBattleXP(entity);
-			EntityTracker.getOrCreate(entity).lastLoggedXpTime = entity.ticksExisted;
+			//EntityTracker.getOrCreate(entity).lastLoggedXpTime = entity.ticksExisted;
+			entity.getEntityData().setInteger("lastLoggedXpTime", entity.ticksExisted);
 		}
 	}
 
@@ -241,7 +242,8 @@ public class PlayerTracker extends ElementsNarutomodMod.ModElement {
 		}
 
 		private boolean isOffCooldown(Entity entity) {
-			int i = entity.ticksExisted - EntityTracker.getOrCreate(entity).lastLoggedXpTime;
+			//int i = entity.ticksExisted - EntityTracker.getOrCreate(entity).lastLoggedXpTime;
+			int i = entity.ticksExisted - entity.getEntityData().getInteger("lastLoggedXpTime");
 			return i < 0 || i > 20;
 		}
 

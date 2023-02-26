@@ -2,16 +2,24 @@
   "group": "narutomod",
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "012"
+    " 1 ",
+    "345",
+    " 7 "
   ],
   "key": {
-    "0": {
+    "1": {
       "item": "minecraft:paper"
     },
-    "1": {
+    "3": {
+      "item": "minecraft:paper"
+    },
+    "4": {
       "item": "minecraft:gunpowder"
     },
-    "2": {
+    "5": {
+      "item": "minecraft:paper"
+    },
+    "7": {
       "item": "minecraft:paper"
     }
   },
