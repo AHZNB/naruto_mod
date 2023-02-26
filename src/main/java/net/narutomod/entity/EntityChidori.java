@@ -16,23 +16,24 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.EnumHandSide;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.Entity;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderLivingBase;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.model.ModelRenderer;
+import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.item.ItemStack;
-import net.minecraft.entity.EntityLiving;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.EnumHandSide;
 import net.minecraft.inventory.EntityEquipmentSlot;
-import net.minecraft.client.Minecraft;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.init.MobEffects;
 
@@ -173,7 +174,10 @@ public class EntityChidori extends ElementsNarutomodMod.ModElement {
 				  f * 0.5f, this.rand.nextFloat() * 2.0f + 1.0f);
 			}
 			if (this.ticksExisted > this.growTime / 2) {
-				ProcedureLightSourceSetBlock.execute(this.world, MathHelper.floor(this.posX), MathHelper.floor(this.posY), MathHelper.floor(this.posZ));
+				BlockPos pos = this.getPosition();
+				if (this.world.isAirBlock(pos)) {
+					ProcedureLightSourceSetBlock.execute(this.world, pos.getX(), pos.getY(), pos.getZ());
+				}
 			}
 			if (this.summoner != null && this.ticksExisted > this.growTime) {
 				RayTraceResult rtr = this.summoner instanceof EntityPlayer 
