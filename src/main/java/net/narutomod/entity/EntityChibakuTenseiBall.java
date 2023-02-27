@@ -322,21 +322,13 @@ public class EntityChibakuTenseiBall extends ElementsNarutomodMod.ModElement {
 			this.summoner = summonerIn;
 			this.setNoGravity(true);
 			this.motionY = -0.1d;
-			this.setFallTime(Integer.MAX_VALUE);
-		}
-
-		@Override
-		public void onUpdate() {
-			super.onUpdate();
-			if (!this.world.isRemote && this.getTicksAlive() > 1200) {
-				this.setDead();
-			}
+			this.setFallTime(1200);
 		}
 
 		@Override
 		protected void onImpact() {
 			if (!this.world.isRemote) {
-				if (!this.explosionSet) {
+				if (!this.explosionSet && this.getTicksAlive() - this.fallTicks <= 1200) {
 					if (this.summoner != null) {
 						this.summoner.getEntityData().setDouble(NarutomodModVariables.InvulnerableTime, 300d);
 					}

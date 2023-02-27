@@ -140,6 +140,7 @@ public class ProcedureOnPlayerPostTick extends ElementsNarutomodMod.ModElement {
 							_setstack.setCount(1);
 							ItemHandlerHelper.giveItemToPlayer(((EntityPlayer) entity), _setstack);
 						}
+						stack = new ItemStack(ItemBakuton.block, (int) (1));
 					} else if ((((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
 							? ((EntityPlayerMP) entity).getAdvancements()
 									.getProgress(((WorldServer) (entity).world).getAdvancementManager()
@@ -160,6 +161,7 @@ public class ProcedureOnPlayerPostTick extends ElementsNarutomodMod.ModElement {
 							_setstack.setCount(1);
 							ItemHandlerHelper.giveItemToPlayer(((EntityPlayer) entity), _setstack);
 						}
+						stack = new ItemStack(ItemRanton.block, (int) (1));
 					} else if ((((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
 							? ((EntityPlayerMP) entity).getAdvancements()
 									.getProgress(((WorldServer) (entity).world).getAdvancementManager()
@@ -180,6 +182,7 @@ public class ProcedureOnPlayerPostTick extends ElementsNarutomodMod.ModElement {
 							_setstack.setCount(1);
 							ItemHandlerHelper.giveItemToPlayer(((EntityPlayer) entity), _setstack);
 						}
+						stack = new ItemStack(ItemFutton.block, (int) (1));
 					} else if ((((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
 							? ((EntityPlayerMP) entity).getAdvancements()
 									.getProgress(((WorldServer) (entity).world).getAdvancementManager()
@@ -200,6 +203,7 @@ public class ProcedureOnPlayerPostTick extends ElementsNarutomodMod.ModElement {
 							_setstack.setCount(1);
 							ItemHandlerHelper.giveItemToPlayer(((EntityPlayer) entity), _setstack);
 						}
+						stack = new ItemStack(ItemJiton.block, (int) (1));
 					} else if ((((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
 							? ((EntityPlayerMP) entity).getAdvancements()
 									.getProgress(((WorldServer) (entity).world).getAdvancementManager()
@@ -220,6 +224,7 @@ public class ProcedureOnPlayerPostTick extends ElementsNarutomodMod.ModElement {
 							_setstack.setCount(1);
 							ItemHandlerHelper.giveItemToPlayer(((EntityPlayer) entity), _setstack);
 						}
+						stack = new ItemStack(ItemYooton.block, (int) (1));
 					} else if ((((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
 							? ((EntityPlayerMP) entity).getAdvancements()
 									.getProgress(((WorldServer) (entity).world).getAdvancementManager()
@@ -240,6 +245,7 @@ public class ProcedureOnPlayerPostTick extends ElementsNarutomodMod.ModElement {
 							_setstack.setCount(1);
 							ItemHandlerHelper.giveItemToPlayer(((EntityPlayer) entity), _setstack);
 						}
+						stack = new ItemStack(ItemHyoton.block, (int) (1));
 					} else if ((((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
 							? ((EntityPlayerMP) entity).getAdvancements()
 									.getProgress(((WorldServer) (entity).world).getAdvancementManager()
@@ -260,6 +266,7 @@ public class ProcedureOnPlayerPostTick extends ElementsNarutomodMod.ModElement {
 							_setstack.setCount(1);
 							ItemHandlerHelper.giveItemToPlayer(((EntityPlayer) entity), _setstack);
 						}
+						stack = new ItemStack(ItemShakuton.block, (int) (1));
 					} else if ((((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
 							? ((EntityPlayerMP) entity).getAdvancements()
 									.getProgress(((WorldServer) (entity).world).getAdvancementManager()
@@ -287,7 +294,51 @@ public class ProcedureOnPlayerPostTick extends ElementsNarutomodMod.ModElement {
 							_setstack.setCount(1);
 							ItemHandlerHelper.giveItemToPlayer(((EntityPlayer) entity), _setstack);
 						}
+						stack = new ItemStack(ItemJinton.block, (int) (1));
 					} else {
+						if ((((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
+								? ((EntityPlayerMP) entity).getAdvancements()
+										.getProgress(((WorldServer) (entity).world).getAdvancementManager()
+												.getAdvancement(new ResourceLocation("narutomod:sharinganopened")))
+										.isDone()
+								: false)) {
+							GuiScrollGenjutsuGui.giveGenjutsu((EntityPlayer) entity);
+							stack = new ItemStack(ItemSharingan.helmet, (int) (1));
+							((ItemDojutsu.Base) stack.getItem()).setOwner(stack, (EntityLivingBase) entity);
+							entity.getEntityData().setLong(NarutomodModVariables.MostRecentWornDojutsuTime, world.getTotalWorldTime());
+							if (entity instanceof EntityPlayer) {
+								ItemStack _setstack = (stack);
+								_setstack.setCount(1);
+								ItemHandlerHelper.giveItemToPlayer(((EntityPlayer) entity), _setstack);
+							}
+						} else if ((((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
+								? ((EntityPlayerMP) entity).getAdvancements()
+										.getProgress(((WorldServer) (entity).world).getAdvancementManager()
+												.getAdvancement(new ResourceLocation("narutomod:byakuganopened")))
+										.isDone()
+								: false)) {
+							stack = new ItemStack(ItemByakugan.helmet, (int) (1));
+							((ItemDojutsu.Base) stack.getItem()).setOwner(stack, (EntityLivingBase) entity);
+							entity.getEntityData().setLong(NarutomodModVariables.MostRecentWornDojutsuTime, world.getTotalWorldTime());
+							if (entity instanceof EntityPlayer) {
+								ItemStack _setstack = (stack);
+								_setstack.setCount(1);
+								ItemHandlerHelper.giveItemToPlayer(((EntityPlayer) entity), _setstack);
+							}
+						} else if ((((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
+								? ((EntityPlayerMP) entity).getAdvancements()
+										.getProgress(((WorldServer) (entity).world).getAdvancementManager()
+												.getAdvancement(new ResourceLocation("narutomod:shikotsumyaku_acquired")))
+										.isDone()
+								: false)) {
+							stack = new ItemStack(ItemShikotsumyaku.block, (int) (1));
+							((ItemJutsu.Base) stack.getItem()).setIsAffinity(stack, true);
+							if (entity instanceof EntityPlayer) {
+								ItemStack _setstack = (stack);
+								_setstack.setCount(1);
+								ItemHandlerHelper.giveItemToPlayer(((EntityPlayer) entity), _setstack);
+							}
+						}
 						rand = (double) Math.random();
 						if (((rand) <= 0.2)) {
 							stack = new ItemStack(ItemKaton.block, (int) (1));
@@ -300,12 +351,12 @@ public class ProcedureOnPlayerPostTick extends ElementsNarutomodMod.ModElement {
 						} else {
 							stack = new ItemStack(ItemDoton.block, (int) (1));
 						}
-						((ItemJutsu.Base) stack.getItem()).setIsAffinity(stack, true);
-						if (entity instanceof EntityPlayer) {
-							ItemStack _setstack = (stack);
-							_setstack.setCount(1);
-							ItemHandlerHelper.giveItemToPlayer(((EntityPlayer) entity), _setstack);
-						}
+					}
+					((ItemJutsu.Base) stack.getItem()).setIsAffinity(stack, true);
+					if (entity instanceof EntityPlayer) {
+						ItemStack _setstack = (stack);
+						_setstack.setCount(1);
+						ItemHandlerHelper.giveItemToPlayer(((EntityPlayer) entity), _setstack);
 					}
 				}
 				if ((!((entity instanceof EntityPlayer)
@@ -388,144 +439,76 @@ public class ProcedureOnPlayerPostTick extends ElementsNarutomodMod.ModElement {
 									.addPotionEffect(new PotionEffect(MobEffects.BLINDNESS, (int) 1200, (int) 0, (false), (false)));
 					}
 				} else if ((((entity.getEntityData().getDouble((NarutomodModVariables.BATTLEXP))) >= 300)
-						&& (((((((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
-								? ((EntityPlayerMP) entity).getAdvancements().getProgress(((WorldServer) (entity).world).getAdvancementManager()
-										.getAdvancement(new ResourceLocation("narutomod:sharinganopened"))).isDone()
-								: false)
-								|| (((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
-										? ((EntityPlayerMP) entity).getAdvancements().getProgress(((WorldServer) (entity).world)
-												.getAdvancementManager().getAdvancement(new ResourceLocation("narutomod:byakuganopened"))).isDone()
+						&& (((((!(((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
+								? ((EntityPlayerMP) entity).getAdvancements()
+										.getProgress(((WorldServer) (entity).world).getAdvancementManager()
+												.getAdvancement(new ResourceLocation("narutomod:sharinganopened")))
+										.isDone()
+								: false))
+								&& (!(((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
+										? ((EntityPlayerMP) entity).getAdvancements()
+												.getProgress(((WorldServer) (entity).world).getAdvancementManager()
+														.getAdvancement(new ResourceLocation("narutomod:byakuganopened")))
+												.isDone()
+										: false)))
+								&& ((!(((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
+										? ((EntityPlayerMP) entity).getAdvancements()
+												.getProgress(((WorldServer) (entity).world).getAdvancementManager()
+														.getAdvancement(new ResourceLocation("narutomod:shakuton_acquired")))
+												.isDone()
 										: false))
-								|| ((((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
-										? ((EntityPlayerMP) entity).getAdvancements().getProgress(((WorldServer) (entity).world)
-												.getAdvancementManager().getAdvancement(new ResourceLocation("narutomod:shakuton_acquired"))).isDone()
-										: false)
-										|| (((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
-												? ((EntityPlayerMP) entity).getAdvancements().getProgress(((WorldServer) (entity).world)
-														.getAdvancementManager().getAdvancement(new ResourceLocation("narutomod:yooton_acquired")))
+										&& (!(((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
+												? ((EntityPlayerMP) entity).getAdvancements()
+														.getProgress(((WorldServer) (entity).world).getAdvancementManager()
+																.getAdvancement(new ResourceLocation("narutomod:yooton_acquired")))
+														.isDone()
+												: false))))
+								&& (((!(((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
+										? ((EntityPlayerMP) entity).getAdvancements()
+												.getProgress(((WorldServer) (entity).world).getAdvancementManager()
+														.getAdvancement(new ResourceLocation("narutomod:bakuton_acquired")))
+												.isDone()
+										: false))
+										&& (!(((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
+												? ((EntityPlayerMP) entity).getAdvancements()
+														.getProgress(((WorldServer) (entity).world).getAdvancementManager()
+																.getAdvancement(new ResourceLocation("narutomod:ranton_acquired")))
 														.isDone()
 												: false)))
-								|| (((((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
-										? ((EntityPlayerMP) entity).getAdvancements().getProgress(((WorldServer) (entity).world)
-												.getAdvancementManager().getAdvancement(new ResourceLocation("narutomod:bakuton_acquired"))).isDone()
-										: false)
-										|| (((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
-												? ((EntityPlayerMP) entity).getAdvancements().getProgress(((WorldServer) (entity).world)
-														.getAdvancementManager().getAdvancement(new ResourceLocation("narutomod:ranton_acquired")))
+										&& (((!(((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
+												? ((EntityPlayerMP) entity).getAdvancements()
+														.getProgress(((WorldServer) (entity).world).getAdvancementManager()
+																.getAdvancement(new ResourceLocation("narutomod:hyoton_acquired")))
 														.isDone()
 												: false))
-										|| (((((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
-												? ((EntityPlayerMP) entity).getAdvancements().getProgress(((WorldServer) (entity).world)
-														.getAdvancementManager().getAdvancement(new ResourceLocation("narutomod:hyoton_acquired")))
-														.isDone()
-												: false)
-												|| (((entity instanceof EntityPlayerMP)
-														&& ((entity).world instanceof WorldServer))
+												&& (!(((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
+														? ((EntityPlayerMP) entity).getAdvancements()
+																.getProgress(((WorldServer) (entity).world).getAdvancementManager()
+																		.getAdvancement(new ResourceLocation("narutomod:jiton_acquired")))
+																.isDone()
+														: false)))
+												&& ((!(((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
+														? ((EntityPlayerMP) entity).getAdvancements()
+																.getProgress(((WorldServer) (entity).world).getAdvancementManager()
+																		.getAdvancement(new ResourceLocation("narutomod:futton_acquired")))
+																.isDone()
+														: false))
+														&& ((!(((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
 																? ((EntityPlayerMP) entity).getAdvancements()
-																		.getProgress(((WorldServer) (entity).world).getAdvancementManager()
-																				.getAdvancement(new ResourceLocation("narutomod:jiton_acquired")))
+																		.getProgress(
+																				((WorldServer) (entity).world).getAdvancementManager().getAdvancement(
+																						new ResourceLocation("narutomod:shikotsumyaku_acquired")))
 																		.isDone()
 																: false))
-												|| ((((entity instanceof EntityPlayerMP)
-														&& ((entity).world instanceof WorldServer))
-																? ((EntityPlayerMP) entity).getAdvancements()
-																		.getProgress(((WorldServer) (entity).world).getAdvancementManager()
-																				.getAdvancement(new ResourceLocation("narutomod:futton_acquired")))
-																		.isDone()
-																: false)
-														|| ((((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
-																? ((EntityPlayerMP) entity).getAdvancements().getProgress(
-																		((WorldServer) (entity).world).getAdvancementManager().getAdvancement(
-																				new ResourceLocation("narutomod:shikotsumyaku_acquired")))
-																		.isDone()
-																: false)
-																|| (((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
+																&& (!(((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
 																		? ((EntityPlayerMP) entity).getAdvancements()
 																				.getProgress(((WorldServer) (entity).world).getAdvancementManager()
 																						.getAdvancement(new ResourceLocation(
 																								"narutomod:kekkei_tota_awakened")))
 																				.isDone()
-																		: false))))))
-								|| (((entity instanceof EntityPlayer) ? ((EntityPlayer) entity).experienceLevel : 0) >= 10)))) {
-					if ((((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
-							? ((EntityPlayerMP) entity).getAdvancements()
-									.getProgress(((WorldServer) (entity).world).getAdvancementManager()
-											.getAdvancement(new ResourceLocation("narutomod:byakuganopened")))
-									.isDone()
-							: false)) {
-						stack = new ItemStack(ItemByakugan.helmet, (int) (1));
-					} else if ((((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
-							? ((EntityPlayerMP) entity).getAdvancements()
-									.getProgress(((WorldServer) (entity).world).getAdvancementManager()
-											.getAdvancement(new ResourceLocation("narutomod:sharinganopened")))
-									.isDone()
-							: false)) {
-						GuiScrollGenjutsuGui.giveGenjutsu((EntityPlayer) entity);
-						stack = new ItemStack(ItemSharingan.helmet, (int) (1));
-					} else if ((((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
-							? ((EntityPlayerMP) entity).getAdvancements()
-									.getProgress(((WorldServer) (entity).world).getAdvancementManager()
-											.getAdvancement(new ResourceLocation("narutomod:kekkei_tota_awakened")))
-									.isDone()
-							: false)) {
-						stack = new ItemStack(ItemJinton.block, (int) (1));
-					} else if ((((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
-							? ((EntityPlayerMP) entity).getAdvancements()
-									.getProgress(((WorldServer) (entity).world).getAdvancementManager()
-											.getAdvancement(new ResourceLocation("narutomod:shikotsumyaku_acquired")))
-									.isDone()
-							: false)) {
-						stack = new ItemStack(ItemShikotsumyaku.block, (int) (1));
-					} else if ((((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
-							? ((EntityPlayerMP) entity).getAdvancements()
-									.getProgress(((WorldServer) (entity).world).getAdvancementManager()
-											.getAdvancement(new ResourceLocation("narutomod:futton_acquired")))
-									.isDone()
-							: false)) {
-						stack = new ItemStack(ItemFutton.block, (int) (1));
-					} else if ((((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
-							? ((EntityPlayerMP) entity).getAdvancements()
-									.getProgress(((WorldServer) (entity).world).getAdvancementManager()
-											.getAdvancement(new ResourceLocation("narutomod:ranton_acquired")))
-									.isDone()
-							: false)) {
-						stack = new ItemStack(ItemRanton.block, (int) (1));
-					} else if ((((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
-							? ((EntityPlayerMP) entity).getAdvancements()
-									.getProgress(((WorldServer) (entity).world).getAdvancementManager()
-											.getAdvancement(new ResourceLocation("narutomod:yooton_acquired")))
-									.isDone()
-							: false)) {
-						stack = new ItemStack(ItemYooton.block, (int) (1));
-					} else if ((((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
-							? ((EntityPlayerMP) entity).getAdvancements()
-									.getProgress(((WorldServer) (entity).world).getAdvancementManager()
-											.getAdvancement(new ResourceLocation("narutomod:shakuton_acquired")))
-									.isDone()
-							: false)) {
-						stack = new ItemStack(ItemShakuton.block, (int) (1));
-					} else if ((((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
-							? ((EntityPlayerMP) entity).getAdvancements()
-									.getProgress(((WorldServer) (entity).world).getAdvancementManager()
-											.getAdvancement(new ResourceLocation("narutomod:hyoton_acquired")))
-									.isDone()
-							: false)) {
-						stack = new ItemStack(ItemHyoton.block, (int) (1));
-					} else if ((((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
-							? ((EntityPlayerMP) entity).getAdvancements()
-									.getProgress(((WorldServer) (entity).world).getAdvancementManager()
-											.getAdvancement(new ResourceLocation("narutomod:jiton_acquired")))
-									.isDone()
-							: false)) {
-						stack = new ItemStack(ItemJiton.block, (int) (1));
-					} else if ((((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
-							? ((EntityPlayerMP) entity).getAdvancements()
-									.getProgress(((WorldServer) (entity).world).getAdvancementManager()
-											.getAdvancement(new ResourceLocation("narutomod:bakuton_acquired")))
-									.isDone()
-							: false)) {
-						stack = new ItemStack(ItemBakuton.block, (int) (1));
-					} else if ((Math.random() <= 0.001)) {
+																		: false)))))))
+								&& (((entity instanceof EntityPlayer) ? ((EntityPlayer) entity).experienceLevel : 0) >= 10)))) {
+					if ((Math.random() <= 0.001)) {
 						rngbase = (double) (((EntityBijuManager.availableBijus() > 0 ? 5 : 0) + (10 * 10)) + 5);
 						if ((Math.random() <= (10 / (rngbase)))) {
 							stack = new ItemStack(ItemByakugan.helmet, (int) (1));
@@ -1039,6 +1022,10 @@ public class ProcedureOnPlayerPostTick extends ElementsNarutomodMod.ModElement {
 							if (((rngbase) > 105)) {
 								int tails = EntityBijuManager.getRandomAvailableBiju();
 								if (EntityBijuManager.setPlayerAsJinchurikiByTails((EntityPlayer) entity, tails)) {
+									world.playSound((EntityPlayer) null, x, y, z,
+											(net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY
+													.getObject(new ResourceLocation("ui.toast.challenge_complete")),
+											SoundCategory.NEUTRAL, (float) 1, (float) 1);
 									{
 										MinecraftServer mcserv = FMLCommonHandler.instance().getMinecraftServerInstance();
 										if (mcserv != null)
@@ -1050,19 +1037,17 @@ public class ProcedureOnPlayerPostTick extends ElementsNarutomodMod.ModElement {
 								}
 							}
 						}
-					} else {
-						stack = new ItemStack(Blocks.AIR, (int) (1));
-					}
-					if (stack.getItem() instanceof ItemDojutsu.Base) {
-						((ItemDojutsu.Base) stack.getItem()).setOwner(stack, (EntityLivingBase) entity);
-						entity.getEntityData().setLong(NarutomodModVariables.MostRecentWornDojutsuTime, world.getTotalWorldTime());
-					} else if (stack.getItem() instanceof ItemJutsu.Base) {
-						((ItemJutsu.Base) stack.getItem()).setIsAffinity(stack, true);
-					}
-					if (entity instanceof EntityPlayer) {
-						ItemStack _setstack = (stack);
-						_setstack.setCount(1);
-						ItemHandlerHelper.giveItemToPlayer(((EntityPlayer) entity), _setstack);
+						if (stack.getItem() instanceof ItemDojutsu.Base) {
+							((ItemDojutsu.Base) stack.getItem()).setOwner(stack, (EntityLivingBase) entity);
+							entity.getEntityData().setLong(NarutomodModVariables.MostRecentWornDojutsuTime, world.getTotalWorldTime());
+						} else if (stack.getItem() instanceof ItemJutsu.Base) {
+							((ItemJutsu.Base) stack.getItem()).setIsAffinity(stack, true);
+						}
+						if (entity instanceof EntityPlayer) {
+							ItemStack _setstack = (stack);
+							_setstack.setCount(1);
+							ItemHandlerHelper.giveItemToPlayer(((EntityPlayer) entity), _setstack);
+						}
 					}
 				}
 			}

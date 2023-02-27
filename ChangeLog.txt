@@ -1,3 +1,13 @@
+0.2.11-beta ===============================================================================
+
+Items:
+ - cleaver sword now takes damage when used
+
+General:
+ - added Japanese localization
+ - kg item will now be given to player at the same time as other basic nature release items
+   (once per lifetime) if the player has already achieved kg naturally
+
 0.2.10-beta ===============================================================================
 
 Jutsus:
@@ -134,7 +144,6 @@ General:
  - hitting entities with a kunai or shuriken no longers gains extra ninjaxp
  - updated the balancing such as susanoo hp, gourd/bone armor durability
  - revised biju management system to seal entities other than players as vessels
- - added Japanese localization
 
 0.2.9-beta ================================================================================
 

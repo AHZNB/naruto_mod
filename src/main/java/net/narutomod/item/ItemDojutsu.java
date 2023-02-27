@@ -62,22 +62,22 @@ public class ItemDojutsu extends ElementsNarutomodMod.ModElement {
 		}
 
 		public boolean isOwner(ItemStack stack, EntityLivingBase entity) {
-			//if (ProcedureUtils.getOwnerId(stack) == null && entity instanceof EntityPlayer && ((EntityPlayer)entity).isCreative()) {
-			//	this.setOwner(stack, entity);
-			//	stack.setStackDisplayName(stack.getDisplayName() + " (creative)");
-			//}
 			return ProcedureUtils.isOriginalOwner(entity, stack);
 		}
 
 		@Nullable
 		public EntityLivingBase getOwner(ItemStack stack, World world) {
-			Entity entity = ProcedureUtils.getEntityFromUUID(world, ProcedureUtils.getOwnerId(stack));
+			UUID uuid = ProcedureUtils.getOwnerId(stack);
+			Entity entity = uuid != null ? ProcedureUtils.getEntityFromUUID(world, uuid) : null;
 			return entity instanceof EntityLivingBase ? (EntityLivingBase)entity : null;
 		}
 
 		public void copyOwner(ItemStack toStack, ItemStack fromStack) {
-			ProcedureUtils.setOriginalOwner(toStack, ProcedureUtils.getOwnerId(fromStack));
-			toStack.setStackDisplayName(fromStack.getDisplayName());
+			UUID uuid = ProcedureUtils.getOwnerId(fromStack);
+			if (uuid != null) {
+				ProcedureUtils.setOriginalOwner(toStack, uuid);
+				toStack.setStackDisplayName(fromStack.getDisplayName());
+			}
 		}
 		
 		public void setOwner(ItemStack stack, EntityLivingBase entityIn) {

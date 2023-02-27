@@ -4,6 +4,7 @@ import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.math.Vec3d;
@@ -16,6 +17,8 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.EntitySelectors;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.SoundEvent;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.nbt.NBTTagList;
@@ -25,13 +28,13 @@ import net.minecraft.item.Item;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.IAttribute;
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.ai.attributes.RangedAttribute;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
@@ -39,13 +42,10 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.block.SoundType;
+import net.minecraft.block.Block;
 import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.init.Items;
-import net.minecraft.util.SoundEvent;
-import net.minecraft.world.WorldServer;
-import net.minecraft.block.Block;
-import net.minecraft.util.EnumParticleTypes;
 
 import net.narutomod.item.ItemSharingan;
 import net.narutomod.item.ItemMangekyoSharinganObito;
@@ -64,12 +64,12 @@ import java.util.List;
 import java.util.Iterator;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Collection;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import com.google.common.collect.Lists;
 import com.google.common.base.Predicates;
 import com.google.common.base.Predicate;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.Collection;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
@@ -161,7 +161,6 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static UUID getOwnerId(ItemStack stack) {
-		//return stack.hasTagCompound() ? stack.getTagCompound().getDouble("player_id") : 0d;
 		return stack.hasTagCompound() && stack.getTagCompound().hasUniqueId("player_id") 
 		 ? stack.getTagCompound().getUniqueId("player_id") : null;
 	}

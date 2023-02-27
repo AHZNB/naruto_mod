@@ -105,7 +105,8 @@ public class EventSphericalExplosion extends SpecialEvent {
 			this.posList[15].setPos(this.x0 - this.tz, this.y0 + this.ty, this.z0 - this.tx + 1);
 			for (BlockPos pos : this.posList) {
 				IBlockState blockstate = this.world.getBlockState(pos);
-				if (blockstate.getMaterial() != Material.AIR && this.rand.nextFloat() <= 1.75f - (float)this.tr / this.radius) {
+				if (blockstate.getMaterial() != Material.AIR
+				 && this.rand.nextFloat() <= 1.75f - pos.getDistance(this.x0, this.y0, this.z0) / this.radius) {
 					if (this.mobGriefing && blockstate.getBlockHardness(this.world, pos) >= 0.0F) {
 						float f = this.radius * (0.7F + this.rand.nextFloat() * 0.6F);
 						float f1 = blockstate.getBlock().getExplosionResistance(null);

@@ -10,9 +10,6 @@
     "recipeShapeless": false,
     "recipeSlots": [
       {
-        "value": ""
-      },
-      {
         "value": "Items.IRON_INGOT"
       },
       {
@@ -22,7 +19,7 @@
         "value": ""
       },
       {
-        "value": "Items.IRON_INGOT"
+        "value": "Blocks.IRON_BLOCK"
       },
       {
         "value": "Items.IRON_INGOT"
@@ -32,6 +29,9 @@
       },
       {
         "value": "Items.STICK"
+      },
+      {
+        "value": ""
       },
       {
         "value": ""

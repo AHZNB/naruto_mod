@@ -53,6 +53,7 @@ import java.util.HashMap;
 import java.util.Random;
 import javax.annotation.Nullable;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.HashMultimap;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class ItemCleaver extends ElementsNarutomodMod.ModElement {
@@ -74,7 +75,7 @@ public class ItemCleaver extends ElementsNarutomodMod.ModElement {
 
 	public static class ItemCustom extends ItemSword implements ItemOnBody.Interface {
 		public ItemCustom() {
-			super(EnumHelper.addToolMaterial("CLEAVER", 1, 1000, 8f, 16f, 0));
+			super(EnumHelper.addToolMaterial("CLEAVER", 1, 1000, 8f, 11f, 0));
 			this.setUnlocalizedName("cleaver");
 			this.setRegistryName("cleaver");
 			this.setCreativeTab(TabModTab.tab);
@@ -82,12 +83,12 @@ public class ItemCleaver extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public Multimap<String, AttributeModifier> getItemAttributeModifiers(EntityEquipmentSlot slot) {
-			Multimap<String, AttributeModifier> multimap = super.getItemAttributeModifiers(slot);
+			Multimap<String, AttributeModifier> multimap = HashMultimap.<String, AttributeModifier>create();
 			if (slot == EntityEquipmentSlot.MAINHAND) {
 				multimap.put(SharedMonsterAttributes.ATTACK_DAMAGE.getName(),
 						new AttributeModifier(ATTACK_DAMAGE_MODIFIER, "Weapon modifier", (double) this.getAttackDamage(), 0));
 				multimap.put(SharedMonsterAttributes.ATTACK_SPEED.getName(),
-						new AttributeModifier(ATTACK_SPEED_MODIFIER, "Weapon modifier", -3.2, 0));
+						new AttributeModifier(ATTACK_SPEED_MODIFIER, "Weapon modifier", -3.0, 0));
 			}
 			return multimap;
 		}
@@ -114,7 +115,7 @@ public class ItemCleaver extends ElementsNarutomodMod.ModElement {
 			if (this.canUseRaiton(attacker) && this.itemRand.nextInt(5) == 0) {
 				EntityLightningArc.onStruck(target, ItemJutsu.causeJutsuDamage(attacker, attacker), 2f);
 			}
-			return true;
+			return super.hitEntity(stack, target, attacker);
 		}
 
 		private boolean canUseRaiton(EntityLivingBase entity) {

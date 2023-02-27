@@ -84,7 +84,7 @@ public class EntityEarthBlocks extends ElementsNarutomodMod.ModElement {
 		private final Map<Entity, Vec3d> entityMap = Maps.newHashMap();
 		private int fallTime = 600;
 		private int ticksAlive;
-		private int fallTicks;
+		protected int fallTicks;
 		private int blocksTotal;
 		private boolean breakOnImpact;
 
@@ -156,7 +156,7 @@ public class EntityEarthBlocks extends ElementsNarutomodMod.ModElement {
 			this.fallTime = ticks;
 		}
 
-		@Override
+		/*@Override
 		public void setDead() {
 			if (!this.world.isRemote && !this.blocksMap.isEmpty() && this.griefingAllowed()) {
 				for (Map.Entry<Vec3d, IBlockState> entry : this.blocksMap.entrySet()) {
@@ -167,7 +167,7 @@ public class EntityEarthBlocks extends ElementsNarutomodMod.ModElement {
 				}
 			}
 			super.setDead();
-		}
+		}*/
 
 		@Override
 	    public void applyEntityCollision(Entity entityIn) {

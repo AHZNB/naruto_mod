@@ -397,16 +397,16 @@ public class BlockAmaterasuBlock extends ElementsNarutomodMod.ModElement {
 			if (!worldIn.getGameRules().getBoolean("doFireTick")) {
 				return;
 			}
-			this.tryCatchFire(worldIn, pos, pos.east(), 300, rand, i, EnumFacing.WEST);
-			this.tryCatchFire(worldIn, pos, pos.west(), 300, rand, i, EnumFacing.EAST);
-			this.tryCatchFire(worldIn, pos, pos.up(), 250, rand, i, EnumFacing.DOWN);
-			this.tryCatchFire(worldIn, pos, pos.north(), 300, rand, i, EnumFacing.SOUTH);
-			this.tryCatchFire(worldIn, pos, pos.south(), 300, rand, i, EnumFacing.NORTH);
+			this.tryCatchFire(worldIn, pos, pos.east(), 500, rand, i, EnumFacing.WEST);
+			this.tryCatchFire(worldIn, pos, pos.west(), 500, rand, i, EnumFacing.EAST);
+			this.tryCatchFire(worldIn, pos, pos.up(), 450, rand, i, EnumFacing.DOWN);
+			this.tryCatchFire(worldIn, pos, pos.north(), 500, rand, i, EnumFacing.SOUTH);
+			this.tryCatchFire(worldIn, pos, pos.south(), 500, rand, i, EnumFacing.NORTH);
 			for (int k = -1; k <= 1; ++k) {
 				for (int l = -1; l <= 1; ++l) {
 					for (int i2 = 0; i2 <= 4; ++i2) {
 						if (k != 0 || i2 != 0 || l != 0) {
-							int j1 = 100;
+							int j1 = 300;
 							if (i2 > 1) {
 								j1 += (i2 - 1) * 100;
 							}
@@ -435,8 +435,7 @@ public class BlockAmaterasuBlock extends ElementsNarutomodMod.ModElement {
 		}
 
 		private void tryCatchFire(World worldIn, BlockPos ogPos, BlockPos atPos, int chance, Random random, int age, EnumFacing face) {
-			int i = this.getFlammability(worldIn.getBlockState(atPos).getBlock());
-			if (random.nextInt(chance) < i) {
+			if (random.nextInt(chance) < this.getFlammability(worldIn.getBlockState(atPos).getBlock())) {
 				IBlockState iblockstate = worldIn.getBlockState(atPos);
 				int j = age + random.nextInt(AGING_DELAY+1) / AGING_DELAY;
 				if (j > 15) j = 15;
