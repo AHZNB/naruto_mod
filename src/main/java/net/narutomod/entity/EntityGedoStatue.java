@@ -953,6 +953,7 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 			bipedHead = new ModelRenderer(this);
 			bipedHead.setRotationPoint(0.0F, 0.0F, 0.0F);
 			bipedHead.cubeList.add(new ModelBox(bipedHead, 0, 0, -3.0F, -6.0F, -4.0F, 6, 6, 6, -0.1F, false));
+			bipedHead.cubeList.add(new ModelBox(bipedHead, 0, 0, -3.0F, -6.75F, -4.0F, 6, 6, 6, -0.4F, false));
 			bipedHead.cubeList.add(new ModelBox(bipedHead, 0, 1, -3.0F, -5.0F, -4.0F, 6, 2, 6, 0.1F, false));
 			bipedHead.cubeList.add(new ModelBox(bipedHead, 50, 0, -2.0F, -0.2F, -4.0F, 4, 2, 2, -0.1F, false));
 	

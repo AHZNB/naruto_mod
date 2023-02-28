@@ -85,7 +85,7 @@ public class EntityZabuzaMomochi extends ElementsNarutomodMod.ModElement {
 			Biomes.JUNGLE, Biomes.SAVANNA, Biomes.ICE_MOUNTAINS, Biomes.ICE_PLAINS, Biomes.BEACH, Biomes.COLD_BEACH
 		};
 		EntityRegistry.addSpawn(EntityCustom.class, 1, 1, 1, EnumCreatureType.MONSTER, spawnBiomes);
-		DungeonHooks.addDungeonMob(new ResourceLocation("narutomod:zabuza_momochi"), 180);
+		DungeonHooks.addDungeonMob(new ResourceLocation("narutomod:zabuza_momochi"), 50);
 	}
 
 	@SideOnly(Side.CLIENT)

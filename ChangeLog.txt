@@ -1,10 +1,17 @@
 0.2.11-beta ===============================================================================
 
+Jutsus:
+ - limit earth sandwich jutsu to size 20
+ - removed fall damage from kamui intangible and sand levitation
+ - spikes coming out of the ground like braken dance, shattering ice spears, earth flow spears
+   power indicator and chakra usage is based on how many spikes produced
+ 
 Items:
  - cleaver sword now takes damage when used
+ - tweaked ninja armor model sizes to better fit layered player skins
 
 General:
- - added Japanese localization
+ - removed japanese localization
  - kg item will now be given to player at the same time as other basic nature release items
    (once per lifetime) if the player has already achieved kg naturally
 

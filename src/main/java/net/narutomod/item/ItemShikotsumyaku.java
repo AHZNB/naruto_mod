@@ -45,7 +45,7 @@ public class ItemShikotsumyaku extends ElementsNarutomodMod.ModElement {
 	public static final ItemJutsu.JutsuEnum CAMELLIA = new ItemJutsu.JutsuEnum(2, "tooltip.shikotsumyaku.dancecamellia", 'S', 150, 100d, new CamelliaDance());
 	public static final ItemJutsu.JutsuEnum BULLETS = new ItemJutsu.JutsuEnum(3, "finger_bone", 'S', 150, 10d, new EntityFingerBone.EC.Jutsu());
 	public static final ItemJutsu.JutsuEnum CFLOWER = new ItemJutsu.JutsuEnum(4, "tooltip.shikotsumyaku.danceclementisflower", 'S', 400, 500d, new ClementisFlower());
-	public static final ItemJutsu.JutsuEnum BRACKEN = new ItemJutsu.JutsuEnum(5, "entitybrackendance", 'S', 400, 100d, new EntityBrackenDance.Jutsu());
+	public static final ItemJutsu.JutsuEnum BRACKEN = new ItemJutsu.JutsuEnum(5, "entitybrackendance", 'S', 400, 20d, new EntityBrackenDance.Jutsu());
 
 	public ItemShikotsumyaku(ElementsNarutomodMod instance) {
 		super(instance, 659);
@@ -92,7 +92,7 @@ public class ItemShikotsumyaku extends ElementsNarutomodMod.ModElement {
 		@Override
 		protected float getPower(ItemStack stack, EntityLivingBase entity, int timeLeft) {
 			 if (this.getCurrentJutsu(stack) == BRACKEN) {
-				return this.getPower(stack, entity, timeLeft, 0.5f, 150f);
+				return this.getPower(stack, entity, timeLeft, 0.5f, 10f);
 			 }
 			return 1f;
 		}
@@ -253,16 +253,17 @@ public class ItemShikotsumyaku extends ElementsNarutomodMod.ModElement {
 				Vec3d vec3d2 = vec3d.add(entity.getLookVec().scale(30d));
 				RayTraceResult res = world.rayTraceBlocks(vec3d, vec3d2, false, true, true);
 				if (res != null && res.typeOfHit == RayTraceResult.Type.BLOCK && res.sideHit == EnumFacing.UP) {
-					for (int i = 0; i < (int)(power * power * 5f); i++) {
+					float f = MathHelper.sqrt(power * 9f / 5f);
+					for (int i = 0; i < Math.round(power); i++) {
 						EntityBrackenDance entity1 = new EntityBrackenDance(entity, power);
-						Vec3d vec = res.hitVec.addVector((entity.getRNG().nextDouble() - 0.5d) * power * 3d, 0d, (entity.getRNG().nextDouble() - 0.5d) * power * 3d);
+						Vec3d vec = res.hitVec.addVector((entity.getRNG().nextDouble() - 0.5d) * f, 0d, (entity.getRNG().nextDouble() - 0.5d) * f);
 						for (; !world.getBlockState(new BlockPos(vec)).isTopSolid(); vec = vec.subtract(0d, 1d, 0d));
 						for (; world.getBlockState(new BlockPos(vec).up()).isTopSolid(); vec = vec.addVector(0d, 1d, 0d));
 						entity1.setLocationAndAngles(vec.x, vec.y + 0.5d, vec.z, entity.getRNG().nextFloat() * 360f, (entity.getRNG().nextFloat() - 0.5f) * 60f);
 						world.spawnEntity(entity1);
 						world.playSound(null, entity1.posX, entity1.posY, entity1.posZ, (SoundEvent)
 						 SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:bonecrack")),
-						 SoundCategory.NEUTRAL, 5f, entity.getRNG().nextFloat() * 0.4f + 0.8f);
+						 SoundCategory.NEUTRAL, 5f, entity.getRNG().nextFloat() * 0.4f + 0.4f);
 					}
 					return true;
 				}

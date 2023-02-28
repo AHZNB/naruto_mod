@@ -66,7 +66,7 @@ public class EntitySpike extends ElementsNarutomodMod.ModElement {
 
 	public static class Base extends EntityScalableProjectile.Base {
 		private static final DataParameter<Integer> COLOR = EntityDataManager.<Integer>createKey(Base.class, DataSerializers.VARINT);
-		private Vec3d tipOffset = new Vec3d(0d, 1.82d, 0d);
+		private Vec3d tipOffset = Vec3d.ZERO;
 
 		public Base(World worldIn) {
 			super(worldIn);
@@ -115,7 +115,7 @@ public class EntitySpike extends ElementsNarutomodMod.ModElement {
 			super.shoot(x, y, z, speed, inaccuracy);
 			this.rotationPitch = MathHelper.wrapDegrees(this.rotationPitch + 90f);
 			this.prevRotationPitch = this.rotationPitch;
-			//this.tipOffset = new Vec3d(0d, 1.82d, 0d);
+			this.tipOffset = new Vec3d(0d, 1.82d, 0d);
 		}
 
 		@Override

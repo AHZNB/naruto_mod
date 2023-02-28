@@ -251,7 +251,7 @@ public class EntityKageBunshin extends ElementsNarutomodMod.ModElement {
 	    @Override
 	    public void onUpdate() {
 	    	super.onUpdate();
-	    	if (!this.world.isRemote && this.ticksExisted == 1) {
+	    	if (!this.world.isRemote && this.ticksExisted == 15) {
 		    	ItemStack stack = this.getHeldItemMainhand();
 		    	if (stack.getItem() instanceof ItemJutsu.Base) {
 		    		for (ItemJutsu.JutsuEnum je : ((ItemJutsu.Base)stack.getItem()).getActivatedJutsus(stack)) {
@@ -301,6 +301,7 @@ public class EntityKageBunshin extends ElementsNarutomodMod.ModElement {
 				}
 				if (add1) {
 					EC newClone = new EC(entity);
+					newClone.setPosition(newClone.posX + (entity.getRNG().nextBoolean() ? -0.1d : 0.1d), newClone.posY, newClone.posZ + (entity.getRNG().nextBoolean() ? -0.1d : 0.1d));
 					entity.world.spawnEntity(newClone);
 					clones.add(newClone.getEntityId());
 					Chakra.Pathway chakra = Chakra.pathway(entity);

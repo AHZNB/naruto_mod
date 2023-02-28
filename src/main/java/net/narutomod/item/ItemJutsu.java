@@ -173,19 +173,21 @@ public class ItemJutsu extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public void onUsingTick(ItemStack stack, EntityLivingBase player, int timeLeft) {
-			if (player instanceof EntityPlayer && !player.world.isRemote) {
-				((EntityPlayer)player).sendStatusMessage(
-					new TextComponentString(String.format("%.1f", this.getPower(stack, player, timeLeft))), true);
-			}
-			if (player.world.isRemote) {
-				Particles.spawnParticle(player.world, Particles.Types.SMOKE, player.posX, player.posY, player.posZ, 
-				 40, 0.2d, 0d, 0.2d, 0d, 0.5d, 0d, 0x106AD1FF, 40, 5, 0xF0, player.getEntityId());
-			}
-			if (timeLeft % 10 == 0) {
-				player.world.playSound(null, player.posX, player.posY, player.posZ,
-				 (net.minecraft.util.SoundEvent)net.minecraft.util.SoundEvent.REGISTRY
-				 .getObject(new ResourceLocation("narutomod:charging_chakra")),
-				 net.minecraft.util.SoundCategory.PLAYERS, 0.05F, itemRand.nextFloat() + 0.5F);
+			if (!(player instanceof EntityPlayer) || PlayerTracker.isNinja((EntityPlayer)player)) {
+				if (player instanceof EntityPlayer && !player.world.isRemote) {
+					((EntityPlayer)player).sendStatusMessage(
+						new TextComponentString(String.format("%.1f", this.getPower(stack, player, timeLeft))), true);
+				}
+				if (player.world.isRemote) {
+					Particles.spawnParticle(player.world, Particles.Types.SMOKE, player.posX, player.posY, player.posZ, 
+					 40, 0.2d, 0d, 0.2d, 0d, 0.5d, 0d, 0x106AD1FF, 40, 5, 0xF0, player.getEntityId());
+				}
+				if (timeLeft % 10 == 0) {
+					player.world.playSound(null, player.posX, player.posY, player.posZ,
+					 (net.minecraft.util.SoundEvent)net.minecraft.util.SoundEvent.REGISTRY
+					 .getObject(new ResourceLocation("narutomod:charging_chakra")),
+					 net.minecraft.util.SoundCategory.PLAYERS, 0.05F, itemRand.nextFloat() + 0.5F);
+				}
 			}
 		}
 

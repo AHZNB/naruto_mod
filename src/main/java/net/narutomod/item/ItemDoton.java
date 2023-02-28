@@ -104,10 +104,10 @@ public class ItemDoton extends ElementsNarutomodMod.ModElement {
 				return this.getPower(stack, entity, timeLeft, base, 15f);
 				//return Math.min(base + (float)(this.getMaxUseDuration() - timeLeft) / 10, this.getMaxPower(stack, entity));
 			} else if (jutsu == SANDWICH) {
-				return this.getPower(stack, entity, timeLeft, base, 75f);
+				return this.getPower(stack, entity, timeLeft, base, 150f);
 				//return Math.min(base + (float)(this.getMaxUseDuration() - timeLeft) / 50, this.getMaxPower(stack, entity));
 			} else if (jutsu == SWAMPPIT) {
-				return this.getPower(stack, entity, timeLeft, 1f, 30f);
+				return this.getPower(stack, entity, timeLeft, 1f, 100f);
 				//return MathHelper.floor(Math.min(1f + (float)(this.getMaxUseDuration() - timeLeft) / 20, this.getMaxPower(stack, entity)));
 			} else if (jutsu == SPEARS) {
 				return this.getPower(stack, entity, timeLeft, 0.5f, 20f);
@@ -124,9 +124,9 @@ public class ItemDoton extends ElementsNarutomodMod.ModElement {
 			if (jutsu == EARTHWALL) {
 				return Math.min(f, 50f);
 			}
-			//if (jutsu == SANDWICH) {
-			//	return Math.min(f, 20f);
-			//}
+			if (jutsu == SANDWICH) {
+				return Math.min(f, 20f);
+			}
 			if (jutsu == GOLEM) {
 				return Math.min(f, 5f);
 			}
@@ -225,7 +225,7 @@ public class ItemDoton extends ElementsNarutomodMod.ModElement {
 			public boolean createJutsu(ItemStack stack, EntityLivingBase entity, float power) {
 				if (!ProcedureOnLivingUpdate.isNoClip(entity)) {
 					entity.world.playSound(null, entity.posX, entity.posY, entity.posZ, (SoundEvent) SoundEvent.REGISTRY
-					 .getObject(new ResourceLocation(("narutomod:jutsu"))), SoundCategory.NEUTRAL, 1, 1f);
+					 .getObject(new ResourceLocation("narutomod:jutsu")), SoundCategory.NEUTRAL, 1, 1f);
 					entity.world.spawnEntity(new EntityHidingInRock(entity));
 					return true;
 				}

@@ -69,6 +69,7 @@ import net.narutomod.ElementsNarutomodMod;
 
 import com.google.common.base.Predicate;
 import javax.annotation.Nullable;
+import net.minecraft.nbt.NBTTagCompound;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityItachi extends ElementsNarutomodMod.ModElement {
@@ -96,7 +97,7 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 			Biomes.BIRCH_FOREST_HILLS, Biomes.ROOFED_FOREST, Biomes.SAVANNA, Biomes.EXTREME_HILLS
 		};
 		EntityRegistry.addSpawn(EntityCustom.class, 1, 1, 1, EnumCreatureType.MONSTER, spawnBiomes);
-		DungeonHooks.addDungeonMob(new ResourceLocation("narutomod:itachi"), 180);
+		DungeonHooks.addDungeonMob(new ResourceLocation("narutomod:itachi"), 50);
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -130,7 +131,6 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 			super(world, 100, 5000d);
 			//this.setItemToInventory(kunaiStack);
 			this.isImmuneToFire = true;
-			this.setIsReal(this.rand.nextInt(5) == 0);
 		}
 
 		@Override
@@ -140,6 +140,7 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 			this.setItemStackToSlot(EntityEquipmentSlot.HEAD, stack);
 			this.setItemToInventory(new ItemStack(ItemKunai.block), 0);
 			this.setItemToInventory(new ItemStack(ItemAkatsukiRobe.helmet), 1);
+			this.setIsReal(this.rand.nextInt(5) == 0);
 			return super.onInitialSpawn(difficulty, livingdata);
 		}
 
@@ -395,6 +396,18 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 		@Override
 		protected boolean canSeeInvisible(Entity entityIn) {
 			return !entityIn.isInvisible() || this.getDistanceSq(entityIn) <= 400d;
+		}
+
+		@Override
+		public void writeEntityToNBT(NBTTagCompound compound) {
+			super.writeEntityToNBT(compound);
+			compound.setBoolean("isReal", this.isReal);
+		}
+
+		@Override
+		public void readEntityFromNBT(NBTTagCompound compound) {
+			super.readEntityFromNBT(compound);
+			this.setIsReal(compound.getBoolean("isReal"));
 		}
 	}
 

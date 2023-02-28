@@ -61,7 +61,7 @@ public class EntityUnrivaledStrength extends ElementsNarutomodMod.ModElement {
 			}
 			this.duration = (int)(power * 20f);
 			this.setPosition(this.user.posX, this.user.posY, this.user.posZ);
-			this.playSound((SoundEvent)SoundEvent.REGISTRY.getObject(new ResourceLocation(("narutomod:kairikimuso"))), 1f, 1f);
+			this.playSound((SoundEvent)SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:kairikimuso")), 1f, 1f);
 			PotionEffect effect = userIn.getActivePotionEffect(MobEffects.STRENGTH);
 			userIn.addPotionEffect(new PotionEffect(MobEffects.STRENGTH, this.duration, 
 			 (int)power + (effect != null ? effect.getAmplifier() : -1), false, false));
@@ -92,7 +92,7 @@ public class EntityUnrivaledStrength extends ElementsNarutomodMod.ModElement {
 					} else {
 						for (int i = 0; i < 20; i++) {
 							Particles.spawnParticle(this.world, Particles.Types.SMOKE, this.posX, this.posY, this.posZ, 1,
-							 0d, 1d, 0d, (this.rand.nextDouble() - 0.5d) * 0.1d, 0d, (this.rand.nextDouble() - 0.5d) * 0.1d,
+							 0d, 1d, 0d, (this.rand.nextDouble() - 0.5d) * 0.2d, 0d, (this.rand.nextDouble() - 0.5d) * 0.2d,
 							 0x20FFFFFF, 10 + this.rand.nextInt(11), 0, 0, this.user.getEntityId());
 						}
 					}

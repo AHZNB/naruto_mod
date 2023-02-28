@@ -127,7 +127,7 @@ public class EntityClone extends ElementsNarutomodMod.ModElement {
 			this.setCustomNameTag(summonerIn.getName());
 			this.setLeftHanded(summonerIn.getPrimaryHand() == EnumHandSide.LEFT);
 			for (EntityEquipmentSlot entityequipmentslot : EntityEquipmentSlot.values()) {
-				this.setItemStackToSlot(entityequipmentslot, summoner.getItemStackFromSlot(entityequipmentslot));
+				this.setItemStackToSlot(entityequipmentslot, summoner.getItemStackFromSlot(entityequipmentslot).copy());
 			}
 			this.prevRotationYaw = this.prevRenderYawOffset = this.renderYawOffset = summonerIn.rotationYaw;
 			this.rotationYawHead = this.prevRotationYawHead = summonerIn.rotationYawHead;
