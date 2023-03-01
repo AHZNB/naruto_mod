@@ -132,8 +132,9 @@ public class EntityRasengan extends ElementsNarutomodMod.ModElement {
 					if (this.shootingEntity instanceof EntityPlayer) {
 						stack = ProcedureUtils.getMatchingItemStack((EntityPlayer)this.shootingEntity, stack.getItem());
 					}
-					if (stack != null && stack.hasTagCompound() && stack.getTagCompound().hasKey("RasenganSize")) {
+					if (stack != null && stack.hasTagCompound()) {
 						stack.getTagCompound().removeTag("RasenganSize");
+						stack.getTagCompound().removeTag(Jutsu.ID_KEY);
 					}
 				}
 			}
@@ -238,16 +239,22 @@ public class EntityRasengan extends ElementsNarutomodMod.ModElement {
 		}
 
 		public static class Jutsu implements ItemJutsu.IJutsuCallback {
+			private static final String ID_KEY = "RasenganEntityId";
+			
 			@Override
 			public boolean createJutsu(ItemStack stack, EntityLivingBase entity, float power) {
-				if (!this.isActivated(stack) || !(entity instanceof EntityPlayer)) {
-					if ((stack.getItem() == ItemNinjutsu.block && power >= 0.5f) || (stack.getItem() == ItemSenjutsu.block && power >= 3.0f)) {
-						entity.world.playSound(null, entity.posX, entity.posY, entity.posZ, (SoundEvent) SoundEvent.REGISTRY
-						  .getObject(new ResourceLocation("narutomod:rasengan_start")), SoundCategory.NEUTRAL, 1.0F, 1.0F);
-						stack.getTagCompound().setFloat("RasenganSize", power);
-						entity.world.spawnEntity(new EC(entity, power, stack));
-						return true;
-					}
+				Entity entity1 = stack.hasTagCompound() ? entity.world.getEntityByID(stack.getTagCompound().getInteger(ID_KEY)) : null;
+				if (entity1 instanceof EC) {
+					entity1.setDead();
+				} else if (!(entity instanceof EntityPlayer)
+				 || (stack.getItem() == ItemNinjutsu.block && power >= 0.5f) || (stack.getItem() == ItemSenjutsu.block && power >= 3.0f)) {
+					entity.world.playSound(null, entity.posX, entity.posY, entity.posZ, SoundEvent.REGISTRY
+					  .getObject(new ResourceLocation("narutomod:rasengan_start")), SoundCategory.NEUTRAL, 1.0F, 1.0F);
+					EC entity2 = new EC(entity, power, stack);
+					entity.world.spawnEntity(entity2);
+					stack.getTagCompound().setInteger(ID_KEY, entity2.getEntityId());
+					stack.getTagCompound().setFloat("RasenganSize", power);
+					return true;
 				}
 				return false;
 			}

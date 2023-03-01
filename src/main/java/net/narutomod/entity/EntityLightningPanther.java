@@ -215,7 +215,8 @@ public class EntityLightningPanther extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void onUpdate() {
 			super.onUpdate();
-			if (!this.world.isRemote && (this.getOwner() == null || this.ticksExisted > (int)(this.getPower() * 100))) {
+			EntityLivingBase owner = this.getOwner();
+			if (!this.world.isRemote && (owner == null || !owner.isEntityAlive() || this.ticksExisted > (int)(this.getPower() * 100))) {
 				this.setDead();
 			} else {
 				if (this.isInWater()) {
@@ -227,9 +228,9 @@ public class EntityLightningPanther extends ElementsNarutomodMod.ModElement {
 				if (!this.world.isRemote && this.ticksExisted == 1) {
 					this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:roar")), 5f, 1f);
 				}
-				if (!this.world.isRemote && this.isTamed()) {
+				if (!this.world.isRemote && owner != null) {
 					this.world.spawnEntity(new EntityLightningArc.Base(this.world,
-					 this.getOwner().getPositionVector().addVector(0d, this.rand.nextDouble() * 1.5d, 0d), 
+					 owner.getPositionVector().addVector(0d, this.rand.nextDouble() * 1.5d, 0d), 
 					 this.getPositionEyes(1f), 0x00000000, 0, 0f));
 				}
 				if (this.rand.nextInt(3) == 2) {

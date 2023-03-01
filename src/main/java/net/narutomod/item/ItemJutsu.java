@@ -35,10 +35,10 @@ import net.narutomod.Particles;
 import net.narutomod.PlayerTracker;
 
 import com.google.common.collect.ImmutableList;
-import java.util.List;
 import com.google.common.collect.Lists;
-import javax.annotation.Nullable;
+import java.util.List;
 import java.util.UUID;
+import javax.annotation.Nullable;
 
 public class ItemJutsu extends ElementsNarutomodMod.ModElement {
 	public static final String NINJUTSU_TYPE = "ninjutsu_damage";
@@ -82,7 +82,7 @@ public class ItemJutsu extends ElementsNarutomodMod.ModElement {
 			stack = player.getHeldItemOffhand();
 		}
 		if (stack.getItem() instanceof Base) {
-			Base baseitem = ((Base)stack.getItem());
+			Base baseitem = (Base)stack.getItem();
 			if (baseitem.getCurrentJutsuXp(stack) < baseitem.getCurrentJutsuRequiredXp(stack)) {
 				baseitem.addCurrentJutsuXp(stack, 1);
 			}
@@ -260,7 +260,8 @@ public class ItemJutsu extends ElementsNarutomodMod.ModElement {
 		}
 
 		public void addCurrentJutsuXp(ItemStack stack, int xp) {
-			this.addJutsuXp(stack, this.getCurrentJutsuIndex(stack), xp);
+			this.addJutsuXp(stack, this.getCurrentJutsuIndex(stack),
+			 Math.min(this.getCurrentJutsuRequiredXp(stack) * 3 - this.getCurrentJutsuXp(stack), xp));
 		}
 
 		private int getRequiredXp(ItemStack stack, int index) {

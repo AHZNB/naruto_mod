@@ -54,6 +54,7 @@ import net.narutomod.entity.EntityHidingInAsh;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.procedure.ProcedureAirPunch;
 import net.minecraft.util.SoundEvent;
+import net.minecraftforge.event.ForgeEventFactory;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class ItemKaton extends ElementsNarutomodMod.ModElement {
@@ -222,7 +223,8 @@ public class ItemKaton extends ElementsNarutomodMod.ModElement {
 	
 			@Override
 			protected EntityItem processAffectedBlock(EntityLivingBase player, BlockPos pos, EnumFacing facing) {
-				if (player.getDistanceSq(pos) > 16d && player.getRNG().nextFloat() < 0.1f) {
+				if (ForgeEventFactory.getMobGriefingEvent(player.world, player)
+				 && player.getDistanceSq(pos) > 16d && player.getRNG().nextFloat() < 0.1f) {
 					for (EnumFacing enumfacing : EnumFacing.values()) {
 						if (player.world.isAirBlock(pos.offset(enumfacing))) {
 							player.world.setBlockState(pos.offset(enumfacing), Blocks.FIRE.getDefaultState(), 3);
@@ -297,7 +299,7 @@ public class ItemKaton extends ElementsNarutomodMod.ModElement {
 					result.entityHit.attackEntityFrom(ItemJutsu.causeJutsuDamage(this, this.shootingEntity).setFireDamage(), this.damage);
 					result.entityHit.setFire(10);
 				}
-				boolean flag = net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.world, this.shootingEntity);
+				boolean flag = ForgeEventFactory.getMobGriefingEvent(this.world, this.shootingEntity);
 				this.world.newExplosion(this.shootingEntity, this.posX, this.posY, this.posZ, this.explosionSize, flag, false);
 				this.setDead();
 			}

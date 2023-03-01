@@ -189,19 +189,20 @@ public class EntityLightningBeast extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void onUpdate() {
 			super.onUpdate();
-			if (!this.world.isRemote && this.ticksExisted % 4 == 0 && this.isTamed()) {
-				this.world.spawnEntity(new EntityLightningArc.Base(this.world, this.getOwner().getPositionEyes(1f), 
+			EntityLivingBase owner = this.getOwner();
+			if (!this.world.isRemote && this.ticksExisted % 4 == 0 && owner != null) {
+				this.world.spawnEntity(new EntityLightningArc.Base(this.world, owner.getPositionEyes(1f), 
 				 this.getPositionEyes(1f), 0xC00000FF, 1, 0f));
 			}
 			if (this.rand.nextInt(8) == 0) {
-				this.playSound((SoundEvent)SoundEvent.REGISTRY.getObject(new ResourceLocation(("narutomod:electricity"))),
+				this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:electricity")),
 				  1f, this.rand.nextFloat() * 0.6f + 0.9f);
 			}
 			if (this.rand.nextFloat() <= 0.4f) {
 				EntityLightningArc.spawnAsParticle(this.world, this.posX + this.rand.nextGaussian() * this.width * 0.5d,
 				 this.posY + this.rand.nextDouble() * this.height, this.posZ + this.rand.nextGaussian() * this.width * 0.5d);
 			}
-			if (!this.world.isRemote && this.ticksExisted > (int)(this.power * 20)) {
+			if (!this.world.isRemote && (this.ticksExisted > (int)(this.power * 20) || owner == null || !owner.isEntityAlive())) {
 				this.setDead();
 			}
 		}

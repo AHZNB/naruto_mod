@@ -182,6 +182,10 @@ public class Chakra extends ElementsNarutomodMod.ModElement {
 		public void warningDisplay() {
 		}
 
+		public int getIdleTime() {
+			return this.motionlessTime;
+		}
+
 		@Override
 		public String toString() {
 			return "Chakra:{amount:"+this.getAmount()+",max:"+this.getMax()+","+this.user.getName()+"}";
@@ -238,6 +242,9 @@ public class Chakra extends ElementsNarutomodMod.ModElement {
 			super.onUpdate();
 			if (this.user.world instanceof WorldServer && ((WorldServer)this.user.world).areAllPlayersAsleep()) {
 				this.consume(-0.6f);
+			}
+			if (this.getIdleTime() > 100 && this.user.ticksExisted % 80 == 0) {
+				this.consume(-0.001f * this.user.getFoodStats().getSaturationLevel());
 			}
 			double d = PlayerTracker.getBattleXp(this.user) * 0.5d;
 			if (d != this.getMax() || this.forceSync) {
