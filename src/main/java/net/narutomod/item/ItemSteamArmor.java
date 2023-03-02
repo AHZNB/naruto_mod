@@ -13,6 +13,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.Item;
 import net.minecraft.init.Items;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
@@ -49,16 +50,13 @@ public class ItemSteamArmor extends ElementsNarutomodMod.ModElement {
 
 	@Override
 	public void initElements() {
-		ItemArmor.ArmorMaterial enuma = EnumHelper.addArmorMaterial("STEAM_ARMOR", "narutomod:sasuke_", 50, new int[]{2, 5, 6, 2}, 9,
-				(net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("")), 1.5f)
-				.setRepairItem(new ItemStack(Items.LEATHER));
+		ItemArmor.ArmorMaterial enuma = EnumHelper.addArmorMaterial("STEAM_ARMOR", "narutomod:sasuke_", 50,
+		 new int[]{2, 5, 6, 2}, 9, SoundEvents.ITEM_ARMOR_EQUIP_LEATHER, 1.5f).setRepairItem(new ItemStack(Items.LEATHER));
 		elements.items.add(() -> new ItemArmor(enuma, 0, EntityEquipmentSlot.HEAD) {
 			@Override
 			@SideOnly(Side.CLIENT)
 			public ModelBiped getArmorModel(EntityLivingBase living, ItemStack stack, EntityEquipmentSlot slot, ModelBiped defaultModel) {
 				ModelBiped armorModel = new ModelSteamArmor();
-				//armorModel.bipedHead = new ModelSteamArmor().bipedHead;
-				//armorModel.bipedHeadwear = new ModelSteamArmor().bipedHeadwear;
 				armorModel.isSneak = living.isSneaking();
 				armorModel.isRiding = living.isRiding();
 				armorModel.isChild = living.isChild();
@@ -70,43 +68,51 @@ public class ItemSteamArmor extends ElementsNarutomodMod.ModElement {
 				return "narutomod:textures/steamarmor.png";
 			}
 		}.setUnlocalizedName("steam_armorhelmet").setRegistryName("steam_armorhelmet").setCreativeTab(TabModTab.tab));
-		elements.items.add(() -> new ItemArmor(enuma, 0, EntityEquipmentSlot.CHEST) {
+		elements.items.add(() -> new ItemNinjaArmor.Base(ItemNinjaArmor.Type.OTHER, enuma, EntityEquipmentSlot.CHEST) {
 			@Override
-			@SideOnly(Side.CLIENT)
-			public ModelBiped getArmorModel(EntityLivingBase living, ItemStack stack, EntityEquipmentSlot slot, ModelBiped defaultModel) {
-				ModelBiped armorModel = new ModelSteamArmor();
-				//armorModel.bipedBody = new ModelSteamArmor().bipedBody;
-				//armorModel.bipedLeftArm = new ModelSteamArmor().bipedLeftArm;
-				//armorModel.bipedRightArm = new ModelSteamArmor().bipedRightArm;
-				armorModel.isSneak = living.isSneaking();
-				armorModel.isRiding = living.isRiding();
-				armorModel.isChild = living.isChild();
-				return armorModel;
+			protected ItemNinjaArmor.ArmorData setArmorData(ItemNinjaArmor.Type type, EntityEquipmentSlot slotIn) {
+				return new Armor4Slot();
 			}
 
-			@Override
-			public String getArmorTexture(ItemStack stack, Entity entity, EntityEquipmentSlot slot, String type) {
-				return "narutomod:textures/steamarmor.png";
+			class Armor4Slot extends ItemNinjaArmor.ArmorData {
+				@SideOnly(Side.CLIENT)
+				@Override
+				protected void init() {
+					this.model = new ModelSteamArmor();
+					this.texture = "narutomod:textures/steamarmor.png";
+				}
+				@SideOnly(Side.CLIENT)
+				@Override
+				public void setSlotVisible() {					
+					this.model.bipedRightLeg.showModel = true;
+					this.model.bipedLeftLeg.showModel = true;
+					((ModelSteamArmor)this.model).leggingsRight.showModel = false;
+					((ModelSteamArmor)this.model).leggingsLeft.showModel = false;
+				}
 			}
-		}.setUnlocalizedName("steam_armorbody").setRegistryName("steam_armorbody").setCreativeTab(TabModTab.tab));
-		elements.items.add(() -> new ItemArmor(enuma, 0, EntityEquipmentSlot.LEGS) {
+		}.setUnlocalizedName("steam_armorbody").setRegistryName("steam_armorbody").setCreativeTab(TabModTab.tab));
+		elements.items.add(() -> new ItemNinjaArmor.Base(ItemNinjaArmor.Type.OTHER, enuma, EntityEquipmentSlot.LEGS) {
 			@Override
-			@SideOnly(Side.CLIENT)
-			public ModelBiped getArmorModel(EntityLivingBase living, ItemStack stack, EntityEquipmentSlot slot, ModelBiped defaultModel) {
-				ModelBiped armorModel = new ModelSteamArmor();
-				//armorModel.bipedLeftLeg = new ModelSteamArmor().bipedLeftLeg;
-				//armorModel.bipedRightLeg = new ModelSteamArmor().bipedRightLeg;
-				armorModel.isSneak = living.isSneaking();
-				armorModel.isRiding = living.isRiding();
-				armorModel.isChild = living.isChild();
-				return armorModel;
+			protected ItemNinjaArmor.ArmorData setArmorData(ItemNinjaArmor.Type type, EntityEquipmentSlot slotIn) {
+				return new Armor4Slot();
 			}
 
-			@Override
-			public String getArmorTexture(ItemStack stack, Entity entity, EntityEquipmentSlot slot, String type) {
-				return "narutomod:textures/steamarmor.png";
+			class Armor4Slot extends ItemNinjaArmor.ArmorData {
+				@SideOnly(Side.CLIENT)
+				@Override
+				protected void init() {
+					this.model = new ModelSteamArmor();
+					this.texture = "narutomod:textures/steamarmor.png";
+				}
+				@SideOnly(Side.CLIENT)
+				@Override
+				public void setSlotVisible() {
+					this.model.bipedBody.showModel = false;
+					((ModelSteamArmor)this.model).skirtRight.showModel = false;
+					((ModelSteamArmor)this.model).skirtLeft.showModel = false;
+				}
 			}
-		}.setUnlocalizedName("steam_armorlegs").setRegistryName("steam_armorlegs").setCreativeTab(TabModTab.tab));
+		}.setUnlocalizedName("steam_armorlegs").setRegistryName("steam_armorlegs").setCreativeTab(TabModTab.tab));
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -234,7 +240,7 @@ public class ItemSteamArmor extends ElementsNarutomodMod.ModElement {
 		//private final ModelRenderer bipedRightArm;
 		//private final ModelRenderer bipedLeftArm;
 		//private final ModelRenderer bipedRightLeg;
-		private final ModelRenderer bone21;
+		private final ModelRenderer skirtRight;
 		private final ModelRenderer cube_r84;
 		private final ModelRenderer cube_r85;
 		private final ModelRenderer cube_r86;
@@ -248,8 +254,9 @@ public class ItemSteamArmor extends ElementsNarutomodMod.ModElement {
 		private final ModelRenderer cube_r92;
 		private final ModelRenderer cube_r93;
 		private final ModelRenderer cube_r94;
+		private final ModelRenderer leggingsRight;
 		//private final ModelRenderer bipedLeftLeg;
-		private final ModelRenderer bone20;
+		private final ModelRenderer skirtLeft;
 		private final ModelRenderer cube_r95;
 		private final ModelRenderer cube_r96;
 		private final ModelRenderer cube_r97;
@@ -263,6 +270,7 @@ public class ItemSteamArmor extends ElementsNarutomodMod.ModElement {
 		private final ModelRenderer cube_r103;
 		private final ModelRenderer cube_r104;
 		private final ModelRenderer cube_r105;
+		private final ModelRenderer leggingsLeft;
 	
 		public ModelSteamArmor() {
 			textureWidth = 64;
@@ -270,7 +278,7 @@ public class ItemSteamArmor extends ElementsNarutomodMod.ModElement {
 	
 			bipedHead = new ModelRenderer(this);
 			bipedHead.setRotationPoint(0.0F, 0.0F, 0.0F);
-			bipedHead.cubeList.add(new ModelBox(bipedHead, 0, 0, -4.0F, -8.0F, -4.0F, 8, 8, 8, 0.25F, false));
+			bipedHead.cubeList.add(new ModelBox(bipedHead, 0, 0, -4.0F, -8.0F, -4.0F, 8, 8, 8, 0.3F, false));
 	
 			hat = new ModelRenderer(this);
 			hat.setRotationPoint(0.0F, -5.0F, 0.0F);
@@ -920,47 +928,46 @@ public class ItemSteamArmor extends ElementsNarutomodMod.ModElement {
 	
 			bipedRightLeg = new ModelRenderer(this);
 			bipedRightLeg.setRotationPoint(-1.9F, 12.0F, 0.0F);
-			bipedRightLeg.cubeList.add(new ModelBox(bipedRightLeg, 0, 16, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.2F, false));
-			bipedRightLeg.cubeList.add(new ModelBox(bipedRightLeg, 0, 32, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.3F, false));
+			
 	
-			bone21 = new ModelRenderer(this);
-			bone21.setRotationPoint(1.9F, 0.475F, 2.25F);
-			bipedRightLeg.addChild(bone21);
+			skirtRight = new ModelRenderer(this);
+			skirtRight.setRotationPoint(1.9F, 0.475F, 2.25F);
+			bipedRightLeg.addChild(skirtRight);
 			
 	
 			cube_r84 = new ModelRenderer(this);
 			cube_r84.setRotationPoint(-4.2328F, -0.9653F, -2.2F);
-			bone21.addChild(cube_r84);
+			skirtRight.addChild(cube_r84);
 			setRotationAngle(cube_r84, 0.2618F, -1.5708F, 0.0F);
 			cube_r84.cubeList.add(new ModelBox(cube_r84, 8, 61, -2.0F, -0.5237F, -0.2164F, 4, 3, 0, 0.1F, false));
 	
 			cube_r85 = new ModelRenderer(this);
 			cube_r85.setRotationPoint(-3.9785F, -0.0683F, -0.1979F);
-			bone21.addChild(cube_r85);
+			skirtRight.addChild(cube_r85);
 			setRotationAngle(cube_r85, -0.3054F, 2.3562F, 0.0F);
 			cube_r85.cubeList.add(new ModelBox(cube_r85, 11, 61, -0.5F, -1.325F, 0.075F, 1, 3, 0, 0.0F, false));
 	
 			cube_r86 = new ModelRenderer(this);
 			cube_r86.setRotationPoint(-3.9785F, -0.0683F, -4.3021F);
-			bone21.addChild(cube_r86);
+			skirtRight.addChild(cube_r86);
 			setRotationAngle(cube_r86, 0.3054F, -2.3562F, 0.0F);
 			cube_r86.cubeList.add(new ModelBox(cube_r86, 8, 61, -0.5F, -1.325F, -0.075F, 1, 3, 0, 0.025F, false));
 	
 			cube_r87 = new ModelRenderer(this);
 			cube_r87.setRotationPoint(0.0F, 0.0F, 0.0F);
-			bone21.addChild(cube_r87);
+			skirtRight.addChild(cube_r87);
 			setRotationAngle(cube_r87, 0.2182F, 0.0F, 0.0F);
 			cube_r87.cubeList.add(new ModelBox(cube_r87, 8, 61, -4.0F, -1.475F, 0.0F, 4, 3, 0, 0.1F, false));
 	
 			cube_r88 = new ModelRenderer(this);
 			cube_r88.setRotationPoint(0.0F, 0.0F, -4.5F);
-			bone21.addChild(cube_r88);
+			skirtRight.addChild(cube_r88);
 			setRotationAngle(cube_r88, -0.2182F, 0.0F, 0.0F);
 			cube_r88.cubeList.add(new ModelBox(cube_r88, 3, 55, -4.0F, -1.475F, 0.0F, 4, 3, 0, 0.1F, false));
 	
 			bone16 = new ModelRenderer(this);
-			bone16.setRotationPoint(-1.7182F, 2.8219F, -2.2464F);
-			bipedRightLeg.addChild(bone16);
+			bone16.setRotationPoint(-3.6182F, 2.3469F, -4.4964F);
+			skirtRight.addChild(bone16);
 			
 	
 			cube_r89 = new ModelRenderer(this);
@@ -1004,49 +1011,54 @@ public class ItemSteamArmor extends ElementsNarutomodMod.ModElement {
 			setRotationAngle(cube_r94, 0.1745F, 0.0F, 0.0F);
 			cube_r94.cubeList.add(new ModelBox(cube_r94, 1, 60, -1.75F, 0.0036F, -0.1263F, 3, 4, 0, 0.0F, false));
 	
+			leggingsRight = new ModelRenderer(this);
+			leggingsRight.setRotationPoint(0.0F, 0.0F, 0.0F);
+			bipedRightLeg.addChild(leggingsRight);
+			leggingsRight.cubeList.add(new ModelBox(leggingsRight, 0, 16, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.2F, false));
+			leggingsRight.cubeList.add(new ModelBox(leggingsRight, 0, 32, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.3F, false));
+	
 			bipedLeftLeg = new ModelRenderer(this);
 			bipedLeftLeg.setRotationPoint(1.9F, 12.0F, 0.0F);
-			bipedLeftLeg.cubeList.add(new ModelBox(bipedLeftLeg, 0, 16, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.2F, true));
-			bipedLeftLeg.cubeList.add(new ModelBox(bipedLeftLeg, 0, 32, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.25F, true));
+			
 	
-			bone20 = new ModelRenderer(this);
-			bone20.setRotationPoint(2.0785F, 0.4067F, -2.0521F);
-			bipedLeftLeg.addChild(bone20);
+			skirtLeft = new ModelRenderer(this);
+			skirtLeft.setRotationPoint(2.0785F, 0.4067F, -2.0521F);
+			bipedLeftLeg.addChild(skirtLeft);
 			
 	
 			cube_r95 = new ModelRenderer(this);
 			cube_r95.setRotationPoint(-3.9785F, 0.0683F, 4.3021F);
-			bone20.addChild(cube_r95);
+			skirtLeft.addChild(cube_r95);
 			setRotationAngle(cube_r95, 0.2182F, 0.0F, 0.0F);
 			cube_r95.cubeList.add(new ModelBox(cube_r95, 8, 61, 0.0F, -1.475F, 0.0F, 4, 3, 0, 0.1F, true));
 	
 			cube_r96 = new ModelRenderer(this);
 			cube_r96.setRotationPoint(0.0F, 0.0F, 0.0F);
-			bone20.addChild(cube_r96);
+			skirtLeft.addChild(cube_r96);
 			setRotationAngle(cube_r96, 0.3054F, 2.3562F, 0.0F);
 			cube_r96.cubeList.add(new ModelBox(cube_r96, 12, 61, -0.5F, -1.35F, -0.075F, 1, 3, 0, 0.025F, true));
 	
 			cube_r97 = new ModelRenderer(this);
 			cube_r97.setRotationPoint(0.2435F, -0.9459F, 2.1021F);
-			bone20.addChild(cube_r97);
+			skirtLeft.addChild(cube_r97);
 			setRotationAngle(cube_r97, 0.2618F, 1.5708F, 0.0F);
 			cube_r97.cubeList.add(new ModelBox(cube_r97, 8, 61, -2.0F, -0.5237F, -0.2164F, 4, 3, 0, 0.1F, true));
 	
 			cube_r98 = new ModelRenderer(this);
 			cube_r98.setRotationPoint(0.0F, 0.0F, 4.1043F);
-			bone20.addChild(cube_r98);
+			skirtLeft.addChild(cube_r98);
 			setRotationAngle(cube_r98, -0.3054F, -2.3562F, 0.0F);
 			cube_r98.cubeList.add(new ModelBox(cube_r98, 12, 61, -0.5F, -1.375F, 0.075F, 1, 3, 0, 0.035F, true));
 	
 			cube_r99 = new ModelRenderer(this);
 			cube_r99.setRotationPoint(-3.9785F, 0.0683F, -0.1979F);
-			bone20.addChild(cube_r99);
+			skirtLeft.addChild(cube_r99);
 			setRotationAngle(cube_r99, -0.2182F, 0.0F, 0.0F);
 			cube_r99.cubeList.add(new ModelBox(cube_r99, 1, 49, 0.0F, -1.475F, 0.0F, 4, 3, 0, 0.1F, true));
 	
 			bone17 = new ModelRenderer(this);
-			bone17.setRotationPoint(1.7182F, 2.8219F, -2.2464F);
-			bipedLeftLeg.addChild(bone17);
+			bone17.setRotationPoint(-0.3603F, 2.4152F, -0.1943F);
+			skirtLeft.addChild(bone17);
 			
 	
 			cube_r100 = new ModelRenderer(this);
@@ -1089,13 +1101,19 @@ public class ItemSteamArmor extends ElementsNarutomodMod.ModElement {
 			bone18.addChild(cube_r105);
 			setRotationAngle(cube_r105, 0.1745F, 0.0F, 0.0F);
 			cube_r105.cubeList.add(new ModelBox(cube_r105, 1, 60, -1.25F, 0.0036F, -0.1263F, 3, 4, 0, 0.0F, true));
+	
+			leggingsLeft = new ModelRenderer(this);
+			leggingsLeft.setRotationPoint(0.0F, 0.0F, 0.0F);
+			bipedLeftLeg.addChild(leggingsLeft);
+			leggingsLeft.cubeList.add(new ModelBox(leggingsLeft, 0, 16, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.2F, true));
+			leggingsLeft.cubeList.add(new ModelBox(leggingsLeft, 0, 32, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.25F, true));
 		}
 
 		@Override
 		public void render(Entity entityIn, float f0, float f1, float f2, float f3, float f4, float f5) {
-			if (this.bipedRightLeg.showModel || this.bipedLeftLeg.showModel) {
-				this.engine.showModel = false;
-			}
+			//if (this.bipedRightLeg.showModel || this.bipedLeftLeg.showModel) {
+			//	this.engine.showModel = false;
+			//}
 			if (entityIn instanceof AbstractClientPlayer && ((AbstractClientPlayer)entityIn).getSkinType().equals("slim")) {
 				this.bipedLeftArm.setRotationPoint(5.0F, 2.5F, 0.0F);
 				this.bipedRightArm.setRotationPoint(-5.0F, 2.5F, 0.0F);

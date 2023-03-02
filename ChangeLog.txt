@@ -7,6 +7,8 @@ Jutsus:
    power indicator and chakra usage is based on how many spikes produced
  - fixed lightning beast/panther crashing when user enters another world/dimension
  - limit max jutsuXp to 3x required xp
+ - limit unrivaled strength to max 30
+ - limit sand bullet barrage to max 5
  
 Items:
  - cleaver sword now takes damage when used, attack speed and damage decrease, recipe changed

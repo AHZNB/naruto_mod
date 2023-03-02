@@ -56,7 +56,7 @@ public class ItemFutton extends ElementsNarutomodMod.ModElement {
 	public static final Item block = null;
 	public static final int ENTITYID = 281;
 	public static final ItemJutsu.JutsuEnum MIST = new ItemJutsu.JutsuEnum(0, "futton_mist", 'S', 50d, new EntityBoilingMist.Jutsu());
-	public static final ItemJutsu.JutsuEnum STRENGTH = new ItemJutsu.JutsuEnum(1, "unrivaled_strength", 'S', 50d, new EntityUnrivaledStrength.EC.Jutsu());
+	public static final ItemJutsu.JutsuEnum STRENGTH = new ItemJutsu.JutsuEnum(1, "unrivaled_strength", 'S', 100d, new EntityUnrivaledStrength.EC.Jutsu());
 
 	public ItemFutton(ElementsNarutomodMod instance) {
 		super(instance, 600);
@@ -91,7 +91,7 @@ public class ItemFutton extends ElementsNarutomodMod.ModElement {
 			if (jutsu == MIST) {
 				return this.getPower(stack, entity, timeLeft, 0.1f, 30f);
 			}
-			return this.getPower(stack, entity, timeLeft, 0.1f, 20f);
+			return this.getPower(stack, entity, timeLeft, 0.1f, 50f);
 		}
 
 		@Override
@@ -100,8 +100,9 @@ public class ItemFutton extends ElementsNarutomodMod.ModElement {
 			float f = super.getMaxPower(stack, entity);
 			if (jutsu == MIST) {
 				return Math.min(f, 30.0f);
+			} else {
+				return Math.min(f, 30.0f);
 			}
-			return f;
 		}
 
 		@Override

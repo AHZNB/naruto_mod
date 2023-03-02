@@ -9,16 +9,18 @@ import net.minecraftforge.fml.client.registry.RenderingRegistry;
 
 import net.minecraft.world.World;
 import net.minecraft.util.ResourceLocation;
-//import net.minecraft.util.DamageSource;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.entity.Render;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.item.ItemStack;
 import net.minecraft.init.SoundEvents;
+import net.minecraft.network.datasync.DataParameter;
+import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraft.network.datasync.DataSerializers;
 
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.item.ItemGourd;
@@ -76,7 +78,7 @@ public class EntitySandBullet extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static class EC extends EntityScalableProjectile.Base {
-		private int color;
+		private static final DataParameter<Integer> COLOR = EntityDataManager.<Integer>createKey(EC.class, DataSerializers.VARINT);
 
 		public EC(World worldIn) {
 			super(worldIn);
@@ -91,7 +93,21 @@ public class EntitySandBullet extends ElementsNarutomodMod.ModElement {
 			super(shooter);
 			this.setOGSize(0.2f, 0.2f);
 			this.setPosition(x, y, z);
-			this.color = sandType.getColor();
+			this.setColor(sandType.getColor());
+		}
+
+		@Override
+		protected void entityInit() {
+			super.entityInit();
+			this.dataManager.register(COLOR, Integer.valueOf(0));
+		}
+
+		public int getColor() {
+			return ((Integer)this.dataManager.get(COLOR)).intValue();
+		}
+
+		protected void setColor(int color) {
+			this.dataManager.set(COLOR, Integer.valueOf(color));
 		}
 
 		@Override
@@ -122,9 +138,10 @@ public class EntitySandBullet extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public void renderParticles() {
-			if (!this.world.isRemote) {
+			if (this.world.isRemote) {
 				Particles.spawnParticle(this.world, Particles.Types.SUSPENDED, this.posX, this.posY+0.1d, this.posZ,
-				 100, 0.03d, 0.03d, 0.03d, 0d, 0d, 0d, this.color, 10, 5);
+ 				 10, 0.03d, 0.03d, 0.03d, 0d, 0d, 0d, this.getColor(), 10, 5);
+
 			}
 		}
 
@@ -161,7 +178,7 @@ public class EntitySandBullet extends ElementsNarutomodMod.ModElement {
 	private static final Map<ItemStack, List<ItemJiton.SwarmTarget>> posMap = Maps.newHashMap();
 
 	@Nullable
-	public static List<ItemJiton.SwarmTarget> getStartPosList(ItemStack stack) {
+	private static List<ItemJiton.SwarmTarget> getStartPosList(ItemStack stack) {
 		List<ItemJiton.SwarmTarget> list = posMap.get(stack);
 		if (list != null) {
 			return list;

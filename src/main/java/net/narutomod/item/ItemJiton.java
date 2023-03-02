@@ -50,11 +50,11 @@ import net.narutomod.Chakra;
 import net.narutomod.creativetab.TabModTab;
 import net.narutomod.ElementsNarutomodMod;
 
-import java.util.List;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import java.util.List;
 import java.util.Iterator;
 import java.util.Random;
-import com.google.common.collect.Maps;
 import java.util.Map;
 
 @ElementsNarutomodMod.ModElement.Tag
@@ -130,6 +130,16 @@ public class ItemJiton extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
+		protected float getMaxPower(ItemStack stack, EntityLivingBase entity) {
+			ItemJutsu.JutsuEnum jutsu = this.getCurrentJutsu(stack);
+			float f = super.getMaxPower(stack, entity);
+			if (jutsu == SANDBULLET) {
+				return Math.min(f, 5.0f);
+			}
+			return f;
+		}
+
+		@Override
 		public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer entity, EnumHand hand) {
 			if ((entity.isCreative() || (ProcedureUtils.hasItemInInventory(entity, ItemFuton.block) 
 			 && ProcedureUtils.hasItemInInventory(entity, ItemDoton.block))) 
@@ -142,7 +152,8 @@ public class ItemJiton extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void onUsingTick(ItemStack stack, EntityLivingBase player, int timeLeft) {
 			super.onUsingTick(stack, player, timeLeft);
-			if (!player.world.isRemote && this.getCurrentJutsu(stack) == SANDBULLET) {
+			if (!player.world.isRemote && this.getCurrentJutsu(stack) == SANDBULLET
+			 && this.getPower(stack, player, timeLeft) < this.getMaxPower(stack, player)) {
 				EntitySandBullet.addPos(stack, player, this.getPower(stack, player, timeLeft));
 			}
 		}
