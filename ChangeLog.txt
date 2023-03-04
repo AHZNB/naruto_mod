@@ -19,6 +19,7 @@ General:
  - kg item will now be given to player at the same time as other basic nature release items
    (once per lifetime) if the player has already achieved kg naturally
  - chakra regeneration amount when idle is now based on player's saturation level
+ - tailed beasts will naturally spawn around the world in a 10k - 100k block radius
 
 0.2.10-beta ===============================================================================
 
