@@ -1,8 +1,8 @@
 {
   "id_map": {
+    "ENTITY": 414,
     "GUI": 63,
-    "DIMENSION": 13,
-    "ENTITY": 414
+    "DIMENSION": 13
   },
   "mod_elements": [
     {
@@ -7937,7 +7937,7 @@
       "entity.mind_transfer.name": "Mind Body Transfer",
       "entity.jintonbeam.name": "Dust Release: Boundary Dismantling Jutsu - beam",
       "tooltip.eightgates.opengates": "[SHIFT] + [Right click] to open gates",
-      "chattext.shinratensei": "Shinra Tensei!",
+      "chattext.shinratensei": "Almighty Push",
       "entity.kankuro.name": "Kankuro",
       "subtitles.shinsusenju": "",
       "entity.genjutsu.name": "Genjutsu",
@@ -7992,8 +7992,8 @@
       "item.smoke_bomb.name": "Smoke Bomb",
       "item.ninja_armor_iwahelmet.name": "Forehead Protector (Iwagakure)",
       "item.byakuganhelmet.name": "Byakugan",
-      "tooltip.rinnegan.jutsu2": "Tendo(Chibakutensei/Tengaishinsei[SHIFT]), Preta(Shield), Animal(Summoning), Naraka(KingOfHell), Outer(FirstEvil L60)",
-      "tooltip.rinnegan.jutsu3": "Banshotenin ([SHIFT] to dislodge blocks)",
+      "tooltip.rinnegan.jutsu2": "Tendo(Chibakutensei/Tengaishinsei[SHIFT]), Preta(Shield), Animal(Summoning), Naraka(KingOfHell), Outer(GedoMazo NXP:8100)",
+      "tooltip.rinnegan.jutsu3": "Universal Pull ([SHIFT] to dislodge blocks)",
       "entity.wood_burial.name": "Wood Burial",
       "entity.hakkeshokeiten.name": "Hakkesho Keiten",
       "subtitles.snake_hiss": "",
@@ -8083,7 +8083,7 @@
       "item.fuma_shuriken.name": "Fuma Shuriken",
       "advancements.yooton_acquired.descr": "Lava Release (\"Corrosion Style\" or \"Lava Style\") is a nature transformation kekkei genkai, a combination of fire and earth.",
       "item.scroll_kikaichu_sphere.name": "Hiden Technique: Kikaichu Sphere",
-      "tooltip.general.powerupkey": "Press the Power Increase key to cycle through abilities",
+      "tooltip.general.powerupkey": "Press [Switch Jutsu] to cycle through abilities",
       "subtitles.charge_ground": "",
       "entity.tailbeastball.name": "Tail beast ball",
       "item.scroll_lightning_beast.name": "Lightning Release: Lightning Beast",
@@ -8100,7 +8100,7 @@
       "entity.enhanced_strength.name": "Enhanced Strength",
       "advancements.mokuton_acquired.descr": "Wood Release is a nature transformation kekkei genkai, a combination of Earth and Water Release. It was famously used by Hashirama Senju, and in fact is not known to have naturally occurred in anyone else, leading to it being regarded as impossible to use without having his cells.",
       "entity.ice_dome.name": "Crystal Ice Mirrors",
-      "advancements.ninjaachievement.title": "Kunai crafted",
+      "advancements.ninjaachievement.title": "Shinobi",
       "potion.effect.heaviness": "Heaviness",
       "advancements.hyoton_acquired.descr": "Ice Release is a nature transformation kekkei genkai, a combination of water and wind.",
       "item.yooton.name": "Lava Release",

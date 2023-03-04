@@ -172,7 +172,7 @@ public class ItemSenjutsu extends ElementsNarutomodMod.ModElement {
 				}
 				EntityLivingBase living = (EntityLivingBase)entity;
 				boolean flag = isSageModeActivated(itemstack);
-				boolean flag1 = living.getEntityAttribute(EntityPlayer.REACH_DISTANCE).hasModifier(ItemSageModeArmor.buffMap.get(EntityPlayer.REACH_DISTANCE));
+				boolean flag1 = living.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).hasModifier(ItemSageModeArmor.buffMap.get(SharedMonsterAttributes.MAX_HEALTH));
 				if (flag && !flag1) {
 					for (Map.Entry<IAttribute, AttributeModifier> entry : ItemSageModeArmor.buffMap.entrySet()) {
 						living.getEntityAttribute(entry.getKey()).applyModifier(entry.getValue());

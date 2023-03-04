@@ -183,34 +183,39 @@ public class ProcedureOnPlayerDeath extends ElementsNarutomodMod.ModElement {
 				if (entity instanceof EntityPlayer)
 					((EntityPlayer) entity).inventory.clearMatchingItems(new ItemStack(ItemSenjutsu.block, (int) (1)).getItem(), -1, (int) (-1),
 							null);
-			} else if (entity.world.getGameRules().getBoolean(PlayerTracker.FORCE_DOJUTSU_DROP_RULE)) {
-				if (((entity instanceof EntityPlayer)
-						? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemSharingan.helmet, (int) (1)))
-						: false)) {
-					stack = ProcedureUtils.getMatchingItemStack((EntityPlayer) entity, ItemSharingan.helmet);
-					((EntityPlayer) entity).dropItem(stack.copy(), true, true);
-					((stack)).shrink((int) 1);
+			} else {
+				if ((EntityBijuManager.cloakLevel((EntityPlayer) entity) > 0)) {
+					EntityBijuManager.toggleBijuCloak((EntityPlayer) entity);
 				}
-				if (((entity instanceof EntityPlayer)
-						? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemMangekyoSharingan.helmet, (int) (1)))
-						: false)) {
-					stack = ProcedureUtils.getMatchingItemStack((EntityPlayer) entity, ItemMangekyoSharingan.helmet);
-					((EntityPlayer) entity).dropItem(stack.copy(), true, true);
-					((stack)).shrink((int) 1);
-				}
-				if (((entity instanceof EntityPlayer)
-						? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemMangekyoSharinganObito.helmet, (int) (1)))
-						: false)) {
-					stack = ProcedureUtils.getMatchingItemStack((EntityPlayer) entity, ItemMangekyoSharinganObito.helmet);
-					((EntityPlayer) entity).dropItem(stack.copy(), true, true);
-					((stack)).shrink((int) 1);
-				}
-				if (((entity instanceof EntityPlayer)
-						? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemByakugan.helmet, (int) (1)))
-						: false)) {
-					stack = ProcedureUtils.getMatchingItemStack((EntityPlayer) entity, ItemByakugan.helmet);
-					((EntityPlayer) entity).dropItem(stack.copy(), true, true);
-					((stack)).shrink((int) 1);
+				if (entity.world.getGameRules().getBoolean(PlayerTracker.FORCE_DOJUTSU_DROP_RULE)) {
+					if (((entity instanceof EntityPlayer)
+							? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemSharingan.helmet, (int) (1)))
+							: false)) {
+						stack = ProcedureUtils.getMatchingItemStack((EntityPlayer) entity, ItemSharingan.helmet);
+						((EntityPlayer) entity).dropItem(stack.copy(), true, true);
+						((stack)).shrink((int) 1);
+					}
+					if (((entity instanceof EntityPlayer)
+							? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemMangekyoSharingan.helmet, (int) (1)))
+							: false)) {
+						stack = ProcedureUtils.getMatchingItemStack((EntityPlayer) entity, ItemMangekyoSharingan.helmet);
+						((EntityPlayer) entity).dropItem(stack.copy(), true, true);
+						((stack)).shrink((int) 1);
+					}
+					if (((entity instanceof EntityPlayer)
+							? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemMangekyoSharinganObito.helmet, (int) (1)))
+							: false)) {
+						stack = ProcedureUtils.getMatchingItemStack((EntityPlayer) entity, ItemMangekyoSharinganObito.helmet);
+						((EntityPlayer) entity).dropItem(stack.copy(), true, true);
+						((stack)).shrink((int) 1);
+					}
+					if (((entity instanceof EntityPlayer)
+							? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemByakugan.helmet, (int) (1)))
+							: false)) {
+						stack = ProcedureUtils.getMatchingItemStack((EntityPlayer) entity, ItemByakugan.helmet);
+						((EntityPlayer) entity).dropItem(stack.copy(), true, true);
+						((stack)).shrink((int) 1);
+					}
 				}
 			}
 			ProcedureSync.EntityNBTTag.removeAndSync(entity, NarutomodModVariables.forceBowPose);

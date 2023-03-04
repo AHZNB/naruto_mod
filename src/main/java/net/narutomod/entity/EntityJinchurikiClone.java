@@ -153,7 +153,9 @@ public class EntityJinchurikiClone extends ElementsNarutomodMod.ModElement {
 			super.onUpdate();
 			if (!this.world.isRemote && this.getSummoner() instanceof EntityPlayerMP) {
 				EntityPlayerMP user = (EntityPlayerMP)this.getSummoner();
-				if (user.getSpectatingEntity() != this) {
+				if (!user.isEntityAlive()) {
+					user.setSpectatingEntity(user);
+				} else if (user.getSpectatingEntity() != this) {
 					user.setSpectatingEntity(this);
 				}
 			}

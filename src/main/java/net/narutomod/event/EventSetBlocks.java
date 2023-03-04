@@ -1,6 +1,7 @@
 package net.narutomod.event;
 
 import net.minecraft.world.World;
+import net.minecraft.world.gen.structure.template.Template;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
@@ -12,11 +13,10 @@ import net.minecraft.block.SoundType;
 import net.minecraft.world.WorldServer;
 import net.minecraft.util.EnumParticleTypes;
 
-import java.util.Map;
 import com.google.common.collect.Maps;
-import java.util.List;
-import net.minecraft.world.gen.structure.template.Template;
 import com.google.common.collect.Lists;
+import java.util.Map;
+import java.util.List;
 
 public class EventSetBlocks extends SpecialEvent {
 	//private Map<BlockPos, IBlockState> blocksMap;

@@ -77,8 +77,13 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 
 	public static int availableBijus() {
 		int i = 0;
-		for (EntityBijuManager bm : mapByClass.values()) {
-			if (!bm.isSealed()) {
+		//for (EntityBijuManager bm : mapByClass.values()) {
+		//	if (!bm.isSealed()) {
+		//		++i;
+		//	}
+		//}
+		for (int j = 1; j <= 9; j++) {
+			if (mapByTailnum.containsKey(j) && !mapByTailnum.get(j).isSealed()) {
 				++i;
 			}
 		}
@@ -90,8 +95,11 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 		if (i > 0) {
 			i = rand.nextInt(i);
 			int j = 0;
-			for (EntityBijuManager bm : mapByClass.values()) {
-				if (!bm.isSealed()) {
+			//for (EntityBijuManager bm : mapByClass.values()) {
+			for (int k = 1; k <= 9; k++) {
+				EntityBijuManager bm = mapByTailnum.get(k);
+				//if (!bm.isSealed()) {
+				if (bm != null && !bm.isSealed()) {
 					if (j == i) {
 						return bm.getTails();
 					}

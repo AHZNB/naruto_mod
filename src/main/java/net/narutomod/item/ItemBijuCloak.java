@@ -9,11 +9,18 @@ import net.minecraftforge.common.util.EnumHelper;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 
+import net.minecraft.world.World;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.translation.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.Item;
 import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.entity.ai.attributes.AttributeModifier;
+import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -21,19 +28,12 @@ import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.model.ModelBox;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.Minecraft;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.ai.attributes.AttributeModifier;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.world.World;
-import net.minecraft.potion.PotionEffect;
-import net.minecraft.init.MobEffects;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.translation.I18n;
+import net.minecraft.client.Minecraft;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.potion.PotionEffect;
+import net.minecraft.init.MobEffects;
 
 import net.narutomod.potion.PotionChakraEnhancedStrength;
 import net.narutomod.potion.PotionReach;
@@ -43,11 +43,11 @@ import net.narutomod.entity.EntityJinchurikiClone;
 import net.narutomod.Particles;
 import net.narutomod.ElementsNarutomodMod;
 
+import com.google.common.collect.Multimap;
 import java.util.UUID;
 import java.util.Random;
-import com.google.common.collect.Multimap;
-import javax.annotation.Nullable;
 import java.util.List;
+import javax.annotation.Nullable;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class ItemBijuCloak extends ElementsNarutomodMod.ModElement {
@@ -294,17 +294,17 @@ public class ItemBijuCloak extends ElementsNarutomodMod.ModElement {
 			 40, 0.2d, 0.4d, 0.2d, 0d, 0d, 0d, 0x2088001b, 20, 
 			 (int)(4.0D / (entity.getRNG().nextDouble() * 0.8D + 0.2D)), 0, entity.getEntityId());
 		}
-		if (!entity.world.isRemote && entity.ticksExisted % 5 == 4) {
+		if (!entity.world.isRemote && entity.ticksExisted % 10 == 4) {
 			//entity.addPotionEffect(new PotionEffect(MobEffects.SATURATION, 5, 0, false, false));
-			entity.addPotionEffect(new PotionEffect(PotionChakraEnhancedStrength.potion, 7, level * 32, false, false));
-			entity.addPotionEffect(new PotionEffect(MobEffects.SPEED, 7, level * 32, false, false));
-			entity.addPotionEffect(new PotionEffect(MobEffects.JUMP_BOOST, 7, 7, false, false));
-			entity.addPotionEffect(new PotionEffect(PotionReach.potion, 7, level - 1, false, false));
-			if (entity.getHealth() < entity.getMaxHealth() && entity.getHealth() > 0f) {
-				entity.heal((float)level);
+			entity.addPotionEffect(new PotionEffect(PotionChakraEnhancedStrength.potion, 12, level * 32, false, false));
+			entity.addPotionEffect(new PotionEffect(MobEffects.SPEED, 12, level * 32, false, false));
+			entity.addPotionEffect(new PotionEffect(MobEffects.JUMP_BOOST, 12, 7, false, false));
+			entity.addPotionEffect(new PotionEffect(PotionReach.potion, 12, level - 1, false, false));
+			if (entity.getHealth() < entity.getMaxHealth() && entity.getHealth() > 0.0f) {
+				entity.heal((float)level * 2f);
 			}
 			if (level == 2) {
-				entity.addPotionEffect(new PotionEffect(MobEffects.RESISTANCE, 7, 2, false, false));
+				entity.addPotionEffect(new PotionEffect(MobEffects.RESISTANCE, 12, 2, false, false));
 			}
 		}
 	}

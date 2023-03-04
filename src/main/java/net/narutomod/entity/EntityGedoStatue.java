@@ -119,6 +119,15 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
+	public static boolean gotAll9Bijus() {
+		for (int i = 0; i < 9; i++) {
+			if (!BIJU_SEALED[i]) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	public static class Sealing9Jutsu implements ItemJutsu.IJutsuCallback {
 		@Override
 		public boolean createJutsu(ItemStack stack, EntityLivingBase entity, float power) {
@@ -135,6 +144,7 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 
 	public static class EntityCustom extends EntitySummonAnimal.Base {
 		private static final DataParameter<Boolean> SIT = EntityDataManager.<Boolean>createKey(EntityCustom.class, DataSerializers.BOOLEAN);
+		private static final DataParameter<Boolean> SEALED9 = EntityDataManager.<Boolean>createKey(EntityCustom.class, DataSerializers.BOOLEAN);
 		private EntityPurpleDragon dragonEntity;
 		private List<EntityLivingBase> dragonTargetList;
 		private List<BlockPos> particleArea;
@@ -165,6 +175,7 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 			this.experienceValue = 100;
 			this.isImmuneToFire = true;
 			this.postScaleFixup();
+			this.setSealedAll9Bijus(gotAll9Bijus());
 		}
 
 		public EntityCustom(EntityLivingBase summonerIn, EntityLivingBase target) {
@@ -180,6 +191,7 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 		public void entityInit() {
 			super.entityInit();
 			this.getDataManager().register(SIT, Boolean.valueOf(false));
+			this.getDataManager().register(SEALED9, Boolean.valueOf(false));
 		}
 
 		public boolean isSitting() {
@@ -188,6 +200,15 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 
 		protected void setSitting(boolean sit) {
 			this.getDataManager().set(SIT, Boolean.valueOf(sit));
+		}
+
+		public boolean sealedAll9Bijus() {
+			return ((Boolean)this.getDataManager().get(SEALED9)).booleanValue();
+		}
+
+		protected void setSealedAll9Bijus(boolean b) {
+			this.getDataManager().set(SEALED9, Boolean.valueOf(b));
+			this.lifeSpan = 2400;
 		}
 
 		@Override
@@ -233,6 +254,9 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 			super.setDead();
 			if (!this.world.isRemote) {
 				thisEntity = null;
+				//if (this.sealedAll9Bijus()) {
+				//	EntityTenTails.EntityCustom entityToSpawn = new EntityTenTails.EntityCustom(this.world);
+				//}
 			}
 		}
 
@@ -248,6 +272,10 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 		protected void initEntityAI() {
 			super.initEntityAI();
 			this.tasks.addTask(1, new EntityAIAttackMelee(this, 1.2D, true) {
+				@Override
+				public boolean shouldExecute() {
+					return !EntityCustom.this.sealedAll9Bijus() && super.shouldExecute();
+				}
 				@Override
 				protected double getAttackReachSqr(EntityLivingBase attackTarget) {
 					double d = this.attacker.width * 2 + attackTarget.width;
@@ -1283,6 +1311,7 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
+			bipedHeadwear.showModel = !((EntityCustom)entity).sealedAll9Bijus();
 			GlStateManager.pushMatrix();
 			GlStateManager.translate(0.0F, 1.5F - 1.5F * MODEL_SCALE * Math.min(f2 / ((EntityCustom)entity).riseTime, 1.0f), 0.0F);
 			GlStateManager.scale(MODEL_SCALE, MODEL_SCALE, MODEL_SCALE);

@@ -9,16 +9,20 @@ Jutsus:
  - limit max jutsuXp to 3x required xp
  - limit unrivaled strength to max 30
  - limit sand bullet barrage to max 5
+ - increased amaterasu damage (based on user ninjaxp)
+ - Yomotsu Hirasaka now works in survival
  
 Items:
  - cleaver sword now takes damage when used, attack speed and damage decrease, recipe changed
  - tweaked ninja armor model sizes to better fit layered player skins
+ - changed dojutsu helmet items textures
 
 General:
  - removed japanese localization
  - kg item will now be given to player at the same time as other basic nature release items
    (once per lifetime) if the player has already achieved kg naturally
  - chakra regeneration amount when idle is now based on player's saturation level
+ - omit the 10 tails becoming a player's naturally sealed biju
 
 0.2.10-beta ===============================================================================
 
