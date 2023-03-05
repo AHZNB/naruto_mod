@@ -195,15 +195,16 @@ public class ItemRinnegan extends ElementsNarutomodMod.ModElement {
 		}.setUnlocalizedName("rinneganhelmet").setRegistryName("rinneganhelmet").setCreativeTab(TabModTab.tab));
 
 		this.elements.items.add(() -> new ItemArmor(enuma, 0, EntityEquipmentSlot.CHEST) {
+			private ModelSizPathRobe armorModel = new ModelSizPathRobe();
+
 			@SideOnly(Side.CLIENT)
 			@Override
 			public ModelBiped getArmorModel(EntityLivingBase living, ItemStack stack, EntityEquipmentSlot slot, ModelBiped defaultModel) {
-				ModelSizPathRobe armorModel = new ModelSizPathRobe();
 				//armorModel.ball[0].showModel = living.getHeldItemMainhand().getItem() != ItemExpandedTruthSeekerBall.block;
-				armorModel.isSneak = living.isSneaking();
-				armorModel.isRiding = living.isRiding();
-				armorModel.isChild = living.isChild();
-				return armorModel;
+				this.armorModel.isSneak = living.isSneaking();
+				this.armorModel.isRiding = living.isRiding();
+				this.armorModel.isChild = living.isChild();
+				return this.armorModel;
 			}
 
 			@Override
@@ -231,15 +232,16 @@ public class ItemRinnegan extends ElementsNarutomodMod.ModElement {
 		}.setUnlocalizedName("rinneganbody").setRegistryName("rinneganbody").setCreativeTab(null));
 		
 		this.elements.items.add(() -> new ItemArmor(enuma, 0, EntityEquipmentSlot.LEGS) {
+			private ModelSizPathRobe armorModel = new ModelSizPathRobe();
+
 			@SideOnly(Side.CLIENT)
 			@Override
 			public ModelBiped getArmorModel(EntityLivingBase living, ItemStack stack, EntityEquipmentSlot slot, ModelBiped defaultModel) {
-				ModelSizPathRobe armorModel = new ModelSizPathRobe();
 				//armorModel.ball[0].showModel = living.getHeldItemMainhand().getItem() != ItemExpandedTruthSeekerBall.block;
-				armorModel.isSneak = living.isSneaking();
-				armorModel.isRiding = living.isRiding();
-				armorModel.isChild = living.isChild();
-				return armorModel;
+				this.armorModel.isSneak = living.isSneaking();
+				this.armorModel.isRiding = living.isRiding();
+				this.armorModel.isChild = living.isChild();
+				return this.armorModel;
 			}
 
 			@Override

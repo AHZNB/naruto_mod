@@ -110,6 +110,7 @@ public class ItemSenjutsu extends ElementsNarutomodMod.ModElement {
 
 	public static class RangedItem extends ItemJutsu.Base implements ItemOnBody.Interface {
 		private static final String TYPEKEY = "SageType";
+		private ModelBiped armorModel = new ModelHelmetSnug();
 
 		public RangedItem(ItemJutsu.JutsuEnum... list) {
 			super(ItemJutsu.JutsuEnum.Type.SENJUTSU, list);
@@ -276,11 +277,10 @@ public class ItemSenjutsu extends ElementsNarutomodMod.ModElement {
 		@SideOnly(Side.CLIENT)
 		public ModelBiped getArmorModel(EntityLivingBase living, ItemStack stack, EntityEquipmentSlot slot, ModelBiped defaultModel) {
 			if (isSageModeActivated(stack)) {
-				ModelBiped armorModel = new ModelHelmetSnug();
-				armorModel.isSneak = living.isSneaking();
-				armorModel.isRiding = living.isRiding();
-				armorModel.isChild = living.isChild();
-				return armorModel;
+				this.armorModel.isSneak = living.isSneaking();
+				this.armorModel.isRiding = living.isRiding();
+				this.armorModel.isChild = living.isChild();
+				return this.armorModel;
 			}
 			return null;
 		}

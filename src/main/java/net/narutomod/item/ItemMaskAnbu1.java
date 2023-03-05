@@ -38,14 +38,15 @@ public class ItemMaskAnbu1 extends ElementsNarutomodMod.ModElement {
 	@Override
 	public void initElements() {
 		elements.items.add(() -> new ItemArmor(ENUMA, 0, EntityEquipmentSlot.HEAD) {
+			private ModelBiped armorModel = new ModelAnbuMask();
+
 			@Override
 			@SideOnly(Side.CLIENT)
 			public ModelBiped getArmorModel(EntityLivingBase living, ItemStack stack, EntityEquipmentSlot slot, ModelBiped defaultModel) {
-				ModelBiped armorModel = new ModelAnbuMask();
-				armorModel.isSneak = living.isSneaking();
-				armorModel.isRiding = living.isRiding();
-				armorModel.isChild = living.isChild();
-				return armorModel;
+				this.armorModel.isSneak = living.isSneaking();
+				this.armorModel.isRiding = living.isRiding();
+				this.armorModel.isChild = living.isChild();
+				return this.armorModel;
 			}
 
 			@Override

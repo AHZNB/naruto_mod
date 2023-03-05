@@ -46,14 +46,15 @@ public class ItemUchiha extends ElementsNarutomodMod.ModElement {
 		ItemArmor.ArmorMaterial enuma = EnumHelper.addArmorMaterial("UCHIHA", "narutomod:sasuke_", 100, new int[]{2, 5, 6, 2}, 9, null, 0f)
 			.setRepairItem(new ItemStack(Items.LEATHER));
 		elements.items.add(() -> new ItemArmor(enuma, 0, EntityEquipmentSlot.CHEST) {
+			private ModelBiped armorModel = new ModelArmorCustom();
+
 			@Override
 			@SideOnly(Side.CLIENT)
 			public ModelBiped getArmorModel(EntityLivingBase living, ItemStack stack, EntityEquipmentSlot slot, ModelBiped defaultModel) {
-				ModelBiped armorModel = new ModelArmorCustom();
-				armorModel.isSneak = living.isSneaking();
-				armorModel.isRiding = living.isRiding();
-				armorModel.isChild = living.isChild();
-				return armorModel;
+				this.armorModel.isSneak = living.isSneaking();
+				this.armorModel.isRiding = living.isRiding();
+				this.armorModel.isChild = living.isChild();
+				return this.armorModel;
 			}
 
 			@Override
@@ -70,25 +71,27 @@ public class ItemUchiha extends ElementsNarutomodMod.ModElement {
 			}
 		}.setUnlocalizedName("uchihabody").setRegistryName("uchihabody").setCreativeTab(TabModTab.tab));
 		elements.items.add(() -> new ItemArmor(enuma, 0, EntityEquipmentSlot.LEGS) {
+			private ModelBiped armorModel = new ModelArmorCustom();
+
 			@Override
 			@SideOnly(Side.CLIENT)
 			public ModelBiped getArmorModel(EntityLivingBase living, ItemStack stack, EntityEquipmentSlot slot, ModelBiped defaultModel) {
-				ModelBiped armorModel = new ModelArmorCustom();
-				armorModel.isSneak = living.isSneaking();
-				armorModel.isRiding = living.isRiding();
-				armorModel.isChild = living.isChild();
-				return armorModel;
+				this.armorModel.isSneak = living.isSneaking();
+				this.armorModel.isRiding = living.isRiding();
+				this.armorModel.isChild = living.isChild();
+				return this.armorModel;
 			}
 		}.setUnlocalizedName("uchihalegs").setRegistryName("uchihalegs").setCreativeTab(TabModTab.tab));
 		elements.items.add(() -> new ItemArmor(enuma, 0, EntityEquipmentSlot.FEET) {
+			private ModelBiped armorModel = new ModelArmorCustom();
+
 			@Override
 			@SideOnly(Side.CLIENT)
 			public ModelBiped getArmorModel(EntityLivingBase living, ItemStack stack, EntityEquipmentSlot slot, ModelBiped defaultModel) {
-				ModelBiped armorModel = new ModelArmorCustom();
-				armorModel.isSneak = living.isSneaking();
-				armorModel.isRiding = living.isRiding();
-				armorModel.isChild = living.isChild();
-				return armorModel;
+				this.armorModel.isSneak = living.isSneaking();
+				this.armorModel.isRiding = living.isRiding();
+				this.armorModel.isChild = living.isChild();
+				return this.armorModel;
 			}
 		}.setUnlocalizedName("uchihaboots").setRegistryName("uchihaboots").setCreativeTab(TabModTab.tab));
 	}

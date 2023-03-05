@@ -43,14 +43,15 @@ public class ItemAsuraPathArmor extends ElementsNarutomodMod.ModElement {
 		ItemArmor.ArmorMaterial enuma = EnumHelper.addArmorMaterial("ASURAPATHARMOR", "narutomod:sasuke_", 1024, new int[]{2, 5, 1024, 2}, 0, null,
 				5.0F);
 		this.elements.items.add(() -> new ItemArmor(enuma, 0, EntityEquipmentSlot.CHEST) {
+			private ModelBiped armorModel = new ModelArmorCustom();
+
 			@SideOnly(Side.CLIENT)
 			@Override
 			public ModelBiped getArmorModel(EntityLivingBase living, ItemStack stack, EntityEquipmentSlot slot, ModelBiped defaultModel) {
-				ModelBiped armorModel = new ModelArmorCustom();
-				armorModel.isSneak = living.isSneaking();
-				armorModel.isRiding = living.isRiding();
-				armorModel.isChild = living.isChild();
-				return armorModel;
+				this.armorModel.isSneak = living.isSneaking();
+				this.armorModel.isRiding = living.isRiding();
+				this.armorModel.isChild = living.isChild();
+				return this.armorModel;
 			}
 
 			@Override
