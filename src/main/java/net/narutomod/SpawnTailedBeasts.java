@@ -111,7 +111,7 @@ public class SpawnTailedBeasts extends ElementsNarutomodMod.ModElement {
 				}
 				spawnPos.setY(height);
 				bm.setPosition(spawnPos);
-				System.out.println(String.format("[SPAWNED TAILED BEAST] Tails: %s, Location: %s", bm.getTails(), spawnPos));
+				//System.out.println(String.format("[SPAWNED TAILED BEAST] Tails: %s, Location: %s", bm.getTails(), spawnPos));
 			}
 			boolean playerInRange = false;
 
