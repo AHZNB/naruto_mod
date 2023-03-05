@@ -16,6 +16,9 @@ Items:
  - cleaver sword now takes damage when used, attack speed and damage decrease, recipe changed
  - tweaked ninja armor model sizes to better fit layered player skins
  - changed dojutsu helmet items textures
+ 
+ Armor:
+  - fix armor lag by preventing it from creating new instances
 
 General:
  - removed japanese localization
