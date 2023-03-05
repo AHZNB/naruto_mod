@@ -1,6 +1,8 @@
 
 package net.narutomod.entity;
 
+import net.minecraft.init.Biomes;
+import net.minecraft.world.biome.Biome;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
@@ -34,6 +36,8 @@ import net.narutomod.item.ItemFuton;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.ElementsNarutomodMod;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 import javax.annotation.Nullable;
 

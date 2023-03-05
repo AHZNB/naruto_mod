@@ -1,6 +1,8 @@
 
 package net.narutomod.entity;
 
+import net.minecraft.init.Biomes;
+import net.minecraft.world.biome.Biome;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 
 import net.minecraft.world.World;
@@ -20,13 +22,11 @@ import net.narutomod.Chakra;
 import net.narutomod.ElementsNarutomodMod;
 
 import javax.annotation.Nullable;
-import java.util.Map;
+import javax.vecmath.Vector3d;
+import java.util.*;
+
 import com.google.common.collect.Maps;
-import java.util.UUID;
-import java.util.List;
 import com.google.common.collect.Lists;
-import java.util.Collection;
-import java.util.Random;
 import com.google.common.collect.ImmutableList;
 
 @ElementsNarutomodMod.ModElement.Tag
@@ -44,7 +44,20 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 	private long cloakCD;
 	private final int[] cloakXp = new int[3];
 	private int respawnCD;
+	private Vector3d position;
 	private static final Random rand = new Random();
+
+	private static final List<List<Biome>> spawns = Lists.newArrayList(
+			Arrays.asList(Biomes.DESERT, Biomes.DESERT_HILLS, Biomes.MESA),											  		   // Shukaku
+			Arrays.asList(Biomes.JUNGLE, Biomes.JUNGLE_EDGE, Biomes.JUNGLE_HILLS, Biomes.SWAMPLAND), 						   // Matatabi
+			Arrays.asList(Biomes.OCEAN, Biomes.BEACH),																		   // Isobu
+			Arrays.asList(Biomes.TAIGA, Biomes.TAIGA_HILLS, Biomes.JUNGLE, Biomes.JUNGLE_EDGE, Biomes.JUNGLE_HILLS), 		   // Son Goku
+			Arrays.asList(Biomes.PLAINS, Biomes.SAVANNA, Biomes.SAVANNA_PLATEAU),											   // Kokuo
+			Arrays.asList(Biomes.RIVER, Biomes.SWAMPLAND),																	   // Saiken
+			Arrays.asList(Biomes.BIRCH_FOREST, Biomes.BIRCH_FOREST_HILLS, Biomes.MUTATED_BIRCH_FOREST, Biomes.MUTATED_FOREST), // Chomei
+			Arrays.asList(Biomes.OCEAN, Biomes.STONE_BEACH),																   // Gyuki
+			Arrays.asList(Biomes.FOREST, Biomes.FOREST_HILLS, Biomes.ROOFED_FOREST)									  		   // Kurama
+	);
 
 	public static Collection<EntityBijuManager> getBMList() {
 		return ImmutableList.copyOf(mapByClass.values());
@@ -212,6 +225,22 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 		this.setCloakXPs(ZERO);
 		mapByClass.put(clazz, this);
 		mapByTailnum.put(tailnum, this);
+	}
+
+	public Vector3d getPosition() {
+		return this.position;
+	}
+
+	public void setPosition(Vector3d position) {
+		this.position = position;
+	}
+
+	public boolean hasPosition() {
+		return this.position != null;
+	}
+
+	public boolean canSpawn(Biome biome) {
+		return this.spawns.get(this.tails - 1).contains(biome);
 	}
 
 	public void onAddedToWorld(T entityIn) {

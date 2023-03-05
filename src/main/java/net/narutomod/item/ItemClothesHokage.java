@@ -41,14 +41,20 @@ public class ItemClothesHokage extends ElementsNarutomodMod.ModElement {
 		ItemArmor.ArmorMaterial enuma = EnumHelper.addArmorMaterial("CLOTHES_HOKAGE", "narutomod:sasuke_", 100, new int[]{2, 5, 6, 2}, 0,
 				SoundEvents.ITEM_ARMOR_EQUIP_LEATHER, 0f);
 		elements.items.add(() -> new ItemArmor(enuma, 0, EntityEquipmentSlot.HEAD) {
+			@SideOnly(Side.CLIENT)
+			private ModelBiped armorModel;
+
 			@Override
 			@SideOnly(Side.CLIENT)
 			public ModelBiped getArmorModel(EntityLivingBase living, ItemStack stack, EntityEquipmentSlot slot, ModelBiped defaultModel) {
-				ModelBiped armorModel = new ModelRobe();
-				armorModel.isSneak = living.isSneaking();
-				armorModel.isRiding = living.isRiding();
-				armorModel.isChild = living.isChild();
-				return armorModel;
+				if (this.armorModel == null) {
+					this.armorModel = new ModelRobe();
+				}
+
+				this.armorModel.isSneak = living.isSneaking();
+				this.armorModel.isRiding = living.isRiding();
+				this.armorModel.isChild = living.isChild();
+				return this.armorModel;
 			}
 
 			@Override
@@ -57,14 +63,20 @@ public class ItemClothesHokage extends ElementsNarutomodMod.ModElement {
 			}
 		}.setUnlocalizedName("clothes_hokagehelmet").setRegistryName("clothes_hokagehelmet").setCreativeTab(TabModTab.tab));
 		elements.items.add(() -> new ItemArmor(enuma, 0, EntityEquipmentSlot.CHEST) {
+			@SideOnly(Side.CLIENT)
+			private ModelBiped armorModel;
+
 			@Override
 			@SideOnly(Side.CLIENT)
 			public ModelBiped getArmorModel(EntityLivingBase living, ItemStack stack, EntityEquipmentSlot slot, ModelBiped defaultModel) {
-				ModelBiped armorModel = new ModelRobe();
-				armorModel.isSneak = living.isSneaking();
-				armorModel.isRiding = living.isRiding();
-				armorModel.isChild = living.isChild();
-				return armorModel;
+				if (this.armorModel == null) {
+					this.armorModel = new ModelRobe();
+				}
+
+				this.armorModel.isSneak = living.isSneaking();
+				this.armorModel.isRiding = living.isRiding();
+				this.armorModel.isChild = living.isChild();
+				return this.armorModel;
 			}
 
 			@Override
@@ -244,7 +256,8 @@ public class ItemClothesHokage extends ElementsNarutomodMod.ModElement {
 			bipedLeftArm.setRotationPoint(5.0F, 2.0F, 0.0F);
 			bipedLeftArm.cubeList.add(new ModelBox(bipedLeftArm, 0, 32, -1.0F, -2.0F, -2.0F, 4, 12, 4, 0.5F, true));
 		}
-
+
+
 		public void setRotationAngle(ModelRenderer modelRenderer, float x, float y, float z) {
 			modelRenderer.rotateAngleX = x;
 			modelRenderer.rotateAngleY = y;

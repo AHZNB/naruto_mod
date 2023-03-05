@@ -1,6 +1,8 @@
 
 package net.narutomod.entity;
 
+import net.minecraft.nbt.NBTTagList;
+import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
@@ -87,10 +89,12 @@ import net.narutomod.ElementsNarutomodMod;
 
 import com.google.common.base.Predicate;
 import javax.annotation.Nullable;
+import javax.vecmath.Vector3d;
 import java.util.UUID;
 import java.util.Map;
 import com.google.common.collect.Maps;
-
+
+
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 	public static final int ENTITYID = 251;
@@ -1301,6 +1305,11 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 	 				this.getBijuManager().setVesselEntity(entity, false);
 	 			}
 	 		}
+			 if (compound.hasKey("positionX")) {
+				 Vector3d position = new Vector3d(compound.getDouble("positionX"), compound.getDouble("positionY"),
+						 compound.getDouble("positionZ"));
+				 this.getBijuManager().setPosition(position);
+			 }
 	 	}
 
 	 	@Override 
@@ -1323,6 +1332,12 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 	 			compound.removeTag("JinchurikiCloakXp");
 	 			compound.removeTag("JinchurikiCloakCD");
 	 		}
+			 if (this.getBijuManager().hasPosition()) {
+				 Vector3d position = this.getBijuManager().getPosition();
+				 compound.setDouble("positionX", position.getX());
+				 compound.setDouble("positionY", position.getY());
+				 compound.setDouble("positionZ", position.getZ());
+			 }
 	 		return compound;
 	 	} 
 	}

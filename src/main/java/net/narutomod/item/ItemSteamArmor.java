@@ -51,16 +51,23 @@ public class ItemSteamArmor extends ElementsNarutomodMod.ModElement {
 	@Override
 	public void initElements() {
 		ItemArmor.ArmorMaterial enuma = EnumHelper.addArmorMaterial("STEAM_ARMOR", "narutomod:sasuke_", 50,
-		 new int[]{2, 5, 6, 2}, 9, SoundEvents.ITEM_ARMOR_EQUIP_LEATHER, 1.5f).setRepairItem(new ItemStack(Items.LEATHER));
+		 new int[]{2, 5, 6, 2}, 9,
+ SoundEvents.ITEM_ARMOR_EQUIP_LEATHER, 1.5f).setRepairItem(new ItemStack(Items.LEATHER));
 		elements.items.add(() -> new ItemArmor(enuma, 0, EntityEquipmentSlot.HEAD) {
+			@SideOnly(Side.CLIENT)
+			private ModelBiped armorModel;
+
 			@Override
 			@SideOnly(Side.CLIENT)
 			public ModelBiped getArmorModel(EntityLivingBase living, ItemStack stack, EntityEquipmentSlot slot, ModelBiped defaultModel) {
-				ModelBiped armorModel = new ModelSteamArmor();
-				armorModel.isSneak = living.isSneaking();
-				armorModel.isRiding = living.isRiding();
-				armorModel.isChild = living.isChild();
-				return armorModel;
+				if (this.armorModel == null) {
+					this.armorModel = new ModelSteamArmor();
+				}
+
+				this.armorModel.isSneak = living.isSneaking();
+				this.armorModel.isRiding = living.isRiding();
+				this.armorModel.isChild = living.isChild();
+				return this.armorModel;
 			}
 
 			@Override
@@ -90,7 +97,8 @@ public class ItemSteamArmor extends ElementsNarutomodMod.ModElement {
 					((ModelSteamArmor)this.model).leggingsLeft.showModel = false;
 				}
 			}
-		}.setUnlocalizedName("steam_armorbody").setRegistryName("steam_armorbody").setCreativeTab(TabModTab.tab));
+
+		}.setUnlocalizedName("steam_armorbody").setRegistryName("steam_armorbody").setCreativeTab(TabModTab.tab));
 		elements.items.add(() -> new ItemNinjaArmor.Base(ItemNinjaArmor.Type.OTHER, enuma, EntityEquipmentSlot.LEGS) {
 			@Override
 			protected ItemNinjaArmor.ArmorData setArmorData(ItemNinjaArmor.Type type, EntityEquipmentSlot slotIn) {
@@ -112,7 +120,8 @@ public class ItemSteamArmor extends ElementsNarutomodMod.ModElement {
 					((ModelSteamArmor)this.model).skirtLeft.showModel = false;
 				}
 			}
-		}.setUnlocalizedName("steam_armorlegs").setRegistryName("steam_armorlegs").setCreativeTab(TabModTab.tab));
+
+		}.setUnlocalizedName("steam_armorlegs").setRegistryName("steam_armorlegs").setCreativeTab(TabModTab.tab));
 	}
 
 	@SideOnly(Side.CLIENT)

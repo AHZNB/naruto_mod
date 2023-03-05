@@ -34,7 +34,7 @@ public class ItemAsuraPathArmor extends ElementsNarutomodMod.ModElement {
 	@ObjectHolder("narutomod:asurapatharmorbody")
 	public static final Item body = null;
 	private static final AttributeModifier HEALTH_MODIFIER = new AttributeModifier(UUID.fromString("92f6ba90-c2b1-460d-a88e-5dd725be3c17"), "Asura bonus", 40d, 0);
-	
+
 	public ItemAsuraPathArmor(ElementsNarutomodMod instance) {
 		super(instance, 210);
 	}
@@ -44,13 +44,19 @@ public class ItemAsuraPathArmor extends ElementsNarutomodMod.ModElement {
 				5.0F);
 		this.elements.items.add(() -> new ItemArmor(enuma, 0, EntityEquipmentSlot.CHEST) {
 			@SideOnly(Side.CLIENT)
+			private ModelBiped armorModel;
+
+			@SideOnly(Side.CLIENT)
 			@Override
 			public ModelBiped getArmorModel(EntityLivingBase living, ItemStack stack, EntityEquipmentSlot slot, ModelBiped defaultModel) {
-				ModelBiped armorModel = new ModelArmorCustom();
-				armorModel.isSneak = living.isSneaking();
-				armorModel.isRiding = living.isRiding();
-				armorModel.isChild = living.isChild();
-				return armorModel;
+				if (this.armorModel == null) {
+					this.armorModel = new ModelArmorCustom();
+				}
+
+				this.armorModel.isSneak = living.isSneaking();
+				this.armorModel.isRiding = living.isRiding();
+				this.armorModel.isChild = living.isChild();
+				return this.armorModel;
 			}
 
 			@Override

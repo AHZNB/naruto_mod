@@ -34,6 +34,9 @@ public class ItemDojutsu extends ElementsNarutomodMod.ModElement {
 	}
 
 	public abstract static class Base extends ItemArmor {
+		@SideOnly(Side.CLIENT)
+		private ModelBiped armorModel;
+
 		public Base(ItemArmor.ArmorMaterial material) {
 			super(material, 0, EntityEquipmentSlot.HEAD);
 		}
@@ -54,11 +57,14 @@ public class ItemDojutsu extends ElementsNarutomodMod.ModElement {
 		@SideOnly(Side.CLIENT)
 		@Override
 		public ModelBiped getArmorModel(EntityLivingBase living, ItemStack stack, EntityEquipmentSlot slot, ModelBiped defaultModel) {
-			ModelBiped armorModel = new ClientModel().new ModelHelmetSnug();
-			armorModel.isSneak = living.isSneaking();
-			armorModel.isRiding = living.isRiding();
-			armorModel.isChild = living.isChild();
-			return armorModel;
+			if (this.armorModel == null) {
+				this.armorModel = new ClientModel().new ModelHelmetSnug();
+			}
+
+			this.armorModel.isSneak = living.isSneaking();
+			this.armorModel.isRiding = living.isRiding();
+			this.armorModel.isChild = living.isChild();
+			return this.armorModel;
 		}
 
 		public boolean isOwner(ItemStack stack, EntityLivingBase entity) {
