@@ -44,7 +44,7 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 	private long cloakCD;
 	private final int[] cloakXp = new int[3];
 	private int respawnCD;
-	private Vector3d position;
+	private Vec3d spawnPos;
 	private static final Random rand = new Random();
 
 	private static final List<List<Biome>> spawns = Lists.newArrayList(
@@ -227,19 +227,19 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 		mapByTailnum.put(tailnum, this);
 	}
 
-	public Vector3d getPosition() {
-		return this.position;
+	public Vec3d getSpawnPos() {
+		return this.spawnPos;
 	}
 
-	public void setPosition(Vector3d position) {
-		this.position = position;
+	public void setSpawnPos(Vec3d spawnPos) {
+		this.spawnPos = spawnPos;
 	}
 
-	public boolean hasPosition() {
-		return this.position != null;
+	public boolean hasSpawnPos() {
+		return this.spawnPos != null;
 	}
 
-	public boolean canSpawn(Biome biome) {
+	public boolean canSpawnInBiome(Biome biome) {
 		return this.spawns.get(this.tails - 1).contains(biome);
 	}
 
