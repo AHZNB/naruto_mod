@@ -1298,9 +1298,8 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 	 			}
 	 		}
 			 if (compound.hasKey("spawnPosX")) {
-				 Vec3d spawnPos = new Vec3d(compound.getDouble("spawnPosX"), compound.getDouble("spawnPosY"),
-						 compound.getDouble("spawnPosZ"));
-				 this.getBijuManager().setSpawnPos(spawnPos);
+				 this.getBijuManager().setSpawnPos(new Vec3d(compound.getDouble("spawnPosX"), compound.getDouble("spawnPosY"),
+						 compound.getDouble("spawnPosZ")));
 			 }
 	 	}
 

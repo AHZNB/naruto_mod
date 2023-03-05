@@ -1,6 +1,5 @@
 package net.narutomod;
 
-import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -12,10 +11,9 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.World;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.block.state.IBlockState;
-
-import javax.vecmath.Vector3d;
 
 import java.util.Random;
 
@@ -24,6 +22,7 @@ import net.narutomod.entity.EntityBijuManager;
 @ElementsNarutomodMod.ModElement.Tag
 public class SpawnTailedBeasts extends ElementsNarutomodMod.ModElement {
 	private static final String SPAWN_TB_RULE = "spawnTailedBeasts";
+
 	public SpawnTailedBeasts(ElementsNarutomodMod instance) {
 		super(instance, 835);
 	}
@@ -39,9 +38,8 @@ public class SpawnTailedBeasts extends ElementsNarutomodMod.ModElement {
 	@SubscribeEvent
 	public void onWorldLoad(WorldEvent.Load event) {
 		World world = event.getWorld();
-
 		if (!world.isRemote && !world.getGameRules().hasRule(SPAWN_TB_RULE)) {
-			world.getGameRules().addGameRule(SPAWN_TB_RULE, "true", net.minecraft.world.GameRules.ValueType.BOOLEAN_VALUE);
+			world.getGameRules().addGameRule(SPAWN_TB_RULE, "false", net.minecraft.world.GameRules.ValueType.BOOLEAN_VALUE);
 		}
 	}
 
@@ -101,8 +99,7 @@ public class SpawnTailedBeasts extends ElementsNarutomodMod.ModElement {
 
 			for (EntityPlayer player : world.playerEntities) {
 				double distanceSq = player.getDistanceSq(spawnPos.x, spawnPos.y, spawnPos.z);
-
-				if (distanceSq < REQUIRED_DISTANCE) {
+				if (distanceSq < REQUIRED_DISTANCE * REQUIRED_DISTANCE) {
 					playerInRange = true;
 					break;
 				}
