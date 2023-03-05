@@ -9,11 +9,13 @@ import net.minecraftforge.common.util.EnumHelper;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 
+import net.minecraft.world.World;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.Item;
 import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.client.entity.AbstractClientPlayer;
@@ -21,12 +23,10 @@ import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.model.ModelBox;
 import net.minecraft.client.model.ModelBiped;
+import net.minecraft.init.SoundEvents;
 
 import net.narutomod.creativetab.TabModTab;
 import net.narutomod.ElementsNarutomodMod;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.world.World;
-import net.minecraft.init.SoundEvents;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class ItemAkatsukiRobe extends ElementsNarutomodMod.ModElement {
@@ -42,8 +42,7 @@ public class ItemAkatsukiRobe extends ElementsNarutomodMod.ModElement {
 	@Override
 	public void initElements() {
 		ItemArmor.ArmorMaterial enuma = EnumHelper.addArmorMaterial("AKATSUKI_ROBE", "narutomod:sasuke_",
-		 100, new int[]{1, 2, 3, 1}, 9,
- SoundEvents.ITEM_ARMOR_EQUIP_LEATHER, 0f);
+		 100, new int[]{1, 2, 3, 1}, 9, SoundEvents.ITEM_ARMOR_EQUIP_LEATHER, 0f);
 		elements.items.add(() -> new ItemArmor(enuma, 0, EntityEquipmentSlot.HEAD) {
 			@SideOnly(Side.CLIENT)
 			private ModelBiped armorModel;
@@ -54,7 +53,6 @@ public class ItemAkatsukiRobe extends ElementsNarutomodMod.ModElement {
 				if (this.armorModel == null) {
 					this.armorModel = new ModelAkatsukiRobe();
 				}
-
 				this.armorModel.isSneak = living.isSneaking();
 				this.armorModel.isRiding = living.isRiding();
 				this.armorModel.isChild = living.isChild();
@@ -85,7 +83,6 @@ public class ItemAkatsukiRobe extends ElementsNarutomodMod.ModElement {
 				if (this.armorModel == null) {
 					this.armorModel = new ModelAkatsukiRobe();
 				}
-
 				this.armorModel.isSneak = living.isSneaking();
 				this.armorModel.isRiding = living.isRiding();
 				this.armorModel.isChild = living.isChild();

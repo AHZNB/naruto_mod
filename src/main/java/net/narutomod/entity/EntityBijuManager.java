@@ -22,9 +22,7 @@ import net.narutomod.Chakra;
 import net.narutomod.ElementsNarutomodMod;
 
 import javax.annotation.Nullable;
-import javax.vecmath.Vector3d;
-import java.util.*;
-
+import java.util.*;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Lists;
 import com.google.common.collect.ImmutableList;

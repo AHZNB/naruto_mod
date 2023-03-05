@@ -30,6 +30,7 @@ import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import java.util.Map;
 import java.util.HashMap;
 import com.google.common.collect.Multimap;
+import javax.annotation.Nullable;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class ItemGunbai extends ElementsNarutomodMod.ModElement {
@@ -75,7 +76,7 @@ public class ItemGunbai extends ElementsNarutomodMod.ModElement {
 			return multimap;
 		}
 
-		@Override
+		/*@Override
 		public void onPlayerStoppedUsing(ItemStack itemstack, World world, EntityLivingBase entityLivingBase, int timeLeft) {
 			if (!world.isRemote) {
 				Map<String, Object> $_dependencies = new HashMap<>();
@@ -83,17 +84,27 @@ public class ItemGunbai extends ElementsNarutomodMod.ModElement {
 				$_dependencies.put("itemstack", itemstack);
 				ProcedureFoldingFanRangedItemUsed.executeProcedure($_dependencies);
 			}
+		}*/
+
+		@Override
+		public boolean canDisableShield(ItemStack stack, ItemStack shield, EntityLivingBase entity, EntityLivingBase attacker) {
+			return false;
 		}
 
 		@Override
-		public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer entity, EnumHand hand) {
-			entity.setActiveHand(hand);
-			return new ActionResult(EnumActionResult.SUCCESS, entity.getHeldItem(hand));
+		public boolean isShield(ItemStack stack, @Nullable EntityLivingBase entity) {
+			return stack.getItem() == block;
+		}
+
+		@Override
+		public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn) {
+			playerIn.setActiveHand(handIn);
+			return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, playerIn.getHeldItem(handIn));
 		}
 
 		@Override
 		public EnumAction getItemUseAction(ItemStack itemstack) {
-			return EnumAction.BOW;
+			return EnumAction.BLOCK;
 		}
 
 		@Override

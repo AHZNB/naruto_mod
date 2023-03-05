@@ -1,8 +1,6 @@
 
 package net.narutomod.entity;
 
-import net.minecraft.init.Biomes;
-import net.minecraft.world.biome.Biome;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
@@ -24,12 +22,10 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.storage.MapStorage;
-//import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
-//import net.narutomod.item.ItemBijuCloak;
 import net.narutomod.item.ItemJiton;
 import net.narutomod.item.ItemDoton;
 import net.narutomod.item.ItemFuton;

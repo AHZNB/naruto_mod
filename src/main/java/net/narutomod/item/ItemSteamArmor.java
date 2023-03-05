@@ -51,8 +51,7 @@ public class ItemSteamArmor extends ElementsNarutomodMod.ModElement {
 	@Override
 	public void initElements() {
 		ItemArmor.ArmorMaterial enuma = EnumHelper.addArmorMaterial("STEAM_ARMOR", "narutomod:sasuke_", 50,
-		 new int[]{2, 5, 6, 2}, 9,
- SoundEvents.ITEM_ARMOR_EQUIP_LEATHER, 1.5f).setRepairItem(new ItemStack(Items.LEATHER));
+		 new int[]{2, 5, 6, 2}, 9, SoundEvents.ITEM_ARMOR_EQUIP_LEATHER, 1.5f).setRepairItem(new ItemStack(Items.LEATHER));
 		elements.items.add(() -> new ItemArmor(enuma, 0, EntityEquipmentSlot.HEAD) {
 			@SideOnly(Side.CLIENT)
 			private ModelBiped armorModel;

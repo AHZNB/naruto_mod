@@ -110,7 +110,6 @@ public class ItemSenjutsu extends ElementsNarutomodMod.ModElement {
 
 	public static class RangedItem extends ItemJutsu.Base implements ItemOnBody.Interface {
 		private static final String TYPEKEY = "SageType";
-
 		@SideOnly(Side.CLIENT)
 		private ModelBiped armorModel;
 
@@ -282,7 +281,6 @@ public class ItemSenjutsu extends ElementsNarutomodMod.ModElement {
 				if (this.armorModel == null) {
 					this.armorModel = new ModelHelmetSnug();
 				}
-
 				this.armorModel.isSneak = living.isSneaking();
 				this.armorModel.isRiding = living.isRiding();
 				this.armorModel.isChild = living.isChild();

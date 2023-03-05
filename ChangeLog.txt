@@ -11,14 +11,14 @@ Jutsus:
  - limit sand bullet barrage to max 5
  - increased amaterasu damage (based on user ninjaxp)
  - Yomotsu Hirasaka now works in survival
+ - lowered damage on Chakra flow
+ - limit black lightning panther to max 5
  
 Items:
  - cleaver sword now takes damage when used, attack speed and damage decrease, recipe changed
  - tweaked ninja armor model sizes to better fit layered player skins
  - changed dojutsu helmet items textures
- 
- Armor:
-  - fix armor lag by preventing it from creating new instances
+ - fix armor lag by preventing it from creating new instances
 
 General:
  - removed japanese localization
@@ -26,7 +26,7 @@ General:
    (once per lifetime) if the player has already achieved kg naturally
  - chakra regeneration amount when idle is now based on player's saturation level
  - omit the 10 tails becoming a player's naturally sealed biju
-- make tailed beasts spawn naturally in a 10k - 100k radius from 0 0
+ - added gamerule:spawnTailedBeasts to spawn bijus naturally in a 10k - 100k radius from 0 0
 
 0.2.10-beta ===============================================================================
 

@@ -96,8 +96,11 @@ public class ItemRaiton extends ElementsNarutomodMod.ModElement {
 		@Override
 		protected float getMaxPower(ItemStack stack, EntityLivingBase entity) {
 			float f = super.getMaxPower(stack, entity);
-			if (this.getCurrentJutsu(stack) == KIRIN) {
+			ItemJutsu.JutsuEnum jutsu = this.getCurrentJutsu(stack);
+			if (jutsu == KIRIN) {
 				return Math.min(f, 1.0f);
+			} else if (jutsu == BLACKPANTHER) {
+				return Math.min(f, 5.0f);
 			}
 			return f;
 		}
