@@ -54,11 +54,16 @@ public class ItemBoneArmor extends ElementsNarutomodMod.ModElement {
 		 new int[]{2, 5, 20, 2}, 0,
  net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:bonecrack")), 5f);
 		elements.items.add(() -> new ItemArmor(enuma, 0, EntityEquipmentSlot.CHEST) {
-			private ModelBiped armorModel = new ModelBoneArmor();
+			@SideOnly(Side.CLIENT)
+			private ModelBiped armorModel;
 
 			@Override
 			@SideOnly(Side.CLIENT)
 			public ModelBiped getArmorModel(EntityLivingBase living, ItemStack stack, EntityEquipmentSlot slot, ModelBiped defaultModel) {
+				if (this.armorModel == null) {
+					this.armorModel = new ModelBoneArmor();
+				}
+
 				this.armorModel.isSneak = living.isSneaking();
 				this.armorModel.isRiding = living.isRiding();
 				this.armorModel.isChild = living.isChild();

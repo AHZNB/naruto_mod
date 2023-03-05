@@ -45,11 +45,16 @@ public class ItemAkatsukiRobe extends ElementsNarutomodMod.ModElement {
 		 100, new int[]{1, 2, 3, 1}, 9,
  SoundEvents.ITEM_ARMOR_EQUIP_LEATHER, 0f);
 		elements.items.add(() -> new ItemArmor(enuma, 0, EntityEquipmentSlot.HEAD) {
-			private ModelBiped armorModel = new ModelAkatsukiRobe();
+			@SideOnly(Side.CLIENT)
+			private ModelBiped armorModel;
 
 			@Override
 			@SideOnly(Side.CLIENT)
 			public ModelBiped getArmorModel(EntityLivingBase living, ItemStack stack, EntityEquipmentSlot slot, ModelBiped defaultModel) {
+				if (this.armorModel == null) {
+					this.armorModel = new ModelAkatsukiRobe();
+				}
+
 				this.armorModel.isSneak = living.isSneaking();
 				this.armorModel.isRiding = living.isRiding();
 				this.armorModel.isChild = living.isChild();
@@ -71,11 +76,16 @@ public class ItemAkatsukiRobe extends ElementsNarutomodMod.ModElement {
 			}
 		}.setUnlocalizedName("akatsuki_robehelmet").setRegistryName("akatsuki_robehelmet").setCreativeTab(TabModTab.tab));
 		elements.items.add(() -> new ItemArmor(enuma, 0, EntityEquipmentSlot.CHEST) {
-			private ModelBiped armorModel = new ModelAkatsukiRobe();
+			@SideOnly(Side.CLIENT)
+			private ModelBiped armorModel;
 
 			@Override
 			@SideOnly(Side.CLIENT)
 			public ModelBiped getArmorModel(EntityLivingBase living, ItemStack stack, EntityEquipmentSlot slot, ModelBiped defaultModel) {
+				if (this.armorModel == null) {
+					this.armorModel = new ModelAkatsukiRobe();
+				}
+
 				this.armorModel.isSneak = living.isSneaking();
 				this.armorModel.isRiding = living.isRiding();
 				this.armorModel.isChild = living.isChild();

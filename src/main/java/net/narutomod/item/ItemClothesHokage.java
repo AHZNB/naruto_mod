@@ -41,11 +41,16 @@ public class ItemClothesHokage extends ElementsNarutomodMod.ModElement {
 		ItemArmor.ArmorMaterial enuma = EnumHelper.addArmorMaterial("CLOTHES_HOKAGE", "narutomod:sasuke_", 100, new int[]{2, 5, 6, 2}, 0,
 				SoundEvents.ITEM_ARMOR_EQUIP_LEATHER, 0f);
 		elements.items.add(() -> new ItemArmor(enuma, 0, EntityEquipmentSlot.HEAD) {
-			private ModelBiped armorModel = new ModelRobe();
+			@SideOnly(Side.CLIENT)
+			private ModelBiped armorModel;
 
 			@Override
 			@SideOnly(Side.CLIENT)
 			public ModelBiped getArmorModel(EntityLivingBase living, ItemStack stack, EntityEquipmentSlot slot, ModelBiped defaultModel) {
+				if (this.armorModel == null) {
+					this.armorModel = new ModelRobe();
+				}
+
 				this.armorModel.isSneak = living.isSneaking();
 				this.armorModel.isRiding = living.isRiding();
 				this.armorModel.isChild = living.isChild();
@@ -58,11 +63,16 @@ public class ItemClothesHokage extends ElementsNarutomodMod.ModElement {
 			}
 		}.setUnlocalizedName("clothes_hokagehelmet").setRegistryName("clothes_hokagehelmet").setCreativeTab(TabModTab.tab));
 		elements.items.add(() -> new ItemArmor(enuma, 0, EntityEquipmentSlot.CHEST) {
-			private ModelBiped armorModel = new ModelRobe();
+			@SideOnly(Side.CLIENT)
+			private ModelBiped armorModel;
 
 			@Override
 			@SideOnly(Side.CLIENT)
 			public ModelBiped getArmorModel(EntityLivingBase living, ItemStack stack, EntityEquipmentSlot slot, ModelBiped defaultModel) {
+				if (this.armorModel == null) {
+					this.armorModel = new ModelRobe();
+				}
+
 				this.armorModel.isSneak = living.isSneaking();
 				this.armorModel.isRiding = living.isRiding();
 				this.armorModel.isChild = living.isChild();

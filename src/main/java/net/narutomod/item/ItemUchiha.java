@@ -46,11 +46,16 @@ public class ItemUchiha extends ElementsNarutomodMod.ModElement {
 		ItemArmor.ArmorMaterial enuma = EnumHelper.addArmorMaterial("UCHIHA", "narutomod:sasuke_", 100, new int[]{2, 5, 6, 2}, 9, null, 0f)
 			.setRepairItem(new ItemStack(Items.LEATHER));
 		elements.items.add(() -> new ItemArmor(enuma, 0, EntityEquipmentSlot.CHEST) {
-			private ModelBiped armorModel = new ModelArmorCustom();
+			@SideOnly(Side.CLIENT)
+			private ModelBiped armorModel;
 
 			@Override
 			@SideOnly(Side.CLIENT)
 			public ModelBiped getArmorModel(EntityLivingBase living, ItemStack stack, EntityEquipmentSlot slot, ModelBiped defaultModel) {
+				if (this.armorModel == null) {
+					this.armorModel = new ModelArmorCustom();
+				}
+
 				this.armorModel.isSneak = living.isSneaking();
 				this.armorModel.isRiding = living.isRiding();
 				this.armorModel.isChild = living.isChild();
@@ -71,11 +76,16 @@ public class ItemUchiha extends ElementsNarutomodMod.ModElement {
 			}
 		}.setUnlocalizedName("uchihabody").setRegistryName("uchihabody").setCreativeTab(TabModTab.tab));
 		elements.items.add(() -> new ItemArmor(enuma, 0, EntityEquipmentSlot.LEGS) {
-			private ModelBiped armorModel = new ModelArmorCustom();
+			@SideOnly(Side.CLIENT)
+			private ModelBiped armorModel;
 
 			@Override
 			@SideOnly(Side.CLIENT)
 			public ModelBiped getArmorModel(EntityLivingBase living, ItemStack stack, EntityEquipmentSlot slot, ModelBiped defaultModel) {
+				if (this.armorModel == null) {
+					this.armorModel = new ModelArmorCustom();
+				}
+
 				this.armorModel.isSneak = living.isSneaking();
 				this.armorModel.isRiding = living.isRiding();
 				this.armorModel.isChild = living.isChild();
@@ -83,11 +93,16 @@ public class ItemUchiha extends ElementsNarutomodMod.ModElement {
 			}
 		}.setUnlocalizedName("uchihalegs").setRegistryName("uchihalegs").setCreativeTab(TabModTab.tab));
 		elements.items.add(() -> new ItemArmor(enuma, 0, EntityEquipmentSlot.FEET) {
-			private ModelBiped armorModel = new ModelArmorCustom();
+			@SideOnly(Side.CLIENT)
+			private ModelBiped armorModel;
 
 			@Override
 			@SideOnly(Side.CLIENT)
 			public ModelBiped getArmorModel(EntityLivingBase living, ItemStack stack, EntityEquipmentSlot slot, ModelBiped defaultModel) {
+				if (this.armorModel == null) {
+					this.armorModel = new ModelArmorCustom();
+				}
+
 				this.armorModel.isSneak = living.isSneaking();
 				this.armorModel.isRiding = living.isRiding();
 				this.armorModel.isChild = living.isChild();

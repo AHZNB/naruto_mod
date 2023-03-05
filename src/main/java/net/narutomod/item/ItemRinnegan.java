@@ -195,11 +195,16 @@ public class ItemRinnegan extends ElementsNarutomodMod.ModElement {
 		}.setUnlocalizedName("rinneganhelmet").setRegistryName("rinneganhelmet").setCreativeTab(TabModTab.tab));
 
 		this.elements.items.add(() -> new ItemArmor(enuma, 0, EntityEquipmentSlot.CHEST) {
-			private ModelSizPathRobe armorModel = new ModelSizPathRobe();
+			@SideOnly(Side.CLIENT)
+			private ModelSizPathRobe armorModel;
 
 			@SideOnly(Side.CLIENT)
 			@Override
 			public ModelBiped getArmorModel(EntityLivingBase living, ItemStack stack, EntityEquipmentSlot slot, ModelBiped defaultModel) {
+				if (this.armorModel == null) {
+					this.armorModel = new ModelSizPathRobe();
+				}
+
 				//armorModel.ball[0].showModel = living.getHeldItemMainhand().getItem() != ItemExpandedTruthSeekerBall.block;
 				this.armorModel.isSneak = living.isSneaking();
 				this.armorModel.isRiding = living.isRiding();
@@ -232,11 +237,15 @@ public class ItemRinnegan extends ElementsNarutomodMod.ModElement {
 		}.setUnlocalizedName("rinneganbody").setRegistryName("rinneganbody").setCreativeTab(null));
 		
 		this.elements.items.add(() -> new ItemArmor(enuma, 0, EntityEquipmentSlot.LEGS) {
-			private ModelSizPathRobe armorModel = new ModelSizPathRobe();
+			private ModelSizPathRobe armorModel;
 
 			@SideOnly(Side.CLIENT)
 			@Override
 			public ModelBiped getArmorModel(EntityLivingBase living, ItemStack stack, EntityEquipmentSlot slot, ModelBiped defaultModel) {
+				if (this.armorModel == null) {
+					this.armorModel = new ModelSizPathRobe();
+				}
+
 				//armorModel.ball[0].showModel = living.getHeldItemMainhand().getItem() != ItemExpandedTruthSeekerBall.block;
 				this.armorModel.isSneak = living.isSneaking();
 				this.armorModel.isRiding = living.isRiding();
