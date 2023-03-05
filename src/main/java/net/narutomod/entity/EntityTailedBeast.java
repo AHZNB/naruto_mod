@@ -1,8 +1,6 @@
 
 package net.narutomod.entity;
 
-import net.minecraft.nbt.NBTTagList;
-import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
@@ -26,7 +24,6 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.item.Item;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.EnumCreatureAttribute;
 import net.minecraft.entity.IRangedAttackMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -39,7 +36,6 @@ import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.client.model.ModelRenderer;
@@ -68,26 +64,22 @@ import net.minecraft.entity.ai.EntityAIMoveTowardsTarget;
 import net.minecraft.entity.ai.EntityAIWander;
 import net.minecraft.entity.ai.attributes.IAttribute;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
-import net.minecraft.entity.ai.attributes.RangedAttribute;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.RayTraceResult;
 //import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.EntitySelectors;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.translation.I18n;
 
 import net.narutomod.item.ItemJutsu;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.procedure.ProcedureAoeCommand;
-import net.narutomod.procedure.ProcedureCameraShake;
 import net.narutomod.event.EventSphericalExplosion;
 import net.narutomod.Particles;
 import net.narutomod.SaveData;
 import net.narutomod.NarutomodModVariables;
 import net.narutomod.ElementsNarutomodMod;
 
-import com.google.common.base.Predicate;
 import javax.annotation.Nullable;
 import javax.vecmath.Vector3d;
 import java.util.UUID;
@@ -1305,10 +1297,10 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 	 				this.getBijuManager().setVesselEntity(entity, false);
 	 			}
 	 		}
-			 if (compound.hasKey("positionX")) {
-				 Vector3d position = new Vector3d(compound.getDouble("positionX"), compound.getDouble("positionY"),
-						 compound.getDouble("positionZ"));
-				 this.getBijuManager().setPosition(position);
+			 if (compound.hasKey("spawnPosX")) {
+				 Vec3d spawnPos = new Vec3d(compound.getDouble("spawnPosX"), compound.getDouble("spawnPosY"),
+						 compound.getDouble("spawnPosZ"));
+				 this.getBijuManager().setSpawnPos(spawnPos);
 			 }
 	 	}
 
@@ -1332,11 +1324,11 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 	 			compound.removeTag("JinchurikiCloakXp");
 	 			compound.removeTag("JinchurikiCloakCD");
 	 		}
-			 if (this.getBijuManager().hasPosition()) {
-				 Vector3d position = this.getBijuManager().getPosition();
-				 compound.setDouble("positionX", position.getX());
-				 compound.setDouble("positionY", position.getY());
-				 compound.setDouble("positionZ", position.getZ());
+			 if (this.getBijuManager().hasSpawnPos()) {
+				 Vec3d spawnPos = this.getBijuManager().getSpawnPos();
+				 compound.setDouble("spawnPosX", spawnPos.x);
+				 compound.setDouble("spawnPosY", spawnPos.y);
+				 compound.setDouble("spawnPosZ", spawnPos.z);
 			 }
 	 		return compound;
 	 	} 
