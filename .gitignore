@@ -23,3 +23,6 @@ run/
 
 # MacOS system files
 .DS_STORE
+
+# Don't want that
+.classpath
