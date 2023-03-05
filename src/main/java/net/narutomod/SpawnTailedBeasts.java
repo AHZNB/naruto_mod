@@ -35,12 +35,14 @@ import java.util.Arrays;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Lists;
+
 import net.narutomod.entity.EntityBijuManager;
 import net.narutomod.entity.EntityTailedBeast;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class SpawnTailedBeasts extends ElementsNarutomodMod.ModElement {
 	private static final String SPAWN_TB_RULE = "spawnTailedBeasts";
+
 	public SpawnTailedBeasts(ElementsNarutomodMod instance) {
 		super(instance, 835);
 	}
@@ -56,7 +58,6 @@ public class SpawnTailedBeasts extends ElementsNarutomodMod.ModElement {
 	@SubscribeEvent
 	public void onWorldLoad(WorldEvent.Load event) {
 		World world = event.getWorld();
-
 		if (!world.isRemote && !world.getGameRules().hasRule(SPAWN_TB_RULE)) {
 			world.getGameRules().addGameRule(SPAWN_TB_RULE, "true", net.minecraft.world.GameRules.ValueType.BOOLEAN_VALUE);
 		}
