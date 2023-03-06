@@ -66,11 +66,14 @@ public class SpawnTailedBeasts extends ElementsNarutomodMod.ModElement {
 			}
 
 			if (bm.getHasLived()) {
-				if (bm.getTicksSinceDeath() >= TIME_FOR_RESPAWN) {
+				if (bm.hasSpawnPos()) {
 					bm.setSpawnPos(null);
 				}
-				else {
+				if (bm.getTicksSinceDeath() < TIME_FOR_RESPAWN) {
 					bm.incrementTicksSinceDeath();
+					continue;
+				} else {
+					bm.setHasLived(false);
 				}
 			}
 
@@ -82,7 +85,7 @@ public class SpawnTailedBeasts extends ElementsNarutomodMod.ModElement {
 			}
 			else {
 				final int x = (rand.nextInt(SPAWN_MAX_RADIUS - SPAWN_MIN_RADIUS) + SPAWN_MIN_RADIUS) + world.getSpawnPoint().getX();
-				final int z = (rand.nextInt(SPAWN_MAX_RADIUS - SPAWN_MIN_RADIUS) + SPAWN_MIN_RADIUS) + world.getSpawnPoint().getY();
+				final int z = (rand.nextInt(SPAWN_MAX_RADIUS - SPAWN_MIN_RADIUS) + SPAWN_MIN_RADIUS) + world.getSpawnPoint().getZ();
 
 				spawnPos = new BlockPos(x, 0.0D, z);
 				Biome biome = world.getBiome(new BlockPos(spawnPos.getX(), spawnPos.getY(), spawnPos.getZ()));

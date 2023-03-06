@@ -174,6 +174,12 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 		return bm != null ? bm.getEntity() : null;
 	}
 
+	@Nullable
+	public static BlockPos getPositionByTails(int tailnum) {
+		EntityBijuManager bm = mapByTailnum.get(tailnum);
+		return bm != null ? bm.getPosOrSpawnPos() : null;
+	}
+
 	public static int getTails(EntityPlayer player) {
 		EntityBijuManager bm = getBijuManagerFrom(player);
 		return bm != null ? bm.getTails() : 0;
@@ -251,33 +257,47 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 		this.cloakCD = 0;
 		this.spawnPos = null;
 		this.entity = null;
+		this.hasLived = false;
+		this.ticksSinceDeath = 0;
 	}
 
 	public int getTicksSinceDeath() {
 		return this.ticksSinceDeath;
 	}
 
-	public void setTicksSinceDeath(int ticksSinceDeath) {
+	public void setTicksSinceDeath(int ticks) {
+		this.setTicksSinceDeath(ticks, true);
+	}
+	
+	public void setTicksSinceDeath(int ticksSinceDeath, boolean dirty) {
 		this.ticksSinceDeath = ticksSinceDeath;
+		if (dirty) {
+			this.markDirty();
+		}
 	}
 
 	public void incrementTicksSinceDeath() {
 		this.ticksSinceDeath++;
+		this.markDirty();
 	}
 
 	public boolean getHasLived() {
 		return this.hasLived;
 	}
 
-	public void setHasLived(boolean hasLived) {
+	public void setHasLived(boolean lived) {
+		this.setHasLived(lived, true);
+	}
+	
+	public void setHasLived(boolean hasLived, boolean dirty) {
 		this.hasLived = hasLived;
+		if (dirty) {
+			this.markDirty();
+		}
 	}
 
 	public BlockPos getPosOrSpawnPos() {
-		if (this.isAddedToWorld()) {
-			return this.locateEntity();
-		}
-		return this.spawnPos;
+		return this.isAddedToWorld() ? this.locateEntity() : this.spawnPos;
 	}
 
 	public double distanceToPlayer(EntityPlayer player) {
@@ -288,8 +308,15 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 		return this.spawnPos;
 	}
 
-	public void setSpawnPos(BlockPos spawnPos) {
+	public void setSpawnPos(BlockPos pos) {
+		this.setSpawnPos(pos, true);
+	}
+	
+	public void setSpawnPos(BlockPos spawnPos, boolean dirty) {
 		this.spawnPos = spawnPos;
+		if (dirty) {
+			this.markDirty();
+		}
 	}
 
 	public boolean hasSpawnPos() {
@@ -306,6 +333,7 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 
 	public void onAddedToWorld(T entityIn, boolean dirty) {
 		this.hasLived = true;
+		this.ticksSinceDeath = 0;
 		this.entity = entityIn;
 		if (dirty) {
 			this.markDirty();

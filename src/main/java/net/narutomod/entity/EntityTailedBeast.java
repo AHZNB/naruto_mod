@@ -1307,13 +1307,12 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 	 				this.getBijuManager().setVesselEntity(entity, false);
 	 			}
 	 		}
-			 if (compound.hasKey("spawnPosX")) {
-				 BlockPos spawnPos = new BlockPos(compound.getDouble("spawnPosX"), compound.getDouble("spawnPosY"),
-						 compound.getDouble("spawnPosZ"));
-				 this.getBijuManager().setSpawnPos(spawnPos);
-			 }
-			 this.getBijuManager().setTicksSinceDeath(compound.getInteger("ticksSinceDeath"));
-			 this.getBijuManager().setHasLived(compound.getBoolean("hasLived"));
+			if (compound.hasKey("spawnPosX")) {
+				this.getBijuManager().setSpawnPos(new BlockPos(compound.getDouble("spawnPosX"),
+				 compound.getDouble("spawnPosY"), compound.getDouble("spawnPosZ")), false);
+			}
+			this.getBijuManager().setTicksSinceDeath(compound.getInteger("ticksSinceDeath"), false);
+			this.getBijuManager().setHasLived(compound.getBoolean("hasLived"), false);
 		}
 
 	 	@Override 
@@ -1337,14 +1336,14 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 	 			compound.removeTag("JinchurikiCloakXp");
 	 			compound.removeTag("JinchurikiCloakCD");
 	 		}
-			 if (this.getBijuManager().hasSpawnPos()) {
-				 BlockPos spawnPos = this.getBijuManager().getSpawnPos();
-				 compound.setDouble("spawnPosX", spawnPos.getX());
-				 compound.setDouble("spawnPosY", spawnPos.getY());
-				 compound.setDouble("spawnPosZ", spawnPos.getZ());
-			 }
-			 compound.setInteger("ticksSinceDeath", this.getBijuManager().getTicksSinceDeath());
-			 compound.setBoolean("hasLived", this.getBijuManager().getHasLived());
+			if (this.getBijuManager().hasSpawnPos()) {
+				BlockPos spawnPos = this.getBijuManager().getSpawnPos();
+				compound.setDouble("spawnPosX", spawnPos.getX());
+				compound.setDouble("spawnPosY", spawnPos.getY());
+				compound.setDouble("spawnPosZ", spawnPos.getZ());
+			}
+			compound.setInteger("ticksSinceDeath", this.getBijuManager().getTicksSinceDeath());
+			compound.setBoolean("hasLived", this.getBijuManager().getHasLived());
 	 		return compound;
 	 	} 
 	}
