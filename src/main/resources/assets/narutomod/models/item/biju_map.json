@@ -1,0 +1,6 @@
+{
+  "parent": "narutomod:custom/scrollmap",
+  "textures": {
+    "2": "narutomod:blocks/scroll_map"
+  }
+}

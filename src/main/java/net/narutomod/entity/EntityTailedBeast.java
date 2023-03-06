@@ -1333,6 +1333,7 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 	 		} else {
 	 			compound.removeTag("JinchurikiUUIDMost");
 	 			compound.removeTag("JinchurikiUUIDLeast");
+	 			compound.removeTag("VesselName");
 	 			compound.removeTag("JinchurikiCloakXp");
 	 			compound.removeTag("JinchurikiCloakCD");
 	 		}

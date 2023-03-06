@@ -1,36 +1,29 @@
-/**
- * This mod element is always locked. Enter your code in the methods below.
- * If you don't need some of these methods, you can remove them as they
- * are overrides of the base class ElementsNarutomodMod.ModElement.
- *
- * You can register new events in this class too.
- *
- * As this class is loaded into mod element list, it NEEDS to extend
- * ModElement class. If you remove this extend statement or remove the
- * constructor, the compilation will fail.
- *
- * If you want to make a plain independent class, create it in
- * "Workspace" -> "Source" menu.
- *
- * If you change workspace package, modid or prefix, you will need
- * to manually adapt this file to these changes or remake it.
- */
-package net.narutomod;
 
-import com.google.common.collect.Sets;
+package net.narutomod.item;
+
+import net.narutomod.creativetab.TabModTab;
+import net.narutomod.entity.EntityBijuManager;
+import net.narutomod.procedure.ProcedureSync;
+import net.narutomod.NarutomodMod;
+import net.narutomod.ElementsNarutomodMod;
+
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.MapItemRenderer;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemMap;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Item;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagInt;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.SPacketMaps;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -38,41 +31,59 @@ import net.minecraft.world.DimensionType;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.MapData;
 import net.minecraft.world.storage.MapDecoration;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import net.narutomod.creativetab.TabModTab;
-import net.narutomod.entity.EntityBijuManager;
-import net.narutomod.procedure.ProcedureSync;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
+import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import net.minecraftforge.fml.common.network.ByteBufUtils;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.client.event.ModelRegistryEvent;
+import net.minecraftforge.common.MinecraftForge;
 
+import io.netty.buffer.ByteBuf;
+import com.google.common.collect.Sets;
 import javax.annotation.Nullable;
+import java.io.IOException;
 import java.util.Set;
+import java.util.Map;
+import java.util.LinkedHashMap;
 
 @ElementsNarutomodMod.ModElement.Tag
-public class TailedBeastMap extends ElementsNarutomodMod.ModElement {
+public class ItemBijuMap extends ElementsNarutomodMod.ModElement {
 	@GameRegistry.ObjectHolder(NarutomodMod.MODID + ":" + TBMapItem.MAP_ID)
-	public static final TBMapItem TB_MAP_ITEM = null;
+	public static final Item block = null;
 
-	/**
-	 * Do not remove this constructor
-	 */
-	public TailedBeastMap(ElementsNarutomodMod instance) {
-		super(instance, 836);
+	public ItemBijuMap(ElementsNarutomodMod instance) {
+		super(instance, 837);
+	}
+
+	@Override
+	public void initElements() {
+		elements.items.add(() -> new TBMapItem().setUnlocalizedName(TBMapItem.MAP_ID)
+		 .setRegistryName(TBMapItem.MAP_ID).setCreativeTab(TabModTab.tab));
+	}
+
+	@SideOnly(Side.CLIENT)
+	@Override
+	public void registerModels(ModelRegistryEvent event) {
+		ModelLoader.setCustomModelResourceLocation(block, 0, new ModelResourceLocation(NarutomodMod.MODID + ":" + TBMapItem.MAP_ID, "inventory"));
+	}
+
+	@Override
+	public void preInit(FMLPreInitializationEvent event) {
+		this.elements.addNetworkMessage(TBMapItem.CPacketTBMap.ClientHandler.class, TBMapItem.CPacketTBMap.class, Side.CLIENT);
 	}
 
 	@Override
 	public void init(FMLInitializationEvent event) {
 		MinecraftForge.EVENT_BUS.register(this);
-	}
-
-	@Override
-	public void initElements() {
-		this.elements.items.add(() -> new TBMapItem().setUnlocalizedName(TBMapItem.MAP_ID).setRegistryName(TBMapItem.MAP_ID).setCreativeTab(TabModTab.tab));
 	}
 
 	public static class TBMapData extends MapData {
@@ -213,10 +224,10 @@ public class TailedBeastMap extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static class TBMapItem extends ItemMap {
-		public static final String MAP_ID = "tb_map";
+		public static final String MAP_ID = "biju_map";
 
 		public static ItemStack setupNewMap(World world, double worldX, double worldZ, byte scale, boolean trackingPosition, boolean unlimitedTracking) {
-			ItemStack item = new ItemStack(TailedBeastMap.TB_MAP_ITEM, 1, world.getUniqueDataId(MAP_ID));
+			ItemStack item = new ItemStack(block, 1, world.getUniqueDataId(MAP_ID));
 			String name = String.format("%s_%s", MAP_ID, item.getMetadata());
 			MapData data = new TBMapData(name);
 			world.setData(name, data);
@@ -275,9 +286,90 @@ public class TailedBeastMap extends ElementsNarutomodMod.ModElement {
 
 			if (packet instanceof SPacketMaps) {
 				TBMapData data = getMapData(stack, worldIn);
-				return NarutomodMod.PACKET_HANDLER.getPacketFrom(new ProcedureSync.CPacketTBMap(stack.getItemDamage(), data, (SPacketMaps) packet));
+				return NarutomodMod.PACKET_HANDLER.getPacketFrom(new CPacketTBMap(stack.getItemDamage(), data, (SPacketMaps) packet));
 			} else {
 				return packet;
+			}
+		}
+
+		public static class CPacketTBMap implements IMessage {
+			private int mapID;
+			private byte[] decoData;
+			private SPacketMaps inner;
+	
+			public CPacketTBMap() {
+			}
+	
+			public CPacketTBMap(int mapID, TBMapData data, SPacketMaps inner) {
+				this.mapID = mapID;
+				this.decoData = data.serializeTBDecos();
+				this.inner = inner;
+			}
+	
+			@Override
+			public void fromBytes(ByteBuf buf) {
+				PacketBuffer tmp = new PacketBuffer(buf);
+				mapID = ByteBufUtils.readVarInt(buf, 5);
+				decoData = tmp.readByteArray();
+	
+				inner = new SPacketMaps();
+	
+				try {
+					inner.readPacketData(tmp);
+				} catch (IOException e) {}
+			}
+	
+			@Override
+			public void toBytes(ByteBuf buf) {
+				PacketBuffer tmp = new PacketBuffer(buf);
+				ByteBufUtils.writeVarInt(buf, mapID, 5);
+				tmp.writeByteArray(decoData);
+	
+				try {
+					inner.writePacketData(tmp);
+				} catch (IOException e) {}
+			}
+	
+			public static class ClientHandler implements IMessageHandler<CPacketTBMap, IMessage> {
+				@SideOnly(Side.CLIENT)
+				@Override
+				public IMessage onMessage(CPacketTBMap message, MessageContext ctx) {
+					Minecraft.getMinecraft().addScheduledTask(() -> {
+						MapItemRenderer mapItemRenderer = Minecraft.getMinecraft().entityRenderer.getMapItemRenderer();
+						TBMapData data = TBMapItem.loadMapData(message.mapID, Minecraft.getMinecraft().world);
+	
+						if (data == null)
+						{
+							String name = String.format("%s_%s", TBMapItem.MAP_ID, message.mapID);
+							data = new TBMapData(name);
+	
+							if (mapItemRenderer.getMapInstanceIfExists(name) != null)
+							{
+								MapData existingData = mapItemRenderer.getData(mapItemRenderer.getMapInstanceIfExists(name));
+	
+								if (existingData instanceof TBMapData)
+								{
+									data = (TBMapData) existingData;
+								}
+							}
+							Minecraft.getMinecraft().world.setData(name, data);
+						}
+	
+						message.inner.setMapdataTo(data);
+	
+						data.deserializeTBDecos(message.decoData);
+	
+						Map<String, MapDecoration> saveVanilla = data.mapDecorations;
+						data.mapDecorations = new LinkedHashMap<>();
+	
+						for (TBMapData.TBMapDecoration deco : data.tbDecorations) {
+							data.mapDecorations.put(deco.toString(), deco);
+						}
+						data.mapDecorations.putAll(saveVanilla);
+						mapItemRenderer.updateMapTexture(data);
+					});
+					return null;
+				}
 			}
 		}
 	}

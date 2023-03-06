@@ -552,7 +552,7 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 				return;
 			if (!this.world.isRemote && result.entityHit instanceof EntityLivingBase
 			 && (!(result.entityHit instanceof EntityPlayer) || !((EntityPlayer)result.entityHit).isCreative())) {
-				if (!this.fuuin) {
+				if (!this.fuuin && !result.entityHit.equals(((EntityCustom)this.shootingEntity).getSummoner())) {
 					net.narutomod.Chakra.pathway((EntityLivingBase)result.entityHit).consume(1.0f);
 					result.entityHit.onKillCommand();
 					if (this.targetList.contains(result.entityHit)) {
