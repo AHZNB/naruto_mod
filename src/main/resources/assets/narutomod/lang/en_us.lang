@@ -661,3 +661,4 @@ item.ninja_armor_otohelmet.name=Ninja Mask (Otogakure)
 item.scroll_genjutsu.name=Genjutsu Scroll
 item.cleaver.name=Cleaver Sword
 item.biju_map.name=Tailed Beast Map
+overlay.no_biju_available=No tailed beasts are available at the moment
