@@ -38,6 +38,7 @@ General:
  - added gamerule:spawnTailedBeasts to spawn bijus naturally in a 10k - 100k radius from 0 0
  - properly flushed world biju save data on world close
  - properly capitalized translations
+ - code cleanup
 
 0.2.10-beta ===============================================================================
 
