@@ -380,7 +380,7 @@ public class ItemBijuMap extends ElementsNarutomodMod.ModElement {
 						Map<String, MapDecoration> saveVanilla = data.mapDecorations;
 						data.mapDecorations = new LinkedHashMap<>();
 
-						for (ItemBijuMap.TBMapData.TBMapDecoration deco : data.tbDecorations) {
+						for (TBMapData.TBMapDecoration deco : data.tbDecorations) {
 							data.mapDecorations.put(deco.toString(), deco);
 						}
 						data.mapDecorations.putAll(saveVanilla);
