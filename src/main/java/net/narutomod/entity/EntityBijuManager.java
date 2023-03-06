@@ -44,7 +44,6 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 	private int respawnCD;
 	private Vec3d spawnPos;
 	private static final Random rand = new Random();
-
 	private static final List<List<Biome>> spawns = Lists.newArrayList(
 			Arrays.asList(Biomes.DESERT, Biomes.DESERT_HILLS, Biomes.MESA),											  		   // Shukaku
 			Arrays.asList(Biomes.JUNGLE, Biomes.JUNGLE_EDGE, Biomes.JUNGLE_HILLS, Biomes.SWAMPLAND), 						   // Matatabi
@@ -60,7 +59,7 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 	public static Collection<EntityBijuManager> getBMList() {
 		return ImmutableList.copyOf(mapByClass.values());
 	}
-	
+
 	@Nullable
 	protected static EntityBijuManager getBijuManagerFrom(EntityPlayer player) {
 		for (EntityBijuManager bm : mapByClass.values()) {
@@ -223,6 +222,13 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 		this.setCloakXPs(ZERO);
 		mapByClass.put(clazz, this);
 		mapByTailnum.put(tailnum, this);
+	}
+
+	public void reset() {
+		this.setVesselEntity(null, false);
+		this.cloakCD = 0;
+		this.spawnPos = null;
+		this.entity = null;
 	}
 
 	public Vec3d getSpawnPos() {

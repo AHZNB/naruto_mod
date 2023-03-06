@@ -13,6 +13,8 @@ Jutsus:
  - Yomotsu Hirasaka now works in survival
  - lowered damage on Chakra flow
  - limit black lightning panther to max 5
+ - disallow using sand binding on the same target multiple times
+ - nerfed bone/ice/earth spikes damage
  
 Items:
  - cleaver sword now takes damage when used, attack speed and damage decrease, recipe changed
@@ -27,6 +29,7 @@ General:
  - chakra regeneration amount when idle is now based on player's saturation level
  - omit the 10 tails becoming a player's naturally sealed biju
  - added gamerule:spawnTailedBeasts to spawn bijus naturally in a 10k - 100k radius from 0 0
+ - properly flushed world biju save data on world close
 
 0.2.10-beta ===============================================================================
 

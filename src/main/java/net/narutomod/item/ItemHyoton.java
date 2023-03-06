@@ -156,6 +156,7 @@ public class ItemHyoton extends ElementsNarutomodMod.ModElement {
 	public static class EntityIceSpike extends EntitySpike.Base {
 		private final int growTime = 10;
 		private final float maxScale = 3.0f;
+		private final float damage = 20.0f;
 		private EntityLivingBase user;
 
 		public EntityIceSpike(World worldIn) {
@@ -178,7 +179,8 @@ public class ItemHyoton extends ElementsNarutomodMod.ModElement {
 				 this.world.getEntitiesWithinAABB(EntityLivingBase.class, this.getEntityBoundingBox().grow(1d, 0d, 1d))) {
 					if (!entity.equals(this.user)) {
 						entity.hurtResistantTime = 10;
-						entity.attackEntityFrom(DamageSource.causeIndirectDamage(this, this.user), 30f);
+						entity.attackEntityFrom(DamageSource.causeIndirectDamage(this, this.user),
+						 this.damage * (1f - (float)(this.ticksAlive - 1) / this.growTime));
 					}
 				}
 			}

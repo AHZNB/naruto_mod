@@ -224,7 +224,6 @@ public class PlayerTracker extends ElementsNarutomodMod.ModElement {
 				if (event.player.getEntityData().getBoolean(FORCE_SEND)) {
 					event.player.getEntityData().removeTag(FORCE_SEND);
 					sendBattleXPToSelf((EntityPlayerMP)event.player);
-//System.out.println("+++ FORCE_SEND: ninjaxp:"+getBattleXp(event.player)+", "+event.player);
 				}
 				if (event.player.getEntityData().getBoolean(UPDATE_HEALTH)) {
 					event.player.getEntityData().removeTag(UPDATE_HEALTH);

@@ -110,6 +110,7 @@ public class EntityFourTails extends ElementsNarutomodMod.ModElement {
 
 	 	@Override
 	 	public void resetData() {
+	 		super.resetData();
 	 		instance = null;
 	 	}
 

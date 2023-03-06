@@ -1277,6 +1277,11 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 
 		protected abstract Base createEntity(World world);
 
+		@Override
+		public void resetData() {
+			this.getBijuManager().reset();
+		}
+
 	 	@Override
 	 	public void readFromNBT(NBTTagCompound compound) {
 	 		if (this.getBijuManager().getEntity() == null && compound.getBoolean("spawned")) {
@@ -1297,10 +1302,10 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 	 				this.getBijuManager().setVesselEntity(entity, false);
 	 			}
 	 		}
-			 if (compound.hasKey("spawnPosX")) {
-				 this.getBijuManager().setSpawnPos(new Vec3d(compound.getDouble("spawnPosX"), compound.getDouble("spawnPosY"),
-						 compound.getDouble("spawnPosZ")));
-			 }
+			if (compound.hasKey("spawnPosX")) {
+				this.getBijuManager().setSpawnPos(new Vec3d(compound.getDouble("spawnPosX"),
+				 compound.getDouble("spawnPosY"), compound.getDouble("spawnPosZ")));
+			}
 	 	}
 
 	 	@Override 
@@ -1320,15 +1325,16 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 	 		} else {
 	 			compound.removeTag("JinchurikiUUIDMost");
 	 			compound.removeTag("JinchurikiUUIDLeast");
+	 			compound.removeTag("VesselName");
 	 			compound.removeTag("JinchurikiCloakXp");
 	 			compound.removeTag("JinchurikiCloakCD");
 	 		}
-			 if (this.getBijuManager().hasSpawnPos()) {
-				 Vec3d spawnPos = this.getBijuManager().getSpawnPos();
-				 compound.setDouble("spawnPosX", spawnPos.x);
-				 compound.setDouble("spawnPosY", spawnPos.y);
-				 compound.setDouble("spawnPosZ", spawnPos.z);
-			 }
+			if (this.getBijuManager().hasSpawnPos()) {
+				Vec3d spawnPos = this.getBijuManager().getSpawnPos();
+				compound.setDouble("spawnPosX", spawnPos.x);
+				compound.setDouble("spawnPosY", spawnPos.y);
+				compound.setDouble("spawnPosZ", spawnPos.z);
+			}
 	 		return compound;
 	 	} 
 	}

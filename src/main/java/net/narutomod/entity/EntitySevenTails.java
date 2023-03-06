@@ -108,6 +108,7 @@ public class EntitySevenTails extends ElementsNarutomodMod.ModElement {
 
 	 	@Override
 	 	public void resetData() {
+	 		super.resetData();
 	 		instance = null;
 	 	}
 
