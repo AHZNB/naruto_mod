@@ -358,6 +358,7 @@ public class EntityKisameHoshigaki extends ElementsNarutomodMod.ModElement {
 				this.resetActiveHand();
 			}
 			if (!this.isClone()) {
+				this.trackAttackedPlayers();
 				this.bossInfo.setPercent(this.getHealth() / this.getMaxHealth());
 			} else if (!this.world.isRemote) {
 				this.setNoAI(EntityWaterPrison.isEntityTrapping(this));
@@ -405,16 +406,22 @@ public class EntityKisameHoshigaki extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void addTrackingPlayer(EntityPlayerMP player) {
 			super.addTrackingPlayer(player);
-			if (!this.isClone() && (player.equals(this.getAttackingEntity()) || player.equals(this.getAttackTarget()))) {
-				this.bossInfo.addPlayer(player);
-			}
 		}
 
 		@Override
 		public void removeTrackingPlayer(EntityPlayerMP player) {
 			super.removeTrackingPlayer(player);
-			if (!this.isClone()) {
+
+			if (this.bossInfo.getPlayers().contains(player)) {
 				this.bossInfo.removePlayer(player);
+			}
+		}
+
+		private void trackAttackedPlayers() {
+			Entity entity = this.getAttackingEntity();
+
+			if (entity instanceof EntityPlayerMP || (entity = this.getAttackTarget()) instanceof EntityPlayerMP) {
+				this.bossInfo.addPlayer((EntityPlayerMP)entity);
 			}
 		}
 

@@ -332,16 +332,22 @@ Biomes.EXTREME_HILLS, Biomes.FOREST, Biomes.TAIGA, Biomes.SWAMPLAND, Biomes.RIVE
 		@Override
 		public void addTrackingPlayer(EntityPlayerMP player) {
 			super.addTrackingPlayer(player);
-			if (!this.isClone() && (player.equals(this.getAttackingEntity()) || player.equals(this.getAttackTarget()))) {
-				this.bossInfo.addPlayer(player);
-			}
 		}
 
 		@Override
 		public void removeTrackingPlayer(EntityPlayerMP player) {
 			super.removeTrackingPlayer(player);
-			if (!this.isClone()) {
+
+			if (this.bossInfo.getPlayers().contains(player)) {
 				this.bossInfo.removePlayer(player);
+			}
+		}
+
+		private void trackAttackedPlayers() {
+			Entity entity = this.getAttackingEntity();
+
+			if (entity instanceof EntityPlayerMP || (entity = this.getAttackTarget()) instanceof EntityPlayerMP) {
+				this.bossInfo.addPlayer((EntityPlayerMP)entity);
 			}
 		}
 
@@ -352,6 +358,7 @@ Biomes.EXTREME_HILLS, Biomes.FOREST, Biomes.TAIGA, Biomes.SWAMPLAND, Biomes.RIVE
 				this.resetActiveHand();
 			}
 			if (!this.isClone()) {
+				this.trackAttackedPlayers();
 				this.bossInfo.setPercent(this.getHealth() / this.getMaxHealth());
 				if (!this.world.isRemote && this.ticksExisted > 20 && this.haku == null) {
 					this.spawnHaku();

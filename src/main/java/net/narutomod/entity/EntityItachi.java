@@ -366,19 +366,29 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void addTrackingPlayer(EntityPlayerMP player) {
 			super.addTrackingPlayer(player);
-			this.bossInfo.addPlayer(player);
 		}
 
 		@Override
 		public void removeTrackingPlayer(EntityPlayerMP player) {
 			super.removeTrackingPlayer(player);
-			this.bossInfo.removePlayer(player);
+
+			if (this.bossInfo.getPlayers().contains(player)) {
+				this.bossInfo.removePlayer(player);
+			}
+		}
+
+		private void trackAttackedPlayers() {
+			Entity entity = this.getAttackingEntity();
+
+			if (entity instanceof EntityPlayerMP || (entity = this.getAttackTarget()) instanceof EntityPlayerMP) {
+				this.bossInfo.addPlayer((EntityPlayerMP)entity);
+			}
 		}
 
 		@Override
 		public void onUpdate() {
 			super.onUpdate();
-
+			this.trackAttackedPlayers();
 			this.bossInfo.setPercent(this.getHealth() / this.getMaxHealth());
 		}
 
