@@ -209,6 +209,7 @@ public class EntitySealingChains extends ElementsNarutomodMod.ModElement {
 	@SideOnly(Side.CLIENT)
 	public class CustomRender extends EntityBeamBase.Renderer<EC> {
 		private final ResourceLocation texture = new ResourceLocation("narutomod:textures/chainlink_gold.png");
+		private ModelChainLink model;
 
 		public CustomRender(RenderManager renderManagerIn) {
 			super(renderManagerIn);
@@ -216,7 +217,10 @@ public class EntitySealingChains extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public EntityBeamBase.Model getMainModel(EC entity) {
-			return new ModelChainLink(entity.getBeamLength());
+			if (this.model == null) {
+				this.model = new ModelChainLink(entity.getBeamLength());
+			}
+			return this.model;
 		}
 
 		@Override

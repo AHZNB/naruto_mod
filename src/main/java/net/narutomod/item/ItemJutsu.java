@@ -1,6 +1,7 @@
 
 package net.narutomod.item;
 
+import net.minecraft.entity.item.EntityItem;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.common.FMLCommonHandler;
@@ -17,7 +18,8 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.text.TextComponentString;
-import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.client.util.ITooltipFlag;
+
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntityDamageSourceIndirect;
 import net.minecraft.client.Minecraft;
@@ -394,7 +396,7 @@ public class ItemJutsu extends ElementsNarutomodMod.ModElement {
 			if (i < this.jutsuList.size()) {
 				stack.getTagCompound().setInteger(JUTSU_INDEX_KEY, next);
 				if (entity instanceof EntityPlayer && !entity.world.isRemote)
-					((EntityPlayer)entity).sendStatusMessage(new TextComponentString(this.jutsuList.get(next).getName()), true);
+					((EntityPlayer) entity).sendStatusMessage(new TextComponentString(this.jutsuList.get(next).getName()), true);
 			}
 		}
 
@@ -454,7 +456,7 @@ public class ItemJutsu extends ElementsNarutomodMod.ModElement {
 			}
 			return stack.getTagCompound().getUniqueId(OWNER_ID_KEY).equals(entity.getUniqueID());
 		}
-	
+
 		@Override
 		public void onUpdate(ItemStack itemstack, World world, Entity entity, int par4, boolean par5) {
 			super.onUpdate(itemstack, world, entity, par4, par5);

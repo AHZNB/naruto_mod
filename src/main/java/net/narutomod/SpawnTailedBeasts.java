@@ -61,7 +61,7 @@ public class SpawnTailedBeasts extends ElementsNarutomodMod.ModElement {
 		Random rand = new Random();
 
 		for (EntityBijuManager bm : EntityBijuManager.getBMList()) {
-			if (bm.isAddedToWorld(world) || bm.isSealed() || bm.getTails() == 10) {
+			if (bm.isAddedToWorld() || bm.isSealed() || bm.getTails() == 10) {
 				continue;
 			}
 

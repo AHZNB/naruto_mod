@@ -273,8 +273,15 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 		this.hasLived = hasLived;
 	}
 
+	public BlockPos getPosOrSpawnPos() {
+		if (this.isAddedToWorld()) {
+			return this.locateEntity();
+		}
+		return this.spawnPos;
+	}
+
 	public double distanceToPlayer(EntityPlayer player) {
-		return player.getDistanceSq(this.spawnPos);
+		return player.getDistanceSq(this.getPosOrSpawnPos());
 	}
 
 	public BlockPos getSpawnPos() {
@@ -508,8 +515,8 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 	}
 
 	@Nullable
-	public Vec3d locateEntity() {
-		return this.entity != null ? this.entity.getPositionVector() : null;
+	public BlockPos locateEntity() {
+		return this.entity != null ? this.entity.getPosition() : null;
 	}
 
 	public int getTails() {

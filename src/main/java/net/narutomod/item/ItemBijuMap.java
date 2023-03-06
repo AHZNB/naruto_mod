@@ -258,7 +258,7 @@ public class ItemBijuMap extends ElementsNarutomodMod.ModElement {
 				final EntityBijuManager bm = EntityBijuManager.getClosestBiju(player);
 
 				if (bm != null) {
-					final BlockPos target = bm.getSpawnPos();
+					final BlockPos target = bm.getPosOrSpawnPos();
 
 					this.setupNewMap(stack, worldIn, target.getX(), target.getZ(), (byte) 1, true, true);
 					TBMapItem.renderBiomePreviewMap(worldIn, stack);
@@ -380,7 +380,7 @@ public class ItemBijuMap extends ElementsNarutomodMod.ModElement {
 						Map<String, MapDecoration> saveVanilla = data.mapDecorations;
 						data.mapDecorations = new LinkedHashMap<>();
 
-						for (ItemBijuMap.TBMapData.TBMapDecoration deco : data.tbDecorations) {
+						for (TBMapData.TBMapDecoration deco : data.tbDecorations) {
 							data.mapDecorations.put(deco.toString(), deco);
 						}
 						data.mapDecorations.putAll(saveVanilla);
