@@ -118,6 +118,7 @@ Biomes.EXTREME_HILLS, Biomes.FOREST, Biomes.TAIGA, Biomes.SWAMPLAND, Biomes.RIVE
 		private EntityLivingBase avoidTarget;
 		private final EntityAINearestAttackableTarget aiTargetPlayer = new EntityAINearestAttackableTarget(this, EntityPlayer.class, true, false);
 		private final EntityAIHurtByTarget aiTargetHurt = new EntityAIHurtByTarget(this, true);
+		private final BossInfoServer bossInfo = new BossInfoServer(this.getDisplayName(), BossInfo.Color.RED, BossInfo.Overlay.PROGRESS);
 
 		public EntityCustom(World world) {
 			super(world, 80, 5000d);
@@ -328,8 +329,6 @@ Biomes.EXTREME_HILLS, Biomes.FOREST, Biomes.TAIGA, Biomes.SWAMPLAND, Biomes.RIVE
 			return this.isClone();
 		}
 
-		private final BossInfoServer bossInfo = new BossInfoServer(this.getDisplayName(), BossInfo.Color.BLUE, BossInfo.Overlay.PROGRESS);
-
 		@Override
 		public void addTrackingPlayer(EntityPlayerMP player) {
 			super.addTrackingPlayer(player);
@@ -346,19 +345,6 @@ Biomes.EXTREME_HILLS, Biomes.FOREST, Biomes.TAIGA, Biomes.SWAMPLAND, Biomes.RIVE
 			}
 		}
 
-		private void trackAttackedPlayers() {
-			Entity entity = this.getAttackingEntity();
-			if (entity instanceof EntityPlayerMP || (entity = this.getAttackTarget()) instanceof EntityPlayerMP) {
-				this.bossInfo.addPlayer((EntityPlayerMP)entity);
-			} else {
-				java.util.List<EntityPlayerMP> list = new java.util.ArrayList<EntityPlayerMP>();
-				for (EntityPlayerMP entityplayermp : this.bossInfo.getPlayers())
-					list.add(entityplayermp);
-				for (EntityPlayerMP entityplayermp : list)
-					this.bossInfo.removePlayer(entityplayermp);
-			}
-		}
-
 		@Override
 		public void onUpdate() {
 			super.onUpdate();
@@ -366,7 +352,6 @@ Biomes.EXTREME_HILLS, Biomes.FOREST, Biomes.TAIGA, Biomes.SWAMPLAND, Biomes.RIVE
 				this.resetActiveHand();
 			}
 			if (!this.isClone()) {
-				this.trackAttackedPlayers();
 				this.bossInfo.setPercent(this.getHealth() / this.getMaxHealth());
 				if (!this.world.isRemote && this.ticksExisted > 20 && this.haku == null) {
 					this.spawnHaku();

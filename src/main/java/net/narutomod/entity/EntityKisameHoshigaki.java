@@ -112,7 +112,7 @@ public class EntityKisameHoshigaki extends ElementsNarutomodMod.ModElement {
 
 	public static class EntityCustom extends EntityNinjaMob.Base implements IRangedAttackMob, IMob {
 		private static final DataParameter<Boolean> ALT_MODEL = EntityDataManager.createKey(EntityCustom.class, DataSerializers.BOOLEAN);
-		private final BossInfoServer bossInfo = new BossInfoServer(this.getDisplayName(), BossInfo.Color.BLUE, BossInfo.Overlay.PROGRESS);
+		private final BossInfoServer bossInfo = new BossInfoServer(this.getDisplayName(), BossInfo.Color.RED, BossInfo.Overlay.PROGRESS);
 		private final int WATERSHARK_CD = 80;
 		private final int BLOCKING_CD = 30;
 		private final int WATERPRISON_CD = 600;
@@ -358,7 +358,6 @@ public class EntityKisameHoshigaki extends ElementsNarutomodMod.ModElement {
 				this.resetActiveHand();
 			}
 			if (!this.isClone()) {
-				this.trackAttackedPlayers();
 				this.bossInfo.setPercent(this.getHealth() / this.getMaxHealth());
 			} else if (!this.world.isRemote) {
 				this.setNoAI(EntityWaterPrison.isEntityTrapping(this));
@@ -416,19 +415,6 @@ public class EntityKisameHoshigaki extends ElementsNarutomodMod.ModElement {
 			super.removeTrackingPlayer(player);
 			if (!this.isClone()) {
 				this.bossInfo.removePlayer(player);
-			}
-		}
-
-		private void trackAttackedPlayers() {
-			Entity entity = this.getAttackingEntity();
-			if (entity instanceof EntityPlayerMP || (entity = this.getAttackTarget()) instanceof EntityPlayerMP) {
-				this.bossInfo.addPlayer((EntityPlayerMP)entity);
-			} else {
-				java.util.List<EntityPlayerMP> list = new java.util.ArrayList<EntityPlayerMP>();
-				for (EntityPlayerMP entityplayermp : this.bossInfo.getPlayers())
-					list.add(entityplayermp);
-				for (EntityPlayerMP entityplayermp : list)
-					this.bossInfo.removePlayer(entityplayermp);
 			}
 		}
 

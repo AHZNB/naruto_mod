@@ -1,14 +1,11 @@
 
 package net.narutomod.item;
 
+import com.google.common.collect.Maps;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.narutomod.creativetab.TabModTab;
 import net.narutomod.entity.EntityBijuManager;
-import net.narutomod.procedure.ProcedureSync;
 import net.narutomod.NarutomodMod;
 import net.narutomod.ElementsNarutomodMod;
 
@@ -24,14 +21,11 @@ import net.minecraft.item.ItemMap;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Item;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagInt;
-import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.SPacketMaps;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.DimensionType;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.MapData;
@@ -40,21 +34,16 @@ import net.minecraft.world.storage.MapDecoration;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
-import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.event.ModelRegistryEvent;
-import net.minecraftforge.common.MinecraftForge;
 
 import io.netty.buffer.ByteBuf;
 import com.google.common.collect.Sets;
-import org.lwjgl.Sys;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -74,7 +63,7 @@ public class ItemBijuMap extends ElementsNarutomodMod.ModElement {
 	@Override
 	public void initElements() {
 		elements.items.add(() -> new TBMapItem().setUnlocalizedName(TBMapItem.MAP_ID)
-		 .setRegistryName(TBMapItem.MAP_ID).setCreativeTab(TabModTab.tab));
+				.setRegistryName(TBMapItem.MAP_ID).setCreativeTab(TabModTab.tab));
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -89,13 +78,13 @@ public class ItemBijuMap extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static class TBMapData extends MapData {
-		public final Set<TBMapDecoration> tbDecorations = Sets.newHashSet();
+		private final Set<TBMapDecoration> tbDecorations = Sets.newHashSet();
 
 		public TBMapData(String name) {
 			super(name);
 		}
 
-		public void addTBDeco(BlockPos target, byte index) {
+		public void addTBDeco(BlockPos target, int index) {
 			int i = 1 << this.scale;
 			float f = (float)(target.getX() - (double)this.xCenter) / (float)i;
 			float f1 = (float)(target.getZ() - (double)this.zCenter) / (float)i;
@@ -173,9 +162,10 @@ public class ItemBijuMap extends ElementsNarutomodMod.ModElement {
 			@Override
 			@SideOnly(Side.CLIENT)
 			public boolean render(int idx) {
-				Minecraft.getMinecraft().renderEngine.bindTexture(MAP_ICONS);
+				Minecraft mc = Minecraft.getMinecraft();
+				mc.renderEngine.bindTexture(MAP_ICONS);
 				GlStateManager.pushMatrix();
-				GlStateManager.translate(0.0F + getX() / 2.0F + 64.0F, 0.0F + getY() / 2.0F + 64.0F, -0.02F);
+				GlStateManager.translate(this.getX() / 2.0F + 64.0F, this.getY() / 2.0F + 64.0F, -0.02F);
 				GlStateManager.rotate((float) (this.getRotation() * 360) / 16.0F, 0.0F, 0.0F, 1.0F);
 				GlStateManager.scale(5.0F, 5.0F, 5.0F);
 
@@ -228,18 +218,6 @@ public class ItemBijuMap extends ElementsNarutomodMod.ModElement {
 	public static class TBMapItem extends ItemMap {
 		public static final String MAP_ID = "biju_map";
 
-		private void setupNewMap(ItemStack stack, World world, double worldX, double worldZ, byte scale, boolean trackingPosition, boolean unlimitedTracking) {
-			String name = String.format("%s_%s", MAP_ID, stack.getMetadata());
-			MapData data = new TBMapData(name);
-			world.setData(name, data);
-			data.scale = scale;
-			data.calculateMapCenter(worldX, worldZ, data.scale);
-			data.dimension = DimensionType.OVERWORLD.getId();
-			data.trackingPosition = trackingPosition;
-			data.unlimitedTracking = unlimitedTracking;
-			data.markDirty();
-		}
-
 		@Override
 		public int getItemStackLimit(ItemStack stack) {
 			return 1;
@@ -249,18 +227,19 @@ public class ItemBijuMap extends ElementsNarutomodMod.ModElement {
 		public void onUpdate(ItemStack stack, World worldIn, Entity entityIn, int itemSlot, boolean isSelected) {
 			super.onUpdate(stack, worldIn, entityIn, itemSlot, isSelected);
 
-			if (worldIn.isRemote) {
+			if (!(entityIn instanceof EntityPlayer) || worldIn.isRemote) {
 				return;
 			}
 
-			if (!stack.hasTagCompound() && entityIn instanceof EntityPlayer) {
-				EntityPlayer player = (EntityPlayer) entityIn;
+			EntityPlayer player = (EntityPlayer) entityIn;
+
+			if (!stack.hasTagCompound()) {
 				final EntityBijuManager bm = EntityBijuManager.getClosestBiju(player);
 
 				if (bm != null) {
 					final BlockPos target = bm.getPosOrSpawnPos();
 
-					this.setupNewMap(stack, worldIn, target.getX(), target.getZ(), (byte) 1, true, true);
+					this.setupNewMap(stack, worldIn, target.getX(), target.getZ(), true, true);
 					TBMapItem.renderBiomePreviewMap(worldIn, stack);
 
 					TBMapData data = ((TBMapItem) stack.getItem()).getMapData(stack, worldIn);
@@ -269,7 +248,21 @@ public class ItemBijuMap extends ElementsNarutomodMod.ModElement {
 					// This way the map will find a tailed beast once one is available :P
 					stack.setTagCompound(new NBTTagCompound());
 				}
+				else if (isSelected && worldIn.getTotalWorldTime() % 20 == 0) {
+					player.sendStatusMessage(new TextComponentTranslation("overlay.no_biju_available"), true);
+				}
 			}
+		}
+
+		private void setupNewMap(ItemStack stack, World world, double worldX, double worldZ, boolean trackingPosition, boolean unlimitedTracking) {
+			String name = String.format("%s_%s", MAP_ID, stack.getMetadata());
+			MapData data = new TBMapData(name);
+			world.setData(name, data);
+			data.calculateMapCenter(worldX, worldZ, data.scale);
+			data.dimension = DimensionType.OVERWORLD.getId();
+			data.trackingPosition = trackingPosition;
+			data.unlimitedTracking = unlimitedTracking;
+			data.markDirty();
 		}
 
 		@Nullable
@@ -286,14 +279,7 @@ public class ItemBijuMap extends ElementsNarutomodMod.ModElement {
 			TBMapData data = (TBMapData) worldIn.loadData(TBMapData.class, name);
 
 			if (data == null && !worldIn.isRemote) {
-				stack.setItemDamage(worldIn.getUniqueDataId(MAP_ID));
-				name = String.format("%s_%s", MAP_ID, stack.getMetadata());
-				data = new TBMapData(name);
-				data.scale = 3;
-				data.calculateMapCenter(worldIn.getWorldInfo().getSpawnX(), worldIn.getWorldInfo().getSpawnZ(), data.scale);
-				data.dimension = worldIn.provider.getDimension();
-				data.markDirty();
-				worldIn.setData(name, data);
+				this.setupNewMap(stack, worldIn, 0.0D, 0.0D, true, true);
 			}
 			return data;
 		}
@@ -303,8 +289,9 @@ public class ItemBijuMap extends ElementsNarutomodMod.ModElement {
 		public Packet<?> createMapDataPacket(ItemStack stack, World worldIn, EntityPlayer player) {
 			Packet<?> packet = super.createMapDataPacket(stack, worldIn, player);
 
+			TBMapData data = this.getMapData(stack, worldIn);
+
 			if (packet instanceof SPacketMaps) {
-				TBMapData data = this.getMapData(stack, worldIn);
 				return NarutomodMod.PACKET_HANDLER.getPacketFrom(new CPacketTBMap(stack.getItemDamage(), data, (SPacketMaps) packet));
 			} else {
 				return packet;
@@ -378,12 +365,13 @@ public class ItemBijuMap extends ElementsNarutomodMod.ModElement {
 						data.deserializeTBDecos(message.decoData);
 
 						Map<String, MapDecoration> saveVanilla = data.mapDecorations;
-						data.mapDecorations = new LinkedHashMap<>();
+						data.mapDecorations = Maps.newLinkedHashMap();
 
 						for (TBMapData.TBMapDecoration deco : data.tbDecorations) {
 							data.mapDecorations.put(deco.toString(), deco);
 						}
 						data.mapDecorations.putAll(saveVanilla);
+
 						mapItemRenderer.updateMapTexture(data);
 					});
 					return null;

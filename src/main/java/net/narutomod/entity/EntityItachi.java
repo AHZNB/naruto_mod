@@ -127,6 +127,8 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 		private int lastSusanooTime;
 		private EntitySusanooClothed.EntityCustom susanooEntity;
 
+		private final BossInfoServer bossInfo = new BossInfoServer(this.getDisplayName(), BossInfo.Color.RED, BossInfo.Overlay.PROGRESS);
+
 		public EntityCustom(World world) {
 			super(world, 100, 5000d);
 			//this.setItemToInventory(kunaiStack);
@@ -361,8 +363,6 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 			}
 		}
 
-		private final BossInfoServer bossInfo = new BossInfoServer(this.getDisplayName(), BossInfo.Color.BLUE, BossInfo.Overlay.PROGRESS);
-
 		@Override
 		public void addTrackingPlayer(EntityPlayerMP player) {
 			super.addTrackingPlayer(player);
@@ -375,23 +375,10 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 			this.bossInfo.removePlayer(player);
 		}
 
-		private void trackAttackedPlayers() {
-			Entity entity = this.getAttackingEntity();
-			if (entity instanceof EntityPlayerMP || (entity = this.getAttackTarget()) instanceof EntityPlayerMP) {
-				this.bossInfo.addPlayer((EntityPlayerMP)entity);
-			} else {
-				java.util.List<EntityPlayerMP> list = new java.util.ArrayList<EntityPlayerMP>();
-				for (EntityPlayerMP entityplayermp : this.bossInfo.getPlayers())
-					list.add(entityplayermp);
-				for (EntityPlayerMP entityplayermp : list)
-					this.bossInfo.removePlayer(entityplayermp);
-			}
-		}
-
 		@Override
 		public void onUpdate() {
 			super.onUpdate();
-			this.trackAttackedPlayers();
+
 			this.bossInfo.setPercent(this.getHealth() / this.getMaxHealth());
 		}
 
