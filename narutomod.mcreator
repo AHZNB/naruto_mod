@@ -7009,13 +7009,13 @@
       "registry_name": "spawn_tailed_beasts"
     },
     {
-      "name": "TailedBeastMap",
-      "type": "code",
+      "name": "BijuMap",
+      "type": "item",
       "sortid": 836,
       "compiles": true,
       "locked_code": true,
       "ids": {},
-      "registry_name": "tailed_beast_map"
+      "registry_name": "biju_map"
     }
   ],
   "variable_elements": [

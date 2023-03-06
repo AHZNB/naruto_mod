@@ -69,7 +69,7 @@ public class ItemScrollWaterShark extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void addInformation(ItemStack itemstack, World world, List<String> list, ITooltipFlag flag) {
 			super.addInformation(itemstack, world, list, flag);
-			list.add("B-rank justu scroll");
+			list.add("B-rank jutsu scroll");
 		}
 
 		@Override

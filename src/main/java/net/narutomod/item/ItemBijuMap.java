@@ -1,6 +1,11 @@
 
 package net.narutomod.item;
 
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.util.EnumActionResult;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
 import net.narutomod.creativetab.TabModTab;
 import net.narutomod.entity.EntityBijuManager;
 import net.narutomod.procedure.ProcedureSync;
@@ -49,6 +54,8 @@ import net.minecraftforge.common.MinecraftForge;
 
 import io.netty.buffer.ByteBuf;
 import com.google.common.collect.Sets;
+import org.lwjgl.Sys;
+
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.Set;
@@ -61,7 +68,7 @@ public class ItemBijuMap extends ElementsNarutomodMod.ModElement {
 	public static final Item block = null;
 
 	public ItemBijuMap(ElementsNarutomodMod instance) {
-		super(instance, 837);
+		super(instance, 836);
 	}
 
 	@Override
@@ -79,11 +86,6 @@ public class ItemBijuMap extends ElementsNarutomodMod.ModElement {
 	@Override
 	public void preInit(FMLPreInitializationEvent event) {
 		this.elements.addNetworkMessage(TBMapItem.CPacketTBMap.ClientHandler.class, TBMapItem.CPacketTBMap.class, Side.CLIENT);
-	}
-
-	@Override
-	public void init(FMLInitializationEvent event) {
-		MinecraftForge.EVENT_BUS.register(this);
 	}
 
 	public static class TBMapData extends MapData {
@@ -125,7 +127,7 @@ public class ItemBijuMap extends ElementsNarutomodMod.ModElement {
 			compound = super.writeToNBT(compound);
 
 			if (this.tbDecorations.size() > 0) {
-				compound.setByteArray("tb_decorations", serializeTBDecos());
+				compound.setByteArray("tb_decorations", this.serializeTBDecos());
 			}
 			return compound;
 		}
@@ -134,10 +136,10 @@ public class ItemBijuMap extends ElementsNarutomodMod.ModElement {
 			this.tbDecorations.clear();
 
 			for (int i = 0; i < storage.length / 4; ++i) {
-				byte index = storage[i * 3];
-				byte mapX = storage[i * 3 + 1];
-				byte mapZ = storage[i * 3 + 2];
-				byte mapRotation = storage[i * 3 + 3];
+				byte index = storage[i * 4];
+				byte mapX = storage[i * 4 + 1];
+				byte mapZ = storage[i * 4 + 2];
+				byte mapRotation = storage[i * 4 + 3];
 
 				this.tbDecorations.add(new TBMapDecoration(index, mapX, mapZ, mapRotation));
 			}
@@ -149,10 +151,10 @@ public class ItemBijuMap extends ElementsNarutomodMod.ModElement {
 			int i = 0;
 
 			for (TBMapDecoration deco : this.tbDecorations) {
-				storage[i * 3] = (byte) deco.index;
-				storage[i * 3 + 1] = deco.getX();
-				storage[i * 3 + 2] = deco.getY();
-				storage[i * 3 + 3] = deco.getRotation();
+				storage[i * 4] = (byte) deco.index;
+				storage[i * 4 + 1] = deco.getX();
+				storage[i * 4 + 2] = deco.getY();
+				storage[i * 4 + 3] = deco.getRotation();
 				i++;
 			}
 			return storage;
@@ -226,9 +228,8 @@ public class ItemBijuMap extends ElementsNarutomodMod.ModElement {
 	public static class TBMapItem extends ItemMap {
 		public static final String MAP_ID = "biju_map";
 
-		public static ItemStack setupNewMap(World world, double worldX, double worldZ, byte scale, boolean trackingPosition, boolean unlimitedTracking) {
-			ItemStack item = new ItemStack(block, 1, world.getUniqueDataId(MAP_ID));
-			String name = String.format("%s_%s", MAP_ID, item.getMetadata());
+		private void setupNewMap(ItemStack stack, World world, double worldX, double worldZ, byte scale, boolean trackingPosition, boolean unlimitedTracking) {
+			String name = String.format("%s_%s", MAP_ID, stack.getMetadata());
 			MapData data = new TBMapData(name);
 			world.setData(name, data);
 			data.scale = scale;
@@ -237,20 +238,38 @@ public class ItemBijuMap extends ElementsNarutomodMod.ModElement {
 			data.trackingPosition = trackingPosition;
 			data.unlimitedTracking = unlimitedTracking;
 			data.markDirty();
-			return item;
 		}
 
 		@Override
-		public void onCreated(ItemStack stack, World worldIn, EntityPlayer playerIn) {
-			super.onCreated(stack, worldIn, playerIn);
+		public int getItemStackLimit(ItemStack stack) {
+			return 1;
+		}
 
-			final EntityBijuManager bm = EntityBijuManager.getClosestBiju(playerIn);
-			final BlockPos target = bm.getSpawnPos();
+		@Override
+		public void onUpdate(ItemStack stack, World worldIn, Entity entityIn, int itemSlot, boolean isSelected) {
+			super.onUpdate(stack, worldIn, entityIn, itemSlot, isSelected);
 
-			final ItemStack map = TBMapItem.setupNewMap(worldIn, target.getX(), target.getZ(), (byte) 1, true, true);
-			TBMapItem.renderBiomePreviewMap(worldIn, map);
-			TBMapData data = ((TBMapItem)map.getItem()).getMapData(map, worldIn);
-			data.addTBDeco(target, (byte)(bm.getTails() - 1));
+			if (worldIn.isRemote) {
+				return;
+			}
+
+			if (!stack.hasTagCompound() && entityIn instanceof EntityPlayer) {
+				EntityPlayer player = (EntityPlayer) entityIn;
+				final EntityBijuManager bm = EntityBijuManager.getClosestBiju(player);
+
+				if (bm != null) {
+					final BlockPos target = bm.getSpawnPos();
+
+					this.setupNewMap(stack, worldIn, target.getX(), target.getZ(), (byte) 1, true, true);
+					TBMapItem.renderBiomePreviewMap(worldIn, stack);
+
+					TBMapData data = ((TBMapItem) stack.getItem()).getMapData(stack, worldIn);
+					data.addTBDeco(target, (byte) (bm.getTails() - 1));
+
+					// This way the map will find a tailed beast once one is available :P
+					stack.setTagCompound(new NBTTagCompound());
+				}
+			}
 		}
 
 		@Nullable
@@ -285,7 +304,7 @@ public class ItemBijuMap extends ElementsNarutomodMod.ModElement {
 			Packet<?> packet = super.createMapDataPacket(stack, worldIn, player);
 
 			if (packet instanceof SPacketMaps) {
-				TBMapData data = getMapData(stack, worldIn);
+				TBMapData data = this.getMapData(stack, worldIn);
 				return NarutomodMod.PACKET_HANDLER.getPacketFrom(new CPacketTBMap(stack.getItemDamage(), data, (SPacketMaps) packet));
 			} else {
 				return packet;
@@ -296,57 +315,56 @@ public class ItemBijuMap extends ElementsNarutomodMod.ModElement {
 			private int mapID;
 			private byte[] decoData;
 			private SPacketMaps inner;
-	
+
 			public CPacketTBMap() {
 			}
-	
+
 			public CPacketTBMap(int mapID, TBMapData data, SPacketMaps inner) {
 				this.mapID = mapID;
 				this.decoData = data.serializeTBDecos();
 				this.inner = inner;
 			}
-	
+
 			@Override
 			public void fromBytes(ByteBuf buf) {
 				PacketBuffer tmp = new PacketBuffer(buf);
 				mapID = ByteBufUtils.readVarInt(buf, 5);
 				decoData = tmp.readByteArray();
-	
+
 				inner = new SPacketMaps();
-	
+
 				try {
 					inner.readPacketData(tmp);
 				} catch (IOException e) {}
 			}
-	
+
 			@Override
 			public void toBytes(ByteBuf buf) {
 				PacketBuffer tmp = new PacketBuffer(buf);
 				ByteBufUtils.writeVarInt(buf, mapID, 5);
 				tmp.writeByteArray(decoData);
-	
+
 				try {
 					inner.writePacketData(tmp);
 				} catch (IOException e) {}
 			}
-	
+
 			public static class ClientHandler implements IMessageHandler<CPacketTBMap, IMessage> {
-				@SideOnly(Side.CLIENT)
 				@Override
 				public IMessage onMessage(CPacketTBMap message, MessageContext ctx) {
 					Minecraft.getMinecraft().addScheduledTask(() -> {
 						MapItemRenderer mapItemRenderer = Minecraft.getMinecraft().entityRenderer.getMapItemRenderer();
 						TBMapData data = TBMapItem.loadMapData(message.mapID, Minecraft.getMinecraft().world);
-	
+
 						if (data == null)
 						{
 							String name = String.format("%s_%s", TBMapItem.MAP_ID, message.mapID);
 							data = new TBMapData(name);
-	
+
 							if (mapItemRenderer.getMapInstanceIfExists(name) != null)
 							{
 								MapData existingData = mapItemRenderer.getData(mapItemRenderer.getMapInstanceIfExists(name));
-	
+
 								if (existingData instanceof TBMapData)
 								{
 									data = (TBMapData) existingData;
@@ -354,15 +372,15 @@ public class ItemBijuMap extends ElementsNarutomodMod.ModElement {
 							}
 							Minecraft.getMinecraft().world.setData(name, data);
 						}
-	
+
 						message.inner.setMapdataTo(data);
-	
+
 						data.deserializeTBDecos(message.decoData);
-	
+
 						Map<String, MapDecoration> saveVanilla = data.mapDecorations;
 						data.mapDecorations = new LinkedHashMap<>();
-	
-						for (TBMapData.TBMapDecoration deco : data.tbDecorations) {
+
+						for (ItemBijuMap.TBMapData.TBMapDecoration deco : data.tbDecorations) {
 							data.mapDecorations.put(deco.toString(), deco);
 						}
 						data.mapDecorations.putAll(saveVanilla);

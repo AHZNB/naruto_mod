@@ -28,7 +28,8 @@ import net.narutomod.ElementsNarutomodMod;
 import net.narutomod.Particles;
 
 import io.netty.buffer.ByteBuf;
-import javax.annotation.Nullable;
+import javax.annotation.Nullable;
+
 import java.util.List;
 
 @ElementsNarutomodMod.ModElement.Tag
