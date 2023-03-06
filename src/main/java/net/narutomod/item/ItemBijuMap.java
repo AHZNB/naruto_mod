@@ -337,6 +337,7 @@ public class ItemBijuMap extends ElementsNarutomodMod.ModElement {
 			}
 
 			public static class ClientHandler implements IMessageHandler<CPacketTBMap, IMessage> {
+				@SideOnly(Side.CLIENT)
 				@Override
 				public IMessage onMessage(CPacketTBMap message, MessageContext ctx) {
 					Minecraft.getMinecraft().addScheduledTask(() -> {
