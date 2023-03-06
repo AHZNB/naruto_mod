@@ -22,9 +22,6 @@ Items:
  - changed dojutsu helmet items textures
  - fix armor lag by preventing it from creating new instances
 
-Armor:
- - fix armor lag by preventing it from creating new instances
-
 Entities:
  - increase spawn rates for bosses and remove dungeon spawns
  - made might guy send messages to current customer instead of server
