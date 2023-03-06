@@ -26,7 +26,7 @@ public class SpawnTailedBeasts extends ElementsNarutomodMod.ModElement {
 	private static final int SPAWN_MAX_RADIUS = 100000;
 	private static final int SPAWN_MIN_RADIUS = 10000;
 	private static final int REQUIRED_DISTANCE = 100;
-	private static final int TIME_FOR_RESPAWN = 72000; // 1 hour
+	private static final int TIME_FOR_RESPAWN = 3600; // 1 hour
 
 	@EventHandler
 	public void init(FMLInitializationEvent event) {
@@ -38,7 +38,7 @@ public class SpawnTailedBeasts extends ElementsNarutomodMod.ModElement {
 		World world = event.getWorld();
 
 		if (!world.isRemote && !world.getGameRules().hasRule(SPAWN_TB_RULE)) {
-			world.getGameRules().addGameRule(SPAWN_TB_RULE, "true", net.minecraft.world.GameRules.ValueType.BOOLEAN_VALUE);
+			world.getGameRules().addGameRule(SPAWN_TB_RULE, "false", net.minecraft.world.GameRules.ValueType.BOOLEAN_VALUE);
 		}
 	}
 
@@ -116,7 +116,7 @@ public class SpawnTailedBeasts extends ElementsNarutomodMod.ModElement {
 			for (EntityPlayer player : world.playerEntities) {
 				double distanceSq = player.getDistanceSq(spawnPos.getX(), spawnPos.getY(), spawnPos.getZ());
 
-				if (distanceSq < REQUIRED_DISTANCE) {
+				if (distanceSq < REQUIRED_DISTANCE * REQUIRED_DISTANCE) {
 					playerInRange = true;
 					break;
 				}
