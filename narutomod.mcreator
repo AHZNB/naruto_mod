@@ -7007,6 +7007,15 @@
       "locked_code": true,
       "ids": {},
       "registry_name": "spawn_tailed_beasts"
+    },
+    {
+      "name": "TailedBeastMap",
+      "type": "code",
+      "sortid": 836,
+      "compiles": true,
+      "locked_code": true,
+      "ids": {},
+      "registry_name": "tailed_beast_map"
     }
   ],
   "variable_elements": [
