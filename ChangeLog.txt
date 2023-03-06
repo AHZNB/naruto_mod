@@ -21,6 +21,7 @@ Items:
  - tweaked ninja armor model sizes to better fit layered player skins
  - changed dojutsu helmet items textures
  - fix armor lag by preventing it from creating new instances
+ - added tailed beast maps
 
 Entities:
  - increase spawn rates for bosses and remove dungeon spawns

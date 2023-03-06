@@ -38,7 +38,7 @@ import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.inventory.EntityEquipmentSlot;
 
-import net.narutomod.TailedBeastMap;
+import net.narutomod.item.ItemBijuMap;
 import net.narutomod.item.ItemScrollBodyReplacement;
 import net.narutomod.item.ItemScrollKageBunshin;
 import net.narutomod.item.ItemKunai;
@@ -90,7 +90,7 @@ public class EntityIrukaSensei extends ElementsNarutomodMod.ModElement {
 			trades[0].add(new MerchantRecipe(new ItemStack(Items.EMERALD, 1), ItemStack.EMPTY, new ItemStack(ItemScrollBodyReplacement.block, 1), 0, 1));
 			trades[1].add(new MerchantRecipe(new ItemStack(Items.EMERALD, 5), ItemStack.EMPTY, new ItemStack(ItemScrollKageBunshin.block, 1), 0, 1));
 			trades[1].add(new MerchantRecipe(new ItemStack(Items.EMERALD, 30), ItemStack.EMPTY, new ItemStack(Items.GOLDEN_APPLE, 1, 1), 0, 1));
-			trades[2].add(new MerchantRecipe(new ItemStack(Items.EMERALD, 64), ItemStack.EMPTY, new ItemStack(TailedBeastMap.TB_MAP_ITEM, 1), 0, 1));
+			trades[2].add(new MerchantRecipe(new ItemStack(Items.EMERALD, 64), ItemStack.EMPTY, new ItemStack(ItemBijuMap.block, 1), 0, 1));
 		};
 
 		public EntityCustom(World world) {
