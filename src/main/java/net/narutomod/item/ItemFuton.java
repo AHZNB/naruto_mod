@@ -140,7 +140,7 @@ public class ItemFuton extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static class ChakraFlow extends EntityChakraFlow.Base {
-		private int strengthModifier = 3;
+		private int strengthModifier = 2;
 
 		public ChakraFlow(World world) {
 			super(world);
@@ -153,7 +153,7 @@ public class ItemFuton extends ElementsNarutomodMod.ModElement {
 				if (f > 0.0f) {
 					f = 1.0f / f;
 					if (user instanceof EntityPlayer) {
-						f *= PlayerTracker.getNinjaLevel((EntityPlayer)user) / 20d;
+						f *= PlayerTracker.getNinjaLevel((EntityPlayer)user) / 30d;
 					}
 					this.strengthModifier = (int)f;
 				}

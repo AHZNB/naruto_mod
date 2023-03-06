@@ -128,7 +128,9 @@ public class EntityJinchurikiClone extends ElementsNarutomodMod.ModElement {
 				EntityPlayerMP user = (EntityPlayerMP)this.getSummoner();
 				user.setGameType(GameType.getByID(this.getEntityData().getInteger("OriginalGameMode")));
 				user.addPotionEffect(new PotionEffect(MobEffects.INVISIBILITY, 2, 0, false, false));
-				user.setHealth(this.getHealth());
+				if (user.isEntityAlive()) {
+					user.setHealth(this.getHealth());
+				}
 			}
 		}
 

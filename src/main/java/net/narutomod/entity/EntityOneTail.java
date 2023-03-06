@@ -24,12 +24,10 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.storage.MapStorage;
-//import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
-//import net.narutomod.item.ItemBijuCloak;
 import net.narutomod.item.ItemJiton;
 import net.narutomod.item.ItemDoton;
 import net.narutomod.item.ItemFuton;
@@ -116,6 +114,7 @@ public class EntityOneTail extends ElementsNarutomodMod.ModElement {
 
 	 	@Override
 	 	public void resetData() {
+	 		super.resetData();
 	 		instance = null;
 	 	}
 

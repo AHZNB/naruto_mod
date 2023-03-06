@@ -166,10 +166,15 @@ public class ItemGourd extends ElementsNarutomodMod.ModElement {
 		private final ModelRenderer cube_r10;
 		private final ModelRenderer cube_r11;
 		private final ModelRenderer cube_r12;
-		private final ModelRenderer bone10;
 		private final ModelRenderer cube_r13;
 		private final ModelRenderer cube_r14;
 		private final ModelRenderer cube_r15;
+		private final ModelRenderer cube_r16;
+		private final ModelRenderer cube_r17;
+		private final ModelRenderer bone10;
+		private final ModelRenderer cube_r18;
+		private final ModelRenderer cube_r19;
+		private final ModelRenderer cube_r20;
 		//private final ModelRenderer bipedRightArm;
 		//private final ModelRenderer bipedLeftArm;
 		public ModelGourd() {
@@ -178,6 +183,7 @@ public class ItemGourd extends ElementsNarutomodMod.ModElement {
 
 			bipedBody = new ModelRenderer(this);
 			bipedBody.setRotationPoint(0.0F, 0.0F, 0.0F);
+			
 	
 			bone2 = new ModelRenderer(this);
 			bone2.setRotationPoint(0.0F, 4.0F, 5.0F);
@@ -278,48 +284,78 @@ public class ItemGourd extends ElementsNarutomodMod.ModElement {
 			bone11 = new ModelRenderer(this);
 			bone11.setRotationPoint(0.0F, -1.7F, 0.0F);
 			bone9.addChild(bone11);
-			bone11.cubeList.add(new ModelBox(bone11, 0, 16, -2.0F, 9.0F, -5.0F, 4, 2, 10, 0.12F, false));
+			
 	
 			cube_r10 = new ModelRenderer(this);
-			cube_r10.setRotationPoint(0.0F, 10.5F, 0.0F);
+			cube_r10.setRotationPoint(-4.7374F, 9.0F, -22.2374F);
 			bone11.addChild(cube_r10);
-			setRotationAngle(cube_r10, 0.0F, -0.7854F, 0.0F);
-			cube_r10.cubeList.add(new ModelBox(cube_r10, 0, 16, -2.0F, -1.5F, -5.0F, 4, 2, 10, 0.12F, false));
+			setRotationAngle(cube_r10, -0.8727F, 0.7854F, 0.0F);
+			cube_r10.cubeList.add(new ModelBox(cube_r10, 0, 16, -14.75F, -11.8F, 8.0997F, 5, 2, 5, 0.3F, false));
 	
 			cube_r11 = new ModelRenderer(this);
-			cube_r11.setRotationPoint(0.0F, 10.5F, 0.0F);
+			cube_r11.setRotationPoint(-4.7374F, 9.0F, 4.7374F);
 			bone11.addChild(cube_r11);
-			setRotationAngle(cube_r11, 0.0F, 1.5708F, 0.0F);
-			cube_r11.cubeList.add(new ModelBox(cube_r11, 0, 16, -2.0F, -1.5F, -5.0F, 4, 2, 10, 0.12F, false));
+			setRotationAngle(cube_r11, 0.8727F, -0.7854F, 0.0F);
+			cube_r11.cubeList.add(new ModelBox(cube_r11, 0, 16, -2.5F, -2.3F, -5.1497F, 5, 2, 5, 0.3F, false));
 	
 			cube_r12 = new ModelRenderer(this);
-			cube_r12.setRotationPoint(0.0F, 10.5F, 0.0F);
+			cube_r12.setRotationPoint(-2.75F, 9.0F, 0.0F);
 			bone11.addChild(cube_r12);
-			setRotationAngle(cube_r12, 0.0F, 0.7854F, 0.0F);
-			cube_r12.cubeList.add(new ModelBox(cube_r12, 0, 16, -2.0F, -1.5F, -5.0F, 4, 2, 10, 0.12F, false));
+			setRotationAngle(cube_r12, 0.0F, -1.5708F, 0.8727F);
+			cube_r12.cubeList.add(new ModelBox(cube_r12, 0, 16, -2.5F, 0.75F, -2.6F, 5, 2, 5, 0.3F, true));
+	
+			cube_r13 = new ModelRenderer(this);
+			cube_r13.setRotationPoint(6.75F, 9.0F, 0.0F);
+			bone11.addChild(cube_r13);
+			setRotationAngle(cube_r13, 0.0F, 1.5708F, -0.8727F);
+			cube_r13.cubeList.add(new ModelBox(cube_r13, 0, 16, -2.5F, -2.3F, -5.2F, 5, 2, 5, 0.3F, false));
+	
+			cube_r14 = new ModelRenderer(this);
+			cube_r14.setRotationPoint(4.7374F, 9.0F, -22.2374F);
+			bone11.addChild(cube_r14);
+			setRotationAngle(cube_r14, -0.8727F, -0.7854F, 0.0F);
+			cube_r14.cubeList.add(new ModelBox(cube_r14, 0, 16, 9.75F, -11.75F, 8.1497F, 5, 2, 5, 0.3F, false));
+	
+			cube_r15 = new ModelRenderer(this);
+			cube_r15.setRotationPoint(4.7374F, 9.0F, 4.7374F);
+			bone11.addChild(cube_r15);
+			setRotationAngle(cube_r15, 0.8727F, 0.7854F, 0.0F);
+			cube_r15.cubeList.add(new ModelBox(cube_r15, 0, 16, -2.5F, -2.25F, -5.1497F, 5, 2, 5, 0.3F, false));
+	
+			cube_r16 = new ModelRenderer(this);
+			cube_r16.setRotationPoint(0.0F, 9.0F, -24.25F);
+			bone11.addChild(cube_r16);
+			setRotationAngle(cube_r16, -0.8727F, 0.0F, 0.0F);
+			cube_r16.cubeList.add(new ModelBox(cube_r16, 0, 16, -2.5F, -15.75F, 11.45F, 5, 2, 5, 0.3F, false));
+	
+			cube_r17 = new ModelRenderer(this);
+			cube_r17.setRotationPoint(0.0F, 9.0F, 6.75F);
+			bone11.addChild(cube_r17);
+			setRotationAngle(cube_r17, 0.8727F, 0.0F, 0.0F);
+			cube_r17.cubeList.add(new ModelBox(cube_r17, 0, 16, -2.5F, -2.3F, -5.2F, 5, 2, 5, 0.3F, false));
 	
 			bone10 = new ModelRenderer(this);
-			bone10.setRotationPoint(0.0F, 7.75F, 0.0F);
+			bone10.setRotationPoint(0.0F, 8.15F, 0.0F);
 			bone9.addChild(bone10);
 			bone10.cubeList.add(new ModelBox(bone10, 0, 0, -1.0F, 2.0F, -3.0F, 2, 1, 6, 0.42F, false));
 	
-			cube_r13 = new ModelRenderer(this);
-			cube_r13.setRotationPoint(0.0F, 2.5F, 0.0F);
-			bone10.addChild(cube_r13);
-			setRotationAngle(cube_r13, 0.0F, 2.3562F, 0.0F);
-			cube_r13.cubeList.add(new ModelBox(cube_r13, 0, 0, -1.0F, -0.5F, -3.0F, 2, 1, 6, 0.42F, false));
+			cube_r18 = new ModelRenderer(this);
+			cube_r18.setRotationPoint(0.0F, 2.5F, 0.0F);
+			bone10.addChild(cube_r18);
+			setRotationAngle(cube_r18, 0.0F, 2.3562F, 0.0F);
+			cube_r18.cubeList.add(new ModelBox(cube_r18, 0, 0, -1.0F, -0.5F, -3.0F, 2, 1, 6, 0.42F, false));
 	
-			cube_r14 = new ModelRenderer(this);
-			cube_r14.setRotationPoint(0.0F, 2.5F, 0.0F);
-			bone10.addChild(cube_r14);
-			setRotationAngle(cube_r14, 0.0F, 1.5708F, 0.0F);
-			cube_r14.cubeList.add(new ModelBox(cube_r14, 0, 0, -1.0F, -0.5F, -3.0F, 2, 1, 6, 0.42F, false));
+			cube_r19 = new ModelRenderer(this);
+			cube_r19.setRotationPoint(0.0F, 2.5F, 0.0F);
+			bone10.addChild(cube_r19);
+			setRotationAngle(cube_r19, 0.0F, 1.5708F, 0.0F);
+			cube_r19.cubeList.add(new ModelBox(cube_r19, 0, 0, -1.0F, -0.5F, -3.0F, 2, 1, 6, 0.42F, false));
 	
-			cube_r15 = new ModelRenderer(this);
-			cube_r15.setRotationPoint(0.0F, 2.5F, 0.0F);
-			bone10.addChild(cube_r15);
-			setRotationAngle(cube_r15, 0.0F, 0.7854F, 0.0F);
-			cube_r15.cubeList.add(new ModelBox(cube_r15, 0, 0, -1.0F, -0.5F, -3.0F, 2, 1, 6, 0.42F, false));
+			cube_r20 = new ModelRenderer(this);
+			cube_r20.setRotationPoint(0.0F, 2.5F, 0.0F);
+			bone10.addChild(cube_r20);
+			setRotationAngle(cube_r20, 0.0F, 0.7854F, 0.0F);
+			cube_r20.cubeList.add(new ModelBox(cube_r20, 0, 0, -1.0F, -0.5F, -3.0F, 2, 1, 6, 0.42F, false));
 	
 			bipedRightArm = new ModelRenderer(this);
 			bipedRightArm.setRotationPoint(-5.0F, 2.0F, 0.0F);

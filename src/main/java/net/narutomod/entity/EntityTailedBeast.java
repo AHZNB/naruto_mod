@@ -24,6 +24,7 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.item.Item;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.EnumCreatureAttribute;
 import net.minecraft.entity.IRangedAttackMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -36,6 +37,7 @@ import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.client.model.ModelRenderer;
@@ -64,24 +66,27 @@ import net.minecraft.entity.ai.EntityAIMoveTowardsTarget;
 import net.minecraft.entity.ai.EntityAIWander;
 import net.minecraft.entity.ai.attributes.IAttribute;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
+import net.minecraft.entity.ai.attributes.RangedAttribute;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.RayTraceResult;
 //import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.EntitySelectors;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.translation.I18n;
 
 import net.narutomod.item.ItemJutsu;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.procedure.ProcedureAoeCommand;
+import net.narutomod.procedure.ProcedureCameraShake;
 import net.narutomod.event.EventSphericalExplosion;
 import net.narutomod.Particles;
 import net.narutomod.SaveData;
 import net.narutomod.NarutomodModVariables;
 import net.narutomod.ElementsNarutomodMod;
 
+import com.google.common.base.Predicate;
 import javax.annotation.Nullable;
-import javax.vecmath.Vector3d;
 import java.util.UUID;
 import java.util.Map;
 import com.google.common.collect.Maps;
@@ -1276,6 +1281,11 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 		protected abstract EntityBijuManager getBijuManager();
 
 		protected abstract Base createEntity(World world);
+
+		@Override
+		public void resetData() {
+			this.getBijuManager().reset();
+		}
 
 	 	@Override
 	 	public void readFromNBT(NBTTagCompound compound) {

@@ -108,6 +108,7 @@ public class EntityFiveTails extends ElementsNarutomodMod.ModElement {
 
 	 	@Override
 	 	public void resetData() {
+	 		super.resetData();
 	 		instance = null;
 	 	}
 

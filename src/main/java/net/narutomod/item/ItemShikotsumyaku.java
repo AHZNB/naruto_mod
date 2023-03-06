@@ -218,7 +218,7 @@ public class ItemShikotsumyaku extends ElementsNarutomodMod.ModElement {
 	public static class EntityBrackenDance extends EntitySpike.Base {
 		private final int growTime = 8;
 		private final float maxScale = 2.0f;
-		private float damage;
+		private final float damage = 20.0f;
 
 		public EntityBrackenDance(World worldIn) {
 			super(worldIn);
@@ -227,7 +227,7 @@ public class ItemShikotsumyaku extends ElementsNarutomodMod.ModElement {
 
 		public EntityBrackenDance(EntityLivingBase userIn, float damageIn) {
 			super(userIn, 0xFFFFFFFF);
-			this.damage = damageIn;
+			//this.damage = damageIn;
 		}
 
 		@Override
@@ -239,7 +239,8 @@ public class ItemShikotsumyaku extends ElementsNarutomodMod.ModElement {
 				 this.world.getEntitiesWithinAABB(EntityLivingBase.class, this.getEntityBoundingBox().grow(1d, 0d, 1d))) {
 					if (!entity.equals(this.shootingEntity)) {
 						entity.hurtResistantTime = 10;
-						entity.attackEntityFrom(ItemJutsu.causeJutsuDamage(this, this.shootingEntity), this.damage);
+						entity.attackEntityFrom(ItemJutsu.causeJutsuDamage(this, this.shootingEntity),
+						 this.damage * (1f - (float)(this.ticksAlive - 1) / this.growTime));
 					}
 				}
 			}

@@ -23,13 +23,11 @@ import net.narutomod.Chakra;
 import net.narutomod.ElementsNarutomodMod;
 
 import javax.annotation.Nullable;
-import javax.vecmath.Vector3d;
 import java.util.*;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Lists;
 import com.google.common.collect.ImmutableList;
-import org.lwjgl.Sys;
 
 @ElementsNarutomodMod.ModElement.Tag
 public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
@@ -66,7 +64,7 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 	public static Collection<EntityBijuManager> getBMList() {
 		return ImmutableList.copyOf(mapByClass.values());
 	}
-	
+
 	@Nullable
 	protected static EntityBijuManager getBijuManagerFrom(EntityPlayer player) {
 		for (EntityBijuManager bm : mapByClass.values()) {
@@ -75,13 +73,6 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 			}
 		}
 		return null;
-	}
-
-	public void reset() {
-		this.setVesselEntity(null, false);
-		this.cloakCD = 0;
-		this.spawnPos = null;
-		this.entity = null;
 	}
 
 	public static boolean isJinchuriki(EntityPlayer player) {
@@ -232,7 +223,7 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 
 	public static EntityBijuManager getClosestBiju(EntityPlayer player) {
 		EntityBijuManager closest = null;
-		
+
 		for (EntityBijuManager bm : mapByClass.values()) {
 			if (!bm.hasSpawnPos() || bm.isSealed()) {
 				continue;
@@ -253,6 +244,13 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 		this.setCloakXPs(ZERO);
 		mapByClass.put(clazz, this);
 		mapByTailnum.put(tailnum, this);
+	}
+
+	public void reset() {
+		this.setVesselEntity(null, false);
+		this.cloakCD = 0;
+		this.spawnPos = null;
+		this.entity = null;
 	}
 
 	public int getTicksSinceDeath() {
