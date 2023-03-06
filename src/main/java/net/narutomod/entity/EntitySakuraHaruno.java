@@ -1,6 +1,7 @@
 
 package net.narutomod.entity;
 
+import net.minecraft.village.Village;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
@@ -67,12 +68,15 @@ public class EntitySakuraHaruno extends ElementsNarutomodMod.ModElement {
 
 	@Override
 	public void initElements() {
-		elements.entities.add(() -> EntityEntryBuilder.create().entity(EntityCustom.class)
-		 .id(new ResourceLocation("narutomod", "sakura_haruno"), ENTITYID).name("sakura_haruno")
+		elements.entities
+.add(() -> EntityEntryBuilder.create().entity(EntityCustom.class)
+		 .id(new ResourceLocation("narutomod", "sakura_haruno"), ENTITYID)
+.name("sakura_haruno")
 		 .tracker(64, 3, true).egg(-3407668, -26215).build());
 	}
 
-	@Override
+
+	@Override
 	public void init(FMLInitializationEvent event) {
 		Biome[] spawnBiomes = {Biomes.FOREST, Biomes.BIRCH_FOREST, Biomes.BIRCH_FOREST_HILLS, Biomes.FOREST_HILLS,
 		 Biomes.JUNGLE, Biomes.JUNGLE_EDGE, Biomes.JUNGLE_HILLS, Biomes.PLAINS, Biomes.ROOFED_FOREST, Biomes.TAIGA, Biomes.TAIGA_HILLS};
@@ -158,7 +162,8 @@ public class EntitySakuraHaruno extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		protected int getTradeLevel(EntityPlayer player) {
-			return this.getVillage() != null ? this.getVillage().getPlayerReputation(player.getUniqueID()) / 3 : 0;
+			Village village = this.getVillage();
+			return village != null ? village.getPlayerReputation(player.getUniqueID()) / 3 : 0;
 		}
 
 		@Override
@@ -363,5 +368,6 @@ public class EntitySakuraHaruno extends ElementsNarutomodMod.ModElement {
 			this.bipedLeftLeg.cubeList.add(new ModelBox(this.bipedLeftLeg, 16, 48, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.0F, false));
 			this.bipedLeftLeg.cubeList.add(new ModelBox(this.bipedLeftLeg, 0, 48, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.25F, false));
 		}
-	}
+
+	}
 }

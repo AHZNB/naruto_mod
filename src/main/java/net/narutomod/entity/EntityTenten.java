@@ -1,6 +1,7 @@
 
 package net.narutomod.entity;
 
+import net.minecraft.village.Village;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
@@ -120,7 +121,8 @@ public class EntityTenten extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		protected int getTradeLevel(EntityPlayer player) {
-			return this.getVillage() != null ? this.getVillage().getPlayerReputation(player.getUniqueID()) / 3 : 0;
+			Village village = this.getVillage();
+			return village != null ? village.getPlayerReputation(player.getUniqueID()) / 3 : 0;
 		}
 
 		@Override

@@ -1,6 +1,7 @@
 
 package net.narutomod.entity;
 
+import net.minecraft.village.Village;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
@@ -67,7 +68,7 @@ public class EntityIrukaSensei extends ElementsNarutomodMod.ModElement {
 	public void init(FMLInitializationEvent event) {
 		Biome[] spawnBiomes = {Biomes.FOREST, Biomes.BIRCH_FOREST, Biomes.BIRCH_FOREST_HILLS, Biomes.FOREST_HILLS,
 		 Biomes.JUNGLE, Biomes.JUNGLE_EDGE, Biomes.JUNGLE_HILLS, Biomes.PLAINS, Biomes.ROOFED_FOREST, Biomes.TAIGA, Biomes.TAIGA_HILLS};
-		EntityRegistry.addSpawn(EntityCustom.class, 1, 1, 1, EnumCreatureType.AMBIENT, spawnBiomes);
+		EntityRegistry.addSpawn(EntityCustom.class, 20, 1, 1, EnumCreatureType.AMBIENT, spawnBiomes);
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -129,7 +130,8 @@ public class EntityIrukaSensei extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		protected int getTradeLevel(EntityPlayer player) {
-			return this.getVillage() != null ? this.getVillage().getPlayerReputation(player.getUniqueID()) / 3 : 0;
+			Village village = this.getVillage();
+			return village != null ? village.getPlayerReputation(player.getUniqueID()) / 3 : 0;
 		}
 
 		@Override
