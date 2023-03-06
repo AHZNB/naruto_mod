@@ -96,8 +96,7 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 			Biomes.TAIGA_HILLS, Biomes.JUNGLE, Biomes.JUNGLE_HILLS, Biomes.BIRCH_FOREST,
 			Biomes.BIRCH_FOREST_HILLS, Biomes.ROOFED_FOREST, Biomes.SAVANNA, Biomes.EXTREME_HILLS
 		};
-		EntityRegistry.addSpawn(EntityCustom.class, 1, 1, 1, EnumCreatureType.MONSTER, spawnBiomes);
-		DungeonHooks.addDungeonMob(new ResourceLocation("narutomod:itachi"), 50);
+		EntityRegistry.addSpawn(EntityCustom.class, 15, 1, 1, EnumCreatureType.MONSTER, spawnBiomes);
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -110,7 +109,8 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 					return new ItemStack(ItemShuriken.block, (int) (1));
 				}
 			};
-		});*/
+		});
+*/
 	}
 
 	public static class EntityCustom extends EntityNinjaMob.Base implements IMob, IRangedAttackMob {
@@ -146,7 +146,7 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 
 		public void setIsReal(boolean real) {
 			this.isReal = real;
-			this.inventoryArmorDropChances[3] = real ? 1.0f : 0.0f;
+			this.setDropChance(EntityEquipmentSlot.HEAD, real ? 2.0F : 0.0F);
 		}
 
 		@Override
@@ -221,7 +221,8 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public SoundEvent getDeathSound() {
-			return (SoundEvent) SoundEvent.REGISTRY.getObject(new ResourceLocation("entity.illusion_illager.death"));
+			return (SoundEvent) SoundEvent.REGISTRY
+.getObject(new ResourceLocation("entity.illusion_illager.death"));
 		}
 
 		@Override
@@ -235,7 +236,8 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public boolean attackEntityFrom(DamageSource source, float amount) {
-			if (source == DamageSource.FALL) {
+			if (source == DamageSource.FALL)
+ {
 				return false;
 			}
 			if (!this.world.isRemote) {

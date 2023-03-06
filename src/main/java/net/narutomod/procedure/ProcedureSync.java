@@ -1,5 +1,11 @@
 package net.narutomod.procedure;
 
+import net.minecraft.client.gui.MapItemRenderer;
+import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.play.server.SPacketMaps;
+import net.minecraft.world.storage.MapData;
+import net.minecraft.world.storage.MapDecoration;
+import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
@@ -15,12 +21,12 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.WorldServer;
-import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.block.Block;
 
+import net.narutomod.TailedBeastMap;
 import net.narutomod.entity.EntityEarthBlocks;
 import net.narutomod.entity.EntityLightningArc;
 import net.narutomod.NarutomodMod;
@@ -30,7 +36,11 @@ import net.narutomod.Particles;
 import io.netty.buffer.ByteBuf;
 import javax.annotation.Nullable;
 import net.minecraft.entity.IEntityMultiPart;
+
+import java.io.IOException;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class ProcedureSync extends ElementsNarutomodMod.ModElement {
@@ -62,6 +72,7 @@ public class ProcedureSync extends ElementsNarutomodMod.ModElement {
 		this.elements.addNetworkMessage(MultiPartsPacket.ServerHandler.class, MultiPartsPacket.class, Side.SERVER);
 		this.elements.addNetworkMessage(MultiPartsPacket.ClientHandler.class, MultiPartsPacket.class, Side.CLIENT);
 		this.elements.addNetworkMessage(MultiPartsSetPassengers.ClientHandler.class, MultiPartsSetPassengers.class, Side.CLIENT);
+		this.elements.addNetworkMessage(CPacketTBMap.ClientHandler.class, CPacketTBMap.class, Side.CLIENT);
 	}
 	
 	public static class SwingMainArm implements IMessage {
@@ -1136,6 +1147,86 @@ public class ProcedureSync extends ElementsNarutomodMod.ModElement {
 			this.passengerIds = new int[this.passengers];
 			for (int i = 0; i < this.passengers; i++) {
 				this.passengerIds[i] = buf.readInt();
+			}
+		}
+	}
+
+	public static class CPacketTBMap implements IMessage {
+		private int mapID;
+		private byte[] decoData;
+		private SPacketMaps inner;
+
+		public CPacketTBMap() {
+		}
+
+		public CPacketTBMap(int mapID, TailedBeastMap.TBMapData data, SPacketMaps inner) {
+			this.mapID = mapID;
+			this.decoData = data.serializeTBDecos();
+			this.inner = inner;
+		}
+
+		@Override
+		public void fromBytes(ByteBuf buf) {
+			PacketBuffer tmp = new PacketBuffer(buf);
+			mapID = ByteBufUtils.readVarInt(buf, 5);
+			decoData = tmp.readByteArray();
+
+			inner = new SPacketMaps();
+
+			try {
+				inner.readPacketData(tmp);
+			} catch (IOException e) {}
+		}
+
+		@Override
+		public void toBytes(ByteBuf buf) {
+			PacketBuffer tmp = new PacketBuffer(buf);
+			ByteBufUtils.writeVarInt(buf, mapID, 5);
+			tmp.writeByteArray(decoData);
+
+			try {
+				inner.writePacketData(tmp);
+			} catch (IOException e) {}
+		}
+
+		public static class ClientHandler implements IMessageHandler<CPacketTBMap, IMessage> {
+			@Override
+			public IMessage onMessage(CPacketTBMap message, MessageContext ctx) {
+				Minecraft.getMinecraft().addScheduledTask(() -> {
+					MapItemRenderer mapItemRenderer = Minecraft.getMinecraft().entityRenderer.getMapItemRenderer();
+					TailedBeastMap.TBMapData data = TailedBeastMap.TBMapItem.loadMapData(message.mapID, Minecraft.getMinecraft().world);
+
+					if (data == null)
+					{
+						String name = String.format("%s_%s", TailedBeastMap.TBMapItem.MAP_ID, message.mapID);
+						data = new TailedBeastMap.TBMapData(name);
+
+						if (mapItemRenderer.getMapInstanceIfExists(name) != null)
+						{
+							MapData existingData = mapItemRenderer.getData(mapItemRenderer.getMapInstanceIfExists(name));
+
+							if (existingData instanceof TailedBeastMap.TBMapData)
+							{
+								data = (TailedBeastMap.TBMapData) existingData;
+							}
+						}
+						Minecraft.getMinecraft().world.setData(name, data);
+					}
+
+					message.inner.setMapdataTo(data);
+
+					data.deserializeTBDecos(message.decoData);
+
+					Map<String, MapDecoration> saveVanilla = data.mapDecorations;
+					data.mapDecorations = new LinkedHashMap<>();
+
+					for (TailedBeastMap.TBMapData.TBMapDecoration deco : data.tbDecorations) {
+						data.mapDecorations.put(deco.toString(), deco);
+					}
+					data.mapDecorations.putAll(saveVanilla);
+					mapItemRenderer.updateMapTexture(data);
+				});
+				return null;
 			}
 		}
 	}

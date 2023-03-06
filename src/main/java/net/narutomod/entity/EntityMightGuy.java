@@ -82,8 +82,10 @@ public class EntityMightGuy extends ElementsNarutomodMod.ModElement {
 
 	@Override
 	public void initElements() {
-		elements.entities.add(() -> EntityEntryBuilder.create().entity(EntityCustom.class)
-		  .id(new ResourceLocation("narutomod", "mightguy"), ENTITYID).name("mightguy").tracker(64, 3, true).egg(-16751104, -3355648).build());
+		elements.entities
+.add(() -> EntityEntryBuilder.create().entity(EntityCustom.class)
+		  .id(new ResourceLocation("narutomod", "mightguy"), ENTITYID)
+.name("mightguy").tracker(64, 3, true).egg(-16751104, -3355648).build());
 	}
 
 	@Override
@@ -117,7 +119,8 @@ public class EntityMightGuy extends ElementsNarutomodMod.ModElement {
 					this.modelLeggings = new ModelBiped(0.5f);
 					this.modelArmor = new ModelBiped(1);
 				}
-			});*/
+			});
+*/
 			return customRender;
 		});
 	}
@@ -277,11 +280,13 @@ public class EntityMightGuy extends ElementsNarutomodMod.ModElement {
 			if (target != null && target.isEntityAlive()) {
 				if (this.gateCooldown == 0) {
 					float gate = 0f;
-					if (this.getHealth() < this.getMaxHealth() / 2) {
+					if (this.getHealth() < this.getMaxHealth() / 2)
+ {
 						gate = 3.5f;
 					}
 					float targetStrength = (float) ProcedureUtils.getModifiedAttackDamage(target);
-					if (targetStrength > 10.0f || target.getMaxHealth() >= 50.0f) {
+					if (targetStrength > 10.0f || target.getMaxHealth() >= 50.0f)
+ {
 						double d = Chakra.getLevel(target);
 						gate = MathHelper.sqrt((targetStrength + d) * (target.getMaxHealth() + d)) / 25f;
 					}
@@ -299,7 +304,8 @@ public class EntityMightGuy extends ElementsNarutomodMod.ModElement {
 					this.closeGates();
 				}
 			}
-			if (this.gateCooldown > 0) {
+			if (this.gateCooldown > 0)
+ {
 				--this.gateCooldown;
 			}
 			super.updateAITasks();
@@ -328,7 +334,8 @@ public class EntityMightGuy extends ElementsNarutomodMod.ModElement {
 		@Override 
 		public boolean getCanSpawnHere() {
 			Village village = this.world.getVillageCollection().getNearestVillage(new BlockPos(this), 32);
-			if (village == null || village.getNumVillageDoors() < 20 || village.getNumVillagers() < 10 
+			if (village == null || village.getNumVillageDoors() < 20 ||
+ village.getNumVillagers() < 10 
 			 || !this.world.getEntities(EntityCustom.class, EntitySelectors.IS_ALIVE).isEmpty()) {
 				return false;
 			 }
@@ -337,7 +344,8 @@ public class EntityMightGuy extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public void onKillEntity(EntityLivingBase entity) {
-			if (this.isTrackingCustomer()) {
+			if (this.isTrackingCustomer())
+ {
 				++this.killCount;
 				this.world.getScoreboard().getOrCreateScore(this.getName(), this.customerKillCount).setScorePoints(this.killCount);
 			}
@@ -349,7 +357,7 @@ public class EntityMightGuy extends ElementsNarutomodMod.ModElement {
 
 		public void startTrackingCustomer() {
 			if (!this.world.isRemote && this.customer != null && this.getVillage() != null) {
-				ProcedureUtils.sendChatAll(TextFormatting.GREEN + I18n.translateToLocal("entity.mightguy.name") + ": "
+				ProcedureUtils.sendChat(this.customer, TextFormatting.GREEN + I18n.translateToLocal("entity.mightguy.name") + ": "
 						+ TextFormatting.WHITE + I18n.translateToLocal("chattext.mightguy.interact2"));
 				this.siegeStartingVillagers = this.getVillage().getNumVillagers();
 				Scoreboard _sc = this.world.getScoreboard();
@@ -368,11 +376,11 @@ public class EntityMightGuy extends ElementsNarutomodMod.ModElement {
 				int villagersKilled = this.siegeStartingVillagers - this.getVillage().getNumVillagers();
 				if (villagersKilled > 0 || kills < this.killCount / 2 || !this.customer.isEntityAlive()) {
 					// failed
-					ProcedureUtils.sendChatAll(TextFormatting.GREEN + I18n.translateToLocal("entity.mightguy.name") + ": "
+					ProcedureUtils.sendChat(this.customer, TextFormatting.GREEN + I18n.translateToLocal("entity.mightguy.name") + ": "
 							+ TextFormatting.WHITE + I18n.translateToLocal("chattext.mightguy.interact4"));
 					this.getVillage().modifyPlayerReputation(this.customer.getUniqueID(), -3);
 				} else {
-					ProcedureUtils.sendChatAll(TextFormatting.GREEN + I18n.translateToLocal("entity.mightguy.name") + ": "
+					ProcedureUtils.sendChat(this.customer, TextFormatting.GREEN + I18n.translateToLocal("entity.mightguy.name") + ": "
 							+ TextFormatting.WHITE + I18n.translateToLocal("chattext.mightguy.interact3"));
 					this.getVillage().modifyPlayerReputation(this.customer.getUniqueID(), 3);
 					ItemHandlerHelper.giveItemToPlayer(this.customer, new ItemStack(ItemEightGates.block));
@@ -393,10 +401,11 @@ public class EntityMightGuy extends ElementsNarutomodMod.ModElement {
 				Village village = this.getVillage();
 				if (this.customer == null && village.getPlayerReputation(player.getUniqueID()) >= 0) {
 					this.customer = player;
-					ProcedureUtils.sendChatAll(TextFormatting.GREEN + I18n.translateToLocal("entity.mightguy.name") + ": "
+					ProcedureUtils.sendChat(player, TextFormatting.GREEN + I18n.translateToLocal("entity.mightguy.name") + ": "
 							+ TextFormatting.WHITE + I18n.translateToLocal("chattext.mightguy.interact1"));
 					long startTime = this.world.getTotalWorldTime() + 18000L - (this.world.getWorldTime() % 24000L);
-					new EventVillageSiege(this.world, null, village.getCenter().getX(), village.getCenter().getY(), 
+					new EventVillageSiege(this.world, null, village.getCenter().getX(),
+ village.getCenter().getY(), 
 					  village.getCenter().getZ(), startTime, village.getVillageRadius() + 5, 80) {
 						protected void doOnTick(int currentTick) {
 							if (currentTick == 0)
@@ -415,7 +424,8 @@ public class EntityMightGuy extends ElementsNarutomodMod.ModElement {
 			if (this.getHeldItemMainhand().getItem() == ItemEightGates.block) {
 				this.gateOpened = this.getGateOpened();
 				if (this.getHealth() < this.getMaxHealth() * 0.9f) {
-					if (gate > 4f && this.gateOpened < 4f) {
+					if (gate > 4f && this.gateOpened < 4f)
+ {
 						gate = 3.5f;
 					} else if (this.getHealth() < 4f && this.gateOpened >= 4f) {
 						this.closeGates();
@@ -432,7 +442,8 @@ public class EntityMightGuy extends ElementsNarutomodMod.ModElement {
 					this.setSneaking(false);
 				}
 				this.closeGatesCountdown = 100;
-			} else {
+			} else
+ {
 				this.swapWithInventory(EntityEquipmentSlot.MAINHAND, 0);
 			}
 		}
@@ -477,7 +488,8 @@ public class EntityMightGuy extends ElementsNarutomodMod.ModElement {
 					this.heal(5f);
 			}
 			if (this.customer != null
-			 && (!this.customer.isEntityAlive()	|| (this.customer instanceof EntityPlayerMP 
+			 && (!this.customer.isEntityAlive()
+	|| (this.customer instanceof EntityPlayerMP 
 			 && ((EntityPlayerMP)this.customer).hasDisconnected())) && this.isTrackingCustomer()) {
 				this.stopTrackingCustomer();
 			}

@@ -1298,11 +1298,13 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 	 			}
 	 		}
 			 if (compound.hasKey("spawnPosX")) {
-				 Vec3d spawnPos = new Vec3d(compound.getDouble("spawnPosX"), compound.getDouble("spawnPosY"),
+				 BlockPos spawnPos = new BlockPos(compound.getDouble("spawnPosX"), compound.getDouble("spawnPosY"),
 						 compound.getDouble("spawnPosZ"));
 				 this.getBijuManager().setSpawnPos(spawnPos);
 			 }
-	 	}
+			 this.getBijuManager().setTicksSinceDeath(compound.getInteger("ticksSinceDeath"));
+			 this.getBijuManager().setHasLived(compound.getBoolean("hasLived"));
+		}
 
 	 	@Override 
 	 	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
@@ -1325,11 +1327,13 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 	 			compound.removeTag("JinchurikiCloakCD");
 	 		}
 			 if (this.getBijuManager().hasSpawnPos()) {
-				 Vec3d spawnPos = this.getBijuManager().getSpawnPos();
-				 compound.setDouble("spawnPosX", spawnPos.x);
-				 compound.setDouble("spawnPosY", spawnPos.y);
-				 compound.setDouble("spawnPosZ", spawnPos.z);
+				 BlockPos spawnPos = this.getBijuManager().getSpawnPos();
+				 compound.setDouble("spawnPosX", spawnPos.getX());
+				 compound.setDouble("spawnPosY", spawnPos.getY());
+				 compound.setDouble("spawnPosZ", spawnPos.getZ());
 			 }
+			 compound.setInteger("ticksSinceDeath", this.getBijuManager().getTicksSinceDeath());
+			 compound.setBoolean("hasLived", this.getBijuManager().getHasLived());
 	 		return compound;
 	 	} 
 	}

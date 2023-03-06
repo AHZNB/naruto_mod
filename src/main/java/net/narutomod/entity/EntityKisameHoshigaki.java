@@ -100,8 +100,8 @@ public class EntityKisameHoshigaki extends ElementsNarutomodMod.ModElement {
 			Biomes.FOREST_HILLS, Biomes.TAIGA_HILLS, Biomes.JUNGLE, Biomes.JUNGLE_HILLS,
 			Biomes.BIRCH_FOREST, Biomes.BIRCH_FOREST_HILLS, Biomes.SAVANNA
 		};
-		EntityRegistry.addSpawn(EntityCustom.class, 1, 1, 1, EnumCreatureType.MONSTER, spawnBiomes);
-		DungeonHooks.addDungeonMob(new ResourceLocation("narutomod:kisame_hoshigaki"), 50);
+		EntityRegistry.addSpawn(EntityCustom.class, 15, 1, 1, EnumCreatureType.MONSTER, spawnBiomes);
+		//DungeonHooks.addDungeonMob(new ResourceLocation("narutomod:kisame_hoshigaki"), 50);
 	}
 
 	@SideOnly(Side.CLIENT)

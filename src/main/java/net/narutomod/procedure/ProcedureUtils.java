@@ -45,7 +45,8 @@ import net.minecraft.block.SoundType;
 import net.minecraft.block.Block;
 import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.advancements.Advancement;
-import net.minecraft.init.Items;
+
+import net.minecraft.init.Items;
 
 import net.narutomod.item.ItemSharingan;
 import net.narutomod.item.ItemMangekyoSharinganObito;
@@ -116,7 +117,8 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 					continue;
 				return player;
 			}
-		}*/
+		}
+*/
 		MinecraftServer mcserv = FMLCommonHandler.instance().getMinecraftServerInstance();
 		if (mcserv != null) {
 			Entity entity = mcserv.getEntityFromUuid(id);
@@ -305,7 +307,8 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 					}
 				}
 			}
-			if (entityIn instanceof EntityLivingBase) {
+			if (entityIn instanceof EntityLivingBase)
+ {
 				ItemStack itemstack1 = attacker.getHeldItemMainhand();
 				if (!itemstack1.isEmpty()) {
 					itemstack1.getItem().hitEntity(itemstack1, (EntityLivingBase)entityIn, attacker);
@@ -492,7 +495,8 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 		Vec3d vec3d2 = vec3d.add(vec3d1);
 		Vec3d vec3d3 = null;
 		RayTraceResult objectMouseOver = entity.world.rayTraceBlocks(vec3d, vec3d2, stopOnLiquid, false, true);
-		if (objectMouseOver != null) {
+		if (objectMouseOver != null)
+ {
 			d1 = objectMouseOver.hitVec.distanceTo(vec3d);
 		}
 		List<Entity> list = entity.world.getEntitiesInAABBexcluding(entity,
@@ -526,7 +530,8 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 				}
 			}
 		}
-		if (targetedEntity != null && (d2 < d1 || objectMouseOver == null)) {
+		if (targetedEntity != null && (d2 < d1 || objectMouseOver == null))
+ {
 			objectMouseOver = new RayTraceResult(targetedEntity, vec3d3);
 		}
 		return objectMouseOver;
@@ -537,7 +542,8 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 	}
 
 	@Nullable
-	public static EntityItem breakBlockAndDropWithChance(World world, BlockPos pos, float hardnessLimit, float breakChance, float dropChance, boolean sound) {
+	public static EntityItem breakBlockAndDropWithChance(World world, BlockPos pos, float hardnessLimit, float breakChance, float dropChance,
+ boolean sound) {
 		EntityItem entityToSpawn = null;
 		IBlockState blockstate = world.getBlockState(pos);
 		float blockHardness = blockstate.getBlockHardness(world, pos);
@@ -551,7 +557,8 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 				if (!world.isRemote && Math.random() <= (double) dropChance) {
 					Item item = blockstate.getBlock().getItemDropped(blockstate, RNG, 0);
 					if (item != Items.AIR) {
-						entityToSpawn = new EntityItem(world, (double) pos.getX(), (double) pos.getY(), (double) pos.getZ(), new ItemStack(item, 1));
+						entityToSpawn = new EntityItem(world, (double) pos.getX(), (double) pos.getY(), (double) pos.getZ(),
+ new ItemStack(item, 1));
 						entityToSpawn.setDefaultPickupDelay();
 						world.spawnEntity(entityToSpawn);
 					}
@@ -710,9 +717,12 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 		if (type == 0) {
 			long l = Minecraft.getSystemTime();
 			for (int i = 0; i < stringLength; ++i)
-				outputString = ((long) i + l / 10L) % 188L == 0L ? outputString + TextFormatting.WHITE + string.substring(i, i + 1)
-						: ((long) i + l / 10L) % 188L == 1L	? outputString + TextFormatting.YELLOW + string.substring(i, i + 1)
-						: ((long) i + l / 10L) % 188L == 187L ? outputString + TextFormatting.YELLOW + string.substring(i, i + 1)
+				outputString = ((long) i + l / 10L) % 188L == 0L
+ ? outputString + TextFormatting.WHITE + string.substring(i, i + 1)
+						: ((long) i + l / 10L) % 188L == 1L
+	? outputString + TextFormatting.YELLOW + string.substring(i, i + 1)
+						: ((long) i + l / 10L) % 188L == 187L
+ ? outputString + TextFormatting.YELLOW + string.substring(i, i + 1)
 						: outputString + TextFormatting.GOLD + string.substring(i, i + 1);
 		} else if (type == 1)
 			outputString = TextFormatting.fromColorIndex((int) (Minecraft.getSystemTime() / 80L % 15L) + (returnToBlack ? 0 : 1)) + string;
@@ -952,6 +962,10 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 		if (mcserv != null) {
 			mcserv.getPlayerList().sendMessage(new TextComponentString(string));
 		}
+	}
+
+	public static void sendChat(EntityPlayer player, String string) {
+		player.sendMessage(new TextComponentString(string));
 	}
 
 	public static void sendMessageToAllNear(String string, double x, double y, double z, double radius, int dimension) {

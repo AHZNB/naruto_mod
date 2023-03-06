@@ -2,6 +2,7 @@
 package net.narutomod.entity;
 
 import net.minecraft.init.Biomes;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.biome.Biome;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 
@@ -28,6 +29,7 @@ import java.util.*;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Lists;
 import com.google.common.collect.ImmutableList;
+import org.lwjgl.Sys;
 
 @ElementsNarutomodMod.ModElement.Tag
 public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
@@ -44,7 +46,9 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 	private long cloakCD;
 	private final int[] cloakXp = new int[3];
 	private int respawnCD;
-	private Vec3d spawnPos;
+	private BlockPos spawnPos;
+	private int ticksSinceDeath;
+	private boolean hasLived;
 	private static final Random rand = new Random();
 
 	private static final List<List<Biome>> spawns = Lists.newArrayList(
@@ -71,6 +75,13 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 			}
 		}
 		return null;
+	}
+
+	public void reset() {
+		this.setVesselEntity(null, false);
+		this.cloakCD = 0;
+		this.spawnPos = null;
+		this.entity = null;
 	}
 
 	public static boolean isJinchuriki(EntityPlayer player) {
@@ -219,6 +230,23 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 		return list;
 	}
 
+	public static EntityBijuManager getClosestBiju(EntityPlayer player) {
+		EntityBijuManager closest = null;
+		
+		for (EntityBijuManager bm : mapByClass.values()) {
+			if (!bm.hasSpawnPos() || bm.isSealed()) {
+				continue;
+			}
+
+			double distance = bm.distanceToPlayer(player);
+
+			if (closest == null || distance < closest.distanceToPlayer(player)) {
+				closest = bm;
+			}
+		}
+		return closest;
+	}
+
 	public EntityBijuManager(Class<T> clazz, int tailnum) {
 		this.entityClass = clazz;
 		this.tails = tailnum;
@@ -227,11 +255,35 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 		mapByTailnum.put(tailnum, this);
 	}
 
-	public Vec3d getSpawnPos() {
+	public int getTicksSinceDeath() {
+		return this.ticksSinceDeath;
+	}
+
+	public void setTicksSinceDeath(int ticksSinceDeath) {
+		this.ticksSinceDeath = ticksSinceDeath;
+	}
+
+	public void incrementTicksSinceDeath() {
+		this.ticksSinceDeath++;
+	}
+
+	public boolean getHasLived() {
+		return this.hasLived;
+	}
+
+	public void setHasLived(boolean hasLived) {
+		this.hasLived = hasLived;
+	}
+
+	public double distanceToPlayer(EntityPlayer player) {
+		return player.getDistanceSq(this.spawnPos);
+	}
+
+	public BlockPos getSpawnPos() {
 		return this.spawnPos;
 	}
 
-	public void setSpawnPos(Vec3d spawnPos) {
+	public void setSpawnPos(BlockPos spawnPos) {
 		this.spawnPos = spawnPos;
 	}
 
@@ -248,6 +300,7 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 	}
 
 	public void onAddedToWorld(T entityIn, boolean dirty) {
+		this.hasLived = true;
 		this.entity = entityIn;
 		if (dirty) {
 			this.markDirty();

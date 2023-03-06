@@ -40,10 +40,12 @@ import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.village.MerchantRecipeList;
 import net.minecraft.village.MerchantRecipe;
-import net.minecraft.inventory.EntityEquipmentSlot;
+
+import net.minecraft.inventory.EntityEquipmentSlot;
 
 import net.narutomod.ElementsNarutomodMod;
-import net.narutomod.item.ItemKunai;
+import net.narutomod.item.
+ItemKunai;
 import net.narutomod.item.ItemKunaiExplosive;
 import net.narutomod.item.ItemShuriken;
 import net.narutomod.item.ItemChokuto;
@@ -70,7 +72,7 @@ public class EntityTenten extends ElementsNarutomodMod.ModElement {
 	public void init(FMLInitializationEvent event) {
 		Biome[] spawnBiomes = {Biomes.FOREST, Biomes.BIRCH_FOREST, Biomes.BIRCH_FOREST_HILLS, Biomes.FOREST_HILLS,
 		 Biomes.JUNGLE, Biomes.JUNGLE_EDGE, Biomes.JUNGLE_HILLS, Biomes.PLAINS, Biomes.ROOFED_FOREST, Biomes.TAIGA, Biomes.TAIGA_HILLS};
-		EntityRegistry.addSpawn(EntityCustom.class, 1, 1, 1, EnumCreatureType.AMBIENT, spawnBiomes);
+		EntityRegistry.addSpawn(EntityCustom.class, 20, 1, 1, EnumCreatureType.AMBIENT, spawnBiomes);
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -247,5 +249,6 @@ public class EntityTenten extends ElementsNarutomodMod.ModElement {
 			this.bipedLeftLeg.cubeList.add(new ModelBox(this.bipedLeftLeg, 16, 48, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.0F, false));
 			this.bipedLeftLeg.cubeList.add(new ModelBox(this.bipedLeftLeg, 0, 48, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.25F, false));
 		}
-	}
+
+	}
 }
