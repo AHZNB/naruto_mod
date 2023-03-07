@@ -15,6 +15,7 @@ Jutsus:
  - limit black lightning panther to max 5
  - disallow using sand binding on the same target multiple times
  - nerfed bone/ice/earth spikes damage
+ - fixed adamantine chains render broken by Radon
 
 Items:
  - cleaver sword now takes damage when used, attack speed and damage decrease, recipe changed
@@ -27,10 +28,11 @@ Entities:
  - increase spawn rates for bosses and remove dungeon spawns
  - made might guy send messages to current customer instead of server
  - made the real itachi drop his mangekyo more likely as intended
- - made tailed beasts respawn after a certain amount of time
+ - made tailed beasts respawn after a certain amount of time after death
  - made Iruka sell tailed beast maps
- - made Itachi, Kisame and Zabuza show their boss bars at all times to fix the flickering issue
+ - fixed Itachi, Kisame and Zabuza boss bars flickering issue
  - made the boss bars red (can be changed just thought it would be better)
+ - expanded Kisame, Itachi, Zabuza, MightGuy, Tenten, Sakura, Iruka spawn biomes and spawn weight
 
 General:
  - removed japanese localization

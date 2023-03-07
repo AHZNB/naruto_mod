@@ -56,7 +56,7 @@ public class EntityNinjaMerchant extends ElementsNarutomodMod.ModElement {
 	}
 
 	public abstract static class Base extends EntityNinjaMob.Base implements IMerchant {
-		private final MerchantRecipeList[] tradeList;
+		private final List<MerchantRecipeList> tradeList = Lists.newArrayList();
 		private final List<EntityPlayer> assholeList = Lists.newArrayList();
 		private EntityPlayer customer;
 		private int homeCheckTimer;
@@ -67,7 +67,15 @@ public class EntityNinjaMerchant extends ElementsNarutomodMod.ModElement {
 		public Base(World worldIn, int level, MerchantRecipeList[] list) {
 			super(worldIn, level, (double)level * level);
 			this.tasks.addTask(2, this.leapAI);
-			this.tradeList = list;
+			for (int i = 0; i < list.length; i++) {
+				MerchantRecipeList recipelist = new MerchantRecipeList();
+				for (int j = 0; j < list[i].size(); j++) {
+					MerchantRecipe recipe = list[i].get(j);
+					recipelist.add(new MerchantRecipe(recipe.getItemToBuy(), recipe.getSecondItemToBuy(),
+					 recipe.getItemToSell(), recipe.getToolUses(), recipe.getMaxTradeUses()));
+				}
+				this.tradeList.add(recipelist);
+			}
 			((PathNavigateGround)this.getNavigator()).setBreakDoors(true);
 		}
 
@@ -109,7 +117,7 @@ public class EntityNinjaMerchant extends ElementsNarutomodMod.ModElement {
 		@Override
 		@Nullable
     	public MerchantRecipeList getRecipes(EntityPlayer player) {
-    		return this.tradeList[MathHelper.clamp(this.getTradeLevel(player), 0, this.tradeList.length - 1)];
+    		return this.tradeList.get(MathHelper.clamp(this.getTradeLevel(player), 0, this.tradeList.size() - 1));
     	}
 
 		@SideOnly(Side.CLIENT)
@@ -171,7 +179,7 @@ public class EntityNinjaMerchant extends ElementsNarutomodMod.ModElement {
 		public boolean processInteract(EntityPlayer player, EnumHand hand) {
 			ItemStack itemstack = player.getHeldItem(hand);
 			if (itemstack.isEmpty() && this.isEntityAlive() && !this.isTrading() && !player.isSneaking()) {
-				if (!this.world.isRemote && !this.tradeList[0].isEmpty() && !this.assholeList.contains(player)) {
+				if (!this.world.isRemote && !this.tradeList.get(0).isEmpty() && !this.assholeList.contains(player)) {
 					this.setCustomer(player);
 					player.displayVillagerTradeGui(this);
 				} else if (this.world.isRemote) {
