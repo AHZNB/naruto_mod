@@ -68,7 +68,7 @@ public class EntityNinjaMerchant extends ElementsNarutomodMod.ModElement {
 
 	public abstract static class Base extends EntityNinjaMob.Base implements IMerchant {
 		private Map<TradeLevel, MerchantRecipeList> trades;
-		private final List<EntityPlayer> assholeList = Lists.newArrayList();
+		private final List<UUID> assholeList = Lists.newArrayList();
 		private EntityPlayer customer;
 		private int homeCheckTimer;
 		private Village village;
@@ -247,7 +247,7 @@ public class EntityNinjaMerchant extends ElementsNarutomodMod.ModElement {
 			ItemStack stack = player.getHeldItem(hand);
 
 			if (stack.isEmpty() && this.isEntityAlive() && !this.isTrading() && !player.isSneaking()) {
-				if (!this.world.isRemote && !this.trades.isEmpty() && !this.assholeList.contains(player)) {
+				if (!this.world.isRemote && !this.trades.isEmpty() && !this.assholeList.contains(player.getUniqueID())) {
 					this.setCustomer(player);
 					player.displayVillagerTradeGui(this);
 				} else if (this.world.isRemote) {
@@ -301,7 +301,8 @@ public class EntityNinjaMerchant extends ElementsNarutomodMod.ModElement {
 		public void setRevengeTarget(@Nullable EntityLivingBase livingBase) {
 			super.setRevengeTarget(livingBase);
 			if (livingBase instanceof EntityPlayer) {
-				this.assholeList.add((EntityPlayer)livingBase);
+				this.assholeList.add(livingBase.getUniqueID());
+
 				if (this.village != null) {
 					this.village.modifyPlayerReputation(livingBase.getUniqueID(), -1);
 				}

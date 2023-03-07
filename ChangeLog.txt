@@ -38,6 +38,7 @@ Entities:
  - expanded Kisame, Itachi, Zabuza, MightGuy, Tenten, Sakura, Iruka spawn biomes and spawn weight
  - made merhcants not despawn if they've traded with a player
  - rewrote EntityNinjaMerchant
+ - fix assholeList not working correctly
 
 General:
  - removed japanese localization

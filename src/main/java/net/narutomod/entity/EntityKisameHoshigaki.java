@@ -97,8 +97,10 @@ public class EntityKisameHoshigaki extends ElementsNarutomodMod.ModElement {
 	public void init(FMLInitializationEvent event) {
 		Biome[] spawnBiomes = {
 			Biomes.SWAMPLAND, Biomes.FOREST, Biomes.TAIGA, Biomes.RIVER, Biomes.BEACH,
-			Biomes.FOREST_HILLS, Biomes.TAIGA_HILLS, Biomes.JUNGLE, Biomes.JUNGLE_HILLS, Biomes.JUNGLE_EDGE,
-			Biomes.BIRCH_FOREST, Biomes.BIRCH_FOREST_HILLS, Biomes.SAVANNA, Biomes.MUTATED_SWAMPLAND,
+			Biomes.FOREST_HILLS, Biomes.TAIGA_HILLS, Biomes.JUNGLE, Biomes.JUNGLE_HILLS,
+ Biomes.JUNGLE_EDGE,
+			Biomes.BIRCH_FOREST, Biomes.BIRCH_FOREST_HILLS, Biomes.SAVANNA
+, Biomes.MUTATED_SWAMPLAND,
 			Biomes.MUTATED_FOREST, Biomes.MUTATED_TAIGA, Biomes.MUTATED_JUNGLE, Biomes.MUTATED_JUNGLE_EDGE,
 			Biomes.MUTATED_BIRCH_FOREST, Biomes.MUTATED_BIRCH_FOREST_HILLS, Biomes.MUTATED_SAVANNA
 		};
