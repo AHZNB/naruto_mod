@@ -1,6 +1,7 @@
 package net.narutomod;
 
 import net.minecraft.block.state.IBlockState;
+import net.minecraftforge.event.GameRuleChangeEvent;
 import net.narutomod.entity.EntityBijuManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
@@ -41,8 +42,13 @@ public class SpawnTailedBeasts extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-	public static boolean isRuleSet(World world) {
-		return world.getGameRules().getBoolean(SPAWN_TB_RULE);
+	@SubscribeEvent
+	public void onGameRuleChange(GameRuleChangeEvent event) {
+		if (event.getRuleName().equals(SPAWN_TB_RULE)) {
+			if (!event.getRules().getBoolean(SPAWN_TB_RULE)) {
+				EntityBijuManager.resetAllSpawnPos();
+			}
+		}
 	}
 
 	@SubscribeEvent
@@ -75,7 +81,8 @@ public class SpawnTailedBeasts extends ElementsNarutomodMod.ModElement {
 				if (bm.getTicksSinceDeath() < TIME_FOR_RESPAWN) {
 					bm.incrementTicksSinceDeath();
 					continue;
-				} else {
+				}
+		 		else {
 					bm.setHasLived(false);
 				}
 			}

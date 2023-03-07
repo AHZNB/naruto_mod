@@ -23,6 +23,7 @@ Items:
  - changed dojutsu helmet items textures
  - fix armor lag by preventing it from creating new instances
  - added tailed beast maps
+  - made tailed beast maps not show positions if spawnTailedBeasts is false
 
 Entities:
  - increase spawn rates for bosses and remove dungeon spawns
@@ -33,6 +34,7 @@ Entities:
  - fixed Itachi, Kisame and Zabuza boss bars flickering issue
  - made the boss bars red (can be changed just thought it would be better)
  - expanded Kisame, Itachi, Zabuza, MightGuy, Tenten, Sakura, Iruka spawn biomes and spawn weight
+ - made merhcants not despawn if they've traded with a player
 
 General:
  - removed japanese localization

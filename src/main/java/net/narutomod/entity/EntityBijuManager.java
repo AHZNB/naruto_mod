@@ -10,7 +10,6 @@ import net.minecraft.world.World;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.translation.I18n;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextComponentTranslation;
@@ -242,6 +241,12 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 			}
 		}
 		return closest;
+	}
+
+	public static void resetAllSpawnPos() {
+		for (EntityBijuManager bm : mapByClass.values()) {
+			bm.setSpawnPos(null);
+		}
 	}
 
 	public EntityBijuManager(Class<T> clazz, int tailnum) {

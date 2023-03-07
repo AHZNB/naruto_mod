@@ -1,9 +1,13 @@
 
 package net.narutomod.entity;
 
+import net.minecraft.nbt.NBTBase;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.relauncher.Side;
-//import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+//
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 //import net.minecraftforge.event.entity.living.LivingSpawnEvent;
 //import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 //import net.minecraftforge.common.MinecraftForge;
@@ -62,6 +66,7 @@ public class EntityNinjaMerchant extends ElementsNarutomodMod.ModElement {
 		private int homeCheckTimer;
 		private Village village;
 		private int recipeResetTime;
+		private boolean hasTraded;
 		protected EntityNinjaMob.AILeapAtTarget leapAI = new EntityNinjaMob.AILeapAtTarget(this, 1.0F);
 
 		public Base(World worldIn, int level, MerchantRecipeList[] list) {
@@ -77,6 +82,23 @@ public class EntityNinjaMerchant extends ElementsNarutomodMod.ModElement {
 				this.tradeList.add(recipelist);
 			}
 			((PathNavigateGround)this.getNavigator()).setBreakDoors(true);
+		}
+
+		@Override
+		public NBTTagCompound writeToNBT(NBTTagCompound compound) {
+			compound.setBoolean("hasTraded", this.hasTraded);
+			return super.writeToNBT(compound);
+		}
+
+		@Override
+		public void readFromNBT(NBTTagCompound compound) {
+			super.readFromNBT(compound);
+			this.hasTraded = compound.getBoolean("hasTraded");
+		}
+
+		@Override
+		protected boolean canDespawn() {
+			return this.hasTraded;
 		}
 
 		@Override
@@ -143,6 +165,7 @@ public class EntityNinjaMerchant extends ElementsNarutomodMod.ModElement {
 			if (!this.world.isRemote && this.livingSoundTime > -this.getTalkInterval() + 20) {
 				this.livingSoundTime = -this.getTalkInterval();
 				this.playSound(stack.isEmpty() ? SoundEvents.ENTITY_VILLAGER_NO : SoundEvents.ENTITY_VILLAGER_YES, this.getSoundVolume(), this.getSoundPitch());
+				this.hasTraded = true;
 			}
 		}
 		

@@ -4,6 +4,7 @@ package net.narutomod.item;
 import com.google.common.collect.Maps;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.world.storage.WorldSavedData;
 import net.narutomod.creativetab.TabModTab;
 import net.narutomod.entity.EntityBijuManager;
 import net.narutomod.NarutomodMod;
@@ -234,22 +235,40 @@ public class ItemBijuMap extends ElementsNarutomodMod.ModElement {
 			EntityPlayer player = (EntityPlayer) entityIn;
 
 			if (!stack.hasTagCompound()) {
-				final EntityBijuManager bm = EntityBijuManager.getClosestBiju(player);
+				stack.setTagCompound(new NBTTagCompound());
+			}
 
-				if (bm != null) {
-					final BlockPos target = bm.getPosition();
+			NBTTagCompound nbt = stack.getTagCompound();
 
-					this.setupNewMap(stack, worldIn, target.getX(), target.getZ(), true, true);
-					TBMapItem.renderBiomePreviewMap(worldIn, stack);
+			if (nbt.getBoolean("hasInitialized")) {
+				return;
+			}
 
-					TBMapData data = ((TBMapItem) stack.getItem()).getMapData(stack, worldIn);
-					data.addTBDeco(target, (byte) (bm.getTails() - 1));
+			final EntityBijuManager bm = EntityBijuManager.getClosestBiju(player);
 
-					// This way the map will find a tailed beast once one is available :P
-					stack.setTagCompound(new NBTTagCompound());
-				}
-				else if (isSelected && worldIn.getTotalWorldTime() % 20 == 0) {
-					player.sendStatusMessage(new TextComponentTranslation("overlay.no_biju_available"), true);
+			if (bm != null) {
+				final BlockPos target = bm.getPosition();
+
+				this.setupNewMap(stack, worldIn, target.getX(), target.getZ(), true, true);
+				TBMapItem.renderBiomePreviewMap(worldIn, stack);
+
+				TBMapData data = ((TBMapItem) stack.getItem()).getMapData(stack, worldIn);
+				data.addTBDeco(target, (byte) (bm.getTails() - 1));
+
+				// This way the map will find a tailed beast once one is available :P
+				nbt.setBoolean("hasInitialized", true);
+			}
+			else if (isSelected && worldIn.getTotalWorldTime() % 20 == 0) {
+				player.sendStatusMessage(new TextComponentTranslation("overlay.no_biju_available"), true);
+
+				if (!nbt.getBoolean("hasReset")) {
+					// Resets the map data
+					String name = String.format("%s_%s", MAP_ID, stack.getMetadata());
+
+					if (worldIn.loadData(TBMapData.class, name) != null) {
+						worldIn.setData(name, new TBMapData(name));
+						nbt.setBoolean("hasReset", true);
+					}
 				}
 			}
 		}
