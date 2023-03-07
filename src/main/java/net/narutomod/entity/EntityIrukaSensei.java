@@ -1,6 +1,7 @@
 
 package net.narutomod.entity;
 
+import com.google.common.collect.Maps;
 import net.minecraft.village.Village;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.relauncher.Side;
@@ -14,18 +15,13 @@ import net.minecraft.init.Biomes;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.World;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.DamageSource;
 import net.minecraft.item.Item;
 import net.minecraft.entity.IEntityLivingData;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.EnumCreatureType;
-import net.minecraft.entity.EnumCreatureAttribute;
-import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
 import net.minecraft.village.MerchantRecipeList;
@@ -35,17 +31,15 @@ import net.minecraft.init.Items;
 import net.minecraft.client.renderer.entity.RenderLiving;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.model.ModelBox;
-import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelBiped;
-import net.minecraft.inventory.EntityEquipmentSlot;
 
-import net.narutomod.item.ItemBijuMap;
 import net.narutomod.item.ItemScrollBodyReplacement;
 import net.narutomod.item.ItemScrollKageBunshin;
 import net.narutomod.item.ItemKunai;
 import net.narutomod.ElementsNarutomodMod;
 
 import javax.annotation.Nullable;
+import java.util.Map;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityIrukaSensei extends ElementsNarutomodMod.ModElement {
@@ -86,18 +80,27 @@ public class EntityIrukaSensei extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static class EntityCustom extends EntityNinjaMerchant.Base {
-		private static final MerchantRecipeList[] trades = { new MerchantRecipeList(), new MerchantRecipeList() };
-
-		static {
-			trades[0].add(new MerchantRecipe(new ItemStack(Items.EMERALD, 3), ItemStack.EMPTY, new ItemStack(Items.GOLDEN_APPLE, 1), 0, 1));
-			trades[0].add(new MerchantRecipe(new ItemStack(Items.EMERALD, 1), ItemStack.EMPTY, new ItemStack(ItemScrollBodyReplacement.block, 1), 0, 1));
-			trades[1].add(new MerchantRecipe(new ItemStack(Items.EMERALD, 5), ItemStack.EMPTY, new ItemStack(ItemScrollKageBunshin.block, 1), 0, 1));
-			trades[1].add(new MerchantRecipe(new ItemStack(Items.EMERALD, 30), ItemStack.EMPTY, new ItemStack(Items.GOLDEN_APPLE, 1, 1), 0, 1));
-		};
-
 		public EntityCustom(World world) {
-			super(world, 20, trades);
+			super(world, 20);
 			this.setSize(0.6f, 2.0f);
+		}
+
+		@Override
+		public Map<EntityNinjaMerchant.TradeLevel, MerchantRecipeList> getTrades() {
+			Map<EntityNinjaMerchant.TradeLevel, MerchantRecipeList> trades = Maps.newHashMap();
+
+			MerchantRecipeList commonTrades = new MerchantRecipeList();
+			commonTrades.add(new MerchantRecipe(new ItemStack(Items.EMERALD, 3), ItemStack.EMPTY, new ItemStack(Items.GOLDEN_APPLE, 1), 0, 1));
+			commonTrades.add(new MerchantRecipe(new ItemStack(Items.EMERALD, 1), ItemStack.EMPTY, new ItemStack(ItemScrollBodyReplacement.block, 1), 0, 1));
+
+			MerchantRecipeList uncommonTrades = new MerchantRecipeList();
+			uncommonTrades.add(new MerchantRecipe(new ItemStack(Items.EMERALD, 5), ItemStack.EMPTY, new ItemStack(ItemScrollKageBunshin.block, 1), 0, 1));
+			uncommonTrades.add(new MerchantRecipe(new ItemStack(Items.EMERALD, 30), ItemStack.EMPTY, new ItemStack(Items.GOLDEN_APPLE, 1, 1), 0, 1));
+
+			trades.put(EntityNinjaMerchant.TradeLevel.COMMON, commonTrades);
+			trades.put(EntityNinjaMerchant.TradeLevel.UNCOMMON, uncommonTrades);
+
+			return trades;
 		}
 
 		@Override

@@ -1,6 +1,7 @@
 
 package net.narutomod.entity;
 
+import com.google.common.collect.Maps;
 import net.minecraft.village.Village;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.relauncher.Side;
@@ -54,6 +55,8 @@ import net.narutomod.ElementsNarutomodMod;
 import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+
 import com.google.common.collect.Lists;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
@@ -105,20 +108,30 @@ public class EntitySakuraHaruno extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static class EntityCustom extends EntityNinjaMerchant.Base {
-		private static final MerchantRecipeList[] trades = { new MerchantRecipeList(), new MerchantRecipeList() };
-		static {
-			trades[0].add(new MerchantRecipe(new ItemStack(Items.EMERALD, 1), ItemStack.EMPTY, new ItemStack(Items.BAKED_POTATO, 3), 0, 1));
-			trades[0].add(new MerchantRecipe(new ItemStack(Items.EMERALD, 1), ItemStack.EMPTY, new ItemStack(ItemMilitaryRationsPill.block, 2), 0, 1));
-			trades[1].add(new MerchantRecipe(new ItemStack(Items.EMERALD, 5), ItemStack.EMPTY, new ItemStack(ItemScrollHealing.block, 1), 0, 1));
-			trades[1].add(new MerchantRecipe(new ItemStack(Items.EMERALD, 5), ItemStack.EMPTY, new ItemStack(ItemMilitaryRationsPillGold.block, 1, 1), 0, 1));
-		};
 		private EntityLivingBase healTarget;
 		private List<EntityLivingBase> healableEntities = Lists.newArrayList();
 
 		public EntityCustom(World world) {
-			super(world, 60, trades);
+			super(world, 60);
 			this.setSize(0.525f, 1.75f);
 			Arrays.fill(this.inventoryHandsDropChances, 0.0F);
+		}
+
+		@Override
+		public Map<EntityNinjaMerchant.TradeLevel, MerchantRecipeList> getTrades() {
+			Map<EntityNinjaMerchant.TradeLevel, MerchantRecipeList> trades = Maps.newHashMap();
+
+			MerchantRecipeList commonTrades = new MerchantRecipeList();
+			commonTrades.add(new MerchantRecipe(new ItemStack(Items.EMERALD, 1), ItemStack.EMPTY, new ItemStack(Items.BAKED_POTATO, 3), 0, 1));
+			commonTrades.add(new MerchantRecipe(new ItemStack(Items.EMERALD, 1), ItemStack.EMPTY, new ItemStack(ItemMilitaryRationsPill.block, 2), 0, 1));
+
+			MerchantRecipeList uncommonTrades = new MerchantRecipeList();
+			uncommonTrades.add(new MerchantRecipe(new ItemStack(Items.EMERALD, 5), ItemStack.EMPTY, new ItemStack(ItemScrollHealing.block, 1), 0, 1));
+			uncommonTrades.add(new MerchantRecipe(new ItemStack(Items.EMERALD, 5), ItemStack.EMPTY, new ItemStack(ItemMilitaryRationsPillGold.block, 1, 1), 0, 1));
+
+			trades.put(EntityNinjaMerchant.TradeLevel.COMMON, commonTrades);
+			trades.put(EntityNinjaMerchant.TradeLevel.UNCOMMON, uncommonTrades);
+			return trades;
 		}
 
 		@Override

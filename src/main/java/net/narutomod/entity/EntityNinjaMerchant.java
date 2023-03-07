@@ -49,6 +49,7 @@ import net.narutomod.ElementsNarutomodMod;
 
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -59,9 +60,14 @@ public class EntityNinjaMerchant extends ElementsNarutomodMod.ModElement {
 		super(instance, 435);
 	}
 
+	public enum TradeLevel {
+		COMMON,
+		UNCOMMON,
+		RARE
+	}
+
 	public abstract static class Base extends EntityNinjaMob.Base implements IMerchant {
-		private final List<MerchantRecipeList> trades = Lists.newArrayList();
-		private final MerchantRecipeList rareTrades = new MerchantRecipeList();
+		private Map<TradeLevel, MerchantRecipeList> trades;
 		private final List<EntityPlayer> assholeList = Lists.newArrayList();
 		private EntityPlayer customer;
 		private int homeCheckTimer;
@@ -70,42 +76,42 @@ public class EntityNinjaMerchant extends ElementsNarutomodMod.ModElement {
 		private boolean hasTraded;
 		protected EntityNinjaMob.AILeapAtTarget leapAI = new EntityNinjaMob.AILeapAtTarget(this, 1.0F);
 
-		public Base(World worldIn, int level, MerchantRecipeList[] list) {
+		public Base(World worldIn, int level) {
 			super(worldIn, level, (double)level * level);
 			this.tasks.addTask(2, this.leapAI);
 
-			for (int i = 0; i < list.length; i++) {
-				MerchantRecipeList currentTrades = new MerchantRecipeList();
+			this.trades = this.getTrades();
 
-				for (int j = 0; j < list[i].size(); j++) {
-					MerchantRecipe trade = list[i].get(j);
-					currentTrades.add(trade);
-				}
-				this.trades.add(currentTrades);
-			}
+			this.addRareTrades();
+
 			((PathNavigateGround)this.getNavigator()).setBreakDoors(true);
 		}
 
-		@Nullable
-		@Override
-		public IEntityLivingData onInitialSpawn(DifficultyInstance difficulty, @Nullable IEntityLivingData livingdata) {
-			this.addRareTrades();
-			return super.onInitialSpawn(difficulty, livingdata);
-		}
+		public abstract Map<TradeLevel, MerchantRecipeList> getTrades();
 
 		// This code can be used in the future to add rare trades
 		private void addRareTrades() {
 			Random rand = new Random();
 
+			MerchantRecipeList rareTrades = new MerchantRecipeList();
+
 			if (rand.nextInt(5) == 0) {
-				this.rareTrades.add(new MerchantRecipe(new ItemStack(Items.EMERALD, 64), ItemStack.EMPTY, new ItemStack(ItemBijuMap.block, 1), 0, 1));
+				rareTrades.add(new MerchantRecipe(new ItemStack(Items.EMERALD, 64), ItemStack.EMPTY, new ItemStack(ItemBijuMap.block, 1), 0, 1));
 			}
+			this.trades.put(TradeLevel.RARE, rareTrades);
 		}
 
 		@Override
 		public NBTTagCompound writeToNBT(NBTTagCompound compound) {
 			compound.setBoolean("hasTraded", this.hasTraded);
-			compound.setTag("rareTrades", this.rareTrades.getRecipiesAsTags());
+
+			NBTTagCompound tradesTag = new NBTTagCompound();
+
+			for (Map.Entry<TradeLevel, MerchantRecipeList> entry : trades.entrySet()) {
+				tradesTag.setTag(entry.getKey().name(), entry.getValue().getRecipiesAsTags());
+			}
+			compound.setTag("trades", tradesTag);
+
 			return super.writeToNBT(compound);
 		}
 
@@ -115,12 +121,16 @@ public class EntityNinjaMerchant extends ElementsNarutomodMod.ModElement {
 
 			this.hasTraded = compound.getBoolean("hasTraded");
 
-			NBTTagList rareTradesTag = compound.getTagList("Recipes", Constants.NBT.TAG_COMPOUND);
+			NBTTagCompound tradesTag = compound.getCompoundTag("trades");
 
-			for (int i = 0; i < rareTradesTag.tagCount(); ++i)
-			{
-				NBTTagCompound tradeTag = rareTradesTag.getCompoundTagAt(i);
-				this.rareTrades.add(new MerchantRecipe(tradeTag));
+			this.trades = Maps.newHashMap();
+
+			for (String key : tradesTag.getKeySet()) {
+				TradeLevel level = TradeLevel.valueOf(key);
+				NBTTagCompound recipeListTag = tradesTag.getCompoundTag(key);
+				MerchantRecipeList recipeList = new MerchantRecipeList();
+				recipeList.readRecipiesFromTags(recipeListTag);
+				this.trades.put(level, recipeList);
 			}
 		}
 
@@ -167,13 +177,11 @@ public class EntityNinjaMerchant extends ElementsNarutomodMod.ModElement {
 		@Override
 		@Nullable
 		public MerchantRecipeList getRecipes(EntityPlayer player) {
-			int tradeLevel = this.getTradeLevel(player);
-			MerchantRecipeList trades = this.trades.get(MathHelper.clamp(tradeLevel, 0, this.trades.size() - 1));
-
-			if (this.rareTrades.size() > 0 && tradeLevel >= 3) {
-				trades.addAll(this.rareTrades);
-			}
-			return trades;
+			int level = this.getTradeLevel(player) + 1; // Add 1 to it to get the ordinal ;o
+			return this.trades.entrySet().stream()
+					.filter(entry -> entry.getKey().ordinal() <= level)
+					.flatMap(entry -> entry.getValue().stream())
+					.collect(Collectors.toCollection(MerchantRecipeList::new));
 		}
 
 		@SideOnly(Side.CLIENT)
@@ -222,7 +230,7 @@ public class EntityNinjaMerchant extends ElementsNarutomodMod.ModElement {
 			if (!this.isTrading() && this.recipeResetTime > 0) {
 				--this.recipeResetTime;
 				if (this.recipeResetTime <= 0) {
-					for (MerchantRecipeList recipeList : this.trades) {
+					for (MerchantRecipeList recipeList : this.trades.values()) {
 						for (MerchantRecipe recipe : recipeList) {
 							if (recipe.isRecipeDisabled()) {
 								recipe.increaseMaxTradeUses(1);
@@ -236,9 +244,10 @@ public class EntityNinjaMerchant extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public boolean processInteract(EntityPlayer player, EnumHand hand) {
-			ItemStack itemstack = player.getHeldItem(hand);
-			if (itemstack.isEmpty() && this.isEntityAlive() && !this.isTrading() && !player.isSneaking()) {
-				if (!this.world.isRemote && !this.trades.get(0).isEmpty() && !this.assholeList.contains(player)) {
+			ItemStack stack = player.getHeldItem(hand);
+
+			if (stack.isEmpty() && this.isEntityAlive() && !this.isTrading() && !player.isSneaking()) {
+				if (!this.world.isRemote && !this.trades.isEmpty() && !this.assholeList.contains(player)) {
 					this.setCustomer(player);
 					player.displayVillagerTradeGui(this);
 				} else if (this.world.isRemote) {

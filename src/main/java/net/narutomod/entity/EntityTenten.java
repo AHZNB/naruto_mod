@@ -1,6 +1,7 @@
 
 package net.narutomod.entity;
 
+import com.google.common.collect.Maps;
 import net.minecraft.village.Village;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.relauncher.Side;
@@ -45,15 +46,12 @@ import net.minecraft.village.MerchantRecipe;
 import net.minecraft.inventory.EntityEquipmentSlot;
 
 import net.narutomod.ElementsNarutomodMod;
-import net.narutomod.item.
-ItemKunai;
-import net.narutomod.item.ItemKunaiExplosive;
-import net.narutomod.item.ItemShuriken;
-import net.narutomod.item.ItemChokuto;
+import net.narutomod.item.*;
 import net.narutomod.block.BlockExplosiveTag;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
+import java.util.Map;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityTenten extends ElementsNarutomodMod.ModElement {
@@ -88,20 +86,30 @@ public class EntityTenten extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static class EntityCustom extends EntityNinjaMerchant.Base implements IRangedAttackMob {
-		private static final MerchantRecipeList[] trades = { new MerchantRecipeList(), new MerchantRecipeList() };
-		static {
-			trades[0].add(new MerchantRecipe(new ItemStack(Items.EMERALD, 1), ItemStack.EMPTY, new ItemStack(ItemShuriken.block, 24), 0, 1));
-			trades[0].add(new MerchantRecipe(new ItemStack(Items.EMERALD, 1), ItemStack.EMPTY, new ItemStack(ItemKunai.block, 3), 0, 1));
-			trades[0].add(new MerchantRecipe(new ItemStack(Items.EMERALD, 1), ItemStack.EMPTY, new ItemStack(BlockExplosiveTag.block, 3), 0, 1));
-			trades[1].add(new MerchantRecipe(new ItemStack(Items.EMERALD, 1), ItemStack.EMPTY, new ItemStack(ItemKunaiExplosive.block, 2), 0, 1));
-			trades[1].add(new MerchantRecipe(new ItemStack(Items.EMERALD, 3), ItemStack.EMPTY, new ItemStack(ItemChokuto.block, 1), 0, 1));
-		};
 		//private final ItemStack kunai = new ItemStack(ItemKunai.block);
 
 		public EntityCustom(World world) {
-			super(world, 50, trades);
+			super(world, 50);
 			this.setSize(0.525f, 1.75f);
 			Arrays.fill(this.inventoryHandsDropChances, 0.0F);
+		}
+
+		@Override
+		public Map<EntityNinjaMerchant.TradeLevel, MerchantRecipeList> getTrades() {
+			Map<EntityNinjaMerchant.TradeLevel, MerchantRecipeList> trades = Maps.newHashMap();
+
+			MerchantRecipeList commonTrades = new MerchantRecipeList();
+			commonTrades.add(new MerchantRecipe(new ItemStack(Items.EMERALD, 1), ItemStack.EMPTY, new ItemStack(ItemShuriken.block, 24), 0, 1));
+			commonTrades.add(new MerchantRecipe(new ItemStack(Items.EMERALD, 1), ItemStack.EMPTY, new ItemStack(ItemKunai.block, 3), 0, 1));
+			commonTrades.add(new MerchantRecipe(new ItemStack(Items.EMERALD, 1), ItemStack.EMPTY, new ItemStack(BlockExplosiveTag.block, 3), 0, 1));
+
+			MerchantRecipeList uncommonTrades = new MerchantRecipeList();
+			uncommonTrades.add(new MerchantRecipe(new ItemStack(Items.EMERALD, 1), ItemStack.EMPTY, new ItemStack(ItemKunaiExplosive.block, 2), 0, 1));
+			uncommonTrades.add(new MerchantRecipe(new ItemStack(Items.EMERALD, 3), ItemStack.EMPTY, new ItemStack(ItemChokuto.block, 1, 1), 0, 1));
+
+			trades.put(EntityNinjaMerchant.TradeLevel.COMMON, commonTrades);
+			trades.put(EntityNinjaMerchant.TradeLevel.UNCOMMON, uncommonTrades);
+			return trades;
 		}
 
 		@Override

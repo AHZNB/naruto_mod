@@ -226,18 +226,13 @@ public class ItemBijuMap extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public void onUpdate(ItemStack stack, World worldIn, Entity entityIn, int itemSlot, boolean isSelected) {
+			super.onUpdate(stack, worldIn, entityIn, itemSlot, isSelected);
+
 			if (!(entityIn instanceof EntityPlayer) || worldIn.isRemote) {
 				return;
 			}
 
-			EntityPlayer player = (EntityPlayer)entityIn;
-
-			TBMapData data = ((TBMapItem) stack.getItem()).getMapData(stack, worldIn);
-			data.updateVisiblePlayers(player, stack);
-
-			if (isSelected || player.getHeldItemOffhand() == stack) {
-				this.updateMapData(worldIn, entityIn, data);
-			}
+			EntityPlayer player = (EntityPlayer) entityIn;
 
 			if (!stack.hasTagCompound()) {
 				stack.setTagCompound(new NBTTagCompound());
@@ -257,6 +252,7 @@ public class ItemBijuMap extends ElementsNarutomodMod.ModElement {
 				this.setupNewMap(stack, worldIn, target.getX(), target.getZ(), true, true);
 				TBMapItem.renderBiomePreviewMap(worldIn, stack);
 
+				TBMapData data = ((TBMapItem) stack.getItem()).getMapData(stack, worldIn);
 				data.addTBDeco(target, (byte) (bm.getTails() - 1));
 
 				// This way the map will find a tailed beast once one is available :P
@@ -277,15 +273,16 @@ public class ItemBijuMap extends ElementsNarutomodMod.ModElement {
 			}
 		}
 
-		private void setupNewMap(ItemStack stack, World world, double worldX, double worldZ, boolean trackingPosition, boolean unlimitedTracking) {
+		private TBMapData setupNewMap(ItemStack stack, World world, double worldX, double worldZ, boolean trackingPosition, boolean unlimitedTracking) {
 			String name = String.format("%s_%s", MAP_ID, stack.getMetadata());
-			MapData data = new TBMapData(name);
+			TBMapData data = new TBMapData(name);
 			world.setData(name, data);
 			data.calculateMapCenter(worldX, worldZ, data.scale);
 			data.dimension = DimensionType.OVERWORLD.getId();
 			data.trackingPosition = trackingPosition;
 			data.unlimitedTracking = unlimitedTracking;
 			data.markDirty();
+			return data;
 		}
 
 		@Nullable
@@ -302,7 +299,7 @@ public class ItemBijuMap extends ElementsNarutomodMod.ModElement {
 			TBMapData data = (TBMapData) worldIn.loadData(TBMapData.class, name);
 
 			if (data == null && !worldIn.isRemote) {
-				this.setupNewMap(stack, worldIn, 0.0D, 0.0D, true, true);
+				data = this.setupNewMap(stack, worldIn, 0.0D, 0.0D, true, true);
 			}
 			return data;
 		}

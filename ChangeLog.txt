@@ -25,6 +25,7 @@ Items:
  - added tailed beast maps
  - made tailed beast maps not show positions if spawnTailedBeasts is false
  - fix eight gates killing you after respawn
+ - fixed some bugs in ItemBijuMap
 
 Entities:
  - increase spawn rates for bosses and remove dungeon spawns
@@ -36,6 +37,7 @@ Entities:
  - made the boss bars red (can be changed just thought it would be better)
  - expanded Kisame, Itachi, Zabuza, MightGuy, Tenten, Sakura, Iruka spawn biomes and spawn weight
  - made merhcants not despawn if they've traded with a player
+ - rewrote EntityNinjaMerchant
 
 General:
  - removed japanese localization

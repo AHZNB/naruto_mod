@@ -1,6 +1,7 @@
 
 package net.narutomod.entity;
 
+import com.google.common.collect.Maps;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.relauncher.Side;
@@ -70,6 +71,7 @@ import net.narutomod.ElementsNarutomodMod;
 
 import com.google.common.base.Predicate;
 import javax.annotation.Nullable;
+import java.util.Map;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityMightGuy extends ElementsNarutomodMod.ModElement {
@@ -142,14 +144,18 @@ public class EntityMightGuy extends ElementsNarutomodMod.ModElement {
 		private ScoreObjective customerKillCount;
 		private int killCount;
 		private float gateOpened;
-		private static final MerchantRecipeList[] trades = { new MerchantRecipeList() };
 
 		public EntityCustom(World world) {
-			super(world, 50, trades);
+			super(world, 50);
 			this.setSize(0.6f, 2.0f);
 			this.tasks.removeTask(this.leapAI);
 			this.setDropChance(EntityEquipmentSlot.MAINHAND, 0f);
 			this.gateCooldown = 100;
+		}
+
+		@Override
+		public Map<EntityNinjaMerchant.TradeLevel, MerchantRecipeList> getTrades() {
+			return Maps.newHashMap();
 		}
 
 		@Override
