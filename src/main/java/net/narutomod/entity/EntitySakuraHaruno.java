@@ -69,10 +69,8 @@ public class EntitySakuraHaruno extends ElementsNarutomodMod.ModElement {
 
 	@Override
 	public void initElements() {
-		elements.entities
-.add(() -> EntityEntryBuilder.create().entity(EntityCustom.class)
-		 .id(new ResourceLocation("narutomod", "sakura_haruno"), ENTITYID)
-.name("sakura_haruno")
+		elements.entities.add(() -> EntityEntryBuilder.create().entity(EntityCustom.class)
+		 .id(new ResourceLocation("narutomod", "sakura_haruno"), ENTITYID).name("sakura_haruno")
 		 .tracker(64, 3, true).egg(-3407668, -26215).build());
 	}
 

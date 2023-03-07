@@ -317,8 +317,9 @@ public class ProcedureAoeCommand extends ElementsNarutomodMod.ModElement {
 					//BlockPos pos = new BlockPos(i, k, j);
 					double d = pos.setPos(i, k, j).distanceSqToCenter(this.centerX, this.centerY, this.centerZ);
 					if (d <= this.maxRange * this.maxRange && d > this.minRange * this.minRange) {
-						if (this.world.isAirBlock(pos) && this.world.getBlockState(pos.down()).isFullBlock() && Math.random() <= chance)
+						if (this.world.isAirBlock(pos) && this.world.getBlockState(pos.down()).isFullBlock() && Math.random() <= chance) {
 							this.world.setBlockState(pos, Blocks.FIRE.getDefaultState());
+						}
 					}
 				}
 			}
