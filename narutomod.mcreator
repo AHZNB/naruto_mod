@@ -1,8 +1,8 @@
 {
   "id_map": {
-    "GUI": 63,
+    "ENTITY": 414,
     "DIMENSION": 13,
-    "ENTITY": 414
+    "GUI": 63
   },
   "mod_elements": [
     {
@@ -8278,6 +8278,7 @@
       "advancements.tenseigan_achieved.descr": "The Tenseigan (literally meaning: Reincarnation Eye), is the next evolution of the Byakugan.",
       "chattext.rinnegan.path4": "Naraka Path",
       "chattext.rinnegan.path5": "Outer Path",
+      "death.attack.ninjutsu_damage": "%1$s was killed by %2$s using ninjutsu",
       "item.ninja_armor_kiribody.name": "Flak Jacket (Kirigakure)",
       "entity.poison_mist.name": "Poison Mist",
       "entity.spike.name": "Spike",
@@ -8410,6 +8411,7 @@
       "item.team_scroll.name": "Team Scroll",
       "advancements.bakuton_acquired.descr": "Explosion Release is a nature transformation kekkei genkai, a combination of earth and lightning. Explosion Release users utilise explosive chakra in combat.",
       "entity.toad_summon.name": "Toad summon",
+      "death.attack.senjutsu_damage": "%1$s was killed by %2$s using senjutsu",
       "item.military_rations_pill_gold.name": "Military Rations Pill - Gold",
       "item.byakurinnesharinganbody.name": "",
       "entity.kirin.name": "Kirin",
