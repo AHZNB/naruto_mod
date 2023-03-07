@@ -103,7 +103,7 @@ public class EntityChibakuTenseiBall extends ElementsNarutomodMod.ModElement {
 		public void shoot(double x, double y, double z, float speed, float inaccuracy) {
 			this.setDead();
 			List<? extends BlockPos> list = ProcedureUtils.getNonAirBlocks(this.world, this.getEntityBoundingBox().grow(1));
-			if (!list.isEmpty()) {
+			if (!list.isEmpty() && this.shootingEntity != null) {
 				this.world.spawnEntity(new Satellite(this.shootingEntity, list));
 			}
 		}

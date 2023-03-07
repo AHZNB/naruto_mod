@@ -125,8 +125,11 @@ public class EntityTenten extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		protected int getTradeLevel(EntityPlayer player) {
-			Village village = this.getVillage();
-			return village != null ? village.getPlayerReputation(player.getUniqueID()) / 3 : 0;
+			if (player != null) {
+				Village village = this.getVillage();
+				return village != null ? village.getPlayerReputation(player.getUniqueID()) / 3 : 0;
+			}
+			return 0;
 		}
 
 		@Override

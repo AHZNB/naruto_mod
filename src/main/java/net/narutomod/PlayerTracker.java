@@ -1,9 +1,14 @@
 package net.narutomod;
 
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraftforge.event.entity.player.PlayerDropsEvent;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
@@ -31,6 +36,7 @@ import net.minecraft.init.MobEffects;
 import net.minecraft.potion.PotionEffect;
 
 import net.narutomod.entity.EntityNinjaMob;
+import net.narutomod.item.ItemIryoJutsu;
 import net.narutomod.procedure.ProcedureSync;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.item.ItemEightGates;

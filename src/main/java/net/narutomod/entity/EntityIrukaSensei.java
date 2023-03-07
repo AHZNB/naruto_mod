@@ -58,7 +58,8 @@ public class EntityIrukaSensei extends ElementsNarutomodMod.ModElement {
 
 	@Override
 	public void initElements() {
-		elements.entities.add(() -> EntityEntryBuilder.create().entity(EntityCustom.class)
+		elements.entities
+.add(() -> EntityEntryBuilder.create().entity(EntityCustom.class)
 		 .id(new ResourceLocation("narutomod", "iruka_sensei"), ENTITYID)
 		 .name("iruka_sensei").tracker(64, 3, true).egg(-16751104, -6711040).build());
 	}
@@ -133,8 +134,11 @@ public class EntityIrukaSensei extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		protected int getTradeLevel(EntityPlayer player) {
-			Village village = this.getVillage();
-			return village != null ? village.getPlayerReputation(player.getUniqueID()) / 3 : 0;
+			if (player != null) {
+				Village village = this.getVillage();
+				return village != null ? village.getPlayerReputation(player.getUniqueID()) / 3 : 0;
+			}
+			return 0;
 		}
 
 		@Override
