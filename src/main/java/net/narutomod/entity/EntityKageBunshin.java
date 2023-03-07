@@ -83,10 +83,10 @@ public class EntityKageBunshin extends ElementsNarutomodMod.ModElement {
 	public static EC getOriginalClone(EntityLivingBase player) {
 		if (player.getEntityData().hasKey(OGCLONE_KEY)) {
 			EC entity = getCloneByID(player.world, player.getEntityData().getInteger(OGCLONE_KEY));
-			if (entity == null) {
-				player.getEntityData().removeTag(OGCLONE_KEY);
+			if (entity != null && entity.isEntityAlive()) {
+				return entity;
 			}
-			return entity;
+			player.getEntityData().removeTag(OGCLONE_KEY);
 		}
 		return null;
 	}
@@ -172,6 +172,7 @@ public class EntityKageBunshin extends ElementsNarutomodMod.ModElement {
 					summoner.rotationYaw = this.rotationYaw;
 					summoner.setPositionAndUpdate(this.posX, this.posY, this.posZ);
 					if (summoner.isEntityAlive()) {
+						this.cancelCloneControl();
 						summoner.attackEntityFrom(this.deathCause != null ? this.deathCause : DamageSource.GENERIC, Float.MAX_VALUE);
 					} else {
 						flag = true;
@@ -388,7 +389,7 @@ public class EntityKageBunshin extends ElementsNarutomodMod.ModElement {
 
 		private void revertClone(EntityLivingBase entity) {
 			EC clone = getOriginalClone(entity);
-			if (clone != null && clone.isEntityAlive()) {
+			if (clone != null) {
 				clone.setDead();
 				entity.isDead = false;
 				if (entity.getEntityData().hasKey("HealthB4Kill")) {
@@ -398,7 +399,7 @@ public class EntityKageBunshin extends ElementsNarutomodMod.ModElement {
 				entity.clearActivePotions();
 				entity.getEntityData().setInteger("ForceExtinguish", 3);
 			}
-			entity.getEntityData().removeTag(OGCLONE_KEY);
+			//entity.getEntityData().removeTag(OGCLONE_KEY);
 		}
 
 		@SubscribeEvent

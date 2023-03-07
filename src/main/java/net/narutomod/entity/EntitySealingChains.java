@@ -209,7 +209,7 @@ public class EntitySealingChains extends ElementsNarutomodMod.ModElement {
 	@SideOnly(Side.CLIENT)
 	public class CustomRender extends EntityBeamBase.Renderer<EC> {
 		private final ResourceLocation texture = new ResourceLocation("narutomod:textures/chainlink_gold.png");
-		private ModelChainLink model;
+		private final ModelChainLink model = new ModelChainLink();
 
 		public CustomRender(RenderManager renderManagerIn) {
 			super(renderManagerIn);
@@ -217,9 +217,7 @@ public class EntitySealingChains extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public EntityBeamBase.Model getMainModel(EC entity) {
-			if (this.model == null) {
-				this.model = new ModelChainLink(entity.getBeamLength());
-			}
+			this.model.addLinks(MathHelper.ceil(entity.getBeamLength() * 6.4f) - 1);
 			return this.model;
 		}
 
@@ -268,16 +266,23 @@ public class EntitySealingChains extends ElementsNarutomodMod.ModElement {
 	@SideOnly(Side.CLIENT)
 	public class ModelChainLink extends EntityBeamBase.Model {
 		private final ModelRenderer chain;
-		private final ModelRenderer link[];
+		private final ModelRenderer[] link = new ModelRenderer[640];
 		private final ModelRenderer tip;
+
+		public void addLinks(int howmany) {
+			howmany = MathHelper.clamp(howmany, 1, link.length);
+			for (int i = 0; i < link.length; i++) {
+				link[i].showModel = i < howmany;
+			}
+			tip.setRotationPoint(0.0F, (float)howmany * 2.5F, 0.0F);
+		}
 		
-		public ModelChainLink(float len) {
+		public ModelChainLink() {
 			textureWidth = 16;
 			textureHeight = 16;
 			chain = new ModelRenderer(this);
-			link = new ModelRenderer[MathHelper.ceil(len * 6.4f) - 1];
-			int i = 0;
-			for (; i < link.length; i++) {
+						
+			for (int i = 0; i < link.length; i++) {
 				link[i] = new ModelRenderer(this);
 				setRotationAngle(link[i], 0.0F, (float)((double)i * Math.PI * 0.4722222D), 0.0F);
 				link[i].setRotationPoint(0.0F, (float)i * 2.5F, 0.0F);
@@ -285,10 +290,11 @@ public class EntitySealingChains extends ElementsNarutomodMod.ModElement {
 				link[i].cubeList.add(new ModelBox(link[i], 8, 2, -0.5F, 0.0F, -1.0F, 1, 3, 2, 0.2F, false));
 				chain.addChild(link[i]);
 			}
+			
 			tip = new ModelRenderer(this);
-			tip.setRotationPoint(0.0F, (float)i * 2.5F, 0.0F);
 			setRotationAngle(tip, 0.0F, -0.7854F, 0.0F);
 			chain.addChild(tip);
+			this.addLinks(1);
 	
 			ModelRenderer bone = new ModelRenderer(this);
 			bone.setRotationPoint(0.0F, 2.0F, 0.0F);

@@ -90,9 +90,15 @@ public class EntityMightGuy extends ElementsNarutomodMod.ModElement {
 
 	@Override
 	public void init(FMLInitializationEvent event) {
-		Biome[] spawnBiomes = {Biomes.SAVANNA, Biomes.SAVANNA_PLATEAU, Biomes.FOREST, Biomes.BIRCH_FOREST,
-		 Biomes.BIRCH_FOREST_HILLS, Biomes.FOREST_HILLS, Biomes.JUNGLE, Biomes.JUNGLE_EDGE,
-		 Biomes.JUNGLE_HILLS, Biomes.ROOFED_FOREST, Biomes.TAIGA, Biomes.TAIGA_HILLS};
+		Biome[] spawnBiomes = {
+			Biomes.SAVANNA, Biomes.SAVANNA_PLATEAU, Biomes.FOREST, Biomes.BIRCH_FOREST,
+		 	Biomes.BIRCH_FOREST_HILLS, Biomes.FOREST_HILLS, Biomes.JUNGLE, Biomes.JUNGLE_EDGE,
+		 	Biomes.JUNGLE_HILLS, Biomes.ROOFED_FOREST, Biomes.REDWOOD_TAIGA, Biomes.REDWOOD_TAIGA_HILLS,
+		 	Biomes.TAIGA, Biomes.TAIGA_HILLS, Biomes.MUTATED_SAVANNA, Biomes.MUTATED_FOREST,
+		 	Biomes.MUTATED_BIRCH_FOREST, Biomes.MUTATED_BIRCH_FOREST_HILLS, Biomes.MUTATED_JUNGLE,
+		 	Biomes.MUTATED_JUNGLE_EDGE, Biomes.MUTATED_ROOFED_FOREST, Biomes.MUTATED_TAIGA,
+		 	Biomes.MUTATED_TAIGA_COLD, Biomes.MUTATED_REDWOOD_TAIGA, Biomes.MUTATED_REDWOOD_TAIGA_HILLS
+		};
 		EntityRegistry.addSpawn(EntityCustom.class, 20, 1, 1, EnumCreatureType.AMBIENT, spawnBiomes);
 	}
 

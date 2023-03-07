@@ -237,7 +237,7 @@ public class ItemBijuMap extends ElementsNarutomodMod.ModElement {
 				final EntityBijuManager bm = EntityBijuManager.getClosestBiju(player);
 
 				if (bm != null) {
-					final BlockPos target = bm.getPosOrSpawnPos();
+					final BlockPos target = bm.getPosition();
 
 					this.setupNewMap(stack, worldIn, target.getX(), target.getZ(), true, true);
 					TBMapItem.renderBiomePreviewMap(worldIn, stack);

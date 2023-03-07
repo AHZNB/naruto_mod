@@ -58,8 +58,7 @@ public class EntityIrukaSensei extends ElementsNarutomodMod.ModElement {
 
 	@Override
 	public void initElements() {
-		elements.entities
-.add(() -> EntityEntryBuilder.create().entity(EntityCustom.class)
+		elements.entities.add(() -> EntityEntryBuilder.create().entity(EntityCustom.class)
 		 .id(new ResourceLocation("narutomod", "iruka_sensei"), ENTITYID)
 		 .name("iruka_sensei").tracker(64, 3, true).egg(-16751104, -6711040).build());
 	}
@@ -67,8 +66,12 @@ public class EntityIrukaSensei extends ElementsNarutomodMod.ModElement {
 	@Override
 	public void init(FMLInitializationEvent event) {
 		Biome[] spawnBiomes = {Biomes.FOREST, Biomes.BIRCH_FOREST, Biomes.BIRCH_FOREST_HILLS, Biomes.FOREST_HILLS,
-		 Biomes.JUNGLE, Biomes.JUNGLE_EDGE, Biomes.JUNGLE_HILLS, Biomes.PLAINS, Biomes.ROOFED_FOREST, Biomes.TAIGA, Biomes.TAIGA_HILLS};
-		EntityRegistry.addSpawn(EntityCustom.class, 20, 1, 1, EnumCreatureType.AMBIENT, spawnBiomes);
+		 Biomes.JUNGLE, Biomes.JUNGLE_EDGE, Biomes.JUNGLE_HILLS, Biomes.PLAINS, Biomes.ROOFED_FOREST, Biomes.TAIGA,
+		 Biomes.TAIGA_HILLS, Biomes.REDWOOD_TAIGA, Biomes.REDWOOD_TAIGA_HILLS, Biomes.MUTATED_PLAINS,
+		 Biomes.MUTATED_FOREST, Biomes.MUTATED_BIRCH_FOREST, Biomes.MUTATED_BIRCH_FOREST_HILLS, Biomes.MUTATED_JUNGLE,
+		 Biomes.MUTATED_JUNGLE_EDGE, Biomes.MUTATED_ROOFED_FOREST, Biomes.MUTATED_TAIGA, Biomes.MUTATED_REDWOOD_TAIGA,
+		 Biomes.MUTATED_REDWOOD_TAIGA_HILLS};
+		EntityRegistry.addSpawn(EntityCustom.class, 5, 1, 1, EnumCreatureType.AMBIENT, spawnBiomes);
 	}
 
 	@SideOnly(Side.CLIENT)

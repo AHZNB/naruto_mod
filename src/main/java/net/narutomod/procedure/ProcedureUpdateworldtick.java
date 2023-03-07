@@ -29,7 +29,7 @@ public class ProcedureUpdateworldtick extends ElementsNarutomodMod.ModElement {
 		}
 		World world = (World) dependencies.get("world");
 		NarutomodModVariables.world_tick = (double) ((NarutomodModVariables.world_tick) + 0.5);
-		SpecialEvent.executeSpecialEvent();
+		SpecialEvent.executeEvents();
 		long l = world.getTotalWorldTime();
 		if (world.provider.getDimension() == 0) {
 			TOTAL_WORLD_TIME = l;

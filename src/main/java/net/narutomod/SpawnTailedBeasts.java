@@ -1,6 +1,7 @@
 package net.narutomod;
 
 import net.minecraft.block.state.IBlockState;
+import net.narutomod.entity.EntityBijuManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -12,7 +13,6 @@ import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
-import net.narutomod.entity.EntityBijuManager;
 
 import java.util.Random;
 
@@ -36,10 +36,13 @@ public class SpawnTailedBeasts extends ElementsNarutomodMod.ModElement {
 	@SubscribeEvent
 	public void onWorldLoad(WorldEvent.Load event) {
 		World world = event.getWorld();
-
 		if (!world.isRemote && !world.getGameRules().hasRule(SPAWN_TB_RULE)) {
 			world.getGameRules().addGameRule(SPAWN_TB_RULE, "false", net.minecraft.world.GameRules.ValueType.BOOLEAN_VALUE);
 		}
+	}
+
+	public static boolean isRuleSet(World world) {
+		return world.getGameRules().getBoolean(SPAWN_TB_RULE);
 	}
 
 	@SubscribeEvent
