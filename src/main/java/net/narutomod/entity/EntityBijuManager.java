@@ -177,7 +177,7 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 	@Nullable
 	public static BlockPos getPositionByTails(int tailnum) {
 		EntityBijuManager bm = mapByTailnum.get(tailnum);
-		return bm != null ? bm.getPosOrSpawnPos() : null;
+		return bm != null ? bm.getPosition() : null;
 	}
 
 	public static int getTails(EntityPlayer player) {
@@ -296,12 +296,12 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 		}
 	}
 
-	public BlockPos getPosOrSpawnPos() {
+	public BlockPos getPosition() {
 		return this.isAddedToWorld() ? this.locateEntity() : this.spawnPos;
 	}
 
 	public double distanceToPlayer(EntityPlayer player) {
-		return player.getDistanceSq(this.getPosOrSpawnPos());
+		return player.getDistanceSq(this.getPosition());
 	}
 
 	public BlockPos getSpawnPos() {

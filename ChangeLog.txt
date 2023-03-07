@@ -3,19 +3,19 @@
 Jutsus:
  - limit earth sandwich jutsu to size 20
  - removed fall damage from kamui intangible and sand levitation
- - spikes coming out of the ground like braken dance, shattering ice spears, earth flow spears
-   power indicator and chakra usage is based on how many spikes produced
+ - bone/ice/earth spikes power indicator and chakra usage is based on how many spikes produced
+ - nerfed bone/ice/earth spikes damage
  - fixed lightning beast/panther crashing when user enters another world/dimension
+ - limit black lightning panther to max 5
  - limit max jutsuXp to 3x required xp
  - limit unrivaled strength to max 30
  - limit sand bullet barrage to max 5
  - increased amaterasu damage (based on user ninjaxp)
  - Yomotsu Hirasaka now works in survival
  - lowered damage on Chakra flow
- - limit black lightning panther to max 5
  - disallow using sand binding on the same target multiple times
- - nerfed bone/ice/earth spikes damage
  - fixed adamantine chains render broken by Radon
+ - fixed when becoming your clone and clone original dies bug
 
 Items:
  - cleaver sword now takes damage when used, attack speed and damage decrease, recipe changed
