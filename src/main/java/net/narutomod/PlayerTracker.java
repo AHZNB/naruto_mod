@@ -1,13 +1,6 @@
 package net.narutomod;
 
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraftforge.event.entity.player.PlayerDropsEvent;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
@@ -45,8 +38,8 @@ import net.narutomod.item.ItemJutsu;
 import java.util.UUID;
 import java.util.List;
 import java.util.Iterator;
-import com.google.common.collect.Lists;
 import java.util.Map;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 @ElementsNarutomodMod.ModElement.Tag

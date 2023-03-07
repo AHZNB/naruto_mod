@@ -24,29 +24,31 @@ public class ProcedureGravityPower extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static EntityEarthBlocks.Base dislodgeBlocks(World world, BlockPos centerPos, int size) {
-		List<BlockPos> affectedBlocks = Lists.newArrayList();
-		int x = centerPos.getX();
-		int y = centerPos.getY();
-		int z = centerPos.getZ();
-		for (int j = -size / 2; j < size / 2 + (size % 2); j++) {
-			for (int k = -size / 2; k < size / 2 + (size % 2); k++) {
-				for (int i = -size / 2; i < size / 2 + (size % 2); i++) {
-					BlockPos pos = new BlockPos(x+i, y+j, z+k);
-					IBlockState blockstate = world.getBlockState(pos);
-					if (!world.isAirBlock(pos) && !blockstate.getMaterial().isLiquid() && blockstate.getBlockHardness(world, pos) >= 0f) {
-						affectedBlocks.add(pos);
+		if (!world.isRemote) {
+			List<BlockPos> affectedBlocks = Lists.newArrayList();
+			int x = centerPos.getX();
+			int y = centerPos.getY();
+			int z = centerPos.getZ();
+			for (int j = -size / 2; j < size / 2 + (size % 2); j++) {
+				for (int k = -size / 2; k < size / 2 + (size % 2); k++) {
+					for (int i = -size / 2; i < size / 2 + (size % 2); i++) {
+						BlockPos pos = new BlockPos(x+i, y+j, z+k);
+						IBlockState blockstate = world.getBlockState(pos);
+						if (!world.isAirBlock(pos) && !blockstate.getMaterial().isLiquid() && blockstate.getBlockHardness(world, pos) >= 0f) {
+							affectedBlocks.add(pos);
+						}
 					}
 				}
 			}
-		}
-		if (!affectedBlocks.isEmpty()) {
-			EntityEarthBlocks.Base entity = new EntityEarthBlocks.Base(world, affectedBlocks);
-			entity.setNoGravity(true);
-			//entity.motionX = 0.2D * raytraceres.sideHit.getDirectionVec().getX();
-			//entity.motionY = 0.2D * raytraceres.sideHit.getDirectionVec().getY();
-			//entity.motionZ = 0.2D * raytraceres.sideHit.getDirectionVec().getZ();
-			world.spawnEntity(entity);
-			return entity;
+			if (!affectedBlocks.isEmpty()) {
+				EntityEarthBlocks.Base entity = new EntityEarthBlocks.Base(world, affectedBlocks);
+				entity.setNoGravity(true);
+				//entity.motionX = 0.2D * raytraceres.sideHit.getDirectionVec().getX();
+				//entity.motionY = 0.2D * raytraceres.sideHit.getDirectionVec().getY();
+				//entity.motionZ = 0.2D * raytraceres.sideHit.getDirectionVec().getZ();
+				world.spawnEntity(entity);
+				return entity;
+			}
 		}
 		return null;
 	}

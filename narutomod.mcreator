@@ -1,8 +1,8 @@
 {
   "id_map": {
-    "ENTITY": 414,
+    "DIMENSION": 13,
     "GUI": 63,
-    "DIMENSION": 13
+    "ENTITY": 414
   },
   "mod_elements": [
     {
@@ -7977,7 +7977,7 @@
       "entity.susanooclothed.name": "Susanoo",
       "item.raiton.name": "Lightning Release",
       "entity.lightning_arc.name": "Lightning Arc",
-      "advancements.eternalmangekyoachieved.descr": "The Eternal Mangekyo Sharingan is proof an Uchiha has continued to push forward despite experiencing great losses.",
+      "advancements.eternalmangekyoachieved.descr": "The Eternal Mangeky�� Sharingan is proof an Uchiha has continued to push forward despite experiencing great losses.",
       "item.ninja_armor_otoboots.name": "",
       "advancements.bakuton_acquired.title": "Explosion Release Acquired",
       "advancements.ranton_acquired.title": "Storm Release Acquired",
@@ -7995,7 +7995,7 @@
       "item.mangekyosharinganobitohelmet.name": "Mangekyo Sharingan - Kamui",
       "advancements.sharinganopened.title": "Sharingan activated",
       "tipped_arrow.effect.chakra_regeneration": "Arrow of Chakra Regeneration",
-      "advancements.kekkei_tota_awakened.descr": "Kekkei Tota is an advanced branch of jutsu that is more advanced than kekkei genkai. The only known example is Dust Release, a combination of three different nature transformations earth, wind, and fire.",
+      "advancements.kekkei_tota_awakened.descr": "Kekkei T?ta is an advanced branch of jutsu that is more advanced than kekkei genkai. The only known example is Dust Release, a combination of three different nature transformations �� earth, wind, and fire.",
       "entity.water_prison.name": "Water Prison jutsu",
       "item.inton.name": "Yin Release",
       "subtitles.lasercircus": "",
@@ -8010,7 +8010,7 @@
       "item.smoke_bomb.name": "Smoke Bomb",
       "item.ninja_armor_iwahelmet.name": "Forehead Protector (Iwagakure)",
       "item.byakuganhelmet.name": "Byakugan",
-      "tooltip.rinnegan.jutsu2": "Tendo (Chibaku Tensei / [SHIFT] Tengai Shinsei),  Preta (Shield), Animal (Summoning), Naraka (King of Hell),  Outer (Gedo Mazo NXP: 8100)",
+      "tooltip.rinnegan.jutsu2": "Tendo (Chibaku Tensei / [SHIFT] Tengai Shinsei),  Preta (Shield), Animal (Summoning), Naraka (King of Hell),  Outer (Gedo Mazo NXP:8100)",
       "tooltip.rinnegan.jutsu3": "Universal Pull ([SHIFT] to dislodge blocks)",
       "entity.wood_burial.name": "Wood Burial",
       "entity.hakkeshokeiten.name": "Hakkesho Keiten",

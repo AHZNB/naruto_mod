@@ -172,7 +172,7 @@ public class EntityEarthBlocks extends ElementsNarutomodMod.ModElement {
 		@Override
 	    public void applyEntityCollision(Entity entityIn) {
        		if (entityIn instanceof Base) {
-       			if (this.mass() > ((Base)entityIn).mass() / 2) {
+       			if (!this.world.isRemote && this.ticksAlive > 20 && this.mass() > ((Base)entityIn).mass() / 2) {
        				entityIn.setNoGravity(false);
        			}
        		} else if (!entityIn.noClip && !entityIn.isBeingRidden()) {
@@ -327,7 +327,7 @@ public class EntityEarthBlocks extends ElementsNarutomodMod.ModElement {
 			this.collided = this.collidedHorizontally || this.collidedVertically;
 			if (!this.world.isRemote) {
 				boolean canMoveThrough = true;
-				this.breakOnImpact = this.collisionForce() > 2000.0f;
+				this.breakOnImpact = this.collisionForce() > 1000.0f;
 				if (dx != x || dy != y || dz != z) {
 					List<BlockPos> list1 = BlocksMoveHelper.convert2BlockposList(list);
 					float f = BlocksMoveHelper.getBlocksTotalResistance(this.world, list1);

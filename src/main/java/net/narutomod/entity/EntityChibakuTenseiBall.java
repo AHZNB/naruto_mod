@@ -159,8 +159,8 @@ public class EntityChibakuTenseiBall extends ElementsNarutomodMod.ModElement {
 					 	this.affectedEntities.add(entity);
 					 }
 				}
-				if (!this.maxSizeReached && !this.blockList.isEmpty() && this.rand.nextInt(10) == 0) {
-					for (EntityEarthBlocks.Base entity = null; entity == null; ) {
+				if (!this.maxSizeReached && this.rand.nextInt(10) == 0) {
+					for (EntityEarthBlocks.Base entity = null; entity == null && !this.blockList.isEmpty(); ) {
 						BlockPos pos = this.blockList.get(0);
 						this.blockList.remove(0);
 						if (!world.isAirBlock(pos)) {
