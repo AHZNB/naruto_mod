@@ -98,7 +98,7 @@ public class EntityNinjaMerchant extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		protected boolean canDespawn() {
-			return this.hasTraded;
+			return !this.hasTraded;
 		}
 
 		@Override

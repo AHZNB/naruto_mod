@@ -816,11 +816,19 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static void setDeathAnimations(EntityLivingBase entity, int type, int duration) {
-		if (entity instanceof EntityPlayer && ((EntityPlayer) entity).isCreative())
+		if ((entity instanceof EntityPlayer && ((EntityPlayer) entity).isCreative()) || !entity.isEntityAlive()) {
 			return;
+		}
 		if ((int) entity.getEntityData().getDouble("deathAnimationType") == 0) {
 			entity.getEntityData().setDouble("deathAnimationType", (double) type);
 			entity.getEntityData().setDouble(NarutomodModVariables.DeathAnimationTime, (double) duration);
+		}
+	}
+
+	public static void clearDeathAnimations(EntityLivingBase entity) {
+		if ((int) entity.getEntityData().getDouble("deathAnimationType") > 0) {
+			entity.getEntityData().removeTag("deathAnimationType");
+			entity.getEntityData().removeTag(NarutomodModVariables.DeathAnimationTime);
 		}
 	}
 

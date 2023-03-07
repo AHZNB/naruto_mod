@@ -152,6 +152,7 @@ public class ProcedureOnLivingUpdate extends ElementsNarutomodMod.ModElement {
 				} else {
 					entity.onKillCommand();
 				}
+				ProcedureUtils.clearDeathAnimations(entity);
 			}
 		}
 		d = entity.getEntityData().getDouble(NarutomodModVariables.InvulnerableTime);
