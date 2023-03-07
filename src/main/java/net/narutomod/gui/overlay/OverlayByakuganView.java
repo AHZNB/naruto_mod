@@ -182,7 +182,7 @@ public class OverlayByakuganView extends ElementsNarutomodMod.ModElement {
 			if ((event.getButton() == 0 || event.getButton() == 1) && event.isButtonstate()) {
 				Minecraft mc = Minecraft.getMinecraft();
 
-				if (mc.objectMouseOver.entityHit instanceof EntityPlayer && mc.objectMouseOver.entityHit.equals(mc.player)) {
+				if (mc.objectMouseOver != null && mc.objectMouseOver.entityHit instanceof EntityPlayer && mc.objectMouseOver.entityHit.equals(mc.player)) {
 					event.setCanceled(true);
 				}
 			}
