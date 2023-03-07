@@ -52,6 +52,7 @@ import net.narutomod.potion.PotionChakraEnhancedStrength;
 import net.narutomod.ElementsNarutomodMod;
 
 import javax.annotation.Nullable;
+import java.util.Arrays;
 import java.util.List;
 import com.google.common.collect.Lists;
 import com.google.common.base.Predicate;
@@ -119,7 +120,7 @@ public class EntitySakuraHaruno extends ElementsNarutomodMod.ModElement {
 		public EntityCustom(World world) {
 			super(world, 60, trades);
 			this.setSize(0.525f, 1.75f);
-			java.util.Arrays.fill(this.inventoryHandsDropChances, 0.0F);
+			Arrays.fill(this.inventoryHandsDropChances, 0.0F);
 		}
 
 		@Override
@@ -166,11 +167,8 @@ public class EntitySakuraHaruno extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		protected int getTradeLevel(EntityPlayer player) {
-			if (player != null) {
-				Village village = this.getVillage();
-				return village != null ? village.getPlayerReputation(player.getUniqueID()) / 3 : 0;
-			}
-			return 0;
+			Village village = this.getVillage();
+			return village != null ? village.getPlayerReputation(player.getUniqueID()) / 3 : 0;
 		}
 
 		@Override

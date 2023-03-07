@@ -1,13 +1,15 @@
 
 package net.narutomod.entity;
 
-import net.minecraft.nbt.NBTBase;
+import net.minecraft.entity.IEntityLivingData;
+import net.minecraft.init.Items;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.world.DifficultyInstance;
+import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.relauncher.Side;
 //
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 //import net.minecraftforge.event.entity.living.LivingSpawnEvent;
 //import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 //import net.minecraftforge.common.MinecraftForge;
@@ -28,7 +30,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.IMerchant;
 import net.minecraft.village.MerchantRecipeList;
 import net.minecraft.village.MerchantRecipe;
@@ -42,16 +43,15 @@ import net.minecraft.init.SoundEvents;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.DamageSource;
 
+import net.narutomod.item.ItemBijuMap;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.ElementsNarutomodMod;
 
 import javax.annotation.Nullable;
-import java.util.List;
+import java.util.*;
+
 import com.google.common.collect.Lists;
-import java.util.Map;
 import com.google.common.collect.Maps;
-import java.util.LinkedHashMap;
-import java.util.Iterator;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityNinjaMerchant extends ElementsNarutomodMod.ModElement {
@@ -60,7 +60,8 @@ public class EntityNinjaMerchant extends ElementsNarutomodMod.ModElement {
 	}
 
 	public abstract static class Base extends EntityNinjaMob.Base implements IMerchant {
-		private final List<MerchantRecipeList> tradeList = Lists.newArrayList();
+		private final List<MerchantRecipeList> trades = Lists.newArrayList();
+		private final MerchantRecipeList rareTrades = new MerchantRecipeList();
 		private final List<EntityPlayer> assholeList = Lists.newArrayList();
 		private EntityPlayer customer;
 		private int homeCheckTimer;
@@ -72,28 +73,55 @@ public class EntityNinjaMerchant extends ElementsNarutomodMod.ModElement {
 		public Base(World worldIn, int level, MerchantRecipeList[] list) {
 			super(worldIn, level, (double)level * level);
 			this.tasks.addTask(2, this.leapAI);
+
 			for (int i = 0; i < list.length; i++) {
-				MerchantRecipeList recipelist = new MerchantRecipeList();
+				MerchantRecipeList currentTrades = new MerchantRecipeList();
+
 				for (int j = 0; j < list[i].size(); j++) {
-					MerchantRecipe recipe = list[i].get(j);
-					recipelist.add(new MerchantRecipe(recipe.getItemToBuy(), recipe.getSecondItemToBuy(),
-					 recipe.getItemToSell(), recipe.getToolUses(), recipe.getMaxTradeUses()));
+					MerchantRecipe trade = list[i].get(j);
+					currentTrades.add(trade);
 				}
-				this.tradeList.add(recipelist);
+				this.trades.add(currentTrades);
 			}
 			((PathNavigateGround)this.getNavigator()).setBreakDoors(true);
+		}
+
+		@Nullable
+		@Override
+		public IEntityLivingData onInitialSpawn(DifficultyInstance difficulty, @Nullable IEntityLivingData livingdata) {
+			this.addRareTrades();
+			return super.onInitialSpawn(difficulty, livingdata);
+		}
+
+		// This code can be used in the future to add rare trades
+		private void addRareTrades() {
+			Random rand = new Random();
+
+			if (rand.nextInt(5) == 0) {
+				this.rareTrades.add(new MerchantRecipe(new ItemStack(Items.EMERALD, 64), ItemStack.EMPTY, new ItemStack(ItemBijuMap.block, 1), 0, 1));
+			}
 		}
 
 		@Override
 		public NBTTagCompound writeToNBT(NBTTagCompound compound) {
 			compound.setBoolean("hasTraded", this.hasTraded);
+			compound.setTag("rareTrades", this.rareTrades.getRecipiesAsTags());
 			return super.writeToNBT(compound);
 		}
 
 		@Override
 		public void readFromNBT(NBTTagCompound compound) {
 			super.readFromNBT(compound);
+
 			this.hasTraded = compound.getBoolean("hasTraded");
+
+			NBTTagList rareTradesTag = compound.getTagList("Recipes", Constants.NBT.TAG_COMPOUND);
+
+			for (int i = 0; i < rareTradesTag.tagCount(); ++i)
+			{
+				NBTTagCompound tradeTag = rareTradesTag.getCompoundTagAt(i);
+				this.rareTrades.add(new MerchantRecipe(tradeTag));
+			}
 		}
 
 		@Override
@@ -135,12 +163,18 @@ public class EntityNinjaMerchant extends ElementsNarutomodMod.ModElement {
 		protected int getTradeLevel(EntityPlayer player) {
 			return 0;
 		}
-		
+
 		@Override
 		@Nullable
-    	public MerchantRecipeList getRecipes(EntityPlayer player) {
-    		return this.tradeList.get(MathHelper.clamp(this.getTradeLevel(player), 0, this.tradeList.size() - 1));
-    	}
+		public MerchantRecipeList getRecipes(EntityPlayer player) {
+			int tradeLevel = this.getTradeLevel(player);
+			MerchantRecipeList trades = this.trades.get(MathHelper.clamp(tradeLevel, 0, this.trades.size() - 1));
+
+			if (this.rareTrades.size() > 0 && tradeLevel >= 3) {
+				trades.addAll(this.rareTrades);
+			}
+			return trades;
+		}
 
 		@SideOnly(Side.CLIENT)
 		@Override
@@ -168,7 +202,7 @@ public class EntityNinjaMerchant extends ElementsNarutomodMod.ModElement {
 				this.hasTraded = true;
 			}
 		}
-		
+
 		public Village getVillage() {
 			return this.village;
 		}
@@ -188,21 +222,23 @@ public class EntityNinjaMerchant extends ElementsNarutomodMod.ModElement {
 			if (!this.isTrading() && this.recipeResetTime > 0) {
 				--this.recipeResetTime;
 				if (this.recipeResetTime <= 0) {
-					for (MerchantRecipe recipe : this.getRecipes(this.getCustomer())) {
-						if (recipe.isRecipeDisabled()) {
-							recipe.increaseMaxTradeUses(1);
+					for (MerchantRecipeList recipeList : this.trades) {
+						for (MerchantRecipe recipe : recipeList) {
+							if (recipe.isRecipeDisabled()) {
+								recipe.increaseMaxTradeUses(1);
+							}
 						}
 					}
 				}
 			}
 			super.updateAITasks();
 		}
-		
+
 		@Override
 		public boolean processInteract(EntityPlayer player, EnumHand hand) {
 			ItemStack itemstack = player.getHeldItem(hand);
 			if (itemstack.isEmpty() && this.isEntityAlive() && !this.isTrading() && !player.isSneaking()) {
-				if (!this.world.isRemote && !this.tradeList.get(0).isEmpty() && !this.assholeList.contains(player)) {
+				if (!this.world.isRemote && !this.trades.get(0).isEmpty() && !this.assholeList.contains(player)) {
 					this.setCustomer(player);
 					player.displayVillagerTradeGui(this);
 				} else if (this.world.isRemote) {
@@ -217,8 +253,8 @@ public class EntityNinjaMerchant extends ElementsNarutomodMod.ModElement {
 //System.out.println(">>> got here. "+this);
 			this.village = this.world.getVillageCollection().getNearestVillage(new BlockPos(this), 32);
 			if (this.village == null
-			 || this.world.getEntitiesWithinAABB(Base.class, new AxisAlignedBB(this.village.getCenter()).grow(96d, 10d, 96d)).size() >= 2
-			 || this.rand.nextInt(10) != 0) {
+					|| this.world.getEntitiesWithinAABB(Base.class, new AxisAlignedBB(this.village.getCenter()).grow(96d, 10d, 96d)).size() >= 2
+					|| this.rand.nextInt(10) != 0) {
 				return false;
 			}
 			return super.getCanSpawnHere();
@@ -240,9 +276,9 @@ public class EntityNinjaMerchant extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
-	    public net.minecraft.util.SoundEvent getAmbientSound() {
-	        return this.isTrading() ? SoundEvents.ENTITY_VILLAGER_TRADING : null;
-	    }
+		public net.minecraft.util.SoundEvent getAmbientSound() {
+			return this.isTrading() ? SoundEvents.ENTITY_VILLAGER_TRADING : null;
+		}
 
 		@Override
 		public void onDeath(DamageSource cause) {
@@ -253,48 +289,48 @@ public class EntityNinjaMerchant extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
-	    public void setRevengeTarget(@Nullable EntityLivingBase livingBase) {
-	        super.setRevengeTarget(livingBase);	
-	        if (livingBase instanceof EntityPlayer) {
-	        	this.assholeList.add((EntityPlayer)livingBase);
-	        	if (this.village != null) {
-                	this.village.modifyPlayerReputation(livingBase.getUniqueID(), -1);
-	        	}
-	        }
-	    }
+		public void setRevengeTarget(@Nullable EntityLivingBase livingBase) {
+			super.setRevengeTarget(livingBase);
+			if (livingBase instanceof EntityPlayer) {
+				this.assholeList.add((EntityPlayer)livingBase);
+				if (this.village != null) {
+					this.village.modifyPlayerReputation(livingBase.getUniqueID(), -1);
+				}
+			}
+		}
 
 		public class AITradePlayer extends EntityAIBase {
-		    private final Base merchant;
-		
-		    public AITradePlayer(Base merchantIn) {
-		        this.merchant = merchantIn;
-		        this.setMutexBits(5);
-		    }
-		
-		    @Override
-		    public boolean shouldExecute() {
-		        if (!this.merchant.isEntityAlive() || this.merchant.isInWater() 
-		         || !this.merchant.onGround || this.merchant.velocityChanged) {
-		            return false;
-		        } else {
-		            EntityPlayer entityplayer = this.merchant.getCustomer();
-		            if (entityplayer == null || this.merchant.getDistanceSq(entityplayer) > 16.0D) {
-		                return false;
-		            } else {
-		                return entityplayer.openContainer != null;
-		            }
-		        }
-		    }
-		
-		    @Override
-		    public void startExecuting() {
-		        this.merchant.getNavigator().clearPath();
-		    }
-		
-		    @Override
-		    public void resetTask() {
-		        this.merchant.setCustomer((EntityPlayer)null);
-		    }
+			private final Base merchant;
+
+			public AITradePlayer(Base merchantIn) {
+				this.merchant = merchantIn;
+				this.setMutexBits(5);
+			}
+
+			@Override
+			public boolean shouldExecute() {
+				if (!this.merchant.isEntityAlive() || this.merchant.isInWater()
+						|| !this.merchant.onGround || this.merchant.velocityChanged) {
+					return false;
+				} else {
+					EntityPlayer entityplayer = this.merchant.getCustomer();
+					if (entityplayer == null || this.merchant.getDistanceSq(entityplayer) > 16.0D) {
+						return false;
+					} else {
+						return entityplayer.openContainer != null;
+					}
+				}
+			}
+
+			@Override
+			public void startExecuting() {
+				this.merchant.getNavigator().clearPath();
+			}
+
+			@Override
+			public void resetTask() {
+				this.merchant.setCustomer((EntityPlayer)null);
+			}
 		}
 
 		public class AIWatchCustomer extends EntityAIWatchClosest {
@@ -322,7 +358,7 @@ public class EntityNinjaMerchant extends ElementsNarutomodMod.ModElement {
 				this.setMutexBits(1);
 			}
 
-		    @Override
+			@Override
 			public boolean shouldExecute() {
 				Village village = this.ninja.getVillage();
 				if (village == null) {
@@ -349,15 +385,15 @@ public class EntityNinjaMerchant extends ElementsNarutomodMod.ModElement {
 			@Nullable
 			private EntityLivingBase findNearestVillagerChaser(World world, Village village) {
 				List<EntityVillager> list = world.<EntityVillager>getEntitiesWithinAABB(EntityVillager.class,
-				 new AxisAlignedBB(village.getCenter()).grow(village.getVillageRadius(), 8d, village.getVillageRadius()));
-				 //new AxisAlignedBB((double)(village.getCenter().getX() - village.getVillageRadius()), 
-				 // (double)(village.getCenter().getY() - 4), (double)(village.getCenter().getZ() - village.getVillageRadius()),
-				 // (double)(village.getCenter().getX() + village.getVillageRadius()), 
-				 // (double)(village.getCenter().getY() + 4), (double)(village.getCenter().getZ() + village.getVillageRadius())));
+						new AxisAlignedBB(village.getCenter()).grow(village.getVillageRadius(), 8d, village.getVillageRadius()));
+				//new AxisAlignedBB((double)(village.getCenter().getX() - village.getVillageRadius()),
+				// (double)(village.getCenter().getY() - 4), (double)(village.getCenter().getZ() - village.getVillageRadius()),
+				// (double)(village.getCenter().getX() + village.getVillageRadius()),
+				// (double)(village.getCenter().getY() + 4), (double)(village.getCenter().getZ() + village.getVillageRadius())));
 				Map<EntityLivingBase, Double> aggressorMap = Maps.<EntityLivingBase, Double>newHashMap();
 				for (EntityVillager villager : list) {
 					List<EntityZombie> list2 = world.<EntityZombie>getEntitiesWithinAABB(EntityZombie.class,
-					 villager.getEntityBoundingBox().grow(8d, 3d, 8d));
+							villager.getEntityBoundingBox().grow(8d, 3d, 8d));
 					if (!list2.isEmpty()) {
 						list2.sort(new ProcedureUtils.EntitySorter(villager));
 						EntityZombie zombie = list2.get(0);
@@ -369,17 +405,17 @@ public class EntityNinjaMerchant extends ElementsNarutomodMod.ModElement {
 				}
 				LinkedHashMap<EntityLivingBase, Double> sortedMap = new LinkedHashMap<>();
 				aggressorMap.entrySet().stream().sorted(Map.Entry.comparingByValue())
-				 .forEachOrdered(x -> sortedMap.put(x.getKey(), x.getValue()));
+						.forEachOrdered(x -> sortedMap.put(x.getKey(), x.getValue()));
 				Iterator<EntityLivingBase> iter = sortedMap.keySet().iterator();
 				return iter.hasNext() ? iter.next() : null;
 			}
 
-		    @Override
+			@Override
 			public void startExecuting() {
 				this.ninja.setAttackTarget(this.villageAgressorTarget);
 				super.startExecuting();
 			}
-		}	
+		}
 	}
 
 	/*public class CheckSpawnHook {

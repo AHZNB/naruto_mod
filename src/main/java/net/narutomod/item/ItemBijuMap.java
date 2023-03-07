@@ -226,13 +226,18 @@ public class ItemBijuMap extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public void onUpdate(ItemStack stack, World worldIn, Entity entityIn, int itemSlot, boolean isSelected) {
-			super.onUpdate(stack, worldIn, entityIn, itemSlot, isSelected);
-
 			if (!(entityIn instanceof EntityPlayer) || worldIn.isRemote) {
 				return;
 			}
 
-			EntityPlayer player = (EntityPlayer) entityIn;
+			EntityPlayer player = (EntityPlayer)entityIn;
+
+			TBMapData data = ((TBMapItem) stack.getItem()).getMapData(stack, worldIn);
+			data.updateVisiblePlayers(player, stack);
+
+			if (isSelected || player.getHeldItemOffhand() == stack) {
+				this.updateMapData(worldIn, entityIn, data);
+			}
 
 			if (!stack.hasTagCompound()) {
 				stack.setTagCompound(new NBTTagCompound());
@@ -252,7 +257,6 @@ public class ItemBijuMap extends ElementsNarutomodMod.ModElement {
 				this.setupNewMap(stack, worldIn, target.getX(), target.getZ(), true, true);
 				TBMapItem.renderBiomePreviewMap(worldIn, stack);
 
-				TBMapData data = ((TBMapItem) stack.getItem()).getMapData(stack, worldIn);
 				data.addTBDeco(target, (byte) (bm.getTails() - 1));
 
 				// This way the map will find a tailed beast once one is available :P

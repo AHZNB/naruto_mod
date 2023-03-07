@@ -53,6 +53,7 @@ import net.narutomod.item.ItemChokuto;
 import net.narutomod.block.BlockExplosiveTag;
 
 import javax.annotation.Nullable;
+import java.util.Arrays;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityTenten extends ElementsNarutomodMod.ModElement {
@@ -83,9 +84,7 @@ public class EntityTenten extends ElementsNarutomodMod.ModElement {
 	@SideOnly(Side.CLIENT)
 	@Override
 	public void preInit(FMLPreInitializationEvent event) {
-		RenderingRegistry.registerEntityRenderingHandler(EntityCustom.class, renderManager -> {
-			return new RenderCustom(renderManager);
-		});
+		RenderingRegistry.registerEntityRenderingHandler(EntityCustom.class, renderManager -> new RenderCustom(renderManager));
 	}
 
 	public static class EntityCustom extends EntityNinjaMerchant.Base implements IRangedAttackMob {
@@ -102,7 +101,7 @@ public class EntityTenten extends ElementsNarutomodMod.ModElement {
 		public EntityCustom(World world) {
 			super(world, 50, trades);
 			this.setSize(0.525f, 1.75f);
-			java.util.Arrays.fill(this.inventoryHandsDropChances, 0.0F);
+			Arrays.fill(this.inventoryHandsDropChances, 0.0F);
 		}
 
 		@Override
@@ -125,11 +124,8 @@ public class EntityTenten extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		protected int getTradeLevel(EntityPlayer player) {
-			if (player != null) {
-				Village village = this.getVillage();
-				return village != null ? village.getPlayerReputation(player.getUniqueID()) / 3 : 0;
-			}
-			return 0;
+			Village village = this.getVillage();
+			return village != null ? village.getPlayerReputation(player.getUniqueID()) / 3 : 0;
 		}
 
 		@Override

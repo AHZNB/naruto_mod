@@ -78,24 +78,21 @@ public class EntityIrukaSensei extends ElementsNarutomodMod.ModElement {
 	@SideOnly(Side.CLIENT)
 	@Override
 	public void preInit(FMLPreInitializationEvent event) {
-		RenderingRegistry.registerEntityRenderingHandler(EntityCustom.class, renderManager -> {
-			return new RenderLiving(renderManager, new ModelBiped64(), 0.5f) {
-				protected ResourceLocation getEntityTexture(Entity entity) {
-					return new ResourceLocation("narutomod:textures/iruka64x64.png");
-				}
-			};
+		RenderingRegistry.registerEntityRenderingHandler(EntityCustom.class, renderManager -> new RenderLiving(renderManager, new ModelBiped64(), 0.5f) {
+			protected ResourceLocation getEntityTexture(Entity entity) {
+				return new ResourceLocation("narutomod:textures/iruka64x64.png");
+			}
 		});
 	}
 
 	public static class EntityCustom extends EntityNinjaMerchant.Base {
-		private static final MerchantRecipeList[] trades = { new MerchantRecipeList(), new MerchantRecipeList(), new MerchantRecipeList() };
+		private static final MerchantRecipeList[] trades = { new MerchantRecipeList(), new MerchantRecipeList() };
 
 		static {
 			trades[0].add(new MerchantRecipe(new ItemStack(Items.EMERALD, 3), ItemStack.EMPTY, new ItemStack(Items.GOLDEN_APPLE, 1), 0, 1));
 			trades[0].add(new MerchantRecipe(new ItemStack(Items.EMERALD, 1), ItemStack.EMPTY, new ItemStack(ItemScrollBodyReplacement.block, 1), 0, 1));
 			trades[1].add(new MerchantRecipe(new ItemStack(Items.EMERALD, 5), ItemStack.EMPTY, new ItemStack(ItemScrollKageBunshin.block, 1), 0, 1));
 			trades[1].add(new MerchantRecipe(new ItemStack(Items.EMERALD, 30), ItemStack.EMPTY, new ItemStack(Items.GOLDEN_APPLE, 1, 1), 0, 1));
-			trades[2].add(new MerchantRecipe(new ItemStack(Items.EMERALD, 64), ItemStack.EMPTY, new ItemStack(ItemBijuMap.block, 1), 0, 1));
 		};
 
 		public EntityCustom(World world) {
@@ -134,11 +131,8 @@ public class EntityIrukaSensei extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		protected int getTradeLevel(EntityPlayer player) {
-			if (player != null) {
-				Village village = this.getVillage();
-				return village != null ? village.getPlayerReputation(player.getUniqueID()) / 3 : 0;
-			}
-			return 0;
+			Village village = this.getVillage();
+			return village != null ? village.getPlayerReputation(player.getUniqueID()) / 3 : 0;
 		}
 
 		@Override
