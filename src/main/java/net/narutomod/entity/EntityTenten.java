@@ -105,7 +105,7 @@ public class EntityTenten extends ElementsNarutomodMod.ModElement {
 
 			MerchantRecipeList uncommonTrades = new MerchantRecipeList();
 			uncommonTrades.add(new MerchantRecipe(new ItemStack(Items.EMERALD, 1), ItemStack.EMPTY, new ItemStack(ItemKunaiExplosive.block, 2), 0, 1));
-			uncommonTrades.add(new MerchantRecipe(new ItemStack(Items.EMERALD, 3), ItemStack.EMPTY, new ItemStack(ItemChokuto.block, 1, 1), 0, 1));
+			uncommonTrades.add(new MerchantRecipe(new ItemStack(Items.EMERALD, 3), ItemStack.EMPTY, new ItemStack(ItemChokuto.block, 1), 0, 1));
 
 			trades.put(EntityNinjaMerchant.TradeLevel.COMMON, commonTrades);
 			trades.put(EntityNinjaMerchant.TradeLevel.UNCOMMON, uncommonTrades);
