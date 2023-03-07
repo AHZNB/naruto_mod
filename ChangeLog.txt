@@ -23,7 +23,8 @@ Items:
  - changed dojutsu helmet items textures
  - fix armor lag by preventing it from creating new instances
  - added tailed beast maps
-  - made tailed beast maps not show positions if spawnTailedBeasts is false
+ - made tailed beast maps not show positions if spawnTailedBeasts is false
+ - fix eight gates killing you after respawn
 
 Entities:
  - increase spawn rates for bosses and remove dungeon spawns
