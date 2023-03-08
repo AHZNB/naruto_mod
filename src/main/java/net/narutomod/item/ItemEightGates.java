@@ -550,6 +550,11 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 					}
 				} else if (gateOpened > 0f) {
 					this.GATE[(int) gateOpened].deActivate(player);
+
+					if (gateOpened == 8) {
+						itemstack.getTagCompound().setInteger(SEKIZO_KEY, 0);
+					}
+
 					this.setGateOpened(itemstack, player, 0);
 					if (player instanceof EntityPlayer && !((EntityPlayer) player).isCreative()) {
 						((EntityPlayer) player).getCooldownTracker().setCooldown(itemstack.getItem(), (int) gateOpened * 200);

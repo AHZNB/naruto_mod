@@ -29,6 +29,7 @@ Items:
  - made tailed beast maps not show positions if spawnTailedBeasts is false
  - fix eight gates killing you after respawn
  - fixed biju map crashing bug
+ - fixed sekizo only being usable once
 
 Entities:
  - increase spawn rates for bosses and remove dungeon spawns
