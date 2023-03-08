@@ -280,15 +280,17 @@ public class PlayerRender extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public void doRenderLayer(AbstractClientPlayer entityIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
-			for (int i = 0; i < entityIn.inventory.mainInventory.size(); i++) {
-				ItemStack stack = entityIn.inventory.mainInventory.get(i);
-				if (stack.getItem() instanceof ItemOnBody.Interface) {
-					ItemOnBody.Interface item = (ItemOnBody.Interface)stack.getItem();
-					if (item.showSkinLayer()) {
-						this.renderSkinLayer(stack, entityIn, limbSwing, limbSwingAmount, partialTicks, ageInTicks, netHeadYaw, headPitch, scale);
-					}
-					if (item.showOnBody() != ItemOnBody.BodyPart.NONE && i != entityIn.inventory.currentItem) {
-						this.renderItemOnBody(stack, entityIn, item.showOnBody());
+			if (!entityIn.isSpectator()) {
+				for (int i = 0; i < entityIn.inventory.mainInventory.size(); i++) {
+					ItemStack stack = entityIn.inventory.mainInventory.get(i);
+					if (stack.getItem() instanceof ItemOnBody.Interface) {
+						ItemOnBody.Interface item = (ItemOnBody.Interface)stack.getItem();
+						if (item.showSkinLayer()) {
+							this.renderSkinLayer(stack, entityIn, limbSwing, limbSwingAmount, partialTicks, ageInTicks, netHeadYaw, headPitch, scale);
+						}
+						if (item.showOnBody() != ItemOnBody.BodyPart.NONE && i != entityIn.inventory.currentItem) {
+							this.renderItemOnBody(stack, entityIn, item.showOnBody());
+						}
 					}
 				}
 			}

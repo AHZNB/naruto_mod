@@ -117,7 +117,7 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 			this.getAttributeMap().registerAttribute(SharedMonsterAttributes.ATTACK_DAMAGE);
 			this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(10D);
 			//this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(50D);
-			this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(48D);
+			this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(64D);
 		}
 
 		@Override

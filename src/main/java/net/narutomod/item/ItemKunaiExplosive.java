@@ -232,7 +232,7 @@ public class ItemKunaiExplosive extends ElementsNarutomodMod.ModElement {
 	}
 
 	@SideOnly(Side.CLIENT)
-	public class RenderCustom extends Render<EntityArrowCustom> {
+	public static class RenderCustom extends Render<EntityArrowCustom> {
 		protected final Item item;
 		private final RenderItem itemRenderer;
 

@@ -84,10 +84,9 @@ public class EntityMightGuy extends ElementsNarutomodMod.ModElement {
 
 	@Override
 	public void initElements() {
-		elements.entities
-.add(() -> EntityEntryBuilder.create().entity(EntityCustom.class)
+		elements.entities.add(() -> EntityEntryBuilder.create().entity(EntityCustom.class)
 		  .id(new ResourceLocation("narutomod", "mightguy"), ENTITYID)
-.name("mightguy").tracker(64, 3, true).egg(-16751104, -3355648).build());
+		  .name("mightguy").tracker(64, 3, true).egg(-16751104, -3355648).build());
 	}
 
 	@Override
@@ -182,8 +181,31 @@ public class EntityMightGuy extends ElementsNarutomodMod.ModElement {
 			});
 			this.tasks.addTask(2, new EntityNinjaMob.AILeapAtTarget(this, 1.0F) {
 				@Override
+			    public boolean shouldExecute() {
+			        this.target = this.leaper.getAttackTarget();
+			        if (this.target != null) {
+			            double d1 = this.target.posX - this.leaper.posX;
+			            double d2 = this.target.posY - this.leaper.posY;
+			            double d3 = this.target.posZ - this.leaper.posZ;
+			            double d0 = d1 * d1 + d2 * d2 + d3 * d3;
+			            double d4 = d1 * d1 + d3 * d3;
+			            if (d0 >= 9.0D && (d0 <= 144.0d || d4 < 256d) && this.leaper.onGround) {
+		                    return this.leaper.getRNG().nextInt(5) == 0;
+			            }
+			        }
+	                return false;
+			    }
+				@Override
 				public void startExecuting() {
-					if (!EntityCustom.this.leapAtTarget(EntityCustom.this.getAttackTarget())) {
+					Vec3d vec = this.leaper.getPositionVector().subtract(this.target.getPositionVector())
+					 .normalize().add(this.target.getPositionVector());
+					if (this.leaper.world.rayTraceBlocks(this.leaper.getPositionEyes(1f), vec, false, true, false) == null) {
+						this.leaper.setPositionAndRotation(vec.x, vec.y, vec.z, this.leaper.rotationYawHead, this.leaper.rotationPitch);
+						this.leaper.motionX = 0.0d;
+						this.leaper.motionY = 0.0d;
+						this.leaper.motionZ = 0.0d;
+						this.leaper.isAirBorne = true;
+					} else {
 						super.startExecuting();
 					}
 				}
@@ -283,7 +305,6 @@ public class EntityMightGuy extends ElementsNarutomodMod.ModElement {
 			this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(100D);
 			this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.5D);
 			this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(10D);
-			this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(50D);
 		}
 
 		@Override
@@ -292,13 +313,11 @@ public class EntityMightGuy extends ElementsNarutomodMod.ModElement {
 			if (target != null && target.isEntityAlive()) {
 				if (this.gateCooldown == 0) {
 					float gate = 0f;
-					if (this.getHealth() < this.getMaxHealth() / 2)
- {
+					if (this.getHealth() < this.getMaxHealth() / 2) {
 						gate = 3.5f;
 					}
 					float targetStrength = (float) ProcedureUtils.getModifiedAttackDamage(target);
-					if (targetStrength > 10.0f || target.getMaxHealth() >= 50.0f)
- {
+					if (targetStrength > 10.0f || target.getMaxHealth() >= 50.0f) {
 						double d = Chakra.getLevel(target);
 						gate = MathHelper.sqrt((targetStrength + d) * (target.getMaxHealth() + d)) / 25f;
 					}
@@ -316,38 +335,16 @@ public class EntityMightGuy extends ElementsNarutomodMod.ModElement {
 					this.closeGates();
 				}
 			}
-			if (this.gateCooldown > 0)
- {
+			if (this.gateCooldown > 0) {
 				--this.gateCooldown;
 			}
 			super.updateAITasks();
 		}
 
-		private boolean leapAtTarget(Entity target) {
-			double d0 = this.posX - target.posX;
-			double d1 = this.posZ - target.posZ;
-			double d2 = this.posY - target.posY;
-			//double d3 = this.getActivePotionEffect(MobEffects.JUMP_BOOST) != null
-			//		? (double) this.getActivePotionEffect(MobEffects.JUMP_BOOST).getAmplifier() + 1
-			//		: -99999f;
-			//double d4 = Math.sqrt(d0 * d0 + d1 * d1);
-			//if (-d2 < d3 && d4 < d3 && this.canEntityBeSeen(target)) {
-				Vec3d vec3d = new Vec3d(d0, d2, d1).normalize().addVector(target.posX, target.posY, target.posZ);
-				if (this.world.rayTraceBlocks(this.getPositionVector(), vec3d, false, true, false) == null) {
-					this.setPositionAndRotation(vec3d.x, vec3d.y, vec3d.z, this.rotationYawHead, this.rotationPitch);
-					this.isAirBorne = true;
-					//this.leapCooldown = 20;
-					return true;
-				}
-			//}
-			return false;
-		}
-
 		@Override 
 		public boolean getCanSpawnHere() {
 			Village village = this.world.getVillageCollection().getNearestVillage(new BlockPos(this), 32);
-			if (village == null || village.getNumVillageDoors() < 20 ||
- village.getNumVillagers() < 10 
+			if (village == null || village.getNumVillageDoors() < 20 || village.getNumVillagers() < 10 
 			 || !this.world.getEntities(EntityCustom.class, EntitySelectors.IS_ALIVE).isEmpty()) {
 				return false;
 			 }
@@ -356,8 +353,7 @@ public class EntityMightGuy extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public void onKillEntity(EntityLivingBase entity) {
-			if (this.isTrackingCustomer())
- {
+			if (this.isTrackingCustomer()) {
 				++this.killCount;
 				this.world.getScoreboard().getOrCreateScore(this.getName(), this.customerKillCount).setScorePoints(this.killCount);
 			}
@@ -416,8 +412,7 @@ public class EntityMightGuy extends ElementsNarutomodMod.ModElement {
 					ProcedureUtils.sendChat(player, TextFormatting.GREEN + I18n.translateToLocal("entity.mightguy.name") + ": "
 							+ TextFormatting.WHITE + I18n.translateToLocal("chattext.mightguy.interact1"));
 					long startTime = this.world.getTotalWorldTime() + 18000L - (this.world.getWorldTime() % 24000L);
-					new EventVillageSiege(this.world, null, village.getCenter().getX(),
- village.getCenter().getY(), 
+					new EventVillageSiege(this.world, null, village.getCenter().getX(), village.getCenter().getY(), 
 					  village.getCenter().getZ(), startTime, village.getVillageRadius() + 5, 80) {
 						protected void doOnTick(int currentTick) {
 							if (currentTick == 0)
@@ -436,8 +431,7 @@ public class EntityMightGuy extends ElementsNarutomodMod.ModElement {
 			if (this.getHeldItemMainhand().getItem() == ItemEightGates.block) {
 				this.gateOpened = this.getGateOpened();
 				if (this.getHealth() < this.getMaxHealth() * 0.9f) {
-					if (gate > 4f && this.gateOpened < 4f)
- {
+					if (gate > 4f && this.gateOpened < 4f) {
 						gate = 3.5f;
 					} else if (this.getHealth() < 4f && this.gateOpened >= 4f) {
 						this.closeGates();
@@ -454,8 +448,7 @@ public class EntityMightGuy extends ElementsNarutomodMod.ModElement {
 					this.setSneaking(false);
 				}
 				this.closeGatesCountdown = 100;
-			} else
- {
+			} else {
 				this.swapWithInventory(EntityEquipmentSlot.MAINHAND, 0);
 			}
 		}
@@ -500,8 +493,7 @@ public class EntityMightGuy extends ElementsNarutomodMod.ModElement {
 					this.heal(5f);
 			}
 			if (this.customer != null
-			 && (!this.customer.isEntityAlive()
-	|| (this.customer instanceof EntityPlayerMP 
+			 && (!this.customer.isEntityAlive() || (this.customer instanceof EntityPlayerMP 
 			 && ((EntityPlayerMP)this.customer).hasDisconnected())) && this.isTrackingCustomer()) {
 				this.stopTrackingCustomer();
 			}
