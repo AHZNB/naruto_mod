@@ -367,7 +367,7 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 	}
 
 	public boolean hasJinchuriki() {
-		return this.vesselUuid != null && !this.vesselUuid.equals(EntityGedoStatue.GEDOMAZO_UUID);
+		return this.vesselUuid != null && !this.vesselUuid.equals(EntityGedoStatue.ENTITY_UUID);
 	}
 
 	@Nullable
@@ -377,7 +377,7 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 	
 	public void setVesselUuid(@Nullable UUID uuid) {
 		this.vesselUuid = uuid;
-		EntityGedoStatue.setBijuSealed(this.tails - 1, EntityGedoStatue.GEDOMAZO_UUID.equals(uuid));
+		EntityGedoStatue.setBijuSealed(this.tails - 1, EntityGedoStatue.ENTITY_UUID.equals(uuid));
 	}
 
 	public String getVesselName() {

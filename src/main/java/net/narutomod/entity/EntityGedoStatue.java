@@ -62,7 +62,7 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 	private static final float MODEL_SCALE = 10.0F;
 	private static EntityCustom thisEntity = null;
 	private static final boolean[] BIJU_SEALED = new boolean[9];
-	protected static final UUID GEDOMAZO_UUID = UUID.fromString("7048f36c-9838-4637-9935-9c4965e75b9a");
+	protected static final UUID ENTITY_UUID = UUID.fromString("7048f36c-9838-4637-9935-9c4965e75b9a");
 
 	public EntityGedoStatue(ElementsNarutomodMod instance) {
 		super(instance, 683);
@@ -161,7 +161,7 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 
 		public EntityCustom(World world) {
 			super(world);
-			this.setUniqueId(GEDOMAZO_UUID);
+			this.setUniqueId(ENTITY_UUID);
 			this.setOGSize(0.5f, 1.9f);
 			this.experienceValue = 100;
 			this.isImmuneToFire = true;
@@ -170,12 +170,11 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 
 		public EntityCustom(EntityLivingBase summonerIn) {
 			super(summonerIn);
-			this.setUniqueId(GEDOMAZO_UUID);
+			this.setUniqueId(ENTITY_UUID);
 			this.setOGSize(0.5f, 1.9f);
 			this.experienceValue = 100;
 			this.isImmuneToFire = true;
 			this.postScaleFixup();
-			this.setSealedAll9Bijus(gotAll9Bijus());
 		}
 
 		public EntityCustom(EntityLivingBase summonerIn, EntityLivingBase target) {
@@ -254,9 +253,13 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 			super.setDead();
 			if (!this.world.isRemote) {
 				thisEntity = null;
-				//if (this.sealedAll9Bijus()) {
-				//	EntityTenTails.EntityCustom entityToSpawn = new EntityTenTails.EntityCustom(this.world);
-				//}
+				EntityLivingBase summoner = this.getSummoner();
+				if (this.sealedAll9Bijus() && this.getHealth() > 0.0f && summoner instanceof EntityPlayer) {
+					EntityTenTails.EntityCustom entity = new EntityTenTails.EntityCustom((EntityPlayer)summoner);
+					entity.rotationYawHead = this.rotationYaw;
+					entity.setLocationAndAngles(this.posX, this.posY, this.posZ, entity.rotationYawHead, 0f);
+					this.world.spawnEntity(entity);
+				}
 			}
 		}
 
@@ -318,6 +321,18 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 		public void onUpdate() {
 			super.onUpdate();
 			int age = this.getAge();
+			boolean flag = this.sealedAll9Bijus();
+			if (!this.world.isRemote && gotAll9Bijus() != flag) {
+				this.setSealedAll9Bijus(gotAll9Bijus());
+			}
+			if (flag && this.world.isRemote) {
+				for (int i = 0; i < (int)(((float)age / this.lifeSpan) * 100f); i++) {
+					Particles.spawnParticle(this.world, Particles.Types.SMOKE,
+					 this.posX, this.posY + this.height * 0.5, this.posZ, 1,
+					 this.width * 0.6D, this.height * 0.5D, this.width * 0.6D,
+					 0d, 0.5d, 0d, 96d, 0x10827c73, 80 + this.rand.nextInt(40));
+				}
+			}
 			if (age <= this.riseTime) {
 				if (this.particleArea == null) {
 					this.particleArea = ProcedureUtils.getNonAirBlocks(this.world, 

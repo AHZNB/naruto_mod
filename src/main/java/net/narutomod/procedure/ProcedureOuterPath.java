@@ -73,14 +73,18 @@ public class ProcedureOuterPath extends ElementsNarutomodMod.ModElement {
 				if (entity instanceof EntityLivingBase) {
 					((EntityLivingBase) entity).swingArm(EnumHand.MAIN_HAND);
 				}
-				EntityGedoStatue.EntityCustom entityToSpawn = EntityGedoStatue.getThisEntity(world);
+				EntityLivingBase entityToSpawn = EntityTenTails.getBijuManager().getHasLived()
+						? EntityTenTails.getBijuManager().getEntityInWorld(world)
+						: EntityGedoStatue.getThisEntity(world);
 				if (entityToSpawn != null) {
 					x = (int) entityToSpawn.posX;
 					y = (int) entityToSpawn.posY;
 					z = (int) entityToSpawn.posZ;
 					(entityToSpawn).world.removeEntity(entityToSpawn);
 				} else if (Chakra.pathway((EntityLivingBase) entity).consume(ItemRinnegan.getOuterPathChakraUsage((EntityLivingBase) entity))) {
-					entityToSpawn = new EntityGedoStatue.EntityCustom((EntityLivingBase) entity);
+					entityToSpawn = EntityTenTails.getBijuManager().getHasLived()
+							? new EntityTenTails.EntityCustom((EntityPlayer) entity)
+							: new EntityGedoStatue.EntityCustom((EntityLivingBase) entity);
 					entityToSpawn.rotationYawHead = entity.rotationYaw;
 					entityToSpawn.setLocationAndAngles(x, world.getTopSolidOrLiquidBlock(new BlockPos(x, y, z)).getY(), z, entity.rotationYaw, 0f);
 					if (world.spawnEntity(entityToSpawn)) {

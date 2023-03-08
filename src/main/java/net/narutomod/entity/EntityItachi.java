@@ -106,7 +106,8 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 	@SideOnly(Side.CLIENT)
 	@Override
 	public void preInit(FMLPreInitializationEvent event) {
-		RenderingRegistry.registerEntityRenderingHandler(EntityCustom.class, renderManager -> new RenderCustom(renderManager, new ModelBiped()));
+		RenderingRegistry.registerEntityRenderingHandler(EntityCustom.class, renderManager ->
+			new RenderCustom(renderManager, new ModelBiped()));
 		/*RenderingRegistry.registerEntityRenderingHandler(EntityArrowCustom.class, renderManager -> {
 			return new RenderSnowball<EntityArrowCustom>(renderManager, null, Minecraft.getMinecraft().getRenderItem()) {
 				public ItemStack getStackToRender(EntityArrowCustom entity) {
@@ -240,8 +241,7 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public boolean attackEntityFrom(DamageSource source, float amount) {
-			if (source == DamageSource.FALL)
- {
+			if (source == DamageSource.FALL) {
 				return false;
 			}
 			if (!this.world.isRemote) {

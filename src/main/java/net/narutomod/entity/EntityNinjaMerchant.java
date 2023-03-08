@@ -213,7 +213,7 @@ public class EntityNinjaMerchant extends ElementsNarutomodMod.ModElement {
 		protected void updateAITasks() {
 			if (--this.homeCheckTimer <= 0) {
 				this.homeCheckTimer = 70 + this.rand.nextInt(50);
-				this.village = this.world.getVillageCollection().getNearestVillage(new BlockPos(this), 48);
+				this.village = this.world.getVillageCollection().getNearestVillage(new BlockPos(this), 96);
 				if (this.village == null) {
 					this.detachHome();
 				} else {

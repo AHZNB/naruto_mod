@@ -21,6 +21,7 @@ import net.minecraft.util.EnumActionResult;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Item;
 import net.minecraft.entity.ai.attributes.IAttribute;
+import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.MoverType;
 import net.minecraft.entity.SharedMonsterAttributes;
@@ -178,14 +179,20 @@ public class ItemSenjutsu extends ElementsNarutomodMod.ModElement {
 				boolean flag1 = living.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).hasModifier(ItemSageModeArmor.buffMap.get(SharedMonsterAttributes.MAX_HEALTH));
 				if (flag && !flag1) {
 					for (Map.Entry<IAttribute, AttributeModifier> entry : ItemSageModeArmor.buffMap.entrySet()) {
-						living.getEntityAttribute(entry.getKey()).applyModifier(entry.getValue());
+						IAttributeInstance attr = living.getEntityAttribute(entry.getKey());
+						if (attr != null) {
+							attr.applyModifier(entry.getValue());
+						}
 					}
 					if (entity instanceof EntityPlayer) {
 						itemstack.getTagCompound().setInteger("prevFoodStat", ((EntityPlayer)entity).getFoodStats().getFoodLevel());
 					}
 				} else if (!flag && flag1) {
 					for (Map.Entry<IAttribute, AttributeModifier> entry : ItemSageModeArmor.buffMap.entrySet()) {
-						living.getEntityAttribute(entry.getKey()).removeModifier(entry.getValue().getID());
+						IAttributeInstance attr = living.getEntityAttribute(entry.getKey());
+						if (attr != null) {
+							attr.removeModifier(entry.getValue().getID());
+						}
 					}
 					if (entity instanceof EntityPlayer) {
 						((EntityPlayer)entity).getFoodStats().setFoodLevel(itemstack.getTagCompound().getInteger("prevFoodStat") - 5);
