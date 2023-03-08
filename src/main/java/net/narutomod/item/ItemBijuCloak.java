@@ -142,6 +142,7 @@ public class ItemBijuCloak extends ElementsNarutomodMod.ModElement {
 			@Override
 			public void onUpdate(ItemStack itemstack, World world, Entity entity, int par4, boolean par5) {
 				super.onUpdate(itemstack, world, entity, par4, par5);
+
 				if (entity instanceof EntityPlayer) {
 					EntityPlayer livingEntity = (EntityPlayer) entity;
 				 	int cloakLevel = EntityBijuManager.cloakLevel(livingEntity);
@@ -150,11 +151,13 @@ public class ItemBijuCloak extends ElementsNarutomodMod.ModElement {
 					 	 && livingEntity.getItemStackFromSlot(EntityEquipmentSlot.CHEST).getItem() == body
 					 	 && livingEntity.getItemStackFromSlot(EntityEquipmentSlot.LEGS).getItem() == legs) {
 					 	 	setWearingFullSet(itemstack, true);
+
 							if (!world.isRemote) {
 								setCloakLevel(itemstack, cloakLevel);
 				 				int wearingTicks = getWearingTicks(livingEntity);
 				 				int cloakXp = EntityBijuManager.getCloakXp(livingEntity);
 						 	 	wearingTicks = wearingTicks > 0 ? ++wearingTicks : 1;
+
 						 	 	if (wearingTicks <= cloakXp * 5 + 200) {
 						 	 		cloakXp += wearingTicks / 20;
 									setCloakXp(itemstack, cloakXp);
@@ -229,7 +232,8 @@ public class ItemBijuCloak extends ElementsNarutomodMod.ModElement {
 			@Override
 			@SideOnly(Side.CLIENT)
 			public ModelBiped getArmorModel(EntityLivingBase living, ItemStack stack, EntityEquipmentSlot slot, ModelBiped defaultModel) {
-				ModelBijuCloak armorModel = ItemBijuCloak.this.bijuModel[stack.getMetadata()];
+				ModelBijuCloak armorModel = ItemBijuCloak.this.bijuModel[stack.getMetadata()]
+;
 				armorModel.isSneak = living.isSneaking();
 				armorModel.isRiding = living.isRiding();
 				armorModel.isChild = living.isChild();
@@ -1183,6 +1187,7 @@ public class ItemBijuCloak extends ElementsNarutomodMod.ModElement {
 					tail[i][j].rotateAngleY += ((EntityLivingBase)e).getRNG().nextFloat() * 0.003125F * (i % 2 == 0 ? -1F : 1F);
 				}
 			}
-		}*/
+		}
+*/
 	}
 }

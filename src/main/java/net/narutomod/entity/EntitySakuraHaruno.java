@@ -131,6 +131,7 @@ public class EntitySakuraHaruno extends ElementsNarutomodMod.ModElement {
 
 			trades.put(EntityNinjaMerchant.TradeLevel.COMMON, commonTrades);
 			trades.put(EntityNinjaMerchant.TradeLevel.UNCOMMON, uncommonTrades);
+
 			return trades;
 		}
 

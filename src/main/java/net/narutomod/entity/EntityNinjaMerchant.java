@@ -238,9 +238,7 @@ public class EntityNinjaMerchant extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public boolean processInteract(EntityPlayer player, EnumHand hand) {
-			ItemStack stack = player.getHeldItem(hand);
-
-			if (stack.isEmpty() && this.isEntityAlive() && !this.isTrading() && !player.isSneaking()) {
+			if (this.isEntityAlive() && !this.isTrading() && !player.isSneaking()) {
 				if (!this.world.isRemote && !this.trades.isEmpty() && !this.assholeList.contains(player.getUniqueID())) {
 					this.setCustomer(player);
 					player.displayVillagerTradeGui(this);
