@@ -78,6 +78,7 @@ public class EntityNinjaMerchant extends ElementsNarutomodMod.ModElement {
 
 		public Base(World worldIn, int level) {
 			super(worldIn, level, (double)level * level);
+
 			this.tasks.addTask(2, this.leapAI);
 
 			this.trades = this.getTrades();
@@ -91,11 +92,9 @@ public class EntityNinjaMerchant extends ElementsNarutomodMod.ModElement {
 
 		// This code can be used in the future to add rare trades
 		private void addRareTrades() {
-			Random rand = new Random();
-
 			MerchantRecipeList rareTrades = new MerchantRecipeList();
 
-			if (rand.nextInt(5) == 0) {
+			if (this.rand.nextInt(5) == 0) {
 				rareTrades.add(new MerchantRecipe(new ItemStack(Items.EMERALD, 64), ItemStack.EMPTY, new ItemStack(ItemBijuMap.block, 1), 0, 1));
 			}
 			this.trades.put(TradeLevel.RARE, rareTrades);
@@ -259,7 +258,7 @@ public class EntityNinjaMerchant extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public boolean getCanSpawnHere() {
-//System.out.println(">>> got here. "+this);
+			//System.out.println(">>> got here. " + this);
 			this.village = this.world.getVillageCollection().getNearestVillage(new BlockPos(this), 32);
 			if (this.village == null
 					|| this.world.getEntitiesWithinAABB(Base.class, new AxisAlignedBB(this.village.getCenter()).grow(96d, 10d, 96d)).size() >= 2
