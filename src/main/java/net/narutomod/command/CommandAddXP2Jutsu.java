@@ -38,7 +38,7 @@ public class CommandAddXP2Jutsu extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public boolean checkPermission(MinecraftServer server, ICommandSender var1) {
-			return true;
+			return var1.canUseCommand(4, this.getName());
 		}
 
 		@Override

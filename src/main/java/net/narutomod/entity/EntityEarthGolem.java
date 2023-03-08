@@ -226,6 +226,12 @@ public class EntityEarthGolem extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
+		public void doRender(EC entity, double x, double y, double z, float entityYaw, float partialTicks) {
+			this.shadowSize = 0.6f * entity.getScale();
+			super.doRender(entity, x, y, z, entityYaw, partialTicks);
+		}
+
+		@Override
 		protected ResourceLocation getEntityTexture(EC entity) {
 			return this.texture;
 		}
