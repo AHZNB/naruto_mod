@@ -16,6 +16,7 @@ Jutsus:
  - disallow using sand binding on the same target multiple times
  - fixed adamantine chains render broken by Radon
  - fixed when becoming your clone and clone original dies bug
+ - fixed son guko not giving you lava chakra mode upon becoming its jinchuriki
 
 Items:
  - cleaver sword now takes damage when used, attack speed and damage decrease, recipe changed
@@ -25,7 +26,7 @@ Items:
  - added tailed beast maps
  - made tailed beast maps not show positions if spawnTailedBeasts is false
  - fix eight gates killing you after respawn
- - fixed some bugs in ItemBijuMap
+ - fixed biju map bug - Radon more details?
 
 Entities:
  - increase spawn rates for bosses and remove dungeon spawns
@@ -37,8 +38,8 @@ Entities:
  - made the boss bars red (can be changed just thought it would be better)
  - expanded Kisame, Itachi, Zabuza, MightGuy, Tenten, Sakura, Iruka spawn biomes and spawn weight
  - made merhcants not despawn if they've traded with a player
- - rewrote EntityNinjaMerchant
- - fix assholeList not working correctly
+ - rewrote ninja merchant code
+ - fixed ninja merchants player blacklist not working correctly
 
 General:
  - removed japanese localization

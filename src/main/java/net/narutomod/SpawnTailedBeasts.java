@@ -44,10 +44,8 @@ public class SpawnTailedBeasts extends ElementsNarutomodMod.ModElement {
 
 	@SubscribeEvent
 	public void onGameRuleChange(GameRuleChangeEvent event) {
-		if (event.getRuleName().equals(SPAWN_TB_RULE)) {
-			if (!event.getRules().getBoolean(SPAWN_TB_RULE)) {
-				EntityBijuManager.resetAllSpawnPos();
-			}
+		if (event.getRuleName().equals(SPAWN_TB_RULE) && !event.getRules().getBoolean(SPAWN_TB_RULE)) {
+			EntityBijuManager.resetAllSpawnPos();
 		}
 	}
 
@@ -79,7 +77,7 @@ public class SpawnTailedBeasts extends ElementsNarutomodMod.ModElement {
 					bm.setSpawnPos(null);
 				}
 				if (bm.getTicksSinceDeath() < TIME_FOR_RESPAWN) {
-					bm.incrementTicksSinceDeath();
+					bm.setTicksSinceDeath(bm.getTicksSinceDeath() + 1);
 					continue;
 				}
 		 		else {

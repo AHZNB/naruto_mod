@@ -71,15 +71,15 @@ public class EntityFourTails extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void setVesselEntity(@Nullable Entity player) {
 			super.setVesselEntity(player);
-			if (player instanceof EntityPlayer && !ProcedureUtils.hasItemInInventory((EntityPlayer)player, ItemYooton.block)) {
-				ItemStack stack = new ItemStack(ItemYooton.block);
-				ItemHandlerHelper.giveItemToPlayer((EntityPlayer)player, stack);
-				((ItemYooton.RangedItem)stack.getItem()).enableJutsu(stack, ItemYooton.CHAKRAMODE, true);
-				if (!ProcedureUtils.hasItemInInventory((EntityPlayer)player, ItemKaton.block)) {
-					ItemHandlerHelper.giveItemToPlayer((EntityPlayer)player, new ItemStack(ItemKaton.block));
-				}
-				if (!ProcedureUtils.hasItemInInventory((EntityPlayer)player, ItemDoton.block)) {
-					ItemHandlerHelper.giveItemToPlayer((EntityPlayer)player, new ItemStack(ItemDoton.block));
+			if (player instanceof EntityPlayer) {
+				if (net.narutomod.gui.GuiNinjaScroll.enableJutsu((EntityPlayer)player,
+				 (ItemYooton.RangedItem)ItemYooton.block, ItemYooton.CHAKRAMODE, true) != null) {
+					if (!ProcedureUtils.hasItemInInventory((EntityPlayer)player, ItemKaton.block)) {
+						ItemHandlerHelper.giveItemToPlayer((EntityPlayer)player, new ItemStack(ItemKaton.block));
+					}
+					if (!ProcedureUtils.hasItemInInventory((EntityPlayer)player, ItemDoton.block)) {
+						ItemHandlerHelper.giveItemToPlayer((EntityPlayer)player, new ItemStack(ItemDoton.block));
+					}
 				}
 			}
 		}
