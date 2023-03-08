@@ -155,7 +155,7 @@ public class EntityLavaChakraMode extends ElementsNarutomodMod.ModElement {
 		public static class Jutsu implements ItemJutsu.IJutsuCallback {
 			@Override
 			public boolean createJutsu(ItemStack stack, EntityLivingBase entity, float power) {
-				if (entity instanceof EntityPlayer && EntityBijuManager.getTails((EntityPlayer)entity) == 4) {
+				//if (entity instanceof EntityPlayer && EntityBijuManager.getTails((EntityPlayer)entity) == 4) {
 				 	Entity entity1 = entity.world.getEntityByID(entity.getEntityData().getInteger(LCMEntityIdKey));
 					if (!(entity1 instanceof EC)) {
 						entity.world.spawnEntity(new EC(entity));
@@ -163,7 +163,7 @@ public class EntityLavaChakraMode extends ElementsNarutomodMod.ModElement {
 					} else {
 						entity1.setDead();
 					}
-				}
+				//}
 				return false;
 			}
 		}

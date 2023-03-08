@@ -1,20 +1,18 @@
 
 package net.narutomod.entity;
 
-import net.minecraft.entity.IEntityLivingData;
-import net.minecraft.init.Items;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.world.DifficultyInstance;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.relauncher.Side;
-//
 //import net.minecraftforge.event.entity.living.LivingSpawnEvent;
 //import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 //import net.minecraftforge.common.MinecraftForge;
 
 import net.minecraft.world.World;
+import net.minecraft.world.DifficultyInstance;
+import net.minecraft.init.Items;
+import net.minecraft.init.SoundEvents;
+import net.minecraft.entity.IEntityLivingData;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.ai.EntityAITarget;
 import net.minecraft.entity.ai.EntityAIWatchClosest;
@@ -39,9 +37,10 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.EnumHand;
-import net.minecraft.init.SoundEvents;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.DamageSource;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 
 import net.narutomod.item.ItemBijuMap;
 import net.narutomod.procedure.ProcedureUtils;
@@ -78,13 +77,9 @@ public class EntityNinjaMerchant extends ElementsNarutomodMod.ModElement {
 
 		public Base(World worldIn, int level) {
 			super(worldIn, level, (double)level * level);
-
 			this.tasks.addTask(2, this.leapAI);
-
 			this.trades = this.getTrades();
-
 			this.addRareTrades();
-
 			((PathNavigateGround)this.getNavigator()).setBreakDoors(true);
 		}
 

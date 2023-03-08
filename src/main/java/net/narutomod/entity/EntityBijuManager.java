@@ -1,16 +1,16 @@
 
 package net.narutomod.entity;
 
-import net.minecraft.init.Biomes;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.biome.Biome;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 
+import net.minecraft.init.Biomes;
 import net.minecraft.world.World;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.text.translation.I18n;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.nbt.NBTTagCompound;
@@ -42,7 +42,6 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 	private int cloakLevel;
 	private long cloakCD;
 	private final int[] cloakXp = new int[3];
-	private int respawnCD;
 	private BlockPos spawnPos;
 	private int ticksSinceDeath;
 	private boolean hasLived;
@@ -141,14 +140,14 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 	public static void unsetPlayerAsJinchuriki(EntityPlayer player) {
 		EntityBijuManager bm = getBijuManagerFrom(player);
 		if (bm != null) {
-			bm.setVesselEntity(null, true);
+			bm.setVesselEntity(null);
 		}
 	}
 
 	public static boolean setPlayerAsJinchurikiByTails(EntityPlayer player, int tailnum) {
 		EntityBijuManager bm = mapByTailnum.get(tailnum);
 		if (bm != null && !bm.isSealed()) {
-			bm.setVesselEntity(player, true);
+			bm.setVesselEntity(player);
 			return true;
 		}
 		return false;
@@ -157,13 +156,13 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 	public static void revokeJinchurikiByTails(int tailnum) {
 		EntityBijuManager bm = mapByTailnum.get(tailnum);
 		if (bm != null) {
-			bm.setVesselEntity(null, true);
+			bm.setVesselEntity(null);
 		}
 	}
 
 	public static void revokeAllJinchuriki() {
 		for (EntityBijuManager bm : mapByClass.values()) {
-			bm.setVesselEntity(null, true);
+			bm.setVesselEntity(null);
 		}
 	}
 
@@ -279,11 +278,6 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 		if (dirty) {
 			this.markDirty();
 		}
-	}
-
-	public void incrementTicksSinceDeath() {
-		this.ticksSinceDeath++;
-		this.markDirty();
 	}
 
 	public boolean getHasLived() {

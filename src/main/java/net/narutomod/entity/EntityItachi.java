@@ -51,6 +51,7 @@ import net.minecraft.client.renderer.entity.RenderBiped;
 import net.minecraft.client.renderer.entity.RenderLiving;
 import net.minecraft.client.Minecraft;
 import net.minecraft.potion.PotionEffect;
+import net.minecraft.nbt.NBTTagCompound;
 
 import net.narutomod.potion.PotionAmaterasuFlame;
 import net.narutomod.potion.PotionParalysis;
@@ -69,7 +70,6 @@ import net.narutomod.ElementsNarutomodMod;
 
 import com.google.common.base.Predicate;
 import javax.annotation.Nullable;
-import net.minecraft.nbt.NBTTagCompound;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityItachi extends ElementsNarutomodMod.ModElement {
@@ -94,8 +94,7 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 		Biome[] spawnBiomes = {
 			Biomes.FOREST, Biomes.TAIGA, Biomes.SWAMPLAND, Biomes.RIVER, Biomes.FOREST_HILLS,
 			Biomes.TAIGA_HILLS, Biomes.JUNGLE, Biomes.JUNGLE_HILLS, Biomes.BIRCH_FOREST,
-			Biomes.BIRCH_FOREST_HILLS, Biomes.ROOFED_FOREST, Biomes.SAVANNA, Biomes.EXTREME_HILLS
-,
+			Biomes.BIRCH_FOREST_HILLS, Biomes.ROOFED_FOREST, Biomes.SAVANNA, Biomes.EXTREME_HILLS,
 			Biomes.MUTATED_FOREST, Biomes.MUTATED_TAIGA, Biomes.MUTATED_SWAMPLAND, Biomes.MUTATED_JUNGLE,
 			Biomes.MUTATED_JUNGLE_EDGE, Biomes.MUTATED_BIRCH_FOREST, Biomes.MUTATED_BIRCH_FOREST_HILLS,
 			Biomes.MUTATED_ROOFED_FOREST, Biomes.MUTATED_SAVANNA, Biomes.MUTATED_EXTREME_HILLS,
@@ -114,8 +113,7 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 					return new ItemStack(ItemShuriken.block, (int) (1));
 				}
 			};
-		});
-*/
+		});*/
 	}
 
 	public static class EntityCustom extends EntityNinjaMob.Base implements IMob, IRangedAttackMob {
@@ -228,8 +226,7 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public SoundEvent getDeathSound() {
-			return (SoundEvent) SoundEvent.REGISTRY
-.getObject(new ResourceLocation("entity.illusion_illager.death"));
+			return SoundEvents.ENTITY_ILLAGER_DEATH;
 		}
 
 		@Override
@@ -295,7 +292,7 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 						ProcedureSync.MobAppearanceParticle.send((EntityPlayerMP)target, ENTITYID);
 					}
 					this.world.playSound(null, target.posX, target.posY, target.posZ,
-					  (SoundEvent) SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:genjutsu")), SoundCategory.NEUTRAL, 1f, 1f);
+					  SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:genjutsu")), SoundCategory.NEUTRAL, 1f, 1f);
 					if (!this.world.isRemote) {
 						target.addPotionEffect(new PotionEffect(PotionParalysis.potion, this.genjutsuDuration, 1, false, false));
 						target.addPotionEffect(new PotionEffect(MobEffects.NAUSEA, this.genjutsuDuration+40, 0, false, true));
@@ -348,7 +345,7 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 				}
 			} else {
 				if (chance == 0 && distanceFactor > 0.3333f && this.consumeChakra(AMATERASU_CHAKRA)) {
-					this.world.playSound(null, target.posX, target.posY, target.posZ, (SoundEvent) SoundEvent.REGISTRY
+					this.world.playSound(null, target.posX, target.posY, target.posZ, SoundEvent.REGISTRY
 					  .getObject(new ResourceLocation("narutomod:sharingansfx")), SoundCategory.NEUTRAL, 1f, 1f);
 					target.addPotionEffect(new PotionEffect(PotionAmaterasuFlame.potion, 1200, 1, false, false));
 				} else if (chance <= 2 && distanceFactor >= 0.5333f && this.consumeChakra(FIREBALL_CHAKRA)) {

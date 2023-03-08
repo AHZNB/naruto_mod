@@ -73,20 +73,16 @@ public class EntityZabuzaMomochi extends ElementsNarutomodMod.ModElement {
 
 	@Override
 	public void initElements() {
-		elements.entities
-.add(() -> EntityEntryBuilder.create().entity(EntityCustom.class)
-		  .id(new ResourceLocation("narutomod", "zabuza_momochi"), ENTITYID)
-.name("zabuza_momochi")
+		elements.entities.add(() -> EntityEntryBuilder.create().entity(EntityCustom.class)
+		  .id(new ResourceLocation("narutomod", "zabuza_momochi"), ENTITYID).name("zabuza_momochi")
 		  .tracker(64, 3, true).egg(-6710887, -16764058).build());
 	}
 
 	@Override
 	public void init(FMLInitializationEvent event) {
 		Biome[] spawnBiomes = { 
-			Biomes.PLAINS, 
-Biomes.EXTREME_HILLS, Biomes.FOREST, Biomes.TAIGA, Biomes.SWAMPLAND, Biomes.RIVER,
-			Biomes.JUNGLE, Biomes.SAVANNA, Biomes.ICE_MOUNTAINS, Biomes.ICE_PLAINS, Biomes.BEACH, Biomes.COLD_BEACH
-,
+			Biomes.PLAINS, Biomes.EXTREME_HILLS, Biomes.FOREST, Biomes.TAIGA, Biomes.SWAMPLAND, Biomes.RIVER,
+			Biomes.JUNGLE, Biomes.SAVANNA, Biomes.ICE_MOUNTAINS, Biomes.ICE_PLAINS, Biomes.BEACH, Biomes.COLD_BEACH,
 			Biomes.MUTATED_PLAINS, Biomes.MUTATED_EXTREME_HILLS, Biomes.MUTATED_FOREST, Biomes.MUTATED_TAIGA,
 			Biomes.MUTATED_SWAMPLAND, Biomes.MUTATED_JUNGLE, Biomes.MUTATED_SAVANNA, Biomes.MUTATED_ICE_FLATS
 		};
