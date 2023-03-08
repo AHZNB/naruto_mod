@@ -1381,6 +1381,14 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 		public void onServerDisconnect(FMLNetworkEvent.ServerDisconnectionFromClientEvent event) {
 			this.checkAndRemove(((net.minecraft.network.NetHandlerPlayServer)event.getHandler()).player);
 		}
+
+		@SubscribeEvent
+		public void onClone(net.minecraftforge.event.entity.player.PlayerEvent.Clone event) {
+			EntityBijuManager bm = EntityBijuManager.getBijuManagerFrom(event.getOriginal());
+			if (bm != null) {
+				bm.setVesselEntity(event.getEntityPlayer(), false);
+			}
+		}
 	}
 
 }

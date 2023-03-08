@@ -18,6 +18,7 @@ Jutsus:
  - fixed when becoming your clone and clone original dies bug
  - fixed son guko not giving you lava chakra mode upon becoming its jinchuriki
  - fixed jinchuriki berzerk mode crash when holding senjutsu item
+ - fixed jinchuriki cloak 2 berzerk mode with cloak 1 head texture
 
 Items:
  - cleaver sword now takes damage when used, attack speed and damage decrease, recipe changed
@@ -41,6 +42,9 @@ Entities:
  - made merhcants not despawn if they've traded with a player
  - rewrote ninja merchant code
  - fixed ninja merchants player blacklist not working correctly
+ 
+Commands:
+ - addxp2jutsu command now requires level 4 permision
 
 General:
  - removed japanese localization
@@ -51,6 +55,7 @@ General:
  - added gamerule:spawnTailedBeasts to spawn bijus naturally in a 10k - 100k radius from 0 0
  - properly flushed world biju save data on world close
  - properly capitalized translations
+ - fixed dying as jinchuriki with keepInventory on can't see cloak on respawn
 
 0.2.10-beta ===============================================================================
 

@@ -30,6 +30,8 @@ import com.google.common.collect.ImmutableList;
 
 @ElementsNarutomodMod.ModElement.Tag
 public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
+	public static final int ENTITYID = 337;
+	public static final int ENTITYID_RANGED = 338;
 	private static final Map<Class<? extends EntityTailedBeast.Base>, EntityBijuManager> mapByClass = Maps.newHashMap();
 	private static final Map<Integer, EntityBijuManager> mapByTailnum = Maps.newHashMap();
 	private static final int[] ZERO = {0, 0, 0};

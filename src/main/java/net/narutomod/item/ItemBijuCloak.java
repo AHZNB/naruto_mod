@@ -102,9 +102,6 @@ public class ItemBijuCloak extends ElementsNarutomodMod.ModElement {
 					int cloakLevel = EntityBijuManager.cloakLevel((EntityPlayer)entity);
 					if (cloakLevel <= 0) {
 						itemstack.shrink(1);
-					} else {
-						setCloakLevel(itemstack, cloakLevel);
-						setCloakXp(itemstack, EntityBijuManager.getCloakXp((EntityPlayer)entity) + getWearingTicks(entity) / 20);
 					}
 				}
 			}
@@ -146,18 +143,22 @@ public class ItemBijuCloak extends ElementsNarutomodMod.ModElement {
 					EntityPlayer livingEntity = (EntityPlayer) entity;
 				 	int cloakLevel = EntityBijuManager.cloakLevel(livingEntity);
 				 	if (cloakLevel > 0) {
-						if (livingEntity.getItemStackFromSlot(EntityEquipmentSlot.HEAD).getItem() == helmet 
-					 	 && livingEntity.getItemStackFromSlot(EntityEquipmentSlot.CHEST).getItem() == body
-					 	 && livingEntity.getItemStackFromSlot(EntityEquipmentSlot.LEGS).getItem() == legs) {
+				 		ItemStack helmetStack = livingEntity.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
+				 		ItemStack legStack = livingEntity.getItemStackFromSlot(EntityEquipmentSlot.LEGS);
+						if (helmetStack.getItem() == helmet && itemstack.getItem() == body && legStack.getItem() == legs) {
 					 	 	setWearingFullSet(itemstack, true);
 							if (!world.isRemote) {
+								setCloakLevel(helmetStack, cloakLevel);
 								setCloakLevel(itemstack, cloakLevel);
+								setCloakLevel(legStack, cloakLevel);
 				 				int wearingTicks = getWearingTicks(livingEntity);
 				 				int cloakXp = EntityBijuManager.getCloakXp(livingEntity);
 						 	 	wearingTicks = wearingTicks > 0 ? ++wearingTicks : 1;
 						 	 	if (wearingTicks <= cloakXp * 5 + 200) {
 						 	 		cloakXp += wearingTicks / 20;
+									setCloakXp(helmetStack, cloakXp);
 									setCloakXp(itemstack, cloakXp);
+									setCloakXp(legStack, cloakXp);
 									setWearingTicks(livingEntity, wearingTicks);
 									if (cloakXp >= 800 || (cloakLevel == 1 && cloakXp >= 400)) {
 										revertOriginal(livingEntity, itemstack);
@@ -245,9 +246,6 @@ public class ItemBijuCloak extends ElementsNarutomodMod.ModElement {
 					int cloakLevel = EntityBijuManager.cloakLevel((EntityPlayer)entity);
 					if (cloakLevel <= 0) {
 						itemstack.shrink(1);
-					} else {
-						setCloakLevel(itemstack, cloakLevel);
-						setCloakXp(itemstack, EntityBijuManager.getCloakXp((EntityPlayer)entity) + getWearingTicks(entity) / 20);
 					}
 				}
 			}
