@@ -8,12 +8,11 @@ import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
-import net.minecraftforge.common.DungeonHooks;
+//import net.minecraftforge.common.DungeonHooks;
 
 import net.minecraft.init.Biomes;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.SoundEvents;
-import net.minecraft.world.biome.Biome;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.BossInfoServer;
@@ -95,16 +94,12 @@ public class EntityKisameHoshigaki extends ElementsNarutomodMod.ModElement {
 
 	@Override
 	public void init(FMLInitializationEvent event) {
-		Biome[] spawnBiomes = {
+		EntityRegistry.addSpawn(EntityCustom.class, 5, 1, 1, EnumCreatureType.MONSTER,
 			Biomes.SWAMPLAND, Biomes.FOREST, Biomes.TAIGA, Biomes.RIVER, Biomes.BEACH,
-			Biomes.FOREST_HILLS, Biomes.TAIGA_HILLS, Biomes.JUNGLE, Biomes.JUNGLE_HILLS,
- Biomes.JUNGLE_EDGE,
-			Biomes.BIRCH_FOREST, Biomes.BIRCH_FOREST_HILLS, Biomes.SAVANNA
-, Biomes.MUTATED_SWAMPLAND,
+			Biomes.FOREST_HILLS, Biomes.TAIGA_HILLS, Biomes.JUNGLE, Biomes.JUNGLE_HILLS, Biomes.JUNGLE_EDGE,
+			Biomes.BIRCH_FOREST, Biomes.BIRCH_FOREST_HILLS, Biomes.SAVANNA, Biomes.MUTATED_SWAMPLAND,
 			Biomes.MUTATED_FOREST, Biomes.MUTATED_TAIGA, Biomes.MUTATED_JUNGLE, Biomes.MUTATED_JUNGLE_EDGE,
-			Biomes.MUTATED_BIRCH_FOREST, Biomes.MUTATED_BIRCH_FOREST_HILLS, Biomes.MUTATED_SAVANNA
-		};
-		EntityRegistry.addSpawn(EntityCustom.class, 10, 1, 1, EnumCreatureType.MONSTER, spawnBiomes);
+			Biomes.MUTATED_BIRCH_FOREST, Biomes.MUTATED_BIRCH_FOREST_HILLS, Biomes.MUTATED_SAVANNA);
 		//DungeonHooks.addDungeonMob(new ResourceLocation("narutomod:kisame_hoshigaki"), 50);
 	}
 
@@ -140,7 +135,7 @@ public class EntityKisameHoshigaki extends ElementsNarutomodMod.ModElement {
 		private final ItemStack hatStack = new ItemStack(ItemAkatsukiRobe.helmet);
 		
 		public EntityCustom(World worldIn) {
-			super(worldIn, 100, 10000d);
+			super(worldIn, 140, 10000d);
 			this.setSize(0.6f, 2.1f);
 			this.mainNavigator = this.navigator;
 			this.altNavigator = new PathNavigateSwimmer(this, worldIn);

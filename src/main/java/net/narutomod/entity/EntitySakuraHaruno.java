@@ -13,7 +13,6 @@ import net.minecraftforge.fml.client.registry.RenderingRegistry;
 
 import net.minecraft.init.Biomes;
 import net.minecraft.init.Items;
-import net.minecraft.world.biome.Biome;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.World;
 import net.minecraft.util.ResourceLocation;
@@ -80,13 +79,13 @@ public class EntitySakuraHaruno extends ElementsNarutomodMod.ModElement {
 
 	@Override
 	public void init(FMLInitializationEvent event) {
-		Biome[] spawnBiomes = {Biomes.FOREST, Biomes.BIRCH_FOREST, Biomes.BIRCH_FOREST_HILLS, Biomes.FOREST_HILLS,
-		 Biomes.JUNGLE, Biomes.JUNGLE_EDGE, Biomes.JUNGLE_HILLS, Biomes.PLAINS, Biomes.ROOFED_FOREST, Biomes.TAIGA,
-		 Biomes.TAIGA_HILLS, Biomes.REDWOOD_TAIGA, Biomes.REDWOOD_TAIGA_HILLS, Biomes.MUTATED_PLAINS,
-		 Biomes.MUTATED_FOREST, Biomes.MUTATED_BIRCH_FOREST, Biomes.MUTATED_BIRCH_FOREST_HILLS, Biomes.MUTATED_JUNGLE,
-		 Biomes.MUTATED_JUNGLE_EDGE, Biomes.MUTATED_ROOFED_FOREST, Biomes.MUTATED_TAIGA, Biomes.MUTATED_REDWOOD_TAIGA,
-		 Biomes.MUTATED_REDWOOD_TAIGA_HILLS};
-		EntityRegistry.addSpawn(EntityCustom.class, 1, 1, 1, EnumCreatureType.AMBIENT, spawnBiomes);
+		EntityRegistry.addSpawn(EntityCustom.class, 1, 1, 1, EnumCreatureType.AMBIENT,
+			Biomes.FOREST, Biomes.BIRCH_FOREST, Biomes.BIRCH_FOREST_HILLS, Biomes.FOREST_HILLS,
+			Biomes.JUNGLE, Biomes.JUNGLE_EDGE, Biomes.JUNGLE_HILLS, Biomes.PLAINS, Biomes.ROOFED_FOREST, Biomes.TAIGA,
+			Biomes.TAIGA_HILLS, Biomes.REDWOOD_TAIGA, Biomes.REDWOOD_TAIGA_HILLS, Biomes.MUTATED_PLAINS,
+			Biomes.MUTATED_FOREST, Biomes.MUTATED_BIRCH_FOREST, Biomes.MUTATED_BIRCH_FOREST_HILLS, Biomes.MUTATED_JUNGLE,
+			Biomes.MUTATED_JUNGLE_EDGE, Biomes.MUTATED_ROOFED_FOREST, Biomes.MUTATED_TAIGA, Biomes.MUTATED_REDWOOD_TAIGA,
+			Biomes.MUTATED_REDWOOD_TAIGA_HILLS);
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -112,7 +111,7 @@ public class EntitySakuraHaruno extends ElementsNarutomodMod.ModElement {
 		private List<EntityLivingBase> healableEntities = Lists.newArrayList();
 
 		public EntityCustom(World world) {
-			super(world, 60);
+			super(world, 80);
 			this.setSize(0.525f, 1.75f);
 			Arrays.fill(this.inventoryHandsDropChances, 0.0F);
 		}

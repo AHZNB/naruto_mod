@@ -618,7 +618,7 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 	@SideOnly(Side.CLIENT)
 	public static class MobAppearance extends Particle {
 		private static final Map<Integer, Class <? extends Entity>> particleEntities = ImmutableMap.of(
-			net.narutomod.entity.EntityItachi.ENTITYID, net.narutomod.entity.EntityItachi.EntityCustom.class
+			net.narutomod.entity.EntityItachi.ENTITYID_RANGED, net.narutomod.entity.EntityItachi.Entity4MobAppearance.class
 		);
 	    private Entity entity;
 	    private int entityTypeId;

@@ -220,7 +220,7 @@ public class EntityKingOfHell extends ElementsNarutomodMod.ModElement {
 					this.healingPlayer.clearActivePotions();
 					this.healingPlayer.addPotionEffect(new PotionEffect(MobEffects.ABSORPTION, 160, 4));
 				}
-				this.healingPlayer.heal(0.1F);
+				this.healingPlayer.heal(0.2F);
 				this.healingPlayer.setSneaking(false);
 				if (this.healingPlayer.getHealth() >= this.healingPlayer.getMaxHealth()) {
 					this.healingPlayer.dismountRidingEntity();

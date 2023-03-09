@@ -48,7 +48,10 @@ Entities:
  - made merhcants not despawn if they've traded with a player
  - rewrote ninja merchant code
  - fixed ninja merchants player blacklist not working correctly
- - fixed a bug with merchants where the trade list can be empty
+ - fixed ninja merchants occasional empty trade list
+ - increased NPCs health and chakra
+ - fixed real Itachi not dropping his mangekyo
+ - fixed Itachi's genjutsu not showing his sharingan
 
 Commands:
  - addxp2jutsu command now requires level 4 permision

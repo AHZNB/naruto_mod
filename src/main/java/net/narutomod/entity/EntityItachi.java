@@ -8,12 +8,11 @@ import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
-import net.minecraftforge.common.DungeonHooks;
+//import net.minecraftforge.common.DungeonHooks;
 
 import net.minecraft.init.MobEffects;
 import net.minecraft.init.Biomes;
 import net.minecraft.init.SoundEvents;
-import net.minecraft.world.biome.Biome;
 import net.minecraft.world.World;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.BossInfo;
@@ -26,7 +25,6 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.EnumHand;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Item;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.entity.ai.EntityAIWander;
 import net.minecraft.entity.ai.EntityAILookIdle;
@@ -83,24 +81,23 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 	@Override
 	public void initElements() {
 		elements.entities.add(() -> EntityEntryBuilder.create().entity(EntityCustom.class)
-			.id(new ResourceLocation("narutomod", "itachi"), ENTITYID).name("itachi").tracker(64, 3, true).egg(-16777216, -65485).build());
-		//elements.entities.add(() -> EntityEntryBuilder.create().entity(EntityArrowCustom.class)
-		//	.id(new ResourceLocation("narutomod", "entitybulletitachi"), ENTITYID_RANGED).name("entitybulletitachi").tracker(64, 1, true)
-		//	.build());
+			.id(new ResourceLocation("narutomod", "itachi"), ENTITYID)
+			.name("itachi").tracker(64, 3, true).egg(-16777216, -65485).build());
+		elements.entities.add(() -> EntityEntryBuilder.create().entity(Entity4MobAppearance.class)
+			.id(new ResourceLocation("narutomod", "itachi_mob_appearance"), ENTITYID_RANGED)
+			.name("itachi_mob_appearance").tracker(64, 1, true).build());
 	}
 
 	@Override
 	public void init(FMLInitializationEvent event) {
-		Biome[] spawnBiomes = {
+		EntityRegistry.addSpawn(EntityCustom.class, 5, 1, 1, EnumCreatureType.MONSTER,
 			Biomes.FOREST, Biomes.TAIGA, Biomes.SWAMPLAND, Biomes.RIVER, Biomes.FOREST_HILLS,
 			Biomes.TAIGA_HILLS, Biomes.JUNGLE, Biomes.JUNGLE_HILLS, Biomes.BIRCH_FOREST,
 			Biomes.BIRCH_FOREST_HILLS, Biomes.ROOFED_FOREST, Biomes.SAVANNA, Biomes.EXTREME_HILLS,
 			Biomes.MUTATED_FOREST, Biomes.MUTATED_TAIGA, Biomes.MUTATED_SWAMPLAND, Biomes.MUTATED_JUNGLE,
 			Biomes.MUTATED_JUNGLE_EDGE, Biomes.MUTATED_BIRCH_FOREST, Biomes.MUTATED_BIRCH_FOREST_HILLS,
 			Biomes.MUTATED_ROOFED_FOREST, Biomes.MUTATED_SAVANNA, Biomes.MUTATED_EXTREME_HILLS,
-			Biomes.MUTATED_EXTREME_HILLS_WITH_TREES, Biomes.EXTREME_HILLS_WITH_TREES
-		};
-		EntityRegistry.addSpawn(EntityCustom.class, 10, 1, 1, EnumCreatureType.MONSTER, spawnBiomes);
+			Biomes.MUTATED_EXTREME_HILLS_WITH_TREES, Biomes.EXTREME_HILLS_WITH_TREES);
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -134,7 +131,7 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 		private final BossInfoServer bossInfo = new BossInfoServer(this.getDisplayName(), BossInfo.Color.RED, BossInfo.Overlay.PROGRESS);
 
 		public EntityCustom(World world) {
-			super(world, 100, 5000d);
+			super(world, 120, 7000d);
 			//this.setItemToInventory(kunaiStack);
 			this.isImmuneToFire = true;
 		}
@@ -152,7 +149,6 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 
 		public void setIsReal(boolean real) {
 			this.isReal = real;
-			this.setDropChance(EntityEquipmentSlot.HEAD, real ? 2.0F : 0.0F);
 		}
 
 		@Override
@@ -221,8 +217,17 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
-		protected Item getDropItem() {
-			return ItemKunai.block;
+		protected void dropLoot(boolean wasRecentlyHit, int lootingModifier, DamageSource source) {
+			this.entityDropItem(new ItemStack(ItemKunai.block, 1), 0.0f);
+			if (this.isReal) {
+				ItemStack stack = this.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
+				if (stack.getItem() != ItemMangekyoSharingan.helmet) {
+					stack = this.getItemFromInventory(1);
+				}
+				if (stack.getItem() == ItemMangekyoSharingan.helmet) {
+					this.entityDropItem(stack, 0.0f);
+				}
+			}
 		}
 
 		@Override
@@ -289,7 +294,7 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 				if (this.lookedAtTime >= 5 && this.ticksExisted > this.lastGenjutsuTime + this.genjutsuDuration 
 				 && this.consumeChakra(GENJUTSU_CHAKRA)) {
 					if (target instanceof EntityPlayerMP) {
-						ProcedureSync.MobAppearanceParticle.send((EntityPlayerMP)target, ENTITYID);
+						ProcedureSync.MobAppearanceParticle.send((EntityPlayerMP)target, ENTITYID_RANGED);
 					}
 					this.world.playSound(null, target.posX, target.posY, target.posZ,
 					  SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:genjutsu")), SoundCategory.NEUTRAL, 1f, 1f);
@@ -409,6 +414,13 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 		public void readEntityFromNBT(NBTTagCompound compound) {
 			super.readEntityFromNBT(compound);
 			this.setIsReal(compound.getBoolean("isReal"));
+		}
+	}
+
+	public static class Entity4MobAppearance extends EntityCustom {
+		public Entity4MobAppearance(World worldIn) {
+			super(worldIn);
+			this.setItemStackToSlot(EntityEquipmentSlot.HEAD, new ItemStack(ItemMangekyoSharingan.helmet));
 		}
 	}
 

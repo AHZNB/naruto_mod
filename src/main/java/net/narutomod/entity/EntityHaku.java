@@ -76,7 +76,7 @@ public class EntityHaku extends ElementsNarutomodMod.ModElement {
 		private final ItemStack senbon = new ItemStack(ItemIceSenbon.block, 1);
 
 		public EntityCustom(World worldIn) {
-			super(worldIn, 60, 4000d);
+			super(worldIn, 80, 4000d);
 			this.setSize(0.525f, 1.75f);
 			this.isImmuneToFire = true;
 		}
