@@ -19,6 +19,9 @@ Jutsus:
  - fixed son guko not giving you lava chakra mode upon becoming its jinchuriki
  - fixed jinchuriki berzerk mode crash when holding senjutsu item
  - fixed jinchuriki cloak 2 berzerk mode with cloak 1 head texture
+ - fixed sekizo only being usable once
+ - fix eight gates killing you after respawn
+ - made S rank jutsus findable
 
 Items:
  - cleaver sword now takes damage when used, attack speed and damage decrease, recipe changed
@@ -27,9 +30,7 @@ Items:
  - fix armor lag by preventing it from creating new instances
  - added tailed beast maps
  - made tailed beast maps not show positions if spawnTailedBeasts is false
- - fix eight gates killing you after respawn
  - fixed biju map crashing bug
- - fixed sekizo only being usable once
 
 Entities:
  - increase spawn rates for bosses and remove dungeon spawns
