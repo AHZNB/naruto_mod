@@ -70,6 +70,7 @@ General:
  - properly capitalized translations
  - fixed dying as jinchuriki with keepInventory on can't see cloak on respawn
  - centered chakra bar
+ - made water walking not push player if underwater
 
 0.2.10-beta ===============================================================================
 

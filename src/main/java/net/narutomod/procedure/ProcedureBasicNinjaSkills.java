@@ -1,5 +1,7 @@
 package net.narutomod.procedure;
 
+import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.narutomod.block.BlockMud;
 import net.narutomod.ElementsNarutomodMod;
 
@@ -44,8 +46,11 @@ public class ProcedureBasicNinjaSkills extends ElementsNarutomodMod.ModElement {
 			if (entity instanceof EntityLivingBase)
 				((EntityLivingBase) entity).addPotionEffect(new PotionEffect(MobEffects.JUMP_BOOST, (int) 2, (int) 1, (false), (false)));
 		}
-		if ((((world.getBlockState(new BlockPos((int) Math.floor((entity.posX)), (int) (entity.posY), (int) Math.floor((entity.posZ)))))
-				.getMaterial() == Material.WATER) && (!(entity.isSneaking())))) {
+
+		IBlockState feetBlockState = world.getBlockState(new BlockPos(Math.round(entity.posX), Math.round(entity.posY), Math.round(entity.posZ)));
+		IBlockState waistBlockState = world.getBlockState(new BlockPos(Math.round(entity.posX), Math.round(entity.posY + 1.0D), Math.round(entity.posZ)));
+
+		if (feetBlockState.getMaterial() == Material.WATER && waistBlockState.getMaterial() != Material.WATER && !entity.isSneaking()) {
 			entity.motionY = 0.01D;
 			entity.onGround = true;
 		}
