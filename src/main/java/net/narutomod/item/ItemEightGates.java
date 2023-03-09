@@ -167,7 +167,8 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 					entity.addPotionEffect(new PotionEffect(MobEffects.STRENGTH, 12, this.strength, false, false));
 					entity.addPotionEffect(new PotionEffect(MobEffects.RESISTANCE, 12, this.resistance, false, false));
 					entity.addPotionEffect(new PotionEffect(MobEffects.SPEED, 12, this.speed, false, false));
-					if (entity.getHealth() > 0 && (!(entity instanceof EntityPlayer) || !((EntityPlayer) entity).isCreative())) {
+					if (entity.getHealth() > 0
+ && (!(entity instanceof EntityPlayer) || !((EntityPlayer) entity).isCreative())) {
 						entity.setHealth(entity.getHealth() - this.damage);
 					}
 				}
@@ -180,7 +181,7 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 
 		public void deActivate(EntityLivingBase entity) {
 			if (!entity.world.isRemote && this.gate > 1 && (!(entity instanceof EntityPlayer) || !((EntityPlayer) entity).isCreative())) {
-				if (this.gate == 8) {
+				if (entity.isEntityAlive() && this.gate == 8) {
 					//PlayerRender.setColorMultiplier((EntityPlayer)entity, 0xB0000000);
 					ProcedureUtils.setDeathAnimations(entity, 2, 200);
 				}
@@ -551,7 +552,8 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 					}
 				} else if (gateOpened > 0f) {
 					this.GATE[(int) gateOpened].deActivate(player);
-					itemstack.getTagCompound().removeTag(SEKIZO_KEY);
+					itemstack.getTagCompound().removeTag(SEKIZO_KEY);
+
 					this.setGateOpened(itemstack, player, 0);
 					if (player instanceof EntityPlayer && !((EntityPlayer) player).isCreative()) {
 						((EntityPlayer) player).getCooldownTracker().setCooldown(itemstack.getItem(), (int) gateOpened * 200);

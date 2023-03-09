@@ -87,6 +87,11 @@ public class EntityNinjaMerchant extends ElementsNarutomodMod.ModElement {
 			((PathNavigateGround)this.getNavigator()).setBreakDoors(true);
 		}
 
+		@Override
+		public String toString() {
+			return super.toString();
+		}
+
 		public abstract Map<TradeLevel, MerchantRecipeList> getTrades();
 
 		// This code can be used in the future to add rare trades

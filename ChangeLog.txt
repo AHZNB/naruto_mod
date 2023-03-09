@@ -24,6 +24,7 @@ Jutsus:
  - 8-gates item won't disappear if not owner holding it
  - made some S rank jutsu scrolls findable
  - limit medical jutsu: poison mist to max 50
+ - fix night guy killing on respawn
 
 Items:
  - cleaver sword now takes damage when used, attack speed and damage decrease, recipe changed
@@ -52,6 +53,7 @@ Entities:
  - increased NPCs health and chakra
  - fixed real Itachi not dropping his mangekyo
  - fixed Itachi's genjutsu not showing his sharingan
+ - fix merchants crashing with LootBags mod
 
 Commands:
  - addxp2jutsu command now requires level 4 permision

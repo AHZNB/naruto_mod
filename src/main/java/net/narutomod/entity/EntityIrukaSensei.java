@@ -3,6 +3,7 @@ package net.narutomod.entity;
 
 import com.google.common.collect.Maps;
 import net.minecraft.village.Village;
+import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
@@ -152,7 +153,6 @@ public class EntityIrukaSensei extends ElementsNarutomodMod.ModElement {
 	// Made with Blockbench 3.7.4
 	// Exported for Minecraft version 1.12
 	// Paste this class into your mod and generate all required imports
-	@SideOnly(Side.CLIENT)
 	public class ModelBiped64 extends ModelBiped {
 		public ModelBiped64() {
 			this.textureWidth = 64;
