@@ -1,8 +1,8 @@
 {
   "id_map": {
-    "GUI": 63,
     "ENTITY": 414,
-    "DIMENSION": 13
+    "DIMENSION": 13,
+    "GUI": 63
   },
   "mod_elements": [
     {
@@ -7912,7 +7912,7 @@
       "entity.tailed_beast.name": "Tailed Beast",
       "item.gunbai.name": "Gunbai",
       "item.scroll_rasenshuriken.name": "Wind Release - Rasenshuriken Scroll",
-      "entity.itachi.name": "Uchiha Itachi",
+      "entity.itachi.name": "Itachi Uchiha",
       "item.scroll_lightning_panther.name": "Lightning Release - Black Panther Scroll",
       "item.clothes_raikagehelmet.name": "Raikage Hat",
       "entity.jinchuriki_clone.name": "Tailed Beast Cloak",
@@ -8474,7 +8474,7 @@
       "item.mangekyosharinganhelmet.name": "Mangekyo Sharingan - Amaterasu",
       "key.mcreator.specialjutsu1": "Special Jutsu 1",
       "subtitles.hiding_in_ash": "",
-      "chattext.ninjaexperience": "Ninja experience: ",
+      "chattext.ninjaexperience": "Ninja Éxperience: ",
       "entity.kisame_hoshigaki.name": "Kisame Hoshigaki",
       "advancements.jiton_acquired.title": "Magnet Release Acquired",
       "item.ninja_armor_fishnetslegs.name": "Ninja Fishnets Shirt and Pants",
