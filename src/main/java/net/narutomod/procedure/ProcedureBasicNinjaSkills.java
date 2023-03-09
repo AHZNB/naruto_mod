@@ -47,12 +47,19 @@ public class ProcedureBasicNinjaSkills extends ElementsNarutomodMod.ModElement {
 				((EntityLivingBase) entity).addPotionEffect(new PotionEffect(MobEffects.JUMP_BOOST, (int) 2, (int) 1, (false), (false)));
 		}
 
-		IBlockState feetBlockState = world.getBlockState(new BlockPos(Math.round(entity.posX), Math.round(entity.posY), Math.round(entity.posZ)));
-		IBlockState waistBlockState = world.getBlockState(new BlockPos(Math.round(entity.posX), Math.round(entity.posY + 1.0D), Math.round(entity.posZ)));
+		if (!entity.isSneaking()) {
+			IBlockState waistBlockState = world.getBlockState(new BlockPos(Math.floor(entity.posX), Math.floor(entity.posY + entity.getEyeHeight()), Math.floor(entity.posZ)));
+			IBlockState feetBlockState = world.getBlockState(new BlockPos(Math.floor(entity.posX), Math.floor(entity.posY), Math.floor(entity.posZ)));
+			IBlockState ankleBlockState = world.getBlockState(new BlockPos(Math.floor(entity.posX), Math.floor(entity.posY + 0.1D), Math.floor(entity.posZ)));
 
-		if (feetBlockState.getMaterial() == Material.WATER && waistBlockState.getMaterial() != Material.WATER && !entity.isSneaking()) {
-			entity.motionY = 0.01D;
-			entity.onGround = true;
+			if (waistBlockState.getMaterial() != Material.WATER) {
+				if (ankleBlockState.getMaterial() == Material.WATER) {
+					entity.motionY = 0.1D;
+				} else if (entity.motionY < 0.0D && feetBlockState.getMaterial() == Material.WATER) {
+					entity.motionY -= entity.motionY;
+					entity.onGround = true;
+				}
+			}
 		}
 		RayTraceResult r = ProcedureUtils.raytraceBlocks(entity, 1d);
 		f1 = (!entity.onGround && entity.rotationPitch < 0 && r != null && r.typeOfHit == RayTraceResult.Type.BLOCK
