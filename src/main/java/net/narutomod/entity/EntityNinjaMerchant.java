@@ -172,10 +172,11 @@ public class EntityNinjaMerchant extends ElementsNarutomodMod.ModElement {
 		@Nullable
 		public MerchantRecipeList getRecipes(EntityPlayer player) {
 			int level = this.getTradeLevel(player) + 1; // Add 1 to it to get the ordinal ;o
-			return this.trades.entrySet().stream()
+			MerchantRecipeList recipes = this.trades.entrySet().stream()
 					.filter(entry -> entry.getKey().ordinal() <= level)
 					.flatMap(entry -> entry.getValue().stream())
 					.collect(Collectors.toCollection(MerchantRecipeList::new));
+			return recipes.size() > 0 ? recipes : null;
 		}
 
 		@SideOnly(Side.CLIENT)
