@@ -76,7 +76,11 @@ public class EntityNinjaMerchant extends ElementsNarutomodMod.ModElement {
 		protected EntityNinjaMob.AILeapAtTarget leapAI = new EntityNinjaMob.AILeapAtTarget(this, 1.0F);
 
 		public Base(World worldIn, int level) {
-			super(worldIn, level, (double)level * level);
+			this(worldIn, level, (double)level * level);
+		}
+
+		public Base(World worldIn, int level, double maxchakra) {
+			super(worldIn, level, maxchakra);
 			this.tasks.addTask(2, this.leapAI);
 			this.trades = this.getTrades();
 			this.addRareTrades();

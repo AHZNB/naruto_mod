@@ -466,6 +466,7 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 
 	public static class EntityPurpleDragon extends EntityScalableProjectile.Base {
 		private final int wait = 40;
+		private final float damage = 120.0f;
 		private float startYaw;
 		private float startPitch;
 		private float prevHeadYaw;
@@ -569,7 +570,8 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 			 && (!(result.entityHit instanceof EntityPlayer) || !((EntityPlayer)result.entityHit).isCreative())) {
 				if (!this.fuuin && !result.entityHit.equals(((EntityCustom)this.shootingEntity).getSummoner())) {
 					net.narutomod.Chakra.pathway((EntityLivingBase)result.entityHit).consume(1.0f);
-					result.entityHit.onKillCommand();
+					result.entityHit.attackEntityFrom(ItemJutsu.causeSenjutsuDamage(this, this.shootingEntity)
+					 .setDamageBypassesArmor().setDamageIsAbsolute(), this.damage + (this.rand.nextFloat()-0.5f) * 40f);
 					if (this.targetList.contains(result.entityHit)) {
 						this.targetList.remove(result.entityHit);
 						this.targetList.sort(new ProcedureUtils.EntitySorter(this));
