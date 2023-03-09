@@ -168,7 +168,7 @@ public class ItemBijuMap extends ElementsNarutomodMod.ModElement {
 				GlStateManager.pushMatrix();
 				GlStateManager.translate(this.getX() / 2.0F + 64.0F, this.getY() / 2.0F + 64.0F, -0.02F);
 				GlStateManager.rotate((float) (this.getRotation() * 360) / 16.0F, 0.0F, 0.0F, 1.0F);
-				GlStateManager.scale(5.0F, 5.0F, 5.0F);
+				GlStateManager.scale(7.5F, 7.5F, 7.5F);
 
 				// We don't care about depth, just the rendering order which is already sorted out
 				GlStateManager.depthMask(false);

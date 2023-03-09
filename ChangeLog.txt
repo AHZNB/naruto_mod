@@ -31,6 +31,7 @@ Items:
  - added tailed beast maps
  - made tailed beast maps not show positions if spawnTailedBeasts is false
  - fixed biju map crashing bug
+ - made biju map icons 50% bigger
 
 Entities:
  - increase spawn rates for bosses and remove dungeon spawns
