@@ -16,6 +16,16 @@
       "entries": [
         {
           "type": "item",
+          "name": "narutomod:scroll_sealing_4_symbols",
+          "weight": 5
+        },
+        {
+          "type": "item",
+          "name": "narutomod:scroll_kirin",
+          "weight": 5
+        },
+        {
+          "type": "item",
           "name": "narutomod:scroll_chidori",
           "weight": 10
         },

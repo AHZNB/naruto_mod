@@ -199,11 +199,11 @@ public class ItemSenjutsu extends ElementsNarutomodMod.ModElement {
 					}
 				}
 				if (flag) {
-					living.addPotionEffect(new PotionEffect(MobEffects.SATURATION, 3, 0, false, false));
 					Chakra.Pathway cp = Chakra.pathway(living);
 					if (cp.getAmount() < itemstack.getTagCompound().getDouble(SAGECHAKRADEPLETIONAMOUNT)) {
 						deactivateSageMode(itemstack, living);
 					} else if (living.ticksExisted % 20 == 10) {
+						living.addPotionEffect(new PotionEffect(MobEffects.SATURATION, 22, 0, false, false));
 						cp.consume(50d);
 					}
 				}

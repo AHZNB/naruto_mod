@@ -51,8 +51,7 @@ public class ItemBoneArmor extends ElementsNarutomodMod.ModElement {
 	@Override
 	public void initElements() {
 		ItemArmor.ArmorMaterial enuma = EnumHelper.addArmorMaterial("BONE_ARMOR", "narutomod:sasuke_", 20,
-		 new int[]{2, 5, 20, 2}, 0,
- net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:bonecrack")), 5f);
+		 new int[]{2, 5, 20, 2}, 0, net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:bonecrack")), 5f);
 		elements.items.add(() -> new ItemArmor(enuma, 0, EntityEquipmentSlot.CHEST) {
 			@SideOnly(Side.CLIENT)
 			private ModelBiped armorModel;
@@ -78,14 +77,14 @@ public class ItemBoneArmor extends ElementsNarutomodMod.ModElement {
 				 || (entity instanceof EntityPlayer && 
 				     !ProcedureUtils.hasItemInInventory((EntityPlayer)entity, ItemShikotsumyaku.block))) {
 					itemstack.shrink(1);
-				} else if (!world.isRemote) {
+				} else if (!world.isRemote && entity.ticksExisted % 20 == 2) {
 					EntityLivingBase living = (EntityLivingBase)entity;
-					living.addPotionEffect(new PotionEffect(MobEffects.RESISTANCE, 3, isLarchActive(itemstack) ? 3 : 2, false, false));
+					living.addPotionEffect(new PotionEffect(MobEffects.RESISTANCE, 22, isLarchActive(itemstack) ? 3 : 2, false, false));
 					int strength = living.isPotionActive(MobEffects.STRENGTH) ? living.getActivePotionEffect(MobEffects.STRENGTH).getAmplifier() : -1;
 					strength += isWillowActive(itemstack) ? 5 : 0;
 					//strength += isClementisFlowerActive(itemstack) ? 8 : 0;
 					if (strength >= 0) {
-						living.addPotionEffect(new PotionEffect(MobEffects.STRENGTH, 1, strength, false, false));
+						living.addPotionEffect(new PotionEffect(MobEffects.STRENGTH, 22, strength, false, false));
 					}
  				}
 			}

@@ -160,15 +160,16 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 					 this.particles, 0.2d, 0.4d, 0.2d, 0d, 0.1d, 0d, this.particleColor, 40, 5, 0xF0, entity.getEntityId());
 				}
 				entity.fallDistance = 0;
-				entity.addPotionEffect(new PotionEffect(MobEffects.SATURATION, 2, 0, false, false));
-				entity.addPotionEffect(new PotionEffect(MobEffects.JUMP_BOOST, 2, 8, false, false));
-				entity.addPotionEffect(new PotionEffect(MobEffects.HASTE, 2, 3, false, false));
-				entity.addPotionEffect(new PotionEffect(MobEffects.STRENGTH, 2, this.strength, false, false));
-				entity.addPotionEffect(new PotionEffect(MobEffects.RESISTANCE, 2, this.resistance, false, false));
-				entity.addPotionEffect(new PotionEffect(MobEffects.SPEED, 2, this.speed, false, false));
-				if (entity.ticksExisted % 10 == 0 && entity.getHealth() > 0
-				 && (!(entity instanceof EntityPlayer) || !((EntityPlayer) entity).isCreative())) {
-					entity.setHealth(entity.getHealth() - this.damage);
+				if (entity.ticksExisted % 10 == 0) {
+					entity.addPotionEffect(new PotionEffect(MobEffects.SATURATION, 12, 0, false, false));
+					entity.addPotionEffect(new PotionEffect(MobEffects.JUMP_BOOST, 12, 8, false, false));
+					entity.addPotionEffect(new PotionEffect(MobEffects.HASTE, 12, 3, false, false));
+					entity.addPotionEffect(new PotionEffect(MobEffects.STRENGTH, 12, this.strength, false, false));
+					entity.addPotionEffect(new PotionEffect(MobEffects.RESISTANCE, 12, this.resistance, false, false));
+					entity.addPotionEffect(new PotionEffect(MobEffects.SPEED, 12, this.speed, false, false));
+					if (entity.getHealth() > 0 && (!(entity instanceof EntityPlayer) || !((EntityPlayer) entity).isCreative())) {
+						entity.setHealth(entity.getHealth() - this.damage);
+					}
 				}
 				if (this.canFly && entity instanceof EntityPlayer && !((EntityPlayer) entity).capabilities.allowFlying) {
 					((EntityPlayer) entity).capabilities.allowFlying = true;
@@ -286,6 +287,20 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 			 SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:hirudora")),
 			 SoundCategory.NEUTRAL, 2.0F, 1.0F);
 			attacker.world.spawnEntity(bullet);
+		}
+
+		private int getSekizoPunchNum(ItemStack stack, int tick) {
+			if (!stack.hasTagCompound()) 
+				stack.setTagCompound(new NBTTagCompound());
+			int punch = stack.getTagCompound().getInteger(SEKIZO_KEY);
+			//int lastTick = stack.getTagCompound().getInteger(SEKIZO_KEY+"_lastTick");
+			//int i = tick - lastTick;
+			//punch = (i <= 20 && i > 0 && punch < 4) ? punch + 1 : 0;
+			//stack.getTagCompound().setInteger(SEKIZO_KEY, punch);
+			//stack.getTagCompound().setInteger(SEKIZO_KEY+"_lastTick", tick);
+			int i = punch >= 0 && punch < 4 ? punch + 1 : -1;
+			stack.getTagCompound().setInteger(SEKIZO_KEY, i);
+			return punch;
 		}
 
 		public int attackSekizo(ItemStack itemstack, EntityLivingBase attacker) {
@@ -464,20 +479,6 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 			return stack.hasTagCompound() ? stack.getTagCompound().getInteger(XP_KEY) : 0;
 		}
 
-		private int getSekizoPunchNum(ItemStack stack, int tick) {
-			if (!stack.hasTagCompound()) 
-				stack.setTagCompound(new NBTTagCompound());
-			int punch = stack.getTagCompound().getInteger(SEKIZO_KEY);
-			//int lastTick = stack.getTagCompound().getInteger(SEKIZO_KEY+"_lastTick");
-			//int i = tick - lastTick;
-			//punch = (i <= 20 && i > 0 && punch < 4) ? punch + 1 : 0;
-			//stack.getTagCompound().setInteger(SEKIZO_KEY, punch);
-			//stack.getTagCompound().setInteger(SEKIZO_KEY+"_lastTick", tick);
-			int i = punch >= 0 && punch < 4 ? punch + 1 : -1;
-			stack.getTagCompound().setInteger(SEKIZO_KEY, i);
-			return punch;
-		}
-
 		@Override
 		public void onUsingTick(ItemStack stack, EntityLivingBase player, int count) {
 			if (player.isSneaking()) {
@@ -526,11 +527,11 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 			stack.setStackDisplayName(stack.getDisplayName() + " (" + owner.getName() + ")");
 		}
 
-		private boolean checkOwner(ItemStack stack, EntityLivingBase entity) {
+		private boolean isOwner(ItemStack stack, EntityLivingBase entity) {
 			if (ProcedureUtils.getOwnerId(stack) == null) {
 				this.setOwner(stack, entity);
 			}
-			return ProcedureUtils.isOriginalOwner(entity, stack);
+			return ProcedureUtils.isOriginalOwner(entity, stack) || (entity instanceof EntityPlayer && ((EntityPlayer)entity).isCreative());
 		}
 
 		@Override
@@ -538,8 +539,8 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 			super.onUpdate(itemstack, world, entity, par4, par5);
 			if (/* !world.isRemote && */ entity instanceof EntityLivingBase) {
 				EntityLivingBase player = (EntityLivingBase) entity;
-				if (!this.checkOwner(itemstack, player)) {
-					itemstack.shrink(1);
+				if (!this.isOwner(itemstack, player)) {
+					//itemstack.shrink(1);
 					return;
 				}
 				float gateOpened = this.getGateOpened(itemstack);
@@ -550,11 +551,7 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 					}
 				} else if (gateOpened > 0f) {
 					this.GATE[(int) gateOpened].deActivate(player);
-
-					if (gateOpened == 8) {
-						itemstack.getTagCompound().setInteger(SEKIZO_KEY, 0);
-					}
-
+					itemstack.getTagCompound().removeTag(SEKIZO_KEY);
 					this.setGateOpened(itemstack, player, 0);
 					if (player instanceof EntityPlayer && !((EntityPlayer) player).isCreative()) {
 						((EntityPlayer) player).getCooldownTracker().setCooldown(itemstack.getItem(), (int) gateOpened * 200);
@@ -608,8 +605,12 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer entity, EnumHand hand) {
-			entity.setActiveHand(hand);
-			return new ActionResult(EnumActionResult.SUCCESS, entity.getHeldItem(hand));
+			ItemStack stack = entity.getHeldItem(hand);
+			if (this.isOwner(stack, entity)) {
+				entity.setActiveHand(hand);
+				return new ActionResult(EnumActionResult.SUCCESS, stack);
+			}
+			return new ActionResult(EnumActionResult.FAIL, stack);
 		}
 
 		@Override

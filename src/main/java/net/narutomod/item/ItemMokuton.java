@@ -121,10 +121,10 @@ public class ItemMokuton extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void onUpdate(ItemStack itemstack, World world, Entity entity, int par4, boolean par5) {
 			super.onUpdate(itemstack, world, entity, par4, par5);
-			if (entity instanceof EntityLivingBase && !world.isRemote) {
-				((EntityLivingBase) entity).addPotionEffect(new PotionEffect(MobEffects.SATURATION, 1, 0, false, false));
-				if (((EntityLivingBase) entity).getHealth() < ((EntityLivingBase) entity).getMaxHealth())
-					((EntityLivingBase) entity).heal(0.2F);
+			if (entity instanceof EntityLivingBase && !world.isRemote && entity.ticksExisted % 20 == 6) {
+				((EntityLivingBase) entity).addPotionEffect(new PotionEffect(MobEffects.SATURATION, 22, 0, false, false));
+				//if (((EntityLivingBase) entity).getHealth() < ((EntityLivingBase) entity).getMaxHealth())
+				//	((EntityLivingBase) entity).heal(0.2F);
 			}
 		}
 	}
