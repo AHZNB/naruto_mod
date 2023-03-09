@@ -50,6 +50,7 @@ import net.narutomod.EntityTracker;
 import net.narutomod.ElementsNarutomodMod;
 
 import java.util.List;
+import net.minecraft.nbt.NBTTagCompound;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class ItemHyoton extends ElementsNarutomodMod.ModElement {
@@ -116,20 +117,44 @@ public class ItemHyoton extends ElementsNarutomodMod.ModElement {
 			return new ActionResult<ItemStack>(EnumActionResult.FAIL, entity.getHeldItem(hand));
 		}
 
+		private void setlastTickPos(Entity entity, BlockPos pos) {
+			NBTTagCompound compound = entity.getEntityData().getCompoundTag("lastTickBlockPos");
+			if (compound == null) {
+				compound = new NBTTagCompound();
+			}
+			compound.setInteger("X", pos.getX());
+			compound.setInteger("Y", pos.getY());
+			compound.setInteger("Z", pos.getZ());
+			entity.getEntityData().setTag("lastTickBlockPos", compound);
+		}
+
+		private BlockPos getLastTickPos(Entity entity) {
+			NBTTagCompound compound = entity.getEntityData().getCompoundTag("lastTickBlockPos");
+			return compound != null
+			 ? new BlockPos(compound.getInteger("X"), compound.getInteger("Y"), compound.getInteger("Z"))
+			 : BlockPos.ORIGIN;
+		}
+
 		@Override
 		public void onUpdate(ItemStack itemstack, World world, Entity entity, int par4, boolean par5) {
 			super.onUpdate(itemstack, world, entity, par4, par5);
-			BlockPos pos = new BlockPos(entity);
-			EntityTracker.SessionDataHolder edh = EntityTracker.getOrCreate(entity);
 			if (!world.isRemote && entity instanceof EntityLivingBase) {
-				((EntityLivingBase)entity).addPotionEffect(new PotionEffect(MobEffects.SPEED, 2, 3, false, false));
-				((EntityLivingBase)entity).extinguish();
-				if (!pos.equals(edh.prevBlockPos)) {
-					edh.prevBlockPos = pos;
-					EnchantmentFrostWalker.freezeNearby((EntityLivingBase)entity, world, pos, 1);
+				//BlockPos pos = new BlockPos(entity);
+				//EntityTracker.SessionDataHolder edh = EntityTracker.getOrCreate(entity);
+				BlockPos pos = entity.getPosition();
+				EntityLivingBase living = (EntityLivingBase)entity;
+				living.extinguish();
+				//if (!pos.equals(edh.prevBlockPos)) {
+				//	edh.prevBlockPos = pos;
+				if (!pos.equals(this.getLastTickPos(entity))) {
+					this.setlastTickPos(entity, pos);
+					EnchantmentFrostWalker.freezeNearby(living, world, pos, 1);
 				}
-				if (entity instanceof EntityPlayer && !ProcedureUtils.hasItemInInventory((EntityPlayer)entity, ItemIceSenbon.block)) {
-					ItemHandlerHelper.giveItemToPlayer((EntityPlayer)entity, new ItemStack(ItemIceSenbon.block));
+				if (living.ticksExisted % 20 == 3) {
+					living.addPotionEffect(new PotionEffect(MobEffects.SPEED, 22, 3, false, false));
+					if (entity instanceof EntityPlayer && !ProcedureUtils.hasItemInInventory((EntityPlayer)entity, ItemIceSenbon.block)) {
+						ItemHandlerHelper.giveItemToPlayer((EntityPlayer)entity, new ItemStack(ItemIceSenbon.block));
+					}
 				}
 			}
 		}

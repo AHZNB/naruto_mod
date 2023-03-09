@@ -95,15 +95,17 @@ public class EntityPoisonMist extends ElementsNarutomodMod.ModElement {
 			@Override
 			protected void preExecuteParticles(EntityLivingBase player) {
 				Vec3d vec = player.getLookVec().scale(2d);
+				Particles.Renderer particles = new Particles.Renderer(player.world);
 				for (int i = 1; i <= 50; i++) {
 					Vec3d vec1 = player.getLookVec().scale(((EC.this.rand.nextDouble() * 0.8d) + 0.2d) * this.getRange(0) * 0.09d);
-					Particles.spawnParticle(player.world, Particles.Types.SMOKE, 
+					particles.spawnParticles(Particles.Types.SMOKE, 
 					 player.posX + vec.x, player.posY + 1.5d + vec.y, player.posZ + vec.z, 1, 0d, 0d, 0d, 
 					 vec1.x + (EC.this.rand.nextDouble()-0.5d) * this.getFarRadius(0) * 0.15d,
 					 vec1.y + (EC.this.rand.nextDouble()-0.5d) * this.getFarRadius(0) * 0.15d,
 					 vec1.z + (EC.this.rand.nextDouble()-0.5d) * this.getFarRadius(0) * 0.15d,
 					 0xff630065, 80 + EC.this.rand.nextInt(20), 0, 0, -1, 0);
 				}
+				particles.send();
 			}
 
 			@Override

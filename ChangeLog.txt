@@ -23,6 +23,7 @@ Jutsus:
  - fixed 8-gates yagai killing you again after death respawn
  - 8-gates item won't disappear if not owner holding it
  - made some S rank jutsu scrolls findable
+ - limit medical jutsu: poison mist to max 50
 
 Items:
  - cleaver sword now takes damage when used, attack speed and damage decrease, recipe changed
@@ -33,6 +34,7 @@ Items:
  - made tailed beast maps not show positions if spawnTailedBeasts is false
  - fixed biju map crashing bug
  - made biju map icons 50% bigger
+ - limit big folding fan blow power
 
 Entities:
  - increase spawn rates for bosses and remove dungeon spawns
@@ -50,7 +52,8 @@ Entities:
 
 Commands:
  - addxp2jutsu command now requires level 4 permision
- - centered chakra bar
+ - added optional [player] parameter to addxp2jutsu
+ - locateEntity command now requires level 4 permision
 
 General:
  - removed japanese localization
@@ -62,6 +65,7 @@ General:
  - properly flushed world biju save data on world close
  - properly capitalized translations
  - fixed dying as jinchuriki with keepInventory on can't see cloak on respawn
+ - centered chakra bar
 
 0.2.10-beta ===============================================================================
 

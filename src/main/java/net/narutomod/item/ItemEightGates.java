@@ -160,15 +160,16 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 					 this.particles, 0.2d, 0.4d, 0.2d, 0d, 0.1d, 0d, this.particleColor, 40, 5, 0xF0, entity.getEntityId());
 				}
 				entity.fallDistance = 0;
-				entity.addPotionEffect(new PotionEffect(MobEffects.SATURATION, 2, 0, false, false));
-				entity.addPotionEffect(new PotionEffect(MobEffects.JUMP_BOOST, 2, 8, false, false));
-				entity.addPotionEffect(new PotionEffect(MobEffects.HASTE, 2, 3, false, false));
-				entity.addPotionEffect(new PotionEffect(MobEffects.STRENGTH, 2, this.strength, false, false));
-				entity.addPotionEffect(new PotionEffect(MobEffects.RESISTANCE, 2, this.resistance, false, false));
-				entity.addPotionEffect(new PotionEffect(MobEffects.SPEED, 2, this.speed, false, false));
-				if (entity.ticksExisted % 10 == 0 && entity.getHealth() > 0
-				 && (!(entity instanceof EntityPlayer) || !((EntityPlayer) entity).isCreative())) {
-					entity.setHealth(entity.getHealth() - this.damage);
+				if (entity.ticksExisted % 10 == 0) {
+					entity.addPotionEffect(new PotionEffect(MobEffects.SATURATION, 12, 0, false, false));
+					entity.addPotionEffect(new PotionEffect(MobEffects.JUMP_BOOST, 12, 8, false, false));
+					entity.addPotionEffect(new PotionEffect(MobEffects.HASTE, 12, 3, false, false));
+					entity.addPotionEffect(new PotionEffect(MobEffects.STRENGTH, 12, this.strength, false, false));
+					entity.addPotionEffect(new PotionEffect(MobEffects.RESISTANCE, 12, this.resistance, false, false));
+					entity.addPotionEffect(new PotionEffect(MobEffects.SPEED, 12, this.speed, false, false));
+					if (entity.getHealth() > 0 && (!(entity instanceof EntityPlayer) || !((EntityPlayer) entity).isCreative())) {
+						entity.setHealth(entity.getHealth() - this.damage);
+					}
 				}
 				if (this.canFly && entity instanceof EntityPlayer && !((EntityPlayer) entity).capabilities.allowFlying) {
 					((EntityPlayer) entity).capabilities.allowFlying = true;
