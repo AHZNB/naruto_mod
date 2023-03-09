@@ -19,9 +19,10 @@ Jutsus:
  - fixed son guko not giving you lava chakra mode upon becoming its jinchuriki
  - fixed jinchuriki berzerk mode crash when holding senjutsu item
  - fixed jinchuriki cloak 2 berzerk mode with cloak 1 head texture
- - fixed sekizo only being usable once
- - fix eight gates killing you after respawn
- - made S rank jutsus findable
+ - fixed 8-gates sekizo only being usable once
+ - fixed 8-gates yagai killing you again after death respawn
+ - 8-gates item won't disappear if not owner holding it
+ - made some S rank jutsu scrolls findable
 
 Items:
  - cleaver sword now takes damage when used, attack speed and damage decrease, recipe changed

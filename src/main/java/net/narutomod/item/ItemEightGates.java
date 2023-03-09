@@ -288,6 +288,20 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 			attacker.world.spawnEntity(bullet);
 		}
 
+		private int getSekizoPunchNum(ItemStack stack, int tick) {
+			if (!stack.hasTagCompound()) 
+				stack.setTagCompound(new NBTTagCompound());
+			int punch = stack.getTagCompound().getInteger(SEKIZO_KEY);
+			//int lastTick = stack.getTagCompound().getInteger(SEKIZO_KEY+"_lastTick");
+			//int i = tick - lastTick;
+			//punch = (i <= 20 && i > 0 && punch < 4) ? punch + 1 : 0;
+			//stack.getTagCompound().setInteger(SEKIZO_KEY, punch);
+			//stack.getTagCompound().setInteger(SEKIZO_KEY+"_lastTick", tick);
+			int i = punch >= 0 && punch < 4 ? punch + 1 : -1;
+			stack.getTagCompound().setInteger(SEKIZO_KEY, i);
+			return punch;
+		}
+
 		public int attackSekizo(ItemStack itemstack, EntityLivingBase attacker) {
 			World world = attacker.world;
 			int punchnum = this.getSekizoPunchNum(itemstack, attacker.ticksExisted);
@@ -464,20 +478,6 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 			return stack.hasTagCompound() ? stack.getTagCompound().getInteger(XP_KEY) : 0;
 		}
 
-		private int getSekizoPunchNum(ItemStack stack, int tick) {
-			if (!stack.hasTagCompound()) 
-				stack.setTagCompound(new NBTTagCompound());
-			int punch = stack.getTagCompound().getInteger(SEKIZO_KEY);
-			//int lastTick = stack.getTagCompound().getInteger(SEKIZO_KEY+"_lastTick");
-			//int i = tick - lastTick;
-			//punch = (i <= 20 && i > 0 && punch < 4) ? punch + 1 : 0;
-			//stack.getTagCompound().setInteger(SEKIZO_KEY, punch);
-			//stack.getTagCompound().setInteger(SEKIZO_KEY+"_lastTick", tick);
-			int i = punch >= 0 && punch < 4 ? punch + 1 : -1;
-			stack.getTagCompound().setInteger(SEKIZO_KEY, i);
-			return punch;
-		}
-
 		@Override
 		public void onUsingTick(ItemStack stack, EntityLivingBase player, int count) {
 			if (player.isSneaking()) {
@@ -526,11 +526,11 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 			stack.setStackDisplayName(stack.getDisplayName() + " (" + owner.getName() + ")");
 		}
 
-		private boolean checkOwner(ItemStack stack, EntityLivingBase entity) {
+		private boolean isOwner(ItemStack stack, EntityLivingBase entity) {
 			if (ProcedureUtils.getOwnerId(stack) == null) {
 				this.setOwner(stack, entity);
 			}
-			return ProcedureUtils.isOriginalOwner(entity, stack);
+			return ProcedureUtils.isOriginalOwner(entity, stack) || (entity instanceof EntityPlayer && ((EntityPlayer)entity).isCreative());
 		}
 
 		@Override
@@ -538,8 +538,8 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 			super.onUpdate(itemstack, world, entity, par4, par5);
 			if (/* !world.isRemote && */ entity instanceof EntityLivingBase) {
 				EntityLivingBase player = (EntityLivingBase) entity;
-				if (!this.checkOwner(itemstack, player)) {
-					itemstack.shrink(1);
+				if (!this.isOwner(itemstack, player)) {
+					//itemstack.shrink(1);
 					return;
 				}
 				float gateOpened = this.getGateOpened(itemstack);
@@ -550,11 +550,7 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 					}
 				} else if (gateOpened > 0f) {
 					this.GATE[(int) gateOpened].deActivate(player);
-
-					if (gateOpened == 8) {
-						itemstack.getTagCompound().setInteger(SEKIZO_KEY, 0);
-					}
-
+					itemstack.getTagCompound().removeTag(SEKIZO_KEY);
 					this.setGateOpened(itemstack, player, 0);
 					if (player instanceof EntityPlayer && !((EntityPlayer) player).isCreative()) {
 						((EntityPlayer) player).getCooldownTracker().setCooldown(itemstack.getItem(), (int) gateOpened * 200);
@@ -608,8 +604,12 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer entity, EnumHand hand) {
-			entity.setActiveHand(hand);
-			return new ActionResult(EnumActionResult.SUCCESS, entity.getHeldItem(hand));
+			ItemStack stack = entity.getHeldItem(hand);
+			if (this.isOwner(stack, entity)) {
+				entity.setActiveHand(hand);
+				return new ActionResult(EnumActionResult.SUCCESS, stack);
+			}
+			return new ActionResult(EnumActionResult.FAIL, stack);
 		}
 
 		@Override
