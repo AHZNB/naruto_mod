@@ -53,7 +53,6 @@ Entities:
  - increased NPCs health and chakra
  - fixed real Itachi not dropping his mangekyo
  - fixed Itachi's genjutsu not showing his sharingan
- - fix merchants crashing with LootBags mod
 
 Commands:
  - addxp2jutsu command now requires level 4 permision

@@ -555,6 +555,7 @@ public class EntityMightGuy extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
+	@SideOnly(Side.CLIENT)
 	public class ModelMightguy extends ModelBiped {
 		public ModelMightguy() {
 			super(0f, 0f, 64, 64);
