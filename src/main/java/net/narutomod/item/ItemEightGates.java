@@ -167,8 +167,7 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 					entity.addPotionEffect(new PotionEffect(MobEffects.STRENGTH, 12, this.strength, false, false));
 					entity.addPotionEffect(new PotionEffect(MobEffects.RESISTANCE, 12, this.resistance, false, false));
 					entity.addPotionEffect(new PotionEffect(MobEffects.SPEED, 12, this.speed, false, false));
-					if (entity.getHealth() > 0
- && (!(entity instanceof EntityPlayer) || !((EntityPlayer) entity).isCreative())) {
+					if (entity.getHealth() > 0 && (!(entity instanceof EntityPlayer) || !((EntityPlayer) entity).isCreative())) {
 						entity.setHealth(entity.getHealth() - this.damage);
 					}
 				}
@@ -420,7 +419,15 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 
 			@SubscribeEvent(priority = EventPriority.LOW)
 			public void onDeath(LivingDeathEvent event) {
-				ProcedureUtils.clearDeathAnimations(event.getEntityLiving());
+				EntityLivingBase entity = event.getEntityLiving();
+				ProcedureUtils.clearDeathAnimations(entity);
+				ItemStack stack = entity.getHeldItemMainhand();
+				if (stack.getItem() != block) {
+					stack = entity.getHeldItemOffhand();
+				}
+				if (stack.getItem() == block) {
+					((RangedItem)stack.getItem()).closeGates(stack, entity);
+				}
 			}
 		}
 
@@ -545,19 +552,25 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 					return;
 				}
 				float gateOpened = this.getGateOpened(itemstack);
-				if (player.isEntityAlive() && (player.getHeldItemMainhand().equals(itemstack) || player.getHeldItemOffhand().equals(itemstack))) {
+				if (player.getHeldItemMainhand().equals(itemstack) || player.getHeldItemOffhand().equals(itemstack)) {
 					this.GATE[(int) gateOpened].activate(player);
 					if (gateOpened >= 1f && gateOpened >= this.getMaxOpenableGate(itemstack) && entity.ticksExisted % 40 == 8) {
 						this.addBattleXP(itemstack, 1);
 					}
-				} else if (gateOpened > 0f) {
-					this.GATE[(int) gateOpened].deActivate(player);
-					itemstack.getTagCompound().removeTag(SEKIZO_KEY);
+				} else {
+					this.closeGates(itemstack, player);
+				}
+			}
+		}
 
-					this.setGateOpened(itemstack, player, 0);
-					if (player instanceof EntityPlayer && !((EntityPlayer) player).isCreative()) {
-						((EntityPlayer) player).getCooldownTracker().setCooldown(itemstack.getItem(), (int) gateOpened * 200);
-					}
+		private void closeGates(ItemStack itemstack, EntityLivingBase player) {
+			float gateOpened = this.getGateOpened(itemstack);
+			if (gateOpened > 0f) {
+				this.GATE[(int) gateOpened].deActivate(player);
+				itemstack.getTagCompound().removeTag(SEKIZO_KEY);
+				this.setGateOpened(itemstack, player, 0);
+				if (player instanceof EntityPlayer && !((EntityPlayer) player).isCreative()) {
+					((EntityPlayer) player).getCooldownTracker().setCooldown(itemstack.getItem(), (int) gateOpened * 200);
 				}
 			}
 		}

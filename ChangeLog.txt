@@ -53,6 +53,7 @@ Entities:
  - rewrote ninja merchant code
  - fixed ninja merchants player blacklist not working correctly
  - fixed ninja merchants occasional empty trade list
+ - fixed ninja merchants crashing with LootBags mod
  - increased NPCs health and chakra
  - fixed real Itachi not dropping his mangekyo
  - fixed Itachi's genjutsu not showing his sharingan
@@ -73,7 +74,8 @@ General:
  - properly capitalized translations
  - fixed dying as jinchuriki with keepInventory on can't see cloak on respawn
  - centered chakra bar
- - made water walking not push player if underwater
+ - made ninja water walking not push player up if underwater
+ - fixed hack to get jinchuriki by putting all nature release items in chests
 
 0.2.10-beta ===============================================================================
 

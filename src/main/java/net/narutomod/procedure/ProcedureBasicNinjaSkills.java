@@ -1,7 +1,5 @@
 package net.narutomod.procedure;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
 import net.narutomod.block.BlockMud;
 import net.narutomod.ElementsNarutomodMod;
 
@@ -46,20 +44,13 @@ public class ProcedureBasicNinjaSkills extends ElementsNarutomodMod.ModElement {
 			if (entity instanceof EntityLivingBase)
 				((EntityLivingBase) entity).addPotionEffect(new PotionEffect(MobEffects.JUMP_BOOST, (int) 2, (int) 1, (false), (false)));
 		}
-
-		if (!entity.isSneaking()) {
-			IBlockState waistBlockState = world.getBlockState(new BlockPos(Math.floor(entity.posX), Math.floor(entity.posY + entity.getEyeHeight()), Math.floor(entity.posZ)));
-			IBlockState feetBlockState = world.getBlockState(new BlockPos(Math.floor(entity.posX), Math.floor(entity.posY), Math.floor(entity.posZ)));
-			IBlockState ankleBlockState = world.getBlockState(new BlockPos(Math.floor(entity.posX), Math.floor(entity.posY + 0.1D), Math.floor(entity.posZ)));
-
-			if (waistBlockState.getMaterial() != Material.WATER) {
-				if (ankleBlockState.getMaterial() == Material.WATER) {
-					entity.motionY = 0.1D;
-				} else if (entity.motionY < 0.0D && feetBlockState.getMaterial() == Material.WATER) {
-					entity.motionY -= entity.motionY;
-					entity.onGround = true;
-				}
-			}
+		if (((((world.getBlockState(new BlockPos((int) Math.floor((entity.posX)), (int) (entity.posY), (int) Math.floor((entity.posZ)))))
+				.getMaterial() == Material.WATER)
+				&& (!((world.getBlockState(new BlockPos((int) Math.floor((entity.posX)), (int) ((entity.posY) + 1), (int) Math.floor((entity.posZ)))))
+						.getMaterial() == Material.WATER)))
+				&& (!(entity.isSneaking())))) {
+			entity.motionY = 0.01D;
+			entity.onGround = true;
 		}
 		RayTraceResult r = ProcedureUtils.raytraceBlocks(entity, 1d);
 		f1 = (!entity.onGround && entity.rotationPitch < 0 && r != null && r.typeOfHit == RayTraceResult.Type.BLOCK

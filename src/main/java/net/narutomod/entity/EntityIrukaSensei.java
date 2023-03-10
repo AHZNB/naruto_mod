@@ -70,11 +70,12 @@ public class EntityIrukaSensei extends ElementsNarutomodMod.ModElement {
 	@SideOnly(Side.CLIENT)
 	@Override
 	public void preInit(FMLPreInitializationEvent event) {
-		RenderingRegistry.registerEntityRenderingHandler(EntityCustom.class, renderManager -> new RenderLiving(renderManager, new ModelBiped64(), 0.5f) {
-			protected ResourceLocation getEntityTexture(Entity entity) {
-				return new ResourceLocation("narutomod:textures/iruka64x64.png");
-			}
-		});
+		RenderingRegistry.registerEntityRenderingHandler(EntityCustom.class, renderManager ->
+			new RenderLiving(renderManager, new ModelBiped64(), 0.5f) {
+				protected ResourceLocation getEntityTexture(Entity entity) {
+					return new ResourceLocation("narutomod:textures/iruka64x64.png");
+				}
+			});
 	}
 
 	public static class EntityCustom extends EntityNinjaMerchant.Base {
@@ -153,7 +154,7 @@ public class EntityIrukaSensei extends ElementsNarutomodMod.ModElement {
 	// Exported for Minecraft version 1.12
 	// Paste this class into your mod and generate all required imports
 	@SideOnly(Side.CLIENT)
-	public class ModelBiped64 extends ModelBiped {
+	public static class ModelBiped64 extends ModelBiped {
 		public ModelBiped64() {
 			this.textureWidth = 64;
 			this.textureHeight = 64;

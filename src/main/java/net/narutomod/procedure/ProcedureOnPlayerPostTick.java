@@ -1019,7 +1019,21 @@ public class ProcedureOnPlayerPostTick extends ElementsNarutomodMod.ModElement {
 							stack = new ItemStack(ItemJinton.block, (int) (1));
 						} else {
 							stack = new ItemStack(Blocks.AIR, (int) (1));
-							if (((rngbase) > 105)) {
+							if ((((rngbase) > 105) && (((((entity instanceof EntityPlayer)
+									? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemDoton.block, (int) (1)))
+									: false)
+									|| ((entity instanceof EntityPlayer)
+											? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemFuton.block, (int) (1)))
+											: false))
+									|| (((entity instanceof EntityPlayer)
+											? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemKaton.block, (int) (1)))
+											: false)
+											|| ((entity instanceof EntityPlayer)
+													? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemSuiton.block, (int) (1)))
+													: false)))
+									|| ((entity instanceof EntityPlayer)
+											? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemRaiton.block, (int) (1)))
+											: false)))) {
 								int tails = EntityBijuManager.getRandomAvailableBiju();
 								if (EntityBijuManager.setPlayerAsJinchurikiByTails((EntityPlayer) entity, tails)) {
 									world.playSound((EntityPlayer) null, x, y, z,

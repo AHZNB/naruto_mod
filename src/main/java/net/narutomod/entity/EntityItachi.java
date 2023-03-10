@@ -88,8 +88,7 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 			.name("itachi").tracker(64, 3, true).egg(-16777216, -65485).build());
 		elements.entities.add(() -> EntityEntryBuilder.create().entity(Entity4MobAppearance.class)
 			.id(new ResourceLocation("narutomod", "itachi_mob_appearance"), ENTITYID_RANGED)
-			.name("itachi_mob_appearance").tracker(64, 1, true)
-.build());
+			.name("itachi_mob_appearance").tracker(64, 1, true).build());
 	}
 
 	@Override
@@ -148,10 +147,6 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 			this.setItemToInventory(new ItemStack(ItemKunai.block), 0);
 			this.setItemToInventory(new ItemStack(ItemAkatsukiRobe.helmet), 1);
 			this.setIsReal(this.rand.nextInt(5) == 0);
-
-			if (this.isReal) {
-				this.setDropChance(EntityEquipmentSlot.HEAD, 1.0F);
-			}
 			return super.onInitialSpawn(difficulty, livingdata);
 		}
 

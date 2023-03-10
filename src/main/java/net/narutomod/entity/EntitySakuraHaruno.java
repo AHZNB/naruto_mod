@@ -351,7 +351,7 @@ public class EntitySakuraHaruno extends ElementsNarutomodMod.ModElement {
 	// Exported for Minecraft version 1.12
 	// Paste this class into your mod and generate all required imports
 	@SideOnly(Side.CLIENT)
-	public class ModelBiped64slim extends ModelBiped {
+	public static class ModelBiped64slim extends ModelBiped {
 		public ModelBiped64slim() {
 			this.textureWidth = 64;
 			this.textureHeight = 64;

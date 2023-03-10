@@ -717,13 +717,13 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 		if (type == 0) {
 			long l = Minecraft.getSystemTime();
 			for (int i = 0; i < stringLength; ++i)
-				outputString = ((long) i + l / 10L) % 188L == 0L
- ? outputString + TextFormatting.WHITE + string.substring(i, i + 1)
-						: ((long) i + l / 10L) % 188L == 1L
-	? outputString + TextFormatting.YELLOW + string.substring(i, i + 1)
-						: ((long) i + l / 10L) % 188L == 187L
- ? outputString + TextFormatting.YELLOW + string.substring(i, i + 1)
-						: outputString + TextFormatting.GOLD + string.substring(i, i + 1);
+				outputString = ((long) i + l / 10L) % 188L == 0L 
+				 ? outputString + TextFormatting.WHITE + string.substring(i, i + 1)
+				 : ((long) i + l / 10L) % 188L == 1L
+				 	? outputString + TextFormatting.YELLOW + string.substring(i, i + 1)
+				 	: ((long) i + l / 10L) % 188L == 187L
+				 		? outputString + TextFormatting.YELLOW + string.substring(i, i + 1)
+				 		: outputString + TextFormatting.GOLD + string.substring(i, i + 1);
 		} else if (type == 1)
 			outputString = TextFormatting.fromColorIndex((int) (Minecraft.getSystemTime() / 80L % 15L) + (returnToBlack ? 0 : 1)) + string;
 		if (returnToBlack)
