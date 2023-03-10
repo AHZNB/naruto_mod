@@ -85,7 +85,7 @@ public class ItemIryoJutsu extends ElementsNarutomodMod.ModElement {
 			ItemJutsu.JutsuEnum jutsu = this.getCurrentJutsu(stack);
 			float f = super.getMaxPower(stack, entity);
 			if (jutsu == POISONMIST) {
-				return Math.min(f, 50.0f);
+				return Math.min(f, 35.0f);
 			}
 			return f;
 		}

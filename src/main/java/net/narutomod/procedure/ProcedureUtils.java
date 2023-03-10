@@ -819,7 +819,7 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 		if ((entity instanceof EntityPlayer && ((EntityPlayer) entity).isCreative()) || !entity.isEntityAlive()) {
 			return;
 		}
-		if ((int) entity.getEntityData().getDouble("deathAnimationType") == 0) {
+		if (entity.getEntityData().getDouble(NarutomodModVariables.DeathAnimationTime) <= 0.0D) {
 			entity.getEntityData().setDouble("deathAnimationType", (double) type);
 			entity.getEntityData().setDouble(NarutomodModVariables.DeathAnimationTime, (double) duration);
 		}

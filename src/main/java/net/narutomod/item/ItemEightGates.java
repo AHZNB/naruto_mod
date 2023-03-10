@@ -181,7 +181,7 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 
 		public void deActivate(EntityLivingBase entity) {
 			if (!entity.world.isRemote && this.gate > 1 && (!(entity instanceof EntityPlayer) || !((EntityPlayer) entity).isCreative())) {
-				if (entity.isEntityAlive() && this.gate == 8) {
+				if (this.gate == 8) {
 					//PlayerRender.setColorMultiplier((EntityPlayer)entity, 0xB0000000);
 					ProcedureUtils.setDeathAnimations(entity, 2, 200);
 				}
