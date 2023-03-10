@@ -168,6 +168,7 @@ public class EntityNineTails extends ElementsNarutomodMod.ModElement {
 
 		public void setKCM(boolean b) {
 			this.getDataManager().set(KCM, Boolean.valueOf(b));
+			this.setTransparency(b ? 0.8f : 1.0f);
 		}
 
 		@Override
@@ -192,7 +193,7 @@ public class EntityNineTails extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public double getMountedYOffset() {
-			return (this.isFaceDown() ? 0.25d : 1.5625d) * MODELSCALE;
+			return (this.isFaceDown() ? 0.3d : 1.5625d) * MODELSCALE;
 		}
 
 		@Override
@@ -217,18 +218,18 @@ public class EntityNineTails extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
-		public net.minecraft.util.SoundEvent getAmbientSound() {
-			return (net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:kyuubi_howl"));
+		public SoundEvent getAmbientSound() {
+			return this.isKCM() ? null : SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:kyuubi_howl"));
 		}
 
 		@Override
-		public net.minecraft.util.SoundEvent getHurtSound(DamageSource ds) {
+		public SoundEvent getHurtSound(DamageSource ds) {
 			return null;
 		}
 
 		@Override
-		public net.minecraft.util.SoundEvent getDeathSound() {
-			return (net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:kyuubi_death"));
+		public SoundEvent getDeathSound() {
+			return SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:kyuubi_death"));
 		}
 	}
 
@@ -244,8 +245,8 @@ public class EntityNineTails extends ElementsNarutomodMod.ModElement {
 		@Override
 		protected void renderModel(EntityCustom entity, float f0, float f1, float f2, float f3, float f4, float f5) {
 			if (entity.isKCM()) {
-				GlStateManager.enableBlend();
-				GlStateManager.color(1.0f, 1.0f, 1.0f, 0.8f);
+				//GlStateManager.enableBlend();
+				//GlStateManager.color(1.0f, 1.0f, 1.0f, 0.8f);
 				OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240.0F, 240.0F);
 			}
 			super.renderModel(entity, f0, f1, f2, f3, f4, f5);

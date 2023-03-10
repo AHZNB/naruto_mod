@@ -1,6 +1,6 @@
 {
-  "parent": "item/generated",
+  "parent": "narutomod:custom/tenseigan",
   "textures": {
-    "layer0": "narutomod:items/tenseigan_item"
+    "1": "narutomod:blocks/tenseigan_item"
   }
 }

@@ -1,6 +1,6 @@
 {
-  "parent": "item/generated",
+  "parent": "narutomod:custom/mangekyo_eternal",
   "textures": {
-    "layer0": "narutomod:items/mangekyosharingan_eterna"
+    "1": "narutomod:blocks/mangekyosharingan_eterna"
   }
 }

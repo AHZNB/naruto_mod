@@ -379,6 +379,7 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 							this.fuuinTarget.setHealth(90.0f);
 							this.ogJinchuriki.startRiding(this.fuuinTarget, true);
 							((EntityTailedBeast.Base)this.fuuinTarget).canPassengerDismount = false;
+							((EntityTailedBeast.Base)this.fuuinTarget).setTransparency(0.3f);
 						}
 						if (this.fuuinTarget instanceof EntityTailedBeast.Base && age > this.riseTime + 201) {
 							EntityTailedBeast.Base biju = (EntityTailedBeast.Base)this.fuuinTarget;

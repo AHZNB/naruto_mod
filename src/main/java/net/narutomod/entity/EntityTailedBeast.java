@@ -86,11 +86,10 @@ import net.narutomod.NarutomodModVariables;
 import net.narutomod.ElementsNarutomodMod;
 
 import com.google.common.base.Predicate;
+import com.google.common.collect.Maps;
 import javax.annotation.Nullable;
 import java.util.UUID;
 import java.util.Map;
-import com.google.common.collect.Maps;
-
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
@@ -125,6 +124,7 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 		private static final DataParameter<Boolean> SHOOT = EntityDataManager.<Boolean>createKey(Base.class, DataSerializers.BOOLEAN);
 		private static final DataParameter<Boolean> CANSTEER = EntityDataManager.<Boolean>createKey(Base.class, DataSerializers.BOOLEAN);
 		private static final DataParameter<Boolean> FACEDOWN = EntityDataManager.<Boolean>createKey(Base.class, DataSerializers.BOOLEAN);
+		private static final DataParameter<Float> TRANSPARENCY = EntityDataManager.<Float>createKey(Base.class, DataSerializers.FLOAT);
 		private final BossInfoServer bossInfo = new BossInfoServer(this.getDisplayName(), BossInfo.Color.RED, BossInfo.Overlay.PROGRESS);
 		public static final int BIJUDAMA_CD = 200;
 		protected final double TARGET_RANGE = 108.0D;
@@ -169,6 +169,7 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 			this.getDataManager().register(SHOOT, Boolean.valueOf(false));
 			this.getDataManager().register(CANSTEER, Boolean.valueOf(false));
 			this.getDataManager().register(FACEDOWN, Boolean.valueOf(false));
+			this.getDataManager().register(TRANSPARENCY, Float.valueOf(1.0f));
 		}
 
 		public int getAge() {
@@ -203,6 +204,14 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 
 		private void setTargetVessel(@Nullable Entity player) {
 			this.getDataManager().set(VESSEL, Integer.valueOf(player != null ? player.getEntityId() : -1));
+		}
+
+		public float getTransparency() {
+			return ((Float)this.getDataManager().get(TRANSPARENCY)).floatValue();
+		}
+
+		protected void setTransparency(float transparency) {
+			this.getDataManager().set(TRANSPARENCY, Float.valueOf(transparency));
 		}
 
 		@Override
@@ -1136,6 +1145,21 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 			this.setModelVisibilities(entity);
 			this.shadowSize = entity.getModelScale() * 0.5f;
 			super.doRender(entity, x, y, z, entityYaw, partialTicks);
+		}
+
+		@Override
+		protected void renderModel(T entity, float f0, float f1, float f2, float f3, float f4, float f5) {
+			float f = entity.getTransparency();
+			boolean flag = f > 0.0f && f < 1.0f;
+			if (flag) {
+				GlStateManager.enableBlend();
+				GlStateManager.color(1.0f, 1.0f, 1.0f, f);
+			}
+			super.renderModel(entity, f0, f1, f2, f3, f4, f5);
+			if (flag) {
+				GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
+				GlStateManager.disableBlend();
+			}
 		}
 
 		protected void copyLimbSwing(T entity, EntityLivingBase rider) {

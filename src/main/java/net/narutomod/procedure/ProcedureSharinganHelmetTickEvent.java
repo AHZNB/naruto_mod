@@ -174,10 +174,12 @@ public class ProcedureSharinganHelmetTickEvent extends ElementsNarutomodMod.ModE
 								}
 							}
 						}
-						world.playSound((EntityPlayer) null, (entity.posX), (entity.posY), (entity.posZ),
-								(net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY
-										.getObject(new ResourceLocation("ui.toast.challenge_complete")),
-								SoundCategory.NEUTRAL, (float) 1, (float) 1);
+						if ((entity instanceof EntityPlayerMP)) {
+							world.playSound((EntityPlayer) null, (entity.posX), (entity.posY), (entity.posZ),
+									(net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY
+											.getObject(new ResourceLocation("ui.toast.challenge_complete")),
+									SoundCategory.NEUTRAL, (float) 1, (float) 1);
+						}
 					}
 				}
 			}

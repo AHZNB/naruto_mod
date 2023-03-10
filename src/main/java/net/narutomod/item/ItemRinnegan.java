@@ -150,8 +150,13 @@ public class ItemRinnegan extends ElementsNarutomodMod.ModElement {
 						}
 					}
 					if (entity instanceof EntityPlayer) {
-						GuiNinjaScroll.enableJutsu((EntityPlayer)entity, (ItemJutsu.Base)ItemYoton.block, ItemYoton.SEALING9D,
-						 ((EntityPlayer)entity).getItemStackFromSlot(EntityEquipmentSlot.HEAD).getItem() == helmet);
+						EntityPlayer player = (EntityPlayer)entity;
+						ItemStack helmetStack = player.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
+						GuiNinjaScroll.enableJutsu(player, (ItemJutsu.Base)ItemYoton.block,
+						 ItemYoton.SEALING9D, helmetStack.getItem() == helmet);
+						if (helmetStack.getItem() != helmet) {
+							player.inventory.clearMatchingItems(ItemAsuraCanon.block, -1, -1, null);
+						}
 					}
 				}
 			}
