@@ -545,7 +545,7 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 					return;
 				}
 				float gateOpened = this.getGateOpened(itemstack);
-				if (player.getHeldItemMainhand().equals(itemstack) || player.getHeldItemOffhand().equals(itemstack)) {
+				if (player.isEntityAlive() && (player.getHeldItemMainhand().equals(itemstack) || player.getHeldItemOffhand().equals(itemstack))) {
 					this.GATE[(int) gateOpened].activate(player);
 					if (gateOpened >= 1f && gateOpened >= this.getMaxOpenableGate(itemstack) && entity.ticksExisted % 40 == 8) {
 						this.addBattleXP(itemstack, 1);

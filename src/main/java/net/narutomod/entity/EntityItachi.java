@@ -1,6 +1,9 @@
 
 package net.narutomod.entity;
 
+import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.registry.EntityEntry;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
@@ -149,7 +152,6 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 			if (this.isReal) {
 				this.setDropChance(EntityEquipmentSlot.HEAD, 1.0F);
 			}
-
 			return super.onInitialSpawn(difficulty, livingdata);
 		}
 

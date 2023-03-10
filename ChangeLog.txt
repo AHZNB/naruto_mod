@@ -27,6 +27,7 @@ Jutsus:
  - fix night guy killing player on respawn
  - limit poison mist to max 35 power
  - decrease Temari's fan max power to 40 from 60
+ - make eight gate deactivate on death
 
 Items:
  - cleaver sword now takes damage when used, attack speed and damage decrease, recipe changed
