@@ -1,8 +1,8 @@
 {
   "id_map": {
+    "DIMENSION": 13,
     "GUI": 63,
-    "ENTITY": 414,
-    "DIMENSION": 13
+    "ENTITY": 414
   },
   "mod_elements": [
     {
@@ -8474,7 +8474,7 @@
       "item.mangekyosharinganhelmet.name": "Mangekyo Sharingan - Amaterasu",
       "key.mcreator.specialjutsu1": "Special Jutsu 1",
       "subtitles.hiding_in_ash": "",
-      "chattext.ninjaexperience": "Ninja Éxperience: ",
+      "chattext.ninjaexperience": "Ninja Experience: ",
       "entity.kisame_hoshigaki.name": "Kisame Hoshigaki",
       "advancements.jiton_acquired.title": "Magnet Release Acquired",
       "item.ninja_armor_fishnetslegs.name": "Ninja Fishnets Shirt and Pants",
