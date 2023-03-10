@@ -514,7 +514,21 @@ public class ProcedureOnPlayerPostTick extends ElementsNarutomodMod.ModElement {
 																				.isDone()
 																		: false)))))))
 								&& (((entity instanceof EntityPlayer) ? ((EntityPlayer) entity).experienceLevel : 0) >= 10)))) {
-					if ((Math.random() <= 0.001)) {
+					if (((Math.random() <= 0.001) && (((((entity instanceof EntityPlayer)
+							? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemDoton.block, (int) (1)))
+							: false)
+							|| ((entity instanceof EntityPlayer)
+									? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemFuton.block, (int) (1)))
+									: false))
+							|| (((entity instanceof EntityPlayer)
+									? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemKaton.block, (int) (1)))
+									: false)
+									|| ((entity instanceof EntityPlayer)
+											? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemSuiton.block, (int) (1)))
+											: false)))
+							|| ((entity instanceof EntityPlayer)
+									? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemRaiton.block, (int) (1)))
+									: false)))) {
 						rngbase = (double) (((EntityBijuManager.availableBijus() > 0 ? 5 : 0) + (10 * 10)) + 5);
 						if ((Math.random() <= (10 / (rngbase)))) {
 							stack = new ItemStack(ItemByakugan.helmet, (int) (1));
@@ -1025,21 +1039,7 @@ public class ProcedureOnPlayerPostTick extends ElementsNarutomodMod.ModElement {
 							stack = new ItemStack(ItemJinton.block, (int) (1));
 						} else {
 							stack = new ItemStack(Blocks.AIR, (int) (1));
-							if ((((rngbase) > 105) && (((((entity instanceof EntityPlayer)
-									? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemDoton.block, (int) (1)))
-									: false)
-									|| ((entity instanceof EntityPlayer)
-											? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemFuton.block, (int) (1)))
-											: false))
-									|| (((entity instanceof EntityPlayer)
-											? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemKaton.block, (int) (1)))
-											: false)
-											|| ((entity instanceof EntityPlayer)
-													? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemSuiton.block, (int) (1)))
-													: false)))
-									|| ((entity instanceof EntityPlayer)
-											? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemRaiton.block, (int) (1)))
-											: false)))) {
+							if (((rngbase) > 105)) {
 								int tails = EntityBijuManager.getRandomAvailableBiju();
 								if (EntityBijuManager.setPlayerAsJinchurikiByTails((EntityPlayer) entity, tails)) {
 									world.playSound((EntityPlayer) null, x, y, z,
