@@ -495,8 +495,7 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 		Vec3d vec3d2 = vec3d.add(vec3d1);
 		Vec3d vec3d3 = null;
 		RayTraceResult objectMouseOver = entity.world.rayTraceBlocks(vec3d, vec3d2, stopOnLiquid, false, true);
-		if (objectMouseOver != null)
- {
+		if (objectMouseOver != null) {
 			d1 = objectMouseOver.hitVec.distanceTo(vec3d);
 		}
 		List<Entity> list = entity.world.getEntitiesInAABBexcluding(entity,
