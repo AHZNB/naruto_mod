@@ -1308,7 +1308,11 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public void resetData() {
-			this.getBijuManager().reset();
+			EntityBijuManager bm = this.getBijuManager();
+			if (bm.getCloakLevel() > 0) {
+				bm.toggleBijuCloak();
+			}
+			bm.reset();
 		}
 
 	 	@Override

@@ -222,6 +222,16 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
+	private static void closeGates(EntityLivingBase entity) {
+		ItemStack stack = entity.getHeldItemMainhand();
+		if (stack.getItem() != block) {
+			stack = entity.getHeldItemOffhand();
+		}
+		if (stack.getItem() == block) {
+			((RangedItem)stack.getItem()).closeGates(stack, entity);
+		}
+	}
+
 	public static class RangedItem extends Item {
 		private final UUID GATE_MODIFIER = UUID.fromString("f6944d0f-5c81-45db-9261-6a9ad9fe4840");
 		private static final String GATE_KEY = "gateOpened";
@@ -264,7 +274,7 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 						  SoundCategory.NEUTRAL, 2.0F, 1.0F);
 						world.spawnEntity(bullet);
 						if (!entity.isCreative()) {
-							ProcedureUtils.setDeathAnimations(entity, 2, 200);
+							//ProcedureUtils.setDeathAnimations(entity, 2, 200);
 							entity.getCooldownTracker().setCooldown(itemstack.getItem(), 200);
 						}
 						entity.sendStatusMessage(new TextComponentString(I18n.translateToLocal("entity.entityngdragon.name")), true);
@@ -420,14 +430,8 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 			@SubscribeEvent(priority = EventPriority.LOW)
 			public void onDeath(LivingDeathEvent event) {
 				EntityLivingBase entity = event.getEntityLiving();
+				ItemEightGates.closeGates(entity);
 				ProcedureUtils.clearDeathAnimations(entity);
-				ItemStack stack = entity.getHeldItemMainhand();
-				if (stack.getItem() != block) {
-					stack = entity.getHeldItemOffhand();
-				}
-				if (stack.getItem() == block) {
-					((RangedItem)stack.getItem()).closeGates(stack, entity);
-				}
 			}
 		}
 
@@ -873,6 +877,14 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 			this.motionX *= 0.4f;
 			this.motionY *= 0.4f;
 			this.motionZ *= 0.4f;
+		}
+
+		@Override
+		public void setDead() {
+			super.setDead();
+			if (!this.world.isRemote && this.shootingEntity != null) {
+				closeGates(this.shootingEntity);
+			}
 		}
 
 		@Override

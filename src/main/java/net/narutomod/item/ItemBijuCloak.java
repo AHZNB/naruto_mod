@@ -77,8 +77,8 @@ public class ItemBijuCloak extends ElementsNarutomodMod.ModElement {
 
 	@Override
 	public void initElements() {
-		ItemArmor.ArmorMaterial enuma = EnumHelper.addArmorMaterial("BIJU_CLOAK", "narutomod:sasuke_", 1024, new int[]{1024, 1024, 1024, 1024}, 0,
-				(net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("")), 5f);
+		ItemArmor.ArmorMaterial enuma = EnumHelper.addArmorMaterial("BIJU_CLOAK", "narutomod:sasuke_",
+		 1024, new int[]{1024, 1024, 1024, 1024}, 0, null, 5f);
 
 		elements.items.add(() -> new ItemArmor(enuma, 0, EntityEquipmentSlot.HEAD) {
 			@Override
@@ -183,13 +183,10 @@ public class ItemBijuCloak extends ElementsNarutomodMod.ModElement {
 					} else if (!world.isRemote) {
 						itemstack.shrink(1);
 					}
-				} else if (entity instanceof EntityJinchurikiClone.EntityCustom && entity.isEntityAlive()) {
-					int wearingTicks = getWearingTicks(entity);
-					setWearingTicks(entity, wearingTicks + 1);
-					if (!world.isRemote) {
-						int i = getCloakLevel(itemstack);
-						applyEffects((EntityLivingBase)entity, i, getTails(itemstack) != 1 && i == 1);
-					}
+				} else if (entity instanceof EntityJinchurikiClone.EntityCustom && !world.isRemote && entity.isEntityAlive()) {
+					setWearingTicks(entity, getWearingTicks(entity) + 1);
+					int i = getCloakLevel(itemstack);
+					applyEffects((EntityLivingBase)entity, i, getTails(itemstack) != 1 && i == 1);
 				}
 			}
 

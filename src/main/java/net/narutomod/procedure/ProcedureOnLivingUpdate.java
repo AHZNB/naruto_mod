@@ -14,6 +14,7 @@ import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.common.MinecraftForge;
 
 import net.minecraft.world.World;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.EntityPlayer;
@@ -147,11 +148,7 @@ public class ProcedureOnLivingUpdate extends ElementsNarutomodMod.ModElement {
 			d -= 1.0D;
 			entity.getEntityData().setDouble(NarutomodModVariables.DeathAnimationTime, d);
 			if (d <= 0.0D) {
-				if (entity.getEntityData().getDouble("deathAnimationType") == 2d) {
-					entity.setHealth(0f);
-				} else {
-					entity.onKillCommand();
-				}
+				entity.attackEntityFrom(DamageSource.WITHER.setDamageIsAbsolute(), Float.MAX_VALUE);
 				ProcedureUtils.clearDeathAnimations(entity);
 			}
 		}
