@@ -185,7 +185,7 @@ public class EntityNinjaMerchant extends ElementsNarutomodMod.ModElement {
 					.filter(entry -> entry.getKey().ordinal() <= level)
 					.flatMap(entry -> entry.getValue().stream())
 					.collect(Collectors.toCollection(MerchantRecipeList::new));
-			return recipes.size() > 0 ? recipes : null;
+			return recipes.isEmpty() ? recipes : null;
 		}
 
 		@SideOnly(Side.CLIENT)
@@ -251,7 +251,7 @@ public class EntityNinjaMerchant extends ElementsNarutomodMod.ModElement {
 			ItemStack stack = player.getHeldItem(hand);
 
 			if (stack.isEmpty() && this.isEntityAlive() && !this.isTrading() && !player.isSneaking()) {
-				if (!this.world.isRemote && !this.trades.isEmpty() && !this.assholeList.contains(player.getUniqueID())) {
+				if (!this.world.isRemote && this.getRecipes(player) != null && !this.assholeList.contains(player.getUniqueID())) {
 					this.setCustomer(player);
 					player.displayVillagerTradeGui(this);
 				} else if (this.world.isRemote) {
