@@ -2,6 +2,7 @@
 package net.narutomod.entity;
 
 import com.google.common.collect.Maps;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.relauncher.Side;
@@ -366,8 +367,10 @@ public class EntityMightGuy extends ElementsNarutomodMod.ModElement {
 				this.siegeStartingVillagers = this.getVillage().getNumVillagers();
 				Scoreboard _sc = this.world.getScoreboard();
 				this.customerKillCount = _sc.getObjective("siege_kills");
-				if (this.customerKillCount == null)
+				if (this.customerKillCount == null) {
 					this.customerKillCount = _sc.addScoreObjective("siege_kills", ScoreCriteria.TOTAL_KILL_COUNT);
+					this.customerKillCount.setDisplayName(I18n.translateToLocal("scoreboard.objective.siege_kills"));
+				}
 				_sc.getOrCreateScore(this.getName(), this.customerKillCount).setScorePoints(0);
 				_sc.getOrCreateScore(this.customer.getName(), this.customerKillCount).setScorePoints(0);
 				_sc.setObjectiveInDisplaySlot(1, this.customerKillCount);

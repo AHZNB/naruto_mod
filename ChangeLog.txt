@@ -80,6 +80,7 @@ General:
  - made ninja water walking not push player up if underwater
  - fixed hack to get jinchuriki by putting all nature release items in chests
  - fixed closing server while jinchuriki in biju cloak revokes the jinchuriki
+ - made might guy mission objective have a display name
 
 0.2.10-beta ===============================================================================
 
