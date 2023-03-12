@@ -158,7 +158,7 @@ public class EntityEightTails extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public double getMountedYOffset() {
-			return (this.isFaceDown() ? -0.09375d : 1.25d) * MODELSCALE;
+			return (this.isFaceDown() ? 0.03125d : 1.25d) * MODELSCALE;
 		}
 
 		@Override
