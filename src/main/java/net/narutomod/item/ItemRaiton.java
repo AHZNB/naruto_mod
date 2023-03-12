@@ -190,10 +190,10 @@ public class ItemRaiton extends ElementsNarutomodMod.ModElement {
 					if (!Chakra.pathway(this.summoner).consume(this.CHAKRA_BURN)) {
 						this.setDead();
 					}
-					this.summoner.addPotionEffect(new PotionEffect(MobEffects.RESISTANCE, 21, 3, false, false));
-					this.summoner.addPotionEffect(new PotionEffect(MobEffects.SPEED, 21, 32, false, false));
-					this.summoner.addPotionEffect(new PotionEffect(MobEffects.STRENGTH, 21, this.strengthAmplifier, false, false));
-					this.summoner.addPotionEffect(new PotionEffect(MobEffects.JUMP_BOOST, 21, 6, false, false));
+					this.summoner.addPotionEffect(new PotionEffect(MobEffects.RESISTANCE, 22, 3, false, false));
+					this.summoner.addPotionEffect(new PotionEffect(MobEffects.SPEED, 22, 32, false, false));
+					this.summoner.addPotionEffect(new PotionEffect(MobEffects.STRENGTH, 22, this.strengthAmplifier, false, false));
+					this.summoner.addPotionEffect(new PotionEffect(MobEffects.JUMP_BOOST, 22, 6, false, false));
 				}
 				this.setPosition(this.summoner.posX, this.summoner.posY, this.summoner.posZ);
 				if (this.rand.nextInt(8) == 0) {

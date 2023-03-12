@@ -853,7 +853,7 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 
 		protected BurningAsh(World worldIn, double xCoordIn, double yCoordIn, double zCoordIn, double xSpeedIn, double ySpeedIn, double zSpeedIn,
 		  int excludeEntityId) {
-			super(worldIn, xCoordIn, yCoordIn, zCoordIn, xSpeedIn, ySpeedIn, zSpeedIn, 0xFF606060, 5f + Particles.rand.nextFloat() * 5f, 100, 0, -1, 0f);
+			super(worldIn, xCoordIn, yCoordIn, zCoordIn, xSpeedIn, ySpeedIn, zSpeedIn, 0xFF606060, 8f + Particles.rand.nextFloat() * 5f, 100, 0, -1, 0f);
 			this.excludeEntity = worldIn.getEntityByID(excludeEntityId);
 		}
 

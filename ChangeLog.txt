@@ -30,6 +30,7 @@ Jutsus:
  - decrease Temari's fan max power to 40 from 60
  - improved lightning beast control, reduced jutsu duration
  - reduced lightning panther jutsu duration
+ - fixed skeletal control willow dance inifinitely gaining strength
 
 Items:
  - cleaver sword now takes damage when used, attack speed and damage decrease, recipe changed
