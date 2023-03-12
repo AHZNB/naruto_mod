@@ -466,11 +466,8 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public boolean attackEntityFrom(DamageSource source, float amount) {
-			if (source.getTrueSource() instanceof EntityLivingBase) {
-				float hp = this.getHealth();
-				float maxhp = this.getMaxHealth();
-				this.setAngerLevel(hp < 0.5f * maxhp ? 2 : hp < maxhp - 500f ? 1 : 0);
-			}
+			if (this.getHealth() <= 0.0f)
+				return false;
 			if (source.getTrueSource() instanceof EntityPlayer && source.getTrueSource().equals(this.getControllingPassenger()))
 				return false;
 			if (source.getImmediateSource() instanceof net.minecraft.entity.projectile.EntityPotion)
@@ -483,6 +480,11 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 				return false;
 			if (source == DamageSource.LIGHTNING_BOLT)
 				return false;
+			if (source.getTrueSource() instanceof EntityLivingBase) {
+				float hp = this.getHealth();
+				float maxhp = this.getMaxHealth();
+				this.setAngerLevel(hp < 0.5f * maxhp ? 2 : hp < maxhp - 500f ? 1 : 0);
+			}
 			//amount = MathHelper.clamp(amount * 0.2f, 0.0F, 1000.0F);
 			return super.attackEntityFrom(source, amount);
 		}

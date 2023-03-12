@@ -1,5 +1,6 @@
 entity.crow.name=Crow
 item.kiba_blades.name=Kiba Blades
+chattext.gedomazo.cantspawn=Can't summon Gedo Mazo, it's already in the world
 entity.tenten.name=Tenten
 item.futton.name=Boil Release
 item.scroll_water_prison.name=Water Release - Water Prison Scroll
@@ -14,8 +15,8 @@ tooltip.samehada.general=Samehada is a sentient sword utilised by the Seven Ninj
 item.shuriken.name=Shuriken
 entity.cellular_activation.name=Cellular Activation
 entity.entityasakujaku.name=Asakujaku (Morning Peacock)
-item.scroll_water_dragon.name=Water Release - Water Dragon Bullet Scroll
 tooltip.kekkeimora.expansivetsb=Expansive Truth Seeking Ball
+item.scroll_water_dragon.name=Water Release - Water Dragon Bullet Scroll
 entity.tailed_beast.name=Tailed Beast
 item.gunbai.name=Gunbai
 item.scroll_rasenshuriken.name=Wind Release - Rasenshuriken Scroll

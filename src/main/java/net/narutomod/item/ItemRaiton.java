@@ -81,8 +81,7 @@ public class ItemRaiton extends ElementsNarutomodMod.ModElement {
 		protected float getPower(ItemStack stack, EntityLivingBase entity, int timeLeft) {
 			ItemJutsu.JutsuEnum jutsu = this.getCurrentJutsu(stack);
 			if (jutsu == CHASINGDOG) {
-				return this.getPower(stack, entity, timeLeft, 5f, 30f);
-				//return Math.min(5f + (float)(this.getMaxUseDuration() - timeLeft) / 20f, this.getMaxPower(stack, entity));
+				return this.getPower(stack, entity, timeLeft, 4f, 30f);
 			} else if (jutsu == GIAN) {
 				return this.getPower(stack, entity, timeLeft, 1f, 150f);
 			} else if (jutsu == KIRIN) {

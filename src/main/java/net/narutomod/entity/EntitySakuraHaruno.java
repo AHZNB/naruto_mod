@@ -243,7 +243,7 @@ public class EntitySakuraHaruno extends ElementsNarutomodMod.ModElement {
 			}
 		}
 
-		class AIHeal extends EntityAIBase {
+		public class AIHeal extends EntityAIBase {
 			private final EntityCustom entity;
 			private final double speed;
 			private final int chance;
@@ -251,11 +251,11 @@ public class EntitySakuraHaruno extends ElementsNarutomodMod.ModElement {
 		    private int delayCounter;
 		    private Vec3d lastVec;
 
-			AIHeal(EntityCustom healer, double speedIn) {
+			public AIHeal(EntityCustom healer, double speedIn) {
 				this(healer, speedIn, 40);
 			}
 
-			AIHeal(EntityCustom healer, double speedIn, int chanceIn) {
+			public AIHeal(EntityCustom healer, double speedIn, int chanceIn) {
 				this.entity = healer;
 				this.speed = speedIn;
 				this.chance = chanceIn;

@@ -58,7 +58,7 @@ public class ItemJutsu extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static DamageSource causeSenjutsuDamage(Entity source, @Nullable EntityLivingBase indirectEntityIn) {
-		return new EntityDamageSourceIndirect(SENJUTSU_TYPE, source, indirectEntityIn);
+		return new EntityDamageSourceIndirect(SENJUTSU_TYPE, source, indirectEntityIn).setDamageIsAbsolute();
 	}
 
 	public static boolean isDamageSourceNinjutsu(DamageSource source) {

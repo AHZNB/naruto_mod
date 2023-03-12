@@ -20,6 +20,7 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.item.ItemStack;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.IAttribute;
@@ -46,6 +47,7 @@ import net.minecraft.network.datasync.DataSerializers;
 
 import net.narutomod.item.ItemJutsu;
 import net.narutomod.procedure.ProcedureUtils;
+import net.narutomod.Chakra;
 import net.narutomod.Particles;
 import net.narutomod.ElementsNarutomodMod;
 
@@ -136,6 +138,8 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 			 || (res.entityHit instanceof EntityPlayer && EntityBijuManager.isJinchuriki((EntityPlayer)res.entityHit)))) {
 				if (entity.world.spawnEntity(new EntityGedoStatue.EntityCustom(entity, (EntityLivingBase)res.entityHit))) {
 					return true;
+				} else if (entity instanceof EntityPlayer) {
+					((EntityPlayer)entity).sendStatusMessage(new TextComponentTranslation("chattext.gedomazo.cantspawn"), false);
 				}
 			}
 			return false;
@@ -184,6 +188,7 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 			Vec3d vec = new Vec3d(0d, 0d, -6d).rotateYaw(-summonerIn.rotationYaw * 0.017453292F).add(summonerIn.getPositionVector());
 			this.rotationYawHead = summonerIn.rotationYaw;
 			this.setLocationAndAngles(vec.x, vec.y, vec.z, summonerIn.rotationYaw, 0f);
+			this.lifeSpan = 400;
 		}
 
 		@Override
@@ -205,9 +210,11 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 			return ((Boolean)this.getDataManager().get(SEALED9)).booleanValue();
 		}
 
-		protected void setSealedAll9Bijus(boolean b) {
-			this.getDataManager().set(SEALED9, Boolean.valueOf(b));
-			this.lifeSpan = 2400;
+		private void setSealedAll9Bijus(boolean set) {
+			this.getDataManager().set(SEALED9, Boolean.valueOf(set));
+			if (set) {
+				this.lifeSpan = this.getAge() + 1200;
+			}
 		}
 
 		@Override
@@ -387,7 +394,10 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 							if (biju.getBijuManager().isSealed()) {
 								this.fuuinTarget = null;
 								this.lifeSpan = age + 40;
-							} else if (passengers > 0) {
+								if (this.ogJinchuriki != null) {
+									this.ogJinchuriki.onKillCommand();
+								}
+							} else if (passengers > 0 && !this.fuuinTarget.isDead) {
 								if (!biju.isFuuinInProgress()) {
 									biju.fuuinIntoVessel(this, 36000);
 								} else {
@@ -399,7 +409,9 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 								biju.cancelFuuin();
 								this.fuuinTarget = null;
 								this.lifeSpan = age + 40;
-								biju.getBijuManager().setVesselEntity(this.ogJinchuriki);
+								if (this.ogJinchuriki != null) {
+									biju.getBijuManager().setVesselEntity(this.ogJinchuriki);
+								}
 							}
 						}
 					} else if (age > this.riseTime && age < this.riseTime + 100) {
@@ -453,6 +465,11 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 					Vec3d vec2 = new Vec3d(this.sitPos[i].x, 0d, this.sitPos[i].z).rotateYaw(-this.renderYawOffset * 0.017453292F)
 					 .addVector(0d, this.sitPos[i].y, 0d).scale(0.0625f * MODEL_SCALE);
 					passenger.setPosition(this.posX + vec2.x, this.posY + vec2.y, this.posZ + vec2.z);
+					if (!this.world.isRemote && passenger instanceof EntityLivingBase
+					 && this.fuuinTarget instanceof EntityTailedBeast.Base && ((EntityTailedBeast.Base)this.fuuinTarget).isFuuinInProgress()
+					 && passenger.ticksExisted % 20 == 8 && !Chakra.pathway((EntityLivingBase)passenger).consume(5d)) {
+						passenger.dismountRidingEntity();
+					}
 				}
 			} else {
 				super.updatePassenger(passenger);
@@ -569,10 +586,14 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 				return;
 			if (!this.world.isRemote && result.entityHit instanceof EntityLivingBase
 			 && (!(result.entityHit instanceof EntityPlayer) || !((EntityPlayer)result.entityHit).isCreative())) {
+			 	if (this.fuuin && result.entityHit instanceof EntityTailedBeast.Base) {
+					result.entityHit.attackEntityFrom(ItemJutsu.causeSenjutsuDamage(this, this.shootingEntity)
+					 .setDamageBypassesArmor(), this.damage + (this.rand.nextFloat()-0.5f) * 40f);
+			 	}
 				if (!this.fuuin && !result.entityHit.equals(((EntityCustom)this.shootingEntity).getSummoner())) {
 					net.narutomod.Chakra.pathway((EntityLivingBase)result.entityHit).consume(1.0f);
 					result.entityHit.attackEntityFrom(ItemJutsu.causeSenjutsuDamage(this, this.shootingEntity)
-					 .setDamageBypassesArmor().setDamageIsAbsolute(), this.damage + (this.rand.nextFloat()-0.5f) * 40f);
+					 .setDamageBypassesArmor(), this.damage + (this.rand.nextFloat()-0.5f) * 40f);
 					if (this.targetList.contains(result.entityHit)) {
 						this.targetList.remove(result.entityHit);
 						this.targetList.sort(new ProcedureUtils.EntitySorter(this));
