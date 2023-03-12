@@ -185,7 +185,7 @@ public class EntityNinjaMerchant extends ElementsNarutomodMod.ModElement {
 					.filter(entry -> entry.getKey().ordinal() <= level)
 					.flatMap(entry -> entry.getValue().stream())
 					.collect(Collectors.toCollection(MerchantRecipeList::new));
-			return recipes.isEmpty() ? recipes : null;
+			return recipes.isEmpty() ? null : recipes;
 		}
 
 		@SideOnly(Side.CLIENT)
