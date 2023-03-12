@@ -42,6 +42,7 @@ Items:
  - fixed biju map crashing bug
  - made biju map icons 50% bigger
  - limit big folding fan blow power
+ - make forceDropDojutsuOnDeath also work for Rinnegan, Tenseigan and EMS
 
 Entities:
  - increase spawn rates for bosses and remove dungeon spawns
