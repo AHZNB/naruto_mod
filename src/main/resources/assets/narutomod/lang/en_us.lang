@@ -535,6 +535,7 @@ item.scroll_puppet.name=Puppet Jutsu Scroll
 item.clothes_hokagelegs.name=
 entity.lightning_panther.name=Black Panther
 potion.effect.reach=Reach
+scoreboard.objective.siege_kills=Siege Kills
 lingering_potion.effect.feather_falling=Lingering Feather Falling
 effect.paralysis=Paralysis
 tile.water_still.name=Water Still
