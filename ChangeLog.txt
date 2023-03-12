@@ -82,6 +82,7 @@ General:
  - fixed hack to get jinchuriki by putting all nature release items in chests
  - fixed closing server while jinchuriki in biju cloak revokes the jinchuriki
  - made might guy mission objective have a display name
+ - use chattext.cooldown.formatted instead of chattext.cooldown
 
 0.2.10-beta ===============================================================================
 

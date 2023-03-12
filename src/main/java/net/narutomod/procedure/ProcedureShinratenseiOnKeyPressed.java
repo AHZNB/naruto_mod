@@ -1,5 +1,6 @@
 package net.narutomod.procedure;
 
+import net.minecraft.util.text.TextComponentTranslation;
 import net.narutomod.potion.PotionFlight;
 import net.narutomod.item.ItemRinnegan;
 import net.narutomod.item.ItemJutsu;
@@ -18,6 +19,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
 
+import java.text.DecimalFormat;
 import java.util.Map;
 
 @ElementsNarutomodMod.ModElement.Tag
@@ -118,12 +120,10 @@ public class ProcedureShinratenseiOnKeyPressed extends ElementsNarutomodMod.ModE
 			}
 			entity.getEntityData().setDouble("shinratensei_power", (power));
 		} else {
-			string = net.minecraft.util.text.translation.I18n.translateToLocal("chattext.cooldown");
 			if (entity instanceof EntityPlayer && !entity.world.isRemote) {
 				((EntityPlayer) entity).sendStatusMessage(
-						new TextComponentString((((string)) + "" + (" ") + "" + ((new java.text.DecimalFormat(".1").format(
-								((((entity.getEntityData().getDouble("shinratenseicd")) - (NarutomodModVariables.world_tick)) + 100) / 20)))))),
-						(true));
+						new TextComponentTranslation("chattext.cooldown.formatted", new DecimalFormat(".1")
+								.format(((entity.getEntityData().getDouble("shinratenseicd") - NarutomodModVariables.world_tick) + 100) / 20)), true);
 			}
 		}
 	}

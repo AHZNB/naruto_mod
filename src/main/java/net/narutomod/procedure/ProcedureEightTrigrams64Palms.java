@@ -1,5 +1,6 @@
 package net.narutomod.procedure;
 
+import net.minecraft.util.text.TextComponentTranslation;
 import net.narutomod.item.ItemByakugan;
 import net.narutomod.entity.EntityEightTrigrams;
 import net.narutomod.PlayerTracker;
@@ -19,6 +20,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
 
+import java.text.DecimalFormat;
 import java.util.Map;
 
 @ElementsNarutomodMod.ModElement.Tag
@@ -69,12 +71,10 @@ public class ProcedureEightTrigrams64Palms extends ElementsNarutomodMod.ModEleme
 					Chakra.pathway((EntityPlayer) entity).warningDisplay();
 				}
 			} else {
-				string = net.minecraft.util.text.translation.I18n.translateToLocal("chattext.cooldown");
 				if (entity instanceof EntityPlayer && !entity.world.isRemote) {
 					((EntityPlayer) entity).sendStatusMessage(
-							new TextComponentString((((string)) + "" + (" ") + ""
-									+ ((new java.text.DecimalFormat(".2").format((((cooldown) - (NarutomodModVariables.world_tick)) / 20)))))),
-							(true));
+							new TextComponentTranslation("chattext.cooldown.formatted", new DecimalFormat(".2")
+									.format((cooldown - NarutomodModVariables.world_tick) / 20)), true);
 				}
 			}
 		}

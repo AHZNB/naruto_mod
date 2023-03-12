@@ -1,5 +1,6 @@
 package net.narutomod.procedure;
 
+import net.minecraft.util.text.TextComponentTranslation;
 import org.lwjgl.input.Mouse;
 
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -98,9 +99,8 @@ public class ProcedureBanShoTenin extends ElementsNarutomodMod.ModElement {
 			procedure.execute(is_pressed, entity, grabbedEntity);
 		} else {
 			if (entity instanceof EntityPlayer && !entity.world.isRemote) {
-				String string = net.minecraft.util.text.translation.I18n.translateToLocal("chattext.cooldown");
 				((EntityPlayer) entity).sendStatusMessage(
-					new TextComponentString(string + " " + (new java.text.DecimalFormat(".1").format(
+					new TextComponentTranslation("chattext.cooldown.formatted", (new java.text.DecimalFormat(".1").format(
 					((float)entity.getEntityData().getInteger(BSTN_CD) - (int)entity.world.getTotalWorldTime()) / 20))), 
 					true);
 			}

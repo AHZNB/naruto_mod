@@ -1,6 +1,7 @@
 
 package net.narutomod.entity;
 
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
@@ -902,8 +903,7 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 				}
 			} else if (entity instanceof EntityPlayer && !entity.world.isRemote) {
 				((EntityPlayer)entity).sendStatusMessage(
-				 new TextComponentString(I18n.translateToLocal("chattext.cooldown") 
-				 + ":" + ((cd.cooldown - entity.ticksExisted) / 20)), true);
+				 new TextComponentTranslation("chattext.cooldown.formatted", (cd.cooldown - entity.ticksExisted) / 20), true);
 			}
 		}
 	}
