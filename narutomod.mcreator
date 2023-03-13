@@ -1,7 +1,7 @@
 {
   "id_map": {
-    "GUI": 63,
     "DIMENSION": 13,
+    "GUI": 63,
     "ENTITY": 414
   },
   "mod_elements": [
@@ -24,7 +24,7 @@
       "type": "procedure",
       "sortid": 21,
       "compiles": true,
-      "locked_code": false,
+      "locked_code": true,
       "ids": {},
       "metadata": {
         "dependencies": [
@@ -1388,7 +1388,7 @@
       "type": "procedure",
       "sortid": 261,
       "compiles": true,
-      "locked_code": false,
+      "locked_code": true,
       "ids": {},
       "metadata": {
         "dependencies": [
@@ -1408,7 +1408,7 @@
       "type": "procedure",
       "sortid": 263,
       "compiles": true,
-      "locked_code": false,
+      "locked_code": true,
       "ids": {},
       "metadata": {
         "dependencies": [
