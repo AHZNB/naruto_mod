@@ -45,6 +45,7 @@ import net.narutomod.entity.EntityShieldBase;
 import net.narutomod.entity.EntitySandBullet;
 import net.narutomod.entity.EntitySandBind;
 import net.narutomod.entity.EntitySandLevitation;
+import net.narutomod.entity.EntityBijuManager;
 import net.narutomod.PlayerTracker;
 import net.narutomod.Chakra;
 import net.narutomod.creativetab.TabModTab;
@@ -143,7 +144,8 @@ public class ItemJiton extends ElementsNarutomodMod.ModElement {
 		public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer entity, EnumHand hand) {
 			if ((entity.isCreative() || (ProcedureUtils.hasItemInInventory(entity, ItemFuton.block) 
 			 && ProcedureUtils.hasItemInInventory(entity, ItemDoton.block))) 
-			 && entity.getItemStackFromSlot(EntityEquipmentSlot.CHEST).getItem() == ItemGourd.body) {
+			 && (entity.getItemStackFromSlot(EntityEquipmentSlot.CHEST).getItem() == ItemGourd.body
+			  || (EntityBijuManager.getTails(entity) == 1 && EntityBijuManager.cloakLevel(entity) > 0))) {
 				return super.onItemRightClick(world, entity, hand);
 			}
 			return new ActionResult<ItemStack>(EnumActionResult.FAIL, entity.getHeldItem(hand));

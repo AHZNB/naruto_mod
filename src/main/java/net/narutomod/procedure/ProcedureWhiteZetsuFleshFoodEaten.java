@@ -48,6 +48,7 @@ public class ProcedureWhiteZetsuFleshFoodEaten extends ElementsNarutomodMod.ModE
 		Entity entity = (Entity) dependencies.get("entity");
 		World world = (World) dependencies.get("world");
 		ItemStack rinneganstack = ItemStack.EMPTY;
+		boolean flag = false;
 		if ((!(world.isRemote))) {
 			if (ProcedureUtils.isWearingMangekyo((EntityLivingBase) entity)) {
 				if (entity instanceof EntityLivingBase)
@@ -108,27 +109,34 @@ public class ProcedureWhiteZetsuFleshFoodEaten extends ElementsNarutomodMod.ModE
 					&& (!((entity instanceof EntityPlayer)
 							? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemMokuton.block, (int) (1)))
 							: false)))
-					&& (Math.random() < 0.1))) {
-				if (entity instanceof EntityPlayer) {
-					ItemStack _setstack = new ItemStack(ItemMokuton.block, (int) (1));
-					_setstack.setCount(1);
-					ItemHandlerHelper.giveItemToPlayer(((EntityPlayer) entity), _setstack);
+					&& (entity.isEntityAlive()))) {
+				if ((world.getGameRules().getBoolean("keepInventory") || world.getGameRules().getBoolean("keepNinjaXp"))) {
+					flag = (boolean) (Math.random() < 0.01);
+				} else {
+					flag = (boolean) (Math.random() < 0.1);
 				}
-				if (((entity instanceof EntityPlayer)
-						? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemNinjutsu.block, (int) (1)))
-						: false)) {
-					ItemStack stack = ProcedureUtils.getMatchingItemStack((EntityPlayer) entity, ItemNinjutsu.block);
-					((ItemNinjutsu.RangedItem) stack.getItem()).enableJutsu(stack, ItemNinjutsu.KAGEBUNSHIN, true);
-				}
-				if (entity instanceof EntityPlayerMP) {
-					Advancement _adv = ((MinecraftServer) ((EntityPlayerMP) entity).mcServer).getAdvancementManager()
-							.getAdvancement(new ResourceLocation("narutomod:mokuton_acquired"));
-					AdvancementProgress _ap = ((EntityPlayerMP) entity).getAdvancements().getProgress(_adv);
-					if (!_ap.isDone()) {
-						Iterator _iterator = _ap.getRemaningCriteria().iterator();
-						while (_iterator.hasNext()) {
-							String _criterion = (String) _iterator.next();
-							((EntityPlayerMP) entity).getAdvancements().grantCriterion(_adv, _criterion);
+				if ((flag)) {
+					if (entity instanceof EntityPlayer) {
+						ItemStack _setstack = new ItemStack(ItemMokuton.block, (int) (1));
+						_setstack.setCount(1);
+						ItemHandlerHelper.giveItemToPlayer(((EntityPlayer) entity), _setstack);
+					}
+					if (((entity instanceof EntityPlayer)
+							? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemNinjutsu.block, (int) (1)))
+							: false)) {
+						ItemStack stack = ProcedureUtils.getMatchingItemStack((EntityPlayer) entity, ItemNinjutsu.block);
+						((ItemNinjutsu.RangedItem) stack.getItem()).enableJutsu(stack, ItemNinjutsu.KAGEBUNSHIN, true);
+					}
+					if (entity instanceof EntityPlayerMP) {
+						Advancement _adv = ((MinecraftServer) ((EntityPlayerMP) entity).mcServer).getAdvancementManager()
+								.getAdvancement(new ResourceLocation("narutomod:mokuton_acquired"));
+						AdvancementProgress _ap = ((EntityPlayerMP) entity).getAdvancements().getProgress(_adv);
+						if (!_ap.isDone()) {
+							Iterator _iterator = _ap.getRemaningCriteria().iterator();
+							while (_iterator.hasNext()) {
+								String _criterion = (String) _iterator.next();
+								((EntityPlayerMP) entity).getAdvancements().grantCriterion(_adv, _criterion);
+							}
 						}
 					}
 				}

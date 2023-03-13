@@ -32,6 +32,8 @@ Jutsus:
  - reduced lightning panther jutsu duration
  - fixed skeletal control willow dance inifinitely gaining strength
  - fixed ice mirrors being able to use without chakra
+ - reduced wood burial duration to 10 seconds, damage 10 per second
+ - allow 1-tail jinchuriki in biju cloak to use magnet release without a sand gourd
 
 Items:
  - cleaver sword now takes damage when used, attack speed and damage decrease, recipe changed
@@ -44,6 +46,7 @@ Items:
  - made biju map icons 50% bigger
  - limit big folding fan blow power
  - updated rinnegan's asura path canon to shoot missiles
+ - reduced chances of getting wood release to 1% if keepInvenotry or keepNinjaXp is true
 
 Entities:
  - increase spawn rates for bosses and remove dungeon spawns

@@ -42,7 +42,7 @@ public class EntityWoodBurial extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static class EC extends ItemMokuton.WoodSegment {
-		private int lifespan = 1200;
+		private int lifespan = 200;
 		private EC prevSegment;
 		private Entity target;
 		private Vec3d targetVec;
@@ -114,7 +114,7 @@ public class EntityWoodBurial extends ElementsNarutomodMod.ModElement {
 					 ImmutableMap.of(pos, Blocks.LEAVES.getStateFromMeta(0)), 0, this.lifespan - this.ticksExisted, false, false);
 				}
 				if (this.targetVec != null && this.targetTargetable()) {
-					this.target.attackEntityFrom(DamageSource.IN_WALL, 1.0f);
+					this.target.attackEntityFrom(DamageSource.IN_WALL, 10.0f);
 					this.target.setPositionAndUpdate(this.targetVec.x, this.targetVec.y, this.targetVec.z);
 				}
 			} else if (!this.world.isRemote) {

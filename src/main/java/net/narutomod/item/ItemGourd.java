@@ -26,11 +26,10 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.init.MobEffects;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.nbt.NBTTagCompound;
-//import net.minecraftforge.fml.common.FMLCommonHandler;
 
+import net.narutomod.entity.EntityBijuManager;
 import net.narutomod.item.ItemJiton;
 import net.narutomod.procedure.ProcedureUtils;
-//import net.narutomod.entity.EntityParticle;
 import net.narutomod.creativetab.TabModTab;
 import net.narutomod.ElementsNarutomodMod;
 
@@ -45,9 +44,8 @@ public class ItemGourd extends ElementsNarutomodMod.ModElement {
 
 	@Override
 	public void initElements() {
-		ItemArmor.ArmorMaterial enuma = EnumHelper.addArmorMaterial("GOURD", "narutomod:sasuke_", 20,
-		 new int[]{2, 5, 20, 2}, 0,
- net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("")), 5f);
+		ItemArmor.ArmorMaterial enuma = EnumHelper.addArmorMaterial("GOURD", "narutomod:sasuke_",
+		 20, new int[]{2, 5, 20, 2}, 0, null, 5f);
 		elements.items.add(() -> new ItemArmor(enuma, 0, EntityEquipmentSlot.CHEST) {
 			@SideOnly(Side.CLIENT)
 			private ModelBiped armorModel;
@@ -128,6 +126,9 @@ public class ItemGourd extends ElementsNarutomodMod.ModElement {
 	}
 	
 	public static Vec3d getMouthPos(EntityLivingBase lb) {
+		if (lb instanceof EntityPlayer && EntityBijuManager.getTails((EntityPlayer)lb) == 1 && EntityBijuManager.cloakLevel((EntityPlayer)lb) > 0) {
+			return lb.getPositionVector();
+		}
 		Vec3d vec = new Vec3d(0.4d, 1.75d, -0.4d);
 		double x = lb.posX - (Math.sin((lb.renderYawOffset + 90) * 0.0174533) * vec.x) - (Math.sin(lb.renderYawOffset * 0.0174533) * vec.z);
 		double z = lb.posZ + (Math.cos((lb.renderYawOffset + 90) * 0.0174533) * vec.x) + (Math.cos(lb.renderYawOffset * 0.0174533) * vec.z);
