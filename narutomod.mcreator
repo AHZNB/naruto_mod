@@ -1,8 +1,8 @@
 {
   "id_map": {
-    "ENTITY": 414,
     "DIMENSION": 13,
-    "GUI": 63
+    "GUI": 63,
+    "ENTITY": 414
   },
   "mod_elements": [
     {
@@ -1389,7 +1389,7 @@
       "type": "procedure",
       "sortid": 261,
       "compiles": true,
-      "locked_code": true,
+      "locked_code": false,
       "ids": {},
       "metadata": {
         "dependencies": [
@@ -1409,7 +1409,7 @@
       "type": "procedure",
       "sortid": 263,
       "compiles": true,
-      "locked_code": true,
+      "locked_code": false,
       "ids": {},
       "metadata": {
         "dependencies": [

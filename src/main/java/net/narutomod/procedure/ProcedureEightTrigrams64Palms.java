@@ -1,6 +1,5 @@
 package net.narutomod.procedure;
 
-import net.minecraft.util.text.TextComponentTranslation;
 import net.narutomod.item.ItemByakugan;
 import net.narutomod.entity.EntityEightTrigrams;
 import net.narutomod.PlayerTracker;
@@ -9,7 +8,7 @@ import net.narutomod.ElementsNarutomodMod;
 import net.narutomod.Chakra;
 
 import net.minecraft.world.World;
-import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.potion.PotionEffect;
@@ -20,7 +19,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
 
-import java.text.DecimalFormat;
 import java.util.Map;
 
 @ElementsNarutomodMod.ModElement.Tag
@@ -40,7 +38,6 @@ public class ProcedureEightTrigrams64Palms extends ElementsNarutomodMod.ModEleme
 		}
 		Entity entity = (Entity) dependencies.get("entity");
 		World world = (World) dependencies.get("world");
-		String string = "";
 		double cooldown = 0;
 		boolean f1 = false;
 		ItemStack helmetstack = ItemStack.EMPTY;
@@ -71,10 +68,9 @@ public class ProcedureEightTrigrams64Palms extends ElementsNarutomodMod.ModEleme
 					Chakra.pathway((EntityPlayer) entity).warningDisplay();
 				}
 			} else {
-				if (entity instanceof EntityPlayer && !entity.world.isRemote) {
+				if (((!(world.isRemote)) && (entity instanceof EntityPlayer))) {
 					((EntityPlayer) entity).sendStatusMessage(
-							new TextComponentTranslation("chattext.cooldown.formatted", new DecimalFormat(".2")
-									.format((cooldown - NarutomodModVariables.world_tick) / 20)), true);
+							new TextComponentTranslation("chattext.cooldown.formatted", (cooldown - NarutomodModVariables.world_tick) / 20), true);
 				}
 			}
 		}
