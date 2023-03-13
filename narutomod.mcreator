@@ -1,8 +1,8 @@
 {
   "id_map": {
-    "DIMENSION": 13,
     "GUI": 63,
-    "ENTITY": 414
+    "ENTITY": 414,
+    "DIMENSION": 13
   },
   "mod_elements": [
     {
@@ -8334,7 +8334,7 @@
       "tooltip.mangekyo.kamui.jutsu1": "1. Intangibility, 2. [SHIFT] Teleport",
       "entity.raitonchakramode.name": "Lightning Chakra Mode",
       "subtitles.chidori": "",
-      "entity.puppet_sanshouo.name": "Sanshouo",
+      "entity.puppet_sanshouo.name": "Sansh?uo",
       "lingering_potion.effect.heaviness": "Lingering Heaviness",
       "tooltip.senjutsu.rasenshuriken": "Massive Rasenshuriken",
       "entity.sealing_chains.name": "Adamantine Sealing Chains / [SHIFT + R-click] to Dispel",
