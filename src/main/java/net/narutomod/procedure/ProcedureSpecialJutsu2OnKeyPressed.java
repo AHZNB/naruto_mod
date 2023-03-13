@@ -115,7 +115,7 @@ public class ProcedureSpecialJutsu2OnKeyPressed extends ElementsNarutomodMod.Mod
 							$_dependencies.put("x", x);
 							$_dependencies.put("y", y);
 							$_dependencies.put("z", z);
-							ProcedureChibakutenseiOnKeyPressed.executeProcedure($_dependencies);
+							ProcedureChibakuTenseiOnKeyPressed.executeProcedure($_dependencies);
 						}
 					}
 				} else if (((which_path) == 4)) {

@@ -1,8 +1,8 @@
 {
   "id_map": {
+    "ENTITY": 414,
     "DIMENSION": 13,
-    "GUI": 63,
-    "ENTITY": 414
+    "GUI": 63
   },
   "mod_elements": [
     {
@@ -20,7 +20,7 @@
       }
     },
     {
-      "name": "ShinratenseiOnKeyPressed",
+      "name": "ShinraTenseiOnKeyPressed",
       "type": "procedure",
       "sortid": 21,
       "compiles": true,
@@ -78,7 +78,7 @@
       }
     },
     {
-      "name": "ChibakutenseiOnKeyPressed",
+      "name": "ChibakuTenseiOnKeyPressed",
       "type": "procedure",
       "sortid": 29,
       "compiles": true,

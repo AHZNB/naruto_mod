@@ -23,8 +23,8 @@ import java.text.DecimalFormat;
 import java.util.Map;
 
 @ElementsNarutomodMod.ModElement.Tag
-public class ProcedureShinratenseiOnKeyPressed extends ElementsNarutomodMod.ModElement {
-	public ProcedureShinratenseiOnKeyPressed(ElementsNarutomodMod instance) {
+public class ProcedureShinraTenseiOnKeyPressed extends ElementsNarutomodMod.ModElement {
+	public ProcedureShinraTenseiOnKeyPressed(ElementsNarutomodMod instance) {
 		super(instance, 21);
 	}
 

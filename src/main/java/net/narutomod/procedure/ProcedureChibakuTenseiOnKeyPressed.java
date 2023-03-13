@@ -1,23 +1,24 @@
 package net.narutomod.procedure;
 
+import net.minecraft.util.text.TextComponentTranslation;
 import net.narutomod.item.ItemRinnegan;
 import net.narutomod.entity.EntityChibakuTenseiBall;
 import net.narutomod.ElementsNarutomodMod;
 import net.narutomod.Chakra;
 
 import net.minecraft.world.World;
-import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
 
+import java.text.DecimalFormat;
 import java.util.Map;
 
 @ElementsNarutomodMod.ModElement.Tag
-public class ProcedureChibakutenseiOnKeyPressed extends ElementsNarutomodMod.ModElement {
-	public ProcedureChibakutenseiOnKeyPressed(ElementsNarutomodMod instance) {
+public class ProcedureChibakuTenseiOnKeyPressed extends ElementsNarutomodMod.ModElement {
+	public ProcedureChibakuTenseiOnKeyPressed(ElementsNarutomodMod instance) {
 		super(instance, 29);
 	}
 
@@ -67,14 +68,10 @@ public class ProcedureChibakutenseiOnKeyPressed extends ElementsNarutomodMod.Mod
 			if (((chakraAmount) < ItemRinnegan.getChibaukutenseiChakraUsage((EntityLivingBase) entity))) {
 				Chakra.pathway((EntityPlayer) entity).warningDisplay();
 			} else {
-				string = net.minecraft.util.text.translation.I18n.translateToLocal("chattext.cooldown");
 				if (entity instanceof EntityPlayer && !entity.world.isRemote) {
 					((EntityPlayer) entity)
-							.sendStatusMessage(
-									new TextComponentString((((string)) + "" + (" ") + ""
-											+ ((new java.text.DecimalFormat(".1").format(
-													((entity.getEntityData().getLong("chibakutenseicd") - world.getTotalWorldTime()) / 20)))))),
-									(true));
+							.sendStatusMessage(new TextComponentTranslation("chattext.cooldown.formatted", new DecimalFormat(".1")
+									.format((entity.getEntityData().getLong("chibakutenseicd") - world.getTotalWorldTime()) / 20)), true);
 				}
 			}
 		}
