@@ -31,6 +31,7 @@ Jutsus:
  - improved lightning beast control, reduced jutsu duration
  - reduced lightning panther jutsu duration
  - fixed skeletal control willow dance inifinitely gaining strength
+ - fixed ice mirrors being able to use without chakra
 
 Items:
  - cleaver sword now takes damage when used, attack speed and damage decrease, recipe changed
@@ -42,6 +43,7 @@ Items:
  - fixed biju map crashing bug
  - made biju map icons 50% bigger
  - limit big folding fan blow power
+ - updated rinnegan's asura path canon to shoot missiles
 
 Entities:
  - increase spawn rates for bosses and remove dungeon spawns

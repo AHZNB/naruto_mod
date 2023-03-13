@@ -218,7 +218,7 @@ public class ItemJinton extends ElementsNarutomodMod.ModElement {
 			
 			@Override
 			protected void attackEntityFrom(EntityLivingBase player, Entity target) {
-				double d = this.getFarRadius(0) / target.getEntityBoundingBox().getAverageEdgeLength() * 0.25d;
+				double d = this.getFarRadius(0) / target.getEntityBoundingBox().getAverageEdgeLength();
 				float f = target instanceof EntityLivingBase ? ((EntityLivingBase)target).getMaxHealth() * (float)d : Float.MAX_VALUE;
 				attackEntityWithJutsu(EntityBeam.this, player, target, f);
 			}
@@ -249,6 +249,7 @@ public class ItemJinton extends ElementsNarutomodMod.ModElement {
 
 	private static void attackEntityWithJutsu(Entity projectile, EntityLivingBase attacker, Entity target, float amount) {
 		if (target instanceof EntityLivingBase) {
+			target.hurtResistantTime = 10;
 			target.attackEntityFrom(ItemJutsu.causeJutsuDamage(projectile, attacker)
 			  .setDamageBypassesArmor().setDamageIsAbsolute(), amount);
 		} else {
@@ -312,7 +313,6 @@ public class ItemJinton extends ElementsNarutomodMod.ModElement {
 		        pos.release();
 			}
 			for (Entity entity : this.world.getEntitiesWithinAABBExcludingEntity(this, bb)) {
-				entity.hurtResistantTime = 10;
 				double d = ProcedureUtils.BB.getVolume(bb.intersect(entity.getEntityBoundingBox()))
 				 / ProcedureUtils.BB.getVolume(entity.getEntityBoundingBox()) * 0.5D;
 				attackEntityWithJutsu(this, this.shootingEntity, entity, 

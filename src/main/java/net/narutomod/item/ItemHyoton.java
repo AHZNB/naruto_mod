@@ -17,28 +17,29 @@ import net.minecraftforge.items.ItemHandlerHelper;
 
 import net.minecraft.world.World;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Item;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.Entity;
-import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.enchantment.EnchantmentFrostWalker;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.DamageSource;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumHand;
-import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Item;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.Entity;
+import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.init.MobEffects;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.block.material.Material;
+import net.minecraft.enchantment.EnchantmentFrostWalker;
+import net.minecraft.nbt.NBTTagCompound;
 
 import net.narutomod.entity.EntitySpike;
 import net.narutomod.entity.EntityIceSpear;
@@ -50,7 +51,6 @@ import net.narutomod.EntityTracker;
 import net.narutomod.ElementsNarutomodMod;
 
 import java.util.List;
-import net.minecraft.nbt.NBTTagCompound;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class ItemHyoton extends ElementsNarutomodMod.ModElement {
@@ -59,7 +59,7 @@ public class ItemHyoton extends ElementsNarutomodMod.ModElement {
 	public static final int ENTITYID = 219;
 	public static final ItemJutsu.JutsuEnum KILLSPIKES = new ItemJutsu.JutsuEnum(0, "ice_spike", 'S', 150, 20d, new EntityIceSpike.Jutsu());
 	public static final ItemJutsu.JutsuEnum ICESPEARS = new ItemJutsu.JutsuEnum(1, "ice_spear", 'S', 150, 20d, new EntityIceSpear.EC.Jutsu());
-	public static final ItemJutsu.JutsuEnum ICEDOME = new ItemJutsu.JutsuEnum(2, "ice_dome", 'S', 200, 5d, new EntityIceDome.EC.Jutsu());
+	public static final ItemJutsu.JutsuEnum ICEDOME = new ItemJutsu.JutsuEnum(2, "ice_dome", 'S', 200, 100d, new EntityIceDome.EC.Jutsu());
 	public static final ItemJutsu.JutsuEnum ICEPRISON = new ItemJutsu.JutsuEnum(3, "ice_prison", 'S', 150, 50d, new EntityIcePrison.EC.Jutsu());
 
 	public ItemHyoton(ElementsNarutomodMod instance) {
@@ -104,8 +104,13 @@ public class ItemHyoton extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		protected float getPower(ItemStack stack, EntityLivingBase entity, int timeLeft) {
-			float f = this.getCurrentJutsu(stack) == KILLSPIKES ? 10f : 40f;
-			return this.getPower(stack, entity, timeLeft, 1f, f);
+			ItemJutsu.JutsuEnum jutsu = this.getCurrentJutsu(stack);
+			if (jutsu == KILLSPIKES) {
+				return this.getPower(stack, entity, timeLeft, 1f, 10f);
+			} else if (jutsu == ICESPEARS) {
+				return this.getPower(stack, entity, timeLeft, 1f, 40f);
+			}
+			return 1f;
 		}
 
 		@Override

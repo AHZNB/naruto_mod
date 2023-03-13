@@ -167,11 +167,9 @@ public class EntityIceDome extends ElementsNarutomodMod.ModElement {
 					}
 				}
 			}
-			if (!this.world.isRemote && this.ticksExisted % 20 == 0 && summoner != null) {
-				if ((!(summoner instanceof EntityPlayer) || !((EntityPlayer)summoner).isCreative())
-				 && !Chakra.pathway(summoner).consume(ItemHyoton.ICEDOME.chakraUsage)) {
-					this.setDead();
-				}
+			if (!this.world.isRemote && this.ticksExisted % 20 == 0 && summoner != null
+			 && !Chakra.pathway(summoner).consume(ItemHyoton.ICEDOME.chakraUsage * 0.05d)) {
+				this.setDead();
 			}
 			this.clearActivePotions();
 		}
