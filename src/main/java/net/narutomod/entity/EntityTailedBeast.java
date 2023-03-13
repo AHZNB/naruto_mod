@@ -671,11 +671,17 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public void attackEntityWithRangedAttack(EntityLivingBase target, float flval) {
-			if (!this.isAIDisabled() || this.tailBeastBallTime <= 0) {
-				if (EntityTailBeastBall.spawn(this, 14f, 1000f)) {
-					this.setSwingingArms(true);
-					this.tailBeastBallTime = BIJUDAMA_CD;
+			if (this.isAIDisabled() && this.tailBeastBallTime > 0) {
+				if (target instanceof EntityPlayer) {
+					EntityPlayer player = (EntityPlayer) target;
+					player.sendStatusMessage(new TextComponentTranslation("chattext.cooldown.formatted", this.tailBeastBallTime / 20), true);
 				}
+				return;
+			}
+
+			if (EntityTailBeastBall.spawn(this, 14f, 1000f)) {
+				this.setSwingingArms(true);
+				this.tailBeastBallTime = BIJUDAMA_CD;
 			}
 		}
 

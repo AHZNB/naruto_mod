@@ -60,6 +60,7 @@ Entities:
  - increased NPCs health and chakra
  - fixed real Itachi not dropping his mangekyo
  - fixed Itachi's genjutsu not showing his sharingan
+ - add cooldown text for tailed beast bomb in stage 3
 
 Commands:
  - addxp2jutsu command now requires level 4 permision
