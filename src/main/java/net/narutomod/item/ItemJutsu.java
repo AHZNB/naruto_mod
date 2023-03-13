@@ -67,7 +67,7 @@ public class ItemJutsu extends ElementsNarutomodMod.ModElement {
 
 	public static boolean canTarget(@Nullable Entity targetIn) {
 		return targetIn != null && targetIn.isEntityAlive() 
-		 && !targetIn.getEntityData().getBoolean("kamui_intangible")
+		 //&& !targetIn.getEntityData().getBoolean("kamui_intangible")
 		 && !ProcedureOnLivingUpdate.isUntargetable(targetIn)
 		 && (!(targetIn instanceof EntityPlayer) || !((EntityPlayer)targetIn).isSpectator());
 	}
@@ -547,6 +547,7 @@ public class ItemJutsu extends ElementsNarutomodMod.ModElement {
 	public interface IJutsuCallback {
 		boolean createJutsu(ItemStack stack, EntityLivingBase entity, float power);
 		default boolean isActivated(ItemStack stack) { return false; }
+		default boolean isActivated(EntityLivingBase entity) { return false; }
 		default float getPower(ItemStack stack) { return 0.0f; }
 	}
 

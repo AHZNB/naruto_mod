@@ -283,7 +283,8 @@ public class EntitySummonAnimal extends ElementsNarutomodMod.ModElement {
 		@Override
 		protected boolean canFitPassenger(Entity passenger) {
 			EntityLivingBase owner = this.getSummoner();
-			return this.getScale() >= 4.0f && this.getPassengers().size() < 1 && owner != null && passenger.isOnSameTeam(owner);
+			return this.getScale() >= 4.0f && this.getPassengers().size() < 1
+			 && owner != null && (passenger.equals(owner) || passenger.isOnSameTeam(owner));
 		}
 
 		@Override

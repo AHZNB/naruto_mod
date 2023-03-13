@@ -34,6 +34,8 @@ Jutsus:
  - fixed ice mirrors being able to use without chakra
  - reduced wood burial duration to 10 seconds, damage 10 per second
  - allow 1-tail jinchuriki in biju cloak to use magnet release without a sand gourd
+ - reduced earth sandwich duration
+ - fixed summoner can't ride summonning animal
 
 Items:
  - cleaver sword now takes damage when used, attack speed and damage decrease, recipe changed

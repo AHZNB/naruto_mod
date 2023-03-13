@@ -91,6 +91,7 @@ public class ProcedureKamuiJikukanIdo extends ElementsNarutomodMod.ModElement {
 					((EntityPlayer) entity).sendPlayerAbilities();
 				}
 				ProcedureOnLivingUpdate.setNoClip(entity, is_pressed);
+				ProcedureOnLivingUpdate.setUntargetable(entity, 3);
 				entity.fallDistance = (float) (0);
 				if (entity instanceof EntityPlayer && !entity.world.isRemote) {
 					((EntityPlayer) entity).sendStatusMessage(

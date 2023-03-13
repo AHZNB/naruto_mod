@@ -146,7 +146,7 @@ public class EntityEarthSandwich extends ElementsNarutomodMod.ModElement {
 				}
 				float f = this.getScale();
 				if (!this.caughtEntities.isEmpty()) {
-					for (Map.Entry<EntityLivingBase, Vec3d> entry : this. caughtEntities.entrySet()) {
+					for (Map.Entry<EntityLivingBase, Vec3d> entry : this.caughtEntities.entrySet()) {
 					 	Vec3d vec = entry.getValue();
 						entry.getKey().setPositionAndUpdate(vec.x, vec.y, vec.z);
 						if (age > this.growTime - 5) {
@@ -159,7 +159,7 @@ public class EntityEarthSandwich extends ElementsNarutomodMod.ModElement {
 					 this.posX, this.posY, this.posZ, (int)(f * f * 6f), this.width * 0.2, 0.5d, this.width * 0.2,
 					 0.15d, Block.getIdFromBlock(Blocks.DIRT));
 				}
-				if (age > 1200) {
+				if (age > 600) {
 					this.setDead();
 				}
 			}
