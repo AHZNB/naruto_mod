@@ -1,6 +1,5 @@
 package net.narutomod.procedure;
 
-import net.minecraft.util.text.TextComponentTranslation;
 import net.narutomod.item.ItemRinnegan;
 import net.narutomod.entity.EntityChibakuTenseiBall;
 import net.narutomod.ElementsNarutomodMod;
@@ -14,7 +13,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
 
-import java.text.DecimalFormat;
 import java.util.Map;
 
 @ElementsNarutomodMod.ModElement.Tag
@@ -69,10 +67,14 @@ public class ProcedureChibakutenseiOnKeyPressed extends ElementsNarutomodMod.Mod
 			if (((chakraAmount) < ItemRinnegan.getChibaukutenseiChakraUsage((EntityLivingBase) entity))) {
 				Chakra.pathway((EntityPlayer) entity).warningDisplay();
 			} else {
+				string = net.minecraft.util.text.translation.I18n.translateToLocal("chattext.cooldown");
 				if (entity instanceof EntityPlayer && !entity.world.isRemote) {
 					((EntityPlayer) entity)
-							.sendStatusMessage(new TextComponentTranslation("chattext.cooldown.formatted", new DecimalFormat(".1")
-									.format((entity.getEntityData().getLong("chibakutenseicd") - world.getTotalWorldTime()) / 20)), true);
+							.sendStatusMessage(
+									new TextComponentString((((string)) + "" + (" ") + ""
+											+ ((new java.text.DecimalFormat(".1").format(
+													((entity.getEntityData().getLong("chibakutenseicd") - world.getTotalWorldTime()) / 20)))))),
+									(true));
 				}
 			}
 		}

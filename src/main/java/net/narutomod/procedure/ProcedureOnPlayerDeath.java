@@ -216,27 +216,6 @@ public class ProcedureOnPlayerDeath extends ElementsNarutomodMod.ModElement {
 						((EntityPlayer) entity).dropItem(stack.copy(), true, true);
 						((stack)).shrink((int) 1);
 					}
-					if (((entity instanceof EntityPlayer)
-							? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemMangekyoSharinganEternal.helmet, (int) (1)))
-							: false)) {
-						stack = ProcedureUtils.getMatchingItemStack((EntityPlayer) entity, ItemMangekyoSharinganEternal.helmet);
-						((EntityPlayer) entity).dropItem(stack.copy(), true, true);
-						((stack)).shrink((int) 1);
-					}
-					if (((entity instanceof EntityPlayer)
-							? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemRinnegan.helmet, (int) (1)))
-							: false)) {
-						stack = ProcedureUtils.getMatchingItemStack((EntityPlayer) entity, ItemRinnegan.helmet);
-						((EntityPlayer) entity).dropItem(stack.copy(), true, true);
-						((stack)).shrink((int) 1);
-					}
-					if (((entity instanceof EntityPlayer)
-							? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemTenseigan.helmet, (int) (1)))
-							: false)) {
-						stack = ProcedureUtils.getMatchingItemStack((EntityPlayer) entity, ItemTenseigan.helmet);
-						((EntityPlayer) entity).dropItem(stack.copy(), true, true);
-						((stack)).shrink((int) 1);
-					}
 				}
 			}
 			ProcedureSync.EntityNBTTag.removeAndSync(entity, NarutomodModVariables.forceBowPose);
