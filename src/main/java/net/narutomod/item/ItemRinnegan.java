@@ -154,7 +154,7 @@ public class ItemRinnegan extends ElementsNarutomodMod.ModElement {
 						ItemStack helmetStack = player.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
 						GuiNinjaScroll.enableJutsu(player, (ItemJutsu.Base)ItemYoton.block,
 						 ItemYoton.SEALING9D, helmetStack.getItem() == helmet);
-						if (helmetStack.getItem() != helmet) {
+						if (helmetStack.getItem() != helmet && helmetStack.getItem() != ItemTenseigan.helmet) {
 							player.inventory.clearMatchingItems(ItemAsuraCanon.block, -1, -1, null);
 						}
 					}
