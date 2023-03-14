@@ -315,7 +315,7 @@ public class EntityEarthBlocks extends ElementsNarutomodMod.ModElement {
 			double dy = y;
 			double dz = z;
 			List<AxisAlignedBB> list = this.world.getCollisionBoxes(this, this.getCollisionBoundingBox().expand(x, y, z));
-			BlocksMoveHelper.CollisionHelper ch = new BlocksMoveHelper.CollisionHelper(this.getCollisionBoundingBox());
+			ProcedureUtils.CollisionHelper ch = new ProcedureUtils.CollisionHelper(this.getCollisionBoundingBox());
 			ch.collideWithAABBs(list, x, y, z);
 			x = ch.minX(x);
 			y = ch.minY(y);
@@ -547,7 +547,7 @@ public class EntityEarthBlocks extends ElementsNarutomodMod.ModElement {
 				for (EntityFallingBlock entity : this.toMove) {
 					AxisAlignedBB aabb = entity.getEntityBoundingBox().expand(mX, mY, mZ);
 					List<AxisAlignedBB> list1 = entity.world.getCollisionBoxes(null, aabb);
-					CollisionHelper stat = new CollisionHelper(entity.getEntityBoundingBox());
+					ProcedureUtils.CollisionHelper stat = new ProcedureUtils.CollisionHelper(entity.getEntityBoundingBox());
 					stat.collideWithAABBs(list1, mX, mY, mZ);
 					this.addToCollidedBlocks(this.convert2BlockposList(list1));
 					dX = stat.minX(dX);
@@ -559,7 +559,7 @@ public class EntityEarthBlocks extends ElementsNarutomodMod.ModElement {
 							return p_apply_1_ != null && !BlocksMoveHelper.this.toMove.contains(p_apply_1_);
 						}
 					});
-					CollisionHelper stat2 = new CollisionHelper(entity.getEntityBoundingBox());
+					ProcedureUtils.CollisionHelper stat2 = new ProcedureUtils.CollisionHelper(entity.getEntityBoundingBox());
 					List<AxisAlignedBB> list3 = this.convert2BoundingboxList(list2);
 					stat2.collideWithAABBs(list3, mX, mY, mZ);
 					this.addToCollidedAABB(list3);
@@ -762,51 +762,6 @@ public class EntityEarthBlocks extends ElementsNarutomodMod.ModElement {
 			 //+"cH:"+this.collidedHorizontally+", cV:"+this.collidedVertically+", oG:"+this.onGround
 			 +", cMT:"+this.canMoveThrough+", motion:("+this.motionX+","+this.motionY+","+this.motionZ
 			 +"), bb:"+this.boundingBox;
-		}
-
-		public static class CollisionHelper {
-			private AxisAlignedBB source;
-			public double dx;
-			public double dy;
-			public double dz;
-			public int hitsOnSide[] = { 0, 0, 0, 0, 0, 0 };
-
-			public CollisionHelper(AxisAlignedBB sourceBB) {
-				this.source = sourceBB;
-			}
-
-			public void collideWithAABBs(List<AxisAlignedBB> list, double x, double y, double z) {
-				this.dx = x;
-				this.dy = y;
-				this.dz = z;
-	        	if (x != 0.0D) for (AxisAlignedBB aabb : list) {
-	        		double d = aabb.calculateXOffset(this.source, x);
-			    	if (Math.abs(d) < Math.abs(this.dx)) this.dx = d;
-			    	if (d != x) this.hitsOnSide[(x > 0d ? EnumFacing.WEST : EnumFacing.EAST).getIndex()]++;
-	        	}
-			    if (y != 0.0D) for (AxisAlignedBB aabb : list) {
-	        		double d = aabb.calculateYOffset(this.source, y);
-			    	if (Math.abs(d) < Math.abs(this.dy)) this.dy = d;
-			    	if (d != y) this.hitsOnSide[(y > 0d ? EnumFacing.UP : EnumFacing.DOWN).getIndex()]++;
-			    }
-			    if (z != 0.0D) for (AxisAlignedBB aabb : list) {
-	        		double d = aabb.calculateZOffset(this.source, z);
-			    	if (Math.abs(d) < Math.abs(this.dz)) this.dz = d;
-			    	if (d != z) this.hitsOnSide[(z > 0d ? EnumFacing.NORTH : EnumFacing.SOUTH).getIndex()]++;
-			    }
-			}
-
-			public double minX(double x) {
-				return Math.signum(x) != Math.signum(this.dx) ? 0d : Math.abs(x) < Math.abs(this.dx) ? x : this.dx;
-			}
-
-			public double minY(double y) {
-				return Math.signum(y) != Math.signum(this.dy) ? 0d : Math.abs(y) < Math.abs(this.dy) ? y : this.dy;
-			}
-
-			public double minZ(double z) {
-				return Math.signum(z) != Math.signum(this.dz) ? 0d : Math.abs(z) < Math.abs(this.dz) ? z : this.dz;
-			}
 		}
 	}
 

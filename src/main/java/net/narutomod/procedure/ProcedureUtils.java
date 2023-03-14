@@ -18,6 +18,7 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.EntitySelectors;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.potion.PotionEffect;
@@ -1135,6 +1136,51 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 	    	return (aabb.maxX - aabb.minX) * (aabb.maxY - aabb.minY) * (aabb.maxZ - aabb.minZ);
 	    }
     }
+
+	public static class CollisionHelper {
+		private AxisAlignedBB source;
+		public double dx;
+		public double dy;
+		public double dz;
+		public int hitsOnSide[] = { 0, 0, 0, 0, 0, 0 };
+
+		public CollisionHelper(AxisAlignedBB sourceBB) {
+			this.source = sourceBB;
+		}
+
+		public void collideWithAABBs(List<AxisAlignedBB> list, double x, double y, double z) {
+			this.dx = x;
+			this.dy = y;
+			this.dz = z;
+	       	if (x != 0.0D) for (AxisAlignedBB aabb : list) {
+	       		double d = aabb.calculateXOffset(this.source, x);
+		    	if (Math.abs(d) < Math.abs(this.dx)) this.dx = d;
+		    	if (d != x) this.hitsOnSide[(x > 0d ? EnumFacing.WEST : EnumFacing.EAST).getIndex()]++;
+	       	}
+		    if (y != 0.0D) for (AxisAlignedBB aabb : list) {
+	       		double d = aabb.calculateYOffset(this.source, y);
+		    	if (Math.abs(d) < Math.abs(this.dy)) this.dy = d;
+		    	if (d != y) this.hitsOnSide[(y > 0d ? EnumFacing.UP : EnumFacing.DOWN).getIndex()]++;
+		    }
+		    if (z != 0.0D) for (AxisAlignedBB aabb : list) {
+	       		double d = aabb.calculateZOffset(this.source, z);
+		    	if (Math.abs(d) < Math.abs(this.dz)) this.dz = d;
+		    	if (d != z) this.hitsOnSide[(z > 0d ? EnumFacing.NORTH : EnumFacing.SOUTH).getIndex()]++;
+		    }
+		}
+
+		public double minX(double x) {
+			return Math.signum(x) != Math.signum(this.dx) ? 0d : Math.abs(x) < Math.abs(this.dx) ? x : this.dx;
+		}
+
+		public double minY(double y) {
+			return Math.signum(y) != Math.signum(this.dy) ? 0d : Math.abs(y) < Math.abs(this.dy) ? y : this.dy;
+		}
+
+		public double minZ(double z) {
+			return Math.signum(z) != Math.signum(this.dz) ? 0d : Math.abs(z) < Math.abs(this.dz) ? z : this.dz;
+		}
+	}
 
     public static class Vec2f {
 	    public static final Vec2f ZERO = new Vec2f(0.0F, 0.0F);

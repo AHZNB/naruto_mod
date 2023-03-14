@@ -166,12 +166,13 @@ public class ItemAsuraCanon extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
+	@SideOnly(Side.CLIENT)
 	@Override
 	public void preInit(FMLPreInitializationEvent event) {
 		new Renderer().register();
 	}
 	
-	public static class Renderer extends EntityRendererRegister {
+	public class Renderer extends EntityRendererRegister {
 		@SideOnly(Side.CLIENT)
 		@Override
 		protected void register() {
