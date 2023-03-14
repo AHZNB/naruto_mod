@@ -337,7 +337,7 @@ public class EntitySakuraHaruno extends ElementsNarutomodMod.ModElement {
 	public static class Renderer extends EntityRendererRegister {
 		@SideOnly(Side.CLIENT)
 		@Override
-		protected void register() {
+		public void register() {
 			RenderingRegistry.registerEntityRenderingHandler(EntityCustom.class, renderManager -> {
 				return new EntityNinjaMob.RenderBase<EntityCustom>(renderManager, new ModelBiped64slim()) {
 					private final ResourceLocation texture = new ResourceLocation("narutomod:textures/sakura_slim.png");

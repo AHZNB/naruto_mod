@@ -147,7 +147,7 @@ public class EntityIrukaSensei extends ElementsNarutomodMod.ModElement {
 	public static class Renderer extends EntityRendererRegister {
 		@SideOnly(Side.CLIENT)
 		@Override
-		protected void register() {
+		public void register() {
 			RenderingRegistry.registerEntityRenderingHandler(EntityCustom.class, renderManager ->
 				new RenderLiving(renderManager, new ModelBiped64(), 0.5f) {
 					private final ResourceLocation texture = new ResourceLocation("narutomod:textures/iruka64x64.png");

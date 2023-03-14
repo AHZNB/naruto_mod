@@ -484,7 +484,7 @@ public class EntityBuddha1000 extends ElementsNarutomodMod.ModElement {
 	public class Renderer extends EntityRendererRegister {
 		@SideOnly(Side.CLIENT)
 		@Override
-		protected void register() {
+		public void register() {
 			RenderingRegistry.registerEntityRenderingHandler(EC.class, renderManager -> new RenderCustom(renderManager));
 			RenderingRegistry.registerEntityRenderingHandler(EntityArm.class, renderManager -> new RenderArm(renderManager));
 		}

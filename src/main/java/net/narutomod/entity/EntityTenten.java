@@ -200,7 +200,7 @@ public class EntityTenten extends ElementsNarutomodMod.ModElement {
 	public static class Renderer extends EntityRendererRegister {
 		@SideOnly(Side.CLIENT)
 		@Override
-		protected void register() {
+		public void register() {
 			RenderingRegistry.registerEntityRenderingHandler(EntityCustom.class, renderManager -> new RenderCustom(renderManager));
 		}
 
