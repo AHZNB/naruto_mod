@@ -204,10 +204,12 @@ public class ItemBijuCloak extends ElementsNarutomodMod.ModElement {
 			public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
 				super.addInformation(stack, worldIn, tooltip, flagIn);
 				tooltip.add(I18n.translateToLocal("key.mcreator.specialjutsu2") + ": " + I18n.translateToLocal("entity.jinchuriki_clone.name"));
-				if (getCloakLevel(stack) == 2) {
+				int i = getCloakLevel(stack);
+				if (i == 2) {
 					tooltip.add(I18n.translateToLocal("key.mcreator.specialjutsu3") + ": " + I18n.translateToLocal("entity.tailbeastball.name"));
 				}
-				tooltip.add("XP: " + TextFormatting.GREEN + getCloakXp(stack) + TextFormatting.RESET);
+				tooltip.add(TextFormatting.GRAY + I18n.translateToLocal("tooltip.bijucloak.level"+i));
+				tooltip.add("JXP: " + TextFormatting.GREEN + getCloakXp(stack) + TextFormatting.RESET);
 			}
 
 			@Override

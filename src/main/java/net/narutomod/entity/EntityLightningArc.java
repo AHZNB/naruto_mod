@@ -66,7 +66,7 @@ public class EntityLightningArc extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static boolean onStruck(Entity entity, DamageSource source, float damage) {
-		return onStruck(entity, source, damage, 100);
+		return onStruck(entity, source, damage, 100, true);
 	}
 
 	public static boolean onStruck(Entity entity, DamageSource source, float damage, int paralysisTicks) {
@@ -80,6 +80,18 @@ public class EntityLightningArc extends ElementsNarutomodMod.ModElement {
 			((EntityLivingBase)entity).addPotionEffect(new PotionEffect(PotionParalysis.potion, paralysisTicks, 2 + (int)(damage * 0.1f), false, false));
 		}
 		return retval;
+	}
+
+	public static boolean onStruck(Entity entity, DamageSource source, float damage, int ticks, boolean spreadInWater) {
+		if (spreadInWater && entity.isInWater()) {
+			for (EntityLivingBase entity1 : entity.world.getEntitiesWithinAABB(EntityLivingBase.class, entity.getEntityBoundingBox().grow(10d))) {
+				float f = (float)entity1.getDistance(entity);
+				if (entity1.isInWater() && f <= 10f) {
+					onStruck(entity1, source, damage * (1f - f * 0.1f), ticks);
+				}
+			}
+		}
+		return onStruck(entity, source, damage, ticks);
 	}
 
 	public static void spawnAsParticle(World world, double x, double y, double z, int... param) {
@@ -243,13 +255,6 @@ public class EntityLightningArc extends ElementsNarutomodMod.ModElement {
 							entity.hurtResistantTime = 10;
 						}
 						onStruck(entity, this.damageSource, this.damageAmount);
-						if (entity.isInWater()) {
-							for (EntityLivingBase entity1 : this.world.getEntitiesWithinAABB(EntityLivingBase.class, entity.getEntityBoundingBox().grow(10d))) {
-								if (entity1.isInWater()) {
-									onStruck(entity1, this.damageSource, this.damageAmount * (float)entity1.getDistance(entity) / 10f);
-								}
-							}
-						}
 					}
 				}
 			}

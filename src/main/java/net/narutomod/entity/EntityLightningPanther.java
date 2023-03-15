@@ -171,7 +171,7 @@ public class EntityLightningPanther extends ElementsNarutomodMod.ModElement {
 		private BlockPos findDestination() {
 			EntityLivingBase owner = this.getOwner();
 			if (owner != null) {
-				RayTraceResult rtr = ProcedureUtils.objectEntityLookingAt(owner, 50d, this);
+				RayTraceResult rtr = ProcedureUtils.objectEntityLookingAt(owner, 40d, this);
 				if (rtr != null) {
 					if (rtr.entityHit != null) {
 						this.startVec = this.getPositionVector();

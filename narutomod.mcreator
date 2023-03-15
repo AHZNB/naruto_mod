@@ -1,8 +1,8 @@
 {
   "id_map": {
-    "GUI": 63,
     "DIMENSION": 13,
-    "ENTITY": 414
+    "ENTITY": 414,
+    "GUI": 63
   },
   "mod_elements": [
     {
@@ -8189,6 +8189,7 @@
       "fluid.mud": "Mud",
       "item.jutsu.name": "Jutsu",
       "tile.light_source.name": "Light Source",
+      "chattext.bijumanager.tooweak": "You are not strong enough to take on %s\u0027s chakra!",
       "item.scroll_big_blow.name": "Wind Release - Great Breakthrough Scroll",
       "chattext.eightgates.gate1": "1st Gate: Gate of Opening",
       "advancements.rinnesharinganactivated.title": "Rinne Sharingan Activated",
@@ -8209,7 +8210,7 @@
       "item.ninja_armor_war_1body.name": "1st Ninja War Body Armor",
       "subtitles.roar": "",
       "entity.futton_mist.name": "Corrosion Mist",
-      "tooltip.jinton.musthave": "Must have Earth, Wind \u0026 Fire release",
+      "tooltip.jinton.musthave": "Must have Earth, Wind \u0026 Fire release \u0026 4900 NXP",
       "subtitles.amaterasu2": "",
       "item.mask_obito_warbody.name": "Mask Obito War Body",
       "item.shikotsumyaku.name": "Skeletal Control",
@@ -8250,8 +8251,10 @@
       "entity.six_tails.name": "Saiken",
       "entity.entitysekizo.name": "Sekizo (Evening Elephant) - foot %d",
       "tooltip.byakugan.tenseigantime": "Tenseigan evolution: ",
+      "tooltip.bijucloak.level2": "Requires 800 JXP to master, 4800 JXP to Biju mode",
       "effect.amaterasuflame": "Amaterasu",
       "subtitles.katsu": "",
+      "tooltip.bijucloak.level1": "Requires 400 JXP to master, 3600 JXP to level 2",
       "entity.summon_animal.name": "Summon Animal",
       "item.ichiraku_ramen.name": "Ichiraku Ramen",
       "subtitles.flamethrow": "",

@@ -481,8 +481,15 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 					}
 					return;
 				}
+				double d = 5000d + this.getCloakXp();
+				if (d > cp.getMax() * 4d && !this.jinchurikiPlayer.isCreative()) {
+					this.jinchurikiPlayer.sendStatusMessage(new TextComponentTranslation("chattext.bijumanager.tooweak",
+					 this.getEntityLocalizedName()), false);
+					return;
+				}
+				double d1 = cp.getMax() * 4d - cp.getAmount();
+				cp.consume(d <= d1 || this.jinchurikiPlayer.isCreative() ? -d : -d1, true);
 				this.cloakCD = l;
-				cp.consume(-5000d - this.getCloakXp(), true);
 				if (this.jinchurikiPlayer.inventory.armorInventory.get(3).getItem() != ItemBijuCloak.helmet) {
 					ItemStack stack = new ItemStack(ItemBijuCloak.helmet);
 					stack.setTagCompound(new NBTTagCompound());
@@ -520,9 +527,17 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 
 	public int increaseCloakLevel() {
 		if (this.cloakLevel < 3) {
-			if ((this.cloakLevel == 1 && this.cloakXp[0] > 3600) || (this.cloakLevel == 2 && this.cloakXp[1] > 4800)) {
-				Chakra.pathway(this.jinchurikiPlayer).consume(-10000d, true);
-				this.saveAndResetWearingTicks(this.cloakLevel++);
+			if (this.jinchurikiPlayer != null
+			 && ((this.cloakLevel == 1 && this.cloakXp[0] > 3600) || (this.cloakLevel == 2 && this.cloakXp[1] > 4800))) {
+				Chakra.Pathway chakra = Chakra.pathway(this.jinchurikiPlayer);
+				double d = 5000d + this.getCloakXp();
+				if (chakra.getAmount() + d > chakra.getMax() * 4 && !this.jinchurikiPlayer.isCreative()) {
+					this.jinchurikiPlayer.sendStatusMessage(new TextComponentTranslation("chattext.bijumanager.tooweak",
+					 this.getEntityLocalizedName()), false);
+				} else {
+					chakra.consume(-d, true);
+					this.saveAndResetWearingTicks(this.cloakLevel++);
+				}
 			}
 		} else {
 			this.cloakLevel = 3;
