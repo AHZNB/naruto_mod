@@ -25,6 +25,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraft.network.play.server.SPacketSetPassengers;
 import net.minecraft.item.Item;
 
 import net.narutomod.procedure.ProcedureUtils;
@@ -162,7 +163,7 @@ public class EntitySummonAnimal extends ElementsNarutomodMod.ModElement {
 	    }
 
 	    public boolean isSummoner(Entity entityIn) {
-	        return entityIn.equals(this.getSummoner());
+	        return entityIn.getUniqueID().equals(this.getOwnerId());
 	    }
 
 	    @Override
@@ -203,11 +204,10 @@ public class EntitySummonAnimal extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public boolean processInteract(EntityPlayer entity, EnumHand hand) {
-			super.processInteract(entity, hand);
 			if (!this.world.isRemote && this.isSummoner(entity)) {
 				return this.canSitOnShoulder() ? this.startRiding(entity) : entity.startRiding(this);
 			}
-			return false;
+			return super.processInteract(entity, hand);
 		}
 
 		public boolean canSitOnShoulder() {
@@ -226,18 +226,19 @@ public class EntitySummonAnimal extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public boolean startRiding(Entity entityIn) {
-			if (entityIn instanceof EntityPlayer) {
-				if (entityIn.getPassengers().size() >= 2) {
-					return false;
+			if (entityIn instanceof EntityPlayer && this.world instanceof WorldServer) {
+				if (entityIn.getPassengers().size() < 2 && this.startRiding(entityIn, true)) {
+					((WorldServer)this.world).getEntityTracker().sendToTracking(this, new SPacketSetPassengers(entityIn));
+					return true;
 				}
-				return super.startRiding(entityIn, true);
+				return false;
 			}
 			return super.startRiding(entityIn);
 		}
 
 		@Override
 		public void setPosition(double x, double y, double z) {
-			if (this.getRidingEntity() instanceof EntityLivingBase) {
+			if (this.getRidingEntity() instanceof EntityPlayer) {
 				EntityLivingBase riding = (EntityLivingBase)this.getRidingEntity();
 				Vec3d vec[] = { new Vec3d(0.4d, riding.getMountedYOffset(), 0.0d), new Vec3d(-0.4d, riding.getMountedYOffset(), 0.0d) };
 				Vec3d vec1 = vec[riding.getPassengers().indexOf(this)]

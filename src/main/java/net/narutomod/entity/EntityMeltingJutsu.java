@@ -121,6 +121,17 @@ public class EntityMeltingJutsu extends ElementsNarutomodMod.ModElement {
 		private void setDie() {
 			this.deathTicks = 1;
 			this.deathTime = 120 + this.rand.nextInt(80);
+			this.world.setEntityState(this, (byte)100);
+		}
+
+		@SideOnly(Side.CLIENT)
+		@Override
+		public void handleStatusUpdate(byte id) {
+			if (id == 100) {
+				this.setDie();
+			} else {
+				super.handleStatusUpdate(id);
+			}
 		}
 
 		@Override
@@ -143,7 +154,7 @@ public class EntityMeltingJutsu extends ElementsNarutomodMod.ModElement {
 				}
 			} else {
 				if (!this.world.isRemote && this.ticksInAir <= this.growTime) {
-					this.setEntityScale(0.5F + 3.5F * (float)this.ticksInAir / this.growTime);
+					this.setEntityScale(0.5F + 4.5F * (float)this.ticksInAir / this.growTime);
 				}
 				if (this.ticksInAir == this.rand.nextInt(99) + 1) {
 					this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:movement")),
@@ -162,17 +173,21 @@ public class EntityMeltingJutsu extends ElementsNarutomodMod.ModElement {
 					return;
 				}
 				if (result.entityHit != null) {
+					result.entityHit.getEntityData().setBoolean("TempData_disableKnockback", true);
 					result.entityHit.hurtResistantTime = 10;
-					result.entityHit.attackEntityFrom(ItemJutsu.causeJutsuDamage(this, this.shootingEntity), 4f);
+					result.entityHit.attackEntityFrom(ItemJutsu.causeJutsuDamage(this, this.shootingEntity).setFireDamage(), 4f);
+					result.entityHit.setFire(15);
 				}
 				Particles.spawnParticle(this.world, Particles.Types.SMOKE, result.hitVec.x, result.hitVec.y, result.hitVec.z,
 				 100, this.width, 0.0d, this.width, 0d, 0d, 0d, 0xB0202020, 20 + this.rand.nextInt(30));
 				this.playSound(SoundEvents.BLOCK_LAVA_AMBIENT, 1f, this.rand.nextFloat() * 0.4f + 0.8f);
-				BlockPos pos = result.typeOfHit == RayTraceResult.Type.BLOCK 
-				 ? result.getBlockPos().offset(result.sideHit) : new BlockPos(result.hitVec);
-				if (this.world.isAirBlock(pos)) {
-					this.world.setBlockState(pos, Blocks.LAVA.getDefaultState(), 3);
-					this.drip = pos;
+				if (this.world.getGameRules().getBoolean("mobGriefing")) {
+					BlockPos pos = result.typeOfHit == RayTraceResult.Type.BLOCK 
+					 ? result.getBlockPos().offset(result.sideHit) : new BlockPos(result.hitVec);
+					if (this.world.isAirBlock(pos)) {
+						this.world.setBlockState(pos, Blocks.LAVA.getDefaultState(), 3);
+						this.drip = pos;
+					}
 				}
 				this.setDie();
 			}
@@ -181,7 +196,7 @@ public class EntityMeltingJutsu extends ElementsNarutomodMod.ModElement {
 		@Override
 		protected void checkOnGround() {
 			super.checkOnGround();
-			if (this.onGround || this.isInWater()) {
+			if (this.isInWater()) {
 				this.setDead();
 			}
 		}
@@ -218,7 +233,7 @@ public class EntityMeltingJutsu extends ElementsNarutomodMod.ModElement {
 			this.bindEntityTexture(entity);
 			GlStateManager.pushMatrix();
 			float scale = entity.getEntityScale();
-			GlStateManager.translate(x, y, z);
+			GlStateManager.translate(x, y + scale * 0.25f, z);
 			GlStateManager.rotate(entityYaw, 0.0f, 1.0f, 0.0f);
 			GlStateManager.scale(scale, scale, scale);
 			GlStateManager.depthMask(true);

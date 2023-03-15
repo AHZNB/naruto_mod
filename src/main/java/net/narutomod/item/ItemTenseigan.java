@@ -9,15 +9,18 @@ import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.translation.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.Item;
 import net.minecraft.inventory.EntityEquipmentSlot;
-import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
+import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.model.ModelBox;
@@ -25,9 +28,10 @@ import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.translation.I18n;
 
+import net.narutomod.entity.EntityKingOfHell;
+import net.narutomod.gui.GuiNinjaScroll;
+import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.procedure.ProcedureRinneganHelmetTickEvent;
 import net.narutomod.procedure.ProcedureTenseiganBodyTickEvent;
 import net.narutomod.creativetab.TabModTab;
@@ -35,8 +39,9 @@ import net.narutomod.ElementsNarutomodMod;
 
 import java.util.Map;
 import java.util.HashMap;
-import javax.annotation.Nullable;
 import java.util.List;
+import java.util.UUID;
+import javax.annotation.Nullable;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class ItemTenseigan extends ElementsNarutomodMod.ModElement {
@@ -82,6 +87,29 @@ public class ItemTenseigan extends ElementsNarutomodMod.ModElement {
 					$_dependencies.put("itemstack", itemstack);
 					$_dependencies.put("world", world);
 					ProcedureRinneganHelmetTickEvent.executeProcedure($_dependencies);
+				}
+			}
+
+			@Override
+			public void onUpdate(ItemStack itemstack, World world, Entity entity, int par4, boolean par5) {
+				super.onUpdate(itemstack, world, entity, par4, par5);
+				if (!world.isRemote && entity.ticksExisted % 20 == 0) {
+					UUID uuid = ProcedureUtils.getUniqueId(itemstack, "KoH_id");
+					if (uuid != null) {
+						Entity koh = ((WorldServer)world).getEntityFromUuid(uuid);
+						if (!(koh instanceof EntityKingOfHell.EntityCustom) || !koh.isEntityAlive()) {
+							ProcedureUtils.removeUniqueIdTag(itemstack, "KoH_id");
+						}
+					}
+					if (entity instanceof EntityPlayer) {
+						EntityPlayer player = (EntityPlayer)entity;
+						ItemStack helmetStack = player.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
+						GuiNinjaScroll.enableJutsu(player, (ItemJutsu.Base)ItemYoton.block,
+						 ItemYoton.SEALING9D, helmetStack.getItem() == helmet);
+						if (helmetStack.getItem() != helmet && helmetStack.getItem() != ItemRinnegan.helmet) {
+							player.inventory.clearMatchingItems(ItemAsuraCanon.block, -1, -1, null);
+						}
+					}
 				}
 			}
 
