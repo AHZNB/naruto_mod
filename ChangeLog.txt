@@ -38,6 +38,7 @@ Jutsus:
  - fixed summoner can't ride summonning animal
  - lava melting jutsu won't spawn lava blocks if mobGriefing disabled
  - fixed tenseigan users not being able to use asura canon
+ - fixed summoner can't ride summon, and summon can't ride summoner
 
 Items:
  - cleaver sword now takes damage when used, attack speed and damage decrease, recipe changed

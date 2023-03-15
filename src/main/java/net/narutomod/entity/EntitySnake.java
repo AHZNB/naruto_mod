@@ -1072,9 +1072,11 @@ System.out.println("    pivotNew"+i+":"+pivotNew);
 
 		@Override
 		public void onUpdate() {
-			ProcedureUtils.Vec2f[] rotations = RIDINGROTATIONS[this.entity.getRidingEntity().getPassengers().indexOf(this.entity)];
-			for (int i = 0; i < this.entity.partRot.size(); i++) {
-				this.entity.partRot.set(i, rotations[i]);
+			if (this.entity.isRiding()) {
+				ProcedureUtils.Vec2f[] rotations = RIDINGROTATIONS[this.entity.getRidingEntity().getPassengers().indexOf(this.entity)];
+				for (int i = 0; i < this.entity.partRot.size(); i++) {
+					this.entity.partRot.set(i, rotations[i]);
+				}
 			}
 			super.onUpdate();
 		}
