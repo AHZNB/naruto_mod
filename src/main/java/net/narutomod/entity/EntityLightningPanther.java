@@ -237,11 +237,11 @@ public class EntityLightningPanther extends ElementsNarutomodMod.ModElement {
 					this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:electricity")),
 					  1f, this.rand.nextFloat() * 0.6f + 0.9f);
 				}
-				for (int i = 0; i < 5; i++) {
-					EntityLightningArc.spawnAsParticle(this.world, this.posX + this.rand.nextGaussian() * this.width * 0.5d,
-					 this.posY + this.rand.nextDouble() * this.height, this.posZ + this.rand.nextGaussian() * this.width * 0.5d,
-					 0.5d * this.width, 0d, 0.15d, 0d, 0);
-				}
+				//for (int i = 0; i < 5; i++) {
+				//	EntityLightningArc.spawnAsParticle(this.world, this.posX + this.rand.nextGaussian() * this.width * 0.5d,
+				//	 this.posY + this.rand.nextDouble() * this.height, this.posZ + this.rand.nextGaussian() * this.width * 0.5d,
+				//	 0.5d * this.width, 0d, 0.15d, 0d, 0);
+				//}
 			}
 		}
 
