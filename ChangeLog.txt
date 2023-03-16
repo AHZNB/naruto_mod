@@ -95,6 +95,7 @@ General:
  - made might guy mission objective have a display name
  - instead of killing the jinchuriki, add chat text saying "you're too weak" if you don't
    have enough ninjaxp to handle biju cloak (going up a level tries to give you 5000+ chakra)
+ - fix water walking fall dmg
 
 0.2.10-beta ===============================================================================
 
