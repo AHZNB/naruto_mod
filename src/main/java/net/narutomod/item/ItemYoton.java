@@ -39,6 +39,7 @@ import net.narutomod.entity.EntityClone;
 import net.narutomod.entity.EntitySealing;
 import net.narutomod.entity.EntitySealingChains;
 import net.narutomod.entity.EntityGedoStatue;
+import net.narutomod.entity.EntityTenTails;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.creativetab.TabModTab;
 import net.narutomod.ElementsNarutomodMod;
@@ -53,6 +54,7 @@ public class ItemYoton extends ElementsNarutomodMod.ModElement {
 	public static final ItemJutsu.JutsuEnum FUUIN = new ItemJutsu.JutsuEnum(1, "sealing", 'S', 100d, new EntitySealing.EC.Jutsu());
 	public static final ItemJutsu.JutsuEnum SEALINGCHAIN = new ItemJutsu.JutsuEnum(2, "sealing_chains", 'A', 50d, new EntitySealingChains.EC.Jutsu());
 	public static final ItemJutsu.JutsuEnum SEALING9D = new ItemJutsu.JutsuEnum(3, "tooltip.phantom9sealing.name", 'S', 100d, new EntityGedoStatue.Sealing9Jutsu());
+	public static final ItemJutsu.JutsuEnum SEALING10 = new ItemJutsu.JutsuEnum(4, "tooltip.10coffinseal.name", 'S', 100d, new EntityTenTails.CoffinSealJutsu());
 
 	public ItemYoton(ElementsNarutomodMod instance) {
 		super(instance, 406);
@@ -60,7 +62,7 @@ public class ItemYoton extends ElementsNarutomodMod.ModElement {
 
 	@Override
 	public void initElements() {
-		elements.items.add(() -> new RangedItem(MULTISIZE, FUUIN, SEALINGCHAIN, SEALING9D));
+		elements.items.add(() -> new RangedItem(MULTISIZE, FUUIN, SEALINGCHAIN, SEALING9D, SEALING10));
 		elements.entities.add(() -> EntityEntryBuilder.create().entity(EntityBiggerMe.class)
 				.id(new ResourceLocation("narutomod", "biggerme"), ENTITYID).name("biggerme").tracker(64, 1, true).build());
 	}

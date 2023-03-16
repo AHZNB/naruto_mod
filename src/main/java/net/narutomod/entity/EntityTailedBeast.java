@@ -199,7 +199,7 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 		public abstract float getModelScale();
 
 		@Nullable
-		private Entity getTargetVessel() {
+		protected Entity getTargetVessel() {
 			return this.world.getEntityByID(((Integer)this.getDataManager().get(VESSEL)).intValue());
 		}
 
@@ -1077,7 +1077,8 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 
 	@SideOnly(Side.CLIENT)
 	public static class LayerEntityDeath implements LayerRenderer<Base> {
-		private final ResourceLocation texture = new ResourceLocation("narutomod:textures/fuuin_beam.png");
+		private final ResourceLocation textureRed = new ResourceLocation("narutomod:textures/fuuin_beam_red.png");
+		private final ResourceLocation texture10t = new ResourceLocation("narutomod:textures/fuuin_beam_10tails.png");
 		private final RenderLiving renderer;
 
 		public LayerEntityDeath(RenderLiving rendererIn) {
@@ -1101,7 +1102,7 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 				float rot_y = (float) -Math.atan2(dx, dz) * 180.0F / (float) Math.PI;
 				float rot_x = (float) -Math.atan2(dy, dxz) * 180.0F / (float) Math.PI;
 				rot_y = MathHelper.wrapDegrees(rot_y - entity.renderYawOffset);
-				this.renderer.bindTexture(this.texture);
+				this.renderer.bindTexture(entity instanceof EntityTenTails.EntityCustom ? this.texture10t : this.textureRed);
 				GlStateManager.pushMatrix();
 				GlStateManager.translate(0.0F, -offset + (vessel instanceof EntityPlayer ? 1.501F : 0F), 0.0F);
 				GlStateManager.rotate(-90.0F, 1.0F, 0.0F, 0.0F);
@@ -1112,6 +1113,7 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 				RenderHelper.disableStandardItemLighting();
 				GlStateManager.enableBlend();
 				GlStateManager.disableCull();
+				GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 				GlStateManager.shadeModel(0x1D01);
 				float f5 = 0.0F - f;
 				float f6 = (float) max_l / 32.0F - f;
@@ -1162,6 +1164,7 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 			if (flag) {
 				GlStateManager.enableBlend();
 				GlStateManager.color(1.0f, 1.0f, 1.0f, f);
+				GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 			}
 			super.renderModel(entity, f0, f1, f2, f3, f4, f5);
 			if (flag) {
