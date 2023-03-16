@@ -227,7 +227,7 @@ public class EntityLightningArc extends ElementsNarutomodMod.ModElement {
 		}
 
 		public void setDamage(DamageSource source, float amount, @Nullable EntityLivingBase entity) {
-			this. setDamage(source, amount, false, entity);
+			this.setDamage(source, amount, false, entity);
 		}
 
 		public void setDamage(DamageSource source, float amount, boolean resetHurtTime, @Nullable EntityLivingBase entity) {

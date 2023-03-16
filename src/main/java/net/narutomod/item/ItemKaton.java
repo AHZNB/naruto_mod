@@ -7,6 +7,7 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
+import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 
@@ -14,47 +15,45 @@ import net.minecraft.world.World;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Item;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.client.Minecraft;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.RayTraceResult;
-//import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.DamageSource;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvent;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.util.DamageSource;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.renderer.texture.TextureMap;
-import net.minecraft.util.EnumParticleTypes;
-import net.minecraft.init.Blocks;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.util.text.TextComponentString;
+import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.init.SoundEvents;
-import net.minecraft.util.SoundCategory;
 
 import net.narutomod.creativetab.TabModTab;
 import net.narutomod.NarutomodModVariables;
 import net.narutomod.ElementsNarutomodMod;
 import net.narutomod.Particles;
 import net.narutomod.Chakra;
+import net.narutomod.entity.EntityRendererRegister;
 import net.narutomod.entity.EntityScalableProjectile;
 import net.narutomod.entity.EntityHidingInAsh;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.procedure.ProcedureAirPunch;
-import net.minecraft.util.SoundEvent;
-import net.minecraftforge.event.ForgeEventFactory;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class ItemKaton extends ElementsNarutomodMod.ModElement {
@@ -84,14 +83,6 @@ public class ItemKaton extends ElementsNarutomodMod.ModElement {
 	@SideOnly(Side.CLIENT)
 	public void registerModels(ModelRegistryEvent event) {
 		ModelLoader.setCustomModelResourceLocation(block, 0, new ModelResourceLocation("narutomod:katon", "inventory"));
-	}
-
-	@SideOnly(Side.CLIENT)
-	@Override
-	public void preInit(FMLPreInitializationEvent event) {
-		RenderingRegistry.registerEntityRenderingHandler(EntityBigFireball.class, renderManager -> {
-			return new RenderBigFireball(renderManager);
-		});
 	}
 
 	public static class RangedItem extends ItemJutsu.Base {
@@ -350,53 +341,59 @@ public class ItemKaton extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
+	@Override
+	public void preInit(FMLPreInitializationEvent event) {
+		new Renderer().register();
+	}
 	
-	@SideOnly(Side.CLIENT)
-	public class RenderBigFireball extends Render<EntityBigFireball> {
-		private final ResourceLocation TEXTURE = new ResourceLocation("narutomod:textures/fireball.png");
-
-		public RenderBigFireball(RenderManager renderManagerIn) {
-			super(renderManagerIn);
+	public static class Renderer extends EntityRendererRegister {
+		@SideOnly(Side.CLIENT)
+		@Override
+		public void register() {
+			RenderingRegistry.registerEntityRenderingHandler(EntityBigFireball.class, renderManager -> {
+				return new RenderBigFireball(renderManager);
+			});
 		}
 
-		@Override
-		public void doRender(EntityBigFireball entity, double x, double y, double z, float entityYaw, float partialTicks) {
-			GlStateManager.pushMatrix();
-			this.bindEntityTexture(entity);
-			float scale = entity.getEntityScale();
-			GlStateManager.translate(x, y + 0.1d * scale, z);
-			GlStateManager.enableRescaleNormal();
-			GlStateManager.scale(scale, scale, scale);
-			//TextureAtlasSprite textureatlassprite = Minecraft.getMinecraft().getRenderItem().getItemModelMesher().getParticleIcon(Items.FIRE_CHARGE);
-			Tessellator tessellator = Tessellator.getInstance();
-			BufferBuilder bufferbuilder = tessellator.getBuffer();
-			//float f = textureatlassprite.getMinU();
-			//float f1 = textureatlassprite.getMaxU();
-			//float f2 = textureatlassprite.getMinV();
-			//float f3 = textureatlassprite.getMaxV();
-			GlStateManager.rotate(180F - this.renderManager.playerViewY, 0.0F, 1.0F, 0.0F);
-			GlStateManager.rotate((float) (this.renderManager.options.thirdPersonView == 2 ? -1 : 1) * -this.renderManager.playerViewX, 1.0F, 0.0F, 0.0F);
-			GlStateManager.disableLighting();
-			OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240.0F, 240.0F);
-			bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX_NORMAL);
-			//bufferbuilder.pos(-0.5D, -0.25D, 0.0D).tex((double)f, (double)f3).normal(0.0F, 1.0F, 0.0F).endVertex();
-			//bufferbuilder.pos(0.5D, -0.25D, 0.0D).tex((double)f1, (double)f3).normal(0.0F, 1.0F, 0.0F).endVertex();
-			//bufferbuilder.pos(0.5D, 0.75D, 0.0D).tex((double)f1, (double)f2).normal(0.0F, 1.0F, 0.0F).endVertex();
-			//bufferbuilder.pos(-0.5D, 0.75D, 0.0D).tex((double)f, (double)f2).normal(0.0F, 1.0F, 0.0F).endVertex();
-			bufferbuilder.pos(-0.5D, -0.25D, 0.0D).tex(0.0D, 1.0D).normal(0.0F, 1.0F, 0.0F).endVertex();
-			bufferbuilder.pos(0.5D, -0.25D, 0.0D).tex(1.0D, 1.0D).normal(0.0F, 1.0F, 0.0F).endVertex();
-			bufferbuilder.pos(0.5D, 0.75D, 0.0D).tex(1.0D, 0.0D).normal(0.0F, 1.0F, 0.0F).endVertex();
-			bufferbuilder.pos(-0.5D, 0.75D, 0.0D).tex(0.0D, 0.0D).normal(0.0F, 1.0F, 0.0F).endVertex();
-			tessellator.draw();
-			GlStateManager.enableLighting();
-			GlStateManager.disableRescaleNormal();
-			GlStateManager.popMatrix();
-			super.doRender(entity, x, y, z, entityYaw, partialTicks);
-		}
-
-		@Override
-		protected ResourceLocation getEntityTexture(EntityBigFireball entity) {
-			return TEXTURE;
+		@SideOnly(Side.CLIENT)
+		public class RenderBigFireball extends Render<EntityBigFireball> {
+			private final ResourceLocation texture = new ResourceLocation("narutomod:textures/fireball.png");
+	
+			public RenderBigFireball(RenderManager renderManagerIn) {
+				super(renderManagerIn);
+			}
+	
+			@Override
+			public void doRender(EntityBigFireball entity, double x, double y, double z, float entityYaw, float partialTicks) {
+				GlStateManager.pushMatrix();
+				this.bindEntityTexture(entity);
+				float scale = entity.getEntityScale();
+				GlStateManager.translate(x, y + 0.375D * scale, z);
+				GlStateManager.enableRescaleNormal();
+				GlStateManager.scale(scale, scale, scale);
+				Tessellator tessellator = Tessellator.getInstance();
+				BufferBuilder bufferbuilder = tessellator.getBuffer();
+				GlStateManager.rotate(180F - this.renderManager.playerViewY, 0.0F, 1.0F, 0.0F);
+				GlStateManager.rotate((float) (this.renderManager.options.thirdPersonView == 2 ? -1 : 1) * -this.renderManager.playerViewX, 1.0F, 0.0F, 0.0F);
+				GlStateManager.rotate(12f * (partialTicks + entity.ticksExisted), 0.0F, 0.0F, 1.0F);
+				GlStateManager.disableLighting();
+				OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240.0F, 240.0F);
+				bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX_NORMAL);
+				bufferbuilder.pos(-0.375D, -0.375D, 0.0D).tex(0.0D, 1.0D).normal(0.0F, 1.0F, 0.0F).endVertex();
+				bufferbuilder.pos(0.375D, -0.375D, 0.0D).tex(1.0D, 1.0D).normal(0.0F, 1.0F, 0.0F).endVertex();
+				bufferbuilder.pos(0.375D, 0.375D, 0.0D).tex(1.0D, 0.0D).normal(0.0F, 1.0F, 0.0F).endVertex();
+				bufferbuilder.pos(-0.375D, 0.375D, 0.0D).tex(0.0D, 0.0D).normal(0.0F, 1.0F, 0.0F).endVertex();
+				tessellator.draw();
+				GlStateManager.enableLighting();
+				GlStateManager.disableRescaleNormal();
+				GlStateManager.popMatrix();
+				super.doRender(entity, x, y, z, entityYaw, partialTicks);
+			}
+	
+			@Override
+			protected ResourceLocation getEntityTexture(EntityBigFireball entity) {
+				return this.texture;
+			}
 		}
 	}
 }
