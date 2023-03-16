@@ -35,16 +35,18 @@ import net.minecraft.world.WorldServer;
 
 import net.narutomod.gui.GuiNinjaScroll;
 import net.narutomod.entity.EntityKingOfHell;
+import net.narutomod.entity.EntityTenTails;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.procedure.ProcedureRinneganHelmetTickEvent;
 import net.narutomod.creativetab.TabModTab;
+import net.narutomod.PlayerTracker;
 import net.narutomod.ElementsNarutomodMod;
 import net.narutomod.NarutomodModVariables;
 
 import javax.annotation.Nullable;
 import java.util.List;
-import com.google.common.collect.Multimap;
 import java.util.UUID;
+import com.google.common.collect.Multimap;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class ItemRinnegan extends ElementsNarutomodMod.ModElement {
@@ -113,6 +115,16 @@ public class ItemRinnegan extends ElementsNarutomodMod.ModElement {
 	public void initElements() {
 		ItemArmor.ArmorMaterial enuma = EnumHelper.addArmorMaterial("RINNEGAN", "narutomod:rinnegan_", 25, new int[]{2, 5, 6, 2}, 0, null, 5.0F);
 		this.elements.items.add(() -> new ItemDojutsu.Base(enuma) {
+			@SideOnly(Side.CLIENT)
+			@Override
+			public ModelBiped getArmorModel(EntityLivingBase living, ItemStack stack, EntityEquipmentSlot slot, ModelBiped defaultModel) {
+				ItemDojutsu.ClientModel.ModelHelmetSnug model = (ItemDojutsu.ClientModel.ModelHelmetSnug)super.getArmorModel(living, stack, slot, defaultModel);
+				if (living.ticksExisted % 20 == 6) {
+					model.foreheadHide = !isRinnesharinganActivated(stack) || !(living instanceof EntityPlayer) || PlayerTracker.getNinjaLevel((EntityPlayer)living) < 180d;
+				}
+				return model;
+			}
+			
 			@Override
 			public String getArmorTexture(ItemStack stack, Entity entity, EntityEquipmentSlot slot, String type) {
 				if (isRinnesharinganActivated(stack))
@@ -154,6 +166,8 @@ public class ItemRinnegan extends ElementsNarutomodMod.ModElement {
 						ItemStack helmetStack = player.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
 						GuiNinjaScroll.enableJutsu(player, (ItemJutsu.Base)ItemYoton.block,
 						 ItemYoton.SEALING9D, helmetStack.getItem() == helmet);
+						GuiNinjaScroll.enableJutsu(player, (ItemJutsu.Base)ItemYoton.block,
+						 ItemYoton.SEALING10, helmetStack.getItem() == helmet && EntityTenTails.getBijuManager().isAddedToWorld(world));
 						if (helmetStack.getItem() != helmet && helmetStack.getItem() != ItemTenseigan.helmet) {
 							player.inventory.clearMatchingItems(ItemAsuraCanon.block, -1, -1, null);
 						}
@@ -209,8 +223,6 @@ public class ItemRinnegan extends ElementsNarutomodMod.ModElement {
 				if (this.armorModel == null) {
 					this.armorModel = new ModelSizPathRobe();
 				}
-
-				//armorModel.ball[0].showModel = living.getHeldItemMainhand().getItem() != ItemExpandedTruthSeekerBall.block;
 				this.armorModel.isSneak = living.isSneaking();
 				this.armorModel.isRiding = living.isRiding();
 				this.armorModel.isChild = living.isChild();
@@ -350,7 +362,9 @@ public class ItemRinnegan extends ElementsNarutomodMod.ModElement {
 		private final ModelRenderer bone9;
 		private final ModelRenderer bone10;
 		//private final ModelRenderer bipedRightArm;
+		private final ModelRenderer robeRightArm;
 		//private final ModelRenderer bipedLeftArm;
+		private final ModelRenderer robeLeftArm;
 		//private final ModelRenderer bipedRightLeg;
 		//private final ModelRenderer bipedLeftLeg;
 	
@@ -441,13 +455,21 @@ public class ItemRinnegan extends ElementsNarutomodMod.ModElement {
 			bipedRightArm.setRotationPoint(-5.0F, 2.0F, 0.0F);
 			setRotationAngle(bipedRightArm, -0.1745F, 0.0F, 0.0F);
 			bipedRightArm.cubeList.add(new ModelBox(bipedRightArm, 40, 16, -3.0F, -2.0F, -2.0F, 4, 12, 4, 0.05F, false));
-			bipedRightArm.cubeList.add(new ModelBox(bipedRightArm, 40, 32, -3.0F, -2.0F, -2.0F, 4, 12, 4, 0.3F, false));
+	
+			robeRightArm = new ModelRenderer(this);
+			robeRightArm.setRotationPoint(5.0F, 22.0F, 0.0F);
+			bipedRightArm.addChild(robeRightArm);
+			robeRightArm.cubeList.add(new ModelBox(robeRightArm, 40, 32, -8.0F, -24.0F, -2.0F, 4, 12, 4, 0.3F, false));
 	
 			bipedLeftArm = new ModelRenderer(this);
 			bipedLeftArm.setRotationPoint(5.0F, 2.0F, 0.0F);
 			setRotationAngle(bipedLeftArm, -0.1745F, 0.0F, 0.0F);
 			bipedLeftArm.cubeList.add(new ModelBox(bipedLeftArm, 48, 0, -1.0F, -2.0F, -2.0F, 4, 12, 4, 0.05F, true));
-			bipedLeftArm.cubeList.add(new ModelBox(bipedLeftArm, 40, 32, -1.0F, -2.0F, -2.0F, 4, 12, 4, 0.3F, true));
+	
+			robeLeftArm = new ModelRenderer(this);
+			robeLeftArm.setRotationPoint(-5.0F, 22.0F, 0.0F);
+			bipedLeftArm.addChild(robeLeftArm);
+			robeLeftArm.cubeList.add(new ModelBox(robeLeftArm, 40, 32, 4.0F, -24.0F, -2.0F, 4, 12, 4, 0.3F, true));
 	
 			bipedRightLeg = new ModelRenderer(this);
 			bipedRightLeg.setRotationPoint(-1.9F, 12.0F, 0.0F);
@@ -464,9 +486,15 @@ public class ItemRinnegan extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
-			if (entity instanceof AbstractClientPlayer && ((AbstractClientPlayer)entity).getSkinType().equals("slim")) {
-				this.bipedLeftArm.setRotationPoint(5.0F, 2.5F, 0.0F);
-				this.bipedRightArm.setRotationPoint(-5.0F, 2.5F, 0.0F);
+			if (entity instanceof AbstractClientPlayer) {
+				if (((AbstractClientPlayer)entity).getSkinType().equals("slim")) {
+					this.bipedLeftArm.setRotationPoint(5.0F, 2.5F, 0.0F);
+					this.bipedRightArm.setRotationPoint(-5.0F, 2.5F, 0.0F);
+				}
+				boolean show = PlayerTracker.getNinjaLevel((AbstractClientPlayer)entity) >= 180d;
+				robe.showModel = show;
+				robeRightArm.showModel = show;
+				robeLeftArm.showModel = show;
 			}
 			/*if (this.bipedLeftArm.showModel) {
 				for (int i = 0; i < 9; i++) {

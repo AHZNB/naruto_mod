@@ -1041,7 +1041,7 @@ public class ProcedureOnPlayerPostTick extends ElementsNarutomodMod.ModElement {
 							stack = new ItemStack(Blocks.AIR, (int) (1));
 							if (((rngbase) > 105)) {
 								int tails = EntityBijuManager.getRandomAvailableBiju();
-								if (EntityBijuManager.setPlayerAsJinchurikiByTails((EntityPlayer) entity, tails)) {
+								if (EntityBijuManager.setVesselByTails(entity, tails)) {
 									world.playSound((EntityPlayer) null, x, y, z,
 											(net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY
 													.getObject(new ResourceLocation("ui.toast.challenge_complete")),

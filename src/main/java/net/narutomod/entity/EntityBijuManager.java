@@ -140,16 +140,21 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 	}
 
 	public static void unsetPlayerAsJinchuriki(EntityPlayer player) {
-		EntityBijuManager bm = getBijuManagerFrom(player);
-		if (bm != null) {
-			bm.setVesselEntity(null);
+		unsetEntityAsVessel(player);
+	}
+
+	public static void unsetEntityAsVessel(Entity entityIn) {
+		for (EntityBijuManager bm : mapByClass.values()) {
+			if (bm.getVesselUuid() != null && bm.getVesselUuid().equals(entityIn.getUniqueID())) {
+				bm.setVesselEntity(null);
+			}
 		}
 	}
 
-	public static boolean setPlayerAsJinchurikiByTails(EntityPlayer player, int tailnum) {
+	public static boolean setVesselByTails(Entity entityIn, int tailnum) {
 		EntityBijuManager bm = mapByTailnum.get(tailnum);
 		if (bm != null && !bm.isSealed()) {
-			bm.setVesselEntity(player);
+			bm.setVesselEntity(entityIn);
 			return true;
 		}
 		return false;
@@ -379,7 +384,9 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 	
 	public void setVesselUuid(@Nullable UUID uuid) {
 		this.vesselUuid = uuid;
-		EntityGedoStatue.setBijuSealed(this.tails - 1, EntityGedoStatue.ENTITY_UUID.equals(uuid));
+		if (this.tails < 10) {
+			EntityGedoStatue.setBijuSealed(this.tails - 1, EntityGedoStatue.ENTITY_UUID.equals(uuid));
+		}
 	}
 
 	public String getVesselName() {
@@ -615,7 +622,7 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 
 	public String toString() {
 		EntityPlayer jinchuriki = this.getJinchurikiPlayer();
-		return " >>>> " + (jinchuriki != null ? jinchuriki.getName() : this.vesselName) + " is the " + this.getEntityLocalizedName() + " jinchuriki.";
+		return " >> " + this.getEntityLocalizedName() + " is sealed in " + (jinchuriki != null ? jinchuriki.getName() : this.vesselName);
 	}
 
 	public interface ITailBeast {

@@ -10,7 +10,6 @@ import net.narutomod.item.ItemBlackReceiver;
 import net.narutomod.item.ItemAsuraPathArmor;
 import net.narutomod.item.ItemAsuraCanon;
 import net.narutomod.entity.EntityTenTails;
-import net.narutomod.PlayerTracker;
 import net.narutomod.NarutomodModVariables;
 import net.narutomod.ElementsNarutomodMod;
 
@@ -59,7 +58,6 @@ public class ProcedureRinneganHelmetTickEvent extends ElementsNarutomodMod.ModEl
 		ItemStack itemstack = (ItemStack) dependencies.get("itemstack");
 		World world = (World) dependencies.get("world");
 		boolean isRinnesharingan = false;
-		boolean f1 = false;
 		ItemStack stack1 = ItemStack.EMPTY;
 		entity.fallDistance = (float) (0);
 		isRinnesharingan = (boolean) ((itemstack).hasTagCompound()
@@ -121,8 +119,7 @@ public class ProcedureRinneganHelmetTickEvent extends ElementsNarutomodMod.ModEl
 				}
 				if (entity instanceof EntityLivingBase)
 					((EntityLivingBase) entity).addPotionEffect(new PotionEffect(MobEffects.RESISTANCE, (int) 2, (int) 2, (false), (false)));
-				f1 = entity.equals(EntityTenTails.getBijuManager().getJinchurikiPlayer());
-				if (((f1) && (PlayerTracker.getNinjaLevel((EntityPlayer) entity) >= 180))) {
+				if (entity.equals(EntityTenTails.getBijuManager().getJinchurikiPlayer())) {
 					{
 						ItemStack _stack = (itemstack);
 						if (!_stack.hasTagCompound())

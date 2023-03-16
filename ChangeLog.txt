@@ -40,6 +40,8 @@ Jutsus:
  - fixed tenseigan users not being able to use asura canon
  - fixed summoner can't ride summon, and summon can't ride summoner
  - lightning jutsus now do aoe damage in a 10 block radius if target is in water
+ - added Six Paths Ten-Tails Coffin Seal - to become the 10-tails jinchuriki
+ - after becoming the 10-tails jinchuriki, armor is obito un-controlled outfit if ninjaxp < 32400
 
 Items:
  - cleaver sword now takes damage when used, attack speed and damage decrease, recipe changed

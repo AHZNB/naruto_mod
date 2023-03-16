@@ -64,7 +64,7 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 	private static final float MODEL_SCALE = 10.0F;
 	private static EntityCustom thisEntity = null;
 	private static final boolean[] BIJU_SEALED = new boolean[9];
-	protected static final UUID ENTITY_UUID = UUID.fromString("7048f36c-9838-4637-9935-9c4965e75b9a");
+	public static final UUID ENTITY_UUID = UUID.fromString("7048f36c-9838-4637-9935-9c4965e75b9a");
 
 	public EntityGedoStatue(ElementsNarutomodMod instance) {
 		super(instance, 683);

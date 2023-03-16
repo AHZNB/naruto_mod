@@ -1,5 +1,6 @@
 package net.narutomod.procedure;
 
+import net.narutomod.entity.EntityGedoStatue;
 import net.narutomod.entity.EntityBijuManager;
 import net.narutomod.command.CommandLocateEntity;
 import net.narutomod.ElementsNarutomodMod;
@@ -8,7 +9,6 @@ import net.minecraftforge.fml.common.FMLCommonHandler;
 
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.Entity;
 
@@ -158,7 +158,6 @@ public class ProcedureLocateEntityCommandExecuted extends ElementsNarutomodMod.M
 						return "";
 					}
 				}.getText());
-				EntityPlayerMP player = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerByUsername(string);
 				tailnum = (double) new Object() {
 					int convert(String s) {
 						try {
@@ -176,8 +175,14 @@ public class ProcedureLocateEntityCommandExecuted extends ElementsNarutomodMod.M
 						return "";
 					}
 				}.getText()));
-				if (player != null) {
-					EntityBijuManager.setPlayerAsJinchurikiByTails(player, (int) tailnum);
+				Entity vessel = null;
+				if ((((string)).equals("gedo"))) {
+					vessel = FMLCommonHandler.instance().getMinecraftServerInstance().getEntityFromUuid(EntityGedoStatue.ENTITY_UUID);
+				} else {
+					vessel = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerByUsername(string);
+				}
+				if (vessel != null) {
+					EntityBijuManager.setVesselByTails(vessel, (int) tailnum);
 				}
 			} else {
 				if (entity instanceof EntityPlayer && !entity.world.isRemote) {
