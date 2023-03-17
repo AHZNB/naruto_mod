@@ -333,18 +333,15 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 				this.setSealedAll9Bijus(gotAll9Bijus());
 			}
 			if (flag && this.world.isRemote) {
+				Particles.Renderer particles = new Particles.Renderer(this.world, 96d);
 				for (int i = 0; i < (int)(((float)age / this.lifeSpan) * 100f); i++) {
-					Particles.spawnParticle(this.world, Particles.Types.SMOKE,
-					 this.posX, this.posY + this.height * 0.5, this.posZ, 1,
-					 this.width * 0.6D, this.height * 0.5D, this.width * 0.6D,
-					 0d, 0.5d, 0d, 96d, 0x10827c73, 80 + this.rand.nextInt(40));
+					particles.spawnParticles(Particles.Types.SMOKE, this.posX, this.posY, this.posZ,
+					 1, this.width * 0.3D, this.height * 0.6D, this.width * 0.3D, 0d, 0.5d, 0d, 0x80827c73,
+					 60 + this.rand.nextInt(41));
 				}
+				particles.send();
 			}
 			if (age <= this.riseTime) {
-				if (this.particleArea == null) {
-					this.particleArea = ProcedureUtils.getNonAirBlocks(this.world, 
-					 this.getEntityBoundingBox().offset(0d, -0.5d * this.height, 0d));
-				}
 				Particles.Renderer particles = new Particles.Renderer(this.world, 96d);
 				for (int i = 0; i < 100; i++) {
 					particles.spawnParticles(Particles.Types.SMOKE, this.posX, this.posY, this.posZ,
@@ -353,6 +350,10 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 					 50 + this.rand.nextInt(30));
 				}
 				particles.send();
+				if (this.particleArea == null) {
+					this.particleArea = ProcedureUtils.getNonAirBlocks(this.world, 
+					 this.getEntityBoundingBox().offset(0d, -0.5d * this.height, 0d));
+				}
 				if (this.particleArea != null) {
 					for (BlockPos pos : this.particleArea) {
 						IBlockState state = this.world.getBlockState(pos);

@@ -4,6 +4,7 @@ import net.narutomod.potion.PotionFlight;
 import net.narutomod.item.ItemTenseiganChakraMode;
 import net.narutomod.item.ItemTenseigan;
 import net.narutomod.item.ItemSixPathSenjutsu;
+import net.narutomod.item.ItemSageStaff;
 import net.narutomod.item.ItemRinnegan;
 import net.narutomod.item.ItemNinjutsu;
 import net.narutomod.item.ItemBlackReceiver;
@@ -94,6 +95,15 @@ public class ProcedureRinneganHelmetTickEvent extends ElementsNarutomodMod.ModEl
 						ItemHandlerHelper.giveItemToPlayer(((EntityPlayer) entity), _setstack);
 					}
 				}
+				if ((!((entity instanceof EntityPlayer)
+						? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemSageStaff.block, (int) (1)))
+						: false))) {
+					if (entity instanceof EntityPlayer) {
+						ItemStack _setstack = new ItemStack(ItemSageStaff.block, (int) (1));
+						_setstack.setCount(1);
+						ItemHandlerHelper.giveItemToPlayer(((EntityPlayer) entity), _setstack);
+					}
+				}
 				if ((((itemstack).getItem() == new ItemStack(ItemTenseigan.helmet, (int) (1)).getItem()) && (!((entity instanceof EntityPlayer)
 						? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemTenseiganChakraMode.block, (int) (1)))
 						: false)))) {
@@ -176,21 +186,21 @@ public class ProcedureRinneganHelmetTickEvent extends ElementsNarutomodMod.ModEl
 							((EntityPlayer) entity).inventory.clearMatchingItems(new ItemStack(ItemAsuraCanon.block, (int) (1)).getItem(), -1,
 									(int) (-1), null);
 					}
+					if ((!((entity instanceof EntityPlayer)
+							? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemBlackReceiver.block, (int) (1)))
+							: false))) {
+						if (entity instanceof EntityPlayer) {
+							ItemStack _setstack = new ItemStack(ItemBlackReceiver.block, (int) (1));
+							_setstack.setCount(1);
+							ItemHandlerHelper.giveItemToPlayer(((EntityPlayer) entity), _setstack);
+						}
+					}
 				}
 			}
 			if (entity instanceof EntityLivingBase)
 				((EntityLivingBase) entity).addPotionEffect(new PotionEffect(MobEffects.SPEED, (int) 2, (int) 4, (false), (false)));
 			if (entity instanceof EntityLivingBase)
 				((EntityLivingBase) entity).addPotionEffect(new PotionEffect(MobEffects.NIGHT_VISION, (int) 210, (int) 0, (false), (false)));
-			if ((!((entity instanceof EntityPlayer)
-					? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemBlackReceiver.block, (int) (1)))
-					: false))) {
-				if (entity instanceof EntityPlayer) {
-					ItemStack _setstack = new ItemStack(ItemBlackReceiver.block, (int) (1));
-					_setstack.setCount(1);
-					ItemHandlerHelper.giveItemToPlayer(((EntityPlayer) entity), _setstack);
-				}
-			}
 		}
 		if ((entity.getEntityData().getBoolean("chibakutensei_active"))) {
 			if (entity instanceof EntityLivingBase)

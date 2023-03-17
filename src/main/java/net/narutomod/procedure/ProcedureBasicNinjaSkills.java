@@ -51,7 +51,7 @@ public class ProcedureBasicNinjaSkills extends ElementsNarutomodMod.ModElement {
 				&& (!(entity.isSneaking())))) {
 			entity.motionY = 0.01D;
 			entity.onGround = true;
-			entity.fallDistance = 0.0F;
+			entity.fallDistance = (float) (0);
 		}
 		RayTraceResult r = ProcedureUtils.raytraceBlocks(entity, 1d);
 		f1 = (!entity.onGround && entity.rotationPitch < 0 && r != null && r.typeOfHit == RayTraceResult.Type.BLOCK

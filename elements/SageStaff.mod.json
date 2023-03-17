@@ -5,7 +5,7 @@
     "renderType": 1,
     "texture": "kusanagi128",
     "customModelName": "sagestaff:default",
-    "name": "Sage Staff",
+    "name": "Truth Seeking Shakujo",
     "specialInfo": [
       "Six Path Shakujo: This is the staff created by the truth seeking orb - Originally being held by the sage of the six paths"
     ],
@@ -16,8 +16,8 @@
     "harvestLevel": 10,
     "efficiency": 25.0,
     "attackSpeed": 5.0,
-    "enchantability": 1,
-    "damageVsEntity": 15.0,
+    "enchantability": 0,
+    "damageVsEntity": 30.0,
     "usageCount": 0,
     "blocksAffected": [],
     "hasGlow": false,

@@ -55,6 +55,7 @@ Items:
  - limit big folding fan blow power
  - updated rinnegan's asura path canon to shoot missiles
  - reduced chances of getting wood release to 1% if keepInvenotry or keepNinjaXp is true
+ - six path staff is given to people that gain 6-path senjutsu. it shoots black receivers
 
 Entities:
  - increase spawn rates for bosses and remove dungeon spawns

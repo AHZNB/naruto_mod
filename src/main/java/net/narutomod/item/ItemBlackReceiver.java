@@ -116,13 +116,9 @@ public class ItemBlackReceiver extends ElementsNarutomodMod.ModElement {
 				entityarrow.setDamage(10);
 				entityarrow.setKnockbackStrength(0);
 				itemstack.damageItem(1, entity);
-				int x = (int) entity.posX;
-				int y = (int) entity.posY;
-				int z = (int) entity.posZ;
-				world.playSound((EntityPlayer) null, (double) x, (double) y, (double) z,
-						(net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY
-								.getObject(new ResourceLocation(("narutomod:hand_shoot"))),
-						SoundCategory.NEUTRAL, 1, 1f / (itemRand.nextFloat() * 0.5f + 1f) + (power / 2));
+				world.playSound(null, entity.posX, entity.posY, entity.posZ,
+				 net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:hand_shoot")),
+				 SoundCategory.NEUTRAL, 1, 1f / (itemRand.nextFloat() * 0.5f + 1f) + (power / 2));
 				entityarrow.pickupStatus = EntityArrow.PickupStatus.DISALLOWED;
 				world.spawnEntity(entityarrow);
 				entity.getCooldownTracker().setCooldown(itemstack.getItem(), 40);
@@ -142,8 +138,8 @@ public class ItemBlackReceiver extends ElementsNarutomodMod.ModElement {
 			if (!world.isRemote) {
 				if (entity instanceof EntityPlayer) {
 					if (!ProcedureUtils.hasItemInInventory((EntityPlayer)entity, ItemRinnegan.helmet)
-					 && !ProcedureUtils.hasItemInInventory((EntityPlayer)entity, ItemTenseigan.helmet)) {
-			 		//if (!((EntityPlayer)entity).inventory.hasItemStack(new ItemStack(ItemRinnegan.helmet))) {
+					 && !ProcedureUtils.hasItemInInventory((EntityPlayer)entity, ItemTenseigan.helmet)
+					 && !((EntityPlayer)entity).isCreative() && entity.ticksExisted % 20 == 7) {
 			 			((EntityLivingBase)entity).addPotionEffect(new PotionEffect(MobEffects.NAUSEA, 100, 1, false, false));
 			 		}
 				} else if (entity instanceof EntityLiving) {
@@ -174,12 +170,12 @@ public class ItemBlackReceiver extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-	private static void onHitEntity(EntityLivingBase entity) {
+	protected static void onHitEntity(EntityLivingBase entity) {
 		int amplifier = 1;
 		if (entity.isPotionActive(PotionHeaviness.potion)) {
 			amplifier += entity.getActivePotionEffect(PotionHeaviness.potion).getAmplifier();
 		}
-		entity.addPotionEffect(new PotionEffect(PotionHeaviness.potion, 600, amplifier, false, false));
+		entity.addPotionEffect(new PotionEffect(PotionHeaviness.potion, 400, amplifier, false, false));
 		//if (entity.isPotionActive(MobEffects.JUMP_BOOST) && entity.getActivePotionEffect(MobEffects.JUMP_BOOST).getAmplifier() > -5) {
 		//	entity.removePotionEffect(MobEffects.JUMP_BOOST);
 		//}

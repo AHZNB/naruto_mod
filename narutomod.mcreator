@@ -1,8 +1,8 @@
 {
   "id_map": {
+    "DIMENSION": 13,
     "GUI": 63,
-    "ENTITY": 416,
-    "DIMENSION": 13
+    "ENTITY": 416
   },
   "mod_elements": [
     {
@@ -6255,7 +6255,7 @@
       "type": "tool",
       "sortid": 776,
       "compiles": true,
-      "locked_code": false,
+      "locked_code": true,
       "ids": {},
       "registry_name": "sage_staff"
     },
@@ -7889,8 +7889,8 @@
       "item.shuriken.name": "Shuriken",
       "entity.cellular_activation.name": "Cellular Activation",
       "entity.entityasakujaku.name": "Asakujaku (Morning Peacock)",
-      "tooltip.kekkeimora.expansivetsb": "Expansive Truth Seeking Ball",
       "item.scroll_water_dragon.name": "Water Release - Water Dragon Bullet Scroll",
+      "tooltip.kekkeimora.expansivetsb": "Expansive Truth Seeking Ball",
       "item.gunbai.name": "Gunbai",
       "entity.tailed_beast.name": "Tailed Beast",
       "item.scroll_rasenshuriken.name": "Wind Release - Rasenshuriken Scroll",
@@ -8007,6 +8007,7 @@
       "subtitles.spiked": "",
       "tooltip.shikotsumyaku.danceclementisflower": "Clematis Dance: Flower",
       "item.zzz.name": "Zzz",
+      "tooltip.sagestaff.descr": "Six Path Shakujo: This is the staff created by the truth seeking orb - Originally being held by the sage of the six paths",
       "item.anbu_robelegs.name": "Anbu Robe Leggings",
       "item.ninja_armor_kirilegs.name": "Ninja Pants (Kirigakure)",
       "entity.zabuza_momochi.name": "Zabuza Momochi",
@@ -8324,7 +8325,7 @@
       "item.ninja_armor_kiriboots.name": "Ninja Boots (Kirigakure)",
       "item.mask_obito_warboots.name": "Mask Obito War Boots",
       "item.uchihabody.name": "Uchiha Body",
-      "item.sage_staff.name": "Sage Staff",
+      "item.sage_staff.name": "Truth Seeking Shakujo",
       "entity.haku.name": "Haku",
       "entity.eight_tails.name": "Gyuuki",
       "entity.scorchorb.name": "Spawn scorch orb",

@@ -73,32 +73,34 @@ public class ProcedureOuterPath extends ElementsNarutomodMod.ModElement {
 				if (entity instanceof EntityLivingBase) {
 					((EntityLivingBase) entity).swingArm(EnumHand.MAIN_HAND);
 				}
-				EntityLivingBase entityToSpawn = EntityTenTails.getBijuManager().getHasLived()
-						? EntityTenTails.getBijuManager().getEntityInWorld(world)
-						: EntityGedoStatue.getThisEntity(world);
+				EntityLivingBase entityToSpawn = EntityGedoStatue.getThisEntity(world);
 				if (entityToSpawn != null) {
-					x = (int) entityToSpawn.posX;
-					y = (int) entityToSpawn.posY;
-					z = (int) entityToSpawn.posZ;
-					(entityToSpawn).world.removeEntity(entityToSpawn);
-				} else if (Chakra.pathway((EntityLivingBase) entity).consume(ItemRinnegan.getOuterPathChakraUsage((EntityLivingBase) entity))) {
-					entityToSpawn = EntityTenTails.getBijuManager().getHasLived()
-							? new EntityTenTails.EntityCustom((EntityPlayer) entity)
-							: new EntityGedoStatue.EntityCustom((EntityLivingBase) entity);
-					entityToSpawn.rotationYawHead = entity.rotationYaw;
-					entityToSpawn.setLocationAndAngles(x, world.getTopSolidOrLiquidBlock(new BlockPos(x, y, z)).getY(), z, entity.rotationYaw, 0f);
-					if (world.spawnEntity(entityToSpawn)) {
-						entity.getEntityData().setDouble((NarutomodModVariables.InvulnerableTime), 100);
-						world.playSound((EntityPlayer) null, x, y, z,
-								(net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY
-										.getObject(new ResourceLocation("narutomod:kuchiyosenojutsu")),
-								SoundCategory.NEUTRAL, (float) 2, (float) 0.9);
-					}
+					if (entityToSpawn instanceof EntityLivingBase)
+						((EntityLivingBase) entityToSpawn).setHealth((float) 0);
 				} else {
-					if ((entity instanceof EntityPlayer)) {
-						Chakra.pathway((EntityPlayer) entity).warningDisplay();
+					entityToSpawn = EntityTenTails.getBijuManager().getEntityInWorld(world);
+					if (entityToSpawn != null) {
+						(entityToSpawn).world.removeEntity(entityToSpawn);
+					} else if (Chakra.pathway((EntityLivingBase) entity).consume(ItemRinnegan.getOuterPathChakraUsage((EntityLivingBase) entity))) {
+						entityToSpawn = EntityTenTails.getBijuManager().getHasLived()
+								? new EntityTenTails.EntityCustom((EntityPlayer) entity)
+								: new EntityGedoStatue.EntityCustom((EntityLivingBase) entity);
+						entityToSpawn.rotationYawHead = entity.rotationYaw;
+						entityToSpawn.setLocationAndAngles(x, world.getTopSolidOrLiquidBlock(new BlockPos(x, y, z)).getY(), z, entity.rotationYaw,
+								0f);
+						if (world.spawnEntity(entityToSpawn)) {
+							entity.getEntityData().setDouble((NarutomodModVariables.InvulnerableTime), 100);
+							world.playSound((EntityPlayer) null, x, y, z,
+									(net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY
+											.getObject(new ResourceLocation("narutomod:kuchiyosenojutsu")),
+									SoundCategory.NEUTRAL, (float) 2, (float) 0.9);
+						}
+					} else {
+						if ((entity instanceof EntityPlayer)) {
+							Chakra.pathway((EntityPlayer) entity).warningDisplay();
+						}
+						return;
 					}
-					return;
 				}
 			} else {
 				if (entity instanceof EntityPlayer && !entity.world.isRemote) {
