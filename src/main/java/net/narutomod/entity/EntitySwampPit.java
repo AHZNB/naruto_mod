@@ -9,21 +9,25 @@ import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
 
 import net.minecraft.world.World;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.SoundCategory;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.Entity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.init.Blocks;
+import net.minecraft.block.state.IBlockState;
 
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.block.BlockMud;
 import net.narutomod.item.ItemJutsu;
 import net.narutomod.Particles;
 import net.narutomod.ElementsNarutomodMod;
+
+import java.util.Map;
+import com.google.common.collect.Maps;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntitySwampPit extends ElementsNarutomodMod.ModElement {
@@ -81,15 +85,19 @@ public class EntitySwampPit extends ElementsNarutomodMod.ModElement {
 					Particles.spawnParticle(this.world, Particles.Types.SMOKE, this.posX, this.posY + 1d, this.posZ, 
 					 100, (double)this.radius/2, 0d, (double)this.radius/2, 0.0d, 0.0d, 0.0d, 0x801c120d, 25);
 				}
+				Map<BlockPos, IBlockState> map = Maps.newHashMap();
 				for (int i = -this.radius; i <= this.radius; i++) {
 					for (int k = -this.radius; k <= this.radius; k++) {
 						if (1 - this.ticksExisted > this.offsetY) {
-							this.world.setBlockToAir(this.center.add(i, 1 - this.ticksExisted, k));
+							//this.world.setBlockToAir(this.center.add(i, 1 - this.ticksExisted, k));
+							map.put(this.center.add(i, 1 - this.ticksExisted, k), Blocks.AIR.getDefaultState());
 						} else {
-							this.world.setBlockState(this.center.add(i, 1 - this.ticksExisted, k), BlockMud.block.getDefaultState(), 3);
+							//this.world.setBlockState(this.center.add(i, 1 - this.ticksExisted, k), BlockMud.block.getDefaultState(), 3);
+							map.put(this.center.add(i, 1 - this.ticksExisted, k), BlockMud.block.getDefaultState());
 						}
 					}
 				}
+				new net.narutomod.event.EventSetBlocks(this.world, map, 0, 600, false, false);
 			}
 			if (!this.world.isRemote && this.ticksExisted >= this.radius - this.offsetY) {
 				this.setDead();
@@ -109,8 +117,8 @@ public class EntitySwampPit extends ElementsNarutomodMod.ModElement {
 			public boolean createJutsu(ItemStack stack, EntityLivingBase entity, float power) {
 				RayTraceResult rtr = ProcedureUtils.raytraceBlocks(entity, 50d);
 				if (rtr != null && rtr.typeOfHit != RayTraceResult.Type.MISS) {
-					entity.world.playSound(null, entity.posX, entity.posY, entity.posZ, (SoundEvent)SoundEvent.REGISTRY
-					 .getObject(new ResourceLocation(("narutomod:yominuma"))), SoundCategory.PLAYERS, 1, 1f);
+					entity.world.playSound(null, entity.posX, entity.posY, entity.posZ, SoundEvent.REGISTRY
+					 .getObject(new ResourceLocation("narutomod:yominuma")), SoundCategory.PLAYERS, 1, 1f);
 					entity.world.spawnEntity(new EC(entity, rtr.getBlockPos(), (int)power));
 					return true;
 				}

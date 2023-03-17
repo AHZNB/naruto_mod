@@ -363,7 +363,7 @@ public class ItemBijuCloak extends ElementsNarutomodMod.ModElement {
 	}
 
 	@Nullable
-	private EntityJinchurikiClone.EntityCustom getClone(World world, ItemStack itemstack) {
+	private static EntityJinchurikiClone.EntityCustom getClone(World world, ItemStack itemstack) {
 		if (hasClone(itemstack)) {
 			Entity entity = world.getEntityByID(itemstack.getTagCompound().getInteger("CloneID"));
 			return entity instanceof EntityJinchurikiClone.EntityCustom ? (EntityJinchurikiClone.EntityCustom)entity : null;
@@ -371,12 +371,12 @@ public class ItemBijuCloak extends ElementsNarutomodMod.ModElement {
 		return null;
 	}
 
-	private int getCloneId(ItemStack stack) {
+	private static int getCloneId(ItemStack stack) {
 		return stack.hasTagCompound() ? stack.getTagCompound().getInteger("CloneID") : -1;
 	}
 
-	private boolean hasClone(ItemStack stack) {
-		return this.getCloneId(stack) > 0;
+	private static boolean hasClone(ItemStack stack) {
+		return getCloneId(stack) > 0;
 	}
 
 	private void spawnClone(EntityPlayer original, ItemStack stack) {
@@ -389,7 +389,7 @@ public class ItemBijuCloak extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-	private void revertOriginal(EntityPlayer player, ItemStack stack) {
+	public static void revertOriginal(EntityPlayer player, ItemStack stack) {
 		EntityJinchurikiClone.EntityCustom clone = getClone(player.world, stack);
 		if (clone != null) {
 			clone.setDead();

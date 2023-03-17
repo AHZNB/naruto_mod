@@ -42,6 +42,7 @@ Jutsus:
  - lightning jutsus now do aoe damage in a 10 block radius if target is in water
  - added Six Paths Ten-Tails Coffin Seal - to become the 10-tails jinchuriki
  - after becoming the 10-tails jinchuriki, armor is obito un-controlled outfit if ninjaxp < 32400
+ - hell swamp jutsu mud blocks now reverts back to original blocks after 30 seconds
 
 Items:
  - cleaver sword now takes damage when used, attack speed and damage decrease, recipe changed
@@ -56,11 +57,11 @@ Items:
  - updated rinnegan's asura path canon to shoot missiles
  - reduced chances of getting wood release to 1% if keepInvenotry or keepNinjaXp is true
  - six path staff is given to people that gain 6-path senjutsu. it shoots black receivers
+ - fixed chokuto or shuriken not showing up in susanoo if you have multiple chokutos in inventory
 
 Entities:
  - increase spawn rates for bosses and remove dungeon spawns
  - made might guy send messages to current customer instead of server
- - made the real itachi drop his mangekyo more likely as intended
  - made tailed beasts respawn after a certain amount of time after death
  - made Iruka sell tailed beast maps
  - fixed Itachi, Kisame and Zabuza boss bars flickering issue

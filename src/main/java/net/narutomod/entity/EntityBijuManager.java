@@ -27,6 +27,7 @@ import java.util.*;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Lists;
 import com.google.common.collect.ImmutableList;
+import net.minecraft.util.text.TextFormatting;
 
 @ElementsNarutomodMod.ModElement.Tag
 public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
@@ -517,6 +518,10 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 				}
 			} else {
 				this.saveAndResetWearingTicks(this.cloakLevel);
+				ItemStack stack = this.jinchurikiPlayer.getItemStackFromSlot(EntityEquipmentSlot.CHEST);
+				if (stack.getItem() == ItemBijuCloak.body) {
+					ItemBijuCloak.revertOriginal(this.jinchurikiPlayer, stack);
+				}
 				this.jinchurikiPlayer.inventory.clearMatchingItems(ItemBijuCloak.helmet, -1, -1, null);
 				this.jinchurikiPlayer.inventory.clearMatchingItems(ItemBijuCloak.body, -1, -1, null);
 				this.jinchurikiPlayer.inventory.clearMatchingItems(ItemBijuCloak.legs, -1, -1, null);
@@ -535,7 +540,7 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 	public int increaseCloakLevel() {
 		if (this.cloakLevel < 3) {
 			if (this.jinchurikiPlayer != null
-			 && ((this.cloakLevel == 1 && this.cloakXp[0] > 3600) || (this.cloakLevel == 2 && this.cloakXp[1] > 4800))) {
+			 && ((this.cloakLevel == 1 && this.cloakXp[0] >= 3600) || (this.cloakLevel == 2 && this.cloakXp[1] >= 4800))) {
 				Chakra.Pathway chakra = Chakra.pathway(this.jinchurikiPlayer);
 				double d = 5000d + this.getCloakXp();
 				if (chakra.getAmount() + d > chakra.getMax() * 4 && !this.jinchurikiPlayer.isCreative()) {
@@ -622,7 +627,7 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 
 	public String toString() {
 		EntityPlayer jinchuriki = this.getJinchurikiPlayer();
-		return " >> " + this.getEntityLocalizedName() + " is sealed in " + (jinchuriki != null ? jinchuriki.getName() : this.vesselName);
+		return " >> " + this.getEntityLocalizedName() + " is sealed in " + TextFormatting.GREEN + (jinchuriki != null ? jinchuriki.getName() : this.vesselName) + TextFormatting.RESET;
 	}
 
 	public interface ITailBeast {

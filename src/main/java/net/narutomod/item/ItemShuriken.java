@@ -39,7 +39,6 @@ import net.narutomod.ElementsNarutomodMod;
 
 import java.util.Map;
 import java.util.HashMap;
-import net.minecraft.client.renderer.GlStateManager;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class ItemShuriken extends ElementsNarutomodMod.ModElement {
@@ -110,7 +109,7 @@ public class ItemShuriken extends ElementsNarutomodMod.ModElement {
 			}
 		}
 
-		@Override
+		/*@Override
 		public void onUpdate(ItemStack itemstack, World world, Entity entity, int par4, boolean par5) {
 			super.onUpdate(itemstack, world, entity, par4, par5);
 			if (!world.isRemote && entity instanceof EntityLivingBase 
@@ -122,7 +121,7 @@ public class ItemShuriken extends ElementsNarutomodMod.ModElement {
 					susanoo.killBullet();
 				}
 			}
-		}
+		}*/
 
 		@Override
 		public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer entity, EnumHand hand) {

@@ -22,6 +22,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.entity.ai.attributes.IAttribute;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 
+import net.narutomod.item.ItemChokuto;
+import net.narutomod.item.ItemShuriken;
 import net.narutomod.item.ItemSharingan;
 import net.narutomod.item.ItemJutsu;
 import net.narutomod.procedure.ProcedureUtils;
@@ -336,5 +338,20 @@ public abstract class EntitySusanooBase extends EntityMob {
     }
 
     public void killBullet() {
+    }
+
+    protected void showHeldWeapons() {
+		EntityLivingBase owner = this.getOwnerPlayer();
+		if (!this.world.isRemote && owner != null) {
+			boolean flag = owner.getHeldItemMainhand().getItem() == ItemChokuto.block;
+			if (this.shouldShowSword() != flag) {
+				this.setShowSword(flag);
+			}
+			if (owner.getHeldItemMainhand().getItem() == ItemShuriken.block) {
+				this.createBullet((float)this.getEntityData().getDouble("entityModelScale") * 0.5f);
+			} else {
+				this.killBullet();
+			}
+		}
     }
 }

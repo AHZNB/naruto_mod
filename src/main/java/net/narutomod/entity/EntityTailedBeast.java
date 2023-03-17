@@ -1388,10 +1388,14 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 	}
 
 	public class PlayerHooks {
-		private void checkAndRemove(Entity entity) {
+		private void checkAndRemove(EntityPlayer entity) {
+			if (EntityBijuManager.cloakLevel(entity) > 0) {
+				EntityBijuManager.toggleBijuCloak(entity);
+			}
 			for (EntityBijuManager bm : EntityBijuManager.getBMList()) {
 				Base biju = bm.getEntityInWorld(entity.world);
-				if (biju != null && (entity.equals(biju.summoningPlayer) || entity.equals(bm.getJinchurikiPlayer()))) {
+				if (biju != null && biju.isEntityAlive()
+				 && (entity.equals(biju.summoningPlayer) || entity.equals(bm.getJinchurikiPlayer()))) {
 					biju.setDead();
 				}
 			}
@@ -1407,7 +1411,7 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 		@SubscribeEvent
 		public void onPlayerChangeDimension(EntityTravelToDimensionEvent event) {
 			if (event.getEntity() instanceof EntityPlayer) {
-				this.checkAndRemove(event.getEntity());
+				this.checkAndRemove((EntityPlayer)event.getEntity());
 			}
 		}
 

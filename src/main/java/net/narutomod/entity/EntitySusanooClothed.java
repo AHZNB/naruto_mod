@@ -88,7 +88,7 @@ public class EntitySusanooClothed extends ElementsNarutomodMod.ModElement {
 		public EntityCustom(World world) {
 			super(world);
 			this.setSize(MODELSCALE * 0.8F, MODELSCALE * (this.hasLegs() ? 2.0F : 1.25F));
-			this.getEntityData().setDouble("entityModelScale", (double) MODELSCALE);
+			this.getEntityData().setDouble("entityModelScale", (double)MODELSCALE);
 			this.lifeSpan = Integer.MAX_VALUE;
 			this.chakraUsage = this.hasLegs() ? 90d : 70d;
 		}
@@ -97,7 +97,7 @@ public class EntitySusanooClothed extends ElementsNarutomodMod.ModElement {
 			super(entity);
 			this.setLegs(fullBody);
 			this.setSize(MODELSCALE * 0.8F, MODELSCALE * (this.hasLegs() ? 2.0F : 1.25F));
-			this.getEntityData().setDouble("entityModelScale", (double) MODELSCALE);
+			this.getEntityData().setDouble("entityModelScale", (double)MODELSCALE);
 			//this.setFlameColor(0x20b83dba);
 			if (this.hasLegs()) {
 				this.getEntityAttribute(EntityPlayer.REACH_DISTANCE).applyModifier(new AttributeModifier("susanoo.reachExtension", 3.0D, 0));
@@ -189,12 +189,17 @@ public class EntitySusanooClothed extends ElementsNarutomodMod.ModElement {
 			return super.getMountedYOffset();
 		}
 
-		//@Override
-		//public boolean attackEntityFrom(DamageSource source, float amount) {
-		//	if (source != DamageSource.OUT_OF_WORLD && this.hasLegs())
-		//		amount = MathHelper.clamp(amount, 0.0F, 80.0F);
-		//	return super.attackEntityFrom(source, amount);
-		//}
+		@Override
+		protected void showHeldWeapons() {
+			super.showHeldWeapons();
+			if (this.getHeldItemMainhand().getItem() == ItemTotsukaSword.block) {
+				HashMap<String, Object> $_dependencies = new HashMap<>();
+				$_dependencies.put("entity", this);
+				$_dependencies.put("itemstack", this.getHeldItemMainhand());
+				$_dependencies.put("world", this.world);
+				ProcedureTotsukaSwordToolInHandTick.executeProcedure($_dependencies);
+			}
+		}
 
 		@Override
 		public void onEntityUpdate() {
@@ -205,19 +210,11 @@ public class EntitySusanooClothed extends ElementsNarutomodMod.ModElement {
 			if (this.lifeSpan-- <= 0) {
 				this.setDead();
 			}
-			//if (this.ticksExisted % 40 == 0) {
-			//	this.heal(5.0F);
-			//}
+			this.showHeldWeapons();
+			EntityLivingBase owner = this.getOwnerPlayer();
 			if (!this.world.isRemote && !this.isAIDisabled() 
-			 && this.getOwnerPlayer() instanceof EntityLiving && this.ticksExisted % 20 == 0) {
-				this.setAttackTarget(((EntityLiving)this.getOwnerPlayer()).getAttackTarget());
-			}
-			if (this.getHeldItemMainhand().getItem() == ItemTotsukaSword.block) {
-				HashMap<String, Object> $_dependencies = new HashMap<>();
-				$_dependencies.put("entity", this);
-				$_dependencies.put("itemstack", this.getHeldItemMainhand());
-				$_dependencies.put("world", this.world);
-				ProcedureTotsukaSwordToolInHandTick.executeProcedure($_dependencies);
+			 && owner instanceof EntityLiving && this.ticksExisted % 20 == 0) {
+				this.setAttackTarget(((EntityLiving)owner).getAttackTarget());
 			}
 		}
 

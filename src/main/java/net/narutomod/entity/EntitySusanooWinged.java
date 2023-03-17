@@ -88,7 +88,7 @@ public class EntitySusanooWinged extends ElementsNarutomodMod.ModElement {
 		public EntityCustom(World world) {
 			super(world);
 			this.setSize(MODELSCALE * 0.8f, MODELSCALE * 2.0f);
-			this.getEntityData().setDouble("entityModelScale", (double) MODELSCALE);
+			this.getEntityData().setDouble("entityModelScale", (double)MODELSCALE);
 			this.chakraUsage = 120d;
 		}
 
@@ -105,7 +105,7 @@ public class EntitySusanooWinged extends ElementsNarutomodMod.ModElement {
 			this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).applyModifier(new AttributeModifier("susanoo.speedboost", 0.5D, 0));
 			this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).applyModifier(new AttributeModifier("susanoo.maxhealth", 43d, 2));
 			this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(this.playerXp * 0.005d);
-			this.getEntityData().setDouble("entityModelScale", (double) MODELSCALE);
+			this.getEntityData().setDouble("entityModelScale", (double)MODELSCALE);
 			Item helmet = player.getItemStackFromSlot(EntityEquipmentSlot.HEAD).getItem();
 			if (helmet == ItemMangekyoSharingan.helmet || helmet == ItemMangekyoSharinganEternal.helmet) {
 				//this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(ItemKagutsuchiSwordRanged.block));
@@ -226,7 +226,8 @@ public class EntitySusanooWinged extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
-		public void onEntityUpdate() {
+		protected void showHeldWeapons() {
+			super.showHeldWeapons();
 			EntityLivingBase owner = this.getOwnerPlayer();
 			if (owner != null) {
 				if (owner.getHeldItemMainhand().getItem() == kagutsuchi.getItem()) {
@@ -250,9 +251,11 @@ public class EntitySusanooWinged extends ElementsNarutomodMod.ModElement {
 					this.setItemStackToSlot(EntityEquipmentSlot.OFFHAND, ItemStack.EMPTY);
 				}
 			}
-			//if (this.getHealth() < this.getMaxHealth() && this.ticksExisted % 40 == 0) {
-			//	this.heal(10.0f);
-			//}
+		}
+
+		@Override
+		public void onEntityUpdate() {
+			this.showHeldWeapons();
 			this.updateWingSwing();
 			super.onEntityUpdate();
 		}
