@@ -391,6 +391,15 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 						attacker.sendStatusMessage(new TextComponentString(
 							I18n.translateToLocal("entity.entityasakujaku.name")), true);
 						break;
+					case 7:
+						Vec3d vec1 = attacker.getPositionVector().addVector(0d, 1.2d, 0d).add(attacker.getLookVec());
+						Vec3d vec2 = target.getPositionVector().subtract(attacker.getPositionVector()).normalize();
+						for (int i = 1, j = 25; i <= j; i++) {
+							Vec3d vec3 = vec2.scale(-0.1d * i);
+							Particles.spawnParticle(attacker.world, Particles.Types.SONIC_BOOM, vec1.x, vec1.y, vec1.z,
+							 1, 0d, 0d, 0d, vec3.x, vec3.y, vec3.z, 0x00ffffff | ((int)((1f-(float)i/j)*0x40)<<24), i,
+							 (int)(5f * (1f + ((float)i/j) * 0.5f)));
+						}
 					default :
 						if (!target.equals(attacker)) {
 							if (gateOpened >= 2f) {

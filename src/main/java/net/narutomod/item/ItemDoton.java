@@ -123,12 +123,12 @@ public class ItemDoton extends ElementsNarutomodMod.ModElement {
 			ItemJutsu.JutsuEnum jutsu = this.getCurrentJutsu(stack);
 			if (jutsu == EARTHWALL) {
 				return Math.min(f, 50f);
-			}
-			if (jutsu == SANDWICH) {
+			} else if (jutsu == SANDWICH) {
 				return Math.min(f, 20f);
-			}
-			if (jutsu == GOLEM) {
+			} else if (jutsu == GOLEM) {
 				return Math.min(f, 5f);
+			} else if (jutsu == SWAMPPIT) {
+				return Math.min(f, 30f);
 			}
 			return f;
 		}

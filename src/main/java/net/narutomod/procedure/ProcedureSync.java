@@ -748,17 +748,23 @@ public class ProcedureSync extends ElementsNarutomodMod.ModElement {
 
 	public static class CPacketEarthBlocks implements IMessage {
 		public int op, id;
+		public float amount;
 
 		public CPacketEarthBlocks() {
 		}
 
-		public CPacketEarthBlocks(int operation, Entity entity) {
+		public CPacketEarthBlocks(int operation, Entity entity, float amountIn) {
 			this.op = operation;
 			this.id = entity.getEntityId();
+			this.amount = amountIn;
 		}
 
 		public static void sendToServer(int operation, Entity entity) {
-			NarutomodMod.PACKET_HANDLER.sendToServer(new CPacketEarthBlocks(operation, entity));
+			sendToServer(operation, entity, 0f);
+		}
+
+		public static void sendToServer(int operation, Entity entity, float amountIn) {
+			NarutomodMod.PACKET_HANDLER.sendToServer(new CPacketEarthBlocks(operation, entity, amountIn));
 		}
 
 		public static class Handler implements IMessageHandler<CPacketEarthBlocks, IMessage> {
@@ -778,11 +784,13 @@ public class ProcedureSync extends ElementsNarutomodMod.ModElement {
 		public void toBytes(ByteBuf buf) {
 			buf.writeInt(this.op);
 			buf.writeInt(this.id);
+			buf.writeFloat(this.amount);
 		}
 
 		public void fromBytes(ByteBuf buf) {
 			this.op = buf.readInt();
 			this.id = buf.readInt();
+			this.amount = buf.readFloat();
 		}
 	}
 

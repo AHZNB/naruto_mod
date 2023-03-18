@@ -262,8 +262,8 @@ public class EntityChibakuTenseiBall extends ElementsNarutomodMod.ModElement {
 				if (entity instanceof EntityEarthBlocks.Base) {
 					Vec3d vec = this.getCenter();
 					if (this.airBlocks == null) {
-						this.airBlocks = ProcedureUtils.getAllAirBlocks(this.world, 
-						  this.getEntityBoundingBox().grow(this.maxRadius() - this.width / 2));
+						this.airBlocks = ProcedureUtils.getAllAirBlocks(this.world,
+						 this.getEntityBoundingBox().grow(this.maxRadius() - this.width / 2).offset(0d, 1d, 0d));
 						this.airBlocks.sort(new ProcedureUtils.BlockposSorter(new BlockPos(vec)));
 					}
 					if (!this.airBlocks.isEmpty()) {
@@ -310,7 +310,6 @@ public class EntityChibakuTenseiBall extends ElementsNarutomodMod.ModElement {
 
 	public static class Satellite extends EntityEarthBlocks.Base {
 		private EntityLivingBase summoner;
-		private int fallThroughTicks;
 		private boolean explosionSet;
 
 		public Satellite(World world) {
@@ -326,7 +325,7 @@ public class EntityChibakuTenseiBall extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
-		protected void onImpact() {
+		protected void onImpact(float impact) {
 			if (!this.world.isRemote) {
 				if (!this.explosionSet && this.getTicksAlive() - this.fallTicks <= 1200) {
 					if (this.summoner != null) {
@@ -339,12 +338,10 @@ public class EntityChibakuTenseiBall extends ElementsNarutomodMod.ModElement {
 						}
 					};
 					this.explosionSet = true;
+					this.explodeOnImpact(true);
 				}
-				//if (++this.fallThroughTicks < 20) {
-				//	return;
-				//}
 			}
-			super.onImpact();
+			super.onImpact(impact);
 		}
 
 		@Override

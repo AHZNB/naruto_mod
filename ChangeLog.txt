@@ -23,9 +23,10 @@ Jutsus:
  - fixed 8-gates yagai killing you again after death respawn
  - force close 8-gates after Night guy use or death
  - 8-gates item won't disappear if not owner holding it
+ - fix night guy killing player on respawn
+ - added sonic boom effects to 7-gate punches and chakra enhanced strength punches
  - made some S rank jutsu scrolls findable
  - limit medical jutsu: poison mist to max 50
- - fix night guy killing player on respawn
  - limit poison mist to max 35 power
  - decrease Temari's fan max power to 40 from 60
  - improved lightning beast control, reduced jutsu duration
@@ -43,6 +44,7 @@ Jutsus:
  - added Six Paths Ten-Tails Coffin Seal - to become the 10-tails jinchuriki
  - after becoming the 10-tails jinchuriki, armor is obito un-controlled outfit if ninjaxp < 32400
  - hell swamp jutsu mud blocks now reverts back to original blocks after 30 seconds
+ - limit hell swamp jutsu to 30 max
 
 Items:
  - cleaver sword now takes damage when used, attack speed and damage decrease, recipe changed

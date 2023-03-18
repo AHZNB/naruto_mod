@@ -546,8 +546,7 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 	}
 
 	@Nullable
-	public static EntityItem breakBlockAndDropWithChance(World world, BlockPos pos, float hardnessLimit, float breakChance, float dropChance,
- boolean sound) {
+	public static EntityItem breakBlockAndDropWithChance(World world, BlockPos pos, float hardnessLimit, float breakChance, float dropChance, boolean sound) {
 		EntityItem entityToSpawn = null;
 		IBlockState blockstate = world.getBlockState(pos);
 		float blockHardness = blockstate.getBlockHardness(world, pos);
@@ -561,8 +560,7 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 				if (!world.isRemote && Math.random() <= (double) dropChance) {
 					Item item = blockstate.getBlock().getItemDropped(blockstate, RNG, 0);
 					if (item != Items.AIR) {
-						entityToSpawn = new EntityItem(world, (double) pos.getX(), (double) pos.getY(), (double) pos.getZ(),
- new ItemStack(item, 1));
+						entityToSpawn = new EntityItem(world, (double) pos.getX(), (double) pos.getY(), (double) pos.getZ(), new ItemStack(item, 1));
 						entityToSpawn.setDefaultPickupDelay();
 						world.spawnEntity(entityToSpawn);
 					}

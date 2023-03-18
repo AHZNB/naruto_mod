@@ -156,6 +156,10 @@ public class EntityEarthBlocks extends ElementsNarutomodMod.ModElement {
 			this.fallTime = ticks;
 		}
 
+		public void explodeOnImpact(boolean explode) {
+			this.breakOnImpact = explode;
+		}
+
 		/*@Override
 		public void setDead() {
 			if (!this.world.isRemote && !this.blocksMap.isEmpty() && this.griefingAllowed()) {
@@ -170,12 +174,23 @@ public class EntityEarthBlocks extends ElementsNarutomodMod.ModElement {
 		}*/
 
 		@Override
+		public boolean attackEntityFrom(DamageSource source, float amount) {
+			if (!this.world.isRemote && amount > 3f * this.mass()) {
+				this.breakOnImpact = true;
+				this.onImpact(amount);
+				return true;
+			}
+			return false;
+		}
+
+		@Override
 	    public void applyEntityCollision(Entity entityIn) {
-       		if (entityIn instanceof Base) {
-       			if (!this.world.isRemote && this.ticksAlive > 20 && this.mass() > ((Base)entityIn).mass() / 2) {
-       				entityIn.setNoGravity(false);
-       			}
-       		} else if (!entityIn.noClip && !entityIn.isBeingRidden()) {
+       		//if (entityIn instanceof Base) {
+       		//	if (!this.world.isRemote && this.ticksAlive > 20 && this.mass() > ((Base)entityIn).mass() / 2) {
+       		//		entityIn.setNoGravity(false);
+       		//	}
+       		//} else
+       		if (!entityIn.noClip && !entityIn.isBeingRidden()) {
 	       		//EnumFacing hitface = BlocksMoveHelper.collideWithEntity(this, entityIn, this.getMotion());
 	       		EnumFacing hitface = BlocksMoveHelper.getCollidingSide(this.getCollisionBoundingBox(), entityIn.getEntityBoundingBox());
 		        if (hitface != null) {
@@ -188,10 +203,6 @@ public class EntityEarthBlocks extends ElementsNarutomodMod.ModElement {
 		           		entityIn.attackEntityFrom(DamageSource.FALLING_BLOCK, this.getCollisionDamage());
 		        	}
 		        }
-		        //double d = this.mass() / (ProcedureUtils.BB.getVolume(entityIn.getEntityBoundingBox()) + this.mass());
-		        //this.motionX *= d;
-		        //this.motionY *= d;
-		        //this.motionZ *= d;
        		}
 	    }
 
@@ -248,7 +259,7 @@ public class EntityEarthBlocks extends ElementsNarutomodMod.ModElement {
 	           	}
 	           	ProcedureSync.ResetBoundingBox.sendToPlayer(this, player);
 			} else if (packet.op == 1) {
-				this.onImpact();
+				this.onImpact(packet.amount);
 			}
 		}
 
@@ -297,7 +308,7 @@ public class EntityEarthBlocks extends ElementsNarutomodMod.ModElement {
         			this.applyEntityCollision(entity);
            		}
 				if (this.onGround && !this.hasNoGravity()) {
-					this.onImpact();
+					this.onImpact(this.collisionForce());
            		}
            		this.motionX *= 0.98d;
            		this.motionY *= 0.98d;
@@ -327,7 +338,7 @@ public class EntityEarthBlocks extends ElementsNarutomodMod.ModElement {
 			this.collided = this.collidedHorizontally || this.collidedVertically;
 			if (!this.world.isRemote) {
 				boolean canMoveThrough = true;
-				this.breakOnImpact = this.collisionForce() > 1000.0f;
+				//this.breakOnImpact = this.collisionForce() > 1000.0f;
 				if (dx != x || dy != y || dz != z) {
 					List<BlockPos> list1 = BlocksMoveHelper.convert2BlockposList(list);
 					float f = BlocksMoveHelper.getBlocksTotalResistance(this.world, list1);
@@ -368,14 +379,15 @@ public class EntityEarthBlocks extends ElementsNarutomodMod.ModElement {
 			return false;
 		}
 
-	    protected void onImpact() {
+	    protected void onImpact(float impactDamage) {
 			if (this.world.isRemote) {
-				ProcedureSync.CPacketEarthBlocks.sendToServer(1, this);
+				ProcedureSync.CPacketEarthBlocks.sendToServer(1, this, impactDamage);
 			} else {
 	           	for (Map.Entry<Entity, Vec3d> entry : this.entityMap.entrySet()) {
 	           		entry.getKey().attackEntityFrom(DamageSource.FALLING_BLOCK, this.getCollisionDamage());
 	           	}
 	           	boolean flag = this.griefingAllowed();
+	           	impactDamage = MathHelper.sqrt(impactDamage) * 0.002236f;
 				BlockPos.PooledMutableBlockPos pos = BlockPos.PooledMutableBlockPos.retain();
 				for (Map.Entry<Vec3d, IBlockState> entry : this.blocksMap.entrySet()) {
 					Vec3d vec = this.getPositionVector().add(entry.getKey());
@@ -385,9 +397,9 @@ public class EntityEarthBlocks extends ElementsNarutomodMod.ModElement {
 							this.world.setBlockState(pos, entry.getValue(), 3);
 			           		EntityFallingBlock entity = new EntityFallingBlock(this.world, vec.x, vec.y, vec.z, entry.getValue());
 			           		this.world.spawnEntity(entity);
-			           		entity.motionX = entry.getKey().x * (0.1d + this.rand.nextDouble() * 0.2d);
-		           			entity.motionY = entry.getKey().y * (0.1d + this.rand.nextDouble() * 0.2d);
-			           		entity.motionZ = entry.getKey().z * (0.1d + this.rand.nextDouble() * 0.2d);
+			           		entity.motionX = entry.getKey().x * (this.rand.nextDouble() * 0.2d + impactDamage);
+		           			entity.motionY = entry.getKey().y * (this.rand.nextDouble() * 0.2d + impactDamage);
+			           		entity.motionZ = entry.getKey().z * (this.rand.nextDouble() * 0.2d + impactDamage);
 			           		ReflectionHelper.setPrivateValue(EntityFallingBlock.class, entity, !flag, 3);
 		           		}
 		           	} else {
