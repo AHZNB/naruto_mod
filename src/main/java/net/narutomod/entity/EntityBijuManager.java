@@ -415,6 +415,9 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 			}
 			this.setCloakXPs(ZERO);
 			this.vesselName = "";
+			if (this.tails == 10 && dirty) {
+				this.hasLived = false;
+			}
 		} else {
 			this.setVesselUuid(entityIn.getUniqueID());
 			this.vesselName = entityIn.getName();

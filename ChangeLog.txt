@@ -87,8 +87,8 @@ Commands:
 
 General:
  - removed japanese localization
- - kg item will now be given to player at the same time as other basic nature release items
-   (once per lifetime) if the player has already achieved kg naturally
+ - on respawn, kg item will now be given to player at the same time as other basic nature
+   release items (once per lifetime) if the player has already achieved kg naturally
  - chakra regeneration amount when idle is now based on player's saturation level
  - omit the 10 tails becoming a player's naturally sealed biju
  - added gamerule:spawnTailedBeasts to spawn bijus naturally in a 10k - 100k radius from 0 0
