@@ -67,12 +67,14 @@ public class ProcedureRinneganHelmetTickEvent extends ElementsNarutomodMod.ModEl
 			if (((isRinnesharingan) && (!(((entity instanceof EntityLivingBase) ? ((EntityLivingBase) entity).getHeldItemMainhand() : ItemStack.EMPTY)
 					.getItem() == new ItemStack(ItemTenseiganChakraMode.block, (int) (1)).getItem())))) {
 				ProcedureUtils.purgeHarmfulEffects((EntityLivingBase) entity);
-				if (entity instanceof EntityLivingBase)
-					((EntityLivingBase) entity).addPotionEffect(new PotionEffect(PotionFlight.potion, (int) 20, (int) 1, (false), (false)));
-				if (entity instanceof EntityLivingBase)
-					((EntityLivingBase) entity).addPotionEffect(new PotionEffect(MobEffects.SATURATION, (int) 2, (int) 1, (false), (false)));
-				if (entity instanceof EntityLivingBase)
-					((EntityLivingBase) entity).addPotionEffect(new PotionEffect(MobEffects.STRENGTH, (int) 2, (int) 9, (false), (false)));
+				if (((entity.ticksExisted % 20) == 2)) {
+					if (entity instanceof EntityLivingBase)
+						((EntityLivingBase) entity).addPotionEffect(new PotionEffect(PotionFlight.potion, (int) 22, (int) 1, (false), (false)));
+					if (entity instanceof EntityLivingBase)
+						((EntityLivingBase) entity).addPotionEffect(new PotionEffect(MobEffects.SATURATION, (int) 22, (int) 1, (false), (false)));
+					if (entity instanceof EntityLivingBase)
+						((EntityLivingBase) entity).addPotionEffect(new PotionEffect(MobEffects.STRENGTH, (int) 22, (int) 9, (false), (false)));
+				}
 				if (((((entity instanceof EntityLivingBase) ? ((EntityLivingBase) entity).getHealth() : -1) < ((entity instanceof EntityLivingBase)
 						? ((EntityLivingBase) entity).getMaxHealth()
 						: -1)) && (((entity instanceof EntityLivingBase) ? ((EntityLivingBase) entity).getHealth() : -1) > 0))) {
@@ -127,8 +129,10 @@ public class ProcedureRinneganHelmetTickEvent extends ElementsNarutomodMod.ModEl
 								ProcedureUtils.rngBoolean() ? ItemNinjutsu.LIMBOCLONE : ItemNinjutsu.AMENOTEJIKARA, true);
 					}
 				}
-				if (entity instanceof EntityLivingBase)
-					((EntityLivingBase) entity).addPotionEffect(new PotionEffect(MobEffects.RESISTANCE, (int) 2, (int) 2, (false), (false)));
+				if (((entity.ticksExisted % 20) == 2)) {
+					if (entity instanceof EntityLivingBase)
+						((EntityLivingBase) entity).addPotionEffect(new PotionEffect(MobEffects.RESISTANCE, (int) 22, (int) 2, (false), (false)));
+				}
 				if (entity.equals(EntityTenTails.getBijuManager().getJinchurikiPlayer())) {
 					{
 						ItemStack _stack = (itemstack);
@@ -197,12 +201,14 @@ public class ProcedureRinneganHelmetTickEvent extends ElementsNarutomodMod.ModEl
 					}
 				}
 			}
-			if (entity instanceof EntityLivingBase)
-				((EntityLivingBase) entity).addPotionEffect(new PotionEffect(MobEffects.SPEED, (int) 2, (int) 4, (false), (false)));
-			if (entity instanceof EntityLivingBase)
-				((EntityLivingBase) entity).addPotionEffect(new PotionEffect(MobEffects.NIGHT_VISION, (int) 210, (int) 0, (false), (false)));
+			if (((entity.ticksExisted % 20) == 2)) {
+				if (entity instanceof EntityLivingBase)
+					((EntityLivingBase) entity).addPotionEffect(new PotionEffect(MobEffects.SPEED, (int) 22, (int) 4, (false), (false)));
+				if (entity instanceof EntityLivingBase)
+					((EntityLivingBase) entity).addPotionEffect(new PotionEffect(MobEffects.NIGHT_VISION, (int) 230, (int) 0, (false), (false)));
+			}
 		}
-		if ((entity.getEntityData().getBoolean("chibakutensei_active"))) {
+		if (((entity.getEntityData().getBoolean("chibakutensei_active")) && ((entity.ticksExisted % 20) == 2))) {
 			if (entity instanceof EntityLivingBase)
 				((EntityLivingBase) entity).addPotionEffect(new PotionEffect(PotionFlight.potion, (int) 200, (int) 1, (false), (false)));
 		}

@@ -148,8 +148,12 @@ public class ProcedureOnLivingUpdate extends ElementsNarutomodMod.ModElement {
 			d -= 1.0D;
 			entity.getEntityData().setDouble(NarutomodModVariables.DeathAnimationTime, d);
 			if (d <= 0.0D) {
-				entity.attackEntityFrom(DamageSource.WITHER.setDamageIsAbsolute(), Float.MAX_VALUE);
 				ProcedureUtils.clearDeathAnimations(entity);
+				if (entity instanceof EntityPlayer) {
+					entity.attackEntityFrom(DamageSource.WITHER.setDamageIsAbsolute(), Float.MAX_VALUE);
+				} else {
+					entity.setDead();
+				}
 			}
 		}
 		d = entity.getEntityData().getDouble(NarutomodModVariables.InvulnerableTime);

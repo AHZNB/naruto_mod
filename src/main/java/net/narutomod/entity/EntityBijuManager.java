@@ -477,7 +477,7 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 	}
 
 	public void toggleBijuCloak() {
-		if (this.jinchurikiPlayer != null) {
+		if (this.jinchurikiPlayer != null && this.tails < 10) {
 			Chakra.Pathway cp = Chakra.pathway(this.jinchurikiPlayer);
 			int i = this.cloakLevel <= 0 ? 1 : 0;
 			if (i == 1) {

@@ -31,7 +31,7 @@ Jutsus:
  - decrease Temari's fan max power to 40 from 60
  - improved lightning beast control, reduced jutsu duration
  - reduced lightning panther jutsu duration
- - fixed skeletal control willow dance inifinitely gaining strength
+ - fixed skeletal control willow dance infinitely gaining strength
  - fixed ice mirrors being able to use without chakra
  - reduced wood burial duration to 10 seconds, damage 10 per second
  - allow 1-tail jinchuriki in biju cloak to use magnet release without a sand gourd
@@ -45,6 +45,7 @@ Jutsus:
  - after becoming the 10-tails jinchuriki, armor is obito un-controlled outfit if ninjaxp < 32400
  - hell swamp jutsu mud blocks now reverts back to original blocks after 30 seconds
  - limit hell swamp jutsu to 30 max
+ - limit explosion release land mine fist to 10 max
 
 Items:
  - cleaver sword now takes damage when used, attack speed and damage decrease, recipe changed

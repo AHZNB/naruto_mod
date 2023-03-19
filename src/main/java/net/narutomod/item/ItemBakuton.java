@@ -114,10 +114,14 @@ public class ItemBakuton extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		protected float getMaxPower(ItemStack stack, EntityLivingBase entity) {
-			if (this.getCurrentJutsu(stack) == CLAY) {
-				return Math.min(3.1f, super.getMaxPower(stack, entity));
+			float f = super.getMaxPower(stack, entity);
+			ItemJutsu.JutsuEnum jutsu = this.getCurrentJutsu(stack);
+			if (jutsu == CLAY) {
+				return Math.min(3.1f, f);
+			} else if (jutsu == JIRAIKEN) {
+				return Math.min(10.0f, f);
 			}
-			return super.getMaxPower(stack, entity);
+			return f;
 		}
 
 		@Override
