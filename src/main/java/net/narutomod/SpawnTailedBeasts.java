@@ -19,8 +19,6 @@ import java.util.Random;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class SpawnTailedBeasts extends ElementsNarutomodMod.ModElement {
-	private static final String SPAWN_TB_RULE = "spawnTailedBeasts";
-
 	public SpawnTailedBeasts(ElementsNarutomodMod instance) {
 		super(instance, 835);
 	}
@@ -35,21 +33,6 @@ public class SpawnTailedBeasts extends ElementsNarutomodMod.ModElement {
 	}
 
 	@SubscribeEvent
-	public void onWorldLoad(WorldEvent.Load event) {
-		World world = event.getWorld();
-		if (!world.isRemote && !world.getGameRules().hasRule(SPAWN_TB_RULE)) {
-			world.getGameRules().addGameRule(SPAWN_TB_RULE, "false", net.minecraft.world.GameRules.ValueType.BOOLEAN_VALUE);
-		}
-	}
-
-	@SubscribeEvent
-	public void onGameRuleChange(GameRuleChangeEvent event) {
-		if (event.getRuleName().equals(SPAWN_TB_RULE) && !event.getRules().getBoolean(SPAWN_TB_RULE)) {
-			EntityBijuManager.resetAllSpawnPos();
-		}
-	}
-
-	@SubscribeEvent
 	public void onWorldTick(TickEvent.WorldTickEvent event) {
 		final World world = event.world;
 
@@ -61,7 +44,7 @@ public class SpawnTailedBeasts extends ElementsNarutomodMod.ModElement {
 			return;
 		}
 
-		if (!world.getGameRules().getBoolean(SPAWN_TB_RULE)) {
+		if (!NarutoModConfig.SPAWN_TAILED_BEASTS) {
 			return;
 		}
 
