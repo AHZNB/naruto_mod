@@ -44,7 +44,7 @@ public class SpawnTailedBeasts extends ElementsNarutomodMod.ModElement {
 			return;
 		}
 
-		if (!NarutoModConfig.SPAWN_TAILED_BEASTS) {
+		if (!ModConfig.SPAWN_TAILED_BEASTS) {
 			return;
 		}
 

@@ -6999,7 +6999,7 @@
       "registry_name": "biju_map"
     },
     {
-      "name": "NarutoModConfig",
+      "name": "ModConfig",
       "type": "code",
       "sortid": 837,
       "compiles": true,
