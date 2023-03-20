@@ -161,7 +161,7 @@ public class EntitySealingChains extends ElementsNarutomodMod.ModElement {
 						Chakra.pathway(target).consume(this.baseChakraDrainOnTarget * d);
 					}
 					double d = this.getDistance(target);
-					if (d > this.initialDistance) {
+					if (d > this.initialDistance && !target.isPassenger(this.shootingEntity)) {
 						Vec3d vec = this.shootingEntity.getPositionVector().subtract(target.getPositionVector())
 						 .normalize().scale(0.2d * d / this.initialDistance);
 						target.addVelocity(vec.x, vec.y, vec.z);

@@ -2,6 +2,7 @@
 
 General:
  - Added a config
+ - moved gamerule spawnTailedBeasts to config
 
 0.2.11-beta ===============================================================================
 

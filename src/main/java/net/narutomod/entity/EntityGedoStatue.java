@@ -396,7 +396,7 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 								this.fuuinTarget = null;
 								this.lifeSpan = age + 40;
 								if (this.ogJinchuriki != null) {
-									this.ogJinchuriki.onKillCommand();
+									ProcedureUtils.setDeathAnimations(this.ogJinchuriki, 2, 100);
 								}
 							} else if (passengers > 0 && !this.fuuinTarget.isDead) {
 								if (!biju.isFuuinInProgress()) {
