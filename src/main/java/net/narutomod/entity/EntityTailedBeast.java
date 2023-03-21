@@ -495,8 +495,9 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 			if (super.attackEntityAsMob(entityIn)) {
 				this.world.createExplosion(this, entityIn.posX, entityIn.posY, entityIn.posZ, 10f,
 				 net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.world, this));
-				ProcedureAoeCommand.set(entityIn, 0d, 5d).exclude(this).exclude(entityIn)
-				 .damageEntities(this, (float)ProcedureUtils.getModifiedAttackDamage(this) * (this.rand.nextFloat() * 0.5f + 0.4f));
+				ProcedureAoeCommand.set(entityIn, 0d, 5d).exclude(this).exclude(this.getSummoningPlayer())
+				 .exclude(this.getBijuManager().getJinchurikiPlayer()).exclude(this.getControllingPassenger())
+				 .damageEntities(this, (float)ProcedureUtils.getModifiedAttackDamage(this) * (this.rand.nextFloat() * 0.5f + 0.5f));
 				return true;
 			}
 			return false;
@@ -515,7 +516,7 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 				this.rotationYawHead = entity.rotationYaw;
 				this.stepHeight = this.height / 3.0F;
 				if (entity instanceof EntityLivingBase) {
-					this.setAIMoveSpeed((float) this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).getAttributeValue() * 0.5F);
+					this.setAIMoveSpeed((float) this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).getAttributeValue());
 					float forward = ((EntityLivingBase) entity).moveForward;
 					float strafe = ((EntityLivingBase) entity).moveStrafing;
 					super.travel(strafe, 0.0F, forward);

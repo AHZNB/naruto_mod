@@ -315,54 +315,55 @@ public class ProcedureOnPlayerPostTick extends ElementsNarutomodMod.ModElement {
 						_setstack.setCount(1);
 						ItemHandlerHelper.giveItemToPlayer(((EntityPlayer) entity), _setstack);
 					}
-				}
-				if ((!ItemSharingan.hasAny((EntityPlayer) entity) && (((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
-						? ((EntityPlayerMP) entity).getAdvancements()
-								.getProgress(((WorldServer) (entity).world).getAdvancementManager()
-										.getAdvancement(new ResourceLocation("narutomod:sharinganopened")))
-								.isDone()
-						: false))) {
-					GuiScrollGenjutsuGui.giveGenjutsu((EntityPlayer) entity);
-					stack = new ItemStack(ItemSharingan.helmet, (int) (1));
-					((ItemDojutsu.Base) stack.getItem()).setOwner(stack, (EntityLivingBase) entity);
-					entity.getEntityData().setLong(NarutomodModVariables.MostRecentWornDojutsuTime, world.getTotalWorldTime());
-					if (entity instanceof EntityPlayer) {
-						ItemStack _setstack = (stack);
-						_setstack.setCount(1);
-						ItemHandlerHelper.giveItemToPlayer(((EntityPlayer) entity), _setstack);
-					}
-				} else if (((!((entity instanceof EntityPlayer)
-						? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemByakugan.helmet, (int) (1)))
-						: false))
-						&& (((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
-								? ((EntityPlayerMP) entity).getAdvancements()
-										.getProgress(((WorldServer) (entity).world).getAdvancementManager()
-												.getAdvancement(new ResourceLocation("narutomod:byakuganopened")))
-										.isDone()
-								: false))) {
-					stack = new ItemStack(ItemByakugan.helmet, (int) (1));
-					((ItemDojutsu.Base) stack.getItem()).setOwner(stack, (EntityLivingBase) entity);
-					entity.getEntityData().setLong(NarutomodModVariables.MostRecentWornDojutsuTime, world.getTotalWorldTime());
-					if (entity instanceof EntityPlayer) {
-						ItemStack _setstack = (stack);
-						_setstack.setCount(1);
-						ItemHandlerHelper.giveItemToPlayer(((EntityPlayer) entity), _setstack);
-					}
-				} else if (((!((entity instanceof EntityPlayer)
-						? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemShikotsumyaku.block, (int) (1)))
-						: false))
-						&& (((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
-								? ((EntityPlayerMP) entity).getAdvancements()
-										.getProgress(((WorldServer) (entity).world).getAdvancementManager()
-												.getAdvancement(new ResourceLocation("narutomod:shikotsumyaku_acquired")))
-										.isDone()
-								: false))) {
-					stack = new ItemStack(ItemShikotsumyaku.block, (int) (1));
-					((ItemJutsu.Base) stack.getItem()).setIsAffinity(stack, true);
-					if (entity instanceof EntityPlayer) {
-						ItemStack _setstack = (stack);
-						_setstack.setCount(1);
-						ItemHandlerHelper.giveItemToPlayer(((EntityPlayer) entity), _setstack);
+					if ((!ItemSharingan.hasAny((EntityPlayer) entity)
+							&& (((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
+									? ((EntityPlayerMP) entity).getAdvancements()
+											.getProgress(((WorldServer) (entity).world).getAdvancementManager()
+													.getAdvancement(new ResourceLocation("narutomod:sharinganopened")))
+											.isDone()
+									: false))) {
+						GuiScrollGenjutsuGui.giveGenjutsu((EntityPlayer) entity);
+						stack = new ItemStack(ItemSharingan.helmet, (int) (1));
+						((ItemDojutsu.Base) stack.getItem()).setOwner(stack, (EntityLivingBase) entity);
+						entity.getEntityData().setLong(NarutomodModVariables.MostRecentWornDojutsuTime, world.getTotalWorldTime());
+						if (entity instanceof EntityPlayer) {
+							ItemStack _setstack = (stack);
+							_setstack.setCount(1);
+							ItemHandlerHelper.giveItemToPlayer(((EntityPlayer) entity), _setstack);
+						}
+					} else if (((!((entity instanceof EntityPlayer)
+							? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemByakugan.helmet, (int) (1)))
+							: false))
+							&& (((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
+									? ((EntityPlayerMP) entity).getAdvancements()
+											.getProgress(((WorldServer) (entity).world).getAdvancementManager()
+													.getAdvancement(new ResourceLocation("narutomod:byakuganopened")))
+											.isDone()
+									: false))) {
+						stack = new ItemStack(ItemByakugan.helmet, (int) (1));
+						((ItemDojutsu.Base) stack.getItem()).setOwner(stack, (EntityLivingBase) entity);
+						entity.getEntityData().setLong(NarutomodModVariables.MostRecentWornDojutsuTime, world.getTotalWorldTime());
+						if (entity instanceof EntityPlayer) {
+							ItemStack _setstack = (stack);
+							_setstack.setCount(1);
+							ItemHandlerHelper.giveItemToPlayer(((EntityPlayer) entity), _setstack);
+						}
+					} else if (((!((entity instanceof EntityPlayer)
+							? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemShikotsumyaku.block, (int) (1)))
+							: false))
+							&& (((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
+									? ((EntityPlayerMP) entity).getAdvancements()
+											.getProgress(((WorldServer) (entity).world).getAdvancementManager()
+													.getAdvancement(new ResourceLocation("narutomod:shikotsumyaku_acquired")))
+											.isDone()
+									: false))) {
+						stack = new ItemStack(ItemShikotsumyaku.block, (int) (1));
+						((ItemJutsu.Base) stack.getItem()).setIsAffinity(stack, true);
+						if (entity instanceof EntityPlayer) {
+							ItemStack _setstack = (stack);
+							_setstack.setCount(1);
+							ItemHandlerHelper.giveItemToPlayer(((EntityPlayer) entity), _setstack);
+						}
 					}
 				}
 				if ((!((entity instanceof EntityPlayer)

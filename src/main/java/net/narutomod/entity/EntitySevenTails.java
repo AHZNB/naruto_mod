@@ -170,8 +170,8 @@ public class EntitySevenTails extends ElementsNarutomodMod.ModElement {
 			super.applyEntityAttributes();
 			this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(100.0D);
 			this.getAttributeMap().registerAttribute(SharedMonsterAttributes.FLYING_SPEED);
-			this.getEntityAttribute(SharedMonsterAttributes.FLYING_SPEED).setBaseValue(0.5D);
-			this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.5D);
+			this.getEntityAttribute(SharedMonsterAttributes.FLYING_SPEED).setBaseValue(0.8D);
+			this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.8D);
 			this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(10000.0D);
 			this.getEntityAttribute(EntityPlayer.REACH_DISTANCE).setBaseValue(30.0D);
 		}
@@ -230,6 +230,17 @@ public class EntitySevenTails extends ElementsNarutomodMod.ModElement {
 		public void onUpdate() {
 			this.setNoGravity(true);
 			super.onUpdate();
+		}
+
+		@Override
+		public void travel(float ti, float tj, float tk) {
+			if (this.isBeingRidden()) {
+				EntityLivingBase entity = (EntityLivingBase)this.getControllingPassenger();
+				if ((!this.onGround || entity.rotationPitch < 0.0F) && entity.moveForward > 0.0F) {
+					this.motionY -= entity.rotationPitch / 45.0D;
+				}
+			}
+			super.travel(ti, tj, tk);
 		}
 
 		public class FlyHelper extends EntityMoveHelper {

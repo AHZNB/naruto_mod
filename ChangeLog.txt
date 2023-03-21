@@ -1,5 +1,11 @@
 0.2.12-beta ===============================================================================
 
+Jutsus:
+ - can fly when jinchuriki in full biju mode of 7-tails
+ 
+Items:
+ - fix using /give command to give nature release items duplicates the item
+
 General:
  - Added a config
  - moved gamerule spawnTailedBeasts to config
