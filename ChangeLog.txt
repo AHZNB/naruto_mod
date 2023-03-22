@@ -9,6 +9,7 @@ Items:
 General:
  - Added a config
  - moved gamerule spawnTailedBeasts to config
+ - added a config option for players being able to spawn as jinchuriki
 
 0.2.11-beta ===============================================================================
 

@@ -24,6 +24,7 @@ import net.narutomod.gui.GuiScrollGenjutsuGui;
 import net.narutomod.entity.EntityBijuManager;
 import net.narutomod.PlayerTracker;
 import net.narutomod.NarutomodModVariables;
+import net.narutomod.ModConfig;
 import net.narutomod.ElementsNarutomodMod;
 
 import net.minecraftforge.items.ItemHandlerHelper;
@@ -1040,7 +1041,7 @@ public class ProcedureOnPlayerPostTick extends ElementsNarutomodMod.ModElement {
 							stack = new ItemStack(ItemJinton.block, (int) (1));
 						} else {
 							stack = new ItemStack(Blocks.AIR, (int) (1));
-							if (((rngbase) > 105)) {
+							if ((((rngbase) > 105) && ModConfig.SPAWN_AS_JINCHURIKI)) {
 								int tails = EntityBijuManager.getRandomAvailableBiju();
 								if (EntityBijuManager.setVesselByTails(entity, tails)) {
 									world.playSound((EntityPlayer) null, x, y, z,
