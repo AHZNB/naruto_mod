@@ -37,7 +37,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.util.ITooltipFlag;
+//import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.RenderItem;
@@ -58,7 +58,7 @@ import net.minecraft.network.play.server.SPacketCollectItem;
 import net.narutomod.creativetab.TabModTab;
 import net.narutomod.ElementsNarutomodMod;
 
-import java.util.List;
+//import java.util.List;
 import com.google.common.collect.Multimap;
 import javax.annotation.Nullable;
 
@@ -117,11 +117,11 @@ public class ItemScytheHidan extends ElementsNarutomodMod.ModElement {
 			return multimap;
 		}
 
-		@Override
+		/*@Override
 		public void addInformation(ItemStack itemstack, World world, List<String> list, ITooltipFlag flag) {
 			super.addInformation(itemstack, world, list, flag);
 			list.add(net.minecraft.util.text.translation.I18n.translateToLocal("tooltip.hidan.general"));
-		}
+		}*/
 
 		@Override
 		public void onPlayerStoppedUsing(ItemStack itemstack, World world, EntityLivingBase entityLivingBase, int timeLeft) {
@@ -137,8 +137,8 @@ public class ItemScytheHidan extends ElementsNarutomodMod.ModElement {
 				world.playSound(null, entity.posX, entity.posY, entity.posZ, SoundEvents.ENTITY_ARROW_SHOOT,
 						SoundCategory.NEUTRAL, 1, 1f / (itemRand.nextFloat() * 0.5f + 1f) + f);
 				world.spawnEntity(entityarrow);
-				ItemStack newstack = new ItemStack(ItemHidanThrown.block);
-				((ItemHidanThrown.RangedItem)newstack.getItem()).setEntity(newstack, entityarrow);
+				ItemStack newstack = new ItemStack(ItemScytheHidanThrown.block);
+				((ItemScytheHidanThrown.RangedItem)newstack.getItem()).setEntity(newstack, entityarrow);
 				entity.replaceItemInInventory(slotID, newstack);
 			}
 		}
@@ -296,7 +296,7 @@ public class ItemScytheHidan extends ElementsNarutomodMod.ModElement {
 				if (this.shootingEntity == null && this.inGround) {
 					flag = entityIn.inventory.addItemStackToInventory(this.getArrowStack());
 				} else if (entityIn.equals(this.shootingEntity) && this.ticksExisted > 15) {
-					flag = entityIn.replaceItemInInventory(ItemHidanThrown.getSlotId(entityIn), this.getArrowStack());
+					flag = entityIn.replaceItemInInventory(ItemScytheHidanThrown.getSlotId(entityIn), this.getArrowStack());
 				}
 				if (flag) {
 	            	((WorldServer)this.world).getEntityTracker().sendToTracking(this, new SPacketCollectItem(this.getEntityId(), entityIn.getEntityId(), 1));

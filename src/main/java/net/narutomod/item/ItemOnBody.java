@@ -38,6 +38,8 @@ import io.netty.buffer.ByteBuf;
 public class ItemOnBody extends ElementsNarutomodMod.ModElement {
 	private static Vec3d RIGHT_LEG_OFFSET = new Vec3d(0.125d, -0.6875d, 0d);
 	private static Vec3d LEFT_LEG_OFFSET = new Vec3d(-0.125d, -0.6875d, 0d);
+	private static Vec3d RIGHT_ARM_OFFSET = new Vec3d(0.3125d, -0.125d, 0d);
+	private static Vec3d LEFT_ARM_OFFSET = new Vec3d(-0.3125d, -0.125d, 0d);
 	
 	public ItemOnBody(ElementsNarutomodMod instance) {
 		super(instance, 711);
@@ -56,14 +58,16 @@ public class ItemOnBody extends ElementsNarutomodMod.ModElement {
 	public interface Interface {
 		default Vec3d getOffset() {
 			switch (this.showOnBody()) {
+				case RIGHT_ARM:
+					return RIGHT_ARM_OFFSET;
 				case RIGHT_LEG:
 					return RIGHT_LEG_OFFSET;
+				case LEFT_ARM:
+					return LEFT_ARM_OFFSET;
 				case LEFT_LEG:
 					return LEFT_LEG_OFFSET;
 				case HEAD:
 				case TORSO:
-				case RIGHT_ARM:
-				case LEFT_ARM:
 				default:
 					return Vec3d.ZERO;
 			}

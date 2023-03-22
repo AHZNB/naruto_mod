@@ -73,18 +73,19 @@ public class EntityEarthSandwich extends ElementsNarutomodMod.ModElement {
 		private final float ogHeight = 0.375F;
 		private final int growTime = 30;
 		private final Map<EntityLivingBase, Vec3d> caughtEntities = Maps.newHashMap();
+		private EntityLivingBase user;
 
 		public EC(World world) {
 			super(world);
 			this.setSize(this.ogWidth, this.ogHeight);
 		}
 
-		public EC(EntityLivingBase user, Entity target, float heightIn) {
-			this(user.world);
-			this.setLocationAndAngles(target.posX, target.posY, target.posZ, user.rotationYawHead, 0f);
+		public EC(EntityLivingBase userIn, Vec3d atVec, float heightIn) {
+			this(userIn.world);
 			heightIn /= this.ogHeight;
 			this.setScale(heightIn);
-			this.setSize(this.ogWidth * heightIn, this.ogHeight * heightIn);
+			this.setLocationAndAngles(atVec.x, atVec.y, atVec.z, userIn.rotationYawHead, 0f);
+			this.user = userIn;
 		}
 
 		@Override
@@ -95,6 +96,7 @@ public class EntityEarthSandwich extends ElementsNarutomodMod.ModElement {
 
 		public void setScale(float f) {
 			this.getDataManager().set(SCALE, Float.valueOf(f));
+			this.setSize(this.ogWidth * f, this.ogHeight * f);
 		}
 
 		public float getScale() {
@@ -138,8 +140,7 @@ public class EntityEarthSandwich extends ElementsNarutomodMod.ModElement {
 				if (age == this.growTime / 2) {
 					for (EntityLivingBase entity : this.world.getEntitiesWithinAABB(EntityLivingBase.class, this.getEntityBoundingBox())) {
 						if (this.getEntityBoundingBox().intersect(entity.getEntityBoundingBox()).equals(entity.getEntityBoundingBox())
-						 && ItemJutsu.canTarget(entity)) {
-						 //&& (!(entity instanceof EntityPlayer) || !((EntityPlayer)entity).isSpectator())) {
+						 && ItemJutsu.canTarget(entity) && !entity.equals(this.user)) {
 							this.caughtEntities.put(entity, entity.getPositionVector());
 						}
 					}
@@ -182,16 +183,16 @@ public class EntityEarthSandwich extends ElementsNarutomodMod.ModElement {
 			@Override
 			public boolean createJutsu(ItemStack stack, EntityLivingBase entity, float power) {
 				if (power >= 2f) {
-					RayTraceResult rt = ProcedureUtils.objectEntityLookingAt(entity, 30d);
-					if (rt != null && rt.entityHit != null) {
+					RayTraceResult rt = ProcedureUtils.raytraceBlocks(entity, 30d);
+					if (rt != null && rt.typeOfHit == RayTraceResult.Type.BLOCK) {
 						if (power >= 8f) {
-							entity.world.playSound(null, entity.posX, entity.posY, entity.posZ, (SoundEvent) SoundEvent.REGISTRY
-							 .getObject(new ResourceLocation(("narutomod:sando_no_jutsu"))), SoundCategory.NEUTRAL, 5, 1f);
+							entity.world.playSound(null, entity.posX, entity.posY, entity.posZ, SoundEvent.REGISTRY
+							 .getObject(new ResourceLocation("narutomod:sando_no_jutsu")), SoundCategory.NEUTRAL, 5, 1f);
 						} else {
-							entity.world.playSound(null, entity.posX, entity.posY, entity.posZ, (SoundEvent) SoundEvent.REGISTRY
-							 .getObject(new ResourceLocation(("narutomod:jutsu"))), SoundCategory.NEUTRAL, 1, 1f);
+							entity.world.playSound(null, entity.posX, entity.posY, entity.posZ, SoundEvent.REGISTRY
+							 .getObject(new ResourceLocation("narutomod:jutsu")), SoundCategory.NEUTRAL, 1, 1f);
 						}
-						entity.world.spawnEntity(new EC(entity, rt.entityHit, power));
+						entity.world.spawnEntity(new EC(entity, rt.hitVec, power));
 						return true;
 					}
 				}

@@ -8,7 +8,7 @@ public class ModConfig extends ElementsNarutomodMod.ModElement {
     @Config.Comment("If enabled tailed beasts spawn naturally around the world.")
 	public static boolean SPAWN_TAILED_BEASTS = false;
 
-	@Config.Comment("If enabled players can spawn as jinchuriki.")
+	@Config.Comment("If enabled players has a chance of spawning as jinchuriki.")
 	public static boolean SPAWN_AS_JINCHURIKI = true;
 
 	public ModConfig(ElementsNarutomodMod instance) {

@@ -471,6 +471,10 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 		return objectEntityLookingAt(entity, range, false, false, excludeEntity);
 	}
 
+	public static RayTraceResult objectEntityLookingAt(Entity entity, double range, double bbgrow, @Nullable Entity excludeEntity) {
+		return objectEntityLookingAt(entity, range, bbgrow, false, false, excludeEntity);
+	}
+
 	public static RayTraceResult objectEntityLookingAt(Entity entity, double range, boolean trackall) {
 		return objectEntityLookingAt(entity, range, trackall, false, (Predicate)null);
 	}
@@ -480,6 +484,10 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static RayTraceResult objectEntityLookingAt(Entity entity, double range, boolean trackall, boolean stopOnLiquid, @Nullable Entity excludeEntity) {
+		return objectEntityLookingAt(entity, range, 0.0d, trackall, stopOnLiquid, excludeEntity);
+	}
+
+	public static RayTraceResult objectEntityLookingAt(Entity entity, double range, double bbgrow, boolean trackall, boolean stopOnLiquid, @Nullable Entity excludeEntity) {
 		return objectEntityLookingAt(entity, range, trackall, stopOnLiquid, new Predicate<Entity>() {
 			public boolean apply(@Nullable Entity p_apply_1_) {
 				return p_apply_1_ != null && !p_apply_1_.equals(excludeEntity);

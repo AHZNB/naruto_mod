@@ -1,7 +1,7 @@
 {
   "id_map": {
+    "ENTITY": 417,
     "GUI": 63,
-    "ENTITY": 416,
     "DIMENSION": 13
   },
   "mod_elements": [
@@ -6690,17 +6690,6 @@
       }
     },
     {
-      "name": "HidanThrown",
-      "type": "gun",
-      "sortid": 815,
-      "compiles": true,
-      "locked_code": true,
-      "ids": {
-        "0": 414
-      },
-      "registry_name": "hidan_thrown"
-    },
-    {
       "name": "ClothesHokage",
       "type": "armor",
       "sortid": 816,
@@ -7006,6 +6995,17 @@
       "locked_code": true,
       "ids": {},
       "registry_name": "naruto_mod_config"
+    },
+    {
+      "name": "ScytheHidanThrown",
+      "type": "gun",
+      "sortid": 838,
+      "compiles": true,
+      "locked_code": true,
+      "ids": {
+        "0": 417
+      },
+      "registry_name": "scythe_hidan_thrown"
     }
   ],
   "variable_elements": [
@@ -8076,7 +8076,6 @@
       "subtitles.daibakusuishoha": "",
       "tooltip.6psenjutsu.shoot": "Truth Seeking Ball: Shoot",
       "subtitles.kuchiyosenojutsu": "",
-      "item.hidan_thrown.name": "Item Hidan Thrown",
       "advancements.kekkei_tota_awakened.title": "Kekkei Tota Acquired",
       "item.scroll_lightning_chakra_mode.name": "Lightning Release - Lightning Chakra Mode Scroll",
       "advancements.achievementmedicalgenin.descr": "You can now perform some medical jutsu.",
@@ -8101,6 +8100,7 @@
       "subtitles.explosion": "",
       "item.clothes_tsuchikagebody.name": "Clothes Tsuchikage Body",
       "entity.kakashi.name": "Kakashi",
+      "item.scythe_hidan_thrown.name": "Scythe 3-blade",
       "item.mangekyosharinganeternalhelmet.name": "Eternal Mangekyo Sharingan",
       "item.biju_map.name": "Tailed Beast Map",
       "entity.earth_blocks.name": "Earth Blocks",

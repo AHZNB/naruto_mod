@@ -2,6 +2,8 @@
 
 Jutsus:
  - can fly when jinchuriki in full biju mode of 7-tails
+ - changed chidori mechanics: swing at a target within 20 blocks to charge at target
+ - changed earth sandwich targeting mechanics: point at block instead of entity
  
 Items:
  - fix using /give command to give nature release items duplicates the item
