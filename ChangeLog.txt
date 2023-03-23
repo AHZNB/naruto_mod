@@ -4,6 +4,10 @@ Jutsus:
  - can fly when jinchuriki in full biju mode of 7-tails
  - changed chidori mechanics: swing at a target within 20 blocks to charge at target
  - changed earth sandwich targeting mechanics: point at block instead of entity
+ - unsummon your earth golem by hitting it
+ - limit bug sphere to max 10, reduce chakra absorption rate from target
+ - tweaked kamui teleport to use more chakra/time, give nausea effect after use
+ - fixed eternal mangekyo intangible not negating damage 
  
 Items:
  - fix using /give command to give nature release items duplicates the item

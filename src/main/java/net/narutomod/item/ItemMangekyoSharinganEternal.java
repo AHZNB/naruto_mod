@@ -26,6 +26,7 @@ import net.minecraft.util.text.translation.I18n;
 import net.narutomod.world.WorldKamuiDimension;
 import net.narutomod.creativetab.TabModTab;
 import net.narutomod.Chakra;
+import net.narutomod.NarutomodModVariables;
 import net.narutomod.ElementsNarutomodMod;
 
 @ElementsNarutomodMod.ModElement.Tag
@@ -53,6 +54,7 @@ public class ItemMangekyoSharinganEternal extends ElementsNarutomodMod.ModElemen
 					}
 					if (entity.getEntityData().getBoolean("kamui_intangible")) {
 						Chakra.pathway(entity).consume(ItemMangekyoSharinganObito.getIntangibleChakraUsage(entity));
+						entity.getEntityData().setDouble(NarutomodModVariables.InvulnerableTime, 2.0d);
 					}
 				}
 			}

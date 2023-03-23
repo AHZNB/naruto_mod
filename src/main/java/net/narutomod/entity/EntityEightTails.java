@@ -397,7 +397,7 @@ public class EntityEightTails extends ElementsNarutomodMod.ModElement {
 			hornRight5_r1.cubeList.add(new ModelBox(hornRight5_r1, 0, 20, -1.9463F, -1.1756F, -2.9677F, 2, 2, 2, -0.2F, false));
 	
 			hornRight6 = new ModelRenderer(this);
-			hornRight6.setRotationPoint(-1.0F, 0.0F, 0.0F);
+			hornRight6.setRotationPoint(-1.5F, 0.0F, 0.0F);
 			hornRight5.addChild(hornRight6);
 			setRotationAngle(hornRight6, 0.0F, -0.3491F, 0.0F);
 			
@@ -406,8 +406,8 @@ public class EntityEightTails extends ElementsNarutomodMod.ModElement {
 			hornRight7_r1.setRotationPoint(-3.8932F, 1.5F, 0.4376F);
 			hornRight6.addChild(hornRight7_r1);
 			setRotationAngle(hornRight7_r1, 0.0F, 0.3927F, 0.0F);
-			hornRight7_r1.cubeList.add(new ModelBox(hornRight7_r1, 0, 20, -1.6783F, -1.9756F, -2.5373F, 2, 2, 2, -0.4F, false));
-			hornRight7_r1.cubeList.add(new ModelBox(hornRight7_r1, 0, 20, -0.8783F, -1.9756F, -2.5373F, 2, 2, 2, -0.3F, false));
+			hornRight7_r1.cubeList.add(new ModelBox(hornRight7_r1, 0, 20, -1.6783F, -1.9756F, -2.5373F, 2, 2, 2, -0.6F, false));
+			hornRight7_r1.cubeList.add(new ModelBox(hornRight7_r1, 0, 20, -0.8783F, -1.9756F, -2.5373F, 2, 2, 2, -0.4F, false));
 	
 			hornLeft1 = new ModelRenderer(this);
 			hornLeft1.setRotationPoint(3.1F, -6.4F, -4.0F);
@@ -470,7 +470,7 @@ public class EntityEightTails extends ElementsNarutomodMod.ModElement {
 			hornRight6_r1.cubeList.add(new ModelBox(hornRight6_r1, 0, 20, -0.0537F, -1.1756F, -2.9677F, 2, 2, 2, -0.2F, true));
 	
 			hornLeft6 = new ModelRenderer(this);
-			hornLeft6.setRotationPoint(1.0F, 0.0F, 0.0F);
+			hornLeft6.setRotationPoint(1.5F, 0.0F, 0.0F);
 			hornLeft5.addChild(hornLeft6);
 			setRotationAngle(hornLeft6, 0.0F, 0.3491F, 0.0F);
 			
@@ -479,8 +479,8 @@ public class EntityEightTails extends ElementsNarutomodMod.ModElement {
 			hornRight8_r1.setRotationPoint(3.8932F, 1.5F, 0.4376F);
 			hornLeft6.addChild(hornRight8_r1);
 			setRotationAngle(hornRight8_r1, 0.0F, -0.3927F, 0.0F);
-			hornRight8_r1.cubeList.add(new ModelBox(hornRight8_r1, 0, 20, -0.3217F, -1.9756F, -2.5373F, 2, 2, 2, -0.4F, true));
-			hornRight8_r1.cubeList.add(new ModelBox(hornRight8_r1, 0, 20, -1.1217F, -1.9756F, -2.5373F, 2, 2, 2, -0.3F, true));
+			hornRight8_r1.cubeList.add(new ModelBox(hornRight8_r1, 0, 20, -0.3217F, -1.9756F, -2.5373F, 2, 2, 2, -0.6F, true));
+			hornRight8_r1.cubeList.add(new ModelBox(hornRight8_r1, 0, 20, -1.1217F, -1.9756F, -2.5373F, 2, 2, 2, -0.4F, true));
 	
 			hornRight13 = new ModelRenderer(this);
 			hornRight13.setRotationPoint(-1.5F, -7.5F, 1.0F);
@@ -552,13 +552,13 @@ public class EntityEightTails extends ElementsNarutomodMod.ModElement {
 			hornRight18_r1.setRotationPoint(1.4163F, 3.6913F, 4.2057F);
 			hornRight18.addChild(hornRight18_r1);
 			setRotationAngle(hornRight18_r1, 0.0F, 0.0F, -1.1345F);
-			hornRight18_r1.cubeList.add(new ModelBox(hornRight18_r1, 0, 20, -1.793F, -1.1029F, -5.9694F, 2, 2, 2, -0.5F, false));
+			hornRight18_r1.cubeList.add(new ModelBox(hornRight18_r1, 0, 20, -1.793F, -1.1029F, -5.9694F, 2, 2, 2, -0.6F, false));
 	
 			hornRight17_r1 = new ModelRenderer(this);
 			hornRight17_r1.setRotationPoint(1.8171F, 3.3884F, 4.0309F);
 			hornRight18.addChild(hornRight17_r1);
 			setRotationAngle(hornRight17_r1, 0.0F, 0.0F, -1.1345F);
-			hornRight17_r1.cubeList.add(new ModelBox(hornRight17_r1, 0, 20, -1.2479F, -1.3053F, -5.7907F, 2, 2, 2, -0.3F, false));
+			hornRight17_r1.cubeList.add(new ModelBox(hornRight17_r1, 0, 20, -1.2479F, -1.3053F, -5.7907F, 2, 2, 2, -0.4F, false));
 	
 			hornLeft13 = new ModelRenderer(this);
 			hornLeft13.setRotationPoint(1.5F, -7.5F, 1.0F);
@@ -630,13 +630,13 @@ public class EntityEightTails extends ElementsNarutomodMod.ModElement {
 			hornRight19_r1.setRotationPoint(-1.4163F, 3.6913F, 4.2057F);
 			hornLeft18.addChild(hornRight19_r1);
 			setRotationAngle(hornRight19_r1, 0.0F, 0.0F, 1.1345F);
-			hornRight19_r1.cubeList.add(new ModelBox(hornRight19_r1, 0, 20, -0.207F, -1.1029F, -5.9694F, 2, 2, 2, -0.5F, true));
+			hornRight19_r1.cubeList.add(new ModelBox(hornRight19_r1, 0, 20, -0.207F, -1.1029F, -5.9694F, 2, 2, 2, -0.6F, true));
 	
 			hornRight18_r2 = new ModelRenderer(this);
 			hornRight18_r2.setRotationPoint(-1.8171F, 3.3884F, 4.0309F);
 			hornLeft18.addChild(hornRight18_r2);
 			setRotationAngle(hornRight18_r2, 0.0F, 0.0F, 1.1345F);
-			hornRight18_r2.cubeList.add(new ModelBox(hornRight18_r2, 0, 20, -0.7521F, -1.3053F, -5.7907F, 2, 2, 2, -0.3F, true));
+			hornRight18_r2.cubeList.add(new ModelBox(hornRight18_r2, 0, 20, -0.7521F, -1.3053F, -5.7907F, 2, 2, 2, -0.4F, true));
 	
 			snout = new ModelRenderer(this);
 			snout.setRotationPoint(0.0F, -4.0F, -3.0F);

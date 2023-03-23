@@ -177,7 +177,7 @@ public class EntityKikaichu extends ElementsNarutomodMod.ModElement {
 		public static class Jutsu implements ItemJutsu.IJutsuCallback {
 			@Override
 			public boolean createJutsu(ItemStack stack, EntityLivingBase entity, float power) {
-				RayTraceResult result = ProcedureUtils.objectEntityLookingAt(entity, 30d, true);
+				RayTraceResult result = ProcedureUtils.objectEntityLookingAt(entity, 30d, 1.5d, true);
 				if (result != null) {
 					if (result.entityHit instanceof EC) {
 						result.entityHit.ticksExisted = EC.MAXTIME;
@@ -280,8 +280,8 @@ public class EntityKikaichu extends ElementsNarutomodMod.ModElement {
 			if (!this.world.isRemote) {
 				for (EntityLivingBase entity : this.world.getEntitiesWithinAABB(EntityLivingBase.class, this.getEntityBoundingBox())) {
 					if (!entity.equals(this.host)) {
-						if (Chakra.pathway(entity).consume(0.5d)) {
-							this.chakra += 0.5d;
+						if (this.chakra < 100d && Chakra.pathway(entity).consume(0.25d)) {
+							this.chakra += 0.25d;
 						}
 					} else if (this.chakra > 0.0d) {
 						Chakra.pathway(this.host).consume(-this.chakra);
