@@ -150,7 +150,7 @@ public class ItemSuiton extends ElementsNarutomodMod.ModElement {
 			this(world);
 			this.setPosition(x, y, z);
 			this.radius = r;
-			this.idleTime = this.buildTime + (world.containsAnyLiquid(new AxisAlignedBB(x-20, y-10, z-20, x+20, y+10, z+20)) ? 1200 : 400);
+			this.idleTime = this.buildTime + (world.containsAnyLiquid(new AxisAlignedBB(x-20, y-10, z-20, x+20, y+10, z+20)) ? 800 : 400);
 			this.dissipateTime = this.idleTime + this.DISSIPATE;
 		}
 
@@ -194,7 +194,7 @@ public class ItemSuiton extends ElementsNarutomodMod.ModElement {
 					}
 					if (entity instanceof EntityPlayer) {
 						d0 = d0 * this.density / Math.max(d1, 1d);
-						ProcedureRenderView.setFogDensity(entity, (float)d0);
+						ProcedureRenderView.setFogDensity(entity, (float)d0, 20);
 					} else if (entity instanceof EntityLiving) {
 						IAttributeInstance aInstance = entity.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE);
 						aInstance.removeModifier(FOLLOW_MODIFIER);

@@ -488,7 +488,7 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static RayTraceResult objectEntityLookingAt(Entity entity, double range, double bbgrow, boolean trackall, boolean stopOnLiquid, @Nullable Entity excludeEntity) {
-		return objectEntityLookingAt(entity, range, trackall, stopOnLiquid, new Predicate<Entity>() {
+		return objectEntityLookingAt(entity, range, bbgrow, trackall, stopOnLiquid, new Predicate<Entity>() {
 			public boolean apply(@Nullable Entity p_apply_1_) {
 				return p_apply_1_ != null && !p_apply_1_.equals(excludeEntity);
 			}

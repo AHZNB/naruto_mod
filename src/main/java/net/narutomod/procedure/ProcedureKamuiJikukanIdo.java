@@ -149,7 +149,7 @@ public class ProcedureKamuiJikukanIdo extends ElementsNarutomodMod.ModElement {
 					f2 = (boolean) (t.entityHit != null);
 					if ((f2)) {
 						i = t.entityHit.getEntityBoundingBox().getAverageEdgeLength();
-						i = (double) ((timer) / (((distance) * (i)) * (2.01 - (PlayerTracker.getNinjaLevel((EntityPlayer) entity) / 500.1))));
+						i = (double) (((timer) - 5) / (((distance) * (i)) * (2.01 - (PlayerTracker.getNinjaLevel((EntityPlayer) entity) / 500.1))));
 						if (((!(f3)) && ((i) <= 0.99999))) {
 							if (((i) > 0)) {
 								i = (double) ((i)

@@ -8,9 +8,11 @@ Jutsus:
  - limit bug sphere to max 10, reduce chakra absorption rate from target
  - tweaked kamui teleport to use more chakra/time, give nausea effect after use
  - fixed eternal mangekyo intangible not negating damage 
+ - decrease shinsu senju damage by 50% and double chakra usage
  
 Items:
  - fix using /give command to give nature release items duplicates the item
+ - remove enchantability on all dojutsus
 
 General:
  - Added a config
@@ -65,7 +67,6 @@ Jutsus:
  - hell swamp jutsu mud blocks now reverts back to original blocks after 30 seconds
  - limit hell swamp jutsu to 30 max
  - limit explosion release land mine fist to 10 max
- - decrease shinsu senju damage by 50% and increase chakra usage by 50%
 
 Items:
  - cleaver sword now takes damage when used, attack speed and damage decrease, recipe changed

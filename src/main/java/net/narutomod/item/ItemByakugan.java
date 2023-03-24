@@ -78,7 +78,7 @@ public class ItemByakugan extends ElementsNarutomodMod.ModElement {
 
 	@Override
 	public void initElements() {
-		ItemArmor.ArmorMaterial enuma = EnumHelper.addArmorMaterial("BYAKUGAN", "narutomod:byakugan_", 25, new int[]{2, 5, 6, 50}, 9, null, 0.0F);
+		ItemArmor.ArmorMaterial enuma = EnumHelper.addArmorMaterial("BYAKUGAN", "narutomod:byakugan_", 25, new int[]{2, 5, 6, 50}, 0, null, 0.0F);
 		
 		this.elements.items.add(() -> new ItemDojutsu.Base(enuma) {
 			@Override
