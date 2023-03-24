@@ -53,7 +53,7 @@ public class ItemSageStaff extends ElementsNarutomodMod.ModElement {
 		ModelLoader.setCustomModelResourceLocation(block, 0, new ModelResourceLocation("narutomod:sage_staff", "inventory"));
 	}
 
-	private static class ItemToolCustom extends Item {
+	private static class ItemToolCustom extends Item implements ItemOnBody.Interface {
 		protected ItemToolCustom() {
 			setMaxDamage(0);
 			setMaxStackSize(1);
@@ -148,6 +148,11 @@ public class ItemSageStaff extends ElementsNarutomodMod.ModElement {
 		@Override
 		public int getItemEnchantability() {
 			return 0;
+		}
+
+		@Override
+		public ItemOnBody.BodyPart showOnBody() {
+			return ItemOnBody.BodyPart.LEFT_ARM;
 		}
 	}
 }

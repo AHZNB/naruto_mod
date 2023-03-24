@@ -108,9 +108,12 @@ public class ItemNinjutsu extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		protected float getMaxPower(ItemStack stack, EntityLivingBase entity) {
+			ItemJutsu.JutsuEnum jutsu = this.getCurrentJutsu(stack);
 			float f = super.getMaxPower(stack, entity);
-			if (this.getCurrentJutsu(stack) == RASENGAN) {
+			if (jutsu == RASENGAN) {
 				return Math.min(f, 3.0f);
+			} else if (jutsu == BUGSWARM) {
+				return Math.min(f, 10.0f);
 			}
 			return f;
 		}

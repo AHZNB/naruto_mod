@@ -131,6 +131,15 @@ public class EntityEarthGolem extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
+		public boolean attackEntityFrom(DamageSource source, float amount) {
+			if (source.getTrueSource() instanceof EntityLivingBase && source.getTrueSource().equals(this.getSummoner())) {
+				this.onDeathUpdate();
+				return false;
+			}
+			return super.attackEntityFrom(source, amount);
+		}
+
+		@Override
 		public boolean attackEntityAsMob(Entity entityIn) {
 			boolean ret = super.attackEntityAsMob(entityIn);
 			if (ret) {

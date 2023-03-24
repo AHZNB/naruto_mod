@@ -34,12 +34,13 @@ import net.narutomod.ElementsNarutomodMod;
 import javax.annotation.Nullable;
 
 @ElementsNarutomodMod.ModElement.Tag
-public class ItemHidanThrown extends ElementsNarutomodMod.ModElement {
-	@GameRegistry.ObjectHolder("narutomod:hidan_thrown")
+public class ItemScytheHidanThrown extends ElementsNarutomodMod.ModElement {
+	@GameRegistry.ObjectHolder("narutomod:scythe_hidan_thrown")
 	public static final Item block = null;
+	public static final int ENTITYID = 417;
 
-	public ItemHidanThrown(ElementsNarutomodMod instance) {
-		super(instance, 814);
+	public ItemScytheHidanThrown(ElementsNarutomodMod instance) {
+		super(instance, 838);
 	}
 
 	@Override
@@ -50,7 +51,7 @@ public class ItemHidanThrown extends ElementsNarutomodMod.ModElement {
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void registerModels(ModelRegistryEvent event) {
-		ModelLoader.setCustomModelResourceLocation(block, 0, new ModelResourceLocation("narutomod:hidan_thrown", "inventory"));
+		ModelLoader.setCustomModelResourceLocation(block, 0, new ModelResourceLocation("narutomod:scythe_hidan_thrown", "inventory"));
 	}
 
 	@Override
@@ -61,12 +62,12 @@ public class ItemHidanThrown extends ElementsNarutomodMod.ModElement {
 	public static class RangedItem extends Item {
 		public RangedItem() {
 			super();
-			this.setMaxDamage(0);
-			this.setFull3D();
-			this.setUnlocalizedName("hidan_thrown");
-			this.setRegistryName("hidan_thrown");
-			this.maxStackSize = 1;
-			this.setCreativeTab(null);
+			setMaxDamage(0);
+			setFull3D();
+			setUnlocalizedName("scythe_hidan_thrown");
+			setRegistryName("scythe_hidan_thrown");
+			maxStackSize = 1;
+			setCreativeTab(null);
 		}
 
 		public void setEntity(ItemStack stack, ItemScytheHidan.EntityCustom entity) {
@@ -86,13 +87,13 @@ public class ItemHidanThrown extends ElementsNarutomodMod.ModElement {
 		public void onPlayerStoppedUsing(ItemStack itemstack, World world, EntityLivingBase entityLivingBase, int timeLeft) {
 			if (!world.isRemote && entityLivingBase instanceof EntityPlayerMP) {
 				EntityPlayerMP entity = (EntityPlayerMP) entityLivingBase;
-				ItemScytheHidan.EntityCustom swordEntity = this.getEntity(world, itemstack);
-				if (swordEntity != null && entity.equals(swordEntity.getShooter())) {
-			        double d0 = entity.posX - swordEntity.posX;
-			        double d1 = entity.getEntityBoundingBox().minY + (double)entity.height / 3d - swordEntity.posY;
-			        double d2 = entity.posZ - swordEntity.posZ;
+				ItemScytheHidan.EntityCustom itemEntity = this.getEntity(world, itemstack);
+				if (itemEntity != null && entity.equals(itemEntity.getShooter())) {
+			        double d0 = entity.posX - itemEntity.posX;
+			        double d1 = entity.getEntityBoundingBox().minY + (double)entity.height / 3d - itemEntity.posY;
+			        double d2 = entity.posZ - itemEntity.posZ;
 			        double d3 = (double)MathHelper.sqrt(d0 * d0 + d2 * d2);
-			        swordEntity.retrieve(d0, d1 + d3 * 0.3D, d2, (float)MathHelper.sqrt(d3) * 0.3F);
+			        itemEntity.retrieve(d0, d1 + d3 * 0.3D, d2, (float)MathHelper.sqrt(d3) * 0.3F);
 				}
 			}
 		}
@@ -101,8 +102,8 @@ public class ItemHidanThrown extends ElementsNarutomodMod.ModElement {
 		public void onUpdate(ItemStack itemstack, World world, Entity entity, int par4, boolean par5) {
 			super.onUpdate(itemstack, world, entity, par4, par5);
 			if (!world.isRemote) {
-				ItemScytheHidan.EntityCustom swordEntity = this.getEntity(world, itemstack);
-				if (swordEntity == null || !entity.equals(swordEntity.getShooter())) {
+				ItemScytheHidan.EntityCustom itemEntity = this.getEntity(world, itemstack);
+				if (itemEntity == null || !entity.equals(itemEntity.getShooter())) {
 					itemstack.shrink(1);
 				}
 			}
@@ -125,7 +126,7 @@ public class ItemHidanThrown extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-	public static int getSlotId(EntityPlayer entity) {
+	protected static int getSlotId(EntityPlayer entity) {
 		for (int i = 0; i < entity.inventory.mainInventory.size(); i++) {
 			ItemStack stack = entity.inventory.mainInventory.get(i);
 			if (stack != null && stack.getItem() == block) {

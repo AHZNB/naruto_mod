@@ -88,7 +88,9 @@ public class EntityChidori extends ElementsNarutomodMod.ModElement {
 		private float summonerYaw;
 		protected int duration;
 		private double chakraBurn;
+		private int attackTime;
 		private int ticksSinceLastSwing;
+		private Entity target;
 
 		public EC(World a) {
 			super(a);
@@ -180,24 +182,28 @@ public class EntityChidori extends ElementsNarutomodMod.ModElement {
 				}
 			}
 			if (this.summoner != null && this.ticksExisted > this.growTime) {
-				RayTraceResult rtr = this.summoner instanceof EntityPlayer 
-				  ? ProcedureUtils.objectEntityLookingAt(this.summoner, 20d)
-				  : this.summoner instanceof EntityLiving && ((EntityLiving)this.summoner).getAttackTarget() != null 
-				  ? new RayTraceResult(((EntityLiving)this.summoner).getAttackTarget()) : null;
-				if (!flag && rtr != null && rtr.entityHit instanceof EntityLivingBase && this.ticksExisted % 6 == 0) {
-					this.launchAtTarget((EntityLivingBase)rtr.entityHit);
+				boolean flag2 = this.summoner instanceof EntityLiving && ((EntityLiving)this.summoner).getAttackTarget() != null;
+				if (flag2 || (this.summoner instanceof EntityPlayer && this.summoner.swingProgressInt == 1)) {
+					this.target = (flag2 ? new RayTraceResult(((EntityLiving)this.summoner).getAttackTarget())
+					 : ProcedureUtils.objectEntityLookingAt(this.summoner, 20d, 1d, this)).entityHit;
+					this.attackTime = 0;
 				}
-				if (this.summoner.swingProgressInt == 1) {
-					if (rtr.entityHit instanceof EntityLivingBase) {
-						double d = rtr.entityHit.getDistance(this.summoner);
-						if (d <= 5) {
-							float damage = flag 
-							 ? (float)ProcedureUtils.getModifiedAttackDamage(this.summoner) * this.damageMultiplier() * 1.3f
-							 : (25f * this.damageMultiplier());
-							EntityLightningArc.onStruck(rtr.entityHit,
-							 ItemJutsu.causeJutsuDamage(this, this.summoner), damage * this.getCooledAttackStrength());
-						}
+				if (this.target instanceof EntityLivingBase && this.attackTime < 12) {
+					this.summoner.rotationYaw = ProcedureUtils.getYawFromVec(this.target.getPositionVector()
+					 .subtract(this.summoner.getPositionVector()));
+					if (!flag && this.attackTime % 6 == 0) {
+						this.launchAtTarget((EntityLivingBase)this.target);
 					}
+					if (this.target.getDistanceSq(this.summoner) < 25d) {
+						float damage = flag 
+						 ? (float)ProcedureUtils.getModifiedAttackDamage(this.summoner) * this.damageMultiplier() * 1.3f
+						 : (25f * this.damageMultiplier());
+						EntityLightningArc.onStruck(this.target,
+						 ItemJutsu.causeJutsuDamage(this, this.summoner), damage * this.getCooledAttackStrength());
+						this.target = null;
+					}
+				}
+				if (this.attackTime == 20) {
 					this.ticksSinceLastSwing = 0;
 				}
 			}
@@ -205,6 +211,7 @@ public class EntityChidori extends ElementsNarutomodMod.ModElement {
 				this.setDead();
 			}
 			++this.ticksSinceLastSwing;
+			++this.attackTime;
 		}
 
 		private void launchAtTarget(EntityLivingBase target) {
@@ -214,7 +221,8 @@ public class EntityChidori extends ElementsNarutomodMod.ModElement {
 			double d0 = target.posX - this.summoner.posX;
 			double d1 = target.posY - this.summoner.posY;
 			double d2 = target.posZ - this.summoner.posZ;
-			ProcedureUtils.setVelocity(this.summoner, d0 * 0.4, d1 * 0.4, d2 * 0.4);
+			double d3 = MathHelper.sqrt(d0 * d0 + d2 * d2);
+			ProcedureUtils.setVelocity(this.summoner, d0 * 0.4, d1 * 0.4 + d3 * 0.02d, d2 * 0.4);
 		}
 
 		protected void setPositionToSummoner() {

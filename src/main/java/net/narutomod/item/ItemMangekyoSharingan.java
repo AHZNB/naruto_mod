@@ -42,7 +42,7 @@ public class ItemMangekyoSharingan extends ElementsNarutomodMod.ModElement {
 		ItemStack stack = entity.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
 		return stack.getItem() == helmet || stack.getItem() == ItemMangekyoSharinganEternal.helmet
 		 ? ((ItemDojutsu.Base)helmet).isOwner(stack, entity) ? AMATERASU_CHAKRA_USAGE 
-		 : AMATERASU_CHAKRA_USAGE * 2 : (Double.MAX_VALUE * 0.001d);
+		 : AMATERASU_CHAKRA_USAGE * 3 : (Double.MAX_VALUE * 0.001d);
 	}
 
 	public void initElements() {

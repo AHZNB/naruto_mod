@@ -13,7 +13,9 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.potion.PotionEffect;
 import net.minecraft.item.ItemStack;
+import net.minecraft.init.MobEffects;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
@@ -147,7 +149,7 @@ public class ProcedureKamuiJikukanIdo extends ElementsNarutomodMod.ModElement {
 					f2 = (boolean) (t.entityHit != null);
 					if ((f2)) {
 						i = t.entityHit.getEntityBoundingBox().getAverageEdgeLength();
-						i = (double) ((timer) / (((distance) * (i)) * (2.01 - (PlayerTracker.getNinjaLevel((EntityPlayer) entity) / 300.1))));
+						i = (double) ((timer) / (((distance) * (i)) * (2.01 - (PlayerTracker.getNinjaLevel((EntityPlayer) entity) / 500.1))));
 						if (((!(f3)) && ((i) <= 0.99999))) {
 							if (((i) > 0)) {
 								i = (double) ((i)
@@ -160,6 +162,14 @@ public class ProcedureKamuiJikukanIdo extends ElementsNarutomodMod.ModElement {
 						} else {
 							ProcedureKamuiTeleportEntity.eEntity(t.entityHit, x, z, dimid);
 						}
+					}
+					if ((!(f3))) {
+						if (entity instanceof EntityLivingBase)
+							((EntityLivingBase) entity)
+									.addPotionEffect(new PotionEffect(MobEffects.NAUSEA, (int) ((timer) * 6), (int) 1, (false), (false)));
+						if (entity instanceof EntityLivingBase)
+							((EntityLivingBase) entity)
+									.addPotionEffect(new PotionEffect(MobEffects.SLOWNESS, (int) ((timer) * 6), (int) 2, (false), (false)));
 					}
 					timer = (double) 0;
 				}

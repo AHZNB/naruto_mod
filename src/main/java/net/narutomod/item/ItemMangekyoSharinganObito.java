@@ -33,7 +33,7 @@ public class ItemMangekyoSharinganObito extends ElementsNarutomodMod.ModElement 
 	@ObjectHolder("narutomod:mangekyosharinganobitohelmet")
 	public static final Item helmet = null;
 	private static final double INTANGIBLE_CHAKRA_USAGE = 1d; // per tick
-	private static final double TELEPORT_CHAKRA_USAGE = 8d; // per tick
+	private static final double TELEPORT_CHAKRA_USAGE = 10d; // per tick
 	
 	public ItemMangekyoSharinganObito(ElementsNarutomodMod instance) {
 		super(instance, 118);
@@ -43,14 +43,14 @@ public class ItemMangekyoSharinganObito extends ElementsNarutomodMod.ModElement 
 		ItemStack stack = entity.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
 		return stack.getItem() == helmet || stack.getItem() == ItemMangekyoSharinganEternal.helmet 
 		 ? ((ItemDojutsu.Base)helmet).isOwner(stack, entity) ? INTANGIBLE_CHAKRA_USAGE 
-		 : INTANGIBLE_CHAKRA_USAGE * 2 : (Double.MAX_VALUE * 0.001d);
+		 : INTANGIBLE_CHAKRA_USAGE * 3 : (Double.MAX_VALUE * 0.001d);
 	}
 
 	public static double getTeleportChakraUsage(EntityLivingBase entity) {
 		ItemStack stack = entity.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
 		return stack.getItem() == helmet || stack.getItem() == ItemMangekyoSharinganEternal.helmet
 		 ? ((ItemDojutsu.Base)helmet).isOwner(stack, entity) ? TELEPORT_CHAKRA_USAGE 
-		 : TELEPORT_CHAKRA_USAGE * 2 : (Double.MAX_VALUE * 0.001d);
+		 : TELEPORT_CHAKRA_USAGE * 3 : (Double.MAX_VALUE * 0.001d);
 	}
 
 	public void initElements() {
