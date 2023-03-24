@@ -290,7 +290,7 @@ public class EntityBuddha1000 extends ElementsNarutomodMod.ModElement {
 							 .rotateYaw(-this.renderYawOffset * (float)Math.PI / 180f)
 							 .scale((this.rand.nextDouble() * 3d + 1.5d) * this.width)
 							 .addVector(this.posX, this.posY + 0.625d * this.height, this.posZ);
-							EntityArm entity = new EntityArm(this, vec1.x, vec1.y, vec1.z, 250f);
+							EntityArm entity = new EntityArm(this, vec1.x, vec1.y, vec1.z, 100f);
 							entity.shoot(vec.x, vec.y, vec.z, 1.15f, 0f);
 							this.world.spawnEntity(entity);
 						}

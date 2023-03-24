@@ -226,6 +226,10 @@ public class ItemTenseigan extends ElementsNarutomodMod.ModElement {
 		}.setUnlocalizedName("tenseiganlegs").setRegistryName("tenseiganlegs").setCreativeTab(null));
 	}
 
+	public static boolean isWearing(EntityLivingBase player) {
+		return player.getItemStackFromSlot(EntityEquipmentSlot.HEAD).getItem() == helmet;
+	}
+
 	public static boolean canUseChakraMode(ItemStack stack, EntityPlayer player) {
 		return stack.hasTagCompound() && stack.getTagCompound().getDouble("ByakuganCount") >= 5.0d;
 	}

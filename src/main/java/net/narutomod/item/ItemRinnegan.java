@@ -72,44 +72,51 @@ public class ItemRinnegan extends ElementsNarutomodMod.ModElement {
 
 	public static double getShinratenseiChakraUsage(EntityLivingBase entity) {
 		ItemStack stack = entity.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
-		return stack.getItem() instanceof ItemDojutsu.Base ? ((ItemDojutsu.Base)helmet).isOwner(stack, entity) ? SHINRATENSEI_CHAKRA_USAGE 
-		 : SHINRATENSEI_CHAKRA_USAGE * 2 : (Double.MAX_VALUE * 0.001d);
+		return stack.getItem() == helmet || stack.getItem() == ItemTenseigan.helmet
+		 ? ((ItemDojutsu.Base)stack.getItem()).isOwner(stack, entity)
+		  ? SHINRATENSEI_CHAKRA_USAGE : SHINRATENSEI_CHAKRA_USAGE * 2 : (Double.MAX_VALUE * 0.001d);
 	}
 
 	public static double getChibaukutenseiChakraUsage(EntityLivingBase entity) {
 		ItemStack stack = entity.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
-		return stack.getItem() instanceof ItemDojutsu.Base ? ((ItemDojutsu.Base)helmet).isOwner(stack, entity) ? CHIBAKUTENSEI_CHAKRA_USAGE 
-		 : CHIBAKUTENSEI_CHAKRA_USAGE * 2 : (Double.MAX_VALUE * 0.001d);
+		return stack.getItem() == helmet || stack.getItem() == ItemTenseigan.helmet
+		 ? ((ItemDojutsu.Base)stack.getItem()).isOwner(stack, entity)
+		  ? CHIBAKUTENSEI_CHAKRA_USAGE : CHIBAKUTENSEI_CHAKRA_USAGE * 2 : (Double.MAX_VALUE * 0.001d);
 	}
 
 	public static double getNarakaPathChakraUsage(EntityLivingBase entity) {
 		ItemStack stack = entity.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
-		return stack.getItem() instanceof ItemDojutsu.Base ? ((ItemDojutsu.Base)helmet).isOwner(stack, entity) ? NARAKAPATH_CHAKRA_USAGE 
-		 : NARAKAPATH_CHAKRA_USAGE * 2 : (Double.MAX_VALUE * 0.001d);
+		return stack.getItem() == helmet || stack.getItem() == ItemTenseigan.helmet
+		 ? ((ItemDojutsu.Base)stack.getItem()).isOwner(stack, entity)
+		  ? NARAKAPATH_CHAKRA_USAGE : NARAKAPATH_CHAKRA_USAGE * 2 : (Double.MAX_VALUE * 0.001d);
 	}
 
 	public static double getPretaPathChakraUsage(EntityLivingBase entity) {
 		ItemStack stack = entity.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
-		return stack.getItem() instanceof ItemDojutsu.Base ? ((ItemDojutsu.Base)helmet).isOwner(stack, entity) ? PRETAPATH_CHAKRA_USAGE 
-		 : PRETAPATH_CHAKRA_USAGE * 2 : (Double.MAX_VALUE * 0.001d);
+		return stack.getItem() == helmet || stack.getItem() == ItemTenseigan.helmet
+		 ? ((ItemDojutsu.Base)stack.getItem()).isOwner(stack, entity)
+		  ? PRETAPATH_CHAKRA_USAGE : PRETAPATH_CHAKRA_USAGE * 2 : (Double.MAX_VALUE * 0.001d);
 	}
 
 	public static double getAnimalPathChakraUsage(EntityLivingBase entity) {
 		ItemStack stack = entity.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
-		return stack.getItem() instanceof ItemDojutsu.Base ? ((ItemDojutsu.Base)helmet).isOwner(stack, entity) ? ANIMALPATH_CHAKRA_USAGE 
-		 : ANIMALPATH_CHAKRA_USAGE * 2 : (Double.MAX_VALUE * 0.001d);
+		return stack.getItem() == helmet || stack.getItem() == ItemTenseigan.helmet
+		 ? ((ItemDojutsu.Base)stack.getItem()).isOwner(stack, entity)
+		  ? ANIMALPATH_CHAKRA_USAGE : ANIMALPATH_CHAKRA_USAGE * 2 : (Double.MAX_VALUE * 0.001d);
 	}
 
 	public static double getOuterPathChakraUsage(EntityLivingBase entity) {
 		ItemStack stack = entity.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
-		return stack.getItem() instanceof ItemDojutsu.Base ? ((ItemDojutsu.Base)helmet).isOwner(stack, entity) ? OUTERPATH_CHAKRA_USAGE 
-		 : OUTERPATH_CHAKRA_USAGE * 2 : (Double.MAX_VALUE * 0.001d);
+		return stack.getItem() == helmet || stack.getItem() == ItemTenseigan.helmet
+		 ? ((ItemDojutsu.Base)stack.getItem()).isOwner(stack, entity)
+		  ? OUTERPATH_CHAKRA_USAGE : OUTERPATH_CHAKRA_USAGE * 2 : (Double.MAX_VALUE * 0.001d);
 	}
 
 	public static double getTengaishinseiChakraUsage(EntityLivingBase entity) {
 		ItemStack stack = entity.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
-		return stack.getItem() instanceof ItemDojutsu.Base ? ((ItemDojutsu.Base)helmet).isOwner(stack, entity) ? TENGAISHINSEI_CHAKRA_USAGE 
-		 : TENGAISHINSEI_CHAKRA_USAGE * 2 : (Double.MAX_VALUE * 0.001d);
+		return stack.getItem() == helmet || stack.getItem() == ItemTenseigan.helmet
+		 ? ((ItemDojutsu.Base)stack.getItem()).isOwner(stack, entity)
+		  ? TENGAISHINSEI_CHAKRA_USAGE : TENGAISHINSEI_CHAKRA_USAGE * 2 : (Double.MAX_VALUE * 0.001d);
 	}
 
 	public void initElements() {
