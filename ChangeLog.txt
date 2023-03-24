@@ -59,6 +59,7 @@ Jutsus:
  - hell swamp jutsu mud blocks now reverts back to original blocks after 30 seconds
  - limit hell swamp jutsu to 30 max
  - limit explosion release land mine fist to 10 max
+ - decrease shinsu senju damage by 50% and increase chakra usage by 50%
 
 Items:
  - cleaver sword now takes damage when used, attack speed and damage decrease, recipe changed

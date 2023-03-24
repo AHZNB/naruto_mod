@@ -145,7 +145,7 @@ public class ItemSenjutsu extends ElementsNarutomodMod.ModElement {
 			}
 			return Math.min(f, 100.0f);
 		}
-		
+
 		@Override
 		protected float getPower(ItemStack stack, EntityLivingBase entity, int timeLeft) {
 			ItemJutsu.JutsuEnum jutsu = this.getCurrentJutsu(stack);
