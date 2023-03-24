@@ -290,7 +290,7 @@ public class EntityBuddha1000 extends ElementsNarutomodMod.ModElement {
 							 .rotateYaw(-this.renderYawOffset * (float)Math.PI / 180f)
 							 .scale((this.rand.nextDouble() * 3d + 1.5d) * this.width)
 							 .addVector(this.posX, this.posY + 0.625d * this.height, this.posZ);
-							EntityArm entity = new EntityArm(this, vec1.x, vec1.y, vec1.z, 50f);
+							EntityArm entity = new EntityArm(this, vec1.x, vec1.y, vec1.z, 250f);
 							entity.shoot(vec.x, vec.y, vec.z, 1.15f, 0f);
 							this.world.spawnEntity(entity);
 						}
@@ -299,7 +299,7 @@ public class EntityBuddha1000 extends ElementsNarutomodMod.ModElement {
 						Vec3d vec1 = this.getLookVec().scale(this.width)
 						 .addVector(this.posX, this.posY + 0.625d * this.height, this.posZ);
 						Vec3d vec = res.hitVec.subtract(vec1);
-						EntityArm entity = new EntityArm(this, vec1.x, vec1.y, vec1.z, 250f);
+						EntityArm entity = new EntityArm(this, vec1.x, vec1.y, vec1.z, 500f);
 						entity.shoot(vec.x, vec.y, vec.z, 1.2f, 0f);
 						this.world.spawnEntity(entity);
 						entity.setGrow(false);
@@ -347,7 +347,7 @@ public class EntityBuddha1000 extends ElementsNarutomodMod.ModElement {
 					entity.world.playSound(null, entity.posX, entity.posY, entity.posZ, 
 					 SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:shinsusenju")),
 					 SoundCategory.PLAYERS, 5f, 1f);
-					entity.world.spawnEntity(new EC(entity, ItemSenjutsu.WOODBUDDHA.chakraUsage * 0.04d *
+					entity.world.spawnEntity(new EC(entity, ItemSenjutsu.WOODBUDDHA.chakraUsage * 0.02d *
 					 ((ItemSenjutsu.RangedItem)stack.getItem()).getCurrentJutsuXpModifier(stack, entity)));
 					return true;
 				} else if (((EC)entity.getRidingEntity()).isSitting()) {

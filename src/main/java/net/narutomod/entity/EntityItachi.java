@@ -123,6 +123,7 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 		private final double AMATERASU_CHAKRA = 50d;
 		private final double SUSANOO_CHAKRA = 300d;
 		private final double INVIS_CHAKRA = 20d;
+		private static final int GENJUTSU_COOLDOWN = 5 * 20; // 10 seconds
 		private boolean isReal;
 		private int lookedAtTime;
 		private final int genjutsuDuration = 200;
@@ -294,7 +295,7 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 			super.updateAITasks();
 			EntityLivingBase target = this.getAttackTarget();
 			if (target != null && target.isEntityAlive()) {
-				if (this.lookedAtTime >= 5 && this.ticksExisted > this.lastGenjutsuTime + this.genjutsuDuration 
+				if (this.lookedAtTime >= 5 && this.ticksExisted > this.lastGenjutsuTime + this.genjutsuDuration + GENJUTSU_COOLDOWN
 				 && this.consumeChakra(GENJUTSU_CHAKRA)) {
 					if (target instanceof EntityPlayerMP) {
 						ProcedureSync.MobAppearanceParticle.send((EntityPlayerMP)target, ENTITYID_RANGED);
