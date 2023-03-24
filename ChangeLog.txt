@@ -8,9 +8,11 @@ Jutsus:
  - limit bug sphere to max 10, reduce chakra absorption rate from target
  - tweaked kamui teleport to use more chakra/time, give nausea effect after use
  - fixed eternal mangekyo intangible not negating damage 
+ - decrease shinsu senju damage by 50% and double chakra usage
  
 Items:
  - fix using /give command to give nature release items duplicates the item
+ - remove enchantability on all dojutsus
 
 Entities:
  - added 5 second cooldown for Itachi's genjutsu

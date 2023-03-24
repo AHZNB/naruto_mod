@@ -97,6 +97,9 @@ public class ItemDojutsu extends ElementsNarutomodMod.ModElement {
 				this.setOwner(stack, (EntityLivingBase)entity);
 				stack.setStackDisplayName(stack.getDisplayName() + " (creative)");
 			}
+			if (stack.hasTagCompound() && stack.getTagCompound().hasKey("ench", 9)) {
+				stack.getTagCompound().removeTag("ench");
+			}
 			super.onUpdate(stack, world, entity, par4, par5);
 		}
 	}

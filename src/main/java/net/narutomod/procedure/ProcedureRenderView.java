@@ -114,7 +114,11 @@ public class ProcedureRenderView extends ElementsNarutomodMod.ModElement {
 	}
 	
 	public static void setFogDensity(Entity entity, float den) {
-		sendToPlayer(entity, 0x7FFFFFFF, -1, den, 0);
+		setFogDensity(entity, den, 0x7FFFFFFF);
+	}
+
+	public static void setFogDensity(Entity entity, float den, int ticks) {
+		sendToPlayer(entity, ticks, -1, den, 0);
 	}
 
 	public static void setFOV(int dimid, double x, double y, double z, double range, int ticks, float fov) {
