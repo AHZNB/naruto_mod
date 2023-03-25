@@ -147,7 +147,7 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 			this.setItemStackToSlot(EntityEquipmentSlot.HEAD, stack);
 			this.setItemToInventory(new ItemStack(ItemKunai.block), 0);
 			this.setItemToInventory(new ItemStack(ItemAkatsukiRobe.helmet), 1);
-			this.setIsReal(this.rand.nextInt(5) == 0);
+			this.setIsReal(this.rand.nextInt(10) == 0);
 			return super.onInitialSpawn(difficulty, livingdata);
 		}
 
@@ -254,13 +254,11 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 				return false;
 			}
 			if (!this.world.isRemote) {
+				boolean ret = true;
 				Entity entity1 = source.getTrueSource();
 				if (this.rand.nextInt(3) <= 1) {
 					this.setPositionAndUpdate(this.posX + (this.rand.nextDouble() - 0.5) * 2, this.posY, this.posZ + (this.rand.nextDouble() - 0.5) * 2);
-					if (entity1 instanceof EntityLivingBase) {
-						this.setRevengeTarget((EntityLivingBase)entity1);
-					}
-					return false;
+					ret = false;
 				} else if (this.isReal && this.getHealth() > 0 && this.getHealth() - amount <= this.getMaxHealth() / 3 
 				 && !this.isRiding() && this.ticksExisted > this.lastSusanooTime + 600 && this.getChakra() >= SUSANOO_CHAKRA) {
 					this.susanooEntity = new EntitySusanooClothed.EntityCustom(this, false);
@@ -270,10 +268,7 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 					this.consumeChakra(SUSANOO_CHAKRA);
 					this.lastSusanooTime = this.ticksExisted;
 					this.susanooEntity.attackEntityFrom(source, amount);
-					if (entity1 instanceof EntityLivingBase) {
-						this.setRevengeTarget((EntityLivingBase)entity1);
-					}
-					return false;
+					ret = false;
 				} else if (this.ticksExisted > this.lastInvisTime + 200 && this.getChakra() >= INVIS_CHAKRA) {
 					this.addPotionEffect(new PotionEffect(MobEffects.INVISIBILITY, 200, 1, false, false));
 					for (int i = 0; i < 100; i++) {
@@ -285,6 +280,13 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 					  this.posZ + (this.rand.nextDouble() - 0.5) * 6);
 					this.consumeChakra(INVIS_CHAKRA);
 					this.lastInvisTime = this.ticksExisted;
+					ret = false;
+				}
+				if (!ret) {
+					if (entity1 instanceof EntityLivingBase) {
+						this.setRevengeTarget((EntityLivingBase)entity1);
+					}
+					return false;
 				}
 			}
 			return super.attackEntityFrom(source, amount);

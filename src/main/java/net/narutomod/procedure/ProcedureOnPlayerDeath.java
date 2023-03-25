@@ -188,31 +188,23 @@ public class ProcedureOnPlayerDeath extends ElementsNarutomodMod.ModElement {
 					EntityBijuManager.toggleBijuCloak((EntityPlayer) entity);
 				}
 				if (entity.world.getGameRules().getBoolean(PlayerTracker.FORCE_DOJUTSU_DROP_RULE)) {
-					if (((entity instanceof EntityPlayer)
-							? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemByakugan.helmet, (int) (1)))
-							: false)) {
-						stack = ProcedureUtils.getMatchingItemStack((EntityPlayer) entity, ItemByakugan.helmet);
+					stack = ProcedureUtils.getMatchingItemStack((EntityPlayer) entity, ItemByakugan.helmet);
+					if (stack != null) {
 						((EntityPlayer) entity).dropItem(stack.copy(), true, true);
 						((stack)).shrink((int) 1);
 					}
-					if (((entity instanceof EntityPlayer)
-							? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemSharingan.helmet, (int) (1)))
-							: false)) {
-						stack = ProcedureUtils.getMatchingItemStack((EntityPlayer) entity, ItemSharingan.helmet);
+					stack = ProcedureUtils.getMatchingItemStack((EntityPlayer) entity, ItemSharingan.helmet);
+					if (stack != null) {
 						((EntityPlayer) entity).dropItem(stack.copy(), true, true);
 						((stack)).shrink((int) 1);
 					}
-					if (((entity instanceof EntityPlayer)
-							? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemMangekyoSharingan.helmet, (int) (1)))
-							: false)) {
-						stack = ProcedureUtils.getMatchingItemStack((EntityPlayer) entity, ItemMangekyoSharingan.helmet);
+					stack = ProcedureUtils.getMatchingItemStack((EntityPlayer) entity, ItemMangekyoSharingan.helmet);
+					if (stack != null) {
 						((EntityPlayer) entity).dropItem(stack.copy(), true, true);
 						((stack)).shrink((int) 1);
 					}
-					if (((entity instanceof EntityPlayer)
-							? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemMangekyoSharinganObito.helmet, (int) (1)))
-							: false)) {
-						stack = ProcedureUtils.getMatchingItemStack((EntityPlayer) entity, ItemMangekyoSharinganObito.helmet);
+					stack = ProcedureUtils.getMatchingItemStack((EntityPlayer) entity, ItemMangekyoSharinganObito.helmet);
+					if (stack != null) {
 						((EntityPlayer) entity).dropItem(stack.copy(), true, true);
 						((stack)).shrink((int) 1);
 					}

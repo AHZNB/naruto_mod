@@ -82,7 +82,7 @@ public class EntityEarthGolem extends ElementsNarutomodMod.ModElement {
 		@Override
 		protected void postScaleFixup() {
 			float f = this.getScale();
-			this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(10.0D * f);
+			this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(20.0D * f);
 			this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(80.0D * f);
 			this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(15.0D * f);
 			this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(10.0D + 6.0D * f);
@@ -143,7 +143,8 @@ public class EntityEarthGolem extends ElementsNarutomodMod.ModElement {
 		public boolean attackEntityAsMob(Entity entityIn) {
 			boolean ret = super.attackEntityAsMob(entityIn);
 			if (ret) {
-				entityIn.motionY += 0.4D;
+				entityIn.motionY += 0.4D * (0.3D + 0.7D * this.getScale());
+				entityIn.velocityChanged = true;
 			}
 			this.playSound(SoundEvents.ENTITY_IRONGOLEM_ATTACK, 1.0F, 1.0F);
 			this.attackTimer = 10;
