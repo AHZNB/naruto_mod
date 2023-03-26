@@ -1,6 +1,7 @@
 
 package net.narutomod.block;
 
+import net.minecraft.entity.EntityLiving;
 import net.narutomod.ElementsNarutomodMod;
 
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -52,6 +53,11 @@ public class BlockKamuiBlock extends ElementsNarutomodMod.ModElement {
 			setLightOpacity(255);
 			setCreativeTab(null);
 			setBlockUnbreakable();
+		}
+
+		@Override
+		public boolean canCreatureSpawn(IBlockState state, IBlockAccess world, BlockPos pos, EntityLiving.SpawnPlacementType type) {
+			return false;
 		}
 
 		@Override
