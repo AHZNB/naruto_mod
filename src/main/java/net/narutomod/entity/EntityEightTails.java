@@ -281,6 +281,8 @@ public class EntityEightTails extends ElementsNarutomodMod.ModElement {
 		private final ModelRenderer bone5;
 		private final ModelRenderer jaw;
 		private final ModelRenderer bone8;
+		private final ModelRenderer dick;
+		private final ModelRenderer dick1;
 		private final ModelRenderer chest;
 		private final ModelRenderer chest_r1;
 		private final ModelRenderer chest_r2;
@@ -689,6 +691,18 @@ public class EntityEightTails extends ElementsNarutomodMod.ModElement {
 			setRotationAngle(bone8, -0.2618F, 0.0F, 0.0F);
 			bone8.cubeList.add(new ModelBox(bone8, 0, 24, -1.0F, 1.3033F, -5.3618F, 2, 2, 2, 0.0F, false));
 	
+			dick = new ModelRenderer(this);
+			dick.setRotationPoint(-1.0F, -1.6F, -3.8F);
+			bipedBody.addChild(dick);
+			setRotationAngle(dick, 0.5236F, 0.0F, 0.0F);
+			dick.cubeList.add(new ModelBox(dick, 0, 59, -2.0F, 0.0F, 0.0F, 6, 2, 2, 0.0F, false));
+	
+			dick1 = new ModelRenderer(this);
+			dick1.setRotationPoint(0.0F, 2.0F, 0.0F);
+			dick.addChild(dick1);
+			setRotationAngle(dick1, 1.0908F, 0.0F, 0.0F);
+			dick1.cubeList.add(new ModelBox(dick1, 0, 59, -2.0F, 0.0F, 0.0F, 6, 2, 2, 0.0F, false));
+
 			chest = new ModelRenderer(this);
 			chest.setRotationPoint(1.0F, -12.5F, 4.0F);
 			bipedBody.addChild(chest);

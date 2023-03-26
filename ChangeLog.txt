@@ -8,19 +8,24 @@ Jutsus:
  - limit bug sphere to max 10, reduce chakra absorption rate from target
  - tweaked kamui teleport to use more chakra/time, give nausea effect after use
  - fixed eternal mangekyo intangible not negating damage 
- - decrease shinsu senju damage by 50% and double chakra usage
+ - fixed water jutsus leaving water blocks in the world
  
 Items:
  - fix using /give command to give nature release items duplicates the item
  - remove enchantability on all dojutsus
+ - add config to force remove rinnegan/tenseigan/ems if obtained without prerequisite achievements
+ - medical scroll to combine dojutsus now require the appropriate achievements to combine
+ - fixed forceDojutsuDropOnDeath not dropping mangekyos
 
 Entities:
  - added 5 second cooldown for Itachi's genjutsu
+ - lowered chances of Itachi dropping mangekyo
 
 General:
  - Added a config
  - moved gamerule spawnTailedBeasts to config
  - added a config option for players being able to spawn as jinchuriki
+ - killing a gedo mazo that has bijus sealed in itself will release the bijus
 
 0.2.11-beta ===============================================================================
 

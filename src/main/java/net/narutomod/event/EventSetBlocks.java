@@ -1,17 +1,20 @@
 package net.narutomod.event;
 
+import net.narutomod.block.BlockMud;
+
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
 import net.minecraft.world.gen.structure.template.Template;
+import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.block.Block;
+import net.minecraft.block.SoundType;
+import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.block.SoundType;
-import net.minecraft.world.WorldServer;
-import net.minecraft.util.EnumParticleTypes;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Lists;
@@ -100,10 +103,12 @@ public class EventSetBlocks extends SpecialEvent {
 				j = 0;
 				for (int i = this.removeIndex; i < this.blocksList.size() && j < 64; i++) {
 					Template.BlockInfo blockinfo = this.blocksList.get(i);
-					BlockPos pos = blockinfo.pos;
-					//if (!this.world.isAirBlock(pos)) {
-					if (this.world.getBlockState(pos).getBlock() == blockinfo.blockState.getBlock()) {
-						this.onRemoveBlock(pos);
+					IBlockState state = this.world.getBlockState(blockinfo.pos);
+					if (state.getBlock() == blockinfo.blockState.getBlock()
+					 || state.getMaterial() == Material.WATER && blockinfo.blockState.getMaterial() == Material.WATER
+					 || state.getMaterial() == Material.LAVA && blockinfo.blockState.getMaterial() == Material.LAVA
+					 || state.getMaterial() == BlockMud.MUD && blockinfo.blockState.getMaterial() == BlockMud.MUD) {
+						this.onRemoveBlock(blockinfo.pos);
 					}
 					++this.removeIndex;
 					++j;
@@ -134,12 +139,11 @@ public class EventSetBlocks extends SpecialEvent {
 	public void onRemoveBlock(BlockPos pos) {
 		Template.BlockInfo blockinfo = this.blocksList.get(this.removeIndex);
 		if (blockinfo.tileentityData != null && blockinfo.tileentityData.hasKey("ogstate")) {
-			IBlockState ogstate = Block.getStateById(blockinfo.tileentityData.getInteger("ogstate"));
-			this.world.setBlockState(pos, ogstate, 2);
-System.out.println(">>>>>> og block: "+ogstate);
+			this.world.setBlockState(pos, Block.getStateById(blockinfo.tileentityData.getInteger("ogstate")), 2);
+//System.out.println(">>>>>> og block: "+ogstate);
 		} else {
 			this.world.setBlockToAir(pos);
-System.out.println("====== no og block saved");
+//System.out.println("====== no og block saved");
 		}
 	}
 
