@@ -8,7 +8,6 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
@@ -168,7 +167,8 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 					entity.addPotionEffect(new PotionEffect(MobEffects.RESISTANCE, 12, this.resistance, false, false));
 					entity.addPotionEffect(new PotionEffect(MobEffects.SPEED, 12, this.speed, false, false));
 					if (entity.getHealth() > 0 && (!(entity instanceof EntityPlayer) || !((EntityPlayer) entity).isCreative())) {
-						entity.setHealth(entity.getHealth() - this.damage);
+						//entity.setHealth(entity.getHealth() - this.damage);
+						entity.attackEntityFrom(ProcedureUtils.SPECIAL_DAMAGE, this.damage);
 					}
 				}
 				if (this.canFly && entity instanceof EntityPlayer && !((EntityPlayer) entity).capabilities.allowFlying) {
@@ -179,6 +179,9 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 		}
 
 		public void deActivate(EntityLivingBase entity) {
+			if (!entity.world.isRemote && entity instanceof EntityPlayer) {
+				PlayerRender.setColorMultiplier((EntityPlayer)entity, 0);
+			}
 			if (!entity.world.isRemote && this.gate > 1 && (!(entity instanceof EntityPlayer) || !((EntityPlayer) entity).isCreative())) {
 				if (this.gate == 8) {
 					//PlayerRender.setColorMultiplier((EntityPlayer)entity, 0xB0000000);
@@ -195,9 +198,6 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 				if (entity.getHealth() > entity.getMaxHealth()) {
 					entity.setHealth(entity.getMaxHealth());
 				}
-			}
-			if (!entity.world.isRemote && entity instanceof EntityPlayer) {
-				PlayerRender.setColorMultiplier((EntityPlayer)entity, 0);
 			}
 		}
 	}
@@ -436,11 +436,10 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 				}
 			}
 
-			@SubscribeEvent(priority = EventPriority.LOW)
+			@SubscribeEvent
 			public void onDeath(LivingDeathEvent event) {
-				EntityLivingBase entity = event.getEntityLiving();
-				ItemEightGates.closeGates(entity);
-				ProcedureUtils.clearDeathAnimations(entity);
+				ItemEightGates.closeGates(event.getEntityLiving());
+				//ProcedureUtils.clearDeathAnimations(entity);
 			}
 		}
 

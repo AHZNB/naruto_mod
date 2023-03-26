@@ -75,12 +75,13 @@ public class ProcedureOuterPath extends ElementsNarutomodMod.ModElement {
 				}
 				EntityLivingBase entityToSpawn = EntityGedoStatue.getThisEntity(world);
 				if (entityToSpawn != null) {
-					if (entityToSpawn instanceof EntityLivingBase)
-						((EntityLivingBase) entityToSpawn).setHealth((float) 0);
+					(entityToSpawn).world.removeEntity(entityToSpawn);
 				} else {
 					entityToSpawn = EntityTenTails.getBijuManager().getEntityInWorld(world);
 					if (entityToSpawn != null) {
 						(entityToSpawn).world.removeEntity(entityToSpawn);
+					} else if ((isJinchuriki)) {
+						return;
 					} else if (Chakra.pathway((EntityLivingBase) entity).consume(ItemRinnegan.getOuterPathChakraUsage((EntityLivingBase) entity))) {
 						entityToSpawn = EntityTenTails.getBijuManager().getHasLived()
 								? new EntityTenTails.EntityCustom((EntityPlayer) entity)

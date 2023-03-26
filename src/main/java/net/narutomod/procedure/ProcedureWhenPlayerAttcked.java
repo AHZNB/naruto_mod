@@ -85,10 +85,14 @@ public class ProcedureWhenPlayerAttcked extends ElementsNarutomodMod.ModElement 
 			 && ItemJutsu.isDamageSourceNinjutsu(evt.getSource())) {
 				evt.setCanceled(true);
 			}
-			if (entity.getRidingEntity() instanceof EntitySusanooBase 
-			 || entity.getRidingEntity() instanceof EntityShieldBase
-			 || entity.getRidingEntity() instanceof EntityTailedBeast.Base
-			 || entity.getRidingEntity() instanceof EntityKingOfHell.EntityCustom) {
+			if ((entity.getRidingEntity() instanceof EntitySusanooBase 
+			  || entity.getRidingEntity() instanceof EntityShieldBase
+			  || entity.getRidingEntity() instanceof EntityTailedBeast.Base)
+			 && evt.getSource() != ProcedureUtils.SPECIAL_DAMAGE) {
+				evt.setCanceled(true);
+				entity.getRidingEntity().attackEntityFrom(evt.getSource(), evt.getAmount());
+			}
+			if (entity.getRidingEntity() instanceof EntityKingOfHell.EntityCustom) {
 				evt.setCanceled(true);
 				entity.getRidingEntity().attackEntityFrom(evt.getSource(), evt.getAmount());
 			}

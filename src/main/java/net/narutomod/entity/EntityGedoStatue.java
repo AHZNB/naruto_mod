@@ -148,6 +148,7 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 		private final Vec3d standPos = new Vec3d(0.0d, 30.35d, 3.0d);
 		private EntityLivingBase fuuinTarget;
 		private EntityPlayer ogJinchuriki;
+		private int evolveTime = Integer.MAX_VALUE;
 
 		public EntityCustom(World world) {
 			super(world);
@@ -199,7 +200,7 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 		private void setSealedAll9Bijus(boolean set) {
 			this.getDataManager().set(SEALED9, Boolean.valueOf(set));
 			if (set) {
-				this.lifeSpan = this.getAge() + 1200;
+				this.evolveTime = this.lifeSpan = this.getAge() + 1200;
 			}
 		}
 
@@ -238,7 +239,7 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 			this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(100D);
 			this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(24.0D);
 			this.getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(1.0D);
-			this.getEntityAttribute(EntityPlayer.REACH_DISTANCE).setBaseValue(28.0D);
+			this.getEntityAttribute(EntityPlayer.REACH_DISTANCE).setBaseValue(24.0D);
 		}
 
 		@Override
@@ -254,7 +255,7 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 					}
 				} else {
 					EntityLivingBase summoner = this.getSummoner();
-					if (this.sealedAll9Bijus() && summoner instanceof EntityPlayer) {
+					if (this.sealedAll9Bijus() && this.getAge() > this.evolveTime && summoner instanceof EntityPlayer) {
 						EntityTenTails.EntityCustom entity = new EntityTenTails.EntityCustom((EntityPlayer)summoner);
 						entity.rotationYawHead = this.rotationYaw;
 						entity.setLocationAndAngles(this.posX, this.posY, this.posZ, entity.rotationYawHead, 0f);
@@ -426,6 +427,34 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 				if (entity instanceof EntityPlayer) {
 					((EntityPlayer)entity).sendStatusMessage(new TextComponentString(String.format("%.1f", progress*100)+"%"), true);
 				}
+			}
+		}
+
+		@Override
+		public void travel(float ti, float tj, float tk) {
+			if (!this.isSitting() && this.isBeingRidden()) {
+				Entity entity = this.getControllingPassenger();
+				this.rotationYaw = entity.rotationYaw;
+				this.prevRotationYaw = this.rotationYaw;
+				//this.rotationPitch = entity.rotationPitch;
+				this.setRotation(this.rotationYaw, this.rotationPitch);
+				this.jumpMovementFactor = this.getAIMoveSpeed();
+				this.renderYawOffset = entity.rotationYaw;
+				this.rotationYawHead = entity.rotationYaw;
+				this.stepHeight = this.height / 3.0F;
+				if (entity instanceof EntityLivingBase) {
+					EntityLivingBase living = (EntityLivingBase)entity;
+					this.swingProgress = living.swingProgress;
+					this.swingProgressInt = living.swingProgressInt;
+					this.prevSwingProgress = living.prevSwingProgress;
+					this.isSwingInProgress = living.isSwingInProgress;
+					this.swingingHand = living.swingingHand;
+					this.setAIMoveSpeed((float)this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).getAttributeValue() * 0.6f);
+					super.travel(living.moveStrafing, 0.0F, living.moveForward);
+				}
+			} else {
+				this.jumpMovementFactor = 0.02F;
+				super.travel(ti, tj, tk);
 			}
 		}
 
@@ -1395,6 +1424,8 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 			public void setRotationAngles(float f, float f1, float f2, float f3, float f4, float f5, Entity e) {
 				f = f * 2.0F / e.height;
 				super.setRotationAngles(f, f1, f2, f3, f4, f5, e);
+				bipedRightLeg.rotationPointZ = 0.0F;
+				bipedLeftLeg.rotationPointZ = 0.0F;
 				this.poseSit(((EntityCustom)e).isSitting());
 			}
 	

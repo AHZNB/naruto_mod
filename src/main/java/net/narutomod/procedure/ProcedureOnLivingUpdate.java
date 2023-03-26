@@ -9,6 +9,8 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.common.MinecraftForge;
@@ -150,7 +152,7 @@ public class ProcedureOnLivingUpdate extends ElementsNarutomodMod.ModElement {
 			if (d <= 0.0D) {
 				ProcedureUtils.clearDeathAnimations(entity);
 				if (entity instanceof EntityPlayer) {
-					entity.attackEntityFrom(DamageSource.WITHER.setDamageIsAbsolute(), Float.MAX_VALUE);
+					entity.attackEntityFrom(ProcedureUtils.SPECIAL_DAMAGE, Float.MAX_VALUE);
 				} else {
 					entity.setDead();
 				}
@@ -219,5 +221,10 @@ public class ProcedureOnLivingUpdate extends ElementsNarutomodMod.ModElement {
 				model.rightArmPose = ModelBiped.ArmPose.BOW_AND_ARROW;
 			}
 		}
+	}
+
+	@SubscribeEvent(priority = EventPriority.LOW)
+	public void onDeath(LivingDeathEvent event) {
+		ProcedureUtils.clearDeathAnimations(event.getEntityLiving());
 	}
 }

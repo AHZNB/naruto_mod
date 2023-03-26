@@ -55,6 +55,7 @@ import net.narutomod.item.ItemMangekyoSharinganEternal;
 import net.narutomod.item.ItemMangekyoSharingan;
 import net.narutomod.item.ItemJutsu;
 import net.narutomod.PlayerTracker;
+import net.narutomod.PlayerRender;
 import net.narutomod.Particles;
 import net.narutomod.NarutomodModVariables;
 import net.narutomod.ElementsNarutomodMod;
@@ -80,6 +81,7 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 	public static final IAttribute MAXHEALTH = (new RangedAttribute(null, "modded.maxHealth", 20.0D, Float.MIN_VALUE, 1048576.0D)).setDescription("Max Modded Health").setShouldWatch(true);
 	private static final Random RNG = new Random();
 	public static final DamageSource AMATERASU = new DamageSource(ItemJutsu.NINJUTSU_TYPE).setFireDamage();
+	public static final DamageSource SPECIAL_DAMAGE = DamageSource.WITHER.setDamageIsAbsolute();
 	
 	public ProcedureUtils(ElementsNarutomodMod instance) {
 		super(instance, 177);
@@ -832,14 +834,18 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 		if (entity.getEntityData().getDouble(NarutomodModVariables.DeathAnimationTime) <= 0.0D) {
 			entity.getEntityData().setDouble("deathAnimationType", (double) type);
 			entity.getEntityData().setDouble(NarutomodModVariables.DeathAnimationTime, (double) duration);
+			if (type == 2 && entity instanceof EntityPlayer) {
+				PlayerRender.setColorMultiplier((EntityPlayer)entity, 0x30000000);
+			}
 		}
 	}
 
 	public static void clearDeathAnimations(EntityLivingBase entity) {
-		if ((int) entity.getEntityData().getDouble("deathAnimationType") > 0) {
-			entity.getEntityData().removeTag("deathAnimationType");
-			entity.getEntityData().removeTag(NarutomodModVariables.DeathAnimationTime);
+		if ((int)entity.getEntityData().getDouble("deathAnimationType") == 2 && entity instanceof EntityPlayer) {
+			PlayerRender.setColorMultiplier((EntityPlayer)entity, 0);
 		}
+		entity.getEntityData().removeTag("deathAnimationType");
+		entity.getEntityData().removeTag(NarutomodModVariables.DeathAnimationTime);
 	}
 
 	public static Field getFieldByIndex(Class clazz, Class matchClazz, int fieldIndex) {

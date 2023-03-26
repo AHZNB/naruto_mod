@@ -21,11 +21,13 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.Block;
+import net.minecraft.entity.EntityLiving;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class BlockKamuiBlock extends ElementsNarutomodMod.ModElement {
 	@GameRegistry.ObjectHolder("narutomod:kamuiblock")
 	public static final Block block = null;
+
 	public BlockKamuiBlock(ElementsNarutomodMod instance) {
 		super(instance, 120);
 	}
