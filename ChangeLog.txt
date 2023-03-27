@@ -11,6 +11,7 @@ Jutsus:
  - fixed water jutsus leaving water blocks in the world
  - susanoo, shield based entities and riding on bijus will no longer protect you from
    damage done to yourself by opening your gates, only king of hell can protect you
+ - fix earth sandwich killing people again after killing them
  
 Items:
  - fix using /give command to give nature release items duplicates the item
