@@ -35,8 +35,8 @@ public class ProcedureExplosiveTagBlockDestroyedByExplosion extends ElementsNaru
 		int z = (int) dependencies.get("z");
 		World world = (World) dependencies.get("world");
 		world.setBlockToAir(new BlockPos((int) x, (int) y, (int) z));
-		if (!world.isRemote) {
-			world.createExplosion(null, (int) x, (int) y, (int) z, (float) 4, true);
+		if ((!(world.isRemote))) {
+			world.createExplosion(null, x, y, z, 4f, world.getGameRules().getBoolean("mobGriefing"));
 		}
 	}
 }

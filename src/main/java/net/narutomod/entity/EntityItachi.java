@@ -416,6 +416,10 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
+	@Override
+	public void preInit(FMLPreInitializationEvent event) {
+		new Renderer().register();
+	}
 
 	public static class Renderer extends EntityRendererRegister {
 		@SideOnly(Side.CLIENT)
@@ -424,9 +428,10 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 			RenderingRegistry.registerEntityRenderingHandler(EntityCustom.class, renderManager ->
 					new RenderCustom(renderManager, new ModelBiped()));
 		}
+
 		@SideOnly(Side.CLIENT)
 		public class RenderCustom extends EntityNinjaMob.RenderBase<EntityCustom> {
-			private final ResourceLocation TEXTURE = new ResourceLocation("narutomod:textures/itachi.png");
+			private final ResourceLocation texture = new ResourceLocation("narutomod:textures/itachi.png");
 
 			public RenderCustom(RenderManager renderManagerIn, ModelBiped modelIn) {
 				super(renderManagerIn, modelIn);
@@ -454,7 +459,7 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 
 			@Override
 			protected ResourceLocation getEntityTexture(EntityCustom entity) {
-				return TEXTURE;
+				return this.texture;
 			}
 		}
 	}

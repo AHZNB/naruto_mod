@@ -529,6 +529,11 @@ public class EntityMightGuy extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
+	@Override
+	public void preInit(FMLPreInitializationEvent event) {
+		new Renderer().register();
+	}
+
 	public static class Renderer extends EntityRendererRegister {
 		@SideOnly(Side.CLIENT)
 		@Override
@@ -559,7 +564,7 @@ public class EntityMightGuy extends ElementsNarutomodMod.ModElement {
 		}
 
 		@SideOnly(Side.CLIENT)
-		public static class ModelMightguy extends ModelBiped {
+		public class ModelMightguy extends ModelBiped {
 			public ModelMightguy() {
 				super(0f, 0f, 64, 64);
 				bipedBody.cubeList.add(new ModelBox(bipedBody, 16, 32, -4.0F, 0.0F, -2.0F, 8, 12, 4, 0.25F, false));

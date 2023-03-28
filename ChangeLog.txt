@@ -19,13 +19,13 @@ Items:
  - add config to force remove rinnegan/tenseigan/ems if obtained without prerequisite achievements
  - medical scroll to combine dojutsus now require the appropriate achievements to combine
  - fixed forceDojutsuDropOnDeath not dropping mangekyos
+ - fixed explosive tags breaking blocks when mobGriefing false
 
 Entities:
  - added 5 second cooldown for Itachi's genjutsu
  - lowered chances of Itachi dropping mangekyo
  - gedomazo can be ridden and controlled by rinnegan/tenseigan users
- - fix itachi, kisame and might guy renderers crashing with ice and fire
- - fix zabuza and haku renderers crashing with ice and fire
+ - fix itachi, kisame, might guy, zabuza and haku renderers crashing with ice and fire
 
 General:
  - Added a config

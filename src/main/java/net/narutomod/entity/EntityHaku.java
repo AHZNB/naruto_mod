@@ -216,6 +216,11 @@ public class EntityHaku extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
+	@Override
+	public void preInit(FMLPreInitializationEvent event) {
+		new Renderer().register();
+	}
+
 	public static class Renderer extends EntityRendererRegister {
 		@SideOnly(Side.CLIENT)
 		@Override
