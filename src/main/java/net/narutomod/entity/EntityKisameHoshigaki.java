@@ -87,26 +87,20 @@ public class EntityKisameHoshigaki extends ElementsNarutomodMod.ModElement {
 	@Override
 	public void initElements() {
 		elements.entities
-		 .add(() -> EntityEntryBuilder.create().entity(EntityCustom.class)
-		 .id(new ResourceLocation("narutomod", "kisame_hoshigaki"), ENTITYID)
-		 .name("kisame_hoshigaki").tracker(64, 3, true).egg(-13421773, -3355444).build());
+				.add(() -> EntityEntryBuilder.create().entity(EntityCustom.class)
+						.id(new ResourceLocation("narutomod", "kisame_hoshigaki"), ENTITYID)
+						.name("kisame_hoshigaki").tracker(64, 3, true).egg(-13421773, -3355444).build());
 	}
 
 	@Override
 	public void init(FMLInitializationEvent event) {
 		EntityRegistry.addSpawn(EntityCustom.class, 5, 1, 1, EnumCreatureType.MONSTER,
-			Biomes.SWAMPLAND, Biomes.FOREST, Biomes.TAIGA, Biomes.RIVER, Biomes.BEACH,
-			Biomes.FOREST_HILLS, Biomes.TAIGA_HILLS, Biomes.JUNGLE, Biomes.JUNGLE_HILLS, Biomes.JUNGLE_EDGE,
-			Biomes.BIRCH_FOREST, Biomes.BIRCH_FOREST_HILLS, Biomes.SAVANNA, Biomes.MUTATED_SWAMPLAND,
-			Biomes.MUTATED_FOREST, Biomes.MUTATED_TAIGA, Biomes.MUTATED_JUNGLE, Biomes.MUTATED_JUNGLE_EDGE,
-			Biomes.MUTATED_BIRCH_FOREST, Biomes.MUTATED_BIRCH_FOREST_HILLS, Biomes.MUTATED_SAVANNA);
+				Biomes.SWAMPLAND, Biomes.FOREST, Biomes.TAIGA, Biomes.RIVER, Biomes.BEACH,
+				Biomes.FOREST_HILLS, Biomes.TAIGA_HILLS, Biomes.JUNGLE, Biomes.JUNGLE_HILLS, Biomes.JUNGLE_EDGE,
+				Biomes.BIRCH_FOREST, Biomes.BIRCH_FOREST_HILLS, Biomes.SAVANNA, Biomes.MUTATED_SWAMPLAND,
+				Biomes.MUTATED_FOREST, Biomes.MUTATED_TAIGA, Biomes.MUTATED_JUNGLE, Biomes.MUTATED_JUNGLE_EDGE,
+				Biomes.MUTATED_BIRCH_FOREST, Biomes.MUTATED_BIRCH_FOREST_HILLS, Biomes.MUTATED_SAVANNA);
 		//DungeonHooks.addDungeonMob(new ResourceLocation("narutomod:kisame_hoshigaki"), 50);
-	}
-
-	@SideOnly(Side.CLIENT)
-	@Override
-	public void preInit(FMLPreInitializationEvent event) {
-		RenderingRegistry.registerEntityRenderingHandler(EntityCustom.class, renderManager -> new RenderCustom(renderManager));
 	}
 
 	public static class EntityCustom extends EntityNinjaMob.Base implements IRangedAttackMob, IMob {
@@ -133,7 +127,7 @@ public class EntityKisameHoshigaki extends ElementsNarutomodMod.ModElement {
 		private static final AttributeModifier FUSED_STRENGTH = new AttributeModifier("kisame.fused.damage", 15f, 0);
 		private static final AttributeModifier FUSED_HEALTH = new AttributeModifier("kisame.fused.health", 100f, 0);
 		private final ItemStack hatStack = new ItemStack(ItemAkatsukiRobe.helmet);
-		
+
 		public EntityCustom(World worldIn) {
 			super(worldIn, 140, 10000d);
 			this.setSize(0.6f, 2.1f);
@@ -193,12 +187,12 @@ public class EntityKisameHoshigaki extends ElementsNarutomodMod.ModElement {
 			super.initEntityAI();
 			//this.targetTasks.addTask(1, new EntityAINearestAttackableTarget(this, EntityPlayer.class, true, false));
 			this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, false));
-			this.targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, EntityPlayer.class, 10, true, false, 
-				new Predicate<EntityPlayer>() {
-					public boolean apply(@Nullable EntityPlayer p_apply_1_) {
-						return p_apply_1_ != null && EntityBijuManager.isJinchuriki(p_apply_1_);
-					}
-				}));
+			this.targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, EntityPlayer.class, 10, true, false,
+					new Predicate<EntityPlayer>() {
+						public boolean apply(@Nullable EntityPlayer p_apply_1_) {
+							return p_apply_1_ != null && EntityBijuManager.isJinchuriki(p_apply_1_);
+						}
+					}));
 			this.tasks.addTask(0, new EntityAISwimming(this) {
 				@Override
 				public boolean shouldExecute() {
@@ -254,21 +248,21 @@ public class EntityKisameHoshigaki extends ElementsNarutomodMod.ModElement {
 				if (this.getHeldItemMainhand().isEmpty()) {
 					this.swapWithInventory(EntityEquipmentSlot.MAINHAND, 0);
 				}
-			 	if (!this.getHeldItemMainhand().isEmpty() && !this.isActiveItemStackBlocking()
-				 && this.ticksExisted > this.lastBlockTime + this.BLOCKING_CD) {
+				if (!this.getHeldItemMainhand().isEmpty() && !this.isActiveItemStackBlocking()
+						&& this.ticksExisted > this.lastBlockTime + this.BLOCKING_CD) {
 					this.setActiveHand(EnumHand.MAIN_HAND);
 					this.activeItemStackUseCount = this.getActiveItemStack().getMaxItemUseDuration() - 5;
 					this.lastBlockTime = this.ticksExisted;
 				}
 			}
 			//if (this.useAltModel() && source.getTrueSource() instanceof EntityLivingBase) {
-				//EntityLivingBase attacker = (EntityLivingBase)source.getTrueSource();
-				//ItemSamehada.applyEffects(attacker, this, 0.5f);
-				//attacker.attackEntityFrom(DamageSource.causeThornsDamage(this), 8f + this.rand.nextFloat() * 2f);
-				//if (!source.isUnblockable() && ProcedureUtils.isEntityInFOV(this, attacker)) {
-				//	amount *= this.rand.nextFloat() * 0.2f;
-				//	this.swingArm(EnumHand.OFF_HAND);
-				//}
+			//EntityLivingBase attacker = (EntityLivingBase)source.getTrueSource();
+			//ItemSamehada.applyEffects(attacker, this, 0.5f);
+			//attacker.attackEntityFrom(DamageSource.causeThornsDamage(this), 8f + this.rand.nextFloat() * 2f);
+			//if (!source.isUnblockable() && ProcedureUtils.isEntityInFOV(this, attacker)) {
+			//	amount *= this.rand.nextFloat() * 0.2f;
+			//	this.swingArm(EnumHand.OFF_HAND);
+			//}
 			//}
 			return super.attackEntityFrom(source, amount);
 		}
@@ -288,7 +282,7 @@ public class EntityKisameHoshigaki extends ElementsNarutomodMod.ModElement {
 				--this.original.clones;
 				this.playSound(SoundEvents.ENTITY_GENERIC_SPLASH, 1f, 1f);
 				new net.narutomod.event.EventSetBlocks(this.world,
-				 ImmutableMap.of(new BlockPos(this).up(), Blocks.WATER.getDefaultState()), 0, 10, false, false);
+						ImmutableMap.of(new BlockPos(this).up(), Blocks.WATER.getDefaultState()), 0, 10, false, false);
 				//this.world.setBlockState(new BlockPos(this).up(), Blocks.WATER.getDefaultState(), 3);
 			}
 		}
@@ -303,23 +297,23 @@ public class EntityKisameHoshigaki extends ElementsNarutomodMod.ModElement {
 			//}
 			if (target != null && target.isEntityAlive()) {
 				if (!this.useAltModel() && !this.isClone() && this.getHealth() < this.getMaxHealth() / 3
-				 && this.consumeChakra(WATERSHOCK_CHAKRA)) {
+						&& this.consumeChakra(WATERSHOCK_CHAKRA)) {
 					this.waterDome = new EntityWaterShockwave.EC.Jutsu().createJutsu(this, 20f);
 					this.setUseAltModel(true);
 					this.setHealth(this.getMaxHealth());
 				}
 				if (this.isClone() && !EntityWaterPrison.isEntityTrapped(target)
-				 && this.ticksExisted > this.prisonLastUsed + WATERPRISON_CD && this.getChakra() >= WATERPRISON_CHAKRA) {
-				 	this.getLookHelper().setLookPositionWithEntity(target, 90f, 30f);
-				 	if (new EntityWaterPrison.EC.Jutsu().createJutsu(this, target, 300) != null) {
-				 		this.swapWithInventory(EntityEquipmentSlot.MAINHAND, 0);
+						&& this.ticksExisted > this.prisonLastUsed + WATERPRISON_CD && this.getChakra() >= WATERPRISON_CHAKRA) {
+					this.getLookHelper().setLookPositionWithEntity(target, 90f, 30f);
+					if (new EntityWaterPrison.EC.Jutsu().createJutsu(this, target, 300) != null) {
+						this.swapWithInventory(EntityEquipmentSlot.MAINHAND, 0);
 						this.consumeChakra(WATERPRISON_CHAKRA);
 						this.prisonLastUsed = this.ticksExisted;
 					}
 				}
 				if (!this.useAltModel() && !this.isClone() && this.clones < 2
-				 && this.ticksExisted > this.cloneLastUsed + WATERCLONE_CD && this.consumeChakra(WATERCLONE_CHAKRA)) {
-				 	this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:kagebunshin")), 1f, 1f);
+						&& this.ticksExisted > this.cloneLastUsed + WATERCLONE_CD && this.consumeChakra(WATERCLONE_CHAKRA)) {
+					this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:kagebunshin")), 1f, 1f);
 					this.world.spawnEntity(new EntityCustom(this));
 					this.cloneLastUsed = this.ticksExisted;
 				}
@@ -368,12 +362,12 @@ public class EntityKisameHoshigaki extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
-	    protected void blockUsingShield(EntityLivingBase attacker) {
-	        super.blockUsingShield(attacker);
-	        if (!this.isClone() && !(attacker instanceof EntityCustom)) {
- 				attacker.attackEntityFrom(DamageSource.causeThornsDamage(this), 2f + this.rand.nextFloat() * 8f);
-	        }
-	    }
+		protected void blockUsingShield(EntityLivingBase attacker) {
+			super.blockUsingShield(attacker);
+			if (!this.isClone() && !(attacker instanceof EntityCustom)) {
+				attacker.attackEntityFrom(DamageSource.causeThornsDamage(this), 2f + this.rand.nextFloat() * 8f);
+			}
+		}
 
 		//@Override
 		//public boolean canBreatheUnderwater() {
@@ -386,15 +380,15 @@ public class EntityKisameHoshigaki extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
-	    protected float getWaterSlowDown() {
-	    	return this.useAltModel() ? 1.0f : 0.8f;
-	    }
+		protected float getWaterSlowDown() {
+			return this.useAltModel() ? 1.0f : 0.8f;
+		}
 
 		@Override
 		public boolean getCanSpawnHere() {
-			return super.getCanSpawnHere() 
-			 && this.world.getEntitiesWithinAABB(EntityCustom.class, this.getEntityBoundingBox().grow(128.0D)).isEmpty()
-			 && this.rand.nextInt(5) == 0;
+			return super.getCanSpawnHere()
+					&& this.world.getEntitiesWithinAABB(EntityCustom.class, this.getEntityBoundingBox().grow(128.0D)).isEmpty()
+					&& this.rand.nextInt(5) == 0;
 		}
 
 		@Override
@@ -446,131 +440,140 @@ public class EntityKisameHoshigaki extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-	@SideOnly(Side.CLIENT)
-	public class RenderCustom extends EntityNinjaMob.RenderBase<EntityCustom> {
-		private final ResourceLocation MAIN_TEXTURE = new ResourceLocation("narutomod:textures/kisame.png");
-		private final ResourceLocation ALT_TEXTURE = new ResourceLocation("narutomod:textures/kisamefinal.png");
-		private final ModelKisameFused altModel = new ModelKisameFused();
-		private final ModelKisame model;
-
-		public RenderCustom(RenderManager renderManager) {
-			super(renderManager, new ModelKisame());
-			this.model = (ModelKisame)this.mainModel;
+	public static class Renderer extends EntityRendererRegister {
+		@SideOnly(Side.CLIENT)
+		@Override
+		public void register() {
+			RenderingRegistry.registerEntityRenderingHandler(EntityCustom.class, renderManager -> new RenderCustom(renderManager));
 		}
 
-		@Override
-		public void doRender(EntityCustom entity, double x, double y, double z, float entityYaw, float partialTicks) {
-			this.mainModel = entity.useAltModel() ? this.altModel : this.model;
-			super.doRender(entity, x, y, z, entityYaw, partialTicks);
-		}
+		@SideOnly(Side.CLIENT)
+		public class RenderCustom extends EntityNinjaMob.RenderBase<EntityCustom> {
+			private final ResourceLocation MAIN_TEXTURE = new ResourceLocation("narutomod:textures/kisame.png");
+			private final ResourceLocation ALT_TEXTURE = new ResourceLocation("narutomod:textures/kisamefinal.png");
+			private final ModelKisameFused altModel = new ModelKisameFused();
+			private final ModelKisame model;
 
-		@Override
-		protected void renderLayers(EntityCustom entityIn, float f0, float f1, float f2, float f3, float f4, float f5, float f6) {
-			if (!entityIn.useAltModel()) {
-				super.renderLayers(entityIn, f0, f1, f2, f3, f4, f5, f6);
+			public RenderCustom(RenderManager renderManager) {
+				super(renderManager, new ModelKisame());
+				this.model = (ModelKisame)this.mainModel;
+			}
+
+			@Override
+			public void doRender(EntityCustom entity, double x, double y, double z, float entityYaw, float partialTicks) {
+				this.mainModel = entity.useAltModel() ? this.altModel : this.model;
+				super.doRender(entity, x, y, z, entityYaw, partialTicks);
+			}
+
+			@Override
+			protected void renderLayers(EntityCustom entityIn, float f0, float f1, float f2, float f3, float f4, float f5, float f6) {
+				if (!entityIn.useAltModel()) {
+					super.renderLayers(entityIn, f0, f1, f2, f3, f4, f5, f6);
+				}
+			}
+
+			@Override
+			protected void preRenderCallback(EntityCustom entity, float partialTickTime) {
+				GlStateManager.scale(1.0625F, 1.0625F, 1.0625F);
+			}
+
+			@Override
+			protected ResourceLocation getEntityTexture(EntityCustom entity) {
+				return entity.useAltModel() ? ALT_TEXTURE : MAIN_TEXTURE;
 			}
 		}
 
-	    @Override
-		protected void preRenderCallback(EntityCustom entity, float partialTickTime) {
-			GlStateManager.scale(1.0625F, 1.0625F, 1.0625F);
+		// Made with Blockbench 3.7.5
+		// Exported for Minecraft version 1.12
+		// Paste this class into your mod and generate all required imports
+		@SideOnly(Side.CLIENT)
+		public class ModelKisame extends ModelBiped {
+			public ModelKisame() {
+				textureWidth = 64;
+				textureHeight = 64;
+				bipedHead = new ModelRenderer(this);
+				bipedHead.setRotationPoint(0.0F, 0.0F, 0.0F);
+				bipedHead.cubeList.add(new ModelBox(bipedHead, 0, 0, -4.0F, -8.0F, -4.0F, 8, 8, 8, 0.0F, false));
+				bipedHeadwear = new ModelRenderer(this);
+				bipedHeadwear.setRotationPoint(0.0F, 0.0F, 0.0F);
+				bipedHeadwear.cubeList.add(new ModelBox(bipedHeadwear, 32, 0, -4.0F, -8.0F, -4.0F, 8, 8, 8, 0.5F, false));
+				bipedHeadwear.cubeList.add(new ModelBox(bipedHeadwear, 40, 8, -3.0F, -9.25F, -4.75F, 6, 1, 1, -0.2F, false));
+				bipedHeadwear.cubeList.add(new ModelBox(bipedHeadwear, 40, 8, -3.0F, -10.0F, -5.0F, 6, 2, 1, -0.4F, false));
+				bipedHeadwear.cubeList.add(new ModelBox(bipedHeadwear, 40, 8, -3.0F, -10.5F, -5.25F, 6, 2, 1, -0.6F, false));
+				bipedBody = new ModelRenderer(this);
+				bipedBody.setRotationPoint(0.0F, 0.0F, 0.0F);
+				bipedBody.cubeList.add(new ModelBox(bipedBody, 16, 16, -4.0F, 0.0F, -2.0F, 8, 12, 4, 0.0F, false));
+				bipedBody.cubeList.add(new ModelBox(bipedBody, 16, 32, -4.0F, 0.0F, -2.0F, 8, 12, 4, 0.25F, false));
+				bipedRightArm = new ModelRenderer(this);
+				bipedRightArm.setRotationPoint(-5.0F, 2.0F, 0.0F);
+				bipedRightArm.cubeList.add(new ModelBox(bipedRightArm, 40, 16, -3.0F, -2.0F, -2.0F, 4, 12, 4, 0.0F, false));
+				bipedRightArm.cubeList.add(new ModelBox(bipedRightArm, 40, 32, -3.0F, -2.0F, -2.0F, 4, 12, 4, 0.25F, false));
+				bipedLeftArm = new ModelRenderer(this);
+				bipedLeftArm.setRotationPoint(5.0F, 2.0F, 0.0F);
+				bipedLeftArm.cubeList.add(new ModelBox(bipedLeftArm, 32, 48, -1.0F, -2.0F, -2.0F, 4, 12, 4, 0.0F, false));
+				bipedLeftArm.cubeList.add(new ModelBox(bipedLeftArm, 48, 48, -1.0F, -2.0F, -2.0F, 4, 12, 4, 0.25F, false));
+				bipedRightLeg = new ModelRenderer(this);
+				bipedRightLeg.setRotationPoint(-1.9F, 12.0F, 0.0F);
+				bipedRightLeg.cubeList.add(new ModelBox(bipedRightLeg, 0, 16, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.0F, false));
+				bipedRightLeg.cubeList.add(new ModelBox(bipedRightLeg, 0, 32, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.25F, false));
+				bipedLeftLeg = new ModelRenderer(this);
+				bipedLeftLeg.setRotationPoint(1.9F, 12.0F, 0.0F);
+				bipedLeftLeg.cubeList.add(new ModelBox(bipedLeftLeg, 16, 48, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.0F, false));
+				bipedLeftLeg.cubeList.add(new ModelBox(bipedLeftLeg, 0, 48, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.25F, false));
+			}
 		}
 
-		@Override
-		protected ResourceLocation getEntityTexture(EntityCustom entity) {
-			return entity.useAltModel() ? ALT_TEXTURE : MAIN_TEXTURE;
-		}
-	}
+		@SideOnly(Side.CLIENT)
+		public class ModelKisameFused extends ModelBiped {
+			private final ModelRenderer RightFin;
+			private final ModelRenderer LeftFin;
 
-	// Made with Blockbench 3.7.5
-	// Exported for Minecraft version 1.12
-	// Paste this class into your mod and generate all required imports
-	@SideOnly(Side.CLIENT)
-	public class ModelKisame extends ModelBiped {
-		public ModelKisame() {
-			textureWidth = 64;
-			textureHeight = 64;
-			bipedHead = new ModelRenderer(this);
-			bipedHead.setRotationPoint(0.0F, 0.0F, 0.0F);
-			bipedHead.cubeList.add(new ModelBox(bipedHead, 0, 0, -4.0F, -8.0F, -4.0F, 8, 8, 8, 0.0F, false));
-			bipedHeadwear = new ModelRenderer(this);
-			bipedHeadwear.setRotationPoint(0.0F, 0.0F, 0.0F);
-			bipedHeadwear.cubeList.add(new ModelBox(bipedHeadwear, 32, 0, -4.0F, -8.0F, -4.0F, 8, 8, 8, 0.5F, false));
-			bipedHeadwear.cubeList.add(new ModelBox(bipedHeadwear, 40, 8, -3.0F, -9.25F, -4.75F, 6, 1, 1, -0.2F, false));
-			bipedHeadwear.cubeList.add(new ModelBox(bipedHeadwear, 40, 8, -3.0F, -10.0F, -5.0F, 6, 2, 1, -0.4F, false));
-			bipedHeadwear.cubeList.add(new ModelBox(bipedHeadwear, 40, 8, -3.0F, -10.5F, -5.25F, 6, 2, 1, -0.6F, false));
-			bipedBody = new ModelRenderer(this);
-			bipedBody.setRotationPoint(0.0F, 0.0F, 0.0F);
-			bipedBody.cubeList.add(new ModelBox(bipedBody, 16, 16, -4.0F, 0.0F, -2.0F, 8, 12, 4, 0.0F, false));
-			bipedBody.cubeList.add(new ModelBox(bipedBody, 16, 32, -4.0F, 0.0F, -2.0F, 8, 12, 4, 0.25F, false));
-			bipedRightArm = new ModelRenderer(this);
-			bipedRightArm.setRotationPoint(-5.0F, 2.0F, 0.0F);
-			bipedRightArm.cubeList.add(new ModelBox(bipedRightArm, 40, 16, -3.0F, -2.0F, -2.0F, 4, 12, 4, 0.0F, false));
-			bipedRightArm.cubeList.add(new ModelBox(bipedRightArm, 40, 32, -3.0F, -2.0F, -2.0F, 4, 12, 4, 0.25F, false));
-			bipedLeftArm = new ModelRenderer(this);
-			bipedLeftArm.setRotationPoint(5.0F, 2.0F, 0.0F);
-			bipedLeftArm.cubeList.add(new ModelBox(bipedLeftArm, 32, 48, -1.0F, -2.0F, -2.0F, 4, 12, 4, 0.0F, false));
-			bipedLeftArm.cubeList.add(new ModelBox(bipedLeftArm, 48, 48, -1.0F, -2.0F, -2.0F, 4, 12, 4, 0.25F, false));
-			bipedRightLeg = new ModelRenderer(this);
-			bipedRightLeg.setRotationPoint(-1.9F, 12.0F, 0.0F);
-			bipedRightLeg.cubeList.add(new ModelBox(bipedRightLeg, 0, 16, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.0F, false));
-			bipedRightLeg.cubeList.add(new ModelBox(bipedRightLeg, 0, 32, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.25F, false));
-			bipedLeftLeg = new ModelRenderer(this);
-			bipedLeftLeg.setRotationPoint(1.9F, 12.0F, 0.0F);
-			bipedLeftLeg.cubeList.add(new ModelBox(bipedLeftLeg, 16, 48, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.0F, false));
-			bipedLeftLeg.cubeList.add(new ModelBox(bipedLeftLeg, 0, 48, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.25F, false));
-		}
-	}
+			public ModelKisameFused() {
+				textureWidth = 64;
+				textureHeight = 64;
+				bipedHead = new ModelRenderer(this);
+				bipedHead.setRotationPoint(0.0F, 0.0F, 0.0F);
+				bipedHead.cubeList.add(new ModelBox(bipedHead, 0, 0, -4.0F, -8.0F, -4.0F, 8, 8, 8, 0.0F, false));
+				bipedHeadwear = new ModelRenderer(this);
+				bipedHeadwear.setRotationPoint(0.0F, 0.0F, 0.0F);
+				bipedHeadwear.cubeList.add(new ModelBox(bipedHeadwear, 32, 0, -4.0F, -8.0F, -4.0F, 8, 8, 8, 0.5F, false));
+				bipedBody = new ModelRenderer(this);
+				bipedBody.setRotationPoint(0.0F, 0.0F, 0.0F);
+				bipedBody.cubeList.add(new ModelBox(bipedBody, 16, 16, -4.0F, 0.0F, -2.0F, 8, 12, 4, 0.0F, false));
+				bipedBody.cubeList.add(new ModelBox(bipedBody, 16, 32, -4.0F, 0.0F, -2.0F, 8, 12, 4, 0.25F, false));
+				bipedRightArm = new ModelRenderer(this);
+				bipedRightArm.setRotationPoint(-5.0F, 2.0F, 0.0F);
+				bipedRightArm.cubeList.add(new ModelBox(bipedRightArm, 40, 16, -3.0F, -2.0F, -2.0F, 4, 12, 4, 0.0F, false));
+				bipedRightArm.cubeList.add(new ModelBox(bipedRightArm, 40, 32, -3.0F, -2.0F, -2.0F, 4, 12, 4, 0.25F, false));
+				RightFin = new ModelRenderer(this);
+				RightFin.setRotationPoint(-3.0F, 5.0F, 2.0F);
+				bipedRightArm.addChild(RightFin);
+				setRotationAngle(RightFin, 0.0F, -0.7854F, 0.0F);
+				RightFin.cubeList.add(new ModelBox(RightFin, 32, 52, 0.0F, -3.0F, 0.0F, 0, 6, 6, 0.0F, false));
+				bipedLeftArm = new ModelRenderer(this);
+				bipedLeftArm.setRotationPoint(5.0F, 2.0F, 0.0F);
+				bipedLeftArm.cubeList.add(new ModelBox(bipedLeftArm, 40, 16, -1.0F, -2.0F, -2.0F, 4, 12, 4, 0.0F, true));
+				bipedLeftArm.cubeList.add(new ModelBox(bipedLeftArm, 40, 32, -1.0F, -2.0F, -2.0F, 4, 12, 4, 0.25F, true));
+				LeftFin = new ModelRenderer(this);
+				LeftFin.setRotationPoint(3.0F, 5.0F, 2.0F);
+				bipedLeftArm.addChild(LeftFin);
+				setRotationAngle(LeftFin, 0.0F, 0.7854F, 0.0F);
+				LeftFin.cubeList.add(new ModelBox(LeftFin, 32, 52, 0.0F, -3.0F, 0.0F, 0, 6, 6, 0.0F, true));
+				bipedRightLeg = new ModelRenderer(this);
+				bipedRightLeg.setRotationPoint(-1.9F, 12.0F, 0.0F);
+				bipedRightLeg.cubeList.add(new ModelBox(bipedRightLeg, 0, 16, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.0F, false));
+				bipedRightLeg.cubeList.add(new ModelBox(bipedRightLeg, 0, 32, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.25F, false));
+				bipedLeftLeg = new ModelRenderer(this);
+				bipedLeftLeg.setRotationPoint(1.9F, 12.0F, 0.0F);
+				bipedLeftLeg.cubeList.add(new ModelBox(bipedLeftLeg, 16, 48, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.0F, false));
+				bipedLeftLeg.cubeList.add(new ModelBox(bipedLeftLeg, 0, 48, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.25F, false));
+			}
 
-	@SideOnly(Side.CLIENT)
-	public class ModelKisameFused extends ModelBiped {
-		private final ModelRenderer RightFin;
-		private final ModelRenderer LeftFin;
-		public ModelKisameFused() {
-			textureWidth = 64;
-			textureHeight = 64;
-			bipedHead = new ModelRenderer(this);
-			bipedHead.setRotationPoint(0.0F, 0.0F, 0.0F);
-			bipedHead.cubeList.add(new ModelBox(bipedHead, 0, 0, -4.0F, -8.0F, -4.0F, 8, 8, 8, 0.0F, false));
-			bipedHeadwear = new ModelRenderer(this);
-			bipedHeadwear.setRotationPoint(0.0F, 0.0F, 0.0F);
-			bipedHeadwear.cubeList.add(new ModelBox(bipedHeadwear, 32, 0, -4.0F, -8.0F, -4.0F, 8, 8, 8, 0.5F, false));
-			bipedBody = new ModelRenderer(this);
-			bipedBody.setRotationPoint(0.0F, 0.0F, 0.0F);
-			bipedBody.cubeList.add(new ModelBox(bipedBody, 16, 16, -4.0F, 0.0F, -2.0F, 8, 12, 4, 0.0F, false));
-			bipedBody.cubeList.add(new ModelBox(bipedBody, 16, 32, -4.0F, 0.0F, -2.0F, 8, 12, 4, 0.25F, false));
-			bipedRightArm = new ModelRenderer(this);
-			bipedRightArm.setRotationPoint(-5.0F, 2.0F, 0.0F);
-			bipedRightArm.cubeList.add(new ModelBox(bipedRightArm, 40, 16, -3.0F, -2.0F, -2.0F, 4, 12, 4, 0.0F, false));
-			bipedRightArm.cubeList.add(new ModelBox(bipedRightArm, 40, 32, -3.0F, -2.0F, -2.0F, 4, 12, 4, 0.25F, false));
-			RightFin = new ModelRenderer(this);
-			RightFin.setRotationPoint(-3.0F, 5.0F, 2.0F);
-			bipedRightArm.addChild(RightFin);
-			setRotationAngle(RightFin, 0.0F, -0.7854F, 0.0F);
-			RightFin.cubeList.add(new ModelBox(RightFin, 32, 52, 0.0F, -3.0F, 0.0F, 0, 6, 6, 0.0F, false));
-			bipedLeftArm = new ModelRenderer(this);
-			bipedLeftArm.setRotationPoint(5.0F, 2.0F, 0.0F);
-			bipedLeftArm.cubeList.add(new ModelBox(bipedLeftArm, 40, 16, -1.0F, -2.0F, -2.0F, 4, 12, 4, 0.0F, true));
-			bipedLeftArm.cubeList.add(new ModelBox(bipedLeftArm, 40, 32, -1.0F, -2.0F, -2.0F, 4, 12, 4, 0.25F, true));
-			LeftFin = new ModelRenderer(this);
-			LeftFin.setRotationPoint(3.0F, 5.0F, 2.0F);
-			bipedLeftArm.addChild(LeftFin);
-			setRotationAngle(LeftFin, 0.0F, 0.7854F, 0.0F);
-			LeftFin.cubeList.add(new ModelBox(LeftFin, 32, 52, 0.0F, -3.0F, 0.0F, 0, 6, 6, 0.0F, true));
-			bipedRightLeg = new ModelRenderer(this);
-			bipedRightLeg.setRotationPoint(-1.9F, 12.0F, 0.0F);
-			bipedRightLeg.cubeList.add(new ModelBox(bipedRightLeg, 0, 16, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.0F, false));
-			bipedRightLeg.cubeList.add(new ModelBox(bipedRightLeg, 0, 32, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.25F, false));
-			bipedLeftLeg = new ModelRenderer(this);
-			bipedLeftLeg.setRotationPoint(1.9F, 12.0F, 0.0F);
-			bipedLeftLeg.cubeList.add(new ModelBox(bipedLeftLeg, 16, 48, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.0F, false));
-			bipedLeftLeg.cubeList.add(new ModelBox(bipedLeftLeg, 0, 48, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.25F, false));
-		}
-
-		public void setRotationAngle(ModelRenderer modelRenderer, float x, float y, float z) {
-			modelRenderer.rotateAngleX = x;
-			modelRenderer.rotateAngleY = y;
-			modelRenderer.rotateAngleZ = z;
+			public void setRotationAngle(ModelRenderer modelRenderer, float x, float y, float z) {
+				modelRenderer.rotateAngleX = x;
+				modelRenderer.rotateAngleY = y;
+				modelRenderer.rotateAngleZ = z;
+			}
 		}
 	}
 }

@@ -24,6 +24,7 @@ Entities:
  - added 5 second cooldown for Itachi's genjutsu
  - lowered chances of Itachi dropping mangekyo
  - gedomazo can be ridden and controlled by rinnegan/tenseigan users
+ - fix itachi, kisame and might guy renderers crashing with ice and fire
 
 General:
  - Added a config

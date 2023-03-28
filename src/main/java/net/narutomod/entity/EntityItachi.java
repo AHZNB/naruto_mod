@@ -84,37 +84,23 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 	@Override
 	public void initElements() {
 		elements.entities.add(() -> EntityEntryBuilder.create().entity(EntityCustom.class)
-			.id(new ResourceLocation("narutomod", "itachi"), ENTITYID)
-			.name("itachi").tracker(64, 3, true).egg(-16777216, -65485).build());
+				.id(new ResourceLocation("narutomod", "itachi"), ENTITYID)
+				.name("itachi").tracker(64, 3, true).egg(-16777216, -65485).build());
 		elements.entities.add(() -> EntityEntryBuilder.create().entity(Entity4MobAppearance.class)
-			.id(new ResourceLocation("narutomod", "itachi_mob_appearance"), ENTITYID_RANGED)
-			.name("itachi_mob_appearance").tracker(64, 1, true).build());
+				.id(new ResourceLocation("narutomod", "itachi_mob_appearance"), ENTITYID_RANGED)
+				.name("itachi_mob_appearance").tracker(64, 1, true).build());
 	}
 
 	@Override
 	public void init(FMLInitializationEvent event) {
 		EntityRegistry.addSpawn(EntityCustom.class, 5, 1, 1, EnumCreatureType.MONSTER,
-			Biomes.FOREST, Biomes.TAIGA, Biomes.SWAMPLAND, Biomes.RIVER, Biomes.FOREST_HILLS,
-			Biomes.TAIGA_HILLS, Biomes.JUNGLE, Biomes.JUNGLE_HILLS, Biomes.BIRCH_FOREST,
-			Biomes.BIRCH_FOREST_HILLS, Biomes.ROOFED_FOREST, Biomes.SAVANNA, Biomes.EXTREME_HILLS,
-			Biomes.MUTATED_FOREST, Biomes.MUTATED_TAIGA, Biomes.MUTATED_SWAMPLAND, Biomes.MUTATED_JUNGLE,
-			Biomes.MUTATED_JUNGLE_EDGE, Biomes.MUTATED_BIRCH_FOREST, Biomes.MUTATED_BIRCH_FOREST_HILLS,
-			Biomes.MUTATED_ROOFED_FOREST, Biomes.MUTATED_SAVANNA, Biomes.MUTATED_EXTREME_HILLS,
-			Biomes.MUTATED_EXTREME_HILLS_WITH_TREES, Biomes.EXTREME_HILLS_WITH_TREES);
-	}
-
-	@SideOnly(Side.CLIENT)
-	@Override
-	public void preInit(FMLPreInitializationEvent event) {
-		RenderingRegistry.registerEntityRenderingHandler(EntityCustom.class, renderManager ->
-			new RenderCustom(renderManager, new ModelBiped()));
-		/*RenderingRegistry.registerEntityRenderingHandler(EntityArrowCustom.class, renderManager -> {
-			return new RenderSnowball<EntityArrowCustom>(renderManager, null, Minecraft.getMinecraft().getRenderItem()) {
-				public ItemStack getStackToRender(EntityArrowCustom entity) {
-					return new ItemStack(ItemShuriken.block, (int) (1));
-				}
-			};
-		});*/
+				Biomes.FOREST, Biomes.TAIGA, Biomes.SWAMPLAND, Biomes.RIVER, Biomes.FOREST_HILLS,
+				Biomes.TAIGA_HILLS, Biomes.JUNGLE, Biomes.JUNGLE_HILLS, Biomes.BIRCH_FOREST,
+				Biomes.BIRCH_FOREST_HILLS, Biomes.ROOFED_FOREST, Biomes.SAVANNA, Biomes.EXTREME_HILLS,
+				Biomes.MUTATED_FOREST, Biomes.MUTATED_TAIGA, Biomes.MUTATED_SWAMPLAND, Biomes.MUTATED_JUNGLE,
+				Biomes.MUTATED_JUNGLE_EDGE, Biomes.MUTATED_BIRCH_FOREST, Biomes.MUTATED_BIRCH_FOREST_HILLS,
+				Biomes.MUTATED_ROOFED_FOREST, Biomes.MUTATED_SAVANNA, Biomes.MUTATED_EXTREME_HILLS,
+				Biomes.MUTATED_EXTREME_HILLS_WITH_TREES, Biomes.EXTREME_HILLS_WITH_TREES);
 	}
 
 	public static class EntityCustom extends EntityNinjaMob.Base implements IMob, IRangedAttackMob {
@@ -162,29 +148,29 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 			this.tasks.addTask(1, new EntityNinjaMob.AIAttackRangedTactical(this, 1.0D, 50, 16.0F) {
 				@Override
 				public boolean shouldExecute() {
-					return super.shouldExecute() 
-					 && EntityCustom.this.getAttackTarget().getDistance(EntityCustom.this) 
-					 > (EntityCustom.this.isSusanooActive() ? ProcedureUtils.getReachDistance(EntityCustom.this.susanooEntity) : 4d);
+					return super.shouldExecute()
+							&& EntityCustom.this.getAttackTarget().getDistance(EntityCustom.this)
+							> (EntityCustom.this.isSusanooActive() ? ProcedureUtils.getReachDistance(EntityCustom.this.susanooEntity) : 4d);
 				}
 			});
 			this.tasks.addTask(2, new EntityNinjaMob.AILeapAtTarget(this, 1.0F) {
 				@Override
 				public boolean shouldExecute() {
 					return super.shouldExecute() && !EntityCustom.this.isRiding()
-					 && EntityCustom.this.getAttackTarget().posY - EntityCustom.this.posY > 3d;
+							&& EntityCustom.this.getAttackTarget().posY - EntityCustom.this.posY > 3d;
 				}
 			});
 			this.tasks.addTask(3, new EntityAIAttackMelee(this, 1.0d, true) {
 				@Override
 				public boolean shouldExecute() {
-					return super.shouldExecute() 
-					 && EntityCustom.this.getAttackTarget().getDistance(EntityCustom.this) 
-					 <= (EntityCustom.this.isSusanooActive() ? ProcedureUtils.getReachDistance(EntityCustom.this.susanooEntity) : 4d);
+					return super.shouldExecute()
+							&& EntityCustom.this.getAttackTarget().getDistance(EntityCustom.this)
+							<= (EntityCustom.this.isSusanooActive() ? ProcedureUtils.getReachDistance(EntityCustom.this.susanooEntity) : 4d);
 				}
 				@Override
 				protected double getAttackReachSqr(EntityLivingBase attackTarget) {
 					return EntityCustom.this.isSusanooActive() ? ProcedureUtils.getReachDistanceSq(EntityCustom.this.susanooEntity)
-					 : super.getAttackReachSqr(attackTarget);
+							: super.getAttackReachSqr(attackTarget);
 				}
 				@Override
 				protected void checkAndPerformAttack(EntityLivingBase p_190102_1_, double p_190102_2_) {
@@ -203,13 +189,13 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 			this.tasks.addTask(5, new EntityAIWander(this, 0.3));
 			this.tasks.addTask(6, new EntityAILookIdle(this));
 			this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, false));
-			this.targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, EntityPlayer.class, 10, true, false, 
-				new Predicate<EntityPlayer>() {
-					public boolean apply(@Nullable EntityPlayer p_apply_1_) {
-						return p_apply_1_ != null 
-						 && (ItemSharingan.wearingAny(p_apply_1_) || EntityBijuManager.isJinchuriki(p_apply_1_));
-					}
-				}));
+			this.targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, EntityPlayer.class, 10, true, false,
+					new Predicate<EntityPlayer>() {
+						public boolean apply(@Nullable EntityPlayer p_apply_1_) {
+							return p_apply_1_ != null
+									&& (ItemSharingan.wearingAny(p_apply_1_) || EntityBijuManager.isJinchuriki(p_apply_1_));
+						}
+					}));
 		}
 
 		@Override
@@ -259,8 +245,8 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 				if (this.rand.nextInt(3) <= 1) {
 					this.setPositionAndUpdate(this.posX + (this.rand.nextDouble() - 0.5) * 2, this.posY, this.posZ + (this.rand.nextDouble() - 0.5) * 2);
 					ret = false;
-				} else if (this.isReal && this.getHealth() > 0 && this.getHealth() - amount <= this.getMaxHealth() / 3 
-				 && !this.isRiding() && this.ticksExisted > this.lastSusanooTime + 600 && this.getChakra() >= SUSANOO_CHAKRA) {
+				} else if (this.isReal && this.getHealth() > 0 && this.getHealth() - amount <= this.getMaxHealth() / 3
+						&& !this.isRiding() && this.ticksExisted > this.lastSusanooTime + 600 && this.getChakra() >= SUSANOO_CHAKRA) {
 					this.susanooEntity = new EntitySusanooClothed.EntityCustom(this, false);
 					this.susanooEntity.setLifeSpan(600);
 					this.world.spawnEntity(this.susanooEntity);
@@ -276,8 +262,8 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 						entityToSpawn.setLocationAndAngles(this.posX, this.posY + 1.4, this.posZ, this.rand.nextFloat() * 360F, 0.0F);
 						this.world.spawnEntity(entityToSpawn);
 					}
-					this.setPositionAndUpdate(this.posX + (this.rand.nextDouble() - 0.5) * 6, this.posY + 1, 
-					  this.posZ + (this.rand.nextDouble() - 0.5) * 6);
+					this.setPositionAndUpdate(this.posX + (this.rand.nextDouble() - 0.5) * 6, this.posY + 1,
+							this.posZ + (this.rand.nextDouble() - 0.5) * 6);
 					this.consumeChakra(INVIS_CHAKRA);
 					this.lastInvisTime = this.ticksExisted;
 					ret = false;
@@ -298,12 +284,12 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 			EntityLivingBase target = this.getAttackTarget();
 			if (target != null && target.isEntityAlive()) {
 				if (this.lookedAtTime >= 5 && this.ticksExisted > this.lastGenjutsuTime + this.genjutsuDuration + GENJUTSU_COOLDOWN
-				 && this.consumeChakra(GENJUTSU_CHAKRA)) {
+						&& this.consumeChakra(GENJUTSU_CHAKRA)) {
 					if (target instanceof EntityPlayerMP) {
 						ProcedureSync.MobAppearanceParticle.send((EntityPlayerMP)target, ENTITYID_RANGED);
 					}
 					this.world.playSound(null, target.posX, target.posY, target.posZ,
-					  SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:genjutsu")), SoundCategory.NEUTRAL, 1f, 1f);
+							SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:genjutsu")), SoundCategory.NEUTRAL, 1f, 1f);
 					if (!this.world.isRemote) {
 						target.addPotionEffect(new PotionEffect(PotionParalysis.potion, this.genjutsuDuration, 1, false, false));
 						target.addPotionEffect(new PotionEffect(MobEffects.NAUSEA, this.genjutsuDuration+40, 0, false, true));
@@ -315,7 +301,7 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 				if (this.equals(ProcedureUtils.objectEntityLookingAt(target, 24d).entityHit)) {
 					++this.lookedAtTime;
 				} else {
-				 	this.lookedAtTime = 0;
+					this.lookedAtTime = 0;
 				}
 			} else if (this.peacefulTicks > 200) {
 				this.setAttackTarget(target = null);
@@ -338,9 +324,9 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public boolean getCanSpawnHere() {
-			return super.getCanSpawnHere() 
-			 && this.world.getEntitiesWithinAABB(EntityCustom.class, this.getEntityBoundingBox().grow(128.0D)).isEmpty()
-			 && this.rand.nextInt(5) == 0;
+			return super.getCanSpawnHere()
+					&& this.world.getEntitiesWithinAABB(EntityCustom.class, this.getEntityBoundingBox().grow(128.0D)).isEmpty()
+					&& this.rand.nextInt(5) == 0;
 		}
 
 		@Override
@@ -357,7 +343,7 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 			} else {
 				if (chance == 0 && distanceFactor > 0.3333f && this.consumeChakra(AMATERASU_CHAKRA)) {
 					this.world.playSound(null, target.posX, target.posY, target.posZ, SoundEvent.REGISTRY
-					  .getObject(new ResourceLocation("narutomod:sharingansfx")), SoundCategory.NEUTRAL, 1f, 1f);
+							.getObject(new ResourceLocation("narutomod:sharingansfx")), SoundCategory.NEUTRAL, 1f, 1f);
 					target.addPotionEffect(new PotionEffect(PotionAmaterasuFlame.potion, 1200, 1, false, false));
 				} else if (chance <= 2 && distanceFactor >= 0.5333f && this.consumeChakra(FIREBALL_CHAKRA)) {
 					double d0 = target.posX - this.posX;
@@ -430,37 +416,46 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-	@SideOnly(Side.CLIENT)
-	public class RenderCustom extends EntityNinjaMob.RenderBase<EntityCustom> {
-		private final ResourceLocation TEXTURE = new ResourceLocation("narutomod:textures/itachi.png");
 
-		public RenderCustom(RenderManager renderManagerIn, ModelBiped modelIn) {
-			super(renderManagerIn, modelIn);
-			//this.addLayer(new net.minecraft.client.renderer.entity.layers.LayerCustomHead(modelIn.bipedHead));
-			//this.addLayer(new net.minecraft.client.renderer.entity.layers.LayerHeldItem(this));
-			//this.addLayer(new EntityClone.ClientRLM().new BipedArmorLayer(this));
-		}
-
+	public static class Renderer extends EntityRendererRegister {
+		@SideOnly(Side.CLIENT)
 		@Override
-		protected void renderLayers(EntityCustom entity, float f0, float f1, float f2, float f3, float f4, float f5, float f6) {
-			if (!entity.isInvisible()) {
-				super.renderLayers(entity, f0, f1, f2, f3, f4, f5, f6);
+		public void register() {
+			RenderingRegistry.registerEntityRenderingHandler(EntityCustom.class, renderManager ->
+					new RenderCustom(renderManager, new ModelBiped()));
+		}
+		@SideOnly(Side.CLIENT)
+		public class RenderCustom extends EntityNinjaMob.RenderBase<EntityCustom> {
+			private final ResourceLocation TEXTURE = new ResourceLocation("narutomod:textures/itachi.png");
+
+			public RenderCustom(RenderManager renderManagerIn, ModelBiped modelIn) {
+				super(renderManagerIn, modelIn);
+				//this.addLayer(new net.minecraft.client.renderer.entity.layers.LayerCustomHead(modelIn.bipedHead));
+				//this.addLayer(new net.minecraft.client.renderer.entity.layers.LayerHeldItem(this));
+				//this.addLayer(new EntityClone.ClientRLM().new BipedArmorLayer(this));
 			}
-		}
 
-	    @Override
-		protected void preRenderCallback(EntityCustom entity, float partialTickTime) {
-			GlStateManager.scale(0.9375F, 0.9375F, 0.9375F);
-		}
+			@Override
+			protected void renderLayers(EntityCustom entity, float f0, float f1, float f2, float f3, float f4, float f5, float f6) {
+				if (!entity.isInvisible()) {
+					super.renderLayers(entity, f0, f1, f2, f3, f4, f5, f6);
+				}
+			}
 
-	    @Override
-	    public void transformHeldFull3DItemLayer() {
-	        GlStateManager.translate(0.0F, 0.1875F, 0.0F);
-	    }
+			@Override
+			protected void preRenderCallback(EntityCustom entity, float partialTickTime) {
+				GlStateManager.scale(0.9375F, 0.9375F, 0.9375F);
+			}
 
-		@Override
-		protected ResourceLocation getEntityTexture(EntityCustom entity) {
-			return TEXTURE;
+			@Override
+			public void transformHeldFull3DItemLayer() {
+				GlStateManager.translate(0.0F, 0.1875F, 0.0F);
+			}
+
+			@Override
+			protected ResourceLocation getEntityTexture(EntityCustom entity) {
+				return TEXTURE;
+			}
 		}
 	}
 }

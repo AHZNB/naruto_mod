@@ -77,7 +77,7 @@ import java.util.Map;
 public class EntityMightGuy extends ElementsNarutomodMod.ModElement {
 	public static final int ENTITYID = 111;
 	public static final int ENTITYID_RANGED = 112;
-	
+
 	public EntityMightGuy(ElementsNarutomodMod instance) {
 		super(instance, 323);
 	}
@@ -85,48 +85,20 @@ public class EntityMightGuy extends ElementsNarutomodMod.ModElement {
 	@Override
 	public void initElements() {
 		elements.entities.add(() -> EntityEntryBuilder.create().entity(EntityCustom.class)
-		  .id(new ResourceLocation("narutomod", "mightguy"), ENTITYID)
-		  .name("mightguy").tracker(64, 3, true).egg(-16751104, -3355648).build());
+				.id(new ResourceLocation("narutomod", "mightguy"), ENTITYID)
+				.name("mightguy").tracker(64, 3, true).egg(-16751104, -3355648).build());
 	}
 
 	@Override
 	public void init(FMLInitializationEvent event) {
 		EntityRegistry.addSpawn(EntityCustom.class, 20, 1, 1, EnumCreatureType.AMBIENT,
-			Biomes.SAVANNA, Biomes.SAVANNA_PLATEAU, Biomes.FOREST, Biomes.BIRCH_FOREST,
-		 	Biomes.BIRCH_FOREST_HILLS, Biomes.FOREST_HILLS, Biomes.JUNGLE, Biomes.JUNGLE_EDGE,
-		 	Biomes.JUNGLE_HILLS, Biomes.ROOFED_FOREST, Biomes.REDWOOD_TAIGA, Biomes.REDWOOD_TAIGA_HILLS,
-		 	Biomes.TAIGA, Biomes.TAIGA_HILLS, Biomes.MUTATED_SAVANNA, Biomes.MUTATED_FOREST,
-		 	Biomes.MUTATED_BIRCH_FOREST, Biomes.MUTATED_BIRCH_FOREST_HILLS, Biomes.MUTATED_JUNGLE,
-		 	Biomes.MUTATED_JUNGLE_EDGE, Biomes.MUTATED_ROOFED_FOREST, Biomes.MUTATED_TAIGA,
-		 	Biomes.MUTATED_TAIGA_COLD, Biomes.MUTATED_REDWOOD_TAIGA, Biomes.MUTATED_REDWOOD_TAIGA_HILLS);
-	}
-
-	@SideOnly(Side.CLIENT)
-	@Override
-	public void preInit(FMLPreInitializationEvent event) {
-		RenderingRegistry.registerEntityRenderingHandler(EntityCustom.class, renderManager -> {
-			RenderBiped customRender = new EntityNinjaMob.RenderBase<EntityCustom>(renderManager, new ModelMightguy()) {
-				private final ResourceLocation texture = new ResourceLocation("narutomod:textures/might_guy.png");
-				@Override
-				protected ResourceLocation getEntityTexture(EntityCustom entity) {
-					return texture;
-				}
-				@Override
-				protected int getColorMultiplier(EntityCustom entity, float lightBrightness, float partialTick) {
-					if (entity.getGateOpened() >= 3f) {
-						return 0xB0C00000;
-					}
-					return super.getColorMultiplier(entity, lightBrightness, partialTick);
-				}
-			};
-			/*customRender.addLayer(new net.minecraft.client.renderer.entity.layers.LayerBipedArmor(customRender) {
-				protected void initArmor() {
-					this.modelLeggings = new ModelBiped(0.5f);
-					this.modelArmor = new ModelBiped(1);
-				}
-			});*/
-			return customRender;
-		});
+				Biomes.SAVANNA, Biomes.SAVANNA_PLATEAU, Biomes.FOREST, Biomes.BIRCH_FOREST,
+				Biomes.BIRCH_FOREST_HILLS, Biomes.FOREST_HILLS, Biomes.JUNGLE, Biomes.JUNGLE_EDGE,
+				Biomes.JUNGLE_HILLS, Biomes.ROOFED_FOREST, Biomes.REDWOOD_TAIGA, Biomes.REDWOOD_TAIGA_HILLS,
+				Biomes.TAIGA, Biomes.TAIGA_HILLS, Biomes.MUTATED_SAVANNA, Biomes.MUTATED_FOREST,
+				Biomes.MUTATED_BIRCH_FOREST, Biomes.MUTATED_BIRCH_FOREST_HILLS, Biomes.MUTATED_JUNGLE,
+				Biomes.MUTATED_JUNGLE_EDGE, Biomes.MUTATED_ROOFED_FOREST, Biomes.MUTATED_TAIGA,
+				Biomes.MUTATED_TAIGA_COLD, Biomes.MUTATED_REDWOOD_TAIGA, Biomes.MUTATED_REDWOOD_TAIGA_HILLS);
 	}
 
 	public static class EntityCustom extends EntityNinjaMerchant.Base implements IRangedAttackMob {
@@ -178,24 +150,24 @@ public class EntityMightGuy extends ElementsNarutomodMod.ModElement {
 			});
 			this.tasks.addTask(2, new EntityNinjaMob.AILeapAtTarget(this, 1.0F) {
 				@Override
-			    public boolean shouldExecute() {
-			        this.target = this.leaper.getAttackTarget();
-			        if (this.target != null) {
-			            double d1 = this.target.posX - this.leaper.posX;
-			            double d2 = this.target.posY - this.leaper.posY;
-			            double d3 = this.target.posZ - this.leaper.posZ;
-			            double d0 = d1 * d1 + d2 * d2 + d3 * d3;
-			            double d4 = d1 * d1 + d3 * d3;
-			            if (d0 >= 9.0D && (d0 <= 144.0d || d4 < 256d) && this.leaper.onGround) {
-		                    return this.leaper.getRNG().nextInt(5) == 0;
-			            }
-			        }
-	                return false;
-			    }
+				public boolean shouldExecute() {
+					this.target = this.leaper.getAttackTarget();
+					if (this.target != null) {
+						double d1 = this.target.posX - this.leaper.posX;
+						double d2 = this.target.posY - this.leaper.posY;
+						double d3 = this.target.posZ - this.leaper.posZ;
+						double d0 = d1 * d1 + d2 * d2 + d3 * d3;
+						double d4 = d1 * d1 + d3 * d3;
+						if (d0 >= 9.0D && (d0 <= 144.0d || d4 < 256d) && this.leaper.onGround) {
+							return this.leaper.getRNG().nextInt(5) == 0;
+						}
+					}
+					return false;
+				}
 				@Override
 				public void startExecuting() {
 					Vec3d vec = this.leaper.getPositionVector().subtract(this.target.getPositionVector())
-					 .normalize().add(this.target.getPositionVector());
+							.normalize().add(this.target.getPositionVector());
 					if (this.leaper.world.rayTraceBlocks(this.leaper.getPositionEyes(1f), vec, false, true, false) == null) {
 						this.leaper.setPositionAndRotation(vec.x, vec.y, vec.z, this.leaper.rotationYawHead, this.leaper.rotationPitch);
 						this.leaper.motionX = 0.0d;
@@ -213,8 +185,8 @@ public class EntityMightGuy extends ElementsNarutomodMod.ModElement {
 					return EntityCustom.this.hasHome() && super.shouldExecute();
 				}
 			});
-			this.targetTasks.addTask(4, new EntityAINearestAttackableTarget(this, 
-			 EntityNinjaMob.Base.class, 10, false, false, IMob.MOB_SELECTOR) {
+			this.targetTasks.addTask(4, new EntityAINearestAttackableTarget(this,
+					EntityNinjaMob.Base.class, 10, false, false, IMob.MOB_SELECTOR) {
 				@Override
 				public boolean shouldExecute() {
 					return EntityCustom.this.hasHome() && super.shouldExecute();
@@ -257,7 +229,7 @@ public class EntityMightGuy extends ElementsNarutomodMod.ModElement {
 		@Override
 		public boolean isOnSameTeam(Entity entityIn) {
 			return super.isOnSameTeam(entityIn) || EntityNinjaMob.TeamKonoha.contains(entityIn.getClass())
-			 || (this.isTrackingCustomer() && entityIn.equals(this.customer));
+					|| (this.isTrackingCustomer() && entityIn.equals(this.customer));
 		}
 
 		@Override
@@ -268,7 +240,7 @@ public class EntityMightGuy extends ElementsNarutomodMod.ModElement {
 				this.getVillage().modifyPlayerReputation(source.getTrueSource().getUniqueID(), -3);
 			}
 			if (source.getTrueSource() instanceof EntityLivingBase
-			 && !source.isUnblockable() && this.isEntityInFOV(source.getTrueSource())) {
+					&& !source.isUnblockable() && this.isEntityInFOV(source.getTrueSource())) {
 				amount *= this.rand.nextFloat() * 0.2f;
 				this.swingArm(EnumHand.OFF_HAND);
 			}
@@ -338,14 +310,14 @@ public class EntityMightGuy extends ElementsNarutomodMod.ModElement {
 			super.updateAITasks();
 		}
 
-		@Override 
+		@Override
 		public boolean getCanSpawnHere() {
 			Village village = this.world.getVillageCollection().getNearestVillage(new BlockPos(this), 32);
-			if (village == null || village.getNumVillageDoors() < 20 || village.getNumVillagers() < 10 
-			 || !this.world.getEntities(EntityCustom.class, EntitySelectors.IS_ALIVE).isEmpty()) {
+			if (village == null || village.getNumVillageDoors() < 20 || village.getNumVillagers() < 10
+					|| !this.world.getEntities(EntityCustom.class, EntitySelectors.IS_ALIVE).isEmpty()) {
 				return false;
-			 }
-			 return super.getCanSpawnHere();
+			}
+			return super.getCanSpawnHere();
 		}
 
 		@Override
@@ -394,7 +366,7 @@ public class EntityMightGuy extends ElementsNarutomodMod.ModElement {
 					ProcedureUtils.grantAdvancement((EntityPlayerMP)this.customer, "narutomod:openedgates", true);
 				}
 				this.customer.sendStatusMessage(new TextComponentString(
-				 "Villagers killed: " + villagersKilled + ", your kills: " + kills + ", Might Guy's kills: " + this.killCount), false);
+						"Villagers killed: " + villagersKilled + ", your kills: " + kills + ", Might Guy's kills: " + this.killCount), false);
 				this.customer.getWorldScoreboard().removeObjective(this.customerKillCount);
 				this.customer = null;
 				this.customerKillCount = null;
@@ -411,8 +383,8 @@ public class EntityMightGuy extends ElementsNarutomodMod.ModElement {
 					ProcedureUtils.sendChat(player, TextFormatting.GREEN + I18n.translateToLocal("entity.mightguy.name") + ": "
 							+ TextFormatting.WHITE + I18n.translateToLocal("chattext.mightguy.interact1"));
 					long startTime = this.world.getTotalWorldTime() + 18000L - (this.world.getWorldTime() % 24000L);
-					new EventVillageSiege(this.world, null, village.getCenter().getX(), village.getCenter().getY(), 
-					  village.getCenter().getZ(), startTime, village.getVillageRadius() + 5, 80) {
+					new EventVillageSiege(this.world, null, village.getCenter().getX(), village.getCenter().getY(),
+							village.getCenter().getZ(), startTime, village.getVillageRadius() + 5, 80) {
 						protected void doOnTick(int currentTick) {
 							if (currentTick == 0)
 								startTrackingCustomer();
@@ -454,7 +426,7 @@ public class EntityMightGuy extends ElementsNarutomodMod.ModElement {
 
 		private void closeGates() {
 			if (this.getGateOpened() > 0f) {
-				this.swapWithInventory(EntityEquipmentSlot.MAINHAND, 0); 
+				this.swapWithInventory(EntityEquipmentSlot.MAINHAND, 0);
 				this.gateOpened = 0f;
 				this.gateCooldown = 600;
 			}
@@ -492,8 +464,8 @@ public class EntityMightGuy extends ElementsNarutomodMod.ModElement {
 					this.heal(5f);
 			}
 			if (this.customer != null
-			 && (!this.customer.isEntityAlive() || (this.customer instanceof EntityPlayerMP 
-			 && ((EntityPlayerMP)this.customer).hasDisconnected())) && this.isTrackingCustomer()) {
+					&& (!this.customer.isEntityAlive() || (this.customer instanceof EntityPlayerMP
+					&& ((EntityPlayerMP)this.customer).hasDisconnected())) && this.isTrackingCustomer()) {
 				this.stopTrackingCustomer();
 			}
 			this.clampVelocity(1d);
@@ -521,7 +493,7 @@ public class EntityMightGuy extends ElementsNarutomodMod.ModElement {
 		public boolean isNonBoss() {
 			return false;
 		}
-		
+
 		private final BossInfoServer bossInfo = new BossInfoServer(this.getDisplayName(), BossInfo.Color.GREEN, BossInfo.Overlay.PROGRESS);
 
 		@Override
@@ -557,34 +529,64 @@ public class EntityMightGuy extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-	@SideOnly(Side.CLIENT)
-	public static class ModelMightguy extends ModelBiped {
-		public ModelMightguy() {
-			super(0f, 0f, 64, 64);
-			bipedBody.cubeList.add(new ModelBox(bipedBody, 16, 32, -4.0F, 0.0F, -2.0F, 8, 12, 4, 0.25F, false));
-			//bipedRightArm = new ModelRenderer(this);
-			//bipedRightArm.setRotationPoint(-5.0F, 2.0F, 0.0F);
-			//bipedRightArm.cubeList.add(new ModelBox(bipedRightArm, 40, 16, -3.0F, -2.0F, -2.0F, 4, 12, 4, 0.0F, false));
-			bipedRightArm.cubeList.add(new ModelBox(bipedRightArm, 40, 32, -3.0F, -2.0F, -2.0F, 4, 12, 4, 0.25F, false));
-			//bipedLeftArm = new ModelRenderer(this);
-			//bipedLeftArm.setRotationPoint(5.0F, 2.0F, 0.0F);
-			//bipedLeftArm.cubeList.add(new ModelBox(bipedLeftArm, 32, 48, -1.0F, -2.0F, -2.0F, 4, 12, 4, 0.0F, false));
-			bipedLeftArm.cubeList.add(new ModelBox(bipedLeftArm, 48, 48, -1.0F, -2.0F, -2.0F, 4, 12, 4, 0.25F, false));
-			//bipedRightLeg = new ModelRenderer(this);
-			//bipedRightLeg.setRotationPoint(-1.9F, 12.0F, 0.0F);
-			//bipedRightLeg.cubeList.add(new ModelBox(bipedRightLeg, 0, 16, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.0F, false));
-			bipedRightLeg.cubeList.add(new ModelBox(bipedRightLeg, 0, 32, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.25F, false));
-			//bipedLeftLeg = new ModelRenderer(this);
-			//bipedLeftLeg.setRotationPoint(1.9F, 12.0F, 0.0F);
-			//bipedLeftLeg.cubeList.add(new ModelBox(bipedLeftLeg, 16, 48, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.0F, false));
-			bipedLeftLeg.cubeList.add(new ModelBox(bipedLeftLeg, 0, 48, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.25F, false));
+	public static class Renderer extends EntityRendererRegister {
+		@SideOnly(Side.CLIENT)
+		@Override
+		public void register() {
+			RenderingRegistry.registerEntityRenderingHandler(EntityCustom.class, renderManager -> {
+				RenderBiped customRender = new EntityNinjaMob.RenderBase<EntityCustom>(renderManager, new ModelMightguy()) {
+					private final ResourceLocation texture = new ResourceLocation("narutomod:textures/might_guy.png");
+					@Override
+					protected ResourceLocation getEntityTexture(EntityCustom entity) {
+						return texture;
+					}
+					@Override
+					protected int getColorMultiplier(EntityCustom entity, float lightBrightness, float partialTick) {
+						if (entity.getGateOpened() >= 3f) {
+							return 0xB0C00000;
+						}
+						return super.getColorMultiplier(entity, lightBrightness, partialTick);
+					}
+				};
+			/*customRender.addLayer(new net.minecraft.client.renderer.entity.layers.LayerBipedArmor(customRender) {
+				protected void initArmor() {
+					this.modelLeggings = new ModelBiped(0.5f);
+					this.modelArmor = new ModelBiped(1);
+				}
+			});*/
+				return customRender;
+			});
 		}
 
-		@Override
-		public void setLivingAnimations(EntityLivingBase entity, float limbSwing, float limbSwingAmount, float partialTickTime)	{
-			super.setLivingAnimations(entity, limbSwing, limbSwingAmount, partialTickTime);
-			if (((EntityCustom)entity).isSwingingArms()) {
-				this.rightArmPose = ModelBiped.ArmPose.BOW_AND_ARROW;
+		@SideOnly(Side.CLIENT)
+		public static class ModelMightguy extends ModelBiped {
+			public ModelMightguy() {
+				super(0f, 0f, 64, 64);
+				bipedBody.cubeList.add(new ModelBox(bipedBody, 16, 32, -4.0F, 0.0F, -2.0F, 8, 12, 4, 0.25F, false));
+				//bipedRightArm = new ModelRenderer(this);
+				//bipedRightArm.setRotationPoint(-5.0F, 2.0F, 0.0F);
+				//bipedRightArm.cubeList.add(new ModelBox(bipedRightArm, 40, 16, -3.0F, -2.0F, -2.0F, 4, 12, 4, 0.0F, false));
+				bipedRightArm.cubeList.add(new ModelBox(bipedRightArm, 40, 32, -3.0F, -2.0F, -2.0F, 4, 12, 4, 0.25F, false));
+				//bipedLeftArm = new ModelRenderer(this);
+				//bipedLeftArm.setRotationPoint(5.0F, 2.0F, 0.0F);
+				//bipedLeftArm.cubeList.add(new ModelBox(bipedLeftArm, 32, 48, -1.0F, -2.0F, -2.0F, 4, 12, 4, 0.0F, false));
+				bipedLeftArm.cubeList.add(new ModelBox(bipedLeftArm, 48, 48, -1.0F, -2.0F, -2.0F, 4, 12, 4, 0.25F, false));
+				//bipedRightLeg = new ModelRenderer(this);
+				//bipedRightLeg.setRotationPoint(-1.9F, 12.0F, 0.0F);
+				//bipedRightLeg.cubeList.add(new ModelBox(bipedRightLeg, 0, 16, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.0F, false));
+				bipedRightLeg.cubeList.add(new ModelBox(bipedRightLeg, 0, 32, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.25F, false));
+				//bipedLeftLeg = new ModelRenderer(this);
+				//bipedLeftLeg.setRotationPoint(1.9F, 12.0F, 0.0F);
+				//bipedLeftLeg.cubeList.add(new ModelBox(bipedLeftLeg, 16, 48, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.0F, false));
+				bipedLeftLeg.cubeList.add(new ModelBox(bipedLeftLeg, 0, 48, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.25F, false));
+			}
+
+			@Override
+			public void setLivingAnimations(EntityLivingBase entity, float limbSwing, float limbSwingAmount, float partialTickTime) {
+				super.setLivingAnimations(entity, limbSwing, limbSwingAmount, partialTickTime);
+				if (((EntityCustom) entity).isSwingingArms()) {
+					this.rightArmPose = ModelBiped.ArmPose.BOW_AND_ARROW;
+				}
 			}
 		}
 	}
