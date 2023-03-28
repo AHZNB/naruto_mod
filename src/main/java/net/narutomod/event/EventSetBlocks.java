@@ -105,9 +105,10 @@ public class EventSetBlocks extends SpecialEvent {
 					Template.BlockInfo blockinfo = this.blocksList.get(i);
 					IBlockState state = this.world.getBlockState(blockinfo.pos);
 					if (state.getBlock() == blockinfo.blockState.getBlock()
-					 || state.getMaterial() == Material.WATER && blockinfo.blockState.getMaterial() == Material.WATER
-					 || state.getMaterial() == Material.LAVA && blockinfo.blockState.getMaterial() == Material.LAVA
-					 || state.getMaterial() == BlockMud.MUD && blockinfo.blockState.getMaterial() == BlockMud.MUD) {
+					 || (state.getMaterial() == blockinfo.blockState.getMaterial() && state.getMaterial().isLiquid())) {
+					 //|| (state.getMaterial() == Material.WATER && blockinfo.blockState.getMaterial() == Material.WATER)
+					 //|| (state.getMaterial() == Material.LAVA && blockinfo.blockState.getMaterial() == Material.LAVA)
+					 //|| (state.getMaterial() == BlockMud.MUD && blockinfo.blockState.getMaterial() == BlockMud.MUD)) {
 						this.onRemoveBlock(blockinfo.pos);
 					}
 					++this.removeIndex;
@@ -139,11 +140,12 @@ public class EventSetBlocks extends SpecialEvent {
 	public void onRemoveBlock(BlockPos pos) {
 		Template.BlockInfo blockinfo = this.blocksList.get(this.removeIndex);
 		if (blockinfo.tileentityData != null && blockinfo.tileentityData.hasKey("ogstate")) {
-			this.world.setBlockState(pos, Block.getStateById(blockinfo.tileentityData.getInteger("ogstate")), 2);
-//System.out.println(">>>>>> og block: "+ogstate);
+			IBlockState ogstate = Block.getStateById(blockinfo.tileentityData.getInteger("ogstate"));
+			this.world.setBlockState(pos, ogstate, 2);
+//System.out.println(">>>>>> og block: "+ogstate+", "+pos);
 		} else {
 			this.world.setBlockToAir(pos);
-//System.out.println("====== no og block saved");
+//System.out.println("====== no og block saved, "+pos);
 		}
 	}
 
@@ -184,7 +186,8 @@ public class EventSetBlocks extends SpecialEvent {
 				NBTTagCompound tagcompound = taglist.getCompoundTagAt(i);
 				BlockPos pos = new BlockPos(tagcompound.getInteger("x"), tagcompound.getInteger("y"), tagcompound.getInteger("z"));
 				IBlockState state = Block.getStateById(tagcompound.getInteger("blockstate"));
-				this.blocksList.add(new Template.BlockInfo(pos, state, (NBTTagCompound)tagcompound.getTag("extraNBT")));
+				NBTTagCompound extraNBT = (NBTTagCompound)tagcompound.getTag("extraNBT");
+				this.blocksList.add(new Template.BlockInfo(pos, state, extraNBT != null ? extraNBT : new NBTTagCompound()));
 			}
 		}
 	}
