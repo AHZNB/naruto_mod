@@ -13,7 +13,8 @@ Jutsus:
    damage done to yourself by opening your gates, only king of hell can protect you
  - fix earth sandwich killing people again after killing them
  - fixed kamui intangibility running out of chakra leaves you intangible forever
- 
+  - fix model renderer for EntityIceDome
+
 Items:
  - fix using /give command to give nature release items duplicates the item
  - remove enchantability on all dojutsus
