@@ -83,6 +83,25 @@ public class ProcedureLocateEntityCommandExecuted extends ElementsNarutomodMod.M
 				}
 				return "";
 			}
+		}.getText())).equals(CommandLocateEntity.Level1.GEDO.toString()))) {
+			Entity gedoEntity = EntityGedoStatue.getThisEntity();
+			if (gedoEntity != null) {
+				string = (String) (("The gedo mazo's last known position at: dimension[") + "" + ((gedoEntity.dimension)) + "" + ("] pos:[") + ""
+						+ ((gedoEntity.posX)) + "" + (", ") + "" + ((gedoEntity.posY)) + "" + (", ") + "" + ((gedoEntity.posZ)) + "" + ("]"));
+			} else {
+				string = (String) "Entity not found";
+			}
+			if (entity instanceof EntityPlayer && !entity.world.isRemote) {
+				((EntityPlayer) entity).sendStatusMessage(new TextComponentString((string)), (false));
+			}
+		} else if ((((new Object() {
+			public String getText() {
+				String param = (String) cmdparams.get("0");
+				if (param != null) {
+					return param;
+				}
+				return "";
+			}
 		}.getText())).equals(CommandLocateEntity.Level1.JINCHURIKI.toString()))) {
 			if ((((new Object() {
 				public String getText() {

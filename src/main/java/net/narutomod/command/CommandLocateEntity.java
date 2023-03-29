@@ -103,6 +103,7 @@ public class CommandLocateEntity extends ElementsNarutomodMod.ModElement {
 
 	public enum Level1 {
 		BIJU("biju"),
+		GEDO("gedo"),
 		JINCHURIKI("jinchuriki"),
 		UNKNOWN;
 

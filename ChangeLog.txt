@@ -27,6 +27,9 @@ Entities:
  - gedomazo can be ridden and controlled by rinnegan/tenseigan users
  - fix itachi, kisame, might guy, zabuza and haku renderers crashing with ice and fire
 
+Commands:
+ - added find gedo mazo location. usage: /locateEntity gedo
+
 General:
  - Added a config
  - moved gamerule spawnTailedBeasts to config
