@@ -110,6 +110,14 @@ public class ItemSharingan extends ElementsNarutomodMod.ModElement {
 			this.setColor(stack, 1 + entityIn.getRNG().nextInt(0x00FFFFFF) | 0x20000000);
 		}
 
+		@Override
+		public void copyOwner(ItemStack toStack, ItemStack fromStack) {
+			super.copyOwner(toStack, fromStack);
+			if (toStack.getItem() instanceof Base && fromStack.getItem() instanceof Base) {
+				this.setColor(toStack, ((Base)fromStack.getItem()).getColor(fromStack));
+			}
+		}
+
 		public void setColor(ItemStack stack, int color) {
 			if (!stack.hasTagCompound()) {
 				stack.setTagCompound(new NBTTagCompound());

@@ -9,12 +9,15 @@ import net.narutomod.NarutomodModVariables;
 import net.narutomod.ElementsNarutomodMod;
 import net.narutomod.Chakra;
 
+import net.minecraftforge.fml.common.FMLCommonHandler;
+
 import net.minecraft.world.World;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.EnumHand;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
@@ -95,6 +98,12 @@ public class ProcedureOuterPath extends ElementsNarutomodMod.ModElement {
 									(net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY
 											.getObject(new ResourceLocation("narutomod:kuchiyosenojutsu")),
 									SoundCategory.NEUTRAL, (float) 2, (float) 0.9);
+							{
+								MinecraftServer mcserv = FMLCommonHandler.instance().getMinecraftServerInstance();
+								if (mcserv != null)
+									mcserv.getPlayerList().sendMessage(new TextComponentString((((entity.getDisplayName().getUnformattedText())) + ""
+											+ (" has summoned the ") + "" + ((entityToSpawn.getDisplayName().getUnformattedText())))));
+							}
 						}
 					} else {
 						if ((entity instanceof EntityPlayer)) {
