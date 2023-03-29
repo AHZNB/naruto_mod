@@ -5,7 +5,6 @@ import net.narutomod.item.ItemSharingan;
 import net.narutomod.item.ItemMangekyoSharinganObito;
 import net.narutomod.item.ItemMangekyoSharinganEternal;
 import net.narutomod.item.ItemMangekyoSharingan;
-import net.narutomod.item.ItemDojutsu;
 import net.narutomod.item.ItemByakugan;
 import net.narutomod.NarutomodModVariables;
 import net.narutomod.ElementsNarutomodMod;
@@ -104,8 +103,7 @@ public class ProcedureMedicalScrollGUIOnButtonClicked extends ElementsNarutomodM
 									.isDone()
 							: false)) {
 						newstack = new ItemStack(ItemMangekyoSharinganEternal.helmet, (int) (1));
-						((ItemDojutsu.Base) newstack.getItem()).setOwner(newstack, owner);
-						((ItemSharingan.Base) newstack.getItem()).setColor(newstack, ((ItemSharingan.Base) stack0.getItem()).getColor(stack0));
+						((ItemSharingan.Base) newstack.getItem()).copyOwner(newstack, stack0);
 						if (entity instanceof EntityPlayerMP) {
 							Container _current = ((EntityPlayerMP) entity).openContainer;
 							if (_current instanceof Supplier) {

@@ -86,24 +86,24 @@ public class ProcedureKamuiJikukanIdo extends ElementsNarutomodMod.ModElement {
 				timer = (double) 0;
 			}
 			chakraUsage = (double) ItemMangekyoSharinganObito.getIntangibleChakraUsage((EntityLivingBase) entity);;
-			if (((chakraAmount) > (chakraUsage))) {
+			f2 = (boolean) ((is_pressed) && ((chakraAmount) > (chakraUsage)));
+			if ((f2)) {
 				ProcedureUtils.purgeHarmfulEffects((EntityLivingBase) entity);
-				if (entity instanceof EntityPlayer) {
-					((EntityPlayer) entity).capabilities.allowEdit = (!(is_pressed));
-					((EntityPlayer) entity).sendPlayerAbilities();
-				}
-				ProcedureOnLivingUpdate.setNoClip(entity, is_pressed);
 				ProcedureOnLivingUpdate.setUntargetable(entity, 3);
 				entity.fallDistance = (float) (0);
-				if (entity instanceof EntityPlayer && !entity.world.isRemote) {
-					((EntityPlayer) entity).sendStatusMessage(
-							new TextComponentString(
-									((net.minecraft.util.text.translation.I18n.translateToLocal("chattext.intangible")) + "" + ((is_pressed)))),
-							(true));
-				}
-				entity.getEntityData().setBoolean("kamui_intangible", (is_pressed));
 			}
-			if ((!(is_pressed))) {
+			if (entity instanceof EntityPlayer) {
+				((EntityPlayer) entity).capabilities.allowEdit = (!(f2));
+				((EntityPlayer) entity).sendPlayerAbilities();
+			}
+			ProcedureOnLivingUpdate.setNoClip(entity, f2);
+			if (entity instanceof EntityPlayer && !entity.world.isRemote) {
+				((EntityPlayer) entity).sendStatusMessage(
+						new TextComponentString(((net.minecraft.util.text.translation.I18n.translateToLocal("chattext.intangible")) + "" + ((f2)))),
+						(true));
+			}
+			entity.getEntityData().setBoolean("kamui_intangible", (f2));
+			if ((!(f2))) {
 				timer = (double) 0;
 			}
 		} else {

@@ -12,6 +12,7 @@ Jutsus:
  - susanoo, shield based entities and riding on bijus will no longer protect you from
    damage done to yourself by opening your gates, only king of hell can protect you
  - fix earth sandwich killing people again after killing them
+ - fixed kamui intangibility running out of chakra leaves you intangible forever
  
 Items:
  - fix using /give command to give nature release items duplicates the item
@@ -20,6 +21,7 @@ Items:
  - medical scroll to combine dojutsus now require the appropriate achievements to combine
  - fixed forceDojutsuDropOnDeath not dropping mangekyos
  - fixed explosive tags breaking blocks when mobGriefing false
+ - fixed after gaining mangekyo naturally susanoo color always black
 
 Entities:
  - added 5 second cooldown for Itachi's genjutsu
