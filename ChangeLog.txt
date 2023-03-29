@@ -20,6 +20,7 @@ Items:
  - medical scroll to combine dojutsus now require the appropriate achievements to combine
  - fixed forceDojutsuDropOnDeath not dropping mangekyos
  - fixed explosive tags breaking blocks when mobGriefing false
+ - fix model renderer for EntityIceDome
 
 Entities:
  - added 5 second cooldown for Itachi's genjutsu
