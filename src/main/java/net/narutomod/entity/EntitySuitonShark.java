@@ -33,6 +33,7 @@ import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockLiquid;
 
 import net.narutomod.item.ItemJutsu;
 import net.narutomod.procedure.ProcedureAoeCommand;
@@ -41,7 +42,6 @@ import net.narutomod.ElementsNarutomodMod;
 
 import java.util.Map;
 import com.google.common.collect.Maps;
-import net.minecraft.block.BlockLiquid;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntitySuitonShark extends ElementsNarutomodMod.ModElement {

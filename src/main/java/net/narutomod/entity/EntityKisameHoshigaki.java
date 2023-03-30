@@ -64,6 +64,7 @@ import net.minecraft.pathfinding.PathNavigate;
 import net.minecraft.pathfinding.PathNavigateSwimmer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.block.BlockLiquid;
 
 import net.narutomod.block.BlockWaterStill;
 import net.narutomod.procedure.ProcedureUtils;
@@ -281,8 +282,8 @@ public class EntityKisameHoshigaki extends ElementsNarutomodMod.ModElement {
 			if (this.isClone()) {
 				--this.original.clones;
 				this.playSound(SoundEvents.ENTITY_GENERIC_SPLASH, 1f, 1f);
-				new net.narutomod.event.EventSetBlocks(this.world,
-						ImmutableMap.of(new BlockPos(this).up(), Blocks.WATER.getDefaultState()), 0, 10, false, false);
+				new net.narutomod.event.EventSetBlocks(this.world, ImmutableMap.of(new BlockPos(this).up(),
+				 Blocks.FLOWING_WATER.getDefaultState().withProperty(BlockLiquid.LEVEL, Integer.valueOf(1))), 0, 10, false, false);
 				//this.world.setBlockState(new BlockPos(this).up(), Blocks.WATER.getDefaultState(), 3);
 			}
 		}

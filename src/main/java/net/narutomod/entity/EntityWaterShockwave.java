@@ -18,7 +18,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.block.BlockStaticLiquid;
+import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
@@ -82,7 +82,9 @@ public class EntityWaterShockwave extends ElementsNarutomodMod.ModElement {
 			}
 			if (this.deathTicks == 0) {
 				for (BlockPos pos : this.domeBlocks) {
-					this.world.setBlockState(pos, (this.rand.nextInt(3)==0?Blocks.WATER:Blocks.AIR).getDefaultState(), 3);
+					this.world.setBlockState(pos, this.rand.nextInt(3) == 0
+					 ? Blocks.FLOWING_WATER.getDefaultState().withProperty(BlockLiquid.LEVEL, Integer.valueOf(1))
+					 : Blocks.AIR.getDefaultState(), 3);
 				}
 			} else if (this.deathTicks % 5 == 0) {
 				for (BlockPos pos : this.domeBlocks) {

@@ -52,6 +52,7 @@ import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.model.ModelBox;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.block.BlockLiquid;
 
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.item.ItemZabuzaSword;
@@ -278,8 +279,8 @@ public class EntityZabuzaMomochi extends ElementsNarutomodMod.ModElement {
 			if (!this.world.isRemote && this.isClone()) {
 				this.playSound(net.minecraft.init.SoundEvents.ENTITY_GENERIC_SPLASH, 1f, 1f);
 				new net.narutomod.event.EventSetBlocks(this.world,
-						com.google.common.collect.ImmutableMap.of(new BlockPos(this).up(),
-								Blocks.FLOWING_WATER.getDefaultState()), 0, 10, false, false);
+				 com.google.common.collect.ImmutableMap.of(new BlockPos(this).up(),
+				 Blocks.FLOWING_WATER.getDefaultState().withProperty(BlockLiquid.LEVEL, Integer.valueOf(1))), 0, 10, false, false);
 				this.setDead();
 			} else {
 				super.onDeathUpdate();

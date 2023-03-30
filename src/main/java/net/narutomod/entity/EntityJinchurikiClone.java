@@ -160,6 +160,8 @@ public class EntityJinchurikiClone extends ElementsNarutomodMod.ModElement {
 				} else if (user.getSpectatingEntity() != this) {
 					user.setSpectatingEntity(this);
 				}
+				Chakra.Pathway userChakra = Chakra.pathway(user);
+				userChakra.consume(userChakra.getAmount() - this.chakra.getAmount());
 			}
 			for (EntityEquipmentSlot slot : EntityEquipmentSlot.values()) {
 				ItemStack itemstack = this.getItemStackFromSlot(slot);

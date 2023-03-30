@@ -30,6 +30,7 @@ import net.minecraft.client.model.ModelBox;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockLiquid;
 
 import net.narutomod.item.ItemSuiton;
 import net.narutomod.item.ItemJutsu;
@@ -206,7 +207,7 @@ public class EntityWaterDragon extends ElementsNarutomodMod.ModElement {
 				  .damageEntities(ItemJutsu.causeJutsuDamage(this, this.shootingEntity), 20f * size);
 				Map<BlockPos, IBlockState> map = Maps.newHashMap();
 				for (BlockPos pos : ProcedureUtils.getAllAirBlocks(this.world, this.getEntityBoundingBox().contract(0d, this.height-1, 0d))) {
-					map.put(pos, Blocks.FLOWING_WATER.getDefaultState());
+					map.put(pos, Blocks.FLOWING_WATER.getDefaultState().withProperty(BlockLiquid.LEVEL, Integer.valueOf(1)));
 				}
 				new net.narutomod.event.EventSetBlocks(this.world, map, 0, 10, false, false);
 				this.setDead();

@@ -22,6 +22,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.block.BlockBush;
+import net.minecraft.block.BlockLiquid;
 
 import net.narutomod.block.BlockAmaterasuBlock;
 import net.narutomod.block.BlockWaterStill;
@@ -126,7 +127,7 @@ public class EntityWaterPrison extends ElementsNarutomodMod.ModElement {
 				}
 				Map<BlockPos, IBlockState> map = Maps.newHashMap();
 				for (BlockPos pos : ProcedureUtils.getAllAirBlocks(this.world, this.realBB.contract(0d, this.realBB.maxY-this.realBB.minY-1, 0d))) {
-					map.put(pos, Blocks.FLOWING_WATER.getDefaultState());
+					map.put(pos, Blocks.FLOWING_WATER.getDefaultState().withProperty(BlockLiquid.LEVEL, Integer.valueOf(1)));
 				}
 				new net.narutomod.event.EventSetBlocks(this.world, map, 0, 10, false, false);
 				trappedMap.remove(this.user);

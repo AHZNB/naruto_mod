@@ -157,7 +157,7 @@ public class ItemBijuCloak extends ElementsNarutomodMod.ModElement {
 				 				int cloakXp = EntityBijuManager.getCloakXp(livingEntity);
 						 	 	wearingTicks = wearingTicks > 0 ? ++wearingTicks : 1;
 
-						 	 	if (wearingTicks <= cloakXp * 5 + 200) {
+						 	 	if (wearingTicks <= cloakXp * 5 + 200 && net.narutomod.Chakra.pathway(livingEntity).getAmount() > 0d) {
 						 	 		cloakXp += wearingTicks / 20;
 									setCloakXp(helmetStack, cloakXp);
 									setCloakXp(itemstack, cloakXp);
