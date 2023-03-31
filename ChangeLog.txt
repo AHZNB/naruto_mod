@@ -15,6 +15,7 @@ Jutsus:
  - fixed water jutsus leaving behind residual water blocks
  - biju cloak now force closes if you don't have anymore chakra
  - biju cloak 2 bijudama charge time is dependant on cloak XP, cooldown 5 seconds
+ - buffed 7/8 gate: user can punch targets 15 blocks away by jumping right in front of them
 
 Items:
  - fix using /give command to give nature release items duplicates the item
