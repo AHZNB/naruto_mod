@@ -4,10 +4,10 @@
       "item": "narutomod:kekkei_mora"
     },
     "title": {
-      "translate": "advancements.rinnesharinganactivated.title"
+      "translate": "advancements.tensei_byakugan_activated.title"
     },
     "description": {
-      "translate": "advancements.rinnesharinganactivated.descr"
+      "translate": "advancements.tensei_byakugan_activated.descr"
     },
     "frame": "goal",
     "show_toast": true,
@@ -15,12 +15,12 @@
     "hidden": false
   },
   "criteria": {
-    "rinnesharinganactivated": {
+    "tensei_byakugan_activated": {
       "trigger": "minecraft:impossible"
     }
   },
   "rewards": {
-    "experience": 0
+    "experience": 1
   },
-  "parent": "narutomod:rinneganawakened"
+  "parent": "narutomod:tenseigan_achieved"
 }

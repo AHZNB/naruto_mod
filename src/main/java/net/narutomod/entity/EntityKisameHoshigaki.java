@@ -70,6 +70,7 @@ import net.narutomod.block.BlockWaterStill;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.item.ItemSamehada;
 import net.narutomod.item.ItemAkatsukiRobe;
+import net.narutomod.ModConfig;
 import net.narutomod.ElementsNarutomodMod;
 
 import com.google.common.collect.ImmutableMap;
@@ -95,12 +96,15 @@ public class EntityKisameHoshigaki extends ElementsNarutomodMod.ModElement {
 
 	@Override
 	public void init(FMLInitializationEvent event) {
-		EntityRegistry.addSpawn(EntityCustom.class, 5, 1, 1, EnumCreatureType.MONSTER,
-				Biomes.SWAMPLAND, Biomes.FOREST, Biomes.TAIGA, Biomes.RIVER, Biomes.BEACH,
-				Biomes.FOREST_HILLS, Biomes.TAIGA_HILLS, Biomes.JUNGLE, Biomes.JUNGLE_HILLS, Biomes.JUNGLE_EDGE,
-				Biomes.BIRCH_FOREST, Biomes.BIRCH_FOREST_HILLS, Biomes.SAVANNA, Biomes.MUTATED_SWAMPLAND,
-				Biomes.MUTATED_FOREST, Biomes.MUTATED_TAIGA, Biomes.MUTATED_JUNGLE, Biomes.MUTATED_JUNGLE_EDGE,
-				Biomes.MUTATED_BIRCH_FOREST, Biomes.MUTATED_BIRCH_FOREST_HILLS, Biomes.MUTATED_SAVANNA);
+		int i = MathHelper.clamp(ModConfig.SPAWN_WEIGHT_KISAME, 0, 20);
+		if (i > 0) {
+			EntityRegistry.addSpawn(EntityCustom.class, i, 1, 1, EnumCreatureType.MONSTER,
+					Biomes.SWAMPLAND, Biomes.FOREST, Biomes.TAIGA, Biomes.RIVER, Biomes.BEACH,
+					Biomes.FOREST_HILLS, Biomes.TAIGA_HILLS, Biomes.JUNGLE, Biomes.JUNGLE_HILLS, Biomes.JUNGLE_EDGE,
+					Biomes.BIRCH_FOREST, Biomes.BIRCH_FOREST_HILLS, Biomes.SAVANNA, Biomes.MUTATED_SWAMPLAND,
+					Biomes.MUTATED_FOREST, Biomes.MUTATED_TAIGA, Biomes.MUTATED_JUNGLE, Biomes.MUTATED_JUNGLE_EDGE,
+					Biomes.MUTATED_BIRCH_FOREST, Biomes.MUTATED_BIRCH_FOREST_HILLS, Biomes.MUTATED_SAVANNA);
+		}
 		//DungeonHooks.addDungeonMob(new ResourceLocation("narutomod:kisame_hoshigaki"), 50);
 	}
 

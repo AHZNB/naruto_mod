@@ -111,7 +111,8 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 		return id;
 	}
 
-	public static EntityLivingBase searchPlayerMatchingId(UUID id) {
+	@Nullable
+	public static EntityLivingBase searchLivingMatchingId(UUID id) {
 		/*MinecraftServer mcserv = FMLCommonHandler.instance().getMinecraftServerInstance();
 		if (mcserv != null) {
 			for (int i = 0; i < mcserv.getPlayerList().getPlayers().size(); ++i) {

@@ -32,6 +32,7 @@ import net.minecraft.item.ItemStack;
 
 import net.narutomod.item.ItemJutsu;
 import net.narutomod.item.ItemRinnegan;
+import net.narutomod.item.ItemTenseigan;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.NarutomodMod;
 import net.narutomod.ElementsNarutomodMod;
@@ -216,7 +217,7 @@ public class EntityTenTails extends ElementsNarutomodMod.ModElement {
 	public static class CoffinSealJutsu implements ItemJutsu.IJutsuCallback {
 		@Override
 		public boolean createJutsu(ItemStack stack, EntityLivingBase entity, float power) {
-			if (ItemRinnegan.wearingRinnegan(entity)) {
+			if (ItemRinnegan.wearingRinnegan(entity) || ItemTenseigan.isWearing(entity)) {
 				Entity entity1 = ProcedureUtils.objectEntityLookingAt(entity, 20d).entityHit;
 				if (entity1 instanceof EntityCustom) {
 					EntityCustom jubi = (EntityCustom)entity1;

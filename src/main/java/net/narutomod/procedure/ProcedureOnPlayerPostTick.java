@@ -297,7 +297,7 @@ public class ProcedureOnPlayerPostTick extends ElementsNarutomodMod.ModElement {
 						}
 						stack = new ItemStack(ItemJinton.block, (int) (1));
 					} else {
-						rand = (double) Math.random();
+						rand = (double) ((EntityLivingBase) entity).getRNG().nextDouble();
 						if (((rand) <= 0.2)) {
 							stack = new ItemStack(ItemKaton.block, (int) (1));
 						} else if (((rand) <= 0.4)) {
@@ -376,7 +376,8 @@ public class ProcedureOnPlayerPostTick extends ElementsNarutomodMod.ModElement {
 											.getAdvancement(new ResourceLocation("narutomod:achievementmedicalgenin")))
 									.isDone()
 							: false);
-					if (((achievedMedical) || ((!(entity.getEntityData().getBoolean("MedicalNinjaChecked"))) && (Math.random() <= 0.25)))) {
+					if (((achievedMedical) || ((!(entity.getEntityData().getBoolean("MedicalNinjaChecked")))
+							&& (((EntityLivingBase) entity).getRNG().nextDouble() <= 0.25)))) {
 						if (entity instanceof EntityPlayer) {
 							ItemStack _setstack = new ItemStack(ItemIryoJutsu.block, (int) (1));
 							_setstack.setCount(1);
@@ -516,7 +517,7 @@ public class ProcedureOnPlayerPostTick extends ElementsNarutomodMod.ModElement {
 																				.isDone()
 																		: false)))))))
 								&& (((entity instanceof EntityPlayer) ? ((EntityPlayer) entity).experienceLevel : 0) >= 10)))) {
-					if (((Math.random() <= 0.001) && (((((entity instanceof EntityPlayer)
+					if (((((EntityLivingBase) entity).getRNG().nextDouble() <= 0.001) && (((((entity instanceof EntityPlayer)
 							? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemDoton.block, (int) (1)))
 							: false)
 							|| ((entity instanceof EntityPlayer)
@@ -531,8 +532,8 @@ public class ProcedureOnPlayerPostTick extends ElementsNarutomodMod.ModElement {
 							|| ((entity instanceof EntityPlayer)
 									? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemRaiton.block, (int) (1)))
 									: false)))) {
-						rngbase = (double) (((EntityBijuManager.availableBijus() > 0 ? 5 : 0) + (10 * 10)) + 5);
-						if ((Math.random() <= (10 / (rngbase)))) {
+						rngbase = (double) (((ModConfig.SPAWN_AS_JINCHURIKI && EntityBijuManager.availableBijus() > 0 ? 5 : 0) + (10 * 10)) + 5);
+						if ((((EntityLivingBase) entity).getRNG().nextDouble() <= (10 / (rngbase)))) {
 							stack = new ItemStack(ItemByakugan.helmet, (int) (1));
 							if ((!(((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
 									? ((EntityPlayerMP) entity).getAdvancements()
@@ -557,7 +558,7 @@ public class ProcedureOnPlayerPostTick extends ElementsNarutomodMod.ModElement {
 												.getObject(new ResourceLocation("ui.toast.challenge_complete")),
 										SoundCategory.NEUTRAL, (float) 1, (float) 1);
 							}
-						} else if ((Math.random() <= (10 / ((rngbase) - 10)))) {
+						} else if ((((EntityLivingBase) entity).getRNG().nextDouble() <= (10 / ((rngbase) - 10)))) {
 							GuiScrollGenjutsuGui.giveGenjutsu((EntityPlayer) entity);
 							stack = new ItemStack(ItemSharingan.helmet, (int) (1));
 							if ((!(((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
@@ -583,7 +584,7 @@ public class ProcedureOnPlayerPostTick extends ElementsNarutomodMod.ModElement {
 												.getObject(new ResourceLocation("ui.toast.challenge_complete")),
 										SoundCategory.NEUTRAL, (float) 1, (float) 1);
 							}
-						} else if ((Math.random() <= (10 / ((rngbase) - 20)))) {
+						} else if ((((EntityLivingBase) entity).getRNG().nextDouble() <= (10 / ((rngbase) - 20)))) {
 							stack = new ItemStack(ItemShikotsumyaku.block, (int) (1));
 							if ((!(((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
 									? ((EntityPlayerMP) entity).getAdvancements()
@@ -614,7 +615,7 @@ public class ProcedureOnPlayerPostTick extends ElementsNarutomodMod.ModElement {
 								|| ((entity instanceof EntityPlayer)
 										? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemKaton.block, (int) (1)))
 										: false))
-								&& (Math.random() <= ((10 / ((rngbase) - 30)) / 0.4)))) {
+								&& (((EntityLivingBase) entity).getRNG().nextDouble() <= ((10 / ((rngbase) - 30)) / 0.4)))) {
 							if ((!(((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
 									? ((EntityPlayerMP) entity).getAdvancements()
 											.getProgress(((WorldServer) (entity).world).getAdvancementManager()
@@ -667,7 +668,7 @@ public class ProcedureOnPlayerPostTick extends ElementsNarutomodMod.ModElement {
 								|| ((entity instanceof EntityPlayer)
 										? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemKaton.block, (int) (1)))
 										: false))
-								&& (Math.random() <= ((10 / ((rngbase) - 40)) / 0.4)))) {
+								&& (((EntityLivingBase) entity).getRNG().nextDouble() <= ((10 / ((rngbase) - 40)) / 0.4)))) {
 							if ((!(((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
 									? ((EntityPlayerMP) entity).getAdvancements()
 											.getProgress(((WorldServer) (entity).world).getAdvancementManager()
@@ -720,7 +721,7 @@ public class ProcedureOnPlayerPostTick extends ElementsNarutomodMod.ModElement {
 								|| ((entity instanceof EntityPlayer)
 										? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemSuiton.block, (int) (1)))
 										: false))
-								&& (Math.random() <= ((10 / ((rngbase) - 50)) / 0.4)))) {
+								&& (((EntityLivingBase) entity).getRNG().nextDouble() <= ((10 / ((rngbase) - 50)) / 0.4)))) {
 							if ((!(((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
 									? ((EntityPlayerMP) entity).getAdvancements()
 											.getProgress(((WorldServer) (entity).world).getAdvancementManager()
@@ -773,7 +774,7 @@ public class ProcedureOnPlayerPostTick extends ElementsNarutomodMod.ModElement {
 								|| ((entity instanceof EntityPlayer)
 										? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemDoton.block, (int) (1)))
 										: false))
-								&& (Math.random() <= ((10 / ((rngbase) - 60)) / 0.4)))) {
+								&& (((EntityLivingBase) entity).getRNG().nextDouble() <= ((10 / ((rngbase) - 60)) / 0.4)))) {
 							if ((!(((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
 									? ((EntityPlayerMP) entity).getAdvancements()
 											.getProgress(((WorldServer) (entity).world).getAdvancementManager()
@@ -826,7 +827,7 @@ public class ProcedureOnPlayerPostTick extends ElementsNarutomodMod.ModElement {
 								|| ((entity instanceof EntityPlayer)
 										? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemDoton.block, (int) (1)))
 										: false))
-								&& (Math.random() <= ((10 / ((rngbase) - 70)) / 0.4)))) {
+								&& (((EntityLivingBase) entity).getRNG().nextDouble() <= ((10 / ((rngbase) - 70)) / 0.4)))) {
 							if ((!(((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
 									? ((EntityPlayerMP) entity).getAdvancements()
 											.getProgress(((WorldServer) (entity).world).getAdvancementManager()
@@ -879,7 +880,7 @@ public class ProcedureOnPlayerPostTick extends ElementsNarutomodMod.ModElement {
 								|| ((entity instanceof EntityPlayer)
 										? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemSuiton.block, (int) (1)))
 										: false))
-								&& (Math.random() <= ((10 / ((rngbase) - 80)) / 0.4)))) {
+								&& (((EntityLivingBase) entity).getRNG().nextDouble() <= ((10 / ((rngbase) - 80)) / 0.4)))) {
 							if ((!(((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
 									? ((EntityPlayerMP) entity).getAdvancements()
 											.getProgress(((WorldServer) (entity).world).getAdvancementManager()
@@ -932,7 +933,7 @@ public class ProcedureOnPlayerPostTick extends ElementsNarutomodMod.ModElement {
 								|| ((entity instanceof EntityPlayer)
 										? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemKaton.block, (int) (1)))
 										: false))
-								&& (Math.random() <= ((10 / ((rngbase) - 90)) / 0.4)))) {
+								&& (((EntityLivingBase) entity).getRNG().nextDouble() <= ((10 / ((rngbase) - 90)) / 0.4)))) {
 							if ((!(((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
 									? ((EntityPlayerMP) entity).getAdvancements()
 											.getProgress(((WorldServer) (entity).world).getAdvancementManager()
@@ -988,7 +989,7 @@ public class ProcedureOnPlayerPostTick extends ElementsNarutomodMod.ModElement {
 										|| ((entity instanceof EntityPlayer)
 												? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemFuton.block, (int) (1)))
 												: false)))
-								&& (Math.random() <= ((5 / ((rngbase) - 100)) / 0.6)))) {
+								&& (((EntityLivingBase) entity).getRNG().nextDouble() <= ((5 / ((rngbase) - 100)) / 0.6)))) {
 							if (entity instanceof EntityPlayerMP) {
 								Advancement _adv = ((MinecraftServer) ((EntityPlayerMP) entity).mcServer).getAdvancementManager()
 										.getAdvancement(new ResourceLocation("narutomod:kekkei_tota_awakened"));
@@ -1041,7 +1042,7 @@ public class ProcedureOnPlayerPostTick extends ElementsNarutomodMod.ModElement {
 							stack = new ItemStack(ItemJinton.block, (int) (1));
 						} else {
 							stack = new ItemStack(Blocks.AIR, (int) (1));
-							if ((((rngbase) > 105) && ModConfig.SPAWN_AS_JINCHURIKI)) {
+							if (((rngbase) > 105)) {
 								int tails = EntityBijuManager.getRandomAvailableBiju();
 								if (EntityBijuManager.setVesselByTails(entity, tails)) {
 									world.playSound((EntityPlayer) null, x, y, z,

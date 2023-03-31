@@ -118,7 +118,7 @@ public class EntityJinchurikiClone extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public void attackEntityWithRangedAttack(EntityLivingBase target, float distanceFactor) {
-			EntityTailedBeast.EntityTailBeastBall.spawn(this, 2f, 200f);
+			EntityTailedBeast.EntityTailBeastBall.spawn(this, 2f, 150f);
 		}
 
 		@Override
