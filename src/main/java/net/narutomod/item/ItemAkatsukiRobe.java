@@ -103,6 +103,7 @@ public class ItemAkatsukiRobe extends ElementsNarutomodMod.ModElement {
 		ModelLoader.setCustomModelResourceLocation(helmet, 0, new ModelResourceLocation("narutomod:akatsuki_robehelmet", "inventory"));
 		ModelLoader.setCustomModelResourceLocation(body, 0, new ModelResourceLocation("narutomod:akatsuki_robebody", "inventory"));
 	}
+
 	// Made with Blockbench 4.3.1
 	// Exported for Minecraft version 1.7 - 1.12
 	// Paste this class into your mod and generate all required imports

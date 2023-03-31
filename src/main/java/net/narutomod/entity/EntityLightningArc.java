@@ -38,7 +38,8 @@ import net.narutomod.procedure.ProcedureSync;
 
 import java.util.Random;
 import javax.annotation.Nullable;
-
+
+
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityLightningArc extends ElementsNarutomodMod.ModElement {
 	public static final int ENTITYID = 135;
@@ -55,14 +56,6 @@ public class EntityLightningArc extends ElementsNarutomodMod.ModElement {
 		  .id(new ResourceLocation("narutomod", "lightning_arc"), ENTITYID).name("lightning_arc").tracker(96, 3, true).build());
 		//elements.entities.add(() -> EntityEntryBuilder.create().entity(ClientBase.class)
 		//  .id(new ResourceLocation("narutomod", "lightning_c"), ENTITYID_RANGED).name("lightning_c").tracker(64, 3, true).build());
-	}
-
-	@SideOnly(Side.CLIENT)
-	@Override
-	public void preInit(FMLPreInitializationEvent event) {
-		RenderingRegistry.registerEntityRenderingHandler(Base.class, renderManager -> {
-			return new RenderCustom(renderManager);
-		});
 	}
 
 	public static boolean onStruck(Entity entity, DamageSource source, float damage) {
@@ -278,101 +271,115 @@ public class EntityLightningArc extends ElementsNarutomodMod.ModElement {
 	}
 
 	@SideOnly(Side.CLIENT)
-	public class RenderCustom extends Render<Base> {
-		private final double segmentOffset = 0.1d;
-		private int maxRecursiveDepth;
+	@Override
+	public void preInit(FMLPreInitializationEvent event) {
+		new Renderer().register();
+	}
 
-	    public RenderCustom(RenderManager renderManagerIn) {
-	        super(renderManagerIn);
-	    }
-	
-	    @Override
-	    public boolean shouldRender(Base livingEntity, ICamera camera, double camX, double camY, double camZ) {
-	        return true;
-	    }
-
-	    @Override
-	    public void doRender(Base entity, double x, double y, double z, float entityYaw, float partialTicks) {
-	    	this.maxRecursiveDepth = entity.getMaxRecursiveDepth();
-			GlStateManager.pushMatrix();
-			GlStateManager.translate(x, y, z);
-			Vec3d vec3d = entity.getEndVec().subtract(entity.posX, entity.posY, entity.posZ);
-			float yaw = (float) (MathHelper.atan2(vec3d.x, vec3d.z) * (180d / Math.PI));
-			float pitch = (float) (-MathHelper.atan2(vec3d.y, MathHelper.sqrt(vec3d.x * vec3d.x + vec3d.z * vec3d.z)) * (180d / Math.PI));
-			GlStateManager.rotate(yaw, 0.0F, 1.0F, 0.0F);
-			GlStateManager.rotate(pitch, 1.0F, 0.0F, 0.0F);
-			double d = (double)entity.getThickness();
-			d = d == 0d ? Math.max(vec3d.lengthVector() * 0.004d, 0.0005d) : d;
-	    	this.renderSection(new Vec3d(0d, 0d, 0d), new Vec3d(0d, 0d, vec3d.lengthVector()), d, entity.getColor(), 0, false);
-	    	GlStateManager.popMatrix();
-	    }
-
-	    private void renderSection(Vec3d fromVec, Vec3d toVec, double thickness, int color, int recursiveDepth, boolean isBranch) {
-	    	if (recursiveDepth == this.maxRecursiveDepth) {
-		        Tessellator tessellator = Tessellator.getInstance();
-		        BufferBuilder bufferbuilder = tessellator.getBuffer();
-		        GlStateManager.disableTexture2D();
-		        GlStateManager.enableBlend();
-		        GlStateManager.disableCull();
-		        GlStateManager.depthMask(false);
-		        GlStateManager.disableLighting();
-		        //GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE);
-		        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, isBranch?160F:240F, isBranch?160F:240F);
-				bufferbuilder.begin(5, DefaultVertexFormats.POSITION_COLOR);
-                //int a = (color & 0xFF000000) >> 24;
-                int r = (color & 0x00FF0000) >> 16;
-                int g = (color & 0x0000FF00) >> 8;
-                int b = color & 0x000000FF;
-                for (int i = 1; i <= 3; i++) {
-	                if (!isBranch || i >= 2) {
-	                	double w = thickness * i;
-	                	int a = 0xF0;
-		                int r1 = r;
-		                int g1 = g;
-		                int b1 = b;
-	                	if (i == 1) {
-	                		r1 = 255;
-	                		g1 = 255;
-	                		b1 = 255;
-	                		GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE);
-	                	} else {
-	                		a = i == 3 ? 0x10 : 0x20;
-		        			GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-	                	}
-		                bufferbuilder.pos(fromVec.x - w, fromVec.y - w, fromVec.z).color(r1, g1, b1, a).endVertex();
-		                bufferbuilder.pos(toVec.x - w, toVec.y - w, toVec.z).color(r1, g1, b1, a).endVertex();
-		                bufferbuilder.pos(fromVec.x - w, fromVec.y + w, fromVec.z).color(r1, g1, b1, a).endVertex();
-		                bufferbuilder.pos(toVec.x - w, toVec.y + w, toVec.z).color(r1, g1, b1, a).endVertex();
-		                bufferbuilder.pos(fromVec.x + w, fromVec.y + w, fromVec.z).color(r1, g1, b1, a).endVertex();
-		                bufferbuilder.pos(toVec.x + w, toVec.y + w, toVec.z).color(r1, g1, b1, a).endVertex();
-		                bufferbuilder.pos(fromVec.x + w, fromVec.y - w, fromVec.z).color(r1, g1, b1, a).endVertex();
-		                bufferbuilder.pos(toVec.x + w, toVec.y - w, toVec.z).color(r1, g1, b1, a).endVertex();
-		                bufferbuilder.pos(fromVec.x - w, fromVec.y - w, fromVec.z).color(r1, g1, b1, a).endVertex();
-		                bufferbuilder.pos(toVec.x - w, toVec.y - w, toVec.z).color(r1, g1, b1, a).endVertex();
-	                }
-                }
-                tessellator.draw();
-	        	GlStateManager.enableLighting();
-		        GlStateManager.depthMask(true);
-		        GlStateManager.enableCull();
-		        GlStateManager.disableBlend();
-	        	GlStateManager.enableTexture2D();
-	    	} else {
-	    		Random rand = new Random();
-	    		Vec3d vec3d = toVec.subtract(fromVec).scale(0.5d);
-	    		double offset = vec3d.lengthVector() * this.segmentOffset;
-	    		vec3d = vec3d.addVector(rand.nextGaussian() * offset, rand.nextGaussian() * offset, rand.nextGaussian() * offset);
-	    		this.renderSection(fromVec, fromVec.add(vec3d), thickness, color, recursiveDepth + 1, isBranch);
-	    		this.renderSection(fromVec.add(vec3d), toVec, thickness, color, recursiveDepth + 1, isBranch);
-	    		if (rand.nextInt(5) == 0) {
-	    			this.renderSection(fromVec.add(vec3d), fromVec.add(vec3d.scale(1.8d)), thickness * 0.6d, color, recursiveDepth + 1, true);
-	    		}
-	    	}
-	    }
-	
+	public static class Renderer extends EntityRendererRegister {
+		@SideOnly(Side.CLIENT)
 		@Override
-	    protected ResourceLocation getEntityTexture(Base entity) {
-	        return null;
-	    }
+		public void register() {
+			RenderingRegistry.registerEntityRenderingHandler(Base.class, renderManager -> new RenderCustom(renderManager));
+		}
+
+		@SideOnly(Side.CLIENT)
+		public class RenderCustom extends Render<Base> {
+			private final double segmentOffset = 0.1d;
+			private int maxRecursiveDepth;
+
+			public RenderCustom(RenderManager renderManagerIn) {
+				super(renderManagerIn);
+			}
+
+			@Override
+			public boolean shouldRender(Base livingEntity, ICamera camera, double camX, double camY, double camZ) {
+				return true;
+			}
+
+			@Override
+			public void doRender(Base entity, double x, double y, double z, float entityYaw, float partialTicks) {
+				this.maxRecursiveDepth = entity.getMaxRecursiveDepth();
+				GlStateManager.pushMatrix();
+				GlStateManager.translate(x, y, z);
+				Vec3d vec3d = entity.getEndVec().subtract(entity.posX, entity.posY, entity.posZ);
+				float yaw = (float) (MathHelper.atan2(vec3d.x, vec3d.z) * (180d / Math.PI));
+				float pitch = (float) (-MathHelper.atan2(vec3d.y, MathHelper.sqrt(vec3d.x * vec3d.x + vec3d.z * vec3d.z)) * (180d / Math.PI));
+				GlStateManager.rotate(yaw, 0.0F, 1.0F, 0.0F);
+				GlStateManager.rotate(pitch, 1.0F, 0.0F, 0.0F);
+				double d = (double) entity.getThickness();
+				d = d == 0d ? Math.max(vec3d.lengthVector() * 0.004d, 0.0005d) : d;
+				this.renderSection(new Vec3d(0d, 0d, 0d), new Vec3d(0d, 0d, vec3d.lengthVector()), d, entity.getColor(), 0, false);
+				GlStateManager.popMatrix();
+			}
+
+			private void renderSection(Vec3d fromVec, Vec3d toVec, double thickness, int color, int recursiveDepth, boolean isBranch) {
+				if (recursiveDepth == this.maxRecursiveDepth) {
+					Tessellator tessellator = Tessellator.getInstance();
+					BufferBuilder bufferbuilder = tessellator.getBuffer();
+					GlStateManager.disableTexture2D();
+					GlStateManager.enableBlend();
+					GlStateManager.disableCull();
+					GlStateManager.depthMask(false);
+					GlStateManager.disableLighting();
+					//GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE);
+					OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, isBranch ? 160F : 240F, isBranch ? 160F : 240F);
+					bufferbuilder.begin(5, DefaultVertexFormats.POSITION_COLOR);
+					//int a = (color & 0xFF000000) >> 24;
+					int r = (color & 0x00FF0000) >> 16;
+					int g = (color & 0x0000FF00) >> 8;
+					int b = color & 0x000000FF;
+					for (int i = 1; i <= 3; i++) {
+						if (!isBranch || i >= 2) {
+							double w = thickness * i;
+							int a = 0xF0;
+							int r1 = r;
+							int g1 = g;
+							int b1 = b;
+							if (i == 1) {
+								r1 = 255;
+								g1 = 255;
+								b1 = 255;
+								GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE);
+							} else {
+								a = i == 3 ? 0x10 : 0x20;
+								GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+							}
+							bufferbuilder.pos(fromVec.x - w, fromVec.y - w, fromVec.z).color(r1, g1, b1, a).endVertex();
+							bufferbuilder.pos(toVec.x - w, toVec.y - w, toVec.z).color(r1, g1, b1, a).endVertex();
+							bufferbuilder.pos(fromVec.x - w, fromVec.y + w, fromVec.z).color(r1, g1, b1, a).endVertex();
+							bufferbuilder.pos(toVec.x - w, toVec.y + w, toVec.z).color(r1, g1, b1, a).endVertex();
+							bufferbuilder.pos(fromVec.x + w, fromVec.y + w, fromVec.z).color(r1, g1, b1, a).endVertex();
+							bufferbuilder.pos(toVec.x + w, toVec.y + w, toVec.z).color(r1, g1, b1, a).endVertex();
+							bufferbuilder.pos(fromVec.x + w, fromVec.y - w, fromVec.z).color(r1, g1, b1, a).endVertex();
+							bufferbuilder.pos(toVec.x + w, toVec.y - w, toVec.z).color(r1, g1, b1, a).endVertex();
+							bufferbuilder.pos(fromVec.x - w, fromVec.y - w, fromVec.z).color(r1, g1, b1, a).endVertex();
+							bufferbuilder.pos(toVec.x - w, toVec.y - w, toVec.z).color(r1, g1, b1, a).endVertex();
+						}
+					}
+					tessellator.draw();
+					GlStateManager.enableLighting();
+					GlStateManager.depthMask(true);
+					GlStateManager.enableCull();
+					GlStateManager.disableBlend();
+					GlStateManager.enableTexture2D();
+				} else {
+					Random rand = new Random();
+					Vec3d vec3d = toVec.subtract(fromVec).scale(0.5d);
+					double offset = vec3d.lengthVector() * this.segmentOffset;
+					vec3d = vec3d.addVector(rand.nextGaussian() * offset, rand.nextGaussian() * offset, rand.nextGaussian() * offset);
+					this.renderSection(fromVec, fromVec.add(vec3d), thickness, color, recursiveDepth + 1, isBranch);
+					this.renderSection(fromVec.add(vec3d), toVec, thickness, color, recursiveDepth + 1, isBranch);
+					if (rand.nextInt(5) == 0) {
+						this.renderSection(fromVec.add(vec3d), fromVec.add(vec3d.scale(1.8d)), thickness * 0.6d, color, recursiveDepth + 1, true);
+					}
+				}
+			}
+
+			@Override
+			protected ResourceLocation getEntityTexture(Base entity) {
+				return null;
+			}
+		}
 	}
 }
