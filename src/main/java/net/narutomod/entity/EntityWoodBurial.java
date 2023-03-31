@@ -5,16 +5,17 @@ import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
 
 import net.minecraft.world.World;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.DamageSource;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.Entity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.init.Blocks;
 
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.item.ItemJutsu;
@@ -22,9 +23,8 @@ import net.narutomod.item.ItemMokuton;
 import net.narutomod.ElementsNarutomodMod;
 
 import com.google.common.base.Predicate;
-import javax.annotation.Nullable;
 import com.google.common.collect.ImmutableMap;
-import net.minecraft.entity.player.EntityPlayer;
+import javax.annotation.Nullable;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityWoodBurial extends ElementsNarutomodMod.ModElement {
@@ -42,7 +42,7 @@ public class EntityWoodBurial extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static class EC extends ItemMokuton.WoodSegment {
-		private int lifespan = 200;
+		private int lifespan = 300;
 		private EC prevSegment;
 		private Entity target;
 		private Vec3d targetVec;
@@ -114,7 +114,9 @@ public class EntityWoodBurial extends ElementsNarutomodMod.ModElement {
 					 ImmutableMap.of(pos, Blocks.LEAVES.getStateFromMeta(0)), 0, this.lifespan - this.ticksExisted, false, false);
 				}
 				if (this.targetVec != null && this.targetTargetable()) {
-					this.target.attackEntityFrom(DamageSource.IN_WALL, 10.0f);
+					if (this.ticksExisted > 50) {
+						this.target.attackEntityFrom(DamageSource.IN_WALL, 10.0f);
+					}
 					this.target.setPositionAndUpdate(this.targetVec.x, this.targetVec.y, this.targetVec.z);
 				}
 			} else if (!this.world.isRemote) {

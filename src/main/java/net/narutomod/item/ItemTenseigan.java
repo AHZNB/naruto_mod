@@ -30,6 +30,7 @@ import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.util.ITooltipFlag;
 
 import net.narutomod.entity.EntityKingOfHell;
+import net.narutomod.entity.EntityTenTails;
 import net.narutomod.gui.GuiNinjaScroll;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.procedure.ProcedureRinneganHelmetTickEvent;
@@ -106,6 +107,8 @@ public class ItemTenseigan extends ElementsNarutomodMod.ModElement {
 						ItemStack helmetStack = player.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
 						GuiNinjaScroll.enableJutsu(player, (ItemJutsu.Base)ItemYoton.block,
 						 ItemYoton.SEALING9D, helmetStack.getItem() == helmet);
+						GuiNinjaScroll.enableJutsu(player, (ItemJutsu.Base)ItemYoton.block,
+						 ItemYoton.SEALING10, helmetStack.getItem() == helmet && EntityTenTails.getBijuManager().isAddedToWorld(world));
 						if (helmetStack.getItem() != helmet && helmetStack.getItem() != ItemRinnegan.helmet) {
 							player.inventory.clearMatchingItems(ItemAsuraCanon.block, -1, -1, null);
 						}

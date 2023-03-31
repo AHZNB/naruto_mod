@@ -23,6 +23,7 @@ import net.minecraft.util.SoundEvent;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.EnumHandSide;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Item;
 import net.minecraft.inventory.EntityEquipmentSlot;
@@ -57,6 +58,7 @@ import net.minecraft.block.BlockLiquid;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.item.ItemZabuzaSword;
 import net.narutomod.item.ItemSuiton;
+import net.narutomod.ModConfig;
 import net.narutomod.ElementsNarutomodMod;
 
 import javax.annotation.Nullable;
@@ -80,11 +82,14 @@ public class EntityZabuzaMomochi extends ElementsNarutomodMod.ModElement {
 
 	@Override
 	public void init(FMLInitializationEvent event) {
-		EntityRegistry.addSpawn(EntityCustom.class, 5, 1, 1, EnumCreatureType.MONSTER,
-				Biomes.PLAINS, Biomes.EXTREME_HILLS, Biomes.FOREST, Biomes.TAIGA, Biomes.SWAMPLAND, Biomes.RIVER,
-				Biomes.JUNGLE, Biomes.SAVANNA, Biomes.ICE_MOUNTAINS, Biomes.ICE_PLAINS, Biomes.BEACH, Biomes.COLD_BEACH,
-				Biomes.MUTATED_PLAINS, Biomes.MUTATED_EXTREME_HILLS, Biomes.MUTATED_FOREST, Biomes.MUTATED_TAIGA,
-				Biomes.MUTATED_SWAMPLAND, Biomes.MUTATED_JUNGLE, Biomes.MUTATED_SAVANNA, Biomes.MUTATED_ICE_FLATS);
+		int i = MathHelper.clamp(ModConfig.SPAWN_WEIGHT_ZABUZA, 0, 20);
+		if (i > 0) {
+			EntityRegistry.addSpawn(EntityCustom.class, i, 1, 1, EnumCreatureType.MONSTER,
+					Biomes.PLAINS, Biomes.EXTREME_HILLS, Biomes.FOREST, Biomes.TAIGA, Biomes.SWAMPLAND, Biomes.RIVER,
+					Biomes.JUNGLE, Biomes.SAVANNA, Biomes.ICE_MOUNTAINS, Biomes.ICE_PLAINS, Biomes.BEACH, Biomes.COLD_BEACH,
+					Biomes.MUTATED_PLAINS, Biomes.MUTATED_EXTREME_HILLS, Biomes.MUTATED_FOREST, Biomes.MUTATED_TAIGA,
+					Biomes.MUTATED_SWAMPLAND, Biomes.MUTATED_JUNGLE, Biomes.MUTATED_SAVANNA, Biomes.MUTATED_ICE_FLATS);
+		}
 		//DungeonHooks.addDungeonMob(new ResourceLocation("narutomod:zabuza_momochi"), 50);
 	}
 

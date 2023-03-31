@@ -93,7 +93,7 @@ public class ProcedureChakraFruitFoodEaten extends ElementsNarutomodMod.ModEleme
 			}
 			if (entity instanceof EntityPlayerMP) {
 				Advancement _adv = ((MinecraftServer) ((EntityPlayerMP) entity).mcServer).getAdvancementManager()
-						.getAdvancement(new ResourceLocation("narutomod:rinnesharinganactivated"));
+						.getAdvancement(new ResourceLocation("narutomod:tensei_byakugan_activated"));
 				AdvancementProgress _ap = ((EntityPlayerMP) entity).getAdvancements().getProgress(_adv);
 				if (!_ap.isDone()) {
 					Iterator _iterator = _ap.getRemaningCriteria().iterator();

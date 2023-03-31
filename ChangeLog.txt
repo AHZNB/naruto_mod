@@ -4,17 +4,17 @@ Jutsus:
  - can fly when jinchuriki in full biju mode of 7-tails
  - changed chidori mechanics: swing at a target within 20 blocks to charge at target
  - changed earth sandwich targeting mechanics: point at block instead of entity
+ - fix earth sandwich killing people again after killing them
  - unsummon your earth golem by hitting it
  - limit bug sphere to max 10, reduce chakra absorption rate from target
  - tweaked kamui teleport to use more chakra/time, give nausea effect after use
+ - fixed kamui intangibility running out of chakra leaves you intangible forever
  - fixed eternal mangekyo intangible not negating damage 
- - fixed water jutsus leaving water blocks in the world
  - susanoo, shield based entities and riding on bijus will no longer protect you from
    damage done to yourself by opening your gates, only king of hell can protect you
- - fix earth sandwich killing people again after killing them
- - fixed kamui intangibility running out of chakra leaves you intangible forever
  - fixed water jutsus leaving behind residual water blocks
  - biju cloak now force closes if you don't have anymore chakra
+ - biju cloak 2 bijudama charge time is dependant on cloak XP, cooldown 5 seconds
 
 Items:
  - fix using /give command to give nature release items duplicates the item
@@ -30,6 +30,10 @@ Entities:
  - lowered chances of Itachi dropping mangekyo
  - gedomazo can be ridden and controlled by rinnegan/tenseigan users
  - fix itachi, kisame, might guy, zabuza and haku renderers crashing with ice and fire
+ - added config settings to tweak Itachi, Kisame, Zabuza, white zetsu spawn weight
+
+Advancements:
+ - associate "Rinnesharingan Activated" advancement to the correct parent (rinnegan/tenseigan) advancement
 
 Commands:
  - added find gedo mazo location. usage: /locateEntity gedo
@@ -39,6 +43,7 @@ General:
  - moved gamerule spawnTailedBeasts to config
  - added a config option for players being able to spawn as jinchuriki
  - killing a gedo mazo that has bijus sealed in itself will release the bijus
+ - ninjas can only gain ninjaxp through damaging or getting damaged by hostile mobs or players
 
 0.2.11-beta ===============================================================================
 

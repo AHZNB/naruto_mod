@@ -539,7 +539,7 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 
 		public EntityLivingBase getOwner(ItemStack stack) {
 			UUID id = ProcedureUtils.getOwnerId(stack);
-			return id == null ? null : ProcedureUtils.searchPlayerMatchingId(id);
+			return id == null ? null : ProcedureUtils.searchLivingMatchingId(id);
 		}
 
 		protected void setOwner(ItemStack stack, EntityLivingBase owner) {

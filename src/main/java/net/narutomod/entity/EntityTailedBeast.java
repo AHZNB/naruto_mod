@@ -91,6 +91,7 @@ import com.google.common.collect.Maps;
 import javax.annotation.Nullable;
 import java.util.UUID;
 import java.util.Map;
+import java.util.Iterator;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
@@ -843,7 +844,7 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 						eventOnTick(getWorld(), getX0(), getY0(), getZ0(), getRadius(), getEntity(), currentTick);
 					}
 				};*/
-				ProcedureAoeCommand.set(this, 0d, radius + 2)
+				ProcedureAoeCommand.set(this, 0d, radius * 1.2)
 				 .damageEntitiesCentered(ItemJutsu.causeJutsuDamage(this, this.shootingEntity), this.maxDamage);
 				this.setDead();
 			}
@@ -886,6 +887,16 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 				this.cooldown = cd;
 				this.power = p;
 			}
+
+			private static void clean() {
+				Iterator<Map.Entry<EntityLivingBase, CDTracker>> iter = cdMap.entrySet().iterator();
+				while (iter.hasNext()) {
+					Map.Entry<EntityLivingBase, CDTracker> entry = iter.next();
+					if (!entry.getKey().isEntityAlive() || !entry.getKey().isAddedToWorld()) {
+						iter.remove();
+					}
+				}
+			}
 		}
 		
 		public static void create(EntityLivingBase entity, boolean is_pressed) {
@@ -896,7 +907,7 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 			if (entity.ticksExisted >= cd.cooldown) {
 				if (is_pressed) {
 					if (cd.power < 14.0f) {
-						cd.power += 0.01f;
+						cd.power += entity instanceof EntityPlayer ? (float)EntityBijuManager.getCloakXp((EntityPlayer)entity) * 0.1f / 4800 : 0.01f;
 					}
 					if (entity instanceof EntityPlayer && !entity.world.isRemote) {
 						((EntityPlayer)entity).sendStatusMessage(
@@ -904,7 +915,7 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 					}
 				} else {
 					if (spawn(entity, cd.power, cd.power * 70f)) {
-						cd.cooldown = entity.ticksExisted + (int)(cd.power * 300f);
+						cd.cooldown = entity.ticksExisted + 100;
 					}
 					cd.power = 0f;
 				}

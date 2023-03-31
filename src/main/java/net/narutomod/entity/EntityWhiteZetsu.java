@@ -13,6 +13,7 @@ import net.minecraft.init.Biomes;
 import net.minecraft.world.World;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.DataParameter;
@@ -30,15 +31,16 @@ import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.entity.EnumCreatureAttribute;
 import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.client.renderer.entity.RenderBiped;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.entity.EntityLivingBase;
 
 import net.narutomod.procedure.ProcedureWhiteZetsuEntityEntityDies;
 import net.narutomod.item.ItemKunai;
+import net.narutomod.ModConfig;
 import net.narutomod.ElementsNarutomodMod;
 
 @ElementsNarutomodMod.ModElement.Tag
@@ -58,11 +60,14 @@ public class EntityWhiteZetsu extends ElementsNarutomodMod.ModElement {
 
 	@Override
 	public void init(FMLInitializationEvent event) {
-		EntityRegistry.addSpawn(EntityCustom.class, 10, 1, 1, EnumCreatureType.MONSTER, 
-			Biomes.EXTREME_HILLS, Biomes.FOREST, Biomes.TAIGA, Biomes.SWAMPLAND, Biomes.BEACH, Biomes.JUNGLE,
-			Biomes.BIRCH_FOREST, Biomes.ROOFED_FOREST, Biomes.REDWOOD_TAIGA, Biomes.SAVANNA, Biomes.MESA,
-			Biomes.MUTATED_FOREST, Biomes.MUTATED_TAIGA, Biomes.MUTATED_SWAMPLAND, Biomes.MUTATED_JUNGLE,
-			Biomes.MUTATED_BIRCH_FOREST, Biomes.MUTATED_ROOFED_FOREST, Biomes.MUTATED_REDWOOD_TAIGA, Biomes.MUTATED_SAVANNA);
+		int i = MathHelper.clamp(ModConfig.SPAWN_WEIGHT_WHITEZETSU, 0, 20);
+		if (i > 0) {
+			EntityRegistry.addSpawn(EntityCustom.class, i, 1, 1, EnumCreatureType.MONSTER, 
+				Biomes.EXTREME_HILLS, Biomes.FOREST, Biomes.TAIGA, Biomes.SWAMPLAND, Biomes.BEACH, Biomes.JUNGLE,
+				Biomes.BIRCH_FOREST, Biomes.ROOFED_FOREST, Biomes.REDWOOD_TAIGA, Biomes.SAVANNA, Biomes.MESA,
+				Biomes.MUTATED_FOREST, Biomes.MUTATED_TAIGA, Biomes.MUTATED_SWAMPLAND, Biomes.MUTATED_JUNGLE,
+				Biomes.MUTATED_BIRCH_FOREST, Biomes.MUTATED_ROOFED_FOREST, Biomes.MUTATED_REDWOOD_TAIGA, Biomes.MUTATED_SAVANNA);
+		}
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -70,6 +75,7 @@ public class EntityWhiteZetsu extends ElementsNarutomodMod.ModElement {
 	public void preInit(FMLPreInitializationEvent event) {
 		RenderingRegistry.registerEntityRenderingHandler(EntityCustom.class, renderManager -> {
 			RenderBiped customRender = new RenderBiped(renderManager, new ModelBiped(0f, 0f, 64, 64), 0.5f) {
+				private final ResourceLocation texture = new ResourceLocation("narutomod:textures/zetsu_white.png");
 				@Override
 				protected ResourceLocation getEntityTexture(Entity entity) {
 					int playerId = ((EntityCustom) entity).getPlayerId();
@@ -78,7 +84,7 @@ public class EntityWhiteZetsu extends ElementsNarutomodMod.ModElement {
 						if (player instanceof AbstractClientPlayer)
 							return ((AbstractClientPlayer) player).getLocationSkin();
 					}
-					return new ResourceLocation("narutomod:textures/zetsu_white.png");
+					return this.texture;
 				}
 				@Override
 				protected void preRenderCallback(EntityLivingBase entitylivingbaseIn, float partialTickTime) {
