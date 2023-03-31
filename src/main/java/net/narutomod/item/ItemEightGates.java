@@ -374,36 +374,31 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 		@Override
 		public boolean onLeftClickEntity(ItemStack itemstack, EntityPlayer attacker, Entity target) {
 			if (!attacker.world.isRemote) {
-				World world = attacker.world;
-				float gateOpened = this.getGateOpened(itemstack);
-				switch ((int) gateOpened) {
-					case 8 :
-						int k = this.attackSekizo(itemstack, attacker);
-						if (k >= 0) {
-							attacker.sendStatusMessage(new TextComponentString(
-								I18n.translateToLocalFormatted("entity.entitysekizo.name", k+1)), true);
-						} else {
-							return true;
-						}
-						break;
+				int gateOpened = (int)this.getGateOpened(itemstack);
+				switch (gateOpened) {
 					case 6 :
 						this.attackAsakujaku(attacker);
 						attacker.sendStatusMessage(new TextComponentString(
 							I18n.translateToLocal("entity.entityasakujaku.name")), true);
 						break;
-					case 7:
-						Vec3d vec1 = attacker.getPositionVector().addVector(0d, 1.2d, 0d).add(attacker.getLookVec());
-						Vec3d vec2 = target.getPositionVector().subtract(attacker.getPositionVector()).normalize();
-						for (int i = 1, j = 25; i <= j; i++) {
-							Vec3d vec3 = vec2.scale(-0.1d * i);
-							Particles.spawnParticle(attacker.world, Particles.Types.SONIC_BOOM, vec1.x, vec1.y, vec1.z,
-							 1, 0d, 0d, 0d, vec3.x, vec3.y, vec3.z, 0x00ffffff | ((int)((1f-(float)i/j)*0x40)<<24), i,
-							 (int)(5f * (1f + ((float)i/j) * 0.5f)));
+					case 8 :
+						int k = this.attackSekizo(itemstack, attacker);
+						if (k >= 0) {
+							attacker.sendStatusMessage(new TextComponentString(
+							 I18n.translateToLocalFormatted("entity.entitysekizo.name", k+1)), true);
+							break;
 						}
-					default :
-						if (!target.equals(attacker)) {
-							if (gateOpened >= 2f) {
-								ProcedureUtils.pushEntity(attacker, target, 10, gateOpened * 0.2f + 2f);
+					case 7:
+						if (attacker.equals(target)) {
+							target = ProcedureUtils.objectEntityLookingAt(attacker, 15d + 5d * (gateOpened - 7), 2d).entityHit;
+							if (target instanceof EntityLivingBase) {
+								Vec3d vec = target.getPositionVector().subtract(attacker.getPositionVector()).normalize();
+								attacker.rotationYaw = ProcedureUtils.getYawFromVec(vec);
+								attacker.rotationPitch = ProcedureUtils.getPitchFromVec(vec);
+								attacker.setPositionAndUpdate(target.posX - vec.x, target.posY - vec.y, target.posZ - vec.z);
+								attacker.attackTargetEntityWithCurrentItem(target);
+							} else {
+								return true;
 							}
 						}
 				}
@@ -421,16 +416,24 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 					if (stack.getItem() != block) {
 						stack = player.getHeldItemOffhand();
 					}
-					if (stack.getItem() == block && (int)((RangedItem)stack.getItem()).getGateOpened(stack) == 7) {
+					if (stack.getItem() == block) {
+						int gateOpened = (int)((RangedItem)stack.getItem()).getGateOpened(stack);
 						EntityLivingBase target = event.getEntityLiving();
-						target.world.playSound(null, target.posX, target.posY, target.posZ,
-						 SoundEvents.ENTITY_GENERIC_EXPLODE, SoundCategory.NEUTRAL, 1.0F, target.getRNG().nextFloat() * 0.5F + 0.5F);
-						Vec3d vec = player.getPositionVector().subtract(target.getPositionVector()).normalize();
-						for (int i = 1, j = 25; i <= j; i++) {
-							Vec3d vec1 = vec.scale(0.06d * i);
-							Particles.spawnParticle(player.world, Particles.Types.SONIC_BOOM, target.posX, target.posY+1.4d, target.posZ,
-							 1, 0d, 0d, 0d, vec1.x, vec1.y, vec1.z, 0x00ffffff | ((int)((1f-(float)i/j)*0x40)<<24),
-							 i * 2, (int)(5f * (1f + ((float)i/j) * 0.5f)));
+						if (gateOpened >= 5) {
+							if (gateOpened >= 7) {
+								target.world.playSound(null, target.posX, target.posY, target.posZ,
+								 SoundEvents.ENTITY_GENERIC_EXPLODE, SoundCategory.NEUTRAL, 1.0F, target.getRNG().nextFloat() * 0.5F + 0.5F);
+							}
+							Vec3d vec = player.getPositionVector().subtract(target.getPositionVector()).normalize();
+							for (int i = 1, j = 25; i <= j; i++) {
+								Vec3d vec1 = vec.scale(0.06d * i);
+								Particles.spawnParticle(player.world, Particles.Types.SONIC_BOOM, target.posX, target.posY+1.4d, target.posZ,
+								 1, 0d, 0d, 0d, vec1.x, vec1.y, vec1.z, 0x00ffffff | ((int)((1f-(float)i/j)*0x40)<<24),
+								 i * 2, (int)(5f * (1f + ((float)i/j) * 0.5f)));
+							}
+						}
+						if (gateOpened >= 2) {
+							ProcedureUtils.pushEntity(player, target, 10, 0.2f * gateOpened + 2f);
 						}
 					}
 				}
