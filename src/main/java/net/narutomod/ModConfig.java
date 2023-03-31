@@ -23,6 +23,9 @@ public class ModConfig extends ElementsNarutomodMod.ModElement {
 	@Config.Comment("Zabuza's spawn weight (0~20). 0 to stop spawning.")
 	public static int SPAWN_WEIGHT_ZABUZA = 5;
 
+	@Config.Comment("White zetsu's spawn weight (0~20). 0 to stop spawning.")
+	public static int SPAWN_WEIGHT_WHITEZETSU = 10;
+
 	public ModConfig(ElementsNarutomodMod instance) {
 		super(instance, 837);
 	}
