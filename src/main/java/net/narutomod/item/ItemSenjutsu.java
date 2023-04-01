@@ -41,6 +41,7 @@ import net.minecraft.init.MobEffects;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.nbt.NBTTagCompound;
 
+import net.narutomod.entity.EntityRendererRegister;
 import net.narutomod.entity.EntityRasengan;
 import net.narutomod.entity.EntityRasenshuriken;
 import net.narutomod.entity.EntityBuddha1000;
@@ -53,9 +54,11 @@ import net.narutomod.Chakra;
 import net.narutomod.ElementsNarutomodMod;
 
 import com.google.common.collect.Maps;
+import com.google.common.collect.ImmutableMap;
 import java.util.Map;
 import java.util.Random;
 import java.util.List;
+import java.util.UUID;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class ItemSenjutsu extends ElementsNarutomodMod.ModElement {
@@ -88,22 +91,6 @@ public class ItemSenjutsu extends ElementsNarutomodMod.ModElement {
 		ModelLoader.setCustomModelResourceLocation(block, 0, new ModelResourceLocation("narutomod:senjutsu", "inventory"));
 	}
 
-	@SideOnly(Side.CLIENT)
-	@Override
-	public void preInit(FMLPreInitializationEvent event) {
-		RenderingRegistry.registerEntityRenderingHandler(EntitySitPlatform.class, renderManager -> {
-			return new Render(renderManager) {
-				@Override
-				public void doRender(Entity entity, double x, double y, double z, float entityYaw, float partialTicks) {
-				}
-				@Override
-				protected ResourceLocation getEntityTexture(Entity entity) {
-					return null;
-				}
-			};
-		});
-	}
-
 	@Override
 	public void init(FMLInitializationEvent event) {
 		ProcedureOnLeftClickEmpty.addQualifiedItem(block, EnumHand.MAIN_HAND);
@@ -111,6 +98,13 @@ public class ItemSenjutsu extends ElementsNarutomodMod.ModElement {
 
 	public static class RangedItem extends ItemJutsu.Base implements ItemOnBody.Interface {
 		private static final String TYPEKEY = "SageType";
+		private static final Map<IAttribute, AttributeModifier> buffMap = ImmutableMap.<IAttribute, AttributeModifier>builder()
+			.put(EntityPlayer.REACH_DISTANCE, new AttributeModifier(UUID.fromString("c3ee1250-8b80-4668-b58a-33af5ea73ee6"), "sagemode.reach", 2.0d, 0))
+			.put(SharedMonsterAttributes.ATTACK_DAMAGE, new AttributeModifier(UUID.fromString("6d6202e1-9aac-4c3d-ba0c-6684bdd58868"), "sagemode.damage", 60.0d, 0))
+			.put(SharedMonsterAttributes.ATTACK_SPEED, new AttributeModifier(UUID.fromString("33b7fa14-828a-4964-b014-b61863526589"), "sagemode.damagespeed", 2.0d, 1))
+			.put(SharedMonsterAttributes.MOVEMENT_SPEED, new AttributeModifier(UUID.fromString("74f3ab51-a73f-45e3-a4c4-aae6974b6414"), "sagemode.movement", 1.5d, 1))
+			.put(SharedMonsterAttributes.MAX_HEALTH, new AttributeModifier(UUID.fromString("70e0acc2-cf75-4bbd-a21a-753088324a59"), "sagemode.health", 80.0d, 0))
+			.build();
 
 		@SideOnly(Side.CLIENT)
 		private ModelBiped armorModel;
@@ -176,9 +170,9 @@ public class ItemSenjutsu extends ElementsNarutomodMod.ModElement {
 				}
 				EntityLivingBase living = (EntityLivingBase)entity;
 				boolean flag = isSageModeActivated(itemstack);
-				boolean flag1 = living.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).hasModifier(ItemSageModeArmor.buffMap.get(SharedMonsterAttributes.MAX_HEALTH));
+				boolean flag1 = living.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).hasModifier(buffMap.get(SharedMonsterAttributes.MAX_HEALTH));
 				if (flag && !flag1) {
-					for (Map.Entry<IAttribute, AttributeModifier> entry : ItemSageModeArmor.buffMap.entrySet()) {
+					for (Map.Entry<IAttribute, AttributeModifier> entry : buffMap.entrySet()) {
 						IAttributeInstance attr = living.getEntityAttribute(entry.getKey());
 						if (attr != null) {
 							attr.applyModifier(entry.getValue());
@@ -188,7 +182,7 @@ public class ItemSenjutsu extends ElementsNarutomodMod.ModElement {
 						itemstack.getTagCompound().setInteger("prevFoodStat", ((EntityPlayer)entity).getFoodStats().getFoodLevel());
 					}
 				} else if (!flag && flag1) {
-					for (Map.Entry<IAttribute, AttributeModifier> entry : ItemSageModeArmor.buffMap.entrySet()) {
+					for (Map.Entry<IAttribute, AttributeModifier> entry : buffMap.entrySet()) {
 						IAttributeInstance attr = living.getEntityAttribute(entry.getKey());
 						if (attr != null) {
 							attr.removeModifier(entry.getValue().getID());
@@ -287,9 +281,8 @@ public class ItemSenjutsu extends ElementsNarutomodMod.ModElement {
 		public ModelBiped getArmorModel(EntityLivingBase living, ItemStack stack, EntityEquipmentSlot slot, ModelBiped defaultModel) {
 			if (isSageModeActivated(stack)) {
 				if (this.armorModel == null) {
-					this.armorModel = new ModelHelmetSnug();
+					this.armorModel = new Renderer().new ModelHelmetSnug();
 				}
-
 				this.armorModel.isSneak = living.isSneaking();
 				this.armorModel.isRiding = living.isRiding();
 				this.armorModel.isChild = living.isChild();
@@ -445,34 +438,57 @@ public class ItemSenjutsu extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-	@SideOnly(Side.CLIENT)
-	public static class ModelHelmetSnug extends ModelBiped {
-		private final ModelRenderer highlight;
+	@Override
+	public void preInit(FMLPreInitializationEvent event) {
+		new Renderer().register();
+	}
 
-		public ModelHelmetSnug() {
-			textureWidth = 64;
-			textureHeight = 16;
-			this.bipedHead = new ModelRenderer(this);
-			this.bipedHead.setRotationPoint(0.0F, 0.0F, 0.0F);
-			this.bipedHead.cubeList.add(new ModelBox(this.bipedHead, 0, 0, -4.0F, -8.0F, -4.0F, 8, 8, 8, 0.02F, false));
-			this.highlight = new ModelRenderer(this);
-			this.highlight.setRotationPoint(0.0F, 0.0F, 0.0F);
-			this.highlight.cubeList.add(new ModelBox(this.highlight, 24, 0, -4.0F, -8.0F, -4.15F, 8, 8, 0, 0.0F, false));
-			this.bipedHeadwear = new ModelRenderer(this);
-			this.bipedHeadwear.setRotationPoint(0.0F, 0.0F, 0.0F);
-			this.bipedHeadwear.cubeList.add(new ModelBox(this.bipedHeadwear, 32, 0, -4.0F, -8.0F, -4.0F, 8, 8, 8, 0.2F, false));
+	public static class Renderer extends EntityRendererRegister {
+		@SideOnly(Side.CLIENT)
+		@Override
+		public void register() {
+			RenderingRegistry.registerEntityRenderingHandler(EntitySitPlatform.class, renderManager -> {
+				return new Render(renderManager) {
+					@Override
+					public void doRender(Entity entity, double x, double y, double z, float entityYaw, float partialTicks) {
+					}
+					@Override
+					protected ResourceLocation getEntityTexture(Entity entity) {
+						return null;
+					}
+				};
+			});
 		}
 
-		@Override
-		public void render(Entity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
-			this.bipedBody.showModel = false;
-			this.bipedLeftArm.showModel = false;
-			this.bipedLeftLeg.showModel = false;
-			this.bipedRightArm.showModel = false;
-			this.bipedRightLeg.showModel = false;
-			GlStateManager.enableBlend();
-			super.render(entityIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale);
-			GlStateManager.disableBlend();
+		@SideOnly(Side.CLIENT)
+		public class ModelHelmetSnug extends ModelBiped {
+			private final ModelRenderer highlight;
+	
+			public ModelHelmetSnug() {
+				textureWidth = 64;
+				textureHeight = 16;
+				this.bipedHead = new ModelRenderer(this);
+				this.bipedHead.setRotationPoint(0.0F, 0.0F, 0.0F);
+				this.bipedHead.cubeList.add(new ModelBox(this.bipedHead, 0, 0, -4.0F, -8.0F, -4.0F, 8, 8, 8, 0.02F, false));
+				this.highlight = new ModelRenderer(this);
+				this.highlight.setRotationPoint(0.0F, 0.0F, 0.0F);
+				this.highlight.cubeList.add(new ModelBox(this.highlight, 24, 0, -4.0F, -8.0F, -4.15F, 8, 8, 0, 0.0F, false));
+				this.bipedHeadwear = new ModelRenderer(this);
+				this.bipedHeadwear.setRotationPoint(0.0F, 0.0F, 0.0F);
+				this.bipedHeadwear.cubeList.add(new ModelBox(this.bipedHeadwear, 32, 0, -4.0F, -8.0F, -4.0F, 8, 8, 8, 0.2F, false));
+			}
+	
+			@Override
+			public void render(Entity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
+				this.bipedBody.showModel = false;
+				this.bipedLeftArm.showModel = false;
+				this.bipedLeftLeg.showModel = false;
+				this.bipedRightArm.showModel = false;
+				this.bipedRightLeg.showModel = false;
+				GlStateManager.enableBlend();
+				super.render(entityIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale);
+				GlStateManager.disableBlend();
+			}
 		}
 	}
 }
