@@ -75,7 +75,7 @@ public class EntitySusanooSkeleton extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-	@SideOnly(Side.CLIENT)
+	@Override
 	public void preInit(FMLPreInitializationEvent event) {
 		new Renderer().register();
 	}
@@ -89,8 +89,8 @@ public class EntitySusanooSkeleton extends ElementsNarutomodMod.ModElement {
 
 		@SideOnly(Side.CLIENT)
 		public class RenderSusanooSkeleton extends RenderLiving<EntityCustom> {
-			private final ResourceLocation MAIN_TEXTURE = new ResourceLocation("narutomod:textures/susanooskeleton.png");
-			private final ResourceLocation FLAME_TEXTURE = new ResourceLocation("narutomod:textures/gas256.png");
+			private final ResourceLocation mainTexture = new ResourceLocation("narutomod:textures/susanooskeleton.png");
+			private final ResourceLocation flameTexture = new ResourceLocation("narutomod:textures/gas256.png");
 
 			public RenderSusanooSkeleton(RenderManager renderManagerIn) {
 				super(renderManagerIn, new ModelSusanooSkeleton(), 1.5F);
@@ -126,7 +126,7 @@ public class EntitySusanooSkeleton extends ElementsNarutomodMod.ModElement {
 					ModelSusanooSkeleton model = (ModelSusanooSkeleton) this.getMainModel();
 					model.renderFlame = false;
 					this.mainModel.render(entity, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scaleFactor);
-					this.bindTexture(FLAME_TEXTURE);
+					this.bindTexture(this.flameTexture);
 					model.renderFlame = true;
 					this.mainModel.render(entity, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scaleFactor * 0.99f);
 				}
@@ -134,7 +134,7 @@ public class EntitySusanooSkeleton extends ElementsNarutomodMod.ModElement {
 
 			@Override
 			protected ResourceLocation getEntityTexture(EntityCustom entity) {
-				return MAIN_TEXTURE;
+				return this.mainTexture;
 			}
 		}
 
