@@ -8,7 +8,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.init.MobEffects;
-import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 
 import net.narutomod.ElementsNarutomodMod;
 
@@ -18,7 +18,7 @@ public class ProcedureOnLivingJump extends ElementsNarutomodMod.ModElement {
 		super(instance, 322);
 	}
 
-	public static void lunge(EntityLivingBase entity) {
+	public static void lunge(EntityPlayer entity) {
 		double speed = ProcedureUtils.getModifiedSpeed(entity);
 		if (entity.isPotionActive(MobEffects.JUMP_BOOST) && speed >= 0.14d && entity.isSneaking()) {
 			double motionY = 0.42d + (double) (entity.getActivePotionEffect(MobEffects.JUMP_BOOST).getAmplifier() + 1) * 0.1d;
@@ -47,9 +47,8 @@ public class ProcedureOnLivingJump extends ElementsNarutomodMod.ModElement {
 
 	@SubscribeEvent
 	public void lunge(LivingEvent.LivingJumpEvent event) {
-		if (event != null) {
-			// EntityLivingBase entity = event.getEntityLiving();
-			lunge(event.getEntityLiving());
+		if (event != null && event.getEntityLiving() instanceof EntityPlayer) {
+			lunge((EntityPlayer)event.getEntityLiving());
 		}
 	}
 

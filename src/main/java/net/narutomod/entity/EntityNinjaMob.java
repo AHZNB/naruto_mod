@@ -94,6 +94,7 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 			this.experienceValue = level;
 			this.isImmuneToFire = false;
 			this.stepHeight = 8f;
+			this.moveHelper = new MoveHelper(this);
 			this.setNoAI(false);
 			this.setCanPickUpLoot(false);
 			this.setCustomNameTag(this.getName());
@@ -433,7 +434,7 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 	        double d0 = this.target.posX - this.leaper.posX;
 	        double d1 = this.target.posZ - this.leaper.posZ;
 	        double d4 = MathHelper.sqrt(d0 * d0 + d1 * d1);
-	        double d2 = this.target.posY - this.leaper.posY + d4 * 0.2d;
+	        double d2 = this.target.posY + (double)this.target.height / 3d - this.leaper.posY + d4 * 0.2d;
 	        double d3 = MathHelper.sqrt(d0 * d0 + d1 * d1 + d2 * d2);
 	        if (d3 >= 1.0E-4D) {
 	            this.leaper.motionX = d0 / d3 * (double)this.leapStrength;
@@ -665,6 +666,38 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 		public void startExecuting() {
 			this.taskOwner.setAttackTarget(this.target);
 			super.startExecuting();
+		}
+	}
+
+	static class MoveHelper extends EntityMoveHelper {
+		MoveHelper(Base entityIn) {
+			super(entityIn);
+		}
+
+		@Override
+		public void onUpdateMoveHelper() {
+			if (this.isUpdating()) {
+	            this.action = EntityMoveHelper.Action.WAIT;
+	            double d0 = this.posX - this.entity.posX;
+	            double d1 = this.posZ - this.entity.posZ;
+	            double d2 = this.posY - this.entity.posY;
+	            double d3 = d0 * d0 + d2 * d2 + d1 * d1;
+	            if (d3 < 2.5E-7D) {
+	                this.entity.setMoveForward(0.0F);
+	                return;
+	            }
+	            float f9 = (float)(MathHelper.atan2(d1, d0) * (180D / Math.PI)) - 90.0F;
+	            this.entity.rotationYaw = this.limitAngle(this.entity.rotationYaw, f9, 90.0F);
+	            this.entity.setAIMoveSpeed((float)(this.speed * this.entity.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).getAttributeValue()));
+	            if (d2 > (double)this.entity.stepHeight && d0 * d0 + d1 * d1 < (double)Math.max(1.0F, this.entity.width)) {
+	                this.entity.getJumpHelper().setJumping();
+	                this.action = EntityMoveHelper.Action.JUMPING;
+	            } else if (d2 > 0.01d && d2 <= (double)this.entity.stepHeight && this.entity.collidedHorizontally) {
+	            	this.entity.motionY = 0.4d;
+	            }
+			} else {
+				super.onUpdateMoveHelper();
+			}
 		}
 	}
 
