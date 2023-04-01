@@ -17,6 +17,8 @@
 */
 package net.narutomod;
 
+import net.minecraft.client.model.ModelPlayer;
+import net.minecraft.util.EnumHand;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -71,7 +73,8 @@ public class PlayerRender extends ElementsNarutomodMod.ModElement {
 	 */
 	public PlayerRender(ElementsNarutomodMod instance) {
 		super(instance, 608);
-	}
+	}
+
 	
 	@SideOnly(Side.CLIENT)
 	@Override
@@ -142,8 +145,7 @@ public class PlayerRender extends ElementsNarutomodMod.ModElement {
 	}
 
 	private static boolean shouldNarutoRun(EntityPlayer player) {
-		return !player.capabilities.isFlying 
-		 && player.getPositionVector().subtract(player.lastTickPosX, player.lastTickPosY, player.lastTickPosZ).lengthSquared() >= 0.125d;
+		return !player.capabilities.isFlying && player.isSprinting();
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -175,14 +177,17 @@ public class PlayerRender extends ElementsNarutomodMod.ModElement {
 					GlStateManager.disableBlendProfile(GlStateManager.Profile.TRANSPARENT_MODEL);
 				}
 			} else {
-				//boolean flag = shouldNarutoRun(entityIn);
-				//if (flag) {
-				//	this.doNarutoRunPre();
-				//}
+				boolean flag = shouldNarutoRun(entityIn);
+
+				if (flag) {
+					this.doNarutoRunPre();
+				}
+
 				super.renderModel(entityIn, f0, f1, f2, f3, f4, f5);
-				//if (flag) {
-				//	this.doNarutoRunPost(f5);
-				//}
+
+				if (flag) {
+					this.doNarutoRunPost(f5);
+				}
 			}
 		}
 
@@ -206,26 +211,42 @@ public class PlayerRender extends ElementsNarutomodMod.ModElement {
 
 		private void doNarutoRunPre() {
 			ModelBiped model = this.getMainModel();
+			model.bipedBody.showModel = false;
 			model.bipedRightArm.showModel = false;
 			model.bipedLeftArm.showModel = false;
+			model.isSneak = true;
 		}
 
 		private void doNarutoRunPost(float scale) {
 			ModelBiped model = this.getMainModel();
+			model.bipedBody.showModel = true;
 			model.bipedRightArm.showModel = true;
 			model.bipedLeftArm.showModel = true;
-			model.bipedRightArm.rotateAngleX = 1.3963f;
-			model.bipedLeftArm.rotateAngleX = 1.3963f;
+
+			model.bipedBody.rotateAngleX = 0.5F;
+
+			boolean rotateLeftArm = true, rotateRightArm = true;
+
+			EntityPlayer player = Minecraft.getMinecraft().player;
+
+			if (player.isHandActive()) {
+				rotateRightArm = player.getActiveHand() != EnumHand.MAIN_HAND;
+				rotateLeftArm = player.getActiveHand() != EnumHand.OFF_HAND;
+			} else if (player.isSwingInProgress) {
+				rotateRightArm = player.swingingHand != EnumHand.MAIN_HAND;
+				rotateLeftArm = player.swingingHand != EnumHand.OFF_HAND;
+			}
+
+			if (rotateRightArm) {
+				model.bipedRightArm.rotateAngleX = 1.6F;
+			}
+			if (rotateLeftArm) {
+				model.bipedLeftArm.rotateAngleX = 1.6F;
+			}
+
+			model.bipedBody.render(scale);
 			model.bipedRightArm.render(scale);
 			model.bipedLeftArm.render(scale);
-		}
-		
-		@Override
-		protected void applyRotations(AbstractClientPlayer entityLiving, float p_77043_2_, float rotationYaw, float partialTicks) {
-			super.applyRotations(entityLiving, p_77043_2_, rotationYaw, partialTicks);
-			if (shouldNarutoRun(entityLiving)) {
-				this.getMainModel().isSneak = true;
-			}
 		}
 
 		@Override
