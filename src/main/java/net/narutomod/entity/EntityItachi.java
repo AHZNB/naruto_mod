@@ -420,6 +420,7 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
+	@SideOnly(Side.CLIENT)
 	@Override
 	public void preInit(FMLPreInitializationEvent event) {
 		new Renderer().register();

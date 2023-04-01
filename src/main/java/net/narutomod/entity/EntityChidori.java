@@ -72,14 +72,6 @@ public class EntityChidori extends ElementsNarutomodMod.ModElement {
 			.id(new ResourceLocation("narutomod", "chidori_spear"), ENTITYID_RANGED).name("chidori_spear").tracker(64, 3, true).build());
 	}
 
-	@SideOnly(Side.CLIENT)
-	@Override
-	public void preInit(FMLPreInitializationEvent event) {
-		RenderingRegistry.registerEntityRenderingHandler(EC.class, renderManager -> {
-			return new RenderChidori(renderManager);
-		});
-	}
-
 	public static class EC extends Entity implements ProcedureSync.CPacketVec3d.IHandler {
 		private static final DataParameter<Integer> OWNER_ID = EntityDataManager.<Integer>createKey(EC.class, DataSerializers.VARINT);
 		private final int growTime = 40;
@@ -356,86 +348,100 @@ public class EntityChidori extends ElementsNarutomodMod.ModElement {
 	}
 
 	@SideOnly(Side.CLIENT)
-	public class RenderChidori extends Render<EC> {
-		public RenderChidori(RenderManager renderManagerIn) {
-			super(renderManagerIn);
-		}
+	@Override
+	public void preInit(FMLPreInitializationEvent event) {
+		new Renderer().register();
+	}
 
+	public static class Renderer extends EntityRendererRegister {
+		@SideOnly(Side.CLIENT)
 		@Override
-		public boolean shouldRender(EC livingEntity, net.minecraft.client.renderer.culling.ICamera camera, double camX, double camY, double camZ) {
-			return true;
+		public void register() {
+			RenderingRegistry.registerEntityRenderingHandler(EC.class, renderManager -> new RenderChidori(renderManager));
 		}
 
-		private Vec3d transform3rdPerson(Vec3d startvec, Vec3d angles, EntityLivingBase entity, EnumHandSide side, float pt) {
-			return ProcedureUtils.rotateRoll(startvec, (float)angles.z).rotatePitch((float)-angles.x).rotateYaw((float)-angles.y)
-			   .addVector(0.0586F * (side==EnumHandSide.RIGHT?-6:6), 1.3F-(entity.isSneaking()?0.3f:0f), -0.05F)
-			   .rotateYaw(-this.interpolateRotation(entity.prevRenderYawOffset, entity.renderYawOffset, pt) * (float)(Math.PI / 180d))
-			   .addVector(entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * pt, entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * pt, entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * pt);
-		}
+		@SideOnly(Side.CLIENT)
+		public class RenderChidori extends Render<EC> {
+			public RenderChidori(RenderManager renderManagerIn) {
+				super(renderManagerIn);
+			}
 
-		@Override
-		public void doRender(EC entity, double x, double y, double z, float f, float partialTicks) {
-			EntityLivingBase user = entity.getOwner();
-			if (user != null) {
-				Entity viewer = Minecraft.getMinecraft().getRenderViewEntity();
-				RenderLivingBase renderer = (RenderLivingBase)this.renderManager.getEntityRenderObject(user);
-				ModelRenderer rightarmModel = ((ModelBiped)renderer.getMainModel()).bipedRightArm;
-				Vec3d rightarmAngles = new Vec3d(rightarmModel.rotateAngleX, rightarmModel.rotateAngleY, rightarmModel.rotateAngleZ);
-				ModelRenderer leftarmModel = ((ModelBiped)renderer.getMainModel()).bipedLeftArm;
-				Vec3d leftarmAngles = new Vec3d(leftarmModel.rotateAngleX, leftarmModel.rotateAngleY, leftarmModel.rotateAngleZ);
-				EnumHandSide mainhandside = user.getPrimaryHand();
-				Vec3d mainarmAngles = mainhandside == EnumHandSide.RIGHT ? rightarmAngles : leftarmAngles;
-				Vec3d offarmAngles = mainhandside == EnumHandSide.RIGHT ? leftarmAngles : rightarmAngles;
-				boolean flag1 = entity.isHoldingWeapon(EnumHand.MAIN_HAND);
-				boolean flag2 = entity.isHoldingWeapon(EnumHand.OFF_HAND);
-				if (!flag1) {
-					mainarmAngles = this.forceRightArmBowPose(mainarmAngles, user, partialTicks);
-					Vec3d vec0 = this.transform3rdPerson(new Vec3d(0d, -0.7d, 0d), mainarmAngles, user, mainhandside, partialTicks);
-					Particles.spawnParticle(entity.world, Particles.Types.SMOKE, vec0.x, vec0.y, vec0.z, 1, 0d, 0d, 0d, 0d, 0d, 0d,
-					 0x20FFFFFF, 5 + user.getRNG().nextInt(55), 5, 0xF0, -1, 0);
-					if (!(entity instanceof Spear)) {
-						EntityLightningArc.spawnAsParticle(entity.world, vec0.x, vec0.y, vec0.z, entity.getGrowth(), 0d, 0d, 0d, 0xc00000ff, 1);
-					}
-					if (viewer.equals(user)) {
-						ProcedureSync.CPacketVec3d.sendToServer(entity, vec0);
-					}
-				} else {
-					if (flag1 && entity.world.rand.nextFloat() <= 0.01f) {
-						Vec3d vec0 = this.transform3rdPerson(new Vec3d(0d, -0.6875d, 0.2d), mainarmAngles, user, mainhandside, partialTicks);
-						Vec3d vec1 = this.transform3rdPerson(new Vec3d(0d, -0.6875d, 1.6d), mainarmAngles, user, mainhandside, partialTicks)
-						 .subtract(vec0).scale(0.2);
-						vec0 = vec0.add(vec1);
-						EntityLightningArc.spawnAsParticle(entity.world, vec0.x, vec0.y, vec0.z, 0.01d, vec1.x, vec1.y, vec1.z);
+			@Override
+			public boolean shouldRender(EC livingEntity, net.minecraft.client.renderer.culling.ICamera camera, double camX, double camY, double camZ) {
+				return true;
+			}
+
+			private Vec3d transform3rdPerson(Vec3d startvec, Vec3d angles, EntityLivingBase entity, EnumHandSide side, float pt) {
+				return ProcedureUtils.rotateRoll(startvec, (float)angles.z).rotatePitch((float)-angles.x).rotateYaw((float)-angles.y)
+						.addVector(0.0586F * (side==EnumHandSide.RIGHT?-6:6), 1.3F-(entity.isSneaking()?0.3f:0f), -0.05F)
+						.rotateYaw(-this.interpolateRotation(entity.prevRenderYawOffset, entity.renderYawOffset, pt) * (float)(Math.PI / 180d))
+						.addVector(entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * pt, entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * pt, entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * pt);
+			}
+
+			@Override
+			public void doRender(EC entity, double x, double y, double z, float f, float partialTicks) {
+				EntityLivingBase user = entity.getOwner();
+				if (user != null) {
+					Entity viewer = Minecraft.getMinecraft().getRenderViewEntity();
+					RenderLivingBase renderer = (RenderLivingBase)this.renderManager.getEntityRenderObject(user);
+					ModelRenderer rightarmModel = ((ModelBiped)renderer.getMainModel()).bipedRightArm;
+					Vec3d rightarmAngles = new Vec3d(rightarmModel.rotateAngleX, rightarmModel.rotateAngleY, rightarmModel.rotateAngleZ);
+					ModelRenderer leftarmModel = ((ModelBiped)renderer.getMainModel()).bipedLeftArm;
+					Vec3d leftarmAngles = new Vec3d(leftarmModel.rotateAngleX, leftarmModel.rotateAngleY, leftarmModel.rotateAngleZ);
+					EnumHandSide mainhandside = user.getPrimaryHand();
+					Vec3d mainarmAngles = mainhandside == EnumHandSide.RIGHT ? rightarmAngles : leftarmAngles;
+					Vec3d offarmAngles = mainhandside == EnumHandSide.RIGHT ? leftarmAngles : rightarmAngles;
+					boolean flag1 = entity.isHoldingWeapon(EnumHand.MAIN_HAND);
+					boolean flag2 = entity.isHoldingWeapon(EnumHand.OFF_HAND);
+					if (!flag1) {
+						mainarmAngles = this.forceRightArmBowPose(mainarmAngles, user, partialTicks);
+						Vec3d vec0 = this.transform3rdPerson(new Vec3d(0d, -0.7d, 0d), mainarmAngles, user, mainhandside, partialTicks);
+						Particles.spawnParticle(entity.world, Particles.Types.SMOKE, vec0.x, vec0.y, vec0.z, 1, 0d, 0d, 0d, 0d, 0d, 0d,
+								0x20FFFFFF, 5 + user.getRNG().nextInt(55), 5, 0xF0, -1, 0);
+						if (!(entity instanceof Spear)) {
+							EntityLightningArc.spawnAsParticle(entity.world, vec0.x, vec0.y, vec0.z, entity.getGrowth(), 0d, 0d, 0d, 0xc00000ff, 1);
+						}
 						if (viewer.equals(user)) {
 							ProcedureSync.CPacketVec3d.sendToServer(entity, vec0);
 						}
-					}
-					if (flag2 && entity.world.rand.nextFloat() <= 0.01f) {
-						Vec3d vec0 = this.transform3rdPerson(new Vec3d(0d, -0.6875d, 0.2d), offarmAngles, user, mainhandside.opposite(), partialTicks);
-						Vec3d vec1 = this.transform3rdPerson(new Vec3d(0d, -0.6875d, 1.6d), offarmAngles, user, mainhandside.opposite(), partialTicks)
-						 .subtract(vec0).scale(0.2);
-						vec0 = vec0.add(vec1);
-						EntityLightningArc.spawnAsParticle(entity.world, vec0.x, vec0.y, vec0.z, 0.01d, vec1.x, vec1.y, vec1.z);
+					} else {
+						if (flag1 && entity.world.rand.nextFloat() <= 0.01f) {
+							Vec3d vec0 = this.transform3rdPerson(new Vec3d(0d, -0.6875d, 0.2d), mainarmAngles, user, mainhandside, partialTicks);
+							Vec3d vec1 = this.transform3rdPerson(new Vec3d(0d, -0.6875d, 1.6d), mainarmAngles, user, mainhandside, partialTicks)
+									.subtract(vec0).scale(0.2);
+							vec0 = vec0.add(vec1);
+							EntityLightningArc.spawnAsParticle(entity.world, vec0.x, vec0.y, vec0.z, 0.01d, vec1.x, vec1.y, vec1.z);
+							if (viewer.equals(user)) {
+								ProcedureSync.CPacketVec3d.sendToServer(entity, vec0);
+							}
+						}
+						if (flag2 && entity.world.rand.nextFloat() <= 0.01f) {
+							Vec3d vec0 = this.transform3rdPerson(new Vec3d(0d, -0.6875d, 0.2d), offarmAngles, user, mainhandside.opposite(), partialTicks);
+							Vec3d vec1 = this.transform3rdPerson(new Vec3d(0d, -0.6875d, 1.6d), offarmAngles, user, mainhandside.opposite(), partialTicks)
+									.subtract(vec0).scale(0.2);
+							vec0 = vec0.add(vec1);
+							EntityLightningArc.spawnAsParticle(entity.world, vec0.x, vec0.y, vec0.z, 0.01d, vec1.x, vec1.y, vec1.z);
+						}
 					}
 				}
 			}
-		}
 
-		private Vec3d forceRightArmBowPose(Vec3d ogvec, EntityLivingBase owner, float partialTicks) {
-            float f = this.interpolateRotation(owner.prevRenderYawOffset, owner.renderYawOffset, partialTicks);
-            float f1 = this.interpolateRotation(owner.prevRotationYawHead, owner.rotationYawHead, partialTicks);
-            float f2 = (f1 - f) * 0.017453292F;
-            float f7 = (owner.prevRotationPitch + (owner.rotationPitch - owner.prevRotationPitch) * partialTicks) * 0.017453292F;
-            return new Vec3d(-((float)Math.PI / 2F) + f7, -0.1F + f2, ogvec.z);
-		}
+			private Vec3d forceRightArmBowPose(Vec3d ogvec, EntityLivingBase owner, float partialTicks) {
+				float f = this.interpolateRotation(owner.prevRenderYawOffset, owner.renderYawOffset, partialTicks);
+				float f1 = this.interpolateRotation(owner.prevRotationYawHead, owner.rotationYawHead, partialTicks);
+				float f2 = (f1 - f) * 0.017453292F;
+				float f7 = (owner.prevRotationPitch + (owner.rotationPitch - owner.prevRotationPitch) * partialTicks) * 0.017453292F;
+				return new Vec3d(-((float)Math.PI / 2F) + f7, -0.1F + f2, ogvec.z);
+			}
 
-		private float interpolateRotation(float prevYawOffset, float yawOffset, float partialTicks) {
-			return prevYawOffset + ProcedureUtils.Vec2f.wrapDegrees(yawOffset - prevYawOffset) * partialTicks;
-		}
+			private float interpolateRotation(float prevYawOffset, float yawOffset, float partialTicks) {
+				return prevYawOffset + ProcedureUtils.Vec2f.wrapDegrees(yawOffset - prevYawOffset) * partialTicks;
+			}
 
-		@Override
-		protected ResourceLocation getEntityTexture(EC entity) {
-			return null;
+			@Override
+			protected ResourceLocation getEntityTexture(EC entity) {
+				return null;
+			}
 		}
 	}
 }
