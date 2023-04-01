@@ -279,6 +279,16 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 		return -1;
 	}
 
+	public static int getAvailableSlotsInMainInventory(EntityPlayer player) {
+		int i = 0;
+		for (ItemStack stack1 : player.inventory.mainInventory) {
+			if (stack1.isEmpty()) {
+				++i;
+			}
+		}
+		return i;
+	}
+
 	public static boolean attackEntityAsMob(EntityLivingBase attacker, Entity entityIn) {
 		int i = 0;
 		float f = (float) getModifiedAttackDamage(attacker);

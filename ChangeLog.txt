@@ -5,6 +5,7 @@ Jutsus:
  - changed chidori mechanics: swing at a target within 20 blocks to charge at target
  - changed earth sandwich targeting mechanics: point at block instead of entity
  - fix earth sandwich killing people again after killing them
+ - nerfed earth sandwich damage
  - unsummon your earth golem by hitting it
  - limit bug sphere to max 10, reduce chakra absorption rate from target
  - tweaked kamui teleport to use more chakra/time, give nausea effect after use

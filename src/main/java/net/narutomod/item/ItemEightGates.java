@@ -167,8 +167,11 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 					entity.addPotionEffect(new PotionEffect(MobEffects.RESISTANCE, 12, this.resistance, false, false));
 					entity.addPotionEffect(new PotionEffect(MobEffects.SPEED, 12, this.speed, false, false));
 					if (entity.getHealth() > 0 && (!(entity instanceof EntityPlayer) || !((EntityPlayer) entity).isCreative())) {
-						//entity.setHealth(entity.getHealth() - this.damage);
-						entity.attackEntityFrom(ProcedureUtils.SPECIAL_DAMAGE, this.damage);
+						if (this.damage >= 0.0f) {
+							entity.attackEntityFrom(ProcedureUtils.SPECIAL_DAMAGE, this.damage);
+						} else {
+							entity.setHealth(entity.getHealth() - this.damage);
+						}
 					}
 				}
 				if (this.canFly && entity instanceof EntityPlayer && !((EntityPlayer) entity).capabilities.allowFlying) {

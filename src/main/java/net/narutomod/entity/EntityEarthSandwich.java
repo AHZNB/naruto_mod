@@ -64,7 +64,7 @@ public class EntityEarthSandwich extends ElementsNarutomodMod.ModElement {
 	public static class EC extends Entity {
 		private static final DataParameter<Float> SCALE = EntityDataManager.<Float>createKey(EC.class, DataSerializers.FLOAT);
 		private static final DataParameter<Integer> AGE = EntityDataManager.<Integer>createKey(EC.class, DataSerializers.VARINT);
-		private final float ogWidth = 0.9375F;
+		private final float ogWidth = 0.875F;
 		private final float ogHeight = 0.375F;
 		private final int growTime = 30;
 		private final Map<EntityLivingBase, Vec3d> caughtEntities = Maps.newHashMap();
@@ -150,7 +150,7 @@ public class EntityEarthSandwich extends ElementsNarutomodMod.ModElement {
 						 	Vec3d vec = entry.getValue();
 							entity.setPositionAndUpdate(vec.x, vec.y, vec.z);
 							if (age > this.growTime - 5) {
-								entity.attackEntityFrom(DamageSource.IN_WALL, age > this.growTime ? 3f : (f * f * 3f));
+								entity.attackEntityFrom(DamageSource.IN_WALL, age > this.growTime ? 3f : (f * f));
 							}
 						} else if (!entity.isEntityAlive() || !entity.getEntityBoundingBox().intersects(this.getEntityBoundingBox())) {
 							iter.remove();
@@ -723,7 +723,7 @@ public class EntityEarthSandwich extends ElementsNarutomodMod.ModElement {
 				textureHeight = 32;
 		
 				half1 = new ModelRenderer(this);
-				half1.setRotationPoint(-1.0F, 1.0F, 0.0F);
+				half1.setRotationPoint(0.0F, 1.0F, 0.0F);
 				//setRotationAngle(half1, 0.0F, 0.0F, 1.5708F);
 				
 		
@@ -1757,7 +1757,7 @@ public class EntityEarthSandwich extends ElementsNarutomodMod.ModElement {
 				bone155.cubeList.add(new ModelBox(bone155, 0, 0, -1.0F, -1.0F, -7.0F, 2, 2, 2, 0.0F, false));
 		
 				half2 = new ModelRenderer(this);
-				half2.setRotationPoint(1.0F, 1.0F, 0.0F);
+				half2.setRotationPoint(0.0F, 1.0F, 0.0F);
 				//setRotationAngle(half2, 0.0F, 0.0F, -1.5708F);
 				
 		
