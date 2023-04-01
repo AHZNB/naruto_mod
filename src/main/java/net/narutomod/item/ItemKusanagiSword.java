@@ -44,6 +44,7 @@ import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.network.play.server.SPacketCollectItem;
 
+import net.narutomod.entity.EntityRendererRegister;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.entity.EntityScalableProjectile;
 import net.narutomod.creativetab.TabModTab;
@@ -76,14 +77,6 @@ public class ItemKusanagiSword extends ElementsNarutomodMod.ModElement {
 		ModelLoader.setCustomModelResourceLocation(block, 0, new ModelResourceLocation("narutomod:kusanagi_sword", "inventory"));
 	}
 
-	@SideOnly(Side.CLIENT)
-	@Override
-	public void preInit(FMLPreInitializationEvent event) {
-		RenderingRegistry.registerEntityRenderingHandler(EntityCustom.class, renderManager -> {
-			return new RenderCustom(renderManager, Minecraft.getMinecraft().getRenderItem());
-		});
-	}
-
 	public static class RangedItem extends Item implements ItemOnBody.Interface {
 		public RangedItem() {
 			super();
@@ -114,8 +107,10 @@ public class ItemKusanagiSword extends ElementsNarutomodMod.ModElement {
 				float power = 1f;
 				EntityCustom entityarrow = new EntityCustom(entity);
 				//entityarrow.shoot(entity.getLookVec().x, entity.getLookVec().y, entity.getLookVec().z, power, 0);
-				world.playSound(null, entity.posX, entity.posY, entity.posZ, net.minecraft.util.SoundEvent.REGISTRY
-				 .getObject(new ResourceLocation(("entity.arrow.shoot"))), SoundCategory.NEUTRAL,
+				world.playSound(null, entity.posX, entity.posY, entity.posZ,
+ net.minecraft.util.SoundEvent.REGISTRY
+				 .getObject(new ResourceLocation(("entity.arrow.shoot"))),
+ SoundCategory.NEUTRAL,
 				 1, 1f / (itemRand.nextFloat() * 0.5f + 1f) + (power / 2));
 				world.spawnEntity(entityarrow);
 				itemstack.shrink(1);
@@ -251,37 +246,51 @@ public class ItemKusanagiSword extends ElementsNarutomodMod.ModElement {
 	}
 
 	@SideOnly(Side.CLIENT)
-	public class RenderCustom extends Render<EntityCustom> {
-		protected final ItemStack itemstack;
-		private final RenderItem itemRenderer;
+	@Override
+	public void preInit(FMLPreInitializationEvent event) {
+		new Renderer().register();
+	}
 
-		public RenderCustom(RenderManager renderManagerIn, RenderItem itemRendererIn) {
-			super(renderManagerIn);
-			this.itemstack = new ItemStack(block);
-			this.itemstack.setTagCompound(new net.minecraft.nbt.NBTTagCompound());
-			this.itemstack.getTagCompound().setBoolean("inAir", true);
-			this.itemRenderer = itemRendererIn;
+	public static class Renderer extends EntityRendererRegister {
+		@SideOnly(Side.CLIENT)
+		@Override
+		public void register() {
+			RenderingRegistry.registerEntityRenderingHandler(EntityCustom.class, renderManager -> new RenderCustom(renderManager, Minecraft.getMinecraft().getRenderItem()));
 		}
 
-		@Override
-		public void doRender(EntityCustom entity, double x, double y, double z, float entityYaw, float pt) {
-			GlStateManager.pushMatrix();
-			GlStateManager.translate((float) x, (float) y, (float) z);
-	        GlStateManager.rotate(-entity.prevRotationYaw - MathHelper.wrapDegrees(entity.rotationYaw - entity.prevRotationYaw) * pt + 180F, 0.0F, 1.0F, 0.0F);
-	        GlStateManager.rotate(-entity.prevRotationPitch - (entity.rotationPitch - entity.prevRotationPitch) * pt + 90F, 1.0F, 0.0F, 0.0F);
-			GlStateManager.enableRescaleNormal();
-			this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
-			GlStateManager.disableLighting();
-			OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240.0F, 240.0F);
-			this.itemRenderer.renderItem(this.itemstack, ItemCameraTransforms.TransformType.GROUND);
-			GlStateManager.enableLighting();
-			GlStateManager.disableRescaleNormal();
-			GlStateManager.popMatrix();
-		}
+		@SideOnly(Side.CLIENT)
+		public class RenderCustom extends Render<EntityCustom> {
+			protected final ItemStack itemstack;
+			private final RenderItem itemRenderer;
 
-		@Override
-		protected ResourceLocation getEntityTexture(EntityCustom entity) {
-			return TextureMap.LOCATION_BLOCKS_TEXTURE;
+			public RenderCustom(RenderManager renderManagerIn, RenderItem itemRendererIn) {
+				super(renderManagerIn);
+				this.itemstack = new ItemStack(block);
+				this.itemstack.setTagCompound(new net.minecraft.nbt.NBTTagCompound());
+				this.itemstack.getTagCompound().setBoolean("inAir", true);
+				this.itemRenderer = itemRendererIn;
+			}
+
+			@Override
+			public void doRender(EntityCustom entity, double x, double y, double z, float entityYaw, float pt) {
+				GlStateManager.pushMatrix();
+				GlStateManager.translate((float) x, (float) y, (float) z);
+				GlStateManager.rotate(-entity.prevRotationYaw - MathHelper.wrapDegrees(entity.rotationYaw - entity.prevRotationYaw) * pt + 180F, 0.0F, 1.0F, 0.0F);
+				GlStateManager.rotate(-entity.prevRotationPitch - (entity.rotationPitch - entity.prevRotationPitch) * pt + 90F, 1.0F, 0.0F, 0.0F);
+				GlStateManager.enableRescaleNormal();
+				this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+				GlStateManager.disableLighting();
+				OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240.0F, 240.0F);
+				this.itemRenderer.renderItem(this.itemstack, ItemCameraTransforms.TransformType.GROUND);
+				GlStateManager.enableLighting();
+				GlStateManager.disableRescaleNormal();
+				GlStateManager.popMatrix();
+			}
+
+			@Override
+			protected ResourceLocation getEntityTexture(EntityCustom entity) {
+				return TextureMap.LOCATION_BLOCKS_TEXTURE;
+			}
 		}
 	}
 }
