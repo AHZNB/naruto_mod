@@ -17,6 +17,7 @@
 */
 package net.narutomod;
 
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.model.ModelPlayer;
 import net.minecraft.client.renderer.entity.layers.LayerBipedArmor;
 import net.minecraft.util.EnumHand;
@@ -137,6 +138,7 @@ public class PlayerRender extends ElementsNarutomodMod.ModElement {
 		return !player.capabilities.isFlying && player.isSprinting();
 	}
 
+	@SideOnly(Side.CLIENT)
 	private static void doNarutoRunPre(ModelBiped model) {
 		model.bipedBody.showModel = false;
 		model.bipedRightArm.showModel = false;
@@ -144,6 +146,7 @@ public class PlayerRender extends ElementsNarutomodMod.ModElement {
 		model.isSneak = true;
 	}
 
+	@SideOnly(Side.CLIENT)
 	private static void doNarutoRunPost(ModelBiped model, float scale) {
 		model.bipedBody.showModel = true;
 		model.bipedRightArm.showModel = true;
@@ -153,7 +156,7 @@ public class PlayerRender extends ElementsNarutomodMod.ModElement {
 
 		boolean rotateLeftArm = true, rotateRightArm = true;
 
-		EntityPlayer player = Minecraft.getMinecraft().player;
+		EntityPlayerSP player = Minecraft.getMinecraft().player;
 
 		if (player.isHandActive()) {
 			rotateRightArm = player.getActiveHand() != EnumHand.MAIN_HAND;
