@@ -46,7 +46,7 @@ General:
  - added a config option for players being able to spawn as jinchuriki
  - killing a gedo mazo that has bijus sealed in itself will release the bijus
  - ninjas can only gain ninjaxp through damaging or getting damaged by hostile mobs or players
- - implemented naruto run don't know why it was disabled though
+ - completely removed naruto run and prevented the player model from sneaking
  - added a config option to make bosses attack on sight
 
 0.2.11-beta ===============================================================================
