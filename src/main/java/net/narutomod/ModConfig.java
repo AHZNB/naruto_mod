@@ -14,7 +14,7 @@ public class ModConfig extends ElementsNarutomodMod.ModElement {
 	@Config.Comment("If enabled, rinnegan/tenseigan/ems gained without the prerequisite achievements will be removed.")
 	public static boolean REMOVE_CHEAT_DOJUTSUS = false;
 
-	@Config.Comment("itachi's spawn weight (0~20). 0 to stop spawning.")
+	@Config.Comment("Itachi's spawn weight (0~20). 0 to stop spawning.")
 	public static int SPAWN_WEIGHT_ITACHI = 5;
 
 	@Config.Comment("Kisame's spawn weight (0~20). 0 to stop spawning.")
@@ -25,6 +25,9 @@ public class ModConfig extends ElementsNarutomodMod.ModElement {
 
 	@Config.Comment("White zetsu's spawn weight (0~20). 0 to stop spawning.")
 	public static int SPAWN_WEIGHT_WHITEZETSU = 10;
+
+	@Config.Comment("Whether or not bosses are aggressive on sight")
+	public static boolean AGGRESSIVE_BOSSES = false;
 
 	public ModConfig(ElementsNarutomodMod instance) {
 		super(instance, 837);

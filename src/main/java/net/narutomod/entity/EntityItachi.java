@@ -369,6 +369,10 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void addTrackingPlayer(EntityPlayerMP player) {
 			super.addTrackingPlayer(player);
+
+			if (ModConfig.AGGRESSIVE_BOSSES) {
+				this.setAttackTarget(player);
+			}
 		}
 
 		@Override
