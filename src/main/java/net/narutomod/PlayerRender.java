@@ -18,35 +18,27 @@
 package net.narutomod;
 
 import net.minecraft.client.model.ModelPlayer;
+import net.minecraft.client.renderer.entity.layers.LayerBipedArmor;
 import net.minecraft.util.EnumHand;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.common.MinecraftForge;
 
-import net.minecraft.world.World;
 import net.minecraft.util.ResourceLocation;
 //import net.minecraft.util.EnumHandSide;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityList;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemArmor;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.entity.layers.LayerRenderer;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.entity.RenderPlayer;
-import net.minecraft.client.renderer.entity.RenderLivingBase;
 import net.minecraft.client.model.ModelBiped;
-import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.Minecraft;
 
 import net.narutomod.item.ItemOnBody;
@@ -54,10 +46,7 @@ import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.procedure.ProcedureSync;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.Map;
-import java.util.UUID;
-import java.util.Iterator;
 import javax.annotation.Nullable;
 import com.google.common.collect.Maps;
 
@@ -148,6 +137,44 @@ public class PlayerRender extends ElementsNarutomodMod.ModElement {
 		return !player.capabilities.isFlying && player.isSprinting();
 	}
 
+	private static void doNarutoRunPre(ModelBiped model) {
+		model.bipedBody.showModel = false;
+		model.bipedRightArm.showModel = false;
+		model.bipedLeftArm.showModel = false;
+		model.isSneak = true;
+	}
+
+	private static void doNarutoRunPost(ModelBiped model, float scale) {
+		model.bipedBody.showModel = true;
+		model.bipedRightArm.showModel = true;
+		model.bipedLeftArm.showModel = true;
+
+		model.bipedBody.rotateAngleX = 0.5F;
+
+		boolean rotateLeftArm = true, rotateRightArm = true;
+
+		EntityPlayer player = Minecraft.getMinecraft().player;
+
+		if (player.isHandActive()) {
+			rotateRightArm = player.getActiveHand() != EnumHand.MAIN_HAND;
+			rotateLeftArm = player.getActiveHand() != EnumHand.OFF_HAND;
+		} else if (player.isSwingInProgress) {
+			rotateRightArm = player.swingingHand != EnumHand.MAIN_HAND;
+			rotateLeftArm = player.swingingHand != EnumHand.OFF_HAND;
+		}
+
+		if (rotateRightArm) {
+			model.bipedRightArm.rotateAngleX = 1.6F;
+		}
+		if (rotateLeftArm) {
+			model.bipedLeftArm.rotateAngleX = 1.6F;
+		}
+
+		model.bipedBody.render(scale);
+		model.bipedRightArm.render(scale);
+		model.bipedLeftArm.render(scale);
+	}
+
 	@SideOnly(Side.CLIENT)
 	public class Renderer extends RenderPlayer {
 		public Renderer(RenderManager renderManager) {
@@ -157,6 +184,10 @@ public class PlayerRender extends ElementsNarutomodMod.ModElement {
 		public Renderer(RenderManager renderManager, boolean useSmallArms) {
 			super(renderManager, useSmallArms);
 			//this.mainModel = new ModelPlayerCustom(0.0F, useSmallArms);
+
+			this.layerRenderers.remove(0);
+			this.addLayer(new CustomLayerBipedArmor(this));
+
 			this.addLayer(new LayerInventoryItem(this));
 			/*Iterator iter = this.layerRenderers.iterator();
 			while (iter.hasNext()) {
@@ -180,13 +211,13 @@ public class PlayerRender extends ElementsNarutomodMod.ModElement {
 				boolean flag = shouldNarutoRun(entityIn);
 
 				if (flag) {
-					this.doNarutoRunPre();
+					doNarutoRunPre(this.getMainModel());
 				}
 
 				super.renderModel(entityIn, f0, f1, f2, f3, f4, f5);
 
 				if (flag) {
-					this.doNarutoRunPost(f5);
+					doNarutoRunPost(this.getMainModel(), f5);
 				}
 			}
 		}
@@ -205,48 +236,9 @@ public class PlayerRender extends ElementsNarutomodMod.ModElement {
 				} else {
 					target = entity;
 				}
+
 				super.renderLayers(target, f0, f1, f2, f3, f4, f5, f6);
 			}
-		}
-
-		private void doNarutoRunPre() {
-			ModelBiped model = this.getMainModel();
-			model.bipedBody.showModel = false;
-			model.bipedRightArm.showModel = false;
-			model.bipedLeftArm.showModel = false;
-			model.isSneak = true;
-		}
-
-		private void doNarutoRunPost(float scale) {
-			ModelBiped model = this.getMainModel();
-			model.bipedBody.showModel = true;
-			model.bipedRightArm.showModel = true;
-			model.bipedLeftArm.showModel = true;
-
-			model.bipedBody.rotateAngleX = 0.5F;
-
-			boolean rotateLeftArm = true, rotateRightArm = true;
-
-			EntityPlayer player = Minecraft.getMinecraft().player;
-
-			if (player.isHandActive()) {
-				rotateRightArm = player.getActiveHand() != EnumHand.MAIN_HAND;
-				rotateLeftArm = player.getActiveHand() != EnumHand.OFF_HAND;
-			} else if (player.isSwingInProgress) {
-				rotateRightArm = player.swingingHand != EnumHand.MAIN_HAND;
-				rotateLeftArm = player.swingingHand != EnumHand.OFF_HAND;
-			}
-
-			if (rotateRightArm) {
-				model.bipedRightArm.rotateAngleX = 1.6F;
-			}
-			if (rotateLeftArm) {
-				model.bipedLeftArm.rotateAngleX = 1.6F;
-			}
-
-			model.bipedBody.render(scale);
-			model.bipedRightArm.render(scale);
-			model.bipedLeftArm.render(scale);
 		}
 
 		@Override
@@ -475,4 +467,34 @@ public class PlayerRender extends ElementsNarutomodMod.ModElement {
 			}
 		}
 	}*/
+
+	@SideOnly(Side.CLIENT)
+	public static class CustomLayerBipedArmor extends LayerBipedArmor {
+		private final RenderPlayer playerRenderer;
+
+		public CustomLayerBipedArmor(RenderPlayer playerRendererIn) {
+			super(playerRendererIn);
+
+			this.playerRenderer = playerRendererIn;
+		}
+
+		@Override
+		protected void setModelSlotVisible(ModelBiped model, EntityEquipmentSlot slotIn) {
+			if (shouldNarutoRun(Minecraft.getMinecraft().player) && slotIn == EntityEquipmentSlot.CHEST) {
+				doNarutoRunPre(model);
+			}
+			else {
+				super.setModelSlotVisible(model, slotIn);
+			}
+		}
+
+		@Override
+		public void doRenderLayer(EntityLivingBase entitylivingbaseIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
+			super.doRenderLayer(entitylivingbaseIn, limbSwing, limbSwingAmount, partialTicks, ageInTicks, netHeadYaw, headPitch, scale);
+
+			if (shouldNarutoRun(Minecraft.getMinecraft().player)) {
+				doNarutoRunPost(this.modelArmor, scale);
+			}
+		}
+	}
 }
