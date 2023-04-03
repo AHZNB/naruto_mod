@@ -39,6 +39,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
+import net.minecraft.client.renderer.entity.layers.LayerBipedArmor;
 import net.minecraft.client.renderer.entity.layers.LayerRenderer;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.entity.RenderPlayer;
@@ -72,7 +73,6 @@ public class PlayerRender extends ElementsNarutomodMod.ModElement {
 	public PlayerRender(ElementsNarutomodMod instance) {
 		super(instance, 608);
 	}
-
 
 	@SideOnly(Side.CLIENT)
 	@Override
@@ -142,11 +142,6 @@ public class PlayerRender extends ElementsNarutomodMod.ModElement {
 		return entity.getEntityData().hasKey(COLORMULTIPLIER) ? entity.getEntityData().getInteger(COLORMULTIPLIER) : 0;
 	}
 
-	private static boolean shouldNarutoRun(EntityPlayer player) {
-		return !player.capabilities.isFlying
-				&& player.getPositionVector().subtract(player.lastTickPosX, player.lastTickPosY, player.lastTickPosZ).lengthSquared() >= 0.125d;
-	}
-
 	@SideOnly(Side.CLIENT)
 	public class Renderer extends RenderPlayer {
 		public Renderer(RenderManager renderManager) {
@@ -155,16 +150,15 @@ public class PlayerRender extends ElementsNarutomodMod.ModElement {
 
 		public Renderer(RenderManager renderManager, boolean useSmallArms) {
 			super(renderManager, useSmallArms);
-			//this.mainModel = new ModelPlayerCustom(0.0F, useSmallArms);
-			this.addLayer(new LayerInventoryItem(this));
-			/*Iterator iter = this.layerRenderers.iterator();
+			Iterator iter = this.layerRenderers.iterator();
 			while (iter.hasNext()) {
 				LayerRenderer renderer = (LayerRenderer)iter.next();
-				if (renderer instanceof net.minecraft.client.renderer.entity.layers.LayerEntityOnShoulder) {
+				if (renderer instanceof LayerBipedArmor) {
 					iter.remove();
 				}
 			}
-			this.addLayer(new LayerEntityOnShoulder(renderManager));*/
+			this.addLayer(new LayerArmorCustom(this));
+			this.addLayer(new LayerInventoryItem(this));
 		}
 
 		@Override
@@ -176,14 +170,14 @@ public class PlayerRender extends ElementsNarutomodMod.ModElement {
 					GlStateManager.disableBlendProfile(GlStateManager.Profile.TRANSPARENT_MODEL);
 				}
 			} else {
-				//boolean flag = shouldNarutoRun(entityIn);
-				//if (flag) {
-				//	this.doNarutoRunPre();
-				//}
+				boolean flag = shouldNarutoRun(entityIn);
+				if (flag) {
+					this.doNarutoRunPre(this.getMainModel());
+				}
 				super.renderModel(entityIn, f0, f1, f2, f3, f4, f5);
-				//if (flag) {
-				//	this.doNarutoRunPost(f5);
-				//}
+				if (flag) {
+					this.doNarutoRunPost(this.getMainModel(), entityIn.isSneaking(), f5);
+				}
 			}
 		}
 
@@ -205,29 +199,30 @@ public class PlayerRender extends ElementsNarutomodMod.ModElement {
 			}
 		}
 
-		private void doNarutoRunPre() {
-			ModelBiped model = this.getMainModel();
+		private void doNarutoRunPre(ModelBiped model) {
 			model.bipedRightArm.showModel = false;
 			model.bipedLeftArm.showModel = false;
+			model.isSneak = true;
 		}
-
-		private void doNarutoRunPost(float scale) {
-			ModelBiped model = this.getMainModel();
+	
+		private void doNarutoRunPost(ModelBiped model, boolean realSneak, float scale) {
 			model.bipedRightArm.showModel = true;
 			model.bipedLeftArm.showModel = true;
+			if (realSneak) {
+				model.bipedRightArm.rotationPointY += 3.25D;
+				model.bipedLeftArm.rotationPointY += 3.25D;
+			}
 			model.bipedRightArm.rotateAngleX = 1.3963f;
 			model.bipedLeftArm.rotateAngleX = 1.3963f;
+			model.bipedRightArm.rotateAngleY = -0.2618f;
+			model.bipedLeftArm.rotateAngleY = 0.2618f;
 			model.bipedRightArm.render(scale);
 			model.bipedLeftArm.render(scale);
-		}
-
-		/*@Override
-		protected void applyRotations(AbstractClientPlayer entityLiving, float p_77043_2_, float rotationYaw, float partialTicks) {
-			super.applyRotations(entityLiving, p_77043_2_, rotationYaw, partialTicks);
-			if (shouldNarutoRun(entityLiving)) {
-				this.getMainModel().isSneak = true;
+			if (realSneak) {
+				model.bipedRightArm.rotationPointY -= 3.25D;
+				model.bipedLeftArm.rotationPointY -= 3.25D;
 			}
-		}*/
+		}
 
 		@Override
 		public ResourceLocation getEntityTexture(AbstractClientPlayer entity) {
@@ -353,106 +348,83 @@ public class PlayerRender extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-	/*@SideOnly(Side.CLIENT)
-	public static class LayerEntityOnShoulder implements LayerRenderer<EntityPlayer> {
-	    private final RenderManager renderManager;
-	    private DataHolder dataHolderLeft;
-	    private DataHolder dataHolderRight;
-	
-	    public LayerEntityOnShoulder(RenderManager renderManagerIn) {
-	        this.renderManager = renderManagerIn;
-	    }
-
-	    @Nullable
-	    private DataHolder getShoulderEntityData(World world, NBTTagCompound compound, @Nullable DataHolder data) {
-	    	UUID uuid = compound.getUniqueId("UUID");
-	    	if (data == null || !data.entity.getUniqueID().equals(uuid)) {
-	    		Entity entity = ProcedureUtils.getEntityFromUUID(world, uuid);
-	    		if (entity instanceof EntityLivingBase) {
-	    			RenderLivingBase renderer = (RenderLivingBase)this.renderManager.getEntityRenderObject(entity);
-	    			ModelBase model = renderer.getMainModel();
-	    			ResourceLocation resource = (ResourceLocation)ProcedureUtils.invokeMethodByParameters(renderer, ResourceLocation.class, entity);
-	    			return new DataHolder((EntityLivingBase)entity, renderer, model, resource);
-	    		}
-	    		return null;
-	    	} else {
-	    		return data;
-	    	}
-	    }
-	
-	    public void doRenderLayer(EntityPlayer entitylivingbaseIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
-	        if (entitylivingbaseIn.getLeftShoulderEntity() != null || entitylivingbaseIn.getRightShoulderEntity() != null) {
-	            GlStateManager.enableRescaleNormal();
-	            GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-	            NBTTagCompound nbttagcompound = entitylivingbaseIn.getLeftShoulderEntity();
-	            if (!nbttagcompound.hasNoTags()) {
-	            	DataHolder dataholder = this.getShoulderEntityData(entitylivingbaseIn.world, nbttagcompound, this.dataHolderLeft);
-	            	if (dataholder != null) {
-	                	this.renderEntityOnShoulder(entitylivingbaseIn, dataholder, limbSwing, limbSwingAmount, partialTicks, ageInTicks, netHeadYaw, headPitch, scale, true);
-	                	this.dataHolderLeft = dataholder;
-	            	}
-	            }
-	            NBTTagCompound nbttagcompound1 = entitylivingbaseIn.getRightShoulderEntity();
-	            if (!nbttagcompound1.hasNoTags()) {
-	            	DataHolder dataholder = this.getShoulderEntityData(entitylivingbaseIn.world, nbttagcompound1, this.dataHolderRight);
-	            	if (dataholder != null) {
-	                	this.renderEntityOnShoulder(entitylivingbaseIn, dataholder, limbSwing, limbSwingAmount, partialTicks, ageInTicks, netHeadYaw, headPitch, scale, false);
-	                	this.dataHolderRight = dataholder;
-	            	}
-	            }
-	            GlStateManager.disableRescaleNormal();
-	        }
-	    }
-	
-	    private void renderEntityOnShoulder(EntityPlayer player, DataHolder data, float p_192864_8_, float p_192864_9_, float p_192864_10_, float p_192864_11_, float p_192864_12_, float p_192864_13_, float p_192864_14_, boolean p_192864_15_) {
-	        data.renderer.bindTexture(data.textureLocation);
-	        GlStateManager.pushMatrix();
-	        float f = player.isSneaking() ? -1.3F : -1.5F;
-	        float f1 = p_192864_15_ ? 0.4F : -0.4F;
-	        GlStateManager.translate(f1, f, 0.0F);
-	        if (data.entity instanceof net.minecraft.entity.passive.EntityParrot) {
-	            p_192864_11_ = 0.0F;
-	            p_192864_9_ = 0.0F;
-	        }
-	        data.model.setLivingAnimations(player, p_192864_8_, p_192864_9_, p_192864_10_);
-	        data.model.setRotationAngles(p_192864_8_, p_192864_9_, p_192864_11_, p_192864_12_, p_192864_13_, p_192864_14_, player);
-	        data.model.render(player, p_192864_8_, p_192864_9_, p_192864_11_, p_192864_12_, p_192864_13_, p_192864_14_);
-	        GlStateManager.popMatrix();
-	    }
-	
-	    public boolean shouldCombineTextures() {
-	        return false;
-	    }
-	
-	    @SideOnly(Side.CLIENT)
-	    class DataHolder {
-	        public EntityLivingBase entity;
-	        public RenderLivingBase <? extends EntityLivingBase > renderer;
-	        public ModelBase model;
-	        public ResourceLocation textureLocation;
-	
-	        public DataHolder(EntityLivingBase entityIn, RenderLivingBase <? extends EntityLivingBase > p_i47463_3_, ModelBase p_i47463_4_, ResourceLocation p_i47463_5_) {
-	            this.entity = entityIn;
-	            this.renderer = p_i47463_3_;
-	            this.model = p_i47463_4_;
-	            this.textureLocation = p_i47463_5_;
-	        }
-	    }
+	private static boolean shouldNarutoRun(EntityPlayer player) {
+		return !player.capabilities.isFlying
+				&& player.getPositionVector().subtract(player.lastTickPosX, player.lastTickPosY, player.lastTickPosZ).lengthSquared() >= 0.125d;
 	}
 
 	@SideOnly(Side.CLIENT)
-	public class ModelPlayerCustom extends ModelPlayer {
-		public ModelPlayerCustom(float modelSize, boolean smallArmsIn) {
-			super(modelSize, smallArmsIn);
+	public class LayerArmorCustom extends LayerBipedArmor {
+		private final Renderer renderer;
+
+		public LayerArmorCustom(Renderer rendererIn) {
+			super(rendererIn);
+			this.renderer = rendererIn;
 		}
 
 		@Override
-		public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn) {
-			super.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scaleFactor, entityIn);
-			if (shouldNarutoRun((EntityPlayer)entityIn)) {
-				this.bipedRightArm.rotateAngleX = 1.3963f;
-				this.bipedLeftArm.rotateAngleX = 1.3963f;
-			}
+		public void doRenderLayer(EntityLivingBase entitylivingbaseIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
+	        this.renderArmorLayer(entitylivingbaseIn, limbSwing, limbSwingAmount, partialTicks, ageInTicks, netHeadYaw, headPitch, scale, EntityEquipmentSlot.CHEST);
+	        this.renderArmorLayer(entitylivingbaseIn, limbSwing, limbSwingAmount, partialTicks, ageInTicks, netHeadYaw, headPitch, scale, EntityEquipmentSlot.LEGS);
+	        this.renderArmorLayer(entitylivingbaseIn, limbSwing, limbSwingAmount, partialTicks, ageInTicks, netHeadYaw, headPitch, scale, EntityEquipmentSlot.FEET);
+	        this.renderArmorLayer(entitylivingbaseIn, limbSwing, limbSwingAmount, partialTicks, ageInTicks, netHeadYaw, headPitch, scale, EntityEquipmentSlot.HEAD);
 		}
-	}*/
+
+	    private void renderArmorLayer(EntityLivingBase entityIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale, EntityEquipmentSlot slotIn) {
+	        ItemStack itemstack = entityIn.getItemStackFromSlot(slotIn);	
+	        if (itemstack.getItem() instanceof ItemArmor) {
+	            ItemArmor itemarmor = (ItemArmor)itemstack.getItem();
+	            if (itemarmor.getEquipmentSlot() == slotIn) {
+	                ModelBiped t = this.getModelFromSlot(slotIn);
+	                t = getArmorModelHook(entityIn, itemstack, slotIn, t);
+	                ModelBiped wearerModel = (ModelBiped)this.renderer.getMainModel();
+	                t.setModelAttributes(wearerModel);
+	                t.setLivingAnimations(entityIn, limbSwing, limbSwingAmount, partialTicks);
+	                this.setModelSlotVisible(t, slotIn);
+	                this.renderer.bindTexture(this.getArmorResource(entityIn, itemstack, slotIn, null));
+                    if (itemarmor.hasOverlay(itemstack)) { // Allow this for anything, not only cloth 
+	                    int i = itemarmor.getColor(itemstack);
+	                    float f = (float)(i >> 16 & 255) / 255.0F;
+	                    float f1 = (float)(i >> 8 & 255) / 255.0F;
+	                    float f2 = (float)(i & 255) / 255.0F;
+	                    GlStateManager.color(f, f1, f2, 1.0F);
+                        t.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale, entityIn);
+                        this.renderArmorModel(t, wearerModel, entityIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale);
+	                    this.renderer.bindTexture(this.getArmorResource(entityIn, itemstack, slotIn, "overlay"));
+	                }
+                    { // Non-colored
+                        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+                        t.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale, entityIn);
+                        this.renderArmorModel(t, wearerModel, entityIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale);
+                    } // Default
+                    if (itemstack.hasEffect()) {
+                        renderEnchantedGlint(this.renderer, entityIn, t, limbSwing, limbSwingAmount, partialTicks, ageInTicks, netHeadYaw, headPitch, scale);
+                    }
+	            }
+	        }
+	    }
+
+	    private void renderArmorModel(ModelBiped model, ModelBiped wearerModel, Entity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
+	        model.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale, entityIn);
+	        GlStateManager.pushMatrix();
+	        if (entityIn.isSneaking()) {
+	            GlStateManager.translate(0.0F, 0.2F, 0.0F);
+	        }
+	        ModelBase.copyModelAngles(wearerModel.bipedHead, model.bipedHead);
+	        ModelBase.copyModelAngles(wearerModel.bipedHeadwear, model.bipedHeadwear);
+	        ModelBase.copyModelAngles(wearerModel.bipedBody, model.bipedBody);
+	        ModelBase.copyModelAngles(wearerModel.bipedRightArm, model.bipedRightArm);
+	        ModelBase.copyModelAngles(wearerModel.bipedLeftArm, model.bipedLeftArm);
+	        ModelBase.copyModelAngles(wearerModel.bipedRightLeg, model.bipedRightLeg);
+	        ModelBase.copyModelAngles(wearerModel.bipedLeftLeg, model.bipedLeftLeg);
+	        model.bipedHead.render(scale);
+	        model.bipedBody.render(scale);
+	        model.bipedRightArm.render(scale);
+	        model.bipedLeftArm.render(scale);
+	        model.bipedRightLeg.render(scale);
+	        model.bipedLeftLeg.render(scale);
+	        model.bipedHeadwear.render(scale);
+	        GlStateManager.popMatrix();
+	    }
+	}
 }

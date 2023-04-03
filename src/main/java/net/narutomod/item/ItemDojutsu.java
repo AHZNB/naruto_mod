@@ -164,6 +164,7 @@ public class ItemDojutsu extends ElementsNarutomodMod.ModElement {
 			public void render(Entity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
 				this.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale, entityIn);
 				GlStateManager.pushMatrix();
+				GlStateManager.enableBlend();
 				GlStateManager.alphaFunc(0x204, 0.01f);
 				if (entityIn.isSneaking()) {
 					GlStateManager.translate(0.0F, 0.2F, 0.0F);
@@ -197,6 +198,7 @@ public class ItemDojutsu extends ElementsNarutomodMod.ModElement {
 					}
 				}
 				GlStateManager.alphaFunc(0x204, 0.1f);
+				GlStateManager.disableBlend();
 				GlStateManager.popMatrix();
 			}
 		}
