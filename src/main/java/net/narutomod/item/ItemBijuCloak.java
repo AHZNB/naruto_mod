@@ -1096,7 +1096,7 @@ public class ItemBijuCloak extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void render(Entity entity, float f0, float f1, float f2, float f3, float f4, float f5) {
 			bipedHeadwear.showModel = false;
-			bipedBody.showModel = bipedBody.showModel && bipedRightArm.showModel;
+			bipedBody.showModel = bipedBody.showModel && !bipedRightLeg.showModel && !bipedLeftLeg.showModel;
 			for (int i = 1; i < 6; i++) {
 				earLeft[i].rotateAngleX = -0.1745F + MathHelper.sin(f2 * 0.15F) * leftEarSwayX[i];
 				earLeft[i].rotateAngleZ = MathHelper.cos(f2 * 0.15F) * leftEarSwayZ[i];

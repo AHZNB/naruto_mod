@@ -29,6 +29,9 @@ public class ModConfig extends ElementsNarutomodMod.ModElement {
 	@Config.Comment("Whether or not bosses are aggressive on sight")
 	public static boolean AGGRESSIVE_BOSSES = false;
 
+	@Config.Comment("Stupid arms in the back Naruto run animation")
+	public static boolean NARUTO_RUN = true;
+
 	public ModConfig(ElementsNarutomodMod instance) {
 		super(instance, 837);
 	}
