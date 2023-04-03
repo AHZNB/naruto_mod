@@ -346,8 +346,8 @@ public class EntityZabuzaMomochi extends ElementsNarutomodMod.ModElement {
 		private void trackAttackedPlayers() {
 			Entity entity = this.getAttackingEntity();
 
-			if (entity instanceof EntityPlayerMP || (entity = this.getAttackTarget()) instanceof EntityPlayerMP) {
-				this.bossInfo.addPlayer((EntityPlayerMP)entity);
+			if (entity instanceof EntityPlayerMP || (entity = (ModConfig.AGGRESSIVE_BOSSES ? this.getLastAttackedEntity() : this.getAttackTarget())) instanceof EntityPlayerMP) {
+				this.bossInfo.addPlayer((EntityPlayerMP) entity);
 			}
 		}
 

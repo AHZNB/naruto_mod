@@ -49,6 +49,7 @@ General:
  - ninjas can only gain ninjaxp through damaging or getting damaged by hostile mobs or players
  - completely removed naruto run and prevented the player model from sneaking
  - added a config option to make bosses attack on sight
+ - improve the boss bars when AGGRESSIVE_BOSSES is enabled
 
 0.2.11-beta ===============================================================================
 
