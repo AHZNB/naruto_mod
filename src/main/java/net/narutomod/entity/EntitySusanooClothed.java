@@ -185,6 +185,19 @@ public class EntitySusanooClothed extends ElementsNarutomodMod.ModElement {
 		@Override
 		protected void showHeldWeapons() {
 			super.showHeldWeapons();
+			EntityLivingBase owner = this.getOwnerPlayer();
+			if (owner != null) {
+				ItemStack ownerheldstack = owner.getHeldItemMainhand();
+				ItemStack thisHeldstack = this.getHeldItemMainhand();
+				if (ownerheldstack.getItem() == ItemTotsukaSword.block) {
+				 	if (thisHeldstack.getItem() != ItemTotsukaSword.block) {
+						this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, ownerheldstack.copy());
+						this.setShowSword(false);
+				 	}
+				} else if (thisHeldstack.getItem() == ItemTotsukaSword.block) {
+					this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, ItemStack.EMPTY);
+				}
+			}
 			if (this.getHeldItemMainhand().getItem() == ItemTotsukaSword.block) {
 				HashMap<String, Object> $_dependencies = new HashMap<>();
 				$_dependencies.put("entity", this);
@@ -196,8 +209,7 @@ public class EntitySusanooClothed extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public void onEntityUpdate() {
-			if (this.hasLegs() && this.height < MODELSCALE * 2f)
- {
+			if (this.hasLegs() && this.height < MODELSCALE * 2f) {
 				this.setSize(this.width, MODELSCALE * 2f);
 			}
 			super.onEntityUpdate();
@@ -373,7 +385,6 @@ public class EntitySusanooClothed extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-	@SideOnly(Side.CLIENT)
 	@Override
 	public void preInit(FMLPreInitializationEvent event) {
 		new Renderer().register();
