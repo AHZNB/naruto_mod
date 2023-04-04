@@ -184,10 +184,10 @@ public class PlayerRender extends ElementsNarutomodMod.ModElement {
 					model.bipedLeftLeg.showModel = false;
 					model.bipedRightArm.showModel = true;
 					model.bipedLeftArm.showModel = false;
-					super.renderModel(entityIn, 4.7157f, 1.2217f, f2, f3, f4, f5);
+					super.renderModel(entityIn, 4.7157f, 1.1345f, f2, f3, f4, f5);
 					model.bipedRightArm.showModel = false;
 					model.bipedLeftArm.showModel = true;
-					super.renderModel(entityIn, 0.0f, 1.2217f, f2, f3, f4, f5);
+					super.renderModel(entityIn, 0.0f, 1.1345f, f2, f3, f4, f5);
 					model.bipedHead.showModel = true;
 					model.bipedHeadwear.showModel = true;
 					model.bipedBody.showModel = true;
@@ -406,20 +406,22 @@ public class PlayerRender extends ElementsNarutomodMod.ModElement {
 				model.bipedLeftArm.showModel = false;
 				model.isSneak = true;
 				model.render(entityIn, f0, f1, f2, f3, f4, f5);
-				model.bipedHead.showModel = false;
-				model.bipedHeadwear.showModel = false;
-				model.bipedBody.showModel = false;
-				model.bipedRightLeg.showModel = false;
-				model.bipedLeftLeg.showModel = false;
-				if (showRightArm) {
-					model.bipedRightArm.showModel = true;
-					model.bipedLeftArm.showModel = false;
-					model.render(entityIn, 4.7157f, 1.2217f, f2, f3, f4, f5);
-				}
-				if (showLeftArm) {
-					model.bipedRightArm.showModel = false;
-					model.bipedLeftArm.showModel = true;
-					model.render(entityIn, 0.0f, 1.2217f, f2, f3, f4, f5);
+				if (showLeftArm || showRightArm) {
+					model.bipedHead.showModel = false;
+					model.bipedHeadwear.showModel = false;
+					model.bipedBody.showModel = false;
+					model.bipedRightLeg.showModel = false;
+					model.bipedLeftLeg.showModel = false;
+					if (showRightArm) {
+						model.bipedRightArm.showModel = true;
+						model.bipedLeftArm.showModel = false;
+						model.render(entityIn, 4.7157f, 1.1345f, f2, f3, f4, f5);
+					}
+					if (showLeftArm) {
+						model.bipedRightArm.showModel = false;
+						model.bipedLeftArm.showModel = true;
+						model.render(entityIn, 0.0f, 1.1345f, f2, f3, f4, f5);
+					}
 				}
 			} else {
 				model.render(entityIn, f0, f1, f2, f3, f4, f5);
