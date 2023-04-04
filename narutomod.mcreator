@@ -1,8 +1,8 @@
 {
   "id_map": {
-    "GUI": 63,
+    "ENTITY": 417,
     "DIMENSION": 13,
-    "ENTITY": 417
+    "GUI": 63
   },
   "mod_elements": [
     {
@@ -8547,11 +8547,12 @@
     "modid": "narutomod",
     "modName": "NarutoMod",
     "version": "0.2.12-beta",
-    "author": "ahznb",
+    "author": "AHZNB",
     "websiteURL": "https://www.youtube.com/c/AHZNB",
-    "license": "Not specified",
+    "license": "GNU General Public License version 3 (GPLv3)",
     "disableForgeVersionCheck": true,
     "serverSideOnly": false,
+    "modPicture": "wei_",
     "requiredMods": [],
     "dependencies": [],
     "dependants": [],

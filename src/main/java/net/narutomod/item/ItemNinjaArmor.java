@@ -116,7 +116,7 @@ public class ItemNinjaArmor extends ElementsNarutomodMod.ModElement {
 		public final ModelRenderer leftLegLayer;
 		public final ModelRenderer leftLegPad;
 		//private final ModelRenderer headbandLeftLeg;
-		private ModelBiped wearerModel;
+		//private ModelBiped wearerModel;
 	
 		public ModelNinjaArmor() {
 			this(Type.KUMO);
@@ -435,13 +435,13 @@ public class ItemNinjaArmor extends ElementsNarutomodMod.ModElement {
 			modelRenderer.rotateAngleZ = z;
 		}
 
-		@Override
+		/*@Override
 		public void setModelAttributes(ModelBase model) {
 			super.setModelAttributes(model);
 			if (model instanceof ModelBiped) {
 				this.wearerModel = (ModelBiped)model;
 			}
-		}
+		}*/
 
 		@Override
 		public void setRotationAngles(float f, float f1, float f2, float f3, float f4, float f5, Entity entity) {
@@ -450,10 +450,10 @@ public class ItemNinjaArmor extends ElementsNarutomodMod.ModElement {
 				this.bipedRightArm.setRotationPoint(-5.0F, 2.5F, 0.0F);
 			}
 			super.setRotationAngles(f, f1, f2, f3, f4, f5, entity);
-			if (this.wearerModel != null) {
+			/*if (this.wearerModel != null) {
 				copyModelAngles(this.wearerModel.bipedLeftArm, this.bipedLeftArm);
 				copyModelAngles(this.wearerModel.bipedRightArm, this.bipedRightArm);
-			}
+			}*/
 		}
 	}
 

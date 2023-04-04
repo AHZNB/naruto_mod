@@ -17,6 +17,8 @@ Jutsus:
  - biju cloak now force closes if you don't have anymore chakra
  - biju cloak 2 bijudama charge time is dependant on cloak XP, cooldown 5 seconds
  - buffed 7/8 gate: user can punch targets 15 blocks away by jumping right in front of them
+ - increased non-affinity releases jutsuXP requirements to 2.5 times affinity requirements
+ - susanoo half-body and higher class can hold totsuka sword if the user has it
 
 Items:
  - fix using /give command to give nature release items duplicates the item
@@ -47,7 +49,7 @@ General:
  - added a config option for players being able to spawn as jinchuriki
  - killing a gedo mazo that has bijus sealed in itself will release the bijus
  - ninjas can only gain ninjaxp through damaging or getting damaged by hostile mobs or players
- - completely removed naruto run and prevented the player model from sneaking
+ - added back naruto run and config option to turn off
  - added a config option to make bosses attack on sight
  - improve the boss bars when AGGRESSIVE_BOSSES is enabled
 

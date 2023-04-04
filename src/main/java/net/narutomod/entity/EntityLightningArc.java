@@ -308,7 +308,7 @@ public class EntityLightningArc extends ElementsNarutomodMod.ModElement {
 				GlStateManager.rotate(yaw, 0.0F, 1.0F, 0.0F);
 				GlStateManager.rotate(pitch, 1.0F, 0.0F, 0.0F);
 				double d = (double) entity.getThickness();
-				d = d == 0d ? Math.max(vec3d.lengthVector() * 0.004d, 0.0005d) : d;
+				d = d == 0d ? Math.max(vec3d.lengthVector() * 0.004d, 0.0006d) : d;
 				this.renderSection(new Vec3d(0d, 0d, 0d), new Vec3d(0d, 0d, vec3d.lengthVector()), d, entity.getColor(), 0, false);
 				GlStateManager.popMatrix();
 			}
