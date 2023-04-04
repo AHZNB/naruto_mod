@@ -32,6 +32,9 @@ public class ModConfig extends ElementsNarutomodMod.ModElement {
 	@Config.Comment("Stupid arms in the back Naruto run animation")
 	public static boolean NARUTO_RUN = true;
 
+	@Config.Comment("Itachi's chance to be real (1~100). Lower value means higher chance. 1 means it will be real everytime.")
+	public static int ITACHI_REAL_CHANCE = 10;
+
 	public ModConfig(ElementsNarutomodMod instance) {
 		super(instance, 837);
 	}
