@@ -11,7 +11,8 @@ import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.event.ModelRegistryEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.common.MinecraftForge;
 
@@ -35,11 +36,7 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.init.MobEffects;
 
-import net.narutomod.entity.EntityClone;
-import net.narutomod.entity.EntitySealing;
-import net.narutomod.entity.EntitySealingChains;
-import net.narutomod.entity.EntityGedoStatue;
-import net.narutomod.entity.EntityTenTails;
+import net.narutomod.entity.*;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.creativetab.TabModTab;
 import net.narutomod.ElementsNarutomodMod;
@@ -72,14 +69,6 @@ public class ItemYoton extends ElementsNarutomodMod.ModElement {
 	public void registerModels(ModelRegistryEvent event) {
 		ModelLoader.setCustomModelResourceLocation(block, 0, new ModelResourceLocation("narutomod:yoton", "inventory"));
 		//this.elements.addNetworkMessage(MessageHandler.class, Message.class, Side.SERVER);
-	}
-
-	@SideOnly(Side.CLIENT)
-	@Override
-	public void preInit(FMLPreInitializationEvent event) {
-		RenderingRegistry.registerEntityRenderingHandler(EntityBiggerMe.class, renderManager -> {
-			return new RenderBiggerMe(renderManager);
-		});
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -235,28 +224,42 @@ public class ItemYoton extends ElementsNarutomodMod.ModElement {
 	}
 
 	@SideOnly(Side.CLIENT)
-	public class RenderBiggerMe extends EntityClone.ClientRLM.RenderClone<EntityBiggerMe> {
-		public RenderBiggerMe(RenderManager renderManager) {
-			new EntityClone.ClientRLM().super(renderManager);
-		}
+	@Override
+	public void preInit(FMLPreInitializationEvent event) {
+		new Renderer().register();
+	}
 
+	public static class Renderer extends EntityRendererRegister {
+		@SideOnly(Side.CLIENT)
 		@Override
-		public void doRender(EntityBiggerMe entity, double x, double y, double z, float entityYaw, float partialTicks) {
-			Entity passenger = entity.getControllingPassenger();
-			if (entity.isBeingRidden() && passenger instanceof AbstractClientPlayer) {
-				this.copyLimbSwing(entity, (AbstractClientPlayer)passenger);
-			}
-			if (!Minecraft.getMinecraft().getRenderViewEntity().equals(passenger) || this.renderManager.options.thirdPersonView != 0) {
-				super.doRender(entity, x, y, z, entityYaw, partialTicks);
-			}
+		public void register() {
+			RenderingRegistry.registerEntityRenderingHandler(EntityBiggerMe.class, renderManager -> new RenderBiggerMe(renderManager));
 		}
 
-		private void copyLimbSwing(EntityBiggerMe entity, AbstractClientPlayer rider) {
-			entity.swingProgress = rider.swingProgress;
-			entity.swingProgressInt = rider.swingProgressInt;
-			entity.prevSwingProgress = rider.prevSwingProgress;
-			entity.isSwingInProgress = rider.isSwingInProgress;
-			entity.swingingHand = rider.swingingHand;
+		@SideOnly(Side.CLIENT)
+		public class RenderBiggerMe extends EntityClone.ClientRLM.RenderClone<EntityBiggerMe> {
+			public RenderBiggerMe(RenderManager renderManager) {
+				new EntityClone.ClientRLM().super(renderManager);
+			}
+
+			@Override
+			public void doRender(EntityBiggerMe entity, double x, double y, double z, float entityYaw, float partialTicks) {
+				Entity passenger = entity.getControllingPassenger();
+				if (entity.isBeingRidden() && passenger instanceof AbstractClientPlayer) {
+					this.copyLimbSwing(entity, (AbstractClientPlayer)passenger);
+				}
+				if (!Minecraft.getMinecraft().getRenderViewEntity().equals(passenger) || this.renderManager.options.thirdPersonView != 0) {
+					super.doRender(entity, x, y, z, entityYaw, partialTicks);
+				}
+			}
+
+			private void copyLimbSwing(EntityBiggerMe entity, AbstractClientPlayer rider) {
+				entity.swingProgress = rider.swingProgress;
+				entity.swingProgressInt = rider.swingProgressInt;
+				entity.prevSwingProgress = rider.prevSwingProgress;
+				entity.isSwingInProgress = rider.isSwingInProgress;
+				entity.swingingHand = rider.swingingHand;
+			}
 		}
 	}
 
