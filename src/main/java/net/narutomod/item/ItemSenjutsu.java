@@ -67,7 +67,7 @@ public class ItemSenjutsu extends ElementsNarutomodMod.ModElement {
 	public static final int ENTITYID = 355;
 	private static final String SAGEMODEACTIVATEDKEY = "SageModeActivated";
 	private static final String SAGECHAKRADEPLETIONAMOUNT = "SageChakraDepletionAmount";
-	public static final ItemJutsu.JutsuEnum SAGEMODE = new ItemJutsu.JutsuEnum(0, "item.sage_mode_armorhelmet.name", 'S', 10d, new SageMode());
+	public static final ItemJutsu.JutsuEnum SAGEMODE = new ItemJutsu.JutsuEnum(0, "tooltip.senjutsu.sagemode", 'S', 10d, new SageMode());
 	public static final ItemJutsu.JutsuEnum RASENGAN = new ItemJutsu.JutsuEnum(1, "tooltip.senjutsu.rasengan", 'S', ItemNinjutsu.RASENGAN.chakraUsage, new EntityRasengan.EC.Jutsu());
 	public static final ItemJutsu.JutsuEnum RASENSHURIKEN = new ItemJutsu.JutsuEnum(2, "tooltip.senjutsu.rasenshuriken", 'S', ItemFuton.RASENSHURIKEN.chakraUsage, new EntityRasenshuriken.EC.Jutsu());
 	public static final ItemJutsu.JutsuEnum WOODBUDDHA = new ItemJutsu.JutsuEnum(3, "buddha_1000", 'S', 5000d, new EntityBuddha1000.EC.Jutsu());

@@ -165,7 +165,7 @@ public class ItemShakuton extends ElementsNarutomodMod.ModElement {
 		public boolean createJutsu(ItemStack stack, EntityLivingBase entity, float power) {
 			EntityScorchBall entity1 = ((RangedItem)block).get1stBallAndPutLast(entity.world, stack);
 			if (entity1 != null && entity1.isEntityAlive()) {
-				RayTraceResult res = ProcedureUtils.objectEntityLookingAt(entity, 30d);
+				RayTraceResult res = ProcedureUtils.objectEntityLookingAt(entity, 30d, 1.5d, EntityScorchBall.class);
 				if (res != null && res.entityHit != null) {
 					entity1.setTarget(res.entityHit);
 					return true;
@@ -206,7 +206,7 @@ public class ItemShakuton extends ElementsNarutomodMod.ModElement {
 
 		public void setNextPosition(Vec3d vec) {
 			if (this.getDistance(vec.x, vec.y, vec.z) > 0.5d && this.targetTime >= 0) {
-				this.setVelocity(vec.subtract(this.getPositionVector()).normalize().scale(0.4d));
+				this.setVelocity(vec.subtract(this.getPositionVector()).normalize().scale(0.6d));
 			} else {
 				this.setVelocity(vec.subtract(this.getPositionVector()));
 				if (vec.equals(this.getIdlePosition()) && this.targetTime >= 0) {
@@ -217,7 +217,7 @@ public class ItemShakuton extends ElementsNarutomodMod.ModElement {
 
 		protected void setTarget(@Nullable Entity targetIn) {
 			this.target = targetIn;
-			this.targetTime = targetIn != null ? 60 : -1;
+			this.targetTime = targetIn != null ? 100 : -1;
 		}
 
 		protected void setMaxScale(float scale) {
@@ -271,7 +271,8 @@ public class ItemShakuton extends ElementsNarutomodMod.ModElement {
 					for (EntityLivingBase entity : this.world.getEntitiesWithinAABB(EntityLivingBase.class, this.getEntityBoundingBox())) {
 						if (!entity.equals(this.shootingEntity) && !entity.equals(this)) {
 							entity.hurtResistantTime = 10;
-							entity.attackEntityFrom(ItemJutsu.causeJutsuDamage(this, this.shootingEntity), 1f);
+							entity.getEntityData().setBoolean("TempData_disableKnockback", true);
+							entity.attackEntityFrom(ItemJutsu.causeJutsuDamage(this, this.shootingEntity), 1.5f);
 							this.scorchEffects(entity.posX, entity.posY+entity.height/2, entity.posZ, entity.width/2, entity.height/2);
 						}
 					}

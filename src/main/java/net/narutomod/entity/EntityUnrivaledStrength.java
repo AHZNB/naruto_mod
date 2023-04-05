@@ -24,6 +24,7 @@ import net.narutomod.item.ItemJutsu;
 import net.narutomod.item.ItemSteamArmor;
 import net.narutomod.Particles;
 import net.narutomod.ElementsNarutomodMod;
+import net.minecraft.entity.player.EntityPlayer;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityUnrivaledStrength extends ElementsNarutomodMod.ModElement {
@@ -109,9 +110,14 @@ public class EntityUnrivaledStrength extends ElementsNarutomodMod.ModElement {
 					 0d, 0d, 0d, (this.rand.nextDouble() - 0.5d) * 0.1d, 0.0d, (this.rand.nextDouble() - 0.5d) * 0.1d,
 					 0x20FFFFFF, 10 + this.rand.nextInt(11), 0, 0, this.user.getEntityId());
 				}
-				if (this.user.isSwingInProgress) {
-					RayTraceResult res = ProcedureUtils.objectEntityLookingAt(this.user, 5d);
+				if (this.user.swingProgressInt == 1 && this.user instanceof EntityPlayer) {
+					RayTraceResult res = ProcedureUtils.objectEntityLookingAt(this.user, 15d, 2d, this);
 					if (res != null && res.entityHit instanceof EntityLivingBase) {
+						Vec3d vec = res.entityHit.getPositionEyes(1f).subtract(this.user.getPositionEyes(1f)).normalize();
+						this.user.rotationYaw = ProcedureUtils.getYawFromVec(vec);
+						this.user.rotationPitch = ProcedureUtils.getPitchFromVec(vec);
+						this.user.setPositionAndUpdate(res.entityHit.posX - vec.x, res.entityHit.posY - vec.y, res.entityHit.posZ - vec.z);
+						((EntityPlayer)this.user).attackTargetEntityWithCurrentItem(res.entityHit);
 						ProcedureUtils.pushEntity(this.user, res.entityHit, 20d, 1.5f);
 					}
 				}

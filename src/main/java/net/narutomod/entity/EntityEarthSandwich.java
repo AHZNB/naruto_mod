@@ -135,7 +135,7 @@ public class EntityEarthSandwich extends ElementsNarutomodMod.ModElement {
 				if (age == this.growTime / 2) {
 					for (EntityLivingBase entity : this.world.getEntitiesWithinAABB(EntityLivingBase.class, this.getEntityBoundingBox())) {
 						if (this.getEntityBoundingBox().intersect(entity.getEntityBoundingBox()).equals(entity.getEntityBoundingBox())
-						 && ItemJutsu.canTarget(entity) && !entity.equals(this.user)) {
+						 && ItemJutsu.canTarget(entity) /*&& !entity.equals(this.user)*/) {
 							this.caughtEntities.put(entity, entity.getPositionVector());
 						}
 					}
@@ -185,7 +185,7 @@ public class EntityEarthSandwich extends ElementsNarutomodMod.ModElement {
 			@Override
 			public boolean createJutsu(ItemStack stack, EntityLivingBase entity, float power) {
 				if (power >= 2f) {
-					RayTraceResult rt = ProcedureUtils.raytraceBlocks(entity, 30d);
+					RayTraceResult rt = ProcedureUtils.raytraceBlocks(entity, 32d);
 					if (rt != null && rt.typeOfHit == RayTraceResult.Type.BLOCK) {
 						if (power >= 8f) {
 							entity.world.playSound(null, entity.posX, entity.posY, entity.posZ, SoundEvent.REGISTRY

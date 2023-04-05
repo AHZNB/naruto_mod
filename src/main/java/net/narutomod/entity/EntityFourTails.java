@@ -422,7 +422,7 @@ public class EntityFourTails extends ElementsNarutomodMod.ModElement {
 				cube_r13 = new ModelRenderer(this);
 				cube_r13.setRotationPoint(0.0F, -1.0F, -3.2F);
 				bipedHead.addChild(cube_r13);
-				setRotationAngle(cube_r13, 0.3054F, 0.0F, 0.0F);
+				setRotationAngle(cube_r13, 0.2182F, 0.0F, 0.0F);
 				cube_r13.cubeList.add(new ModelBox(cube_r13, 0, 45, -2.0F, 0.0F, 0.0F, 4, 2, 1, 0.0F, false));
 		
 				cube_r14 = new ModelRenderer(this);

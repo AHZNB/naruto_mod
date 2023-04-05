@@ -134,7 +134,7 @@ public class ProcedureAmaterasu extends ElementsNarutomodMod.ModElement {
 				if (entity instanceof EntityLivingBase)
 					((EntityLivingBase) entity).addPotionEffect(new PotionEffect(MobEffects.WEAKNESS, (int) (i), (int) 2));
 				if (entity instanceof EntityLivingBase)
-					((EntityLivingBase) entity).addPotionEffect(new PotionEffect(MobEffects.NAUSEA, (int) (i), (int) 0));
+					((EntityLivingBase) entity).addPotionEffect(new PotionEffect(MobEffects.NAUSEA, (int) ((i) * 6), (int) 0));
 			}
 			entity.getEntityData().setBoolean("amaterasu_active", (false));
 		}
