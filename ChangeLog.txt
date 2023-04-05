@@ -41,6 +41,7 @@ Entities:
  - added config settings to tweak Itachi, Kisame, Zabuza, white zetsu spawn weight
  - new 4-tails Son Goku model
  - made itachi's real chance configurable
+ - patch loophole for sakura to drop anything
 
 Advancements:
  - associate "Rinnesharingan Activated" advancement to the correct parent (rinnegan/tenseigan) advancement
@@ -54,9 +55,11 @@ General:
  - added a config option for players being able to spawn as jinchuriki
  - killing a gedo mazo that has bijus sealed in itself will release the bijus
  - ninjas can only gain ninjaxp through damaging or getting damaged by hostile mobs or players
- - added back naruto run and config option to turn off
- - added a config option to make bosses attack on sight
+ - added back naruto run and config option NARUTO_RUN to turn off
+ - added a config option AGGRESSIVE_BOSSES to make bosses attack on sight
  - improve the boss bars when AGGRESSIVE_BOSSES is enabled
+ - added config setting CHAKRA_REGEN_RATE to customize idle chakra regen rate
+ - added config option ENABLE_JUTSU_SCROLLS_IN_LOOTCHESTS to disable jutsu scrolls in loot chests
 
 0.2.11-beta ===============================================================================
 

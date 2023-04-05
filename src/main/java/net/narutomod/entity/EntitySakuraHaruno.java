@@ -1,8 +1,6 @@
 
 package net.narutomod.entity;
 
-import com.google.common.collect.Maps;
-import net.minecraft.village.Village;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
@@ -10,6 +8,9 @@ import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.event.entity.living.LivingDropsEvent;
+import net.minecraftforge.common.MinecraftForge;
 
 import net.minecraft.init.Biomes;
 import net.minecraft.init.Items;
@@ -41,6 +42,7 @@ import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.village.MerchantRecipe;
 import net.minecraft.village.MerchantRecipeList;
+import net.minecraft.village.Village;
 import net.minecraft.potion.PotionEffect;
 
 import net.narutomod.item.ItemScrollHealing;
@@ -57,6 +59,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 
@@ -79,6 +82,7 @@ public class EntitySakuraHaruno extends ElementsNarutomodMod.ModElement {
 
 	@Override
 	public void init(FMLInitializationEvent event) {
+		MinecraftForge.EVENT_BUS.register(new EntityCustom.LivingHook());
 		EntityRegistry.addSpawn(EntityCustom.class, 1, 1, 1, EnumCreatureType.AMBIENT,
 			Biomes.FOREST, Biomes.BIRCH_FOREST, Biomes.BIRCH_FOREST_HILLS, Biomes.FOREST_HILLS,
 			Biomes.JUNGLE, Biomes.JUNGLE_EDGE, Biomes.JUNGLE_HILLS, Biomes.PLAINS, Biomes.ROOFED_FOREST, Biomes.TAIGA,
@@ -243,6 +247,10 @@ public class EntitySakuraHaruno extends ElementsNarutomodMod.ModElement {
 			}
 		}
 
+		@Override
+		protected void dropLoot(boolean wasRecentlyHit, int lootingModifier, DamageSource source) {
+		}
+
 		public class AIHeal extends EntityAIBase {
 			private final EntityCustom entity;
 			private final double speed;
@@ -325,6 +333,15 @@ public class EntitySakuraHaruno extends ElementsNarutomodMod.ModElement {
 		            }
 		        }
 	        	this.entity.healTargetEntity();
+			}
+		}
+
+		public static class LivingHook {
+			@SubscribeEvent
+			public void onLivingDrop(LivingDropsEvent event) {
+				if (event.getEntity() instanceof EntityCustom) {
+					event.setCanceled(true);
+				}
 			}
 		}
 	}

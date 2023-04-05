@@ -35,6 +35,12 @@ public class ModConfig extends ElementsNarutomodMod.ModElement {
 	@Config.Comment("Itachi's chance to be real (1~100). Lower value means higher chance. 1 means it will be real everytime.")
 	public static int ITACHI_REAL_CHANCE = 10;
 
+	@Config.Comment("Chakra regeneration rate. 0.006 means 0.6% of your max chakra every 4 seconds")
+	public static float CHAKRA_REGEN_RATE = 0.006F;
+
+	@Config.Comment("Disable this to not allow any jutsu scrolls in loot chests")
+	public static boolean ENABLE_JUTSU_SCROLLS_IN_LOOTCHESTS = true;
+
 	public ModConfig(ElementsNarutomodMod instance) {
 		super(instance, 837);
 	}

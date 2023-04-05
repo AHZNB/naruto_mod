@@ -2,17 +2,18 @@
 package net.narutomod.util;
 
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-
-import net.minecraft.world.storage.loot.LootTableList;
-import net.minecraft.util.ResourceLocation;
-
-import net.narutomod.ElementsNarutomodMod;
-import net.minecraft.world.storage.loot.LootTable;
-import net.minecraft.world.World;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.event.LootTableLoadEvent;
-import net.minecraft.world.storage.loot.LootPool;
 import net.minecraftforge.common.MinecraftForge;
+
+import net.minecraft.world.World;
+import net.minecraft.world.storage.loot.LootPool;
+import net.minecraft.world.storage.loot.LootTableList;
+import net.minecraft.world.storage.loot.LootTable;
+import net.minecraft.util.ResourceLocation;
+
+import net.narutomod.ModConfig;
+import net.narutomod.ElementsNarutomodMod;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class LootTableJutsuLootTable extends ElementsNarutomodMod.ModElement {
@@ -34,13 +35,14 @@ public class LootTableJutsuLootTable extends ElementsNarutomodMod.ModElement {
 
 	@SubscribeEvent
 	public void onLootTableLoad(LootTableLoadEvent event) {
-		if (event.getName().equals(LootTableList.CHESTS_ABANDONED_MINESHAFT) || event.getName().equals(LootTableList.CHESTS_DESERT_PYRAMID)
-		 || event.getName().equals(LootTableList.CHESTS_END_CITY_TREASURE) || event.getName().equals(LootTableList.CHESTS_IGLOO_CHEST)
-		 || event.getName().equals(LootTableList.CHESTS_JUNGLE_TEMPLE) || event.getName().equals(LootTableList.CHESTS_NETHER_BRIDGE)
-		 || event.getName().equals(LootTableList.CHESTS_SIMPLE_DUNGEON) || event.getName().equals(LootTableList.CHESTS_SPAWN_BONUS_CHEST)
-		 || event.getName().equals(LootTableList.CHESTS_STRONGHOLD_CORRIDOR) || event.getName().equals(LootTableList.CHESTS_STRONGHOLD_CROSSING)
-		 || event.getName().equals(LootTableList.CHESTS_STRONGHOLD_LIBRARY) || event.getName().equals(LootTableList.CHESTS_VILLAGE_BLACKSMITH)
-		 || event.getName().equals(LootTableList.CHESTS_WOODLAND_MANSION)) {
+		if (ModConfig.ENABLE_JUTSU_SCROLLS_IN_LOOTCHESTS
+		 && (event.getName().equals(LootTableList.CHESTS_ABANDONED_MINESHAFT) || event.getName().equals(LootTableList.CHESTS_DESERT_PYRAMID)
+		  || event.getName().equals(LootTableList.CHESTS_END_CITY_TREASURE) || event.getName().equals(LootTableList.CHESTS_IGLOO_CHEST)
+		  || event.getName().equals(LootTableList.CHESTS_JUNGLE_TEMPLE) || event.getName().equals(LootTableList.CHESTS_NETHER_BRIDGE)
+		  || event.getName().equals(LootTableList.CHESTS_SIMPLE_DUNGEON) || event.getName().equals(LootTableList.CHESTS_SPAWN_BONUS_CHEST)
+		  || event.getName().equals(LootTableList.CHESTS_STRONGHOLD_CORRIDOR) || event.getName().equals(LootTableList.CHESTS_STRONGHOLD_CROSSING)
+		  || event.getName().equals(LootTableList.CHESTS_STRONGHOLD_LIBRARY) || event.getName().equals(LootTableList.CHESTS_VILLAGE_BLACKSMITH)
+		  || event.getName().equals(LootTableList.CHESTS_WOODLAND_MANSION))) {
 			LootTable loottable = event.getTable();
 			LootTable newtable = event.getLootTableManager().getLootTableFromLocation(jutsuLootTable);
 			if (loottable.getPool("rank_a_pool") == null) {

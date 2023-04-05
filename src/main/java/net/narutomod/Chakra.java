@@ -173,7 +173,7 @@ public class Chakra extends ElementsNarutomodMod.ModElement {
 			 	this.motionlessTime = 0;
 			}
 			if (this.motionlessTime > 100 && this.user.ticksExisted % 80 == 0) {
-				this.consume(-0.006f);
+				this.consume(-ModConfig.CHAKRA_REGEN_RATE);
 			}
 			this.prevX = this.user.posX;
 			this.prevZ = this.user.posZ;
