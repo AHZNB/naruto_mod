@@ -242,8 +242,8 @@ public class EntityNineTails extends ElementsNarutomodMod.ModElement {
 
 		@SideOnly(Side.CLIENT)
 		public class RenderCustom extends EntityTailedBeast.Renderer<EntityCustom> {
-			private final ResourceLocation TEXTURE = new ResourceLocation("narutomod:textures/ninetails.png");
-			private final ResourceLocation KCM_TEXTURE = new ResourceLocation("narutomod:textures/ninetailskcm.png");
+			private final ResourceLocation mainTexture = new ResourceLocation("narutomod:textures/ninetails.png");
+			private final ResourceLocation kcmTexture = new ResourceLocation("narutomod:textures/ninetailskcm.png");
 
 			public RenderCustom(RenderManager renderManagerIn) {
 				super(renderManagerIn, new ModelNineTails(), MODELSCALE * 0.5F);
@@ -261,7 +261,7 @@ public class EntityNineTails extends ElementsNarutomodMod.ModElement {
 
 			@Override
 			protected ResourceLocation getEntityTexture(EntityCustom entity) {
-				return entity.isKCM() ? KCM_TEXTURE : TEXTURE;
+				return entity.isKCM() ? this.kcmTexture : this.mainTexture;
 			}
 		}
 
@@ -475,7 +475,7 @@ public class EntityNineTails extends ElementsNarutomodMod.ModElement {
 				jaw = new ModelRenderer(this);
 				jaw.setRotationPoint(0.0F, -0.35F, -5.0F);
 				bipedHead.addChild(jaw);
-				setRotationAngle(jaw, -0.0873F, 0.0F, 0.0F);
+				setRotationAngle(jaw, -0.1309F, 0.0F, 0.0F);
 				jaw.cubeList.add(new ModelBox(jaw, 0, 26, -2.0F, 0.0F, -4.5F, 4, 1, 5, 0.0F, false));
 
 				earRight = new ModelRenderer(this);
@@ -1575,14 +1575,14 @@ public class EntityNineTails extends ElementsNarutomodMod.ModElement {
 					setRotationAngle(midLegLeft, 0.0F, 0.0F, 2.3562F);
 					setRotationAngle(leftFoot, 0.0F, 3.1416F, 0.0F);
 				}
-				if (((EntityCustom) e).isShooting()) {
+				if (((EntityCustom)e).isShooting()) {
 					//bipedHead.rotateAngleX = -0.5236F;
 					//bipedHeadwear.rotateAngleX = -0.5236F;
 					snout.rotateAngleX = -0.2618F;
 					jaw.rotateAngleX = 1.0472F;
 				} else {
 					snout.rotateAngleX = 0.0F;
-					jaw.rotateAngleX = -0.0873F;
+					jaw.rotateAngleX = -0.1309F;
 				}
 				if (((EntityCustom) e).isFaceDown()) {
 					body.rotationPointZ = 20.0F;
