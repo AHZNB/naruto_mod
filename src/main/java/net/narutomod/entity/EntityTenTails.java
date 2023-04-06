@@ -53,8 +53,10 @@ public class EntityTenTails extends ElementsNarutomodMod.ModElement {
 
 	@Override
 	public void initElements() {
-		elements.entities.add(() -> EntityEntryBuilder.create().entity(EntityCustom.class)
-		  .id(new ResourceLocation("narutomod", "ten_tails"), ENTITYID).name("ten_tails").tracker(96, 3, true)
+		elements.entities
+.add(() -> EntityEntryBuilder.create().entity(EntityCustom.class)
+		  .id(new ResourceLocation("narutomod", "ten_tails"), ENTITYID)
+.name("ten_tails").tracker(96, 3, true)
 		  .egg(-13421773, -16777216).build());
 	}
 
@@ -245,7 +247,7 @@ public class EntityTenTails extends ElementsNarutomodMod.ModElement {
 		}
 
 		@SideOnly(Side.CLIENT)
-		public class RenderTenTails extends EntityTailedBeast.Renderer<EntityCustom> {
+		public class RenderTenTails extends EntityTailedBeast.ClientOnly.Renderer<EntityCustom> {
 			//private final ModelTenTails tentailsModel = new ModelTenTails();
 			//private final ModelTenTailsV1 tentailsModelV1 = new ModelTenTailsV1();
 			//private final ModelGedoMazo gedomazoModel = new ModelGedoMazo();

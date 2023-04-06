@@ -244,7 +244,7 @@ public class EntityThreeTails extends ElementsNarutomodMod.ModElement {
 		}
 
 		@SideOnly(Side.CLIENT)
-		public class RenderCustom extends EntityTailedBeast.Renderer<EntityCustom> {
+		public class RenderCustom extends EntityTailedBeast.ClientOnly.Renderer<EntityCustom> {
 			private final ResourceLocation TEXTURE = new ResourceLocation("narutomod:textures/threetails.png");
 
 			public RenderCustom(RenderManager renderManagerIn) {

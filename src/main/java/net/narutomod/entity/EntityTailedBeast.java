@@ -109,12 +109,6 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 		  .tracker(128, 1, true).build());
 	}
 
-	@SideOnly(Side.CLIENT)
-	@Override
-	public void preInit(FMLPreInitializationEvent event) {
-		RenderingRegistry.registerEntityRenderingHandler(EntityTailBeastBall.class, renderManager -> new RenderTailBeastBall(renderManager));
-	}
-
 	@Override
 	public void init(FMLInitializationEvent event) {
 		MinecraftForge.EVENT_BUS.register(new PlayerHooks());
@@ -1088,235 +1082,249 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 	}
 
 	@SideOnly(Side.CLIENT)
-	public static class LayerEntityDeath implements LayerRenderer<Base> {
-		private final ResourceLocation textureRed = new ResourceLocation("narutomod:textures/fuuin_beam_red.png");
-		private final ResourceLocation texture10t = new ResourceLocation("narutomod:textures/fuuin_beam_10tails.png");
-		private final RenderLiving renderer;
+	@Override
+	public void preInit(FMLPreInitializationEvent event) {
+		new ClientOnly().register();
+	}
 
-		public LayerEntityDeath(RenderLiving rendererIn) {
-			this.renderer = rendererIn;
+	public static class ClientOnly extends EntityRendererRegister {
+		@SideOnly(Side.CLIENT)
+		@Override
+		public void register() {
+			RenderingRegistry.registerEntityRenderingHandler(EntityTailBeastBall.class, RenderTailBeastBall::new);
 		}
 
-	 	@Override
-		public void doRenderLayer(Base entity, float _1, float _2, float partialTicks, float _3, float _4, float _5, float _6) {
-			Entity vessel = entity.getTargetVessel();
-			if (entity.deathTicks > 1 && vessel != null) {
-				float f = ((float) entity.deathTicks + partialTicks) * 0.01F;
-				float offset = entity.getFuuinBeamHeight();
-				double d0 = vessel.lastTickPosX + (vessel.posX - vessel.lastTickPosX) * partialTicks;
-				double d1 = vessel.lastTickPosY + (vessel.posY - vessel.lastTickPosY) * partialTicks + vessel.getEyeHeight();
-				double d2 = vessel.lastTickPosZ + (vessel.posZ - vessel.lastTickPosZ) * partialTicks;
-				double dx = d0 - entity.posX;
-				double dy = d1 - (entity.posY + offset);
-				double dz = d2 - entity.posZ;
-				double dxz = MathHelper.sqrt(dx * dx + dz * dz);
-				double max_l = MathHelper.sqrt(dx * dx + dy * dy + dz * dz);
-				float rot_y = (float) -Math.atan2(dx, dz) * 180.0F / (float) Math.PI;
-				float rot_x = (float) -Math.atan2(dy, dxz) * 180.0F / (float) Math.PI;
-				rot_y = MathHelper.wrapDegrees(rot_y - entity.renderYawOffset);
-				this.renderer.bindTexture(entity instanceof EntityTenTails.EntityCustom ? this.texture10t : this.textureRed);
+		@SideOnly(Side.CLIENT)
+		public static class LayerEntityDeath implements LayerRenderer<Base> {
+			private final ResourceLocation textureRed = new ResourceLocation("narutomod:textures/fuuin_beam_red.png");
+			private final ResourceLocation texture10t = new ResourceLocation("narutomod:textures/fuuin_beam_10tails.png");
+			private final RenderLiving renderer;
+
+			public LayerEntityDeath(RenderLiving rendererIn) {
+				this.renderer = rendererIn;
+			}
+
+			@Override
+			public void doRenderLayer(Base entity, float _1, float _2, float partialTicks, float _3, float _4, float _5, float _6) {
+				Entity vessel = entity.getTargetVessel();
+				if (entity.deathTicks > 1 && vessel != null) {
+					float f = ((float) entity.deathTicks + partialTicks) * 0.01F;
+					float offset = entity.getFuuinBeamHeight();
+					double d0 = vessel.lastTickPosX + (vessel.posX - vessel.lastTickPosX) * partialTicks;
+					double d1 = vessel.lastTickPosY + (vessel.posY - vessel.lastTickPosY) * partialTicks + vessel.getEyeHeight();
+					double d2 = vessel.lastTickPosZ + (vessel.posZ - vessel.lastTickPosZ) * partialTicks;
+					double dx = d0 - entity.posX;
+					double dy = d1 - (entity.posY + offset);
+					double dz = d2 - entity.posZ;
+					double dxz = MathHelper.sqrt(dx * dx + dz * dz);
+					double max_l = MathHelper.sqrt(dx * dx + dy * dy + dz * dz);
+					float rot_y = (float) -Math.atan2(dx, dz) * 180.0F / (float) Math.PI;
+					float rot_x = (float) -Math.atan2(dy, dxz) * 180.0F / (float) Math.PI;
+					rot_y = MathHelper.wrapDegrees(rot_y - entity.renderYawOffset);
+					this.renderer.bindTexture(entity instanceof EntityTenTails.EntityCustom ? this.texture10t : this.textureRed);
+					GlStateManager.pushMatrix();
+					GlStateManager.translate(0.0F, -offset + (vessel instanceof EntityPlayer ? 1.501F : 0F), 0.0F);
+					GlStateManager.rotate(-90.0F, 1.0F, 0.0F, 0.0F);
+					GlStateManager.rotate(rot_y, 0.0F, 0.0F, 1.0F);
+					GlStateManager.rotate(rot_x - 90.0F, 1.0F, 0.0F, 0.0F);
+					Tessellator tessellator = Tessellator.getInstance();
+					BufferBuilder bufferbuilder = tessellator.getBuffer();
+					RenderHelper.disableStandardItemLighting();
+					GlStateManager.enableBlend();
+					GlStateManager.disableCull();
+					GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+					GlStateManager.shadeModel(0x1D01);
+					float f5 = 0.0F - f;
+					float f6 = (float) max_l / 32.0F - f;
+					bufferbuilder.begin(5, DefaultVertexFormats.POSITION_TEX_COLOR);
+					for (int j = 0; j <= 8; j++) {
+						float f7 = MathHelper.sin((j % 8) * ((float) Math.PI * 2F) / 8.0F);
+						float f8 = MathHelper.cos((j % 8) * ((float) Math.PI * 2F) / 8.0F);
+						float f9 = (j % 8) / 8.0F;
+						bufferbuilder.pos(f7 * 1.5F, f8 * 1.5F, 0.0D).tex(f9, f5).color(0, 0, 0, 128).endVertex();
+						bufferbuilder.pos(f7 * 0.3F, f8 * 0.3F, (float) max_l).tex(f9, f6).color(255, 255, 255, 192).endVertex();
+					}
+					tessellator.draw();
+					GlStateManager.enableCull();
+					GlStateManager.disableBlend();
+					GlStateManager.shadeModel(0x1D00);
+					RenderHelper.enableStandardItemLighting();
+					GlStateManager.popMatrix();
+				}
+			}
+
+			@Override
+			public boolean shouldCombineTextures() {
+				return false;
+			}
+		}
+
+		@SideOnly(Side.CLIENT)
+		public static abstract class Renderer<T extends Base> extends RenderLiving<T> {
+			public Renderer(RenderManager renderManagerIn, ModelBase model, float shadowsize) {
+				super(renderManagerIn, model, shadowsize);
+				this.addLayer(new LayerEntityDeath(this));
+			}
+
+			@Override
+			public void doRender(T entity, double x, double y, double z, float entityYaw, float partialTicks) {
+				if (entity.isBeingRidden() && entity.canBeSteered() && entity.getControllingPassenger() instanceof EntityLivingBase) {
+					this.copyLimbSwing(entity, (EntityLivingBase) entity.getControllingPassenger());
+				}
+				this.setModelVisibilities(entity);
+				this.shadowSize = entity.getModelScale() * 0.5f;
+				super.doRender(entity, x, y, z, entityYaw, partialTicks);
+			}
+
+			@Override
+			protected void renderModel(T entity, float f0, float f1, float f2, float f3, float f4, float f5) {
+				float f = entity.getTransparency();
+				boolean flag = f > 0.0f && f < 1.0f;
+				if (flag) {
+					GlStateManager.enableBlend();
+					GlStateManager.color(1.0f, 1.0f, 1.0f, f);
+					GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+				}
+				super.renderModel(entity, f0, f1, f2, f3, f4, f5);
+				if (flag) {
+					GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
+					GlStateManager.disableBlend();
+				}
+			}
+
+			protected void copyLimbSwing(T entity, EntityLivingBase rider) {
+				entity.swingProgress = rider.swingProgress;
+				entity.swingProgressInt = rider.swingProgressInt;
+				entity.prevSwingProgress = rider.prevSwingProgress;
+				entity.isSwingInProgress = rider.isSwingInProgress;
+				entity.swingingHand = rider.swingingHand;
+			}
+
+			protected void setModelVisibilities(T entity) {
+				if (this.getMainModel() instanceof ModelBiped) {
+					ModelBiped model = (ModelBiped) this.getMainModel();
+					model.setVisible(true);
+					if (Minecraft.getMinecraft().getRenderViewEntity().equals(entity.getControllingPassenger())
+							&& this.renderManager.options.thirdPersonView == 0) {
+						model.bipedHead.showModel = false;
+						model.bipedHeadwear.showModel = false;
+					}
+				}
+			}
+		}
+
+		@SideOnly(Side.CLIENT)
+		public class RenderTailBeastBall extends Render<EntityTailBeastBall> {
+			private final ResourceLocation BIJUDAMA_TEXTURE = new ResourceLocation("narutomod:textures/longcube_white.png");
+			protected final ModelBase mainModel;
+
+			public RenderTailBeastBall(RenderManager renderManagerIn) {
+				super(renderManagerIn);
+				this.mainModel = new ModelSquareBall();
+			}
+
+			@Override
+			public void doRender(EntityTailBeastBall entity, double x, double y, double z, float entityYaw, float partialTicks) {
+				this.bindEntityTexture(entity);
 				GlStateManager.pushMatrix();
-				GlStateManager.translate(0.0F, -offset + (vessel instanceof EntityPlayer ? 1.501F : 0F), 0.0F);
-				GlStateManager.rotate(-90.0F, 1.0F, 0.0F, 0.0F);
-				GlStateManager.rotate(rot_y, 0.0F, 0.0F, 1.0F);
-				GlStateManager.rotate(rot_x - 90.0F, 1.0F, 0.0F, 0.0F);
-				Tessellator tessellator = Tessellator.getInstance();
-				BufferBuilder bufferbuilder = tessellator.getBuffer();
-				RenderHelper.disableStandardItemLighting();
+				//GlStateManager.disableCull();
+				float scale = entity.getEntityScale();
+				GlStateManager.translate(x, y + (0.125F * scale), z);
+				GlStateManager.scale(scale, scale, scale);
+				GlStateManager.rotate(entity.ticksExisted * 30.0F, 1.0F, 0.0F, 0.0F);
+				GlStateManager.enableAlpha();
 				GlStateManager.enableBlend();
-				GlStateManager.disableCull();
+				GlStateManager.disableLighting();
 				GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-				GlStateManager.shadeModel(0x1D01);
-				float f5 = 0.0F - f;
-				float f6 = (float) max_l / 32.0F - f;
-				bufferbuilder.begin(5, DefaultVertexFormats.POSITION_TEX_COLOR);
-				for (int j = 0; j <= 8; j++) {
-					float f7 = MathHelper.sin((j % 8) * ((float) Math.PI * 2F) / 8.0F);
-					float f8 = MathHelper.cos((j % 8) * ((float) Math.PI * 2F) / 8.0F);
-					float f9 = (j % 8) / 8.0F;
-					bufferbuilder.pos(f7 * 1.5F, f8 * 1.5F, 0.0D).tex(f9, f5).color(0, 0, 0, 128).endVertex();
-					bufferbuilder.pos(f7 * 0.3F, f8 * 0.3F, (float) max_l).tex(f9, f6).color(255, 255, 255, 192).endVertex();
+				OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240.0F, 240.0F);
+				for (int i = 0; i < 6; i++) {
+					GlStateManager.rotate(entity.getRNG().nextFloat() * 30f, 0f, 1f, 0f);
+					GlStateManager.rotate(entity.getRNG().nextFloat() * 30f, 1f, 1f, 0f);
+					this.mainModel.render(entity, 0.0F, 0.0F, partialTicks + entity.ticksExisted, 0.0F, 0.0F, 0.0625F);
 				}
-				tessellator.draw();
-				GlStateManager.enableCull();
+				GlStateManager.enableLighting();
+				GlStateManager.disableAlpha();
 				GlStateManager.disableBlend();
-				GlStateManager.shadeModel(0x1D00);
-				RenderHelper.enableStandardItemLighting();
+				//GlStateManager.enableCull();
 				GlStateManager.popMatrix();
+				//super.doRender(entity, x, y, z, entityYaw, partialTicks);
+			}
+
+			@Override
+			protected ResourceLocation getEntityTexture(EntityTailBeastBall entity) {
+				return BIJUDAMA_TEXTURE;
 			}
 		}
 
-	 	@Override
-		public boolean shouldCombineTextures() {
-			return false;
-		}
-	}
+		@SideOnly(Side.CLIENT)
+		public class ModelSquareBall extends ModelBase {
+			private final ModelRenderer core;
+			private final ModelRenderer shell;
 
-	@SideOnly(Side.CLIENT)
-	public static abstract class Renderer<T extends Base> extends RenderLiving<T> {
-		public Renderer(RenderManager renderManagerIn, ModelBase model, float shadowsize) {
-			super(renderManagerIn, model, shadowsize);
-			this.addLayer(new LayerEntityDeath(this));
-		}
+			public ModelSquareBall() {
+				textureWidth = 32;
+				textureHeight = 32;
 
-	 	@Override
-		public void doRender(T entity, double x, double y, double z, float entityYaw, float partialTicks) {
-			if (entity.isBeingRidden() && entity.canBeSteered() && entity.getControllingPassenger() instanceof EntityLivingBase) {
-				this.copyLimbSwing(entity, (EntityLivingBase)entity.getControllingPassenger());
+				core = new ModelRenderer(this);
+				core.setRotationPoint(0.0F, 0.0F, 0.0F);
+				ModelRenderer cube = new ModelRenderer(this);
+				cube.setRotationPoint(0.0F, 0.0F, 0.0F);
+				core.addChild(cube);
+				cube.cubeList.add(new ModelBox(cube, 0, 0, -2.0F, -2.0F, -2.0F, 4, 4, 4, 0.0F, false));
+				cube = new ModelRenderer(this);
+				cube.setRotationPoint(0.0F, 0.0F, 0.0F);
+				core.addChild(cube);
+				setRotationAngle(cube, 0.0F, 0.0F, 0.7854F);
+				cube.cubeList.add(new ModelBox(cube, 0, 0, -2.0F, -2.0F, -2.0F, 4, 4, 4, 0.0F, false));
+				cube = new ModelRenderer(this);
+				cube.setRotationPoint(0.0F, 0.0F, 0.0F);
+				core.addChild(cube);
+				setRotationAngle(cube, 0.0F, -0.7854F, 0.0F);
+				cube.cubeList.add(new ModelBox(cube, 0, 0, -2.0F, -2.0F, -2.0F, 4, 4, 4, 0.0F, false));
+				cube = new ModelRenderer(this);
+				cube.setRotationPoint(0.0F, 0.0F, 0.0F);
+				core.addChild(cube);
+				setRotationAngle(cube, -0.7854F, 0.0F, 0.0F);
+				cube.cubeList.add(new ModelBox(cube, 0, 0, -2.0F, -2.0F, -2.0F, 4, 4, 4, 0.0F, false));
+
+				shell = new ModelRenderer(this);
+				shell.setRotationPoint(0.0F, 0.0F, 0.0F);
+				cube = new ModelRenderer(this);
+				cube.setRotationPoint(0.0F, 0.0F, 0.0F);
+				shell.addChild(cube);
+				cube.cubeList.add(new ModelBox(cube, 0, 0, -2.0F, -2.0F, -2.0F, 4, 4, 4, 0.1F, false));
+				cube = new ModelRenderer(this);
+				cube.setRotationPoint(0.0F, 0.0F, 0.0F);
+				shell.addChild(cube);
+				setRotationAngle(cube, 0.0F, 0.0F, 0.7854F);
+				cube.cubeList.add(new ModelBox(cube, 0, 0, -2.0F, -2.0F, -2.0F, 4, 4, 4, 0.1F, false));
+				cube = new ModelRenderer(this);
+				cube.setRotationPoint(0.0F, 0.0F, 0.0F);
+				shell.addChild(cube);
+				setRotationAngle(cube, 0.0F, -0.7854F, 0.0F);
+				cube.cubeList.add(new ModelBox(cube, 0, 0, -2.0F, -2.0F, -2.0F, 4, 4, 4, 0.1F, false));
+				cube = new ModelRenderer(this);
+				cube.setRotationPoint(0.0F, 0.0F, 0.0F);
+				shell.addChild(cube);
+				setRotationAngle(cube, -0.7854F, 0.0F, 0.0F);
+				cube.cubeList.add(new ModelBox(cube, 0, 0, -2.0F, -2.0F, -2.0F, 4, 4, 4, 0.1F, false));
 			}
-			this.setModelVisibilities(entity);
-			this.shadowSize = entity.getModelScale() * 0.5f;
-			super.doRender(entity, x, y, z, entityYaw, partialTicks);
-		}
 
-		@Override
-		protected void renderModel(T entity, float f0, float f1, float f2, float f3, float f4, float f5) {
-			float f = entity.getTransparency();
-			boolean flag = f > 0.0f && f < 1.0f;
-			if (flag) {
-				GlStateManager.enableBlend();
-				GlStateManager.color(1.0f, 1.0f, 1.0f, f);
-				GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+			@Override
+			public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
+				GlStateManager.color(0.0f, 0.0f, 0.0f, 1.0f);
+				core.render(f5);
+				//shell.rotateAngleY += 0.52359876F;
+				//shell.rotateAngleZ += 0.52359876F;
+				GlStateManager.color(1.0F, 1.0F, 1.0F, 0.15F);
+				shell.render(f5);
 			}
-			super.renderModel(entity, f0, f1, f2, f3, f4, f5);
-			if (flag) {
-				GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
-				GlStateManager.disableBlend();
+
+			public void setRotationAngle(ModelRenderer modelRenderer, float x, float y, float z) {
+				modelRenderer.rotateAngleX = x;
+				modelRenderer.rotateAngleY = y;
+				modelRenderer.rotateAngleZ = z;
 			}
-		}
-
-		protected void copyLimbSwing(T entity, EntityLivingBase rider) {
-			entity.swingProgress = rider.swingProgress;
-			entity.swingProgressInt = rider.swingProgressInt;
-			entity.prevSwingProgress = rider.prevSwingProgress;
-			entity.isSwingInProgress = rider.isSwingInProgress;
-			entity.swingingHand = rider.swingingHand;
-		}
-
-		protected void setModelVisibilities(T entity) {
-			if (this.getMainModel() instanceof ModelBiped) {
-				ModelBiped model = (ModelBiped)this.getMainModel();
-				model.setVisible(true);
-				if (Minecraft.getMinecraft().getRenderViewEntity().equals(entity.getControllingPassenger())
-				 && this.renderManager.options.thirdPersonView == 0) {
-					model.bipedHead.showModel = false;
-					model.bipedHeadwear.showModel = false;
-				}
-			}
-		}
-	}
-
-	@SideOnly(Side.CLIENT)
-	public class RenderTailBeastBall extends Render<EntityTailBeastBall> {
-		private final ResourceLocation BIJUDAMA_TEXTURE = new ResourceLocation("narutomod:textures/longcube_white.png");
-		protected final ModelBase mainModel;
-
-		public RenderTailBeastBall(RenderManager renderManagerIn) {
-			super(renderManagerIn);
-			this.mainModel = new ModelSquareBall();
-		}
-
-	 	@Override
-		public void doRender(EntityTailBeastBall entity, double x, double y, double z, float entityYaw, float partialTicks) {
-			this.bindEntityTexture(entity);
-			GlStateManager.pushMatrix();
-			//GlStateManager.disableCull();
-			float scale = entity.getEntityScale();
-			GlStateManager.translate(x, y + (0.125F * scale), z);
-			GlStateManager.scale(scale, scale, scale);
-			GlStateManager.rotate(entity.ticksExisted * 30.0F, 1.0F, 0.0F, 0.0F);
-			GlStateManager.enableAlpha();
-			GlStateManager.enableBlend();
-			GlStateManager.disableLighting();
-			GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-			OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240.0F, 240.0F);
-			for (int i = 0; i < 6; i++) {
-				GlStateManager.rotate(entity.getRNG().nextFloat() * 30f, 0f, 1f, 0f);
-				GlStateManager.rotate(entity.getRNG().nextFloat() * 30f, 1f, 1f, 0f);
-				this.mainModel.render(entity, 0.0F, 0.0F, partialTicks + entity.ticksExisted, 0.0F, 0.0F, 0.0625F);
-			}
-			GlStateManager.enableLighting();
-			GlStateManager.disableAlpha();
-			GlStateManager.disableBlend();
-			//GlStateManager.enableCull();
-			GlStateManager.popMatrix();
-			//super.doRender(entity, x, y, z, entityYaw, partialTicks);
-		}
-
-	 	@Override
-		protected ResourceLocation getEntityTexture(EntityTailBeastBall entity) {
-			return BIJUDAMA_TEXTURE;
-		}
-	}
-
-	@SideOnly(Side.CLIENT)
-	public class ModelSquareBall extends ModelBase {
-		private final ModelRenderer core;
-		private final ModelRenderer shell;
-	
-		public ModelSquareBall() {
-			textureWidth = 32;
-			textureHeight = 32;
-	
-			core = new ModelRenderer(this);
-			core.setRotationPoint(0.0F, 0.0F, 0.0F);
-			ModelRenderer cube = new ModelRenderer(this);
-			cube.setRotationPoint(0.0F, 0.0F, 0.0F);
-			core.addChild(cube);
-			cube.cubeList.add(new ModelBox(cube, 0, 0, -2.0F, -2.0F, -2.0F, 4, 4, 4, 0.0F, false));
-			cube = new ModelRenderer(this);
-			cube.setRotationPoint(0.0F, 0.0F, 0.0F);
-			core.addChild(cube);
-			setRotationAngle(cube, 0.0F, 0.0F, 0.7854F);
-			cube.cubeList.add(new ModelBox(cube, 0, 0, -2.0F, -2.0F, -2.0F, 4, 4, 4, 0.0F, false));
-			cube = new ModelRenderer(this);
-			cube.setRotationPoint(0.0F, 0.0F, 0.0F);
-			core.addChild(cube);
-			setRotationAngle(cube, 0.0F, -0.7854F, 0.0F);
-			cube.cubeList.add(new ModelBox(cube, 0, 0, -2.0F, -2.0F, -2.0F, 4, 4, 4, 0.0F, false));
-			cube = new ModelRenderer(this);
-			cube.setRotationPoint(0.0F, 0.0F, 0.0F);
-			core.addChild(cube);
-			setRotationAngle(cube, -0.7854F, 0.0F, 0.0F);
-			cube.cubeList.add(new ModelBox(cube, 0, 0, -2.0F, -2.0F, -2.0F, 4, 4, 4, 0.0F, false));
-	
-			shell = new ModelRenderer(this);
-			shell.setRotationPoint(0.0F, 0.0F, 0.0F);
-			cube = new ModelRenderer(this);
-			cube.setRotationPoint(0.0F, 0.0F, 0.0F);
-			shell.addChild(cube);
-			cube.cubeList.add(new ModelBox(cube, 0, 0, -2.0F, -2.0F, -2.0F, 4, 4, 4, 0.1F, false));
-			cube = new ModelRenderer(this);
-			cube.setRotationPoint(0.0F, 0.0F, 0.0F);
-			shell.addChild(cube);
-			setRotationAngle(cube, 0.0F, 0.0F, 0.7854F);
-			cube.cubeList.add(new ModelBox(cube, 0, 0, -2.0F, -2.0F, -2.0F, 4, 4, 4, 0.1F, false));
-			cube = new ModelRenderer(this);
-			cube.setRotationPoint(0.0F, 0.0F, 0.0F);
-			shell.addChild(cube);
-			setRotationAngle(cube, 0.0F, -0.7854F, 0.0F);
-			cube.cubeList.add(new ModelBox(cube, 0, 0, -2.0F, -2.0F, -2.0F, 4, 4, 4, 0.1F, false));
-			cube = new ModelRenderer(this);
-			cube.setRotationPoint(0.0F, 0.0F, 0.0F);
-			shell.addChild(cube);
-			setRotationAngle(cube, -0.7854F, 0.0F, 0.0F);
-			cube.cubeList.add(new ModelBox(cube, 0, 0, -2.0F, -2.0F, -2.0F, 4, 4, 4, 0.1F, false));
-		}
-
-		@Override
-		public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
-			GlStateManager.color(0.0f, 0.0f, 0.0f, 1.0f);
-			core.render(f5);
-			//shell.rotateAngleY += 0.52359876F;
-			//shell.rotateAngleZ += 0.52359876F;
-			GlStateManager.color(1.0F, 1.0F, 1.0F, 0.15F);
-			shell.render(f5);
-		}
-
-		public void setRotationAngle(ModelRenderer modelRenderer, float x, float y, float z) {
-			modelRenderer.rotateAngleX = x;
-			modelRenderer.rotateAngleY = y;
-			modelRenderer.rotateAngleZ = z;
 		}
 	}
 
@@ -1338,55 +1346,55 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 			bm.reset();
 		}
 
-	 	@Override
-	 	public void readFromNBT(NBTTagCompound compound) {
-	 		if (this.getBijuManager().getEntity() == null && compound.getBoolean("spawned")) {
-	 			World world = FMLCommonHandler.instance().getMinecraftServerInstance().getWorld(compound.getInteger("dimension"));
-	 			if (world != null) {
-	 				this.getBijuManager().onAddedToWorld(this.createEntity(world), false);
-	 				this.getBijuManager().loadEntityFromNBT(compound);
-	 			}
-	 		}
-	 		if (compound.hasUniqueId("JinchurikiUUID")) {
-	 			UUID vesseluuid = compound.getUniqueId("JinchurikiUUID");
-	 			this.getBijuManager().setVesselUuid(vesseluuid);
-	 			this.getBijuManager().setVesselName(compound.getString("VesselName"));
-	 			this.getBijuManager().setCloakXPs(compound.getIntArray("JinchurikiCloakXp"));
-	 			this.getBijuManager().setCloakCD(compound.getLong("JinchurikiCloakCD"));
-	 			Entity entity = FMLCommonHandler.instance().getMinecraftServerInstance().getEntityFromUuid(vesseluuid);
-	 			if (entity != null) {
-	 				this.getBijuManager().setVesselEntity(entity, false);
-	 			}
-	 		}
+		@Override
+		public void readFromNBT(NBTTagCompound compound) {
+			if (this.getBijuManager().getEntity() == null && compound.getBoolean("spawned")) {
+				World world = FMLCommonHandler.instance().getMinecraftServerInstance().getWorld(compound.getInteger("dimension"));
+				if (world != null) {
+					this.getBijuManager().onAddedToWorld(this.createEntity(world), false);
+					this.getBijuManager().loadEntityFromNBT(compound);
+				}
+			}
+			if (compound.hasUniqueId("JinchurikiUUID")) {
+				UUID vesseluuid = compound.getUniqueId("JinchurikiUUID");
+				this.getBijuManager().setVesselUuid(vesseluuid);
+				this.getBijuManager().setVesselName(compound.getString("VesselName"));
+				this.getBijuManager().setCloakXPs(compound.getIntArray("JinchurikiCloakXp"));
+				this.getBijuManager().setCloakCD(compound.getLong("JinchurikiCloakCD"));
+				Entity entity = FMLCommonHandler.instance().getMinecraftServerInstance().getEntityFromUuid(vesseluuid);
+				if (entity != null) {
+					this.getBijuManager().setVesselEntity(entity, false);
+				}
+			}
 			if (compound.hasKey("spawnPosX")) {
 				this.getBijuManager().setSpawnPos(new BlockPos(compound.getDouble("spawnPosX"),
-				 compound.getDouble("spawnPosY"), compound.getDouble("spawnPosZ")), false);
+						compound.getDouble("spawnPosY"), compound.getDouble("spawnPosZ")), false);
 			}
 			this.getBijuManager().setTicksSinceDeath(compound.getInteger("ticksSinceDeath"), false);
 			this.getBijuManager().setHasLived(compound.getBoolean("hasLived"), false);
 		}
 
-	 	@Override 
-	 	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
-	 		Entity entity = this.getBijuManager().getEntity();
-	 		compound.setBoolean("spawned", entity != null);
-	 		if (entity != null) {
-		 		compound.setInteger("dimension", entity.dimension);
-		 		entity.writeToNBT(compound);
-	 		}
-	 		UUID vesseluuid = this.getBijuManager().getVesselUuid();
-	 		if (vesseluuid != null) {
-	 			compound.setUniqueId("JinchurikiUUID", vesseluuid);
-	 			compound.setString("VesselName", this.getBijuManager().getVesselName());
-	 			compound.setIntArray("JinchurikiCloakXp", this.getBijuManager().getCloakXPs());
-	 			compound.setLong("JinchurikiCloakCD", this.getBijuManager().getCloakCD());
-	 		} else {
-	 			compound.removeTag("JinchurikiUUIDMost");
-	 			compound.removeTag("JinchurikiUUIDLeast");
-	 			compound.removeTag("VesselName");
-	 			compound.removeTag("JinchurikiCloakXp");
-	 			compound.removeTag("JinchurikiCloakCD");
-	 		}
+		@Override
+		public NBTTagCompound writeToNBT(NBTTagCompound compound) {
+			Entity entity = this.getBijuManager().getEntity();
+			compound.setBoolean("spawned", entity != null);
+			if (entity != null) {
+				compound.setInteger("dimension", entity.dimension);
+				entity.writeToNBT(compound);
+			}
+			UUID vesseluuid = this.getBijuManager().getVesselUuid();
+			if (vesseluuid != null) {
+				compound.setUniqueId("JinchurikiUUID", vesseluuid);
+				compound.setString("VesselName", this.getBijuManager().getVesselName());
+				compound.setIntArray("JinchurikiCloakXp", this.getBijuManager().getCloakXPs());
+				compound.setLong("JinchurikiCloakCD", this.getBijuManager().getCloakCD());
+			} else {
+				compound.removeTag("JinchurikiUUIDMost");
+				compound.removeTag("JinchurikiUUIDLeast");
+				compound.removeTag("VesselName");
+				compound.removeTag("JinchurikiCloakXp");
+				compound.removeTag("JinchurikiCloakCD");
+			}
 			if (this.getBijuManager().hasSpawnPos()) {
 				BlockPos spawnPos = this.getBijuManager().getSpawnPos();
 				compound.setDouble("spawnPosX", spawnPos.getX());
@@ -1395,8 +1403,8 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 			}
 			compound.setInteger("ticksSinceDeath", this.getBijuManager().getTicksSinceDeath());
 			compound.setBoolean("hasLived", this.getBijuManager().getHasLived());
-	 		return compound;
-	 	} 
+			return compound;
+		}
 	}
 
 	public class PlayerHooks {
@@ -1407,7 +1415,7 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 			for (EntityBijuManager bm : EntityBijuManager.getBMList()) {
 				Base biju = bm.getEntityInWorld(entity.world);
 				if (biju != null && biju.isEntityAlive()
-				 && (entity.equals(biju.summoningPlayer) || entity.equals(bm.getJinchurikiPlayer()))) {
+						&& (entity.equals(biju.summoningPlayer) || entity.equals(bm.getJinchurikiPlayer()))) {
 					biju.setDead();
 				}
 			}
@@ -1423,7 +1431,7 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 		@SubscribeEvent
 		public void onPlayerChangeDimension(EntityTravelToDimensionEvent event) {
 			if (event.getEntity() instanceof EntityPlayer) {
-				this.checkAndRemove((EntityPlayer)event.getEntity());
+				this.checkAndRemove((EntityPlayer) event.getEntity());
 			}
 		}
 
@@ -1434,7 +1442,7 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 
 		@SubscribeEvent
 		public void onServerDisconnect(FMLNetworkEvent.ServerDisconnectionFromClientEvent event) {
-			this.checkAndRemove(((net.minecraft.network.NetHandlerPlayServer)event.getHandler()).player);
+			this.checkAndRemove(((net.minecraft.network.NetHandlerPlayServer) event.getHandler()).player);
 		}
 
 		@SubscribeEvent
@@ -1445,5 +1453,4 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 			}
 		}
 	}
-
 }

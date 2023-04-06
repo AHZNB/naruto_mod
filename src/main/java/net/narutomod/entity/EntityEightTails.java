@@ -206,7 +206,7 @@ public class EntityEightTails extends ElementsNarutomodMod.ModElement {
 		}
 
 		@SideOnly(Side.CLIENT)
-		public class RenderCustom extends EntityTailedBeast.Renderer<EntityCustom> {
+		public class RenderCustom extends EntityTailedBeast.ClientOnly.Renderer<EntityCustom> {
 			private final ResourceLocation texture = new ResourceLocation("narutomod:textures/eighttails.png");
 
 			public RenderCustom(RenderManager renderManagerIn) {

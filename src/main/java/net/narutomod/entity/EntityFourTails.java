@@ -6,7 +6,8 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
-import net.minecraftforge.fml.common.FMLCommonHandler;
+
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 
 import net.minecraft.world.World;
@@ -22,7 +23,8 @@ import net.minecraft.entity.Entity;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.model.ModelBox;
-import net.minecraft.client.renderer.OpenGlHelper;
+
+import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.item.ItemStack;
@@ -31,7 +33,8 @@ import net.narutomod.item.ItemYooton;
 import net.narutomod.item.ItemKaton;
 import net.narutomod.item.ItemDoton;
 import net.narutomod.procedure.ProcedureUtils;
-import net.narutomod.ElementsNarutomodMod;
+import net.narutomod.ElementsNarutomodMod;
+
 
 import java.util.Random;
 import javax.annotation.Nullable;
@@ -49,8 +52,10 @@ public class EntityFourTails extends ElementsNarutomodMod.ModElement {
 
 	@Override
 	public void initElements() {
-		elements.entities.add(() -> EntityEntryBuilder.create().entity(EntityCustom.class)
-		 .id(new ResourceLocation("narutomod", "four_tails"), ENTITYID).name("four_tails")
+		elements.entities
+.add(() -> EntityEntryBuilder.create().entity(EntityCustom.class)
+		 .id(new ResourceLocation("narutomod", "four_tails"), ENTITYID)
+.name("four_tails")
 		 .tracker(96, 3, true).egg(-3407872, -6697984).build());
 	}
 
@@ -221,7 +226,7 @@ public class EntityFourTails extends ElementsNarutomodMod.ModElement {
 		}
 
 		@SideOnly(Side.CLIENT)
-		public class RenderCustom extends EntityTailedBeast.Renderer<EntityCustom> {
+		public class RenderCustom extends EntityTailedBeast.ClientOnly.Renderer<EntityCustom> {
 			private final ResourceLocation texture = new ResourceLocation("narutomod:textures/fourtails.png");
 	
 			public RenderCustom(RenderManager renderManagerIn) {
