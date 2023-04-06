@@ -91,13 +91,17 @@ public class EntityExplosiveClone extends ElementsNarutomodMod.ModElement {
 
 		public EC(World world) {
 			super(world);
+			this.stepHeight = 16f;
+			this.moveHelper = new EntityNinjaMob.MoveHelper(this);
 		}
 
 		public EC(EntityLivingBase user) {
 			super(user);
 			this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(48d);
-			double d = ProcedureUtils.getModifiedSpeed(user) * 3.5d;
+			double d = ProcedureUtils.getModifiedSpeed(user) * 4.0d;
 			this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(d);
+			this.stepHeight = 16f;
+			this.moveHelper = new EntityNinjaMob.MoveHelper(this);
 		}
 
 		@Override
@@ -117,7 +121,7 @@ public class EntityExplosiveClone extends ElementsNarutomodMod.ModElement {
 		@Override
 		protected void initEntityAI() {
 			super.initEntityAI();
-			this.tasks.addTask(2, new EntityClone.AIFollowSummoner(this, 0.6d, 3.0F));
+			this.tasks.addTask(2, new EntityClone.AIFollowSummoner(this, 0.8d, 4.0F));
 		}
 
 		@Override

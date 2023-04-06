@@ -601,6 +601,12 @@ public class EntitySnake extends ElementsNarutomodMod.ModElement {
 	        }
 	    }
 	
+	    @Override
+	    public void clearPath() {
+	    	super.clearPath();
+	    	this.targetPosition = null;
+	    }
+		
 		@Override
 	    public void onUpdateNavigation() {
 	        if (!this.noPath()) {
@@ -609,9 +615,10 @@ public class EntitySnake extends ElementsNarutomodMod.ModElement {
 	            if (this.targetPosition != null) {
 	                double d0 = (double)(this.entity.width * this.entity.width);
 	                double d1 = (double)this.targetPosition.getY() - this.entity.posY;
-	                if (this.entity.getDistanceSqToCenter(new BlockPos(this.targetPosition.getX(),
-	                		MathHelper.floor(this.entity.posY), this.targetPosition.getZ())) >= d0
-	                 || (d1 <= (double)this.entity.height * 8 && d1 >= -(double)this.entity.height * 12)) {
+	                double d2 = this.entity.getDistanceSqToCenter(new BlockPos(this.targetPosition.getX(),
+	                 MathHelper.floor(this.entity.posY), this.targetPosition.getZ()));
+	                double d3 = this.targetPosition.distanceSq(this.entity.getPosition());
+	                if (d3 >= 1.0d && (d2 >= d0 || (d1 <= 8d * this.entity.height && d1 >= -12d * this.entity.height))) {
 	                	this.entity.getMoveHelper().setMoveTo((double)this.targetPosition.getX(),
 	                	 (double)this.targetPosition.getY(), (double)this.targetPosition.getZ(), this.speed);
 	                } else {

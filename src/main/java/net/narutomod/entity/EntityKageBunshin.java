@@ -13,23 +13,23 @@ import net.minecraftforge.event.entity.player.PlayerSleepInBedEvent;
 import net.minecraftforge.common.MinecraftForge;
 
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.DamageSource;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.world.WorldServer;
-import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.ai.attributes.AttributeModifier;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.Entity;
+import net.minecraft.item.ItemStack;
 
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.ElementsNarutomodMod;
@@ -99,14 +99,18 @@ public class EntityKageBunshin extends ElementsNarutomodMod.ModElement {
 
 		public EC(World world) {
 			super(world);
+			this.stepHeight = 16f;
+			this.moveHelper = new EntityNinjaMob.MoveHelper(this);
 		}
 
 		public EC(EntityLivingBase user) {
 			super(user);
+			this.stepHeight = 16f;
 			this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).applyModifier(new AttributeModifier("bunshin.followRange", 32, 0));
-			this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(ProcedureUtils.getModifiedSpeed(user) * 3.5d);
+			this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(ProcedureUtils.getModifiedSpeed(user) * 4.0d);
 			this.getEntityAttribute(SharedMonsterAttributes.ARMOR)
 			 .setBaseValue(user.getEntityAttribute(SharedMonsterAttributes.ARMOR).getAttributeValue());
+			this.moveHelper = new EntityNinjaMob.MoveHelper(this);
 		}
 
 		@Nullable
@@ -121,7 +125,7 @@ public class EntityKageBunshin extends ElementsNarutomodMod.ModElement {
 		@Override
 		protected void initEntityAI() {
 			super.initEntityAI();
-			this.tasks.addTask(2, new EntityClone.AIFollowSummoner(this, 0.6d, 3.0F) {
+			this.tasks.addTask(2, new EntityClone.AIFollowSummoner(this, 0.8d, 4.0F) {
 				@Override
 				public boolean shouldExecute() {
 					return super.shouldExecute() && !EC.this.isOriginal;

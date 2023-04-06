@@ -62,6 +62,7 @@ import com.google.common.collect.Maps;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class PlayerRender extends ElementsNarutomodMod.ModElement {
+	private static PlayerRender INSTANCE;
 	private static final String CLONETARGETID = "SkinCloningTargetId";
 	private static final String CLONETARGETLAYERS = "SkinCloningRenderTargetLayers";
 	private static final String PLAYERTRANSPARENT = "PlayerRenderTransparent";
@@ -72,6 +73,11 @@ public class PlayerRender extends ElementsNarutomodMod.ModElement {
 	 */
 	public PlayerRender(ElementsNarutomodMod instance) {
 		super(instance, 608);
+		INSTANCE = this;
+	}
+
+	public static PlayerRender getInstance() {
+		return INSTANCE;
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -343,16 +349,17 @@ public class PlayerRender extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-	private static boolean shouldNarutoRun(EntityPlayer player) {
-		return ModConfig.NARUTO_RUN && !player.capabilities.isFlying && !player.isRiding()
-		 && player.getPositionVector().subtract(player.lastTickPosX, player.lastTickPosY, player.lastTickPosZ).lengthSquared() >= 0.125d;
+	public static boolean shouldNarutoRun(Entity entity) {
+		return ModConfig.NARUTO_RUN && !entity.isRiding()
+		 && (!(entity instanceof EntityPlayer) || !((EntityPlayer)entity).capabilities.isFlying)
+		 && entity.getPositionVector().subtract(entity.lastTickPosX, entity.lastTickPosY, entity.lastTickPosZ).lengthSquared() >= 0.125d;
 	}
 
 	@SideOnly(Side.CLIENT)
 	public class LayerArmorCustom extends LayerBipedArmor {
-		private final Renderer renderer;
+		private final RenderLivingBase<?> renderer;
 
-		public LayerArmorCustom(Renderer rendererIn) {
+		public LayerArmorCustom(RenderLivingBase<?> rendererIn) {
 			super(rendererIn);
 			this.renderer = rendererIn;
 		}
@@ -398,7 +405,7 @@ public class PlayerRender extends ElementsNarutomodMod.ModElement {
 	    }
 
 		private void renderArmorModel(ModelBiped model, Entity entityIn, float f0, float f1, float f2, float f3, float f4, float f5) {
-			if (entityIn instanceof EntityPlayer && shouldNarutoRun((EntityPlayer)entityIn) && model.swingProgress == 0.0f
+			if (shouldNarutoRun(entityIn) && model.swingProgress == 0.0f
 			 && model.rightArmPose == ModelBiped.ArmPose.EMPTY && model.leftArmPose == ModelBiped.ArmPose.EMPTY) {
 				boolean showRightArm = model.bipedRightArm.showModel;
 				boolean showLeftArm = model.bipedLeftArm.showModel;

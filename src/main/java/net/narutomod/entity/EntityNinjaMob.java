@@ -56,6 +56,9 @@ import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.Minecraft;
+import net.minecraft.pathfinding.Path;
+import net.minecraft.pathfinding.PathNavigate;
+import net.minecraft.pathfinding.PathNavigateGround;
 
 import net.narutomod.item.ItemOnBody;
 import net.narutomod.potion.PotionFeatherFalling;
@@ -93,7 +96,7 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 			this.setSize(0.6f, 1.8f);
 			this.experienceValue = level;
 			this.isImmuneToFire = false;
-			this.stepHeight = 8f;
+			this.stepHeight = 16f;
 			this.moveHelper = new MoveHelper(this);
 			this.setNoAI(false);
 			this.setCanPickUpLoot(false);
@@ -103,6 +106,13 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 			this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(50d + 0.005d * level * level);
 			// .applyModifier(new AttributeModifier(NINJA_HEALTH, "ninja.maxhealth", 0.005d * level * level, 0));
 			this.setHealth(this.getMaxHealth());
+		}
+
+		@Override
+		protected PathNavigate createNavigator(World worldIn) {
+			PathNavigateGround navi = new NavigateGround(this, worldIn);
+			navi.setCanSwim(true);
+			return navi;
 		}
 
 		@Override
@@ -669,8 +679,67 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-	static class MoveHelper extends EntityMoveHelper {
-		MoveHelper(Base entityIn) {
+	public static class NavigateGround extends PathNavigateGround {
+		private BlockPos targetPosition;
+	
+		public NavigateGround(EntityLiving entityLivingIn, World worldIn) {
+			super(entityLivingIn, worldIn);
+		}
+	
+		@Override
+	    public Path getPathToPos(BlockPos pos) {
+	        this.targetPosition = pos;
+	        return super.getPathToPos(pos);
+	    }
+		
+		@Override
+	    public Path getPathToEntityLiving(Entity entityIn) {
+	        this.targetPosition = new BlockPos(entityIn);
+	        return super.getPathToEntityLiving(entityIn);
+	    }
+		
+		@Override
+	    public boolean tryMoveToEntityLiving(Entity entityIn, double speedIn) {
+		   	Path path = this.getPathToEntityLiving(entityIn);
+		    if (path != null) {
+		        return this.setPath(path, speedIn);
+		    } else {
+		        this.targetPosition = new BlockPos(entityIn);
+		        this.speed = speedIn;
+		        return true;
+		    }
+		}
+
+		@Override
+		public void clearPath() {
+		   	super.clearPath();
+		   	this.targetPosition = null;
+		}
+		
+		@Override
+		public void onUpdateNavigation() {
+		    if (!this.noPath()) {
+		        super.onUpdateNavigation();
+		    } else {
+		        if (this.targetPosition != null) {
+		            double d0 = (double)(this.entity.width * this.entity.width);
+		            double d1 = (double)this.targetPosition.getY() - this.entity.posY;
+		            double d2 = this.entity.getDistanceSqToCenter(new BlockPos(this.targetPosition.getX(),
+		             MathHelper.floor(this.entity.posY), this.targetPosition.getZ()));
+		            double d3 = this.targetPosition.distanceSq(this.entity.getPosition());
+		            if (d3 >= 1.0d && (d2 >= d0 || (d1 <= this.entity.stepHeight && d1 >= -12d * this.entity.height))) {
+		              	this.entity.getMoveHelper().setMoveTo((double)this.targetPosition.getX(),
+		               	 (double)this.targetPosition.getY(), (double)this.targetPosition.getZ(), this.speed);
+		            } else {
+		                this.targetPosition = null;
+		            }
+		        }
+		    }
+		}
+	}
+
+	public static class MoveHelper extends EntityMoveHelper {
+		public MoveHelper(EntityCreature entityIn) {
 			super(entityIn);
 		}
 
@@ -689,11 +758,11 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 	            float f9 = (float)(MathHelper.atan2(d1, d0) * (180D / Math.PI)) - 90.0F;
 	            this.entity.rotationYaw = this.limitAngle(this.entity.rotationYaw, f9, 90.0F);
 	            this.entity.setAIMoveSpeed((float)(this.speed * this.entity.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).getAttributeValue()));
-	            if (d2 > (double)this.entity.stepHeight && d0 * d0 + d1 * d1 < (double)Math.max(1.0F, this.entity.width)) {
+	            if (d2 > 0.01d && this.entity.collidedHorizontally) {
+	            	this.entity.motionY = 0.42d;
+	            } else if (d2 > (double)this.entity.stepHeight && d0 * d0 + d1 * d1 < (double)Math.max(1.0F, this.entity.width)) {
 	                this.entity.getJumpHelper().setJumping();
 	                this.action = EntityMoveHelper.Action.JUMPING;
-	            } else if (d2 > 0.01d && d2 <= (double)this.entity.stepHeight && this.entity.collidedHorizontally) {
-	            	this.entity.motionY = 0.4d;
 	            }
 			} else {
 				super.onUpdateMoveHelper();

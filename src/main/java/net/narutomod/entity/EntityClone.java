@@ -57,7 +57,10 @@ import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.pathfinding.PathNodeType;
 import net.minecraft.pathfinding.PathNavigate;
+import net.minecraft.pathfinding.PathNavigateGround;
+import net.minecraft.potion.PotionEffect;
 
+import net.narutomod.potion.PotionFeatherFalling;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.item.ItemOnBody;
 import net.narutomod.ElementsNarutomodMod;
@@ -135,6 +138,13 @@ public class EntityClone extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
+		protected PathNavigate createNavigator(World worldIn) {
+			PathNavigateGround navi = new EntityNinjaMob.NavigateGround(this, worldIn);
+			navi.setCanSwim(true);
+			return navi;
+		}
+
+		@Override
 		protected void entityInit() {
 			super.entityInit();
 			this.getDataManager().register(SUMMONER_ID, Integer.valueOf(-1));
@@ -168,7 +178,7 @@ public class EntityClone extends ElementsNarutomodMod.ModElement {
 			super.initEntityAI();
 			this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, true));
 			this.tasks.addTask(0, new EntityAISwimming(this));
-			this.tasks.addTask(1, new EntityAIAttackMelee(this, 0.8d, true));
+			this.tasks.addTask(1, new EntityAIAttackMelee(this, 1.25d, true));
 			//this.tasks.addTask(2, new AIFollowSummoner(this, 0.6d, 3.0F));
 			this.tasks.addTask(5, new EntityAILookIdle(this));
 		}
@@ -316,7 +326,15 @@ public class EntityClone extends ElementsNarutomodMod.ModElement {
 			if (this.world.isRemote && this.height != this.getScale() * 1.8f) {
 				this.setSize(0.6f * this.getScale(), 1.8f * this.getScale());
 			}
+			if (!this.world.isRemote && this.ticksExisted % 200 == 1) {
+				this.addPotionEffect(new PotionEffect(PotionFeatherFalling.potion, 202, 1, false, false));
+			}
 			super.onUpdate();
+		}
+
+		@Override
+		public int getMaxFallHeight() {
+			return 12;
 		}
 	}
 
@@ -372,7 +390,7 @@ public class EntityClone extends ElementsNarutomodMod.ModElement {
 			}
 		}
 	}
-	
+
 	public static class AIFollowSummoner extends EntityAIBase {
 	    private final EntityLiving entity;
 	    protected EntityLivingBase followingEntity;
@@ -553,7 +571,7 @@ public class EntityClone extends ElementsNarutomodMod.ModElement {
 		    public RenderClone(RenderManager renderManager) {
 		        super(renderManager, new ModelClone(0.0F, false), 0.5F);
 		        //this.smallArms = false;
-		        this.addLayer(new BipedArmorLayer(this));
+		        this.addLayer(new BipedArmorLayer(this));//this.addLayer(PlayerRender.getInstance().new LayerArmorCustom(this));
 		        this.addLayer(new net.minecraft.client.renderer.entity.layers.LayerHeldItem(this));
 		        //this.addLayer(new net.minecraft.client.renderer.entity.layers.LayerDeadmau5Head(this));
 		        //this.addLayer(new net.minecraft.client.renderer.entity.layers.LayerCape(this));
