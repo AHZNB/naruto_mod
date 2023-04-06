@@ -241,7 +241,7 @@ public class EntityNineTails extends ElementsNarutomodMod.ModElement {
 		}
 
 		@SideOnly(Side.CLIENT)
-		public class RenderCustom extends EntityTailedBeast.Renderer<EntityCustom> {
+		public class RenderCustom extends EntityTailedBeast.ClientOnly.Renderer<EntityCustom> {
 			private final ResourceLocation mainTexture = new ResourceLocation("narutomod:textures/ninetails.png");
 			private final ResourceLocation kcmTexture = new ResourceLocation("narutomod:textures/ninetailskcm.png");
 
