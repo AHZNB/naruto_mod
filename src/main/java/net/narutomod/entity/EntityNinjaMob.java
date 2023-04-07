@@ -16,6 +16,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraft.world.World;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.EnumSkyBlock;
+import net.minecraft.block.material.Material;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.Vec3d;
@@ -184,6 +185,12 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 		public void onUpdate() {
 			this.fixOnClientSpawn();
 			super.onUpdate();
+			BlockPos pos = new BlockPos(this);
+			if (this.world.getBlockState(pos).getMaterial() == Material.WATER
+			 && this.world.getBlockState(pos.up()).getMaterial() != Material.WATER) {
+				this.motionY = 0.01d;
+				this.onGround = true;
+			}
 			if (!this.world.isRemote && this.isEntityAlive()) {
 				if (this.ticksExisted % 200 == 1) {
 					this.addPotionEffect(new PotionEffect(PotionFeatherFalling.potion, 201, 1, false, false));

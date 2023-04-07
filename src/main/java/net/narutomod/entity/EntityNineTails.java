@@ -597,19 +597,19 @@ public class EntityNineTails extends ElementsNarutomodMod.ModElement {
 				bone70 = new ModelRenderer(this);
 				bone70.setRotationPoint(1.0F, -1.0F, 1.0F);
 				chest.addChild(bone70);
-
+				setRotationAngle(bone70, -0.0436F, 0.0F, 0.0F);
 
 				bone71 = new ModelRenderer(this);
 				bone71.setRotationPoint(-7.0F, -0.25F, -1.75F);
 				bone70.addChild(bone71);
 				setRotationAngle(bone71, 0.0F, 0.0F, -0.7854F);
-				bone71.cubeList.add(new ModelBox(bone71, 10, 0, 0.0F, 0.0F, -3.0F, 8, 6, 6, -0.25F, false));
-
+				bone71.cubeList.add(new ModelBox(bone71, 10, 0, 0.0F, 0.0F, -3.0F, 8, 6, 6, -0.1F, false));
+		
 				bone72 = new ModelRenderer(this);
 				bone72.setRotationPoint(7.0F, -0.25F, -1.75F);
 				bone70.addChild(bone72);
 				setRotationAngle(bone72, 0.0F, 0.0F, 0.7854F);
-				bone72.cubeList.add(new ModelBox(bone72, 10, 0, -8.0F, 0.0F, -3.0F, 8, 6, 6, -0.25F, true));
+				bone72.cubeList.add(new ModelBox(bone72, 10, 0, -8.0F, 0.0F, -3.0F, 8, 6, 6, -0.1F, true));
 
 				bipedRightArm = new ModelRenderer(this);
 				bipedRightArm.setRotationPoint(-6.0F, -23.0F, -3.0F);

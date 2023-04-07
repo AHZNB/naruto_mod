@@ -253,6 +253,11 @@ public class EntityKageBunshin extends ElementsNarutomodMod.ModElement {
 	    	}
 	    }
 
+		@Override
+		protected float getWaterSlowDown() {
+			return 1.0f;
+		}
+
 	    @Override
 	    public void onUpdate() {
 	    	super.onUpdate();

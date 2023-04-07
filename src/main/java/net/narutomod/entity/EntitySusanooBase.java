@@ -27,6 +27,7 @@ import net.narutomod.item.ItemShuriken;
 import net.narutomod.item.ItemSharingan;
 import net.narutomod.item.ItemJutsu;
 import net.narutomod.procedure.ProcedureUtils;
+import net.narutomod.procedure.ProcedureSusanoo;
 import net.narutomod.PlayerTracker;
 import net.narutomod.Particles;
 import net.narutomod.ElementsNarutomodMod;
@@ -309,10 +310,14 @@ public abstract class EntitySusanooBase extends EntityMob {
 			this.setDead();
 		}
 		if (flag && !((EntityPlayer)ownerPlayer).isCreative()) {
-			ownerPlayer.setSneaking(false);
-		}
-		if (!this.world.isRemote && flag) {
-			this.consumeChakra();
+			if (!this.isBeingRidden()) {
+				ProcedureSusanoo.execute((EntityPlayer)ownerPlayer);
+			} else {
+				ownerPlayer.setSneaking(false);
+			}
+			if (!this.world.isRemote) {
+				this.consumeChakra();
+			}
 		}
 
 		super.onLivingUpdate();

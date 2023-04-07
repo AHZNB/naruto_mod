@@ -17,6 +17,7 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.EnumHandSide;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -59,6 +60,7 @@ import net.minecraft.pathfinding.PathNodeType;
 import net.minecraft.pathfinding.PathNavigate;
 import net.minecraft.pathfinding.PathNavigateGround;
 import net.minecraft.potion.PotionEffect;
+import net.minecraft.block.material.Material;
 
 import net.narutomod.potion.PotionFeatherFalling;
 import net.narutomod.procedure.ProcedureUtils;
@@ -328,6 +330,12 @@ public class EntityClone extends ElementsNarutomodMod.ModElement {
 			}
 			if (!this.world.isRemote && this.ticksExisted % 200 == 1) {
 				this.addPotionEffect(new PotionEffect(PotionFeatherFalling.potion, 202, 1, false, false));
+			}
+			BlockPos pos = new BlockPos(this);
+			if (this.world.getBlockState(pos).getMaterial() == Material.WATER
+			 && this.world.getBlockState(pos.up()).getMaterial() != Material.WATER) {
+				this.motionY = 0.01d;
+				this.onGround = true;
 			}
 			super.onUpdate();
 		}

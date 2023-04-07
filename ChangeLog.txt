@@ -43,6 +43,7 @@ Entities:
  - new 4-tails Son Goku model
  - made itachi's real chance configurable
  - patch loophole for sakura to drop anything
+ - better NPC/clone water walking and wall climbing AI
 
 Advancements:
  - associate "Rinnesharingan Activated" advancement to the correct parent (rinnegan/tenseigan) advancement

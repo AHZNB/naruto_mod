@@ -50,7 +50,7 @@ public class ProcedureSusanoo extends ElementsNarutomodMod.ModElement {
 		return entity.getEntityData().getInteger(SUMMONED_SUSANOO);
 	}
 
-	private static void execute(EntityPlayer player) {
+	public static void execute(EntityPlayer player) {
 		World world = player.world;
 		boolean flag = (player.isCreative() || ProcedureUtils.hasItemInInventory(player, ItemRinnegan.helmet));
 		ItemStack helmet = player.inventory.armorInventory.get(3);
