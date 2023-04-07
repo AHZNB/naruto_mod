@@ -188,7 +188,9 @@ public class EntityKageBunshin extends ElementsNarutomodMod.ModElement {
 				if (flag && summoner != null) {
 					Jutsu.updateClones(summoner, false);
 					Chakra.pathway(summoner).consume(-Chakra.pathway(this).getAmount() * 0.9d, false);
-					summoner.setHealth(summoner.getHealth() + this.getHealth());
+					if (summoner.getHealth() > 0.0f) {
+						summoner.setHealth(summoner.getHealth() + this.getHealth());
+					}
 				}
 			}
 		}
@@ -371,18 +373,26 @@ public class EntityKageBunshin extends ElementsNarutomodMod.ModElement {
 		@SubscribeEvent(priority = EventPriority.HIGHEST)
 		public void onDeath(LivingDeathEvent event) {
 			EntityLivingBase entity = event.getEntityLiving();
-			if (entity instanceof EntityPlayer && isPlayerClone((EntityPlayer)entity)) {
-				event.setCanceled(true);
-				this.revertClone(entity);
+			if (entity instanceof EntityPlayer) {
+				if (isPlayerClone((EntityPlayer)entity)) {
+					event.setCanceled(true);
+					this.revertClone(entity);
+				} else if (EC.Jutsu.hasClones(entity)) {
+					EC.Jutsu.removeAllClones(entity);
+				}
 			}
 		}
 
 		@SubscribeEvent
 		public void onPlayerChangeDimension(EntityTravelToDimensionEvent event) {
 			Entity entity = event.getEntity();
-			if (entity instanceof EntityPlayer && isPlayerClone((EntityPlayer)entity)) {
-				event.setCanceled(true);
-				((EntityPlayer)entity).sendStatusMessage(new TextComponentString("You are a clone, you can't travel to another dimension."), false);
+			if (entity instanceof EntityPlayer) {
+				if (isPlayerClone((EntityPlayer)entity)) {
+					event.setCanceled(true);
+					((EntityPlayer)entity).sendStatusMessage(new TextComponentString("You are a clone, you can't travel to another dimension."), false);
+				} else if (EC.Jutsu.hasClones((EntityPlayer)entity)) {
+					EC.Jutsu.removeAllClones((EntityPlayer)entity);
+				}
 			}
 		}
 

@@ -24,6 +24,8 @@ Jutsus:
  - boil release unrivaled strength now can punch entities 15 blocks away by jumping right in front of them
  - increased nausea duration on amaterasu use
  - enabled user movements when using byakugan vision
+ - fixed fake death syndrome when dying with shadow clones alive
+ - remove shadow clones when user changes dimension
 
 Items:
  - fix using /give command to give nature release items duplicates the item
