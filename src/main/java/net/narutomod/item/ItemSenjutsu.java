@@ -8,8 +8,11 @@ import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.event.ModelRegistryEvent;
+import net.minecraftforge.common.MinecraftForge;
 
 import net.minecraft.world.World;
 import net.minecraft.util.ResourceLocation;
@@ -93,6 +96,7 @@ public class ItemSenjutsu extends ElementsNarutomodMod.ModElement {
 
 	@Override
 	public void init(FMLInitializationEvent event) {
+		MinecraftForge.EVENT_BUS.register(new EventHook());
 		ProcedureOnLeftClickEmpty.addQualifiedItem(block, EnumHand.MAIN_HAND);
 	}
 
@@ -258,8 +262,11 @@ public class ItemSenjutsu extends ElementsNarutomodMod.ModElement {
 		public boolean onLeftClickEntity(ItemStack itemstack, EntityPlayer attacker, Entity target) {
 			if (attacker.equals(target) && this.getSageType(itemstack) == Type.TOAD && isSageModeActivated(itemstack)) {
 				target = ProcedureUtils.objectEntityLookingAt(attacker, ProcedureUtils.getReachDistance(attacker), 3d).entityHit;
-				if (target != null) {
-					attacker.attackTargetEntityWithCurrentItem(target);
+				if (target == null) {
+					target = ProcedureUtils.objectEntityLookingAt(attacker, ProcedureUtils.getReachDistance(attacker), 4.5d).entityHit;
+					if (target != null) {
+						attacker.attackTargetEntityWithCurrentItem(target);
+					}
 				}
 			}
 			return super.onLeftClickEntity(itemstack, attacker, target);
@@ -327,6 +334,19 @@ public class ItemSenjutsu extends ElementsNarutomodMod.ModElement {
 		}
 		if (entity instanceof EntityPlayerMP) {
 			OverlayChakraDisplay.ShowFlamesMessage.send((EntityPlayerMP)entity, false);
+		}
+	}
+
+	public static class EventHook {
+		@SubscribeEvent
+		public void onDeath(LivingDeathEvent event) {
+			EntityLivingBase entity = event.getEntityLiving();
+			if (entity instanceof EntityPlayer) {
+				ItemStack stack = ProcedureUtils.getMatchingItemStack((EntityPlayer)entity, block);
+				if (stack != null) {
+					deactivateSageMode(stack, entity);
+				}
+			}
 		}
 	}
 

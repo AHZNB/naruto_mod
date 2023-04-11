@@ -174,7 +174,7 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 			this.fuuinTarget = target;
 			Vec3d vec = new Vec3d(0d, 0d, -6d).rotateYaw(-summonerIn.rotationYaw * 0.017453292F).add(summonerIn.getPositionVector());
 			this.rotationYawHead = summonerIn.rotationYaw;
-			this.setLocationAndAngles(vec.x, vec.y, vec.z, summonerIn.rotationYaw, 0f);
+			this.setLocationAndAngles(vec.x, summonerIn.world.getTopSolidOrLiquidBlock(new BlockPos(vec)).getY(), vec.z, summonerIn.rotationYaw, 0f);
 			this.lifeSpan = 400;
 		}
 

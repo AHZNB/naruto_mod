@@ -18,6 +18,8 @@ Jutsus:
  - biju cloak now force closes if you don't have anymore chakra
  - biju cloak 2 bijudama charge time is dependant on cloak XP, cooldown 5 seconds
  - buffed 7/8 gate: user can punch targets 15 blocks away by jumping right in front of them
+ - 8th gate sekizo and yagai damage can't be reduced by resistance effects,
+   7th gate resistence effect reduced to level 4
  - increased non-affinity releases jutsuXP requirements to 2.5 times affinity requirements
  - susanoo half-body and higher class can hold totsuka sword if the user has it
  - scorch balls damage and duration increased, targeting is much better
@@ -26,6 +28,7 @@ Jutsus:
  - enabled user movements when using byakugan vision
  - fixed fake death syndrome when dying with shadow clones alive
  - remove shadow clones when user changes dimension
+ - added flying thunder god kunai functionality (WIP)
 
 Items:
  - fix using /give command to give nature release items duplicates the item

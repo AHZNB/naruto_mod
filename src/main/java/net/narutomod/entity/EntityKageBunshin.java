@@ -189,7 +189,7 @@ public class EntityKageBunshin extends ElementsNarutomodMod.ModElement {
 					Jutsu.updateClones(summoner, false);
 					Chakra.pathway(summoner).consume(-Chakra.pathway(this).getAmount() * 0.9d, false);
 					if (summoner.getHealth() > 0.0f) {
-						summoner.setHealth(summoner.getHealth() + this.getHealth());
+						summoner.setHealth(summoner.getHealth() + this.getHealth() * 0.9f);
 					}
 				}
 			}
