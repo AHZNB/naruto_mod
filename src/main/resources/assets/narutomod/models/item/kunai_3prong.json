@@ -1,0 +1,6 @@
+{
+  "parent": "narutomod:custom/kunai_3prong",
+  "textures": {
+    "0": "narutomod:blocks/kunai_3prong"
+  }
+}

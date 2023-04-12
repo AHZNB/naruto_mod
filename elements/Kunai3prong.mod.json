@@ -1,0 +1,37 @@
+{
+  "_fv": 18,
+  "_type": "gun",
+  "definition": {
+    "renderType": 1,
+    "texture": "kusanagi128",
+    "customModelName": "kunai_3prong:default",
+    "name": "3-prong Kunai",
+    "specialInfo": [],
+    "creativeTab": {
+      "value": "CUSTOM:ModTab"
+    },
+    "stackSize": 3,
+    "ammoItem": {
+      "value": "CUSTOM:Kunai3prong"
+    },
+    "shootConstantly": false,
+    "usageCount": 100,
+    "actionSound": {
+      "value": "entity.arrow.shoot"
+    },
+    "hasGlow": false,
+    "animation": "bow",
+    "enableMeleeDamage": true,
+    "damageVsEntity": 7.0,
+    "bulletPower": 1.0,
+    "bulletDamage": 7.0,
+    "bulletKnockback": 0,
+    "bulletParticles": false,
+    "bulletIgnitesFire": false,
+    "bulletItemTexture": {
+      "value": "CUSTOM:Kunai3prong"
+    },
+    "bulletModel": "Default",
+    "customBulletModelTexture": ""
+  }
+}

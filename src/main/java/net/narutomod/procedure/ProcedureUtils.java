@@ -134,7 +134,7 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 	}
 
 	@Nullable
-	public static EntityPlayerMP getPlayerMatchingUuId(UUID id) {
+	public static EntityPlayerMP getPlayerMatchingUuid(UUID id) {
 		MinecraftServer mcserv = FMLCommonHandler.instance().getMinecraftServerInstance();
 		return mcserv != null ? mcserv.getPlayerList().getPlayerByUUID(id) : null;
 	}

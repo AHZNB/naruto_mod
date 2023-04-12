@@ -38,6 +38,7 @@ Items:
  - fixed forceDojutsuDropOnDeath not dropping mangekyos
  - fixed explosive tags breaking blocks when mobGriefing false
  - fixed after gaining mangekyo naturally susanoo color always black
+ - added 3-prong kunai weapon and recipe
 
 Entities:
  - added 5 second cooldown for Itachi's genjutsu

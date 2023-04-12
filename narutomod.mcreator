@@ -1,8 +1,8 @@
 {
   "id_map": {
-    "DIMENSION": 13,
+    "ENTITY": 418,
     "GUI": 63,
-    "ENTITY": 417
+    "DIMENSION": 13
   },
   "mod_elements": [
     {
@@ -6991,6 +6991,26 @@
         "0": 417
       },
       "registry_name": "scythe_hidan_thrown"
+    },
+    {
+      "name": "Kunai3prong",
+      "type": "gun",
+      "sortid": 839,
+      "compiles": true,
+      "locked_code": true,
+      "ids": {
+        "0": 418
+      },
+      "registry_name": "kunai_3prong"
+    },
+    {
+      "name": "Kunai3prongRecipe",
+      "type": "recipe",
+      "sortid": 840,
+      "compiles": true,
+      "locked_code": false,
+      "ids": {},
+      "registry_name": "kunai_3prong_recipe"
     }
   ],
   "variable_elements": [
@@ -7866,35 +7886,35 @@
   ],
   "language_map": {
     "en_us": {
-      "entity.crow.name": "Crow",
       "item.kiba_blades.name": "Kiba Blades",
+      "entity.crow.name": "Crow",
       "chattext.gedomazo.cantspawn": "Can\u0027t summon Gedo Mazo, it\u0027s already in the world",
       "entity.tenten.name": "Tenten",
       "item.futton.name": "Boil Release",
       "item.scroll_water_prison.name": "Water Release - Water Prison Scroll",
       "subtitles.sando_no_jutsi": "",
       "item.steam_armorlegs.name": "Steam Armor Leggings",
-      "subtitles.sando_no_jutsu": "",
       "item.futon.name": "Wind Release",
+      "subtitles.sando_no_jutsu": "",
       "subtitles.laser": "",
       "item.ryo_100.name": "100 Ryo",
-      "item.summoning_contract.name": "Summoning Contract",
       "tooltip.samehada.general": "Samehada is a sentient sword utilised by the Seven Ninja Swordsmen of the Mist and is regarded as the most terrifying out of all the Seven Swordsmen\u0027s blades.",
+      "item.summoning_contract.name": "Summoning Contract",
       "item.shuriken.name": "Shuriken",
       "entity.cellular_activation.name": "Cellular Activation",
       "entity.entityasakujaku.name": "Asakujaku (Morning Peacock)",
-      "tooltip.kekkeimora.expansivetsb": "Expansive Truth Seeking Ball",
       "item.scroll_water_dragon.name": "Water Release - Water Dragon Bullet Scroll",
-      "entity.tailed_beast.name": "Tailed Beast",
+      "tooltip.kekkeimora.expansivetsb": "Expansive Truth Seeking Ball",
       "item.gunbai.name": "Gunbai",
+      "entity.tailed_beast.name": "Tailed Beast",
       "item.scroll_rasenshuriken.name": "Wind Release - Rasenshuriken Scroll",
       "entity.itachi.name": "Itachi Uchiha",
       "item.scroll_lightning_panther.name": "Lightning Release - Black Panther Scroll",
       "item.clothes_raikagehelmet.name": "Raikage Hat",
       "entity.jinchuriki_clone.name": "Tailed Beast Cloak",
       "tipped_arrow.effect.paralysis": "Arrow of Paralysis",
-      "tipped_arrow.effect.reach": "Arrow of Reach",
       "item.byakurinnesharinganhelmet.name": "Fake Rinne Sharingan",
+      "tipped_arrow.effect.reach": "Arrow of Reach",
       "chattext.medicalgui.notmedninja": "You are not a medical ninja.",
       "tooltip.shikotsumyaku.dancelarch": "Larch Dance",
       "entity.tensei_baku_silver.name": "Silver Wheel Rebirth Blast",
@@ -8533,6 +8553,7 @@
       "overlay.no_biju_available": "No tailed beasts are available at the moment",
       "lingering_potion.effect.flight": "Lingering Flight",
       "item.kamuishuriken.name": "Kamui Shuriken",
+      "item.kunai_3prong.name": "3-prong Kunai",
       "key.mcreator.specialjutsu2": "Special Jutsu 2",
       "key.mcreator.specialjutsu3": "Special Jutsu 3",
       "item.ninja_armor_otohelmet.name": "Ninja Mask (Otogakure)",

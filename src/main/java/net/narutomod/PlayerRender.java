@@ -255,7 +255,13 @@ public class PlayerRender extends ElementsNarutomodMod.ModElement {
 		@Nullable
 		private AbstractClientPlayer getSkinCloneTarget(Entity entity) {
 			if (entity.getEntityData().hasKey(CLONETARGETID)) {
-				Entity target = this.renderManager.world.getEntityByID(entity.getEntityData().getInteger(CLONETARGETID));
+				Entity target = null;
+				for (EntityPlayer player : this.renderManager.world.playerEntities) {
+					if (player.getEntityId() == entity.getEntityData().getInteger(CLONETARGETID)) {
+						target = player;
+						break;
+					}
+				}
 				if (target instanceof AbstractClientPlayer) {
 					return (AbstractClientPlayer)target;
 				} else {
