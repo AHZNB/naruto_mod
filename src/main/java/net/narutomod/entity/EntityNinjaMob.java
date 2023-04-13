@@ -186,7 +186,8 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 			this.fixOnClientSpawn();
 			super.onUpdate();
 			BlockPos pos = new BlockPos(this);
-			if (this.world.getBlockState(pos).getMaterial() == Material.WATER
+			if (this.navigator instanceof PathNavigateGround
+			 && this.world.getBlockState(pos).getMaterial() == Material.WATER
 			 && this.world.getBlockState(pos.up()).getMaterial() != Material.WATER) {
 				this.motionY = 0.01d;
 				this.onGround = true;

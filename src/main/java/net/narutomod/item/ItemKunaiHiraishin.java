@@ -19,6 +19,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
@@ -121,7 +122,7 @@ public class ItemKunaiHiraishin extends ElementsNarutomodMod.ModElement {
 			Multimap<String, AttributeModifier> multimap = super.getItemAttributeModifiers(slot);
 			if (slot == EntityEquipmentSlot.MAINHAND) {
 				multimap.put(SharedMonsterAttributes.ATTACK_DAMAGE.getName(),
-						new AttributeModifier(ATTACK_DAMAGE_MODIFIER, "Ranged item modifier", (double) 3, 0));
+						new AttributeModifier(ATTACK_DAMAGE_MODIFIER, "Ranged item modifier", 6d, 0));
 				multimap.put(SharedMonsterAttributes.ATTACK_SPEED.getName(),
 						new AttributeModifier(ATTACK_SPEED_MODIFIER, "Ranged item modifier", -2.4, 0));
 			}
@@ -143,7 +144,7 @@ public class ItemKunaiHiraishin extends ElementsNarutomodMod.ModElement {
 				world.playSound(null, entity.posX, entity.posY, entity.posZ, net.minecraft.init.SoundEvents.ENTITY_ARROW_SHOOT,
 				 SoundCategory.NEUTRAL, 1, 1f / (itemRand.nextFloat() * 0.5f + 1f) + (power / 2));
 				if (entity.isCreative()) {
-					entityarrow.pickupStatus = EntityArrow.PickupStatus.DISALLOWED;
+					entityarrow.pickupStatus = EntityArrow.PickupStatus.CREATIVE_ONLY;
 				} else {
 					entityarrow.pickupStatus = EntityArrow.PickupStatus.ALLOWED;
 					itemstack.shrink(1);
@@ -175,8 +176,19 @@ public class ItemKunaiHiraishin extends ElementsNarutomodMod.ModElement {
 				setOwner(stack, (EntityPlayerMP)entity);
 			}
 			UUID ownerUuid = getOwnerUuid(stack);
-			if (ownerUuid != null && !ownerUuid.equals(entity.getUniqueID())) {
-				EntityCustom.updateServerKunaiMap(ownerUuid, entity.getUniqueID(), new Vector4d(entity.posX, entity.posY, entity.posZ, entity.dimension));
+			if (ownerUuid != null) {
+				UUID lastMarkerUuid = stack.getTagCompound().hasUniqueId("lastMarkerUuid")
+				 ? stack.getTagCompound().getUniqueId("lastMarkerUuid") : null;
+				if (!ownerUuid.equals(entity.getUniqueID())) {
+					if (lastMarkerUuid != null && !lastMarkerUuid.equals(entity.getUniqueID())) {
+						EntityCustom.updateServerMarkerMap(ownerUuid, lastMarkerUuid, null);
+					}
+					EntityCustom.updateServerMarkerMap(ownerUuid, entity.getUniqueID(), new Vector4d(entity.posX, entity.posY, entity.posZ, entity.dimension));
+					stack.getTagCompound().setUniqueId("lastMarkerUuid", entity.getUniqueID());
+				} else if (lastMarkerUuid != null) {
+					EntityCustom.updateServerMarkerMap(ownerUuid, lastMarkerUuid, null);
+					stack.getTagCompound().removeTag("lastMarkerUuid");
+				}
 			}
 		}
 
@@ -198,10 +210,11 @@ public class ItemKunaiHiraishin extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static class EntityCustom extends EntityArrow {
-		private static Map<UUID, Map<UUID, Vector4d>> serverKunaiMap = Maps.newHashMap();
-		private static Map<UUID, Vector4d> clientKunaiList = Maps.newHashMap();
+		private static final Map<UUID, Map<UUID, Vector4d>> serverMarkerMap = Maps.newHashMap();
+		private static final Map<UUID, Vector4d> clientMarkerList = Maps.newHashMap();
 		private static final DataParameter<ItemStack> ITEM = EntityDataManager.<ItemStack>createKey(EntityCustom.class, DataSerializers.ITEM_STACK);
 		private boolean noUpdate;
+		private int pickupDelay = 60;
 		
 		public EntityCustom(World a) {
 			super(a);
@@ -241,12 +254,6 @@ public class ItemKunaiHiraishin extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
-		protected void arrowHit(EntityLivingBase entity) {
-			super.arrowHit(entity);
-			entity.setArrowCountInEntity(entity.getArrowCountInEntity() - 1);
-		}
-
-		@Override
 		protected ItemStack getArrowStack() {
 			return this.getItem().copy();
 		}
@@ -257,32 +264,26 @@ public class ItemKunaiHiraishin extends ElementsNarutomodMod.ModElement {
 			if (!this.world.isRemote) {
 				UUID uuid = this.getOwnerId();
 				if (uuid != null) {
-					updateServerKunaiMap(uuid, this.getUniqueID(), null);
+					updateServerMarkerMap(uuid, this.getUniqueID(), null);
 				}
 			}
 		}
 
-		public static void cleanupServerKunaiMap() {
-			Iterator<Map.Entry<UUID, Map<UUID, Vector4d>>> iter = serverKunaiMap.entrySet().iterator();
-			while (iter.hasNext()) {
-				Map.Entry<UUID, Map<UUID, Vector4d>> entry = iter.next();
-				if (entry.getValue().isEmpty()) {
-					iter.remove();
-				}
-			}
-		}
-
-		protected static void updateServerKunaiMap(UUID ownerUuid, UUID kunaiUuid, @Nullable Vector4d vec4d) {
+		protected static void updateServerMarkerMap(UUID ownerUuid, UUID kunaiUuid, @Nullable Vector4d vec4d) {
 			if (vec4d == null) {
-				if (serverKunaiMap.containsKey(ownerUuid)) {
-					serverKunaiMap.get(ownerUuid).remove(kunaiUuid);
+				if (serverMarkerMap.containsKey(ownerUuid)) {
+					Map<UUID, Vector4d> map = serverMarkerMap.get(ownerUuid);
+					map.remove(kunaiUuid);
+					if (map.isEmpty()) {
+						serverMarkerMap.remove(ownerUuid);
+					}
 				}
-			} else if (!serverKunaiMap.containsKey(ownerUuid)) {
+			} else if (!serverMarkerMap.containsKey(ownerUuid)) {
 				Map<UUID, Vector4d> map = Maps.newHashMap();
 				map.put(kunaiUuid, vec4d);
-				serverKunaiMap.put(ownerUuid, map);
+				serverMarkerMap.put(ownerUuid, map);
 			} else {
-				serverKunaiMap.get(ownerUuid).put(kunaiUuid, vec4d);
+				serverMarkerMap.get(ownerUuid).put(kunaiUuid, vec4d);
 			}
 			EntityPlayerMP owner = ProcedureUtils.getPlayerMatchingUuid(ownerUuid);
 			if (owner != null) {
@@ -293,6 +294,10 @@ public class ItemKunaiHiraishin extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void onUpdate() {
 			super.onUpdate();
+			if (this.inGround && this.getOwnerId() != null
+			 && (int)ReflectionHelper.getPrivateValue(EntityArrow.class, this, 12) > 1198) {
+				ReflectionHelper.setPrivateValue(EntityArrow.class, this, 1, 12); // this.ticksInGround
+			}
 			if (!this.world.isRemote && !this.isDead) {
 				EntityPlayerMP owner = this.getOwner();
 				if (owner == null) {
@@ -300,12 +305,30 @@ public class ItemKunaiHiraishin extends ElementsNarutomodMod.ModElement {
 				} else if (!this.noUpdate) {
 					Vec3d vec = this.getPositionVector();
 					Vector4d vec4d = new Vector4d(vec.x, vec.y, vec.z, this.dimension);
-					updateServerKunaiMap(owner.getUniqueID(), this.getUniqueID(), vec4d);
+					updateServerMarkerMap(owner.getUniqueID(), this.getUniqueID(), vec4d);
 					if (this.inGround) {
 						this.noUpdate = true;
 					}
 				}
 			}
+		}
+
+		@Override
+		public void onCollideWithPlayer(EntityPlayer entityIn) {
+			if (!this.world.isRemote && this.inGround && this.arrowShake <= 0) {
+				if (this.pickupDelay <= 0) {
+					super.onCollideWithPlayer(entityIn);
+				}
+				if (this.pickupDelay > 0) {
+					--this.pickupDelay;
+				}
+			}
+		}
+
+		@Override
+		protected void arrowHit(EntityLivingBase entity) {
+			super.arrowHit(entity);
+			entity.setArrowCountInEntity(entity.getArrowCountInEntity() - 1);
 		}
 
 		@Override
@@ -348,9 +371,9 @@ public class ItemKunaiHiraishin extends ElementsNarutomodMod.ModElement {
 					Minecraft.getMinecraft().addScheduledTask(() -> {
 						UUID uuid = UUID.fromString(message.uuid);
 						if (message.vec != null) {
-							clientKunaiList.put(uuid, message.vec);
+							clientMarkerList.put(uuid, message.vec);
 						} else {
-							clientKunaiList.remove(uuid);
+							clientMarkerList.remove(uuid);
 						}
 					});
 					return null;
@@ -482,10 +505,10 @@ public class ItemKunaiHiraishin extends ElementsNarutomodMod.ModElement {
             	Tessellator tessellator = Tessellator.getInstance();
             	BufferBuilder bufferbuilder = tessellator.getBuffer();
             	bufferbuilder.begin(7, DefaultVertexFormats.POSITION_COLOR);
-            	bufferbuilder.pos((double)(-i - 1), -1.0D, 0.0D).color(0.0F, 0.0F, 0.0F, 0.25F).endVertex();
-            	bufferbuilder.pos((double)(-i - 1), 8.0D, 0.0D).color(0.0F, 0.0F, 0.0F, 0.25F).endVertex();
-            	bufferbuilder.pos((double)(i + 1), 8.0D, 0.0D).color(0.0F, 0.0F, 0.0F, 0.25F).endVertex();
-            	bufferbuilder.pos((double)(i + 1), -1.0D, 0.0D).color(0.0F, 0.0F, 0.0F, 0.25F).endVertex();
+            	bufferbuilder.pos((double)(-i - 1), -1.0D, 0.0D).color(0.0F, 0.0F, 0.0F, 0.3F).endVertex();
+            	bufferbuilder.pos((double)(-i - 1), 8.0D, 0.0D).color(0.0F, 0.0F, 0.0F, 0.3F).endVertex();
+            	bufferbuilder.pos((double)(i + 1), 8.0D, 0.0D).color(0.0F, 0.0F, 0.0F, 0.3F).endVertex();
+            	bufferbuilder.pos((double)(i + 1), -1.0D, 0.0D).color(0.0F, 0.0F, 0.0F, 0.3F).endVertex();
             	tessellator.draw();
             	GlStateManager.enableTexture2D();
             	fontRenderer.drawString(str, -fontRenderer.getStringWidth(str) / 2, 0, 0x20FFFFFF);
@@ -511,11 +534,11 @@ public class ItemKunaiHiraishin extends ElementsNarutomodMod.ModElement {
 		@SideOnly(Side.CLIENT)
 		@SubscribeEvent
 		public void onRenderWorldLast(RenderWorldLastEvent event) {
-			if (!EntityCustom.clientKunaiList.isEmpty()) {
+			if (!EntityCustom.clientMarkerList.isEmpty()) {
 				Minecraft mc = Minecraft.getMinecraft();
 				RenderManager renderManager = mc.getRenderManager();
 				if (renderManager.options.thirdPersonView == 0) {
-					for (Vector4d vec : EntityCustom.clientKunaiList.values()) {
+					for (Vector4d vec : EntityCustom.clientMarkerList.values()) {
 						if ((int)vec.w == mc.world.provider.getDimension()) {
 							this.renderCustom.renderMarker(vec.x - renderManager.viewerPosX, vec.y - renderManager.viewerPosY,
 							 vec.z - renderManager.viewerPosZ, (float)mc.world.getTotalWorldTime() + event.getPartialTicks());
@@ -543,7 +566,7 @@ public class ItemKunaiHiraishin extends ElementsNarutomodMod.ModElement {
 				player.world.spawnEntity(entityarrow);
 				UUID ownerUuid = RangedItem.getOwnerUuid(stack);
 				if (ownerUuid != null && !ownerUuid.equals(player.getUniqueID())) {
-					EntityCustom.updateServerKunaiMap(ownerUuid, player.getUniqueID(), null);
+					EntityCustom.updateServerMarkerMap(ownerUuid, player.getUniqueID(), null);
 				}
 			}
 		}
@@ -563,10 +586,10 @@ public class ItemKunaiHiraishin extends ElementsNarutomodMod.ModElement {
 		@SideOnly(Side.CLIENT)
 		@SubscribeEvent
 		public void onLeftClickEmpty(PlayerInteractEvent.LeftClickEmpty event) {
-			if (!EntityCustom.clientKunaiList.isEmpty()) {
+			if (!EntityCustom.clientMarkerList.isEmpty()) {
 				Minecraft mc = Minecraft.getMinecraft();
 				Vec3d vec1 = event.getEntityPlayer().getPositionEyes(1f);
-				for (Vector4d vec4d : EntityCustom.clientKunaiList.values()) {
+				for (Vector4d vec4d : EntityCustom.clientMarkerList.values()) {
 					if ((int)vec4d.w == mc.world.provider.getDimension()) {
 						Vec3d vec = new Vec3d(vec4d.x, vec4d.y, vec4d.z);
 						double d = vec.subtract(vec1).lengthVector();
