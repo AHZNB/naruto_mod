@@ -7,24 +7,25 @@ import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
 
 import net.minecraft.world.World;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.SoundEvent;
-import net.minecraft.init.SoundEvents;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.Entity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.init.MobEffects;
 import net.minecraft.potion.PotionEffect;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.nbt.NBTTagCompound;
 
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.item.ItemJutsu;
 import net.narutomod.item.ItemSteamArmor;
 import net.narutomod.Particles;
 import net.narutomod.ElementsNarutomodMod;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.math.RayTraceResult;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityUnrivaledStrength extends ElementsNarutomodMod.ModElement {
@@ -46,6 +47,8 @@ public class EntityUnrivaledStrength extends ElementsNarutomodMod.ModElement {
 		private EntityLivingBase user;
 		private int duration;
 		private boolean isWearingSteamArmor;
+		private Entity target;
+		private int attackTime;
 
 		public EC(World worldIn) {
 			super(worldIn);
@@ -58,9 +61,11 @@ public class EntityUnrivaledStrength extends ElementsNarutomodMod.ModElement {
 			this.user = userIn;
 			this.isWearingSteamArmor = ItemSteamArmor.isWearingFullSet(userIn);
 			if (this.isWearingSteamArmor) {
+				this.duration = (int)(power * 60f);
 				power *= 2f;
+			} else {
+				this.duration = (int)(power * 20f);
 			}
-			this.duration = (int)(power * 20f);
 			this.setPosition(this.user.posX, this.user.posY, this.user.posZ);
 			this.playSound((SoundEvent)SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:kairikimuso")), 1f, 1f);
 			PotionEffect effect = userIn.getActivePotionEffect(MobEffects.STRENGTH);
@@ -69,9 +74,9 @@ public class EntityUnrivaledStrength extends ElementsNarutomodMod.ModElement {
 			effect = userIn.getActivePotionEffect(MobEffects.SPEED);
 			userIn.addPotionEffect(new PotionEffect(MobEffects.SPEED, this.duration, 
 			 (int)(power * 2f) + (effect != null ? effect.getAmplifier() : -1), false, false));
-			effect = userIn.getActivePotionEffect(MobEffects.JUMP_BOOST);
-			userIn.addPotionEffect(new PotionEffect(MobEffects.JUMP_BOOST, this.duration, 
-			 (int)(power * 0.5f) + (effect != null ? effect.getAmplifier() : -1), false, false));
+			//effect = userIn.getActivePotionEffect(MobEffects.JUMP_BOOST);
+			//userIn.addPotionEffect(new PotionEffect(MobEffects.JUMP_BOOST, this.duration, 
+			// (int)(power * 0.5f) + (effect != null ? effect.getAmplifier() : -1), false, false));
 		}
 
 		@Override
@@ -111,16 +116,30 @@ public class EntityUnrivaledStrength extends ElementsNarutomodMod.ModElement {
 					 0x20FFFFFF, 10 + this.rand.nextInt(11), 0, 0, this.user.getEntityId());
 				}
 				if (this.user.swingProgressInt == 1 && this.user instanceof EntityPlayer) {
-					RayTraceResult res = ProcedureUtils.objectEntityLookingAt(this.user, 15d, 2d, this);
+					RayTraceResult res = ProcedureUtils.objectEntityLookingAt(this.user, 3d, this);
 					if (res != null && res.entityHit instanceof EntityLivingBase) {
-						Vec3d vec = res.entityHit.getPositionEyes(1f).subtract(this.user.getPositionEyes(1f)).normalize();
-						this.user.rotationYaw = ProcedureUtils.getYawFromVec(vec);
-						this.user.rotationPitch = ProcedureUtils.getPitchFromVec(vec);
-						this.user.setPositionAndUpdate(res.entityHit.posX - vec.x, res.entityHit.posY - vec.y, res.entityHit.posZ - vec.z);
-						((EntityPlayer)this.user).attackTargetEntityWithCurrentItem(res.entityHit);
-						ProcedureUtils.pushEntity(this.user, res.entityHit, 20d, 1.5f);
+						ProcedureUtils.pushEntity(this.user, res.entityHit, 15d, 1.5f);
+					} else {
+						res = ProcedureUtils.objectEntityLookingAt(this.user, 12d, 3d, this);
+						if (res != null && res.entityHit instanceof EntityLivingBase) {
+							this.target = res.entityHit;
+							this.attackTime = 0;
+							this.user.rotationYaw = ProcedureUtils.getYawFromVec(this.target.getPositionVector()
+							 .subtract(this.user.getPositionVector()));
+							double d0 = this.target.posX - this.user.posX;
+							double d1 = this.target.posY - this.user.posY;
+							double d2 = this.target.posZ - this.user.posZ;
+							double d3 = MathHelper.sqrt(d0 * d0 + d2 * d2);
+							ProcedureUtils.setVelocity(this.user, d0 * 0.4, d1 * 0.4 + d3 * 0.02d, d2 * 0.4);
+						}
 					}
 				}
+				if (this.attackTime < 12 && this.target != null && this.target.getDistanceSq(this.user) < 25d) {
+					((EntityPlayer)this.user).attackTargetEntityWithCurrentItem(this.target);
+					ProcedureUtils.pushEntity(this.user, this.target, 15d, 1.5f);
+					this.target = null;
+				}
+				++this.attackTime;
 			}
 			if (this.ticksExisted % 5 == 4) {
 				this.playSound(SoundEvents.BLOCK_FIRE_EXTINGUISH, 0.2f, this.rand.nextFloat() * 0.5f + 0.4f);

@@ -398,7 +398,7 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 								Vec3d vec = target.getPositionVector().subtract(attacker.getPositionVector()).normalize();
 								attacker.rotationYaw = ProcedureUtils.getYawFromVec(vec);
 								attacker.rotationPitch = ProcedureUtils.getPitchFromVec(vec);
-								attacker.setPositionAndUpdate(target.posX - vec.x, target.posY - vec.y, target.posZ - vec.z);
+								attacker.setPositionAndUpdate(target.posX - vec.x, target.posY - vec.y + 0.5d, target.posZ - vec.z);
 								attacker.attackTargetEntityWithCurrentItem(target);
 							} else {
 								return true;

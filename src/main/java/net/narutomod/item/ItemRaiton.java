@@ -193,7 +193,7 @@ public class ItemRaiton extends ElementsNarutomodMod.ModElement {
 					this.summoner.addPotionEffect(new PotionEffect(MobEffects.RESISTANCE, 22, 3, false, false));
 					this.summoner.addPotionEffect(new PotionEffect(MobEffects.SPEED, 22, 32, false, false));
 					this.summoner.addPotionEffect(new PotionEffect(MobEffects.STRENGTH, 22, this.strengthAmplifier, false, false));
-					this.summoner.addPotionEffect(new PotionEffect(MobEffects.JUMP_BOOST, 22, 6, false, false));
+					//this.summoner.addPotionEffect(new PotionEffect(MobEffects.JUMP_BOOST, 22, 6, false, false));
 				}
 				this.setPosition(this.summoner.posX, this.summoner.posY, this.summoner.posZ);
 				if (this.rand.nextInt(8) == 0) {
@@ -205,6 +205,22 @@ public class ItemRaiton extends ElementsNarutomodMod.ModElement {
 				  0.5d, 0d, 0.15d, 0d);
 				Particles.spawnParticle(world, Particles.Types.SMOKE, this.posX, this.posY, this.posZ,
 				  20, 0.3d, 0.0d, 0.3d, 0d, 0.5d, 0d, 0x2080D0FF, 50, 5, 0xF0, this.summoner.getEntityId());
+				if (this.summoner.swingProgressInt == 1 && this.summoner instanceof EntityPlayer) {
+					Entity target = ProcedureUtils.objectEntityLookingAt(this.summoner, 3d, this).entityHit;
+					if (target == null) {
+						target = ProcedureUtils.objectEntityLookingAt(this.summoner, 12d, 3d, this).entityHit;
+						if (target instanceof EntityLivingBase) {
+							Vec3d vec = target.getPositionEyes(1f).subtract(this.summoner.getPositionEyes(1f)).normalize();
+							this.summoner.rotationYaw = ProcedureUtils.getYawFromVec(vec);
+							this.summoner.rotationPitch = ProcedureUtils.getPitchFromVec(vec);
+							this.summoner.setPositionAndUpdate(target.posX - vec.x, target.posY - vec.y + 0.5d, target.posZ - vec.z);
+							((EntityPlayer)this.summoner).attackTargetEntityWithCurrentItem(target);
+						}
+					}
+					if (target instanceof EntityLivingBase) {
+						ProcedureUtils.pushEntity(this.summoner, target, 12d, 1.5f);
+					}
+				}
 			} else if (!this.world.isRemote) {
 				this.setDead();
 			}

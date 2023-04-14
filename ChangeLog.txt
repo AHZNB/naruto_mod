@@ -23,12 +23,17 @@ Jutsus:
  - increased non-affinity releases jutsuXP requirements to 2.5 times affinity requirements
  - susanoo half-body and higher class can hold totsuka sword if the user has it
  - scorch balls damage and duration increased, targeting is much better
- - boil release unrivaled strength now can punch entities 15 blocks away by jumping right in front of them
+ - boil release unrivaled strength now can punch entities 12 blocks away by jumping right in front of them
+ - lightning chakra mode now can punch entities 12 blocks away by jumping right in front of them
+ - boil release unrivaled strength and lightning chakra mode doesn't give jump boost anymore
  - increased nausea duration on amaterasu use
  - enabled user movements when using byakugan vision
  - fixed fake death syndrome when dying with shadow clones alive
  - remove shadow clones when user changes dimension
  - added flying thunder god kunai functionality (WIP)
+ - body replacement jutsu now only activates on entity damage source, and user doesn't have paralysis effect
+   body replacement jutsu won't teleport user into blocks
+ - sharingan users no longer give attackers slowness, instead will lock eyes on the attacker for 15s if in range
 
 Items:
  - fix using /give command to give nature release items duplicates the item

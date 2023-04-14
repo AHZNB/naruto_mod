@@ -11,13 +11,14 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import net.minecraftforge.event.entity.living.LivingSetAttackTargetEvent;
-import net.minecraftforge.event.entity.living.LivingAttackEvent;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.common.MinecraftForge;
 
 import net.minecraft.init.Blocks;
 import net.minecraft.init.MobEffects;
 import net.minecraft.world.World;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumParticleTypes;
@@ -52,6 +53,7 @@ import net.narutomod.entity.EntityKikaichu;
 import net.narutomod.entity.EntityTransformationJutsu;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.procedure.ProcedureOnLivingUpdate;
+import net.narutomod.potion.PotionParalysis;
 import net.narutomod.Chakra;
 
 import javax.annotation.Nullable;
@@ -159,16 +161,22 @@ public class ItemNinjutsu extends ElementsNarutomodMod.ModElement {
 			this.setNoAI(true);
 		}
 
-		public EntityReplacementClone(EntityLivingBase player, @Nullable Entity attacker) {
+		public EntityReplacementClone(EntityLivingBase player, Entity attacker) {
 			super(player);
-			if (attacker != null) {
-				Vec3d vec3d = player.getPositionVector().subtract(attacker.getPositionVector()).normalize().scale(5.0d);
-				player.rotationYaw = ProcedureUtils.getYawFromVec(vec3d.x, vec3d.z);
-				player.setPositionAndUpdate(attacker.posX - vec3d.x, attacker.posY, attacker.posZ - vec3d.z);
-			} else {
-				Vec3d vec3d = player.getLookVec().scale(5);
-				player.rotationYaw = (player.rotationYaw + 180f) % 360f;
-				player.setPositionAndUpdate(player.posX + vec3d.x, player.posY, player.posZ + vec3d.z);
+			Vec3d vec3d = player.getPositionVector().subtract(attacker.getPositionVector()).normalize();
+			int i = 5;
+			for (Vec3d vec1 = vec3d.scale(i); i > 1; vec1 = vec3d.scale(--i)) {
+				int j = 0;
+				BlockPos pos = new BlockPos(attacker.posX - vec1.x, attacker.posY - vec1.y, attacker.posZ - vec1.z);
+				while (j < 6 && (!player.world.getBlockState(pos.down()).isTopSolid() || !player.world.isAirBlock(pos.up()))) {
+					pos = pos.offset(EnumFacing.VALUES[j++]);
+				}
+				if (j < 6) {
+					vec3d = new Vec3d(0.5d + pos.getX(), pos.getY(), 0.5d + pos.getZ());
+					player.rotationYaw = ProcedureUtils.getYawFromVec(attacker.getPositionVector().subtract(vec3d));
+					player.setPositionAndUpdate(vec3d.x, vec3d.y, vec3d.z);
+					break;
+				}
 			}
 		}
 		
@@ -236,9 +244,10 @@ public class ItemNinjutsu extends ElementsNarutomodMod.ModElement {
 
 			public static class Hook {
 				@SubscribeEvent
-				public void onAttacked(LivingAttackEvent event) {
+				public void onAttacked(LivingHurtEvent event) {
 					EntityLivingBase entity = event.getEntityLiving();
-					if (entity instanceof EntityPlayer && !entity.world.isRemote && event.getSource() != DamageSource.OUT_OF_WORLD) {
+					if (entity instanceof EntityPlayer && !entity.world.isRemote && !entity.isPotionActive(PotionParalysis.potion)
+					 && event.getSource() != DamageSource.OUT_OF_WORLD && event.getSource().getTrueSource() instanceof EntityLivingBase) {
 						ItemStack stack = ProcedureUtils.getMatchingItemStack((EntityPlayer)entity, block);
 						if (stack != null && REPLACEMENT.jutsu.isActivated(stack)) {
 							long l = entity.world.getTotalWorldTime();

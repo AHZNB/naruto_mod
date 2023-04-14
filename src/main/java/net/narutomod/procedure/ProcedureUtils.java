@@ -573,8 +573,7 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 				}
 			}
 		}
-		if (targetedEntity != null && (d2 < d1 || objectMouseOver == null))
- {
+		if (targetedEntity != null && (d2 < d1 || objectMouseOver == null)) {
 			objectMouseOver = new RayTraceResult(targetedEntity, vec3d3);
 		}
 		return objectMouseOver;
