@@ -59,8 +59,7 @@ public class ProcedureHakkeshoKaiten extends ElementsNarutomodMod.ModElement {
 				}
 			} else {
 				world.playSound((EntityPlayer) null, (entity.posX), (entity.posY), (entity.posZ),
-						(net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY
-								.getObject(new ResourceLocation("narutomod:dojutsu_activate")),
+						(net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:dojutsu")),
 						SoundCategory.NEUTRAL, (float) 1, (float) 1);
 				for (int index0 = 0; index0 < (int) (1000); index0++) {
 					Particles.spawnParticle(world, Particles.Types.SMOKE, entity.posX, entity.posY + 1.4d, entity.posZ, 1, 1d, 0d, 1d,

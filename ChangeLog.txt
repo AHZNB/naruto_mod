@@ -30,10 +30,11 @@ Jutsus:
  - enabled user movements when using byakugan vision
  - fixed fake death syndrome when dying with shadow clones alive
  - remove shadow clones when user changes dimension
- - added flying thunder god kunai functionality (WIP)
+ - added Flying thunder god jutsu. can be used on blocks, entities and 3-prong kunais
  - body replacement jutsu now only activates on entity damage source, and user doesn't have paralysis effect
    body replacement jutsu won't teleport user into blocks
  - sharingan users no longer give attackers slowness, instead will lock eyes on the attacker for 15s if in range
+ - added chakra pulse for kekkei mora
 
 Items:
  - fix using /give command to give nature release items duplicates the item
@@ -44,6 +45,8 @@ Items:
  - fixed explosive tags breaking blocks when mobGriefing false
  - fixed after gaining mangekyo naturally susanoo color always black
  - added 3-prong kunai weapon and recipe
+ - added some horns on 6-path rinnegan and tenseigan chakra mode
+ - truth seeking shakujo no longer drops
 
 Entities:
  - added 5 second cooldown for Itachi's genjutsu
@@ -112,7 +115,6 @@ Jutsus:
  - reduced wood burial duration to 10 seconds, damage 10 per second
  - allow 1-tail jinchuriki in biju cloak to use magnet release without a sand gourd
  - reduced earth sandwich duration
- - fixed summoner can't ride summonning animal
  - lava melting jutsu won't spawn lava blocks if mobGriefing disabled
  - fixed tenseigan users not being able to use asura canon
  - fixed summoner can't ride summon, and summon can't ride summoner

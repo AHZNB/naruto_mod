@@ -31,11 +31,13 @@ import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.renderer.OpenGlHelper;
 
+import net.narutomod.procedure.ProcedureAoeCommand;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.procedure.ProcedureYomotsuHirasaka;
 import net.narutomod.entity.EntityScalableProjectile;
 import net.narutomod.entity.EntityTruthSeekerBall;
 import net.narutomod.creativetab.TabModTab;
+import net.narutomod.Particles;
 import net.narutomod.ElementsNarutomodMod;
 
 import com.google.common.collect.ImmutableMap;
@@ -49,6 +51,7 @@ public class ItemKekkeiMora extends ElementsNarutomodMod.ModElement {
 	public static final ItemJutsu.JutsuEnum PORTAL = new ItemJutsu.JutsuEnum(1, "tooltip.byakurinnesharingan.jutsu2", 'S', 10d, new YomotsuHirasaka());
 	public static final ItemJutsu.JutsuEnum BIGBALL = new ItemJutsu.JutsuEnum(2, "tooltip.kekkeimora.expansivetsb", 'S', 10d, new ExpansiveTSB());
 	public static final ItemJutsu.JutsuEnum ASHBONE = new ItemJutsu.JutsuEnum(3, "item.ashbones.name", 'S', 10d, new AshBone());
+	public static final ItemJutsu.JutsuEnum PULSE = new ItemJutsu.JutsuEnum(4, "tooltip.byakurinnesharingan.pulse", 'S', 10d, new ChakraPulse());
 
 	public ItemKekkeiMora(ElementsNarutomodMod instance) {
 		super(instance, 731);
@@ -56,7 +59,7 @@ public class ItemKekkeiMora extends ElementsNarutomodMod.ModElement {
 
 	@Override
 	public void initElements() {
-		elements.items.add(() -> new RangedItem(EIGHTYGODS, PORTAL, BIGBALL, ASHBONE));
+		elements.items.add(() -> new RangedItem(EIGHTYGODS, PORTAL, BIGBALL, ASHBONE, PULSE));
 		elements.entities.add(() -> EntityEntryBuilder.create().entity(Entity80Gods.class)
 				.id(new ResourceLocation("narutomod", "entity80gods"), ENTITYID).name("entity80gods").tracker(64, 1, true)
 				.build());
@@ -89,6 +92,10 @@ public class ItemKekkeiMora extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		protected float getPower(ItemStack stack, EntityLivingBase entity, int timeLeft) {
+			ItemJutsu.JutsuEnum jutsu = this.getCurrentJutsu(stack);
+			if (jutsu == PULSE) {
+				return this.getPower(stack, entity, timeLeft, 10f, 20f);
+			}
 			return 1f;
 		}
 
@@ -128,7 +135,7 @@ public class ItemKekkeiMora extends ElementsNarutomodMod.ModElement {
 		public boolean createJutsu(ItemStack stack, EntityLivingBase entity, float power) {
 			if (entity.getHeldItemMainhand().getItem() != ItemAshBones.block) {
 				entity.world.playSound(null, entity.posX, entity.posY, entity.posZ,
-				 net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation(("narutomod:bonecrack"))),
+				 net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:bonecrack")),
 				 net.minecraft.util.SoundCategory.PLAYERS, 0.5f, 1f);
 				ItemStack itemstack = new ItemStack(ItemAshBones.block);
 				if (entity instanceof EntityPlayer) {
@@ -139,6 +146,23 @@ public class ItemKekkeiMora extends ElementsNarutomodMod.ModElement {
 				return true;
 			}
 			return false;
+		}
+	}
+
+	public static class ChakraPulse implements ItemJutsu.IJutsuCallback {
+		@Override
+		public boolean createJutsu(ItemStack stack, EntityLivingBase entity, float power) {
+			entity.world.playSound(null, entity.posX, entity.posY, entity.posZ,
+			 net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:dojutsu")),
+			 net.minecraft.util.SoundCategory.NEUTRAL, 1f, 1f);
+			for (int i = 0; i < 1000; i++) {
+				Particles.spawnParticle(entity.world, Particles.Types.SMOKE, entity.posX, entity.posY + 1.4d, entity.posZ,
+				 1, 1d, 0d, 1d, entity.getRNG().nextGaussian(), 1d, entity.getRNG().nextGaussian(), 0x10FFFFFF, 30, 0);
+			}
+			ProcedureAoeCommand.set(entity, 0d, power / 2).exclude(entity).knockback(3f);
+			ProcedureUtils.purgeHarmfulEffects(entity);
+			entity.extinguish();
+			return true;
 		}
 	}
 

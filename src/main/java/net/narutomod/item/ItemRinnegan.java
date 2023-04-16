@@ -6,18 +6,18 @@ import net.minecraftforge.fml.common.registry.GameRegistry.ObjectHolder;
 import net.minecraftforge.common.util.EnumHelper;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.event.ModelRegistryEvent;
-//import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-//import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-//import net.minecraftforge.event.entity.living.LivingDamageEvent;
-//import net.minecraftforge.common.MinecraftForge;
 
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.translation.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.Item;
 import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.entity.ai.attributes.AttributeModifier;
+import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.EntityLivingBase;
@@ -29,9 +29,6 @@ import net.minecraft.client.model.ModelBox;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.entity.AbstractClientPlayer;
-import net.minecraft.entity.ai.attributes.AttributeModifier;
-import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.world.WorldServer;
 
 import net.narutomod.gui.GuiNinjaScroll;
 import net.narutomod.entity.EntityKingOfHell;
@@ -57,7 +54,7 @@ public class ItemRinnegan extends ElementsNarutomodMod.ModElement {
 	@ObjectHolder("narutomod:rinneganlegs")
 	public static final Item legs = null;
 	private static final String RINNESHARINGAN_KEY = NarutomodModVariables.RINNESHARINGAN_ACTIVATED;
-	private final UUID RINNESHARINGAN_MODIFIER = UUID.fromString("135da083-a632-483e-85bd-2281f15ca7e0");
+	protected static final UUID RINNESHARINGAN_MODIFIER = UUID.fromString("135da083-a632-483e-85bd-2281f15ca7e0");
 	private static final double SHINRATENSEI_CHAKRA_USAGE = 10d;
 	private static final double CHIBAKUTENSEI_CHAKRA_USAGE = 5000d;
 	private static final double NARAKAPATH_CHAKRA_USAGE = 100d;
@@ -120,12 +117,14 @@ public class ItemRinnegan extends ElementsNarutomodMod.ModElement {
 	}
 
 	public void initElements() {
-		ItemArmor.ArmorMaterial enuma = EnumHelper.addArmorMaterial("RINNEGAN", "narutomod:rinnegan_", 25, new int[]{2, 5, 6, 2}, 0, null, 5.0F);
+		ItemArmor.ArmorMaterial enuma = EnumHelper.addArmorMaterial("RINNEGAN", "narutomod:rinnegan_", 25, new int[]{2, 5, 6, 2}, 0,
+		 net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:dojutsu")), 5.0F);
 		this.elements.items.add(() -> new ItemDojutsu.Base(enuma) {
 			@SideOnly(Side.CLIENT)
 			@Override
 			public ModelBiped getArmorModel(EntityLivingBase living, ItemStack stack, EntityEquipmentSlot slot, ModelBiped defaultModel) {
 				ItemDojutsu.ClientModel.ModelHelmetSnug model = (ItemDojutsu.ClientModel.ModelHelmetSnug)super.getArmorModel(living, stack, slot, defaultModel);
+				model.hornMiddle.showModel = false;
 				if (living.ticksExisted % 20 == 6) {
 					model.foreheadHide = !isRinnesharinganActivated(stack) || !(living instanceof EntityPlayer) || PlayerTracker.getNinjaLevel((EntityPlayer)living) < 180d;
 				}

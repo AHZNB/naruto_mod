@@ -108,6 +108,11 @@ public class ItemSageStaff extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
+		public int getEntityLifespan(ItemStack itemStack, World world) {
+			return 1;
+		}
+
+		@Override
 		public float getDestroySpeed(ItemStack par1ItemStack, IBlockState par2Block) {
 			return 16f;
 		}

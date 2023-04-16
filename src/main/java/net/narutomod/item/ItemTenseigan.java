@@ -17,6 +17,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.Item;
 import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.entity.ai.attributes.AttributeModifier;
+import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
@@ -43,6 +45,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 import javax.annotation.Nullable;
+import com.google.common.collect.Multimap;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class ItemTenseigan extends ElementsNarutomodMod.ModElement {
@@ -60,7 +63,7 @@ public class ItemTenseigan extends ElementsNarutomodMod.ModElement {
 	@Override
 	public void initElements() {
 		ItemArmor.ArmorMaterial enuma = EnumHelper.addArmorMaterial("TENSEIGAN", "narutomod:sasuke_", 5, new int[]{2, 75, 100, 50}, 0,
-				(net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("")), 0f);
+		 net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:dojutsu")), 0f);
 
 		elements.items.add(() -> new ItemDojutsu.Base(enuma) {
 			@SideOnly(Side.CLIENT)
@@ -71,6 +74,8 @@ public class ItemTenseigan extends ElementsNarutomodMod.ModElement {
 				armorModel.foreheadHide = !ItemRinnegan.isRinnesharinganActivated(stack);
 				Item item = living.getHeldItemMainhand().getItem();
 				armorModel.headwearHide = item != ItemTenseiganChakraMode.block || ((ItemTenseiganChakraMode.RangedItem)item).isOnCooldown(living);
+				armorModel.headHide = !armorModel.headwearHide;
+				armorModel.hornRight.showModel = armorModel.hornLeft.showModel = false;
 				return armorModel;
 			}
 
@@ -124,6 +129,16 @@ public class ItemTenseigan extends ElementsNarutomodMod.ModElement {
 			@Override
 			public boolean isDamageable() {
 				return false;
+			}
+
+			@Override
+			public Multimap<String, AttributeModifier> getAttributeModifiers(EntityEquipmentSlot slot, ItemStack stack) {
+				Multimap<String, AttributeModifier> multimap = super.getAttributeModifiers(slot, stack);
+				if (slot == EntityEquipmentSlot.HEAD && ItemRinnegan.isRinnesharinganActivated(stack)) {
+					multimap.put(SharedMonsterAttributes.MAX_HEALTH.getName(),
+					 new AttributeModifier(ItemRinnegan.RINNESHARINGAN_MODIFIER, "rinnesharingan.maxhealth", 380d, 0));
+				}
+				return multimap;
 			}
 
 			@Override

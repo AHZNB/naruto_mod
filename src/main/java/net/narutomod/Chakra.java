@@ -215,7 +215,7 @@ public class Chakra extends ElementsNarutomodMod.ModElement {
 
 		private void sendToClient() {
 			if (this.user instanceof EntityPlayerMP) {
-				Message.sendToSelf((EntityPlayerMP)this.user, this.getAmount(), this.getMax());
+				ServerMessage.sendToSelf((EntityPlayerMP)this.user, this.getAmount(), this.getMax());
 			}
 		}
 
@@ -323,29 +323,29 @@ public class Chakra extends ElementsNarutomodMod.ModElement {
 					}
 				//}
 			}
-		}	
+		}
 
-		public static class Message implements IMessage {
+		public static class ServerMessage implements IMessage {
 			//int id;
 			double amount;
 			double max;
 	
-			public Message() { }
+			public ServerMessage() { }
 	
-			public Message(double amountIn, double maxIn) {
+			public ServerMessage(double amountIn, double maxIn) {
 				//this.id = pathway.player.getEntityId();
 				this.amount = amountIn;
 				this.max = maxIn;
 			}
 
 			public static void sendToSelf(EntityPlayerMP player, double d1, double d2) {
-				NarutomodMod.PACKET_HANDLER.sendTo(new Message(d1, d2), player);
+				NarutomodMod.PACKET_HANDLER.sendTo(new ServerMessage(d1, d2), player);
 			}
 	
-			public static class Handler implements IMessageHandler<Message, IMessage> {
+			public static class Handler implements IMessageHandler<ServerMessage, IMessage> {
 				@SideOnly(Side.CLIENT)
 				@Override
-				public IMessage onMessage(Message message, MessageContext context) {
+				public IMessage onMessage(ServerMessage message, MessageContext context) {
 					Minecraft.getMinecraft().addScheduledTask(() -> {
 						EntityPlayer player = Minecraft.getMinecraft().player;
 						if (player != null) {
@@ -368,11 +368,46 @@ public class Chakra extends ElementsNarutomodMod.ModElement {
 				this.max = buf.readDouble();
 			}
 		}
+
+		public static class ConsumeMessage implements IMessage {
+			public double amount;
+	
+			public ConsumeMessage() {
+			}
+	
+			public ConsumeMessage(double amountIn) {
+				this.amount = amountIn;
+			}
+	
+			public static void sendToServer(double amountIn) {
+				NarutomodMod.PACKET_HANDLER.sendToServer(new ConsumeMessage(amountIn));
+			}
+	
+			public static class Handler implements IMessageHandler<ConsumeMessage, IMessage> {
+				@Override
+				public IMessage onMessage(ConsumeMessage message, MessageContext context) {
+					EntityPlayerMP entity = context.getServerHandler().player;
+					entity.getServerWorld().addScheduledTask(() -> {
+						pathway(entity).consume(message.amount);
+					});
+					return null;
+				}
+			}
+	
+			public void toBytes(ByteBuf buf) {
+				buf.writeDouble(this.amount);
+			}
+	
+			public void fromBytes(ByteBuf buf) {
+				this.amount = buf.readDouble();
+			}
+		}
 	}
 
 	@Override
 	public void preInit(FMLPreInitializationEvent event) {
-		elements.addNetworkMessage(Chakra.PathwayPlayer.Message.Handler.class, Chakra.PathwayPlayer.Message.class, Side.CLIENT);
+		elements.addNetworkMessage(PathwayPlayer.ServerMessage.Handler.class, PathwayPlayer.ServerMessage.class, Side.CLIENT);
+		elements.addNetworkMessage(PathwayPlayer.ConsumeMessage.Handler.class, PathwayPlayer.ConsumeMessage.class, Side.SERVER);
 	}
 
 	@Override

@@ -143,15 +143,6 @@
       }
     ]
   },
-  "dojutsu_activate": {
-    "category": "master",
-    "sounds": [
-      {
-        "name": "narutomod:dojutsu",
-        "stream": false
-      }
-    ]
-  },
   "BanshoTenin": {
     "category": "master",
     "sounds": [
@@ -931,6 +922,15 @@
     "sounds": [
       {
         "name": "narutomod:hirudora",
+        "stream": false
+      }
+    ]
+  },
+  "dojutsu": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "narutomod:dojutsu",
         "stream": false
       }
     ]
