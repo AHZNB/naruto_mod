@@ -8,16 +8,19 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundEvent;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.entity.IEntityMultiPart;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.client.Minecraft;
-import net.minecraft.world.WorldServer;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.block.Block;
 
@@ -29,7 +32,6 @@ import net.narutomod.Particles;
 
 import io.netty.buffer.ByteBuf;
 import javax.annotation.Nullable;
-
 import java.util.List;
 
 @ElementsNarutomodMod.ModElement.Tag
@@ -62,6 +64,7 @@ public class ProcedureSync extends ElementsNarutomodMod.ModElement {
 		this.elements.addNetworkMessage(MultiPartsPacket.ServerHandler.class, MultiPartsPacket.class, Side.SERVER);
 		this.elements.addNetworkMessage(MultiPartsPacket.ClientHandler.class, MultiPartsPacket.class, Side.CLIENT);
 		this.elements.addNetworkMessage(MultiPartsSetPassengers.ClientHandler.class, MultiPartsSetPassengers.class, Side.CLIENT);
+		this.elements.addNetworkMessage(SoundEffectMessage.Handler.class, SoundEffectMessage.class, Side.SERVER);
 	}
 	
 	public static class SwingMainArm implements IMessage {
@@ -513,7 +516,6 @@ public class ProcedureSync extends ElementsNarutomodMod.ModElement {
 	public static class EntityNBTTag implements IMessage {
 		int id;
 		int dataType; // 0:remove, 1:integer, 2:double, 3:boolean
-		int tagLength;
 		String tag;
 		int iData;
 		double dData;
@@ -543,7 +545,6 @@ public class ProcedureSync extends ElementsNarutomodMod.ModElement {
 
 		private void setup(Entity entity, String tagName, int type) {
 			this.id = entity.getEntityId();
-			this.tagLength = tagName.length();
 			this.tag = tagName;
 			this.dataType = type;
 		}
@@ -669,10 +670,7 @@ public class ProcedureSync extends ElementsNarutomodMod.ModElement {
 		public void toBytes(ByteBuf buf) {
 			buf.writeInt(this.id);
 			buf.writeInt(this.dataType);
-			buf.writeInt(this.tagLength);
-			for (int i = 0; i < this.tagLength; i++) {
-				buf.writeChar(this.tag.charAt(i));
-			}
+			writeString(buf, this.tag);
 			buf.writeInt(this.iData);
 			buf.writeDouble(this.dData);
 			buf.writeBoolean(this.bData);
@@ -681,12 +679,7 @@ public class ProcedureSync extends ElementsNarutomodMod.ModElement {
 		public void fromBytes(ByteBuf buf) {
 			this.id = buf.readInt();
 			this.dataType = buf.readInt();
-			this.tagLength = buf.readInt();
-			char[] tagArray = new char[this.tagLength];
-			for (int i = 0; i < this.tagLength; i++) {
-				tagArray[i] = buf.readChar();
-			}
-			this.tag = new String(tagArray);
+			this.tag = readString(buf);
 			this.iData = buf.readInt();
 			this.dData = buf.readDouble();
 			this.bData = buf.readBoolean();
@@ -1146,5 +1139,84 @@ public class ProcedureSync extends ElementsNarutomodMod.ModElement {
 				this.passengerIds[i] = buf.readInt();
 			}
 		}
+	}
+
+	public static class SoundEffectMessage implements IMessage {
+		double x;
+		double y;
+		double z;
+		String domain;
+		String path;
+		String category;
+		float volume;
+		float pitch;
+		
+		public SoundEffectMessage() {}
+	
+		public SoundEffectMessage(double _x, double _y, double _z, SoundEvent sound, SoundCategory cat, float vol, float p) {
+			this.x = _x;
+			this.y = _y;
+			this.z = _z;
+			this.domain = sound.getSoundName().getResourceDomain();
+			this.path = sound.getSoundName().getResourcePath();
+			this.category = cat.getName();
+			this.volume = vol;
+			this.pitch = p;
+		}
+		
+		public static void sendToServer(double _x, double _y, double _z, SoundEvent sound, SoundCategory cat, float vol, float p) {
+			NarutomodMod.PACKET_HANDLER.sendToServer(new SoundEffectMessage(_x, _y, _z, sound, cat, vol, p));
+		}
+	
+		public static class Handler implements IMessageHandler<SoundEffectMessage, IMessage> {
+			@Override
+			public IMessage onMessage(SoundEffectMessage message, MessageContext context) {
+				EntityPlayerMP entity = context.getServerHandler().player;
+				entity.getServerWorld().addScheduledTask(() -> {
+					entity.world.playSound(null, message.x, message.y, message.z,
+					 net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation(message.domain, message.path)),
+					 net.minecraft.util.SoundCategory.getByName(message.category), message.volume, message.pitch);
+				});
+				return null;
+			}
+		}
+	
+		public void toBytes(ByteBuf buf) {
+			buf.writeDouble(this.x);
+			buf.writeDouble(this.y);
+			buf.writeDouble(this.z);
+			writeString(buf, this.domain);
+			writeString(buf, this.path);
+			writeString(buf, this.category);
+			buf.writeFloat(this.volume);
+			buf.writeFloat(this.pitch);
+		}
+
+		public void fromBytes(ByteBuf buf) {
+			this.x = buf.readDouble();
+			this.y = buf.readDouble();
+			this.z = buf.readDouble();
+			this.domain = readString(buf);
+			this.path = readString(buf);
+			this.category = readString(buf);
+			this.volume = buf.readFloat();
+			this.pitch = buf.readFloat();
+		}
+	}
+
+	public static void writeString(ByteBuf buf, String str) {
+		buf.writeInt(str.length());
+		for (int i = 0; i < str.length(); i++) {
+			buf.writeChar(str.charAt(i));
+		}
+	}
+
+	public static String readString(ByteBuf buf) {
+		int len = buf.readInt();
+		char[] tagArray = new char[len];
+		for (int i = 0; i < len; i++) {
+			tagArray[i] = buf.readChar();
+		}
+		return new String(tagArray);
 	}
 }

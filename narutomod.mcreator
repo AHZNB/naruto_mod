@@ -1,8 +1,8 @@
 {
   "id_map": {
-    "ENTITY": 420,
+    "GUI": 64,
     "DIMENSION": 13,
-    "GUI": 63
+    "ENTITY": 420
   },
   "mod_elements": [
     {
@@ -7014,6 +7014,26 @@
         "1": 420
       },
       "registry_name": "hiraishin"
+    },
+    {
+      "name": "ScrollHiraishinGui",
+      "type": "gui",
+      "sortid": 842,
+      "compiles": true,
+      "locked_code": true,
+      "ids": {
+        "0": 64
+      },
+      "registry_name": "scroll_hiraishin_gui"
+    },
+    {
+      "name": "ScrollHiraishin",
+      "type": "item",
+      "sortid": 843,
+      "compiles": true,
+      "locked_code": false,
+      "ids": {},
+      "registry_name": "scroll_hiraishin"
     }
   ],
   "variable_elements": [
@@ -7886,6 +7906,14 @@
       ],
       "category": "master",
       "subtitle": ""
+    },
+    {
+      "name": "swoosh",
+      "files": [
+        "swoosh"
+      ],
+      "category": "master",
+      "subtitle": ""
     }
   ],
   "language_map": {
@@ -8041,6 +8069,7 @@
       "item.ryo_1000.name": "Ryo 1,000",
       "chattext.outerpath.hasjinchuriki": "Unable to summon Ten Tails, it is sealed in a Jinchuriki.",
       "subtitles.windecho": "",
+      "item.scroll_hiraishin.name": "Flying Thunder God Jutsu",
       "chattext.chibakutensei": "Chibaku Tensei!",
       "chattext.outerpath.notenoughxp": "You do not have enough experience.",
       "entity.ninja_suna.name": "Ninja Suna",
@@ -8334,6 +8363,7 @@
       "item.scroll_chidori.name": "Lightning Release - Chidori Scroll",
       "subtitles.ice_shoot_small": "",
       "item.ninjutsu.amenotejikara": "Amenotejikara",
+      "subtitles.swoosh": "",
       "entity.unrivaled_strength.name": "Unrivaled Strength",
       "tooltip.zabuzasword.general": "One of the legendary swords belonging to the Seven Ninja Swordsmen of the Mist this sword is passed down from generation to generation amongst the group\u0027s members.",
       "entity.biju_manager.name": "Biju Manager",
@@ -8521,7 +8551,7 @@
       "item.ninja_armor_konohahelmet.name": "Forehead Protector (Konoha)",
       "item.scroll_enhanced_strength.name": "Medical Ninjutsu - Chakra Enhanced Strength",
       "entity.susanooskeleton.name": "Susanoo Skeleton",
-      "entity.hiraishin.name": "Hiraishin",
+      "entity.hiraishin.name": "Flying Thunder God Jutsu",
       "tooltip.jiton.musthave": "Must have Earth \u0026 Wind release",
       "item.anbu_sword.name": "Anbu Sword",
       "entity.specialeffect.name": "Special Effect",

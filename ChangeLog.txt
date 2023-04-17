@@ -30,7 +30,7 @@ Jutsus:
  - enabled user movements when using byakugan vision
  - fixed fake death syndrome when dying with shadow clones alive
  - remove shadow clones when user changes dimension
- - added Flying thunder god jutsu. can be used on blocks, entities and 3-prong kunais
+ - added Flying thunder god jutsu and scroll. can be used on blocks, entities and 3-prong kunais
  - body replacement jutsu now only activates on entity damage source, and user doesn't have paralysis effect
    body replacement jutsu won't teleport user into blocks
  - sharingan users no longer give attackers slowness, instead will lock eyes on the attacker for 15s if in range

@@ -934,5 +934,14 @@
         "stream": false
       }
     ]
+  },
+  "swoosh": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "narutomod:swoosh",
+        "stream": false
+      }
+    ]
   }
 }

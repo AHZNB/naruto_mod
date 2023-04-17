@@ -132,6 +132,7 @@ public class ItemDojutsu extends ElementsNarutomodMod.ModElement {
 			private final ModelRenderer bone9;
 			private final ModelRenderer bone10;
 			private final ModelRenderer bone11;
+			private final ModelRenderer bone12;
 			private final ModelRenderer highlight;
 			private final ModelRenderer forehead;
 			protected boolean headHide;
@@ -199,6 +200,7 @@ public class ItemDojutsu extends ElementsNarutomodMod.ModElement {
 				bipedHeadwear = new ModelRenderer(this);
 				bipedHeadwear.setRotationPoint(0.0F, 0.0F, 0.0F);
 				bipedHeadwear.cubeList.add(new ModelBox(this.bipedHeadwear, 32, 0, -4.0F, -8.0F, -4.0F, 8, 8, 8, 0.4F, false));
+
 				hornMiddle = new ModelRenderer(this);
 				hornMiddle.setRotationPoint(0.0F, -6.25F, -4.0F);
 				bipedHeadwear.addChild(hornMiddle);
@@ -208,26 +210,32 @@ public class ItemDojutsu extends ElementsNarutomodMod.ModElement {
 				bone8 = new ModelRenderer(this);
 				bone8.setRotationPoint(0.0F, -1.0F, 0.0F);
 				hornMiddle.addChild(bone8);
-				setRotationAngle(bone8, -0.1309F, 0.0F, 0.0F);
+				setRotationAngle(bone8, -0.0873F, 0.0F, 0.0F);
 				bone8.cubeList.add(new ModelBox(bone8, 0, 4, -0.5F, -1.0F, -0.5F, 1, 1, 1, 0.2F, false));
 		
 				bone9 = new ModelRenderer(this);
 				bone9.setRotationPoint(0.0F, -1.0F, 0.0F);
 				bone8.addChild(bone9);
-				setRotationAngle(bone9, -0.1309F, 0.0F, 0.0F);
+				setRotationAngle(bone9, -0.0873F, 0.0F, 0.0F);
 				bone9.cubeList.add(new ModelBox(bone9, 0, 4, -0.5F, -1.0F, -0.5F, 1, 1, 1, 0.1F, false));
 		
 				bone10 = new ModelRenderer(this);
 				bone10.setRotationPoint(0.0F, -0.9F, 0.0F);
 				bone9.addChild(bone10);
-				setRotationAngle(bone10, -0.1309F, 0.0F, 0.0F);
+				setRotationAngle(bone10, -0.0873F, 0.0F, 0.0F);
 				bone10.cubeList.add(new ModelBox(bone10, 0, 4, -0.5F, -1.0F, -0.5F, 1, 1, 1, 0.0F, false));
 		
 				bone11 = new ModelRenderer(this);
 				bone11.setRotationPoint(0.0F, -0.8F, 0.0F);
 				bone10.addChild(bone11);
-				setRotationAngle(bone11, -0.1309F, 0.0F, 0.0F);
-				bone11.cubeList.add(new ModelBox(bone11, 0, 4, -0.5F, -1.0F, -0.5F, 1, 1, 1, -0.1F, false));
+				setRotationAngle(bone11, -0.0873F, 0.0F, 0.0F);
+				bone11.cubeList.add(new ModelBox(bone11, 0, 4, -0.5F, -1.0F, -0.5F, 1, 1, 1, -0.15F, false));
+		
+				bone12 = new ModelRenderer(this);
+				bone12.setRotationPoint(0.0F, -0.6F, 0.0F);
+				bone11.addChild(bone12);
+				setRotationAngle(bone12, -0.0873F, 0.0F, 0.0F);
+				bone12.cubeList.add(new ModelBox(bone12, 0, 4, -0.5F, -0.9F, -0.5F, 1, 1, 1, -0.3F, false));
 
 				this.highlight = new ModelRenderer(this);
 				this.highlight.setRotationPoint(0.0F, 0.0F, 0.0F);

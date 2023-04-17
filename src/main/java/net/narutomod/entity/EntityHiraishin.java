@@ -7,6 +7,7 @@ import net.narutomod.item.ItemJutsu;
 import net.narutomod.procedure.ProcedureSync;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.Chakra;
+import net.narutomod.PlayerTracker;
 import net.narutomod.NarutomodMod;
 import net.narutomod.ElementsNarutomodMod;
 
@@ -25,12 +26,19 @@ import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.network.datasync.DataParameter;
+import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraft.network.datasync.DataSerializers;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
@@ -54,17 +62,10 @@ import java.util.Map;
 import java.util.UUID;
 import javax.annotation.Nullable;
 import javax.vecmath.Vector4d;
-import com.google.common.collect.Maps;
-import io.netty.buffer.ByteBuf;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.world.WorldServer;
-import net.minecraft.network.datasync.DataParameter;
-import net.minecraft.network.datasync.EntityDataManager;
-import net.minecraft.network.datasync.DataSerializers;
-import com.google.common.base.Optional;
 import javax.vecmath.Vector2f;
-import net.minecraft.entity.item.EntityItem;
+import com.google.common.collect.Maps;
+import com.google.common.base.Optional;
+import io.netty.buffer.ByteBuf;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityHiraishin extends ElementsNarutomodMod.ModElement {
@@ -261,7 +262,7 @@ public class EntityHiraishin extends ElementsNarutomodMod.ModElement {
 						ItemStack stack1 = new ItemStack(ItemKunaiHiraishin.block, 1);
 						ItemKunaiHiraishin.RangedItem.setOwner(stack1, entity);
 						((EntityItem)res.entityHit).setItem(stack1);
-					} else if (res.entityHit instanceof EntityLivingBase) {
+					} else if (res.entityHit instanceof EntityLivingBase || res.typeOfHit == RayTraceResult.Type.BLOCK) {
 						return entity.world.spawnEntity(new EC(entity, res));
 					}
 				}
@@ -271,7 +272,6 @@ public class EntityHiraishin extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static class UpdateMarkerMessage implements IMessage {
-		int len;
 		String uuid;
 		Vector4d vec;
 
@@ -279,7 +279,6 @@ public class EntityHiraishin extends ElementsNarutomodMod.ModElement {
 
 		public UpdateMarkerMessage(UUID id, @Nullable Vector4d v4d) {
 			this.uuid = id.toString();
-			this.len = this.uuid.length();
 			this.vec = v4d;
 		}
 
@@ -304,10 +303,7 @@ public class EntityHiraishin extends ElementsNarutomodMod.ModElement {
 		}
 	
 		public void toBytes(ByteBuf buf) {
-			buf.writeInt(this.len);
-			for (int i = 0; i < this.len; i++) {
-				buf.writeChar(this.uuid.charAt(i));
-			}
+			ProcedureSync.writeString(buf, this.uuid);
 			if (this.vec != null) {
 				buf.writeBoolean(true);
 				buf.writeDouble(this.vec.x);
@@ -320,12 +316,7 @@ public class EntityHiraishin extends ElementsNarutomodMod.ModElement {
 		}
 	
 		public void fromBytes(ByteBuf buf) {
-			this.len = buf.readInt();
-			char[] tagArray = new char[this.len];
-			for (int i = 0; i < this.len; i++) {
-				tagArray[i] = buf.readChar();
-			}
-			this.uuid = new String(tagArray);
+			this.uuid = ProcedureSync.readString(buf);
 			this.vec = buf.readBoolean() ? new Vector4d(buf.readDouble(), buf.readDouble(), buf.readDouble(), buf.readDouble()) : null;
 		}
 	}
@@ -498,8 +489,8 @@ public class EntityHiraishin extends ElementsNarutomodMod.ModElement {
 		@SideOnly(Side.CLIENT)
 		@SubscribeEvent
 		public void onRenderWorldLast(RenderWorldLastEvent event) {
-			if (!clientMarkerList.isEmpty()) {
-				Minecraft mc = Minecraft.getMinecraft();
+			Minecraft mc = Minecraft.getMinecraft();
+			if (PlayerTracker.isNinja(mc.player) && !clientMarkerList.isEmpty()) {
 				RenderManager renderManager = mc.getRenderManager();
 				if (renderManager.options.thirdPersonView == 0) {
 					for (Vector4d vec : clientMarkerList.values()) {
@@ -515,11 +506,10 @@ public class EntityHiraishin extends ElementsNarutomodMod.ModElement {
 		@SideOnly(Side.CLIENT)
 		@SubscribeEvent
 		public void onLeftClickEmpty(PlayerInteractEvent.LeftClickEmpty event) {
-			if (!clientMarkerList.isEmpty()) {
-				Minecraft mc = Minecraft.getMinecraft();
+			if (PlayerTracker.isNinja(event.getEntityPlayer()) && !clientMarkerList.isEmpty()) {
 				Vec3d vec1 = event.getEntityPlayer().getPositionEyes(1f);
 				for (Vector4d vec4d : clientMarkerList.values()) {
-					if ((int)vec4d.w == mc.world.provider.getDimension()) {
+					if ((int)vec4d.w == Minecraft.getMinecraft().world.provider.getDimension()) {
 						Vec3d vec = new Vec3d(vec4d.x, vec4d.y, vec4d.z);
 						double d = vec.subtract(vec1).lengthVector();
 						Vec3d vec2 = vec1.add(event.getEntityPlayer().getLookVec().scale(d + 10d));
@@ -527,6 +517,9 @@ public class EntityHiraishin extends ElementsNarutomodMod.ModElement {
 						if (aabb.grow(d/20d).calculateIntercept(vec1, vec2) != null) {
 							Chakra.Pathway chakra = Chakra.pathway(event.getEntityPlayer());
 							if (chakra.getAmount() > d) {
+								ProcedureSync.SoundEffectMessage.sendToServer(vec.x, vec.y, vec.z,
+								 net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:swoosh")),
+								 net.minecraft.util.SoundCategory.NEUTRAL, 0.8f, event.getEntityPlayer().getRNG().nextFloat() * 0.4f + 0.8f);
 								event.getEntityPlayer().setPosition(vec.x, vec.y, vec.z);
 								ProcedureSync.ResetBoundingBox.sendToServer(event.getEntityPlayer());
 								Chakra.PathwayPlayer.ConsumeMessage.sendToServer(d);
