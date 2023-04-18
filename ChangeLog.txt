@@ -35,6 +35,7 @@ Jutsus:
    body replacement jutsu won't teleport user into blocks
  - sharingan users no longer give attackers slowness, instead will lock eyes on the attacker for 15s if in range
  - added chakra pulse for kekkei mora
+ - added a way to remove flying raijin markers
 
 Items:
  - fix using /give command to give nature release items duplicates the item
