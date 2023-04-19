@@ -70,8 +70,11 @@ public class ProcedureOnEntitySpawn extends ElementsNarutomodMod.ModElement {
 				}
 			}
 		}
-		if (((entity instanceof EntityPlayerMP) && ((world.provider.getDimension()) == (0)))) {
-			((EntityPlayer) entity).sendStatusMessage(ForgeHooks.newChatWithLinks(I18n.translateToLocal("chattext.intro.message1")), false);
+		if ((entity instanceof EntityPlayerMP)) {
+			ProcedureOnLivingUpdate.setNoClip(entity, false);
+			if (((world.provider.getDimension()) == (0))) {
+				((EntityPlayer) entity).sendStatusMessage(ForgeHooks.newChatWithLinks(I18n.translateToLocal("chattext.intro.message1")), false);
+			}
 		}
 	}
 

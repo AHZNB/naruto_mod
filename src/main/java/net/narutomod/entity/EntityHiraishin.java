@@ -126,16 +126,17 @@ public class EntityHiraishin extends ElementsNarutomodMod.ModElement {
 			this.userUuid = userIn.getUniqueID();
 			if (res.sideHit.getHorizontalIndex() == -1) {
 				this.rotationYaw = 90f * EnumFacing.fromAngle(userIn.rotationYaw).getHorizontalIndex();
-				this.rotationPitch = 90f * (res.sideHit.getDirectionVec().getY() - 1);
+				this.rotationPitch = -90f * (res.sideHit.getDirectionVec().getY() - 1);
 			} else {
 				this.rotationYaw = 90f * res.sideHit.getOpposite().getHorizontalIndex();
-				this.rotationPitch = 90f;
+				this.rotationPitch = -90f;
 			}
 			this.setLocationAndAngles(res.hitVec.x, res.hitVec.y, res.hitVec.z, this.rotationYaw, this.rotationPitch);
 			if (res.entityHit != null) {
 				this.setTargetUuid(res.entityHit.getUniqueID());
+				float yaw = res.entityHit instanceof EntityLivingBase ? ((EntityLivingBase)res.entityHit).renderYawOffset : res.entityHit.rotationYaw;
 				this.setOffsets(res.hitVec.x - res.entityHit.posX, res.hitVec.y - res.entityHit.posY, res.hitVec.z - res.entityHit.posZ,
-				 MathHelper.wrapDegrees(this.rotationYaw - res.entityHit.rotationYaw), this.rotationPitch);
+				 MathHelper.wrapDegrees(this.rotationYaw - yaw), this.rotationPitch);
 			}
 		}
 
@@ -387,7 +388,7 @@ public class EntityHiraishin extends ElementsNarutomodMod.ModElement {
 					GlStateManager.translate(x, y, z);
 					GlStateManager.rotate(180.0F, 0.0F, 0.0F, 1.0F);
 					GlStateManager.rotate(entityYaw, 0.0F, 1.0F, 0.0F);
-					GlStateManager.rotate(entityPitch, 1.0F, 0.0F, 0.0F);
+					GlStateManager.rotate(-entityPitch, 1.0F, 0.0F, 0.0F);
 					GlStateManager.enableAlpha();
 					GlStateManager.enableBlend();
 					GlStateManager.disableLighting();

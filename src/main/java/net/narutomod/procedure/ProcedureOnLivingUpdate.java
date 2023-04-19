@@ -71,7 +71,11 @@ public class ProcedureOnLivingUpdate extends ElementsNarutomodMod.ModElement {
 		if (player instanceof EntityPlayerMP) {
 			byte flag = noClip ? (byte)(1|(allowMouseClicks?2:0)) : (byte)0;
 			player.noClip = noClip;
-			player.getEntityData().setByte(NarutomodModVariables.noClipFlag, flag);
+			if (noClip) {
+				player.getEntityData().setByte(NarutomodModVariables.noClipFlag, flag);
+			} else {
+				player.getEntityData().removeTag(NarutomodModVariables.noClipFlag);
+			}
 			NarutomodMod.PACKET_HANDLER.sendTo(new CustomDataMessage(player, flag), (EntityPlayerMP) player);
 			NarutomodMod.PACKET_HANDLER.sendToAllTracking(new CustomDataMessage(player, flag), player);
 		}
@@ -98,8 +102,13 @@ public class ProcedureOnLivingUpdate extends ElementsNarutomodMod.ModElement {
 				Minecraft.getMinecraft().addScheduledTask(() -> {
 					Entity player = Minecraft.getMinecraft().world.getEntityByID(message.id);
 					if (player instanceof EntityPlayer) {
-						player.getEntityData().setByte(NarutomodModVariables.noClipFlag, message.flag);
-						player.noClip = message.flag != 0 ? true : false;
+						if (message.flag == 0) {
+							player.getEntityData().removeTag(NarutomodModVariables.noClipFlag);
+							player.noClip = false;
+						} else {
+							player.getEntityData().setByte(NarutomodModVariables.noClipFlag, message.flag);
+							player.noClip = true;
+						}
 					}
 					//noClip = message.bVar1;
 					//motionY = message.qwVar2;

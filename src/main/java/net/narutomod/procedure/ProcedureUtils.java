@@ -559,7 +559,8 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 			RayTraceResult raytraceresult = axisalignedbb.calculateIntercept(vec3d, vec3d2);
 			if (axisalignedbb.contains(vec3d)) {
 				if (d2 >= 0.0) {
-					entityTrace = raytraceresult != null ? raytraceresult : new RayTraceResult(RayTraceResult.Type.ENTITY, vec3d, EnumFacing.UP, null);
+					entityTrace = raytraceresult != null ? raytraceresult : new RayTraceResult(vec3d, EnumFacing.UP, null);
+					entityTrace.typeOfHit = RayTraceResult.Type.ENTITY;
 					entityTrace.entityHit = entity1;
 					d2 = 0.0;
 				}
@@ -567,6 +568,7 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 				double d3 = vec3d.distanceTo(raytraceresult.hitVec);
 				if (d3 < d2 || d2 == 0.0) {
 					entityTrace = raytraceresult;
+					entityTrace.typeOfHit = RayTraceResult.Type.ENTITY;
 					entityTrace.entityHit = entity1;
 					d2 = d3;
 				}
