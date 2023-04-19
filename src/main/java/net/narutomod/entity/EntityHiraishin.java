@@ -1,7 +1,6 @@
 
 package net.narutomod.entity;
 
-import net.minecraft.entity.player.EntityPlayer;
 import net.narutomod.item.ItemKunaiHiraishin;
 import net.narutomod.item.ItemKunai3prong;
 import net.narutomod.item.ItemJutsu;
@@ -59,7 +58,6 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.NBTTagCompound;
 
-import java.util.Iterator;
 import java.util.Map;
 import java.util.UUID;
 import javax.annotation.Nullable;
@@ -83,7 +81,7 @@ public class EntityHiraishin extends ElementsNarutomodMod.ModElement {
 	@Override
 	public void initElements() {
 		elements.entities.add(() -> EntityEntryBuilder.create().entity(EC.class)
-				.id(new ResourceLocation("narutomod", "hiraishin"), ENTITYID).name("hiraishin").tracker(64, 3, true).build());
+		 .id(new ResourceLocation("narutomod", "hiraishin"), ENTITYID).name("hiraishin").tracker(64, 3, true).build());
 	}
 
 	public static void updateServerMarkerMap(UUID ownerUuid, UUID kunaiUuid, @Nullable Vector4d vec4d) {
@@ -137,7 +135,7 @@ public class EntityHiraishin extends ElementsNarutomodMod.ModElement {
 			if (res.entityHit != null) {
 				this.setTargetUuid(res.entityHit.getUniqueID());
 				this.setOffsets(res.hitVec.x - res.entityHit.posX, res.hitVec.y - res.entityHit.posY, res.hitVec.z - res.entityHit.posZ,
-						MathHelper.wrapDegrees(this.rotationYaw - res.entityHit.rotationYaw), this.rotationPitch);
+				 MathHelper.wrapDegrees(this.rotationYaw - res.entityHit.rotationYaw), this.rotationPitch);
 			}
 		}
 
@@ -175,14 +173,14 @@ public class EntityHiraishin extends ElementsNarutomodMod.ModElement {
 		}
 
 		private Vec3d getOffsetVec() {
-			return new Vec3d( ((Float)this.getDataManager().get(OFFSET_X)).floatValue(),
-					((Float)this.getDataManager().get(OFFSET_Y)).floatValue(),
-					((Float)this.getDataManager().get(OFFSET_Z)).floatValue() );
+			return new Vec3d( ((Float)this.getDataManager().get(OFFSET_X)).floatValue(), 
+			                  ((Float)this.getDataManager().get(OFFSET_Y)).floatValue(), 
+			                  ((Float)this.getDataManager().get(OFFSET_Z)).floatValue() );
 		}
 
 		private Vector2f getOffsetRotations() {
-			return new Vector2f(((Float)this.getDataManager().get(OFFSET_YAW)).floatValue(),
-					((Float)this.getDataManager().get(OFFSET_PITCH)).floatValue() );
+			return new Vector2f(((Float)this.getDataManager().get(OFFSET_YAW)).floatValue(), 
+			                    ((Float)this.getDataManager().get(OFFSET_PITCH)).floatValue() );
 		}
 
 		@Override
@@ -230,7 +228,7 @@ public class EntityHiraishin extends ElementsNarutomodMod.ModElement {
 			if (compound.hasUniqueId("targetUuid")) {
 				this.setTargetUuid(compound.getUniqueId("targetUuid"));
 				this.setOffsets(compound.getFloat("offsetX"), compound.getFloat("offsetY"), compound.getFloat("offsetZ"),
-						compound.getFloat("offsetYaw"), compound.getFloat("offsetPitch"));
+				 compound.getFloat("offsetYaw"), compound.getFloat("offsetPitch"));
 			}
 		}
 
@@ -260,7 +258,7 @@ public class EntityHiraishin extends ElementsNarutomodMod.ModElement {
 					if (res.entityHit instanceof EC) {
 						res.entityHit.setDead();
 					} else if (res.entityHit instanceof EntityItem
-							&& ((EntityItem)res.entityHit).getItem().getItem() == ItemKunai3prong.block) {
+					 && ((EntityItem)res.entityHit).getItem().getItem() == ItemKunai3prong.block) {
 						ItemStack stack1 = new ItemStack(ItemKunaiHiraishin.block, 1);
 						ItemKunaiHiraishin.RangedItem.setOwner(stack1, entity);
 						((EntityItem)res.entityHit).setItem(stack1);
@@ -270,41 +268,6 @@ public class EntityHiraishin extends ElementsNarutomodMod.ModElement {
 				}
 				return false;
 			}
-		}
-	}
-
-	public static class RemoveMarkerMessage implements IMessage {
-		String uuid;
-
-		public RemoveMarkerMessage() {
-		}
-
-		public RemoveMarkerMessage(UUID id) {
-			this.uuid = id.toString();
-		}
-
-		public static void sendToServer(UUID id) {
-			NarutomodMod.PACKET_HANDLER.sendToServer(new RemoveMarkerMessage(id));
-		}
-
-		public static class Handler implements IMessageHandler<RemoveMarkerMessage, IMessage> {
-			@SideOnly(Side.CLIENT)
-			@Override
-			public IMessage onMessage(RemoveMarkerMessage message, MessageContext context) {
-				WorldServer world = context.getServerHandler().player.getServerWorld();
-				world.addScheduledTask(() -> serverMarkerMap.remove(UUID.fromString(message.uuid)));
-				return null;
-			}
-		}
-
-		@Override
-		public void fromBytes(ByteBuf buf) {
-			this.uuid = ProcedureSync.readString(buf);
-		}
-
-		@Override
-		public void toBytes(ByteBuf buf) {
-			ProcedureSync.writeString(buf, this.uuid);
 		}
 	}
 
@@ -338,7 +301,7 @@ public class EntityHiraishin extends ElementsNarutomodMod.ModElement {
 				return null;
 			}
 		}
-
+	
 		public void toBytes(ByteBuf buf) {
 			ProcedureSync.writeString(buf, this.uuid);
 			if (this.vec != null) {
@@ -351,7 +314,7 @@ public class EntityHiraishin extends ElementsNarutomodMod.ModElement {
 				buf.writeBoolean(false);
 			}
 		}
-
+	
 		public void fromBytes(ByteBuf buf) {
 			this.uuid = ProcedureSync.readString(buf);
 			this.vec = buf.readBoolean() ? new Vector4d(buf.readDouble(), buf.readDouble(), buf.readDouble(), buf.readDouble()) : null;
@@ -362,7 +325,6 @@ public class EntityHiraishin extends ElementsNarutomodMod.ModElement {
 	public void preInit(FMLPreInitializationEvent event) {
 		new Renderer().register();
 		this.elements.addNetworkMessage(UpdateMarkerMessage.Handler.class, UpdateMarkerMessage.class, Side.CLIENT);
-		this.elements.addNetworkMessage(RemoveMarkerMessage.Handler.class, RemoveMarkerMessage.class, Side.SERVER);
 	}
 
 	@Override
@@ -378,7 +340,7 @@ public class EntityHiraishin extends ElementsNarutomodMod.ModElement {
 		public Renderer() {
 			instance = this;
 		}
-
+		
 		@SideOnly(Side.CLIENT)
 		@Override
 		public void register() {
@@ -394,14 +356,14 @@ public class EntityHiraishin extends ElementsNarutomodMod.ModElement {
 			protected final ModelBase mainModel;
 			private final Item item;
 			private final RenderItem itemRenderer;
-
+			
 			public RenderCustom(RenderManager renderManagerIn) {
 				super(renderManagerIn);
 				this.mainModel = new ModelFormula();
 				this.item = ItemKunaiHiraishin.block;
 				this.itemRenderer = Minecraft.getMinecraft().getRenderItem();
 			}
-
+	
 			@Override
 			public void doRender(EC entity, double x, double y, double z, float entityYaw, float partialTicks) {
 				Entity target = entity.getTarget();
@@ -441,7 +403,7 @@ public class EntityHiraishin extends ElementsNarutomodMod.ModElement {
 				}
 				//super.doRender(entity, x, y, z, entityYaw, partialTicks);
 			}
-
+	
 			@Override
 			protected ResourceLocation getEntityTexture(EC entity) {
 				return this.texture;
@@ -461,49 +423,49 @@ public class EntityHiraishin extends ElementsNarutomodMod.ModElement {
 					GlStateManager.rotate(180.0F - this.renderManager.playerViewY, 0.0F, 1.0F, 0.0F);
 					GlStateManager.rotate((float)(this.renderManager.options.thirdPersonView == 2 ? -1 : 1) * -this.renderManager.playerViewX, 1.0F, 0.0F, 0.0F);
 					GlStateManager.rotate(45.0F, 0.0F, 0.0F, 1.0F);
-					GlStateManager.disableLighting();
+            		GlStateManager.disableLighting();
 					this.itemRenderer.renderItem(new ItemStack(this.item), ItemCameraTransforms.TransformType.GROUND);
-					GlStateManager.enableLighting();
+            		GlStateManager.enableLighting();
 					GlStateManager.popMatrix();
 					this.renderText(""+(int)d, x, y, z);
 				}
 			}
 
-			private void renderText(String str, double x, double y, double z) {
-				FontRenderer fontRenderer = this.getFontRendererFromRenderManager();
-				GlStateManager.pushMatrix();
-				GlStateManager.translate(x, y + 0.1D, z);
-				GlStateManager.rotate(-this.renderManager.playerViewY, 0.0F, 1.0F, 0.0F);
-				GlStateManager.rotate((float)(this.renderManager.options.thirdPersonView == 2 ? -1 : 1) * this.renderManager.playerViewX, 1.0F, 0.0F, 0.0F);
-				GlStateManager.scale(-0.0025F, -0.0025F, 0.0025F);
-				GlStateManager.disableLighting();
-
-				GlStateManager.depthMask(false);
-				GlStateManager.disableDepth();
-				GlStateManager.enableBlend();
-				GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-				int i = fontRenderer.getStringWidth(str) / 2;
-				GlStateManager.disableTexture2D();
-				Tessellator tessellator = Tessellator.getInstance();
-				BufferBuilder bufferbuilder = tessellator.getBuffer();
-				bufferbuilder.begin(7, DefaultVertexFormats.POSITION_COLOR);
-				bufferbuilder.pos((double)(-i - 1), -1.0D, 0.0D).color(0.0F, 0.0F, 0.0F, 0.3F).endVertex();
-				bufferbuilder.pos((double)(-i - 1), 8.0D, 0.0D).color(0.0F, 0.0F, 0.0F, 0.3F).endVertex();
-				bufferbuilder.pos((double)(i + 1), 8.0D, 0.0D).color(0.0F, 0.0F, 0.0F, 0.3F).endVertex();
-				bufferbuilder.pos((double)(i + 1), -1.0D, 0.0D).color(0.0F, 0.0F, 0.0F, 0.3F).endVertex();
-				tessellator.draw();
-				GlStateManager.enableTexture2D();
-				fontRenderer.drawString(str, -fontRenderer.getStringWidth(str) / 2, 0, 0x20FFFFFF);
-				GlStateManager.enableDepth();
-
-				GlStateManager.depthMask(true);
-				fontRenderer.drawString(str, -fontRenderer.getStringWidth(str) / 2, 0, 0xFF00FF00);
-				GlStateManager.enableLighting();
-				GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-				GlStateManager.popMatrix();
-			}
+		    private void renderText(String str, double x, double y, double z) {
+		    	FontRenderer fontRenderer = this.getFontRendererFromRenderManager();
+            	GlStateManager.pushMatrix();
+            	GlStateManager.translate(x, y + 0.1D, z);
+            	GlStateManager.rotate(-this.renderManager.playerViewY, 0.0F, 1.0F, 0.0F);
+            	GlStateManager.rotate((float)(this.renderManager.options.thirdPersonView == 2 ? -1 : 1) * this.renderManager.playerViewX, 1.0F, 0.0F, 0.0F);
+            	GlStateManager.scale(-0.0025F, -0.0025F, 0.0025F);
+            	GlStateManager.disableLighting();
+            	
+            	GlStateManager.depthMask(false);
+            	GlStateManager.disableDepth();
+            	GlStateManager.enableBlend();
+            	GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+            	int i = fontRenderer.getStringWidth(str) / 2;
+            	GlStateManager.disableTexture2D();
+            	Tessellator tessellator = Tessellator.getInstance();
+            	BufferBuilder bufferbuilder = tessellator.getBuffer();
+            	bufferbuilder.begin(7, DefaultVertexFormats.POSITION_COLOR);
+            	bufferbuilder.pos((double)(-i - 1), -1.0D, 0.0D).color(0.0F, 0.0F, 0.0F, 0.3F).endVertex();
+            	bufferbuilder.pos((double)(-i - 1), 8.0D, 0.0D).color(0.0F, 0.0F, 0.0F, 0.3F).endVertex();
+            	bufferbuilder.pos((double)(i + 1), 8.0D, 0.0D).color(0.0F, 0.0F, 0.0F, 0.3F).endVertex();
+            	bufferbuilder.pos((double)(i + 1), -1.0D, 0.0D).color(0.0F, 0.0F, 0.0F, 0.3F).endVertex();
+            	tessellator.draw();
+            	GlStateManager.enableTexture2D();
+            	fontRenderer.drawString(str, -fontRenderer.getStringWidth(str) / 2, 0, 0x20FFFFFF);
+            	GlStateManager.enableDepth();
+            	
+            	GlStateManager.depthMask(true);
+            	fontRenderer.drawString(str, -fontRenderer.getStringWidth(str) / 2, 0, 0xFF00FF00);
+            	GlStateManager.enableLighting();
+            	GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+            	GlStateManager.popMatrix();
+		    }
 		}
-
+	
 		// Made with Blockbench 4.6.5
 		// Exported for Minecraft version 1.7 - 1.12
 		// Paste this class into your mod and generate all required imports
@@ -517,7 +479,7 @@ public class EntityHiraishin extends ElementsNarutomodMod.ModElement {
 				bb_main.setRotationPoint(0.0F, 0.0F, 0.0F);
 				bb_main.cubeList.add(new ModelBox(bb_main, -9, 0, -1.5F, 0.0F, -4.5F, 3, 0, 9, 0.1F, false));
 			}
-
+	
 			@Override
 			public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
 				bb_main.render(f5);
@@ -534,7 +496,7 @@ public class EntityHiraishin extends ElementsNarutomodMod.ModElement {
 					for (Vector4d vec : clientMarkerList.values()) {
 						if ((int)vec.w == mc.world.provider.getDimension()) {
 							this.renderCustom.renderMarker(vec.x - renderManager.viewerPosX, vec.y - renderManager.viewerPosY,
-									vec.z - renderManager.viewerPosZ, (float)mc.world.getTotalWorldTime() + event.getPartialTicks());
+							 vec.z - renderManager.viewerPosZ, (float)mc.world.getTotalWorldTime() + event.getPartialTicks());
 						}
 					}
 				}
@@ -546,31 +508,23 @@ public class EntityHiraishin extends ElementsNarutomodMod.ModElement {
 		public void onLeftClickEmpty(PlayerInteractEvent.LeftClickEmpty event) {
 			if (PlayerTracker.isNinja(event.getEntityPlayer()) && !clientMarkerList.isEmpty()) {
 				Vec3d vec1 = event.getEntityPlayer().getPositionEyes(1f);
-				Iterator<Map.Entry<UUID, Vector4d>> iter = clientMarkerList.entrySet().iterator();
-				while (iter.hasNext()) {
-					Map.Entry<UUID, Vector4d> entry = iter.next();
-					Vector4d vec4d = entry.getValue();
+				for (Vector4d vec4d : clientMarkerList.values()) {
 					if ((int)vec4d.w == Minecraft.getMinecraft().world.provider.getDimension()) {
 						Vec3d vec = new Vec3d(vec4d.x, vec4d.y, vec4d.z);
 						double d = vec.subtract(vec1).lengthVector();
 						Vec3d vec2 = vec1.add(event.getEntityPlayer().getLookVec().scale(d + 10d));
 						AxisAlignedBB aabb = new AxisAlignedBB(vec.x-0.5d, vec.y, vec.z-0.5d, vec.x+0.5d, vec.y+1.0d, vec.z+0.5d);
 						if (aabb.grow(d/20d).calculateIntercept(vec1, vec2) != null) {
-							if (event.getEntityPlayer().isSneaking()) {
-								iter.remove();
-								RemoveMarkerMessage.sendToServer(entry.getKey());
+							Chakra.Pathway chakra = Chakra.pathway(event.getEntityPlayer());
+							if (chakra.getAmount() > d) {
+								ProcedureSync.SoundEffectMessage.sendToServer(vec.x, vec.y, vec.z,
+								 net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:swoosh")),
+								 net.minecraft.util.SoundCategory.NEUTRAL, 0.8f, event.getEntityPlayer().getRNG().nextFloat() * 0.4f + 0.8f);
+								event.getEntityPlayer().setPosition(vec.x, vec.y, vec.z);
+								ProcedureSync.ResetBoundingBox.sendToServer(event.getEntityPlayer());
+								Chakra.PathwayPlayer.ConsumeMessage.sendToServer(d);
 							} else {
-								Chakra.Pathway<EntityPlayer> chakra = Chakra.pathway(event.getEntityPlayer());
-								if (chakra.getAmount() > d) {
-									ProcedureSync.SoundEffectMessage.sendToServer(vec.x, vec.y, vec.z,
-											net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:swoosh")),
-											net.minecraft.util.SoundCategory.NEUTRAL, 0.8f, event.getEntityPlayer().getRNG().nextFloat() * 0.4f + 0.8f);
-									event.getEntityPlayer().setPosition(vec.x, vec.y, vec.z);
-									ProcedureSync.ResetBoundingBox.sendToServer(event.getEntityPlayer());
-									Chakra.PathwayPlayer.ConsumeMessage.sendToServer(d);
-								} else {
-									chakra.warningDisplay();
-								}
+								chakra.warningDisplay();
 							}
 						}
 					}
