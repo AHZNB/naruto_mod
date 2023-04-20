@@ -26,3 +26,6 @@ run/
 
 # Don't want that
 .classpath
+*.class
+*.mcmeta
+*.png
