@@ -74,9 +74,9 @@ public class EntityUnrivaledStrength extends ElementsNarutomodMod.ModElement {
 			effect = userIn.getActivePotionEffect(MobEffects.SPEED);
 			userIn.addPotionEffect(new PotionEffect(MobEffects.SPEED, this.duration, 
 			 (int)(power * 2f) + (effect != null ? effect.getAmplifier() : -1), false, false));
-			//effect = userIn.getActivePotionEffect(MobEffects.JUMP_BOOST);
-			//userIn.addPotionEffect(new PotionEffect(MobEffects.JUMP_BOOST, this.duration, 
-			// (int)(power * 0.5f) + (effect != null ? effect.getAmplifier() : -1), false, false));
+			effect = userIn.getActivePotionEffect(MobEffects.JUMP_BOOST);
+			userIn.addPotionEffect(new PotionEffect(MobEffects.JUMP_BOOST, this.duration, 
+			 (int)(power * 0.2f) + (effect != null ? effect.getAmplifier() : -1), false, false));
 		}
 
 		@Override

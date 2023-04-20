@@ -476,6 +476,9 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 				return false;
 			if (source == DamageSource.LIGHTNING_BOLT)
 				return false;
+			if (this.equals(source.getTrueSource())) {
+				return false;
+			}
 			if (source.getTrueSource() instanceof EntityLivingBase) {
 				float hp = this.getHealth();
 				float maxhp = this.getMaxHealth();
@@ -838,7 +841,7 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 						eventOnTick(getWorld(), getX0(), getY0(), getZ0(), getRadius(), getEntity(), currentTick);
 					}
 				};*/
-				ProcedureAoeCommand.set(this, 0d, radius * 1.2)
+				ProcedureAoeCommand.set(this, 0d, radius * 1.2).exclude(excludePlayer)
 				 .damageEntitiesCentered(ItemJutsu.causeJutsuDamage(this, this.shootingEntity), this.maxDamage);
 				this.setDead();
 			}

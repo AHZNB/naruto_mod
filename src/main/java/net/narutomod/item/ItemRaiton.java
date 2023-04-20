@@ -193,7 +193,7 @@ public class ItemRaiton extends ElementsNarutomodMod.ModElement {
 					this.summoner.addPotionEffect(new PotionEffect(MobEffects.RESISTANCE, 22, 3, false, false));
 					this.summoner.addPotionEffect(new PotionEffect(MobEffects.SPEED, 22, 32, false, false));
 					this.summoner.addPotionEffect(new PotionEffect(MobEffects.STRENGTH, 22, this.strengthAmplifier, false, false));
-					//this.summoner.addPotionEffect(new PotionEffect(MobEffects.JUMP_BOOST, 22, 6, false, false));
+					this.summoner.addPotionEffect(new PotionEffect(MobEffects.JUMP_BOOST, 22, 5, false, false));
 				}
 				this.setPosition(this.summoner.posX, this.summoner.posY, this.summoner.posZ);
 				if (this.rand.nextInt(8) == 0) {

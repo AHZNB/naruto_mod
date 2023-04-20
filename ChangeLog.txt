@@ -25,7 +25,6 @@ Jutsus:
  - scorch balls damage and duration increased, targeting is much better
  - boil release unrivaled strength now can punch entities 12 blocks away by jumping right in front of them
  - lightning chakra mode now can punch entities 12 blocks away by jumping right in front of them
- - boil release unrivaled strength and lightning chakra mode doesn't give jump boost anymore
  - increased nausea duration on amaterasu use
  - enabled user movements when using byakugan vision
  - fixed fake death syndrome when dying with shadow clones alive

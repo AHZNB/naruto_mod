@@ -260,9 +260,9 @@ public class PlayerTracker extends ElementsNarutomodMod.ModElement {
 					if (targetEntity instanceof EntityLivingBase && this.isOffCooldown(sourceEntity)) {
 						EntityLivingBase target = (EntityLivingBase)targetEntity;
 						int resistance = target.isPotionActive(MobEffects.RESISTANCE) 
-						 ? target.getActivePotionEffect(MobEffects.RESISTANCE).getAmplifier() : 1;
+						 ? target.getActivePotionEffect(MobEffects.RESISTANCE).getAmplifier() + 2 : 1;
 						double x = MathHelper.sqrt(target.getMaxHealth() * ProcedureUtils.getModifiedAttackDamage(target)
-						 * MathHelper.sqrt(ProcedureUtils.getArmorValue(target)+1d)) * resistance;
+						 * MathHelper.sqrt(ProcedureUtils.getArmorValue(target)+1d) * Math.min(resistance, 6));
 						xp = Math.min(x * Math.min(amount / target.getMaxHealth(), 1f) * 0.5d, 50d);
 //System.out.println(">>> target:"+target.getName()+", x="+x+", amount="+amount+", maxhp="+target.getMaxHealth()+", xp="+xp);
 					}
