@@ -28,7 +28,8 @@ import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.translation.I18n;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.translation.I18n;
 
 import net.narutomod.procedure.ProcedureSharinganHelmetTickEvent;
 import net.narutomod.procedure.ProcedureSync;
@@ -180,7 +181,9 @@ public class ItemSharingan extends ElementsNarutomodMod.ModElement {
 				//((EntityLivingBase)attacker).addPotionEffect(new PotionEffect(MobEffects.SLOWNESS, 300, 1, false, true));
 				//((EntityLivingBase)attacker).addPotionEffect(new PotionEffect(MobEffects.MINING_FATIGUE, 300, 1, false, true));
 				if (entity instanceof EntityPlayer) {
-					this.lockOnTarget(entity, (EntityLivingBase)attacker, 300);
+					if(entity.getEntityData().getBoolean("sharinganLockToggled")) {
+						this.lockOnTarget(entity, (EntityLivingBase)attacker, 300);
+					}
 				}
 			}
 		}
@@ -191,7 +194,7 @@ public class ItemSharingan extends ElementsNarutomodMod.ModElement {
 			if (event.phase == TickEvent.Phase.END && this.hasTargetLockOnEntity(entity)) {
 				int remaining = this.targetLockTicksRemaining(entity);
 				EntityLivingBase target = this.getLockedTarget(entity);
-				if (!entity.world.isRemote && (remaining <= 0 || target == null || !target.isEntityAlive() || target.getDistanceSq(entity) > 1024d)) {
+				if (!entity.world.isRemote && (remaining <= 0 || (entity.getEntityData().getBoolean("sharinganLockToggled") == false) ||  target == null || !target.isEntityAlive() || target.getDistanceSq(entity) > 1024d)) {
 					this.unlockOnTarget(entity);
 				} else if (target != null) {
 					Vec3d vec2 = target.getPositionVector().addVector(0d, target.height / 2, 0d).subtract(entity.getPositionEyes(1f));

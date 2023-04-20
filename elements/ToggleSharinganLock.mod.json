@@ -1,0 +1,12 @@
+{
+  "_fv": 18,
+  "_type": "keybind",
+  "definition": {
+    "triggerKey": "NUMPAD1",
+    "keyBindingName": "Toggle Sharingan Lock",
+    "keyBindingCategoryKey": "category",
+    "onKeyPressed": {
+      "name": "ToggleSharinganLockOnKeyPressed"
+    }
+  }
+}

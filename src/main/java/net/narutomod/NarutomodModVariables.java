@@ -25,6 +25,7 @@ public class NarutomodModVariables {
 	public static String JutsuKey2Pressed = "JutsuKey2Pressed";
 	public static String forceBowPose = "ForceBipedBowPose";
 	public static String tenseiganEvolvedTime = "TenseiganEvolvedTime";
+	public static String sharinganLockToggled = "sharinganLockToggledFlag";
 	public static class MapVariables extends WorldSavedData {
 		public static final String DATA_NAME = "narutomod_mapvars";
 		public MapVariables() {
