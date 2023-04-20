@@ -27,7 +27,13 @@ public class ProcedureToggleSharinganLockOnKeyPressed extends ElementsNarutomodM
 			} else {
 				entity.getEntityData().setBoolean("sharinganLockToggled", false);
 			}
-			((EntityPlayer) entity).sendStatusMessage(new TextComponentString("Sharingan Lock Toggled is: " + entity.getEntityData().getBoolean("sharinganLockToggled") ? "ON" : "OFF", (true));
+						String test = "Sharingan Lock Toggled is now ";
+			if(entity.getEntityData().getBoolean("sharinganLockToggled") == true) {
+				test += "ON";
+			} else {
+				test += "OFF";
+			}
+			((EntityPlayer) entity).sendMessage(new TextComponentString(test));
 		}
 	}
 }
