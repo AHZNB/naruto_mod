@@ -11,6 +11,7 @@ import net.minecraft.util.SoundEvent;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
@@ -25,7 +26,6 @@ import net.narutomod.item.ItemJutsu;
 import net.narutomod.item.ItemSteamArmor;
 import net.narutomod.Particles;
 import net.narutomod.ElementsNarutomodMod;
-import net.minecraft.util.math.RayTraceResult;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityUnrivaledStrength extends ElementsNarutomodMod.ModElement {
@@ -62,7 +62,7 @@ public class EntityUnrivaledStrength extends ElementsNarutomodMod.ModElement {
 			this.isWearingSteamArmor = ItemSteamArmor.isWearingFullSet(userIn);
 			if (this.isWearingSteamArmor) {
 				this.duration = (int)(power * 60f);
-				power *= 2f;
+				power *= 1.5f;
 			} else {
 				this.duration = (int)(power * 20f);
 			}

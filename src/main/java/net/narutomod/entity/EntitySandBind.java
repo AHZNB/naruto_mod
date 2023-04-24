@@ -155,12 +155,12 @@ public class EntitySandBind extends ElementsNarutomodMod.ModElement {
 		}
 
 		private void holdTarget() {
-			EntityLivingBase entity = this.targetEntity;
+			//EntityLivingBase entity = this.targetEntity;
 			//if (entity instanceof MultiPartEntityPart && ((MultiPartEntityPart)entity).parent instanceof EntityLivingBase) {
 			//	entity = (EntityLivingBase)((MultiPartEntityPart)entity).parent;
 			//}
-			entity.addPotionEffect(new PotionEffect(PotionParalysis.potion, 2, 0, false, false));
-			entity.setPositionAndUpdate(this.capturedVec.x, this.capturedVec.y, this.capturedVec.z);
+			this.targetEntity.addPotionEffect(new PotionEffect(PotionParalysis.potion, 2, 0, false, false));
+			this.targetEntity.setPositionAndUpdate(this.capturedVec.x, this.capturedVec.y, this.capturedVec.z);
 		}
 
 		@Override

@@ -1,8 +1,8 @@
 {
   "id_map": {
-    "GUI": 64,
+    "ENTITY": 422,
     "DIMENSION": 13,
-    "ENTITY": 420
+    "GUI": 64
   },
   "mod_elements": [
     {
@@ -7034,6 +7034,18 @@
       "locked_code": false,
       "ids": {},
       "registry_name": "scroll_hiraishin"
+    },
+    {
+      "name": "Firestream",
+      "type": "mob",
+      "sortid": 844,
+      "compiles": true,
+      "locked_code": true,
+      "ids": {
+        "0": 421,
+        "1": 422
+      },
+      "registry_name": "firestream"
     }
   ],
   "variable_elements": [
@@ -8324,6 +8336,7 @@
       "entity.four_tails.name": "Son Goku",
       "potion.effect.paralysis": "Paralysis",
       "item.shakuton.name": "Scorch Release",
+      "entity.firestream.name": "Firestream",
       "item.folding_fan.name": "Giant Folding Fan",
       "splash_potion.effect.feather_falling": "Splash Feather Falling",
       "tooltip.yooton.musthave": "Must have Earth \u0026 Fire release",

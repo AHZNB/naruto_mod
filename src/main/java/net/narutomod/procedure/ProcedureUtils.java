@@ -327,8 +327,7 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 					}
 				}
 			}
-			if (entityIn instanceof EntityLivingBase)
- {
+			if (entityIn instanceof EntityLivingBase) {
 				ItemStack itemstack1 = attacker.getHeldItemMainhand();
 				if (!itemstack1.isEmpty()) {
 					itemstack1.getItem().hitEntity(itemstack1, (EntityLivingBase)entityIn, attacker);

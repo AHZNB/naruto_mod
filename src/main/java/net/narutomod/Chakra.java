@@ -95,14 +95,9 @@ public class Chakra extends ElementsNarutomodMod.ModElement {
 		protected final T user;
 		private double amount;
 		private double max;
-		private int motionlessTime;
-		private double prevX;
-		private double prevZ;
 		
 		protected Pathway(T userIn) {
 			this.user = userIn;
-			this.prevX = userIn.posX;
-			this.prevZ = userIn.posZ;
 		}
 
 		public double getMax() {
@@ -167,23 +162,9 @@ public class Chakra extends ElementsNarutomodMod.ModElement {
 				this.user.addPotionEffect(new PotionEffect(MobEffects.SLOWNESS, 100, 3));
 				this.user.addPotionEffect(new PotionEffect(MobEffects.NAUSEA, 200, 3));
 			}
-			++this.motionlessTime;
-			if (this.user.posX != this.prevX || this.user.posZ != this.prevZ
-			 || !this.user.onGround || this.user.isSwingInProgress) {
-			 	this.motionlessTime = 0;
-			}
-			if (this.motionlessTime > 100 && this.user.ticksExisted % 80 == 0) {
-				this.consume(-ModConfig.CHAKRA_REGEN_RATE);
-			}
-			this.prevX = this.user.posX;
-			this.prevZ = this.user.posZ;
 		}
 
 		public void warningDisplay() {
-		}
-
-		public int getIdleTime() {
-			return this.motionlessTime;
 		}
 
 		@Override
@@ -194,6 +175,9 @@ public class Chakra extends ElementsNarutomodMod.ModElement {
 	
 	public static class PathwayPlayer extends Pathway<EntityPlayer> {
 		private boolean forceSync;
+		private int motionlessTime;
+		private double prevX;
+		private double prevZ;
 
 		protected PathwayPlayer(EntityPlayer playerIn) {
 			super(playerIn);
@@ -202,6 +186,8 @@ public class Chakra extends ElementsNarutomodMod.ModElement {
 			if (this.getAmount() < 0d) {
 				this.set(this.getMax());
 			}
+			this.prevX = playerIn.posX;
+			this.prevZ = playerIn.posZ;
 			if (!playerIn.world.isRemote) {
 				playerMap.put(playerIn, this);
 				this.sendToClient();
@@ -225,6 +211,7 @@ public class Chakra extends ElementsNarutomodMod.ModElement {
 				super.set(amountIn);
 				this.user.getEntityData().setDouble(DATAKEY, amountIn);
 				this.sendToClient();
+				this.motionlessTime = 0;
 			}
 		}
 
@@ -243,8 +230,13 @@ public class Chakra extends ElementsNarutomodMod.ModElement {
 			if (this.user.world instanceof WorldServer && ((WorldServer)this.user.world).areAllPlayersAsleep()) {
 				this.consume(-0.6f);
 			}
-			if (this.getIdleTime() > 100 && this.user.ticksExisted % 80 == 0) {
-				this.consume(-0.001f * this.user.getFoodStats().getSaturationLevel());
+			++this.motionlessTime;
+			if (this.user.posX != this.prevX || this.user.posZ != this.prevZ
+			 || !this.user.onGround || this.user.isSwingInProgress) {
+			 	this.motionlessTime = 0;
+			}
+			if (this.motionlessTime > 80) {
+				this.consume(-ModConfig.CHAKRA_REGEN_RATE - 0.001f * this.user.getFoodStats().getSaturationLevel());
 			}
 			double d = PlayerTracker.getBattleXp(this.user) * 0.5d;
 			if (d != this.getMax() || this.forceSync) {
@@ -252,6 +244,8 @@ public class Chakra extends ElementsNarutomodMod.ModElement {
 				this.setMax(d);
 				this.sendToClient();
 			}
+			this.prevX = this.user.posX;
+			this.prevZ = this.user.posZ;
 		}
 
 		public static class PlayerHook {

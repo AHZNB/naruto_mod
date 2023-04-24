@@ -91,7 +91,7 @@ public class ItemFutton extends ElementsNarutomodMod.ModElement {
 			if (jutsu == MIST) {
 				return this.getPower(stack, entity, timeLeft, 0.1f, 30f);
 			}
-			return this.getPower(stack, entity, timeLeft, 0.1f, 50f);
+			return this.getPower(stack, entity, timeLeft, 1.0f, 100f);
 		}
 
 		@Override
@@ -101,7 +101,7 @@ public class ItemFutton extends ElementsNarutomodMod.ModElement {
 			if (jutsu == MIST) {
 				return Math.min(f, 30.0f);
 			} else {
-				return Math.min(f, 30.0f);
+				return Math.min(f, 20.0f);
 			}
 		}
 

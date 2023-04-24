@@ -23,8 +23,10 @@ Jutsus:
  - increased non-affinity releases jutsuXP requirements to 2.5 times affinity requirements
  - susanoo half-body and higher class can hold totsuka sword if the user has it
  - scorch balls damage and duration increased, targeting is much better
+ - limit unrivaled strength to max 20
  - boil release unrivaled strength now can punch entities 12 blocks away by jumping right in front of them
  - lightning chakra mode now can punch entities 12 blocks away by jumping right in front of them
+ - entering biju cloak mode now can punch entities 15 blocks away by jumping right in front of them
  - increased nausea duration on amaterasu use
  - enabled user movements when using byakugan vision
  - fixed fake death syndrome when dying with shadow clones alive
@@ -34,6 +36,7 @@ Jutsus:
    body replacement jutsu won't teleport user into blocks
  - sharingan users no longer give attackers slowness, instead will lock eyes on the attacker for 15s if in range
  - added chakra pulse for kekkei mora
+ - re-made fire annihilation and great flame jutsus to not go through walls
 
 Items:
  - fix using /give command to give nature release items duplicates the item
@@ -75,6 +78,7 @@ General:
  - improve the boss bars when AGGRESSIVE_BOSSES is enabled
  - added config setting CHAKRA_REGEN_RATE to customize idle chakra regen rate
  - added config option ENABLE_JUTSU_SCROLLS_IN_LOOTCHESTS to disable jutsu scrolls in loot chests
+ - chakra does not regenerate when using jutsus
 
 0.2.11-beta ===============================================================================
 
