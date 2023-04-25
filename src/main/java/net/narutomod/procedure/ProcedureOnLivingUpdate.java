@@ -222,7 +222,11 @@ public class ProcedureOnLivingUpdate extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static void setUntargetable(Entity entity, int ticks) {
-		entity.getEntityData().setInteger("UntargetableTicks", ticks);
+		if (entity.world.isRemote) {
+			ProcedureSync.EntityNBTTag.sendToServer(entity, "UntargetableTicks", ticks);
+		} else {
+			entity.getEntityData().setInteger("UntargetableTicks", ticks);
+		}
 	}
 
 	public static boolean isUntargetable(Entity entity) {

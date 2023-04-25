@@ -4,6 +4,7 @@ package net.narutomod.entity;
 import net.narutomod.item.ItemKunaiHiraishin;
 import net.narutomod.item.ItemKunai3prong;
 import net.narutomod.item.ItemJutsu;
+import net.narutomod.procedure.ProcedureOnLivingUpdate;
 import net.narutomod.procedure.ProcedureSync;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.Chakra;
@@ -519,6 +520,7 @@ public class EntityHiraishin extends ElementsNarutomodMod.ModElement {
 							Chakra.Pathway chakra = Chakra.pathway(event.getEntityPlayer());
 							double chakraUsage = MathHelper.sqrt(d) * 10d;
 							if (chakra.getAmount() > chakraUsage) {
+								ProcedureOnLivingUpdate.setUntargetable(event.getEntityPlayer(), 5);
 								ProcedureSync.SoundEffectMessage.sendToServer(vec.x, vec.y, vec.z,
 								 net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:swoosh")),
 								 net.minecraft.util.SoundCategory.NEUTRAL, 0.8f, event.getEntityPlayer().getRNG().nextFloat() * 0.4f + 0.8f);

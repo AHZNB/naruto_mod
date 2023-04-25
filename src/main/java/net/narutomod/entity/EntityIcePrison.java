@@ -100,7 +100,7 @@ public class EntityIcePrison extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public void onUpdate() {
-			if (this.user != null && this.target != null) {
+			if (this.user != null && ItemJutsu.canTarget(this.target)) {
 				this.target.setPositionAndUpdate(this.posX, this.posY + 0.5d, this.posZ);
 				Map<BlockPos, IBlockState> map = Maps.newHashMap();
 				for (BlockPos pos : this.tpos) {
@@ -152,8 +152,7 @@ public class EntityIcePrison extends ElementsNarutomodMod.ModElement {
 				RayTraceResult result = ProcedureUtils.objectEntityLookingAt(entity, 10d, true);
 				if (result != null && result.entityHit instanceof EntityLivingBase) {
 					entity.world.playSound(null, result.entityHit.posX, result.entityHit.posY, result.entityHit.posZ, 
-					 (net.minecraft.util.SoundEvent)net.minecraft.util.SoundEvent.REGISTRY
-					 .getObject(new ResourceLocation("narutomod:ice_shoot")),
+					 net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:ice_shoot")),
 					 net.minecraft.util.SoundCategory.NEUTRAL, 1f, entity.getRNG().nextFloat() * 0.4f + 0.8f);
 					entity.world.spawnEntity(new EC(entity, (EntityLivingBase)result.entityHit));
 					return true;

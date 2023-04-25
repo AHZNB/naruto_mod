@@ -147,7 +147,7 @@ public class EntityWaterPrison extends ElementsNarutomodMod.ModElement {
 		
 		@Override
 		public void onUpdate() {
-			if (this.user != null && this.target != null && this.user.isEntityAlive() && this.target.isEntityAlive()
+			if (this.user != null && this.user.isEntityAlive() && ItemJutsu.canTarget(this.target)
 			 && this.user.getDistance(this.target) <= 4d && ProcedureUtils.isEntityInFOV(this.user, this.target)
 			 && this.enoughWaterRemaining() && this.ticksExisted <= this.duration) {
 				this.target.setPositionAndUpdate(this.posX, this.posY, this.posZ);

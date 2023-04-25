@@ -37,6 +37,8 @@ Jutsus:
  - sharingan users no longer give attackers slowness, instead will lock eyes on the attacker for 15s if in range
  - added chakra pulse for kekkei mora
  - re-made fire annihilation and great flame jutsus to not go through walls
+ - buffed rasengan damage
+ - flying thunder god jutsu can escape from immobilization jutsus
 
 Items:
  - fix using /give command to give nature release items duplicates the item

@@ -59,8 +59,7 @@ public class EntityIceDome extends ElementsNarutomodMod.ModElement {
 	@Override
 	public void initElements() {
 		elements.entities.add(() -> EntityEntryBuilder.create().entity(EC.class)
-		 .id(new ResourceLocation("narutomod", "ice_dome"), ENTITYID)
-.name("ice_dome").tracker(64, 3, true).build());
+		 .id(new ResourceLocation("narutomod", "ice_dome"), ENTITYID).name("ice_dome").tracker(64, 3, true).build());
 	}
 
 	@Override
@@ -154,11 +153,11 @@ public class EntityIceDome extends ElementsNarutomodMod.ModElement {
 				}
 				--this.shootSpearsTime;
 			}
-			if (this.ticksExisted % 40 == 0) {
+			if (!this.entitiesInside.isEmpty()) {
 				Iterator<EntityLivingBase> iter = this.entitiesInside.iterator();
 				while (iter.hasNext()) {
 					EntityLivingBase entity = iter.next();
-					if (!entity.isEntityAlive()) {
+					if (!ItemJutsu.canTarget(entity)) {
 						iter.remove();
 					}
 				}
@@ -323,7 +322,7 @@ public class EntityIceDome extends ElementsNarutomodMod.ModElement {
 			}
 
 			public EC createJutsu(EntityLivingBase entity, double x, double y, double z) {
-				entity.world.playSound(null, entity.posX, entity.posY, entity.posZ, (net.minecraft.util.SoundEvent)
+				entity.world.playSound(null, entity.posX, entity.posY, entity.posZ,
 				 net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:makyohyosho")),
 				 net.minecraft.util.SoundCategory.NEUTRAL, 1f, 0.9f);
 				EC entity1 = new EC(entity, x, y, z);
@@ -375,7 +374,7 @@ public class EntityIceDome extends ElementsNarutomodMod.ModElement {
 
 		@SideOnly(Side.CLIENT)
 		public class CustomRender extends Render<EC> {
-			private final ResourceLocation TEXTURE = new ResourceLocation("narutomod:textures/dome_ice.png");
+			private final ResourceLocation texture = new ResourceLocation("narutomod:textures/dome_ice.png");
 			private final ModelDome model = new ModelDome();
 			private final int growTime = 30;
 
@@ -413,7 +412,7 @@ public class EntityIceDome extends ElementsNarutomodMod.ModElement {
 
 			@Override
 			protected ResourceLocation getEntityTexture(EC entity) {
-				return TEXTURE;
+				return this.texture;
 			}
 		}
 
