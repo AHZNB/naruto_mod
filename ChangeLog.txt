@@ -32,13 +32,13 @@ Jutsus:
  - fixed fake death syndrome when dying with shadow clones alive
  - remove shadow clones when user changes dimension
  - added Flying thunder god jutsu and scroll. can be used on blocks, entities and 3-prong kunais
+ - flying thunder god jutsu can escape from immobilization jutsus
  - body replacement jutsu now only activates on entity damage source, and user doesn't have paralysis effect
    body replacement jutsu won't teleport user into blocks
  - sharingan users no longer give attackers slowness, instead will lock eyes on the attacker for 15s if in range
  - added chakra pulse for kekkei mora
  - re-made fire annihilation and great flame jutsus to not go through walls
  - buffed rasengan damage
- - flying thunder god jutsu can escape from immobilization jutsus
 
 Items:
  - fix using /give command to give nature release items duplicates the item
