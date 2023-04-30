@@ -51,6 +51,7 @@ Items:
  - added 3-prong kunai weapon and recipe
  - added some horns on 6-path rinnegan and tenseigan chakra mode
  - truth seeking shakujo no longer drops
+ - use custom explosions for shibuki sword
 
 Entities:
  - added 5 second cooldown for Itachi's genjutsu
