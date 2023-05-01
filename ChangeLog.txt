@@ -84,6 +84,7 @@ General:
  - added config setting CHAKRA_REGEN_RATE to customize idle chakra regen rate
  - added config option ENABLE_JUTSU_SCROLLS_IN_LOOTCHESTS to disable jutsu scrolls in loot chests
  - chakra does not regenerate when using jutsus
+ - fixed immortality bug
 
 0.2.11-beta ===============================================================================
 
