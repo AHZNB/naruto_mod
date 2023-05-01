@@ -15,16 +15,17 @@ import net.minecraft.world.WorldServer;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.client.Minecraft;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.scoreboard.Team;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.Entity;
+import net.minecraft.client.Minecraft;
+import net.minecraft.scoreboard.Team;
 import net.minecraft.init.MobEffects;
 import net.minecraft.potion.PotionEffect;
 
@@ -257,7 +258,8 @@ public class PlayerTracker extends ElementsNarutomodMod.ModElement {
 				}
 				if (sourceEntity instanceof EntityPlayer) {
 					double xp = 0.0d;
-					if (targetEntity instanceof EntityLivingBase && this.isOffCooldown(sourceEntity)) {
+					if ((targetEntity instanceof EntityPlayer || (targetEntity instanceof EntityLiving && !((EntityLiving)targetEntity).isAIDisabled()))
+					 && this.isOffCooldown(sourceEntity)) {
 						EntityLivingBase target = (EntityLivingBase)targetEntity;
 						int resistance = target.isPotionActive(MobEffects.RESISTANCE) 
 						 ? target.getActivePotionEffect(MobEffects.RESISTANCE).getAmplifier() + 2 : 1;

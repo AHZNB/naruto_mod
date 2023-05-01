@@ -23,17 +23,24 @@ Jutsus:
  - increased non-affinity releases jutsuXP requirements to 2.5 times affinity requirements
  - susanoo half-body and higher class can hold totsuka sword if the user has it
  - scorch balls damage and duration increased, targeting is much better
+ - limit unrivaled strength to max 20
  - boil release unrivaled strength now can punch entities 12 blocks away by jumping right in front of them
  - lightning chakra mode now can punch entities 12 blocks away by jumping right in front of them
+ - entering biju cloak mode now can punch entities 15 blocks away by jumping right in front of them
  - increased nausea duration on amaterasu use
  - enabled user movements when using byakugan vision
  - fixed fake death syndrome when dying with shadow clones alive
  - remove shadow clones when user changes dimension
  - added Flying thunder god jutsu and scroll. can be used on blocks, entities and 3-prong kunais
+ - flying thunder god jutsu can escape from immobilization jutsus
  - body replacement jutsu now only activates on entity damage source, and user doesn't have paralysis effect
    body replacement jutsu won't teleport user into blocks
  - sharingan users no longer give attackers slowness, instead will lock eyes on the attacker for 15s if in range
  - added chakra pulse for kekkei mora
+ - re-made fire annihilation and great flame jutsus to not go through walls
+ - buffed rasengan damage
+ - increased speed and size of Lava release: magma balls
+ - fixed susanoo bug sometimes creating infinite susanoo entities on the client side
 
 Items:
  - fix using /give command to give nature release items duplicates the item
@@ -46,6 +53,7 @@ Items:
  - added 3-prong kunai weapon and recipe
  - added some horns on 6-path rinnegan and tenseigan chakra mode
  - truth seeking shakujo no longer drops
+ - use custom explosions for shibuki sword
 
 Entities:
  - added 5 second cooldown for Itachi's genjutsu
@@ -75,7 +83,7 @@ General:
  - improve the boss bars when AGGRESSIVE_BOSSES is enabled
  - added config setting CHAKRA_REGEN_RATE to customize idle chakra regen rate
  - added config option ENABLE_JUTSU_SCROLLS_IN_LOOTCHESTS to disable jutsu scrolls in loot chests
- - fix immortality bug
+ - chakra does not regenerate when using jutsus
 
 0.2.11-beta ===============================================================================
 

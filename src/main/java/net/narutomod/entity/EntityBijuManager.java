@@ -525,9 +525,7 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 				if (stack.getItem() == ItemBijuCloak.body) {
 					ItemBijuCloak.revertOriginal(this.jinchurikiPlayer, stack);
 				}
-				this.jinchurikiPlayer.inventory.clearMatchingItems(ItemBijuCloak.helmet, -1, -1, null);
-				this.jinchurikiPlayer.inventory.clearMatchingItems(ItemBijuCloak.body, -1, -1, null);
-				this.jinchurikiPlayer.inventory.clearMatchingItems(ItemBijuCloak.legs, -1, -1, null);
+				ItemBijuCloak.clearCloakItems(this.jinchurikiPlayer);
 				T biju = this.getEntityInWorld(this.jinchurikiPlayer.world);
 				if (biju != null && !biju.isDead) {
 					biju.setDead();
@@ -558,9 +556,7 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 			this.cloakLevel = 3;
 		}
 		if (this.cloakLevel == 3 && this.jinchurikiPlayer != null) {
-			this.jinchurikiPlayer.inventory.clearMatchingItems(ItemBijuCloak.helmet, -1, -1, null);
-			this.jinchurikiPlayer.inventory.clearMatchingItems(ItemBijuCloak.body, -1, -1, null);
-			this.jinchurikiPlayer.inventory.clearMatchingItems(ItemBijuCloak.legs, -1, -1, null);
+			ItemBijuCloak.clearCloakItems(this.jinchurikiPlayer);
 			T biju = this.spawnEntity(this.jinchurikiPlayer);
 			if (biju != null) {
 				biju.setLifeSpan(this.cloakXp[2] * 5 + 200);

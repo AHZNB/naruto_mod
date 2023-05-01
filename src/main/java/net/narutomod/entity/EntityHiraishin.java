@@ -4,6 +4,7 @@ package net.narutomod.entity;
 import net.narutomod.item.ItemKunaiHiraishin;
 import net.narutomod.item.ItemKunai3prong;
 import net.narutomod.item.ItemJutsu;
+import net.narutomod.procedure.ProcedureOnLivingUpdate;
 import net.narutomod.procedure.ProcedureSync;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.Chakra;
@@ -517,13 +518,15 @@ public class EntityHiraishin extends ElementsNarutomodMod.ModElement {
 						AxisAlignedBB aabb = new AxisAlignedBB(vec.x-0.5d, vec.y, vec.z-0.5d, vec.x+0.5d, vec.y+1.0d, vec.z+0.5d);
 						if (aabb.grow(d/20d).calculateIntercept(vec1, vec2) != null) {
 							Chakra.Pathway chakra = Chakra.pathway(event.getEntityPlayer());
-							if (chakra.getAmount() > d) {
+							double chakraUsage = MathHelper.sqrt(d) * 10d;
+							if (chakra.getAmount() > chakraUsage) {
+								ProcedureOnLivingUpdate.setUntargetable(event.getEntityPlayer(), 5);
 								ProcedureSync.SoundEffectMessage.sendToServer(vec.x, vec.y, vec.z,
 								 net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:swoosh")),
 								 net.minecraft.util.SoundCategory.NEUTRAL, 0.8f, event.getEntityPlayer().getRNG().nextFloat() * 0.4f + 0.8f);
 								event.getEntityPlayer().setPosition(vec.x, vec.y, vec.z);
 								ProcedureSync.ResetBoundingBox.sendToServer(event.getEntityPlayer());
-								Chakra.PathwayPlayer.ConsumeMessage.sendToServer(d);
+								Chakra.PathwayPlayer.ConsumeMessage.sendToServer(chakraUsage);
 							} else {
 								chakra.warningDisplay();
 							}

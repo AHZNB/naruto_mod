@@ -50,7 +50,6 @@ import org.lwjgl.util.glu.Sphere;
 import org.lwjgl.util.glu.GLU;
 import javax.annotation.Nullable;
 import com.google.common.collect.Lists;
-import net.minecraft.util.DamageSource;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class Particles extends ElementsNarutomodMod.ModElement {
@@ -63,7 +62,6 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 	@Override
 	public void preInit(FMLPreInitializationEvent event) {
 		this.elements.addNetworkMessage(ParticleRenderer.Message.Handler.class, ParticleRenderer.Message.class, Side.CLIENT);
-		this.elements.addNetworkMessage(Flame.Message.Handler.class, Flame.Message.class, Side.SERVER);
 		this.elements.addNetworkMessage(BurningAsh.Message.Handler.class, BurningAsh.Message.class, Side.SERVER);
 		this.elements.addNetworkMessage(AcidSpit.Message.Handler.class, AcidSpit.Message.class, Side.SERVER);
 	}
@@ -220,24 +218,21 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 		}
 		
 		public static class Message implements IMessage {
-			int messages;
 			List<MessageContents> list;
 
 			public Message() {}
 
 			public Message(MessageContents msgcontents) {
-				this.messages = 1;
 				this.list = Lists.newArrayList(msgcontents);
 			}
 
 			public Message(List<MessageContents> listIn) {
-				this.messages = listIn.size();
 				this.list = listIn;
 			}
 
 			@Override
 			public void toBytes(ByteBuf buf) {
-				buf.writeInt(this.messages);
+				buf.writeInt(this.list.size());
 				for (MessageContents msg : this.list) {
 					msg.toBytes(buf);
 				}
@@ -245,9 +240,9 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 
 			@Override
 			public void fromBytes(ByteBuf buf) {
-				this.messages = buf.readInt();
+				int j = buf.readInt();
 				this.list = Lists.newArrayList();
-				for (int i = 0; i < this.messages; i++) {
+				for (int i = 0; i < j; i++) {
 					this.list.add(new MessageContents(buf));
 				}
 			}
@@ -289,16 +284,19 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 			if (this.world instanceof WorldServer) {
 				super.spawnParticles(type, x, y, z, count, xOff, yOff, zOff, xSpeed, ySpeed, zSpeed, args);
 			} else {
-				for (int i = 0; i < count; i++) {
-					double d1 = rand.nextGaussian() * xOff;
-					double d2 = rand.nextGaussian() * yOff;
-					double d3 = rand.nextGaussian() * zOff;
-					if (count > 5) {
-						xSpeed *= rand.nextDouble() * 0.3d + 0.85d;
-						ySpeed *= rand.nextDouble() * 0.3d + 0.85d;
-						zSpeed *= rand.nextDouble() * 0.3d + 0.85d;
+				Minecraft mc = Minecraft.getMinecraft();
+				if (mc.getRenderViewEntity() != null && mc.effectRenderer != null) {
+					for (int i = 0; i < count; i++) {
+						double d1 = rand.nextGaussian() * xOff;
+						double d2 = rand.nextGaussian() * yOff;
+						double d3 = rand.nextGaussian() * zOff;
+						if (count > 5) {
+							xSpeed *= rand.nextDouble() * 0.3d + 0.85d;
+							ySpeed *= rand.nextDouble() * 0.3d + 0.85d;
+							zSpeed *= rand.nextDouble() * 0.3d + 0.85d;
+						}
+						mc.effectRenderer.spawnEffectParticle(type.getID(), x + d1, y + d2, z + d3, xSpeed, ySpeed, zSpeed, args);
 					}
-					Minecraft.getMinecraft().renderGlobal.spawnParticle(type.getID(), true, x + d1, y + d2, z + d3, xSpeed, ySpeed, zSpeed, args);
 				}
 			}
 		}
@@ -523,10 +521,9 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 		private static final ResourceLocation TEXTURE = new ResourceLocation("narutomod:textures/particles.png");
 		private final TextureManager textureManager;
 		private final float flameScale;
-		private final float burnDamage;
 
 		protected Flame(World worldIn, double xCoordIn, double yCoordIn, double zCoordIn, double xSpeedIn, double ySpeedIn, double zSpeedIn,
-				int color, float scale, float damage) {
+				int color, float scale) {
 			super(worldIn, xCoordIn, yCoordIn, zCoordIn, xSpeedIn, ySpeedIn, zSpeedIn);
 			this.motionX = this.motionX * 0.009999999776482582D + xSpeedIn;
 			this.motionY = this.motionY * 0.009999999776482582D + ySpeedIn;
@@ -550,7 +547,6 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 			//this.setParticleTextureIndex(48);
 			this.particleTextureIndexY = 1;
 			this.textureManager = Minecraft.getMinecraft().getTextureManager();
-			this.burnDamage = damage;
 		}
 
 		//public void move(double x, double y, double z) {
@@ -595,11 +591,6 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 			this.particleTextureIndexX = (this.particleAge / 2) % 8;
 			this.motionY += 0.003D;
 			this.move(this.motionX, this.motionY, this.motionZ);
-			if (this.isAlive() && this.burnDamage > 0.01F) {
-				for (EntityLivingBase entity : this.world.getEntitiesWithinAABB(EntityLivingBase.class, this.getBoundingBox().grow(0.5d))) {
-					NarutomodMod.PACKET_HANDLER.sendToServer(new Message(entity.getEntityId(), this.burnDamage));
-				}
-			}
 			this.motionX *= 0.9599999785423279D;
 			this.motionY *= 0.9599999785423279D;
 			this.motionZ *= 0.9599999785423279D;
@@ -617,48 +608,9 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 		public static class Factory implements IParticleFactory {
 			public Particle createParticle(int particleID, World worldIn, double xCoordIn, double yCoordIn, double zCoordIn, double xSpeedIn,
 					double ySpeedIn, double zSpeedIn, int... parameters) {
-				float arg2 = (parameters.length > 2) && parameters[2] != 0 ? (float)parameters[2] / 10.0F : 0.0F;
 				float arg1 = (parameters.length > 1) ? (float)parameters[1] / 10.0F : 1.0F;
 				int arg0 = (parameters.length > 0) ? parameters[0] : -1;
-				return new Flame(worldIn, xCoordIn, yCoordIn, zCoordIn, xSpeedIn, ySpeedIn, zSpeedIn, arg0, arg1, arg2);
-			}
-		}
-
-		public static class Message implements IMessage {
-			int id;
-			float amount;
-			
-			public Message() {
-			}
-	
-			public Message(int entityId, float damage) {
-				this.id = entityId;
-				this.amount = damage;
-			}
-	
-			public void toBytes(ByteBuf buf) {
-				buf.writeInt(this.id);
-				buf.writeFloat(this.amount);
-			}
-	
-			public void fromBytes(ByteBuf buf) {
-				this.id = buf.readInt();
-				this.amount = buf.readFloat();
-			}
-
-			public static class Handler implements IMessageHandler<Message, IMessage> {
-				@Override
-				public IMessage onMessage(Message message, MessageContext context) {
-					WorldServer world = context.getServerHandler().player.getServerWorld();
-					world.addScheduledTask(() -> {
-						Entity entity = world.getEntityByID(message.id);
-						if (entity instanceof EntityLivingBase) {
-							entity.attackEntityFrom(DamageSource.IN_FIRE, message.amount);
-							entity.setFire(15);
-						}
-					});
-					return null;
-				}
+				return new Flame(worldIn, xCoordIn, yCoordIn, zCoordIn, xSpeedIn, ySpeedIn, zSpeedIn, arg0, arg1);
 			}
 		}
 	}
@@ -1423,7 +1375,7 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 		SMOKE("smoke_colored", 54678400, 6), 
 		SUSPENDED("suspended_colored", 54678401, 3), 
 		FALLING_DUST("falling_dust", 54678402, 1), 
-		FLAME("flame_colored", 54678403, 3),
+		FLAME("flame_colored", 54678403, 2),
 		MOB_APPEARANCE("mob_appearance", 54678404, 1),
 		BURNING_ASH("burning_ash", 54678405, 1),
 		HOMING_ORB("homing_orb", 54678406, 2),

@@ -13,25 +13,13 @@ import net.minecraftforge.client.event.ModelRegistryEvent;
 
 import net.minecraft.world.World;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Item;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.item.EntityItem;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumParticleTypes;
-import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
-import net.minecraft.util.text.TextComponentString;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Item;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.Entity;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
@@ -40,31 +28,26 @@ import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.client.renderer.texture.TextureMap;
-import net.minecraft.client.Minecraft;
-import net.minecraft.nbt.NBTTagCompound;
 
 import net.narutomod.creativetab.TabModTab;
 import net.narutomod.NarutomodModVariables;
 import net.narutomod.ElementsNarutomodMod;
 import net.narutomod.Particles;
-import net.narutomod.Chakra;
 import net.narutomod.entity.EntityRendererRegister;
 import net.narutomod.entity.EntityScalableProjectile;
 import net.narutomod.entity.EntityHidingInAsh;
-import net.narutomod.procedure.ProcedureUtils;
-import net.narutomod.procedure.ProcedureAirPunch;
+import net.narutomod.entity.EntityFirestream;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class ItemKaton extends ElementsNarutomodMod.ModElement {
 	@GameRegistry.ObjectHolder("narutomod:katon")
 	public static final Item block = null;
 	public static final int ENTITYID = 123;
-	public static final int ENTITY2ID = 10123;
+	//public static final int ENTITY2ID = 10123;
 	public static final ItemJutsu.JutsuEnum GREATFIREBALL = new ItemJutsu.JutsuEnum(0, "katonfireball", 'C', 30d, new EntityBigFireball.Jutsu());
-	public static final ItemJutsu.JutsuEnum GFANNIHILATION = new ItemJutsu.JutsuEnum(1, "tooltip.katon.annihilation", 'B', 50d, new EntityFireStream.Jutsu1());
+	public static final ItemJutsu.JutsuEnum GFANNIHILATION = new ItemJutsu.JutsuEnum(1, "tooltip.katon.annihilation", 'B', 50d, new EntityFirestream.EC.Jutsu1());
 	public static final ItemJutsu.JutsuEnum HIDINGINASH = new ItemJutsu.JutsuEnum(2, "hiding_in_ash", 'B', 50d, new EntityHidingInAsh.EC.Jutsu());
-	public static final ItemJutsu.JutsuEnum GREATFLAME = new ItemJutsu.JutsuEnum(3, "katonfirestream", 'C', 20d, new EntityFireStream.Jutsu2());
+	public static final ItemJutsu.JutsuEnum GREATFLAME = new ItemJutsu.JutsuEnum(3, "katonfirestream", 'C', 20d, new EntityFirestream.EC.Jutsu2());
 
 	public ItemKaton(ElementsNarutomodMod instance) {
 		super(instance, 366);
@@ -75,8 +58,6 @@ public class ItemKaton extends ElementsNarutomodMod.ModElement {
 		elements.items.add(() -> new RangedItem(GREATFIREBALL, GFANNIHILATION, HIDINGINASH, GREATFLAME));
 		elements.entities.add(() -> EntityEntryBuilder.create().entity(EntityBigFireball.class)
 				.id(new ResourceLocation("narutomod", "katonfireball"), ENTITYID).name("katonfireball").tracker(64, 1, true).build());
-		elements.entities.add(() -> EntityEntryBuilder.create().entity(EntityFireStream.class)
-				.id(new ResourceLocation("narutomod", "katonfirestream"), ENTITY2ID).name("katonfirestream").tracker(64, 1, true).build());
 	}
 
 	@Override
@@ -119,140 +100,6 @@ public class ItemKaton extends ElementsNarutomodMod.ModElement {
 				return Math.min(f, 10.0f);
 			}
 			return f;
-		}
-	}
-
-	
-	public static class EntityFireStream extends Entity {
-		private int wait = 50;
-		private int maxLife = 110;
-		private FireStream fireStream = new FireStream();
-		private EntityLivingBase shooter;
-		private double width, range;
-
-		public EntityFireStream(World world) {
-			super(world);
-			this.setSize(0.01f, 0.01f);
-		}
-
-		public EntityFireStream(EntityLivingBase shooterIn, double widthIn, double rangeIn) {
-			this(shooterIn.world);
-			this.shooter = shooterIn;
-			this.setIdlePosition();
-			this.width = widthIn;
-			this.range = rangeIn;
-		}
-
-		@Override
-		protected void entityInit() {
-		}
-
-		protected void setIdlePosition() {
-			if (this.shooter != null) {
-				Vec3d vec3d = this.shooter.getLookVec();
-				this.setPosition(this.shooter.posX + vec3d.x, this.shooter.posY + this.shooter.getEyeHeight() + vec3d.y - 0.2d, this.shooter.posZ + vec3d.z);
-			}
-		}
-
-		@Override
-		public void onUpdate() {
-			//super.onUpdate();
-			if (!this.world.isRemote && (this.ticksExisted > this.maxLife || this.handleWaterMovement())) {
-				this.setDead();
-			} else {
-				this.setIdlePosition();
-				if (!this.world.isRemote && this.ticksExisted > this.wait) {
-					if (this.shooter != null) {// && this.ticksExisted % 4 == 1) {
-						double d = (double)this.ticksExisted / this.maxLife;
-						d = 1.0d - d * d * 0.8d;
-						this.fireStream.execute(this.shooter, this.range * d, this.width * d);
-					}
-					if (this.ticksExisted % 10 == 1) {
-						this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation(("narutomod:flamethrow"))), 
-						 1.0f, this.rand.nextFloat() * 0.5f + 0.6f);
-					}
-				}
-			}
-		}
-
-		@Override
-		protected void readEntityFromNBT(NBTTagCompound compound) {
-		}
-
-		@Override
-		protected void writeEntityToNBT(NBTTagCompound compound) {
-		}
-
-		public class FireStream extends ProcedureAirPunch {
-			public FireStream() {
-				this.particlesDuring = null;
-			}
-	
-			@Override
-			protected void attackEntityFrom(EntityLivingBase player, Entity target) {
-				if (!(target instanceof EntityFireStream)) {
-					//float damage = (float)(this.getRange(0) * player.experienceLevel * 0.1);
-					double damage = this.getRange(0) * (player.getRNG().nextDouble() * 0.5d + 0.5d);
-					target.attackEntityFrom(ItemJutsu.causeJutsuDamage(EntityFireStream.this, player)
-					 .setDamageBypassesArmor().setFireDamage(), (float)damage);
-					target.setFire(10);
-				}
-			}
-	
-			@Override
-			protected void preExecuteParticles(EntityLivingBase player) {
-				Vec3d vec3d1 = player.getLookVec();
-				double angle = Math.atan(this.getFarRadius(0) / this.getRange(0)) * 180d / Math.PI;
-				for (int i = 0; i < (int)(this.getRange(0) * this.getFarRadius(0) * 0.8d); i++) {
-					Vec3d vec3d = Vec3d.fromPitchYaw(player.rotationPitch + (float)((this.rand.nextDouble()-0.5d) * angle * 3.0d),
-					 player.rotationYaw + (float)((this.rand.nextDouble()-0.5d) * angle * 3.0d)).scale(this.getRange(0) * 0.1d);
-					Particles.spawnParticle(player.world, Particles.Types.FLAME, player.posX + vec3d1.x,
-					  player.posY + player.getEyeHeight() - 0.2d + vec3d1.y, player.posZ + vec3d1.z, 1, 0, 0, 0, 
-					  vec3d.x, vec3d.y, vec3d.z, 0xffffcf00, (int)(vec3d.lengthVector()*50d)+this.rand.nextInt(20));
-				}
-			}
-	
-			@Override
-			protected EntityItem processAffectedBlock(EntityLivingBase player, BlockPos pos, EnumFacing facing) {
-				if (ForgeEventFactory.getMobGriefingEvent(player.world, player)
-				 && player.getDistanceSq(pos) > 16d && player.getRNG().nextFloat() < 0.1f) {
-					for (EnumFacing enumfacing : EnumFacing.values()) {
-						if (player.world.isAirBlock(pos.offset(enumfacing))) {
-							player.world.setBlockState(pos.offset(enumfacing), Blocks.FIRE.getDefaultState(), 3);
-						}
-					}
-				}
-				return null;
-			}
-	
-			@Override
-			protected float getBreakChance(BlockPos pos, EntityLivingBase player, double range) {
-				return -1F;
-			}
-		}
-
-		public static class Jutsu1 implements ItemJutsu.IJutsuCallback {
-			@Override
-			public boolean createJutsu(ItemStack stack, EntityLivingBase entity, float power) {
-				entity.world.playSound(null, entity.posX, entity.posY, entity.posZ, (SoundEvent) 
-				  SoundEvent.REGISTRY.getObject(new ResourceLocation(("narutomod:katon_gokamekeku"))),
-				  SoundCategory.NEUTRAL, 5, 1f);
-				entity.world.spawnEntity(new EntityFireStream((EntityPlayer)entity, power * 0.8, power * 1.5));
-				//ItemJutsu.setCurrentJutsuCooldown(stack, (EntityPlayer)entity, (long)(power * 200));
-				return true;
-			}
-		}
-
-		public static class Jutsu2 implements ItemJutsu.IJutsuCallback {
-			@Override
-			public boolean createJutsu(ItemStack stack, EntityLivingBase entity, float power) {
-				EntityFireStream entity1 = new EntityFireStream((EntityPlayer)entity, power * 0.1f, power);
-				entity1.wait = 0;
-				entity1.maxLife = (int)(power * 10f);
-				entity.world.spawnEntity(entity1);
-				//ItemJutsu.setCurrentJutsuCooldown(stack, (EntityPlayer)entity, (long)(power * 200));
-				return true;
-			}
 		}
 	}
 

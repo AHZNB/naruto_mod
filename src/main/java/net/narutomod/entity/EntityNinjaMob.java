@@ -734,8 +734,7 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 		            double d1 = (double)this.targetPosition.getY() - this.entity.posY;
 		            double d2 = this.entity.getDistanceSqToCenter(new BlockPos(this.targetPosition.getX(),
 		             MathHelper.floor(this.entity.posY), this.targetPosition.getZ()));
-		            double d3 = this.targetPosition.distanceSq(this.entity.getPosition());
-		            if (d3 >= 1.0d && (d2 >= d0 || (d1 <= this.entity.stepHeight && d1 >= -12d * this.entity.height))) {
+		            if (d2 >= d0 && d1 <= this.entity.stepHeight && d1 >= -12d * this.entity.height) {
 		              	this.entity.getMoveHelper().setMoveTo((double)this.targetPosition.getX(),
 		               	 (double)this.targetPosition.getY(), (double)this.targetPosition.getZ(), this.speed);
 		            } else {

@@ -137,7 +137,7 @@ public class ItemSenjutsu extends ElementsNarutomodMod.ModElement {
 			ItemJutsu.JutsuEnum jutsu = this.getCurrentJutsu(stack);
 			float f = super.getMaxPower(stack, entity);
 			if (jutsu == RASENGAN) {
-				return Math.min(f, 7.0f);
+				return Math.min(f, 6.0f);
 			} else if (jutsu == RASENSHURIKEN) {
 				return Math.min(f, 6.0f);
 			}

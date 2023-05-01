@@ -70,6 +70,7 @@ public class EventSphericalExplosion extends SpecialEvent {
 		if (!this.shouldExecute())
 			return;
 		super.onUpdate();
+		this.doOnTick(this.tick);
 		if (this.sound) {
 			if (this.tick == 1) {
 				this.world.playSound(null, this.x0, this.y0, this.z0, SoundEvents.ENTITY_GENERIC_EXPLODE,
@@ -85,7 +86,6 @@ public class EventSphericalExplosion extends SpecialEvent {
 			ProcedureCameraShake.sendToClients(this.world.provider.getDimension(), this.x0, this.y0, this.z0,
 			 32f * f + this.radius, 80, 8f * f);
 		}
-		this.doOnTick(this.tick);
 		for (int i = 0; i < 1024; ) {
 			this.posList[0].setPos(this.x0 + this.tx, this.y0 + this.ty, this.z0 + this.tz);
 			this.posList[1].setPos(this.x0 - this.tx, this.y0 + this.ty, this.z0 + this.tz);

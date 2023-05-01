@@ -169,7 +169,8 @@ public class ItemSharingan extends ElementsNarutomodMod.ModElement {
 		public void onAttacked(LivingAttackEvent event) {
 			EntityLivingBase entity = event.getEntityLiving();
 			Entity attacker = event.getSource().getTrueSource();
-			if (wearingAny(entity) && ItemJutsu.canTarget(entity) && attacker instanceof EntityLivingBase && !attacker.world.isRemote) {
+			if (wearingAny(entity) && ItemJutsu.canTarget(entity) && !entity.isRiding()
+			 && attacker instanceof EntityLivingBase && !attacker.world.isRemote) {
 			 	if (entity.getRNG().nextFloat() < 0.5f) {
 			 		event.setCanceled(true);
 			 		Vec3d vec = entity.getPositionVector().subtract(attacker.getPositionVector()).normalize()
@@ -180,7 +181,7 @@ public class ItemSharingan extends ElementsNarutomodMod.ModElement {
 				//((EntityLivingBase)attacker).addPotionEffect(new PotionEffect(MobEffects.SLOWNESS, 300, 1, false, true));
 				//((EntityLivingBase)attacker).addPotionEffect(new PotionEffect(MobEffects.MINING_FATIGUE, 300, 1, false, true));
 				if (entity instanceof EntityPlayer) {
-					this.lockOnTarget(entity, (EntityLivingBase)attacker, 300);
+					this.lockOnTarget(entity, (EntityLivingBase)attacker, 200);
 				}
 			}
 		}

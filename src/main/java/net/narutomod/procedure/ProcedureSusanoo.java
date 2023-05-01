@@ -89,12 +89,12 @@ public class ProcedureSusanoo extends ElementsNarutomodMod.ModElement {
 			double cooldown = player.getEntityData().getDouble("susanoo_ticks") * 0.25d;
 			cooldown *= ProcedureUtils.getCooldownModifier(player);
 			//player.getEntityData().setDouble("susanoo_cd", NarutomodModVariables.world_tick + cooldown);
-			player.getEntityData().setBoolean("susanoo_activated", false);
-			player.getEntityData().setDouble("susanoo_ticks", 0.0D);
+			player.getEntityData().removeTag("susanoo_activated");
+			player.getEntityData().removeTag("susanoo_ticks");
 			Entity entitySpawned = world.getEntityByID(getSummonedSusanooId(player));
-			player.getEntityData().setInteger(SUMMONED_SUSANOO, 0);
+			player.getEntityData().removeTag(SUMMONED_SUSANOO);
 			if (entitySpawned != null) {
-				world.removeEntity(entitySpawned);
+				entitySpawned.setDead();
 			}
 			if (!flag && helmet.getItem() != ItemMangekyoSharinganEternal.helmet) {
 				player.addPotionEffect(new PotionEffect(MobEffects.WEAKNESS, (int)cooldown, 3));

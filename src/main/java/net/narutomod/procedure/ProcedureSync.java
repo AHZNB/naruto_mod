@@ -184,27 +184,28 @@ public class ProcedureSync extends ElementsNarutomodMod.ModElement {
 
 	public static class SetGlowing implements IMessage {
 		int id;
-		boolean glow;
+		int ticks;
 
 		public SetGlowing() { }
 
-		public SetGlowing(Entity entity, boolean glowIn) {
+		public SetGlowing(Entity entity, int glowTicks) {
 			this.id = entity.getEntityId();
-			this.glow = glowIn;
+			this.ticks = glowTicks;
 		}
 
-		public static void send(EntityPlayerMP player, Entity entity, boolean shouldGlow) {
-			NarutomodMod.PACKET_HANDLER.sendTo(new SetGlowing(entity, shouldGlow), player);
+		public static void send(EntityPlayerMP player, Entity entity, int glowTicks) {
+			NarutomodMod.PACKET_HANDLER.sendTo(new SetGlowing(entity, glowTicks), player);
 		}
 
 		public static class Handler implements IMessageHandler<SetGlowing, IMessage> {
 			@SideOnly(Side.CLIENT)
 			@Override
 			public IMessage onMessage(SetGlowing message, MessageContext context) {
-				Minecraft.getMinecraft().addScheduledTask(() -> {
-					Entity entity = Minecraft.getMinecraft().world.getEntityByID(message.id);
+				Minecraft mc = Minecraft.getMinecraft();
+				mc.addScheduledTask(() -> {
+					Entity entity = mc.world.getEntityByID(message.id);
 					if (entity != null) {
-						entity.setGlowing(message.glow);
+						ProcedureOnLivingUpdate.setGlowingFor(entity, message.ticks);
 					}
 				});
 				return null;
@@ -213,12 +214,12 @@ public class ProcedureSync extends ElementsNarutomodMod.ModElement {
 
 		public void toBytes(ByteBuf buf) {
 			buf.writeInt(this.id);
-			buf.writeBoolean(this.glow);
+			buf.writeInt(this.ticks);
 		}
 
 		public void fromBytes(ByteBuf buf) {
 			this.id = buf.readInt();
-			this.glow = buf.readBoolean();
+			this.ticks = buf.readInt();
 		}
 	}
 

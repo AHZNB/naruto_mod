@@ -12,6 +12,7 @@ import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraft.world.World;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.translation.I18n;
 import net.minecraft.item.ItemStack;
@@ -38,6 +39,7 @@ import net.minecraft.init.MobEffects;
 import net.narutomod.potion.PotionChakraEnhancedStrength;
 import net.narutomod.potion.PotionReach;
 import net.narutomod.procedure.ProcedureSync;
+import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.entity.EntityBijuManager;
 import net.narutomod.entity.EntityJinchurikiClone;
 import net.narutomod.Particles;
@@ -232,8 +234,7 @@ public class ItemBijuCloak extends ElementsNarutomodMod.ModElement {
 			@Override
 			@SideOnly(Side.CLIENT)
 			public ModelBiped getArmorModel(EntityLivingBase living, ItemStack stack, EntityEquipmentSlot slot, ModelBiped defaultModel) {
-				ModelBijuCloak armorModel = ItemBijuCloak.this.bijuModel[stack.getMetadata()]
-;
+				ModelBijuCloak armorModel = ItemBijuCloak.this.bijuModel[stack.getMetadata()];
 				armorModel.isSneak = living.isSneaking();
 				armorModel.isRiding = living.isRiding();
 				armorModel.isChild = living.isChild();
@@ -285,6 +286,13 @@ public class ItemBijuCloak extends ElementsNarutomodMod.ModElement {
 		 		: "narutomod:textures/bijucloakl1.png";
 	}
 
+	public static void clearCloakItems(EntityPlayer player) {
+		player.inventory.clearMatchingItems(helmet, -1, -1, null);
+		player.inventory.clearMatchingItems(body, -1, -1, null);
+		player.inventory.clearMatchingItems(legs, -1, -1, null);
+		player.getEntityData().removeTag("lungeAttackData");
+	}
+
 	public static void applyEffects(EntityLivingBase entity, int level) {
 		applyEffects(entity, level, true);
 	}
@@ -298,15 +306,41 @@ public class ItemBijuCloak extends ElementsNarutomodMod.ModElement {
 		if (!entity.world.isRemote && entity.ticksExisted % 10 == 4) {
 			//entity.addPotionEffect(new PotionEffect(MobEffects.SATURATION, 5, 0, false, false));
 			entity.addPotionEffect(new PotionEffect(PotionChakraEnhancedStrength.potion, 12, level * 32, false, false));
-			entity.addPotionEffect(new PotionEffect(MobEffects.SPEED, 12, level * 32, false, false));
-			entity.addPotionEffect(new PotionEffect(MobEffects.JUMP_BOOST, 12, 7, false, false));
+			entity.addPotionEffect(new PotionEffect(MobEffects.SPEED, 12, level * 24, false, false));
+			entity.addPotionEffect(new PotionEffect(MobEffects.JUMP_BOOST, 12, 5, false, false));
 			entity.addPotionEffect(new PotionEffect(PotionReach.potion, 12, level - 1, false, false));
 			if (entity.getHealth() < entity.getMaxHealth() && entity.getHealth() > 0.0f) {
-				entity.heal((float)level * 2f);
+				entity.heal((float)level);
 			}
 			if (level == 2) {
 				entity.addPotionEffect(new PotionEffect(MobEffects.RESISTANCE, 12, 2, false, false));
 			}
+		}
+		if (!entity.world.isRemote && entity instanceof EntityPlayer) {
+			NBTTagCompound compound = entity.getEntityData().hasKey("lungeAttackData") ? entity.getEntityData().getCompoundTag("lungeAttackData") : new NBTTagCompound();
+			int attackTime = compound.getInteger("attackTime");
+			Entity target = compound.hasKey("targetId") ? entity.world.getEntityByID(compound.getInteger("targetId")) : null;
+			if (entity.swingProgressInt == 1) {
+				RayTraceResult res = ProcedureUtils.objectEntityLookingAt(entity, 15d, 3d);
+				if (res != null && res.entityHit instanceof EntityLivingBase && res.entityHit.isEntityAlive()) {
+					target = res.entityHit;
+					compound.setInteger("targetId", target.getEntityId());
+					attackTime = 0;
+					entity.rotationYaw = ProcedureUtils.getYawFromVec(target.getPositionVector()
+					 .subtract(entity.getPositionVector()));
+					double d0 = target.posX - entity.posX;
+					double d1 = target.posY - entity.posY;
+					double d2 = target.posZ - entity.posZ;
+					double d3 = MathHelper.sqrt(d0 * d0 + d2 * d2);
+					ProcedureUtils.setVelocity(entity, d0 * 0.5, d1 * 0.5 + d3 * 0.025d, d2 * 0.5);
+				}
+			}
+			if (attackTime < 12 && target != null && target.getDistanceSq(entity) < 25d) {
+				((EntityPlayer)entity).attackTargetEntityWithCurrentItem(target);
+				compound.removeTag("targetId");
+			}
+			compound.setInteger("attackTime", ++attackTime);
+			entity.getEntityData().setTag("lungeAttackData", compound);
 		}
 	}
 

@@ -63,6 +63,7 @@ public class ItemJiton extends ElementsNarutomodMod.ModElement {
 	@GameRegistry.ObjectHolder("narutomod:jiton")
 	public static final Item block = null;
 	public static final int ENTITYID = 201;
+	public static final int ENTITYID_RANGED = 200;
 	public static final ItemJutsu.JutsuEnum SANDSHIELD = new ItemJutsu.JutsuEnum(0, "entityjitonshield", 'S', 150, 20d, new EntitySandShield.Jutsu());
 	public static final ItemJutsu.JutsuEnum SANDBULLET = new ItemJutsu.JutsuEnum(1, "sand_bullet", 'S', 100, 20d, new EntitySandBullet.EC.Jutsu());
 	public static final ItemJutsu.JutsuEnum SANDBIND = new ItemJutsu.JutsuEnum(2, "sand_bind", 'S', 200, 100d, new EntitySandBind.EC.Jutsu());
@@ -76,7 +77,9 @@ public class ItemJiton extends ElementsNarutomodMod.ModElement {
 	public void initElements() {
 		elements.items.add(() -> new RangedItem(SANDSHIELD, SANDBULLET, SANDBIND, SANDFLY));
 		elements.entities.add(() -> EntityEntryBuilder.create().entity(EntitySandShield.class)
-				.id(new ResourceLocation("narutomod", "entityjitonshield"), ENTITYID).name("entityjitonshield").tracker(64, 1, true).build());
+		 .id(new ResourceLocation("narutomod", "entityjitonshield"), ENTITYID).name("entityjitonshield").tracker(64, 1, true).build());
+		elements.entities.add(() -> EntityEntryBuilder.create().entity(SandParticle.class)
+		 .id(new ResourceLocation("narutomod", "jitonparticle"), ENTITYID_RANGED).name("jitonparticle").tracker(64, 1, true).build());
 	}
 
 	@Override
@@ -391,6 +394,38 @@ public class ItemJiton extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
+	public static class SandParticle extends EntityParticle.Base {
+		private int idleTime;
+		private int deathTicks;
+
+		public SandParticle(World w) {
+			super(w);
+		}
+
+		public SandParticle(World worldIn, double x, double y, double z, double mX, double mY, double mZ, int color, float scale, int maxAgeIn) {
+			super(worldIn, x, y, z, mX, mY, mZ, color, scale, maxAgeIn);
+		}
+				
+		@Override
+		public void onDeath() {
+			if (++this.deathTicks >= 20 && !this.world.isRemote) {
+				this.setDead();
+			}
+			this.motionY -= 0.05d;
+		}
+		
+		@Override
+		public void onUpdate() {
+			super.onUpdate();
+			double d = this.getVelocity();
+			this.idleTime = d < 0.001d ? this.idleTime + 1 : 0;
+			this.setParticleTextureOffset(this.texU + (d > 0.01d ? 1 : 0) % 8);
+			if (this.idleTime > 1000) {
+				this.setAge(this.getMaxAge());
+			}
+		}
+	}
+
 	public static class SwarmTarget {
 		private World world;
 		private int total;
@@ -450,7 +485,7 @@ public class ItemJiton extends ElementsNarutomodMod.ModElement {
 		}
 
 		protected Entity createParticle(double x, double y, double z, double mx, double my, double mz, int c, float sc, int life) {
-			return new EntityParticle.Base(this.world, x, y, z, mx, my, mz, c, sc, life);
+			return new SandParticle(this.world, x, y, z, mx, my, mz, c, sc, life);
 		}
 
 		private void spawnNewParticles() {

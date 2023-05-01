@@ -161,9 +161,9 @@ public class ItemSuiton extends ElementsNarutomodMod.ModElement {
 				if (entity instanceof EntityLiving) {
 					entity.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).removeModifier(FOLLOW_MODIFIER);
 				}
-				if (!entity.equals(this.user) && this.user instanceof EntityPlayerMP) {
-					ProcedureSync.SetGlowing.send((EntityPlayerMP)this.user, entity, false);
-				}
+				//if (!entity.equals(this.user) && this.user instanceof EntityPlayerMP) {
+				//	ProcedureSync.SetGlowing.send((EntityPlayerMP)this.user, entity, false);
+				//}
 			}
 		}
 
@@ -192,7 +192,7 @@ public class ItemSuiton extends ElementsNarutomodMod.ModElement {
 						aInstance.applyModifier(new AttributeModifier(FOLLOW_MODIFIER, "suiton.followModifier", -d0, 0));
 					}
 					if (!entity.equals(this.user) && this.user instanceof EntityPlayerMP) {
-						ProcedureSync.SetGlowing.send((EntityPlayerMP)this.user, entity, true);
+						ProcedureSync.SetGlowing.send((EntityPlayerMP)this.user, entity, 5);
 					}
 				}
 				if (this.ticksExisted >= this.dissipateTime) {

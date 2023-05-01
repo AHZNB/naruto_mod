@@ -310,10 +310,10 @@ public abstract class EntitySusanooBase extends EntityMob {
 			this.setDead();
 		}
 		if (flag && !((EntityPlayer)ownerPlayer).isCreative()) {
-			if (!this.isBeingRidden()) {
-				ProcedureSusanoo.execute((EntityPlayer)ownerPlayer);
-			} else {
+			if (this.isBeingRidden()) {
 				ownerPlayer.setSneaking(false);
+			} else if (!this.world.isRemote) {
+				ProcedureSusanoo.execute((EntityPlayer)ownerPlayer);
 			}
 			if (!this.world.isRemote) {
 				this.consumeChakra();

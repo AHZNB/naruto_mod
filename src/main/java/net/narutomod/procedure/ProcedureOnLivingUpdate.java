@@ -167,25 +167,41 @@ public class ProcedureOnLivingUpdate extends ElementsNarutomodMod.ModElement {
 				}
 			}
 		}
-		d = entity.getEntityData().getDouble(NarutomodModVariables.InvulnerableTime);
-		if (d > 0D) {
-			entity.getEntityData().setDouble(NarutomodModVariables.InvulnerableTime, d - 1d);
+		if (entity.getEntityData().hasKey(NarutomodModVariables.InvulnerableTime)) {
+			d = entity.getEntityData().getDouble(NarutomodModVariables.InvulnerableTime);
+			if (d > 0.0D) {
+				entity.getEntityData().setDouble(NarutomodModVariables.InvulnerableTime, d - 1d);
+			} else {
+				entity.getEntityData().removeTag(NarutomodModVariables.InvulnerableTime);
+			}
 		}
-		int i = entity.getEntityData().getInteger("FearEffect");
-		if (i > 0) {
-			entity.getEntityData().setInteger("FearEffect", i - 1);
+		if (entity.getEntityData().hasKey("ForceExtinguish")) {
+			int i = entity.getEntityData().getInteger("FearEffect");
+			if (i > 0) {
+				entity.getEntityData().setInteger("FearEffect", i - 1);
+			} else {
+				entity.getEntityData().removeTag("FearEffect");
+			}
 		}
-		i = entity.getEntityData().getInteger("ForceExtinguish");
-		if (i > 0) {
-			entity.getEntityData().setInteger("ForceExtinguish", i - 1);
-			entity.extinguish();
+		if (entity.getEntityData().hasKey("ForceExtinguish")) {
+			int i = entity.getEntityData().getInteger("ForceExtinguish");
+			if (i > 0) {
+				entity.getEntityData().setInteger("ForceExtinguish", i - 1);
+				entity.extinguish();
+			} else {
+				entity.getEntityData().removeTag("ForceExtinguish");
+			}
 		}
-		i = entity.getEntityData().getInteger("UntargetableTicks");
-		if (i > 0) {
-			entity.getEntityData().setInteger("UntargetableTicks", i - 1);
+		if (entity.getEntityData().hasKey("UntargetableTicks")) {
+			int i = entity.getEntityData().getInteger("UntargetableTicks");
+			if (i > 0) {
+				entity.getEntityData().setInteger("UntargetableTicks", i - 1);
+			} else {
+				entity.getEntityData().removeTag("UntargetableTicks");
+			}
 		}
-		if (entity.getEntityData().hasKey("GlowingTicks")) {
-			i = entity.getEntityData().getInteger("GlowingTicks");
+		if (world.isRemote && entity.getEntityData().hasKey("GlowingTicks")) {
+			int i = entity.getEntityData().getInteger("GlowingTicks");
 			entity.setGlowing(i > 0);
 			if (i > 0) {
 				setGlowingFor(entity, i - 1);
@@ -206,7 +222,11 @@ public class ProcedureOnLivingUpdate extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static void setUntargetable(Entity entity, int ticks) {
-		entity.getEntityData().setInteger("UntargetableTicks", ticks);
+		if (entity.world.isRemote) {
+			ProcedureSync.EntityNBTTag.sendToServer(entity, "UntargetableTicks", ticks);
+		} else {
+			entity.getEntityData().setInteger("UntargetableTicks", ticks);
+		}
 	}
 
 	public static boolean isUntargetable(Entity entity) {
