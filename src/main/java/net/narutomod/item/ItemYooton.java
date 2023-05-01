@@ -173,6 +173,7 @@ public class ItemYooton extends ElementsNarutomodMod.ModElement {
 		public EntityMagmaBall(EntityLivingBase shooter, float scale) {
 			super(shooter);
 			this.setOGSize(1.0F, 1.0F);
+			scale *= 1.2F;
 			this.setEntityScale(scale);
 			this.explosionSize = Math.max((int)scale - 1, 0);
 			this.damage = scale * 20f;
@@ -230,7 +231,7 @@ public class ItemYooton extends ElementsNarutomodMod.ModElement {
 
 			public void createJutsu(EntityLivingBase entity, double x, double y, double z, float power) {
 				EntityMagmaBall entityarrow = new EntityMagmaBall(entity, power);
-				entityarrow.shoot(x, y, z, 0.95f, 0);
+				entityarrow.shoot(x, y, z, 1.05f, 0);
 				entity.world.spawnEntity(entityarrow);
 			}
 		}

@@ -152,11 +152,14 @@ public class EntityPretaShield extends ElementsNarutomodMod.ModElement {
 					summoner.heal(amount / 2.0F);
 					return true;
 				}
-				if (entity instanceof EntityLivingBase && !this.world.isRemote) {
-					this.weakenEntity((EntityLivingBase)entity, amount);
-					Chakra.pathway((EntityLivingBase)entity).consume((double)amount);
-					if (summoner != null) {
-						Chakra.pathway(summoner).consume((double)-amount, true);
+				if (entity instanceof EntityLivingBase && summoner != null) {
+					Chakra.Pathway chakra = Chakra.pathway((EntityLivingBase)entity);
+					if (chakra.getAmount() > 0.0d) {
+						double d = Math.min(chakra.getAmount(), amount);
+						chakra.consume(d);
+						this.weakenEntity((EntityLivingBase)entity, (float)d);
+						Chakra.pathway(summoner).consume(-d, true);
+						return true;
 					}
 				}
 				/*if (entity instanceof EntityNinjaMob.Base) {

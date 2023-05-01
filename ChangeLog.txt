@@ -39,6 +39,8 @@ Jutsus:
  - added chakra pulse for kekkei mora
  - re-made fire annihilation and great flame jutsus to not go through walls
  - buffed rasengan damage
+ - increased speed and size of Lava release: magma balls
+ - fixed susanoo bug sometimes creating infinite susanoo entities on the client side
 
 Items:
  - fix using /give command to give nature release items duplicates the item

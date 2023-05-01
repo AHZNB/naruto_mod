@@ -118,7 +118,8 @@ public class ItemShibukiSword extends ElementsNarutomodMod.ModElement {
 							this.y0 = MathHelper.floor(target.posY + 0.5d * target.height + 0.1d);
 							this.z0 = MathHelper.floor(target.posZ);
 							if (currentTick == 1) {
-								ProcedureAoeCommand.set(target, 0d, 4d).damageEntitiesCentered(DamageSource.causeExplosionDamage(sourceentity), 40f);
+								ProcedureAoeCommand.set(target, 0d, 4d)
+								 .damageEntitiesCentered(DamageSource.causeExplosionDamage(sourceentity), 40f);
 							}
 						}
 					}

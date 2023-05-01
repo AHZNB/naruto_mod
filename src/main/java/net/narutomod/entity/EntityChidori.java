@@ -262,7 +262,7 @@ public class EntityChidori extends ElementsNarutomodMod.ModElement {
 					entity1.setDead();
 					entity.world.spawnEntity(new Spear(entity, CHAKRA_BURN));
 					return true;
-				} else {
+				} else if (!entity.isRiding()) {
 					entity.world.playSound(null, entity.posX, entity.posY, entity.posZ,
 					 SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:chidori")), 
 					 SoundCategory.PLAYERS, 1.0F, 1.0F);
@@ -276,6 +276,7 @@ public class EntityChidori extends ElementsNarutomodMod.ModElement {
 					stack.getTagCompound().setInteger(ID_KEY, entity1.getEntityId());
 					return true;
 				}
+				return false;
 			}
 
 			@Override
