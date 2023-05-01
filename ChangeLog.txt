@@ -75,6 +75,7 @@ General:
  - improve the boss bars when AGGRESSIVE_BOSSES is enabled
  - added config setting CHAKRA_REGEN_RATE to customize idle chakra regen rate
  - added config option ENABLE_JUTSU_SCROLLS_IN_LOOTCHESTS to disable jutsu scrolls in loot chests
+ - fix immortality bug
 
 0.2.11-beta ===============================================================================
 
