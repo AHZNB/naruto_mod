@@ -147,12 +147,10 @@ public class Chakra extends ElementsNarutomodMod.ModElement {
 		}
 
 		protected void onUpdate() {
-			if (!this.user.isEntityAlive()) return;
-
 			double d = this.getAmount();
 			double d1 = this.getMax();
-			if (d > d1 * 4d) {
-				this.user.onKillCommand();
+			if (d > d1 * 4d && this.user.isEntityAlive()) {
+				this.user.attackEntityFrom(DamageSource.CRAMMING, Float.MAX_VALUE);
 				return;
 			}
 			if (d > d1 && this.user.ticksExisted % 20 == 0) {

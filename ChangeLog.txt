@@ -35,7 +35,8 @@ Jutsus:
  - flying thunder god jutsu can escape from immobilization jutsus
  - body replacement jutsu now only activates on entity damage source, and user doesn't have paralysis effect
    body replacement jutsu won't teleport user into blocks
- - sharingan users no longer give attackers slowness, instead will lock eyes on the attacker for 15s if in range
+ - sharingan users no longer give attackers slowness, instead will highlight the attacker for 15s if in range,
+   and lock users eyes on the attacker when mouse right button is pressed
  - added chakra pulse for kekkei mora
  - re-made fire annihilation and great flame jutsus to not go through walls
  - buffed rasengan damage
@@ -84,7 +85,7 @@ General:
  - added config setting CHAKRA_REGEN_RATE to customize idle chakra regen rate
  - added config option ENABLE_JUTSU_SCROLLS_IN_LOOTCHESTS to disable jutsu scrolls in loot chests
  - chakra does not regenerate when using jutsus
- - fixed immortality bug
+ - fixed dying from chakra overload causes immortality when revived with king of hell
 
 0.2.11-beta ===============================================================================
 

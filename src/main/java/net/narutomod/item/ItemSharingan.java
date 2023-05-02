@@ -3,15 +3,17 @@ package net.narutomod.item;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.common.registry.GameRegistry.ObjectHolder;
-import net.minecraftforge.common.util.EnumHelper;
-import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
+import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraftforge.common.util.EnumHelper;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.client.event.ModelRegistryEvent;
+import net.minecraftforge.client.event.MouseEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
-import net.minecraftforge.common.MinecraftForge;
 
 import net.minecraft.world.World;
 import net.minecraft.item.ItemStack;
@@ -25,6 +27,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextFormatting;
@@ -33,6 +36,7 @@ import net.minecraft.util.text.TextFormatting;
 import net.narutomod.procedure.ProcedureSharinganHelmetTickEvent;
 import net.narutomod.procedure.ProcedureSync;
 import net.narutomod.procedure.ProcedureUtils;
+import net.narutomod.procedure.ProcedureOnLivingUpdate;
 import net.narutomod.creativetab.TabModTab;
 import net.narutomod.ElementsNarutomodMod;
 
@@ -178,10 +182,8 @@ public class ItemSharingan extends ElementsNarutomodMod.ModElement {
 			 		entity.addVelocity(vec.x, 0.0d, vec.z);
 			 		entity.velocityChanged = true;
 			 	}
-				//((EntityLivingBase)attacker).addPotionEffect(new PotionEffect(MobEffects.SLOWNESS, 300, 1, false, true));
-				//((EntityLivingBase)attacker).addPotionEffect(new PotionEffect(MobEffects.MINING_FATIGUE, 300, 1, false, true));
 				if (entity instanceof EntityPlayer) {
-					this.lockOnTarget(entity, (EntityLivingBase)attacker, 200);
+					this.lockOnTarget(entity, (EntityLivingBase)attacker, 300);
 				}
 			}
 		}
@@ -195,11 +197,31 @@ public class ItemSharingan extends ElementsNarutomodMod.ModElement {
 				if (!entity.world.isRemote && (remaining <= 0 || target == null || !target.isEntityAlive() || target.getDistanceSq(entity) > 1024d)) {
 					this.unlockOnTarget(entity);
 				} else if (target != null) {
-					Vec3d vec2 = target.getPositionVector().addVector(0d, target.height / 2, 0d).subtract(entity.getPositionEyes(1f));
-					entity.rotationYaw = ProcedureUtils.getYawFromVec(vec2);
-					entity.rotationPitch = ProcedureUtils.getPitchFromVec(vec2);
+					if (entity.world.isRemote) {
+						ProcedureOnLivingUpdate.setGlowingFor(target, 3);
+					}
+					if (entity.getEntityData().getBoolean("shouldTargetLockOnEntity")) {
+						Vec3d vec2 = target.getPositionEyes(1f).subtract(entity.getPositionEyes(1f));
+						entity.rotationYaw = ProcedureUtils.getYawFromVec(vec2);
+						entity.rotationPitch = ProcedureUtils.getPitchFromVec(vec2);
+					}
 					this.lockOnTarget(entity, target, remaining - 1);
 				}
+			}
+		}
+
+		@SideOnly(Side.CLIENT)
+		@SubscribeEvent
+		public void onMouseEvent(MouseEvent event) {
+			EntityPlayer player = Minecraft.getMinecraft().player;
+			if (FMLClientHandler.instance().isGUIOpen(net.minecraft.client.gui.GuiChat.class) || player == null) {
+				return;
+			}
+			if (event.getButton() == 1 && this.hasTargetLockOnEntity(player)) {
+				//boolean flag = player.getEntityData().getBoolean("shouldTargetLockOnEntity");
+				boolean flag = !event.isButtonstate();
+				player.getEntityData().setBoolean("shouldTargetLockOnEntity", !flag);
+				ProcedureSync.EntityNBTTag.sendToServer(player, "shouldTargetLockOnEntity", !flag);
 			}
 		}
 
@@ -224,8 +246,10 @@ public class ItemSharingan extends ElementsNarutomodMod.ModElement {
 			if (!entity.world.isRemote) {
 				entity.getEntityData().removeTag("targetLockOnEntityId");
 				entity.getEntityData().removeTag("targetLockOnEntityTicksRemaining");
+				entity.getEntityData().removeTag("shouldTargetLockOnEntity");
 				if (entity instanceof EntityPlayerMP) {
 					ProcedureSync.EntityNBTTag.sendToSelf((EntityPlayerMP)entity, "targetLockOnEntityId");
+					ProcedureSync.EntityNBTTag.sendToSelf((EntityPlayerMP)entity, "shouldTargetLockOnEntity");
 				}
 			}
 		}

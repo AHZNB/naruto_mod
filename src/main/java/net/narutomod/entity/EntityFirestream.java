@@ -95,11 +95,11 @@ public class EntityFirestream extends ElementsNarutomodMod.ModElement {
 
 		protected void preExecuteParticles(double range, double radius) {
 			double angle = Math.atan(radius / range) * 180d / Math.PI;
-			for (int i = 0; i < (int)(range * radius * 0.8d); i++) {
+			for (int i = 0; i < (int)(range * radius * 0.4d); i++) {
 				Vec3d vec3d = Vec3d.fromPitchYaw(this.shooter.rotationPitch + (float)((this.rand.nextDouble()-0.5d) * angle * 3.0d),
 				 this.shooter.rotationYaw + (float)((this.rand.nextDouble()-0.5d) * angle * 3.0d)).scale(range * 0.1d);
 				this.world.spawnEntity(new FlameParticle(this.shooter, this.posX, this.posY, this.posZ,
-				 vec3d.x, vec3d.y, vec3d.z, 0xffffcf00, (float)vec3d.lengthVector()*8f + this.rand.nextFloat()*3f,
+				 vec3d.x, vec3d.y, vec3d.z, 0xffffcf00, (float)vec3d.lengthVector()*15f + this.rand.nextFloat()*3f,
 				 (float)range * (this.rand.nextFloat() * 0.5f + 0.5f)));
 			}
 		}

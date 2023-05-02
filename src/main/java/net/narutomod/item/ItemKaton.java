@@ -94,8 +94,10 @@ public class ItemKaton extends ElementsNarutomodMod.ModElement {
 		protected float getMaxPower(ItemStack stack, EntityLivingBase entity) {
 			ItemJutsu.JutsuEnum jutsu = this.getCurrentJutsu(stack);
 			float f = super.getMaxPower(stack, entity);
-			if (jutsu == GFANNIHILATION || jutsu == GREATFLAME) {
+			if (jutsu == GREATFLAME) {
 				return Math.min(f, 30.0f);
+			} else if (jutsu == GFANNIHILATION) {
+				return Math.min(f, 20.0f);
 			} else if (jutsu == GREATFIREBALL) {
 				return Math.min(f, 10.0f);
 			}
