@@ -60,6 +60,8 @@ import java.util.UUID;
 import java.util.Iterator;
 import javax.vecmath.Vector4d;
 import javax.annotation.Nullable;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraftforge.items.ItemHandlerHelper;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class ItemKunaiHiraishin extends ElementsNarutomodMod.ModElement {
@@ -197,6 +199,7 @@ public class ItemKunaiHiraishin extends ElementsNarutomodMod.ModElement {
 		private static final DataParameter<ItemStack> ITEM = EntityDataManager.<ItemStack>createKey(EntityCustom.class, DataSerializers.ITEM_STACK);
 		private boolean noUpdate;
 		private int pickupDelay = 60;
+		private int lastCollideTime;
 		
 		public EntityCustom(World a) {
 			super(a);
@@ -276,19 +279,45 @@ public class ItemKunaiHiraishin extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void onCollideWithPlayer(EntityPlayer entityIn) {
 			if (!this.world.isRemote && this.inGround && this.arrowShake <= 0) {
+				if (this.timeInGround - this.lastCollideTime > 20) {
+					this.pickupDelay = 60;
+				}
 				if (this.pickupDelay <= 0) {
 					super.onCollideWithPlayer(entityIn);
 				}
 				if (this.pickupDelay > 0) {
 					--this.pickupDelay;
 				}
+				this.lastCollideTime = this.timeInGround;
 			}
 		}
 
 		@Override
-		protected void arrowHit(EntityLivingBase entity) {
-			super.arrowHit(entity);
-			entity.setArrowCountInEntity(entity.getArrowCountInEntity() - 1);
+		protected void onHit(RayTraceResult result) {
+			if (result.entityHit == null || !this.world.isRemote) {
+				super.onHit(result);
+			}
+		}
+
+		@Override
+		protected void arrowHit(EntityLivingBase living) {
+			super.arrowHit(living);
+			living.setArrowCountInEntity(living.getArrowCountInEntity() - 1);
+			if (living instanceof EntityPlayer) {
+				ItemHandlerHelper.giveItemToPlayer((EntityPlayer)living, this.getItem());
+			} else {
+				EntityPlayerMP owner = this.getOwner();
+				if (owner != null) {
+					RayTraceResult rtr = living.getEntityBoundingBox()
+					 .calculateIntercept(this.getPositionVector(), living.getPositionVector()
+					 .addVector(0d, 0.5d * living.height, 0d));
+					if (rtr != null) {
+						rtr.entityHit = living;
+						rtr.typeOfHit = RayTraceResult.Type.ENTITY;
+						this.world.spawnEntity(new EntityHiraishin.EC(owner, rtr));
+					}
+				}
+			}
 		}
 
 		@Override
@@ -382,7 +411,8 @@ public class ItemKunaiHiraishin extends ElementsNarutomodMod.ModElement {
 			if (!player.world.isRemote) {
 				EntityCustom entityarrow = new EntityCustom(player, stack);
 				Vec3d vec = player.getLookVec();
-				entityarrow.shoot(vec.x, 0d, vec.z, 0.3f, 0);
+				entityarrow.shoot(vec.x, 0d, vec.z, 0.4f, 0);
+				entityarrow.setDamage(7);
 				entityarrow.pickupStatus = EntityArrow.PickupStatus.ALLOWED;
 				player.world.spawnEntity(entityarrow);
 				UUID ownerUuid = RangedItem.getOwnerUuid(stack);

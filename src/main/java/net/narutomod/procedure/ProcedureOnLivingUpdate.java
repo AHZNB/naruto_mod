@@ -175,7 +175,7 @@ public class ProcedureOnLivingUpdate extends ElementsNarutomodMod.ModElement {
 				entity.getEntityData().removeTag(NarutomodModVariables.InvulnerableTime);
 			}
 		}
-		if (entity.getEntityData().hasKey("ForceExtinguish")) {
+		if (entity.getEntityData().hasKey("FearEffect")) {
 			int i = entity.getEntityData().getInteger("FearEffect");
 			if (i > 0) {
 				entity.getEntityData().setInteger("FearEffect", i - 1);
