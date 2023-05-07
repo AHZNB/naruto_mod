@@ -899,7 +899,7 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-	public static Object invokeMethodByParameters(Object parent, Class returnType, Object... params) {
+	public static <T extends Object> T invokeMethodByParameters(Object parent, Class<? extends T> returnType, Object... params) {
 	 //throws IndexOutOfBoundsException, NoSuchMethodException {
 		try {
 			for (Method method : parent.getClass().getDeclaredMethods()) {
@@ -909,14 +909,14 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 					match = false;
 				} else {
 					for (int i = 0; i < clazz1.length; i++) {
-						if (!clazz1[i].equals(params[i].getClass())) {
+						if (!clazz1[i].isAssignableFrom(params[i].getClass())) {
 							match = false;
 						}
 					}
 				}
 				if (match) {
 	            	method.setAccessible(true);
-					return method.invoke(parent, params);
+					return (T)method.invoke(parent, params);
 				}
 			}
 		} catch (Exception e) {

@@ -10,6 +10,7 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 
 import net.minecraft.init.Biomes;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.world.World;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.DamageSource;
@@ -37,8 +38,10 @@ import net.minecraft.client.renderer.entity.RenderBiped;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.entity.Render;
 
 import net.narutomod.procedure.ProcedureWhiteZetsuEntityEntityDies;
+import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.item.ItemKunai;
 import net.narutomod.ModConfig;
 import net.narutomod.ElementsNarutomodMod;
@@ -70,41 +73,54 @@ public class EntityWhiteZetsu extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-	@SideOnly(Side.CLIENT)
 	@Override
 	public void preInit(FMLPreInitializationEvent event) {
-		RenderingRegistry.registerEntityRenderingHandler(EntityCustom.class, renderManager -> {
-			RenderBiped customRender = new RenderBiped(renderManager, new ModelBiped(0f, 0f, 64, 64), 0.5f) {
-				private final ResourceLocation texture = new ResourceLocation("narutomod:textures/zetsu_white.png");
-				@Override
-				protected ResourceLocation getEntityTexture(Entity entity) {
-					int playerId = ((EntityCustom) entity).getPlayerId();
-					if (playerId >= 0 && ((EntityLiving) entity).getHealth() > 1f) {
-						Entity player = entity.world.getEntityByID(playerId);
-						if (player instanceof AbstractClientPlayer)
-							return ((AbstractClientPlayer) player).getLocationSkin();
-					}
-					return this.texture;
-				}
-				@Override
-				protected void preRenderCallback(EntityLivingBase entitylivingbaseIn, float partialTickTime) {
-					//if (((EntityCustom) entitylivingbaseIn).getPlayerId() >= 0 && entitylivingbaseIn.getHealth() > 1f) {
-					//	Entity player = entitylivingbaseIn.world.getEntityByID(((EntityCustom) entitylivingbaseIn).getPlayerId());
-					//	if (player instanceof AbstractClientPlayer)
-							GlStateManager.scale(0.9375F, 0.9375F, 0.9375F);
-					//}
-				}
-			};
-			customRender.addLayer(new net.minecraft.client.renderer.entity.layers.LayerBipedArmor(customRender) {
-				protected void initArmor() {
-					this.modelLeggings = new ModelBiped(0.5f);
-					this.modelArmor = new ModelBiped(1);
-				}
-			});
-			return customRender;
-		});
+		new Renderer().register();
 	}
-	
+
+	public static class Renderer extends EntityRendererRegister {
+		@SideOnly(Side.CLIENT)
+		@Override
+		public void register() {
+			RenderingRegistry.registerEntityRenderingHandler(EntityCustom.class, renderManager -> {
+				RenderBiped customRender = new RenderBiped(renderManager, new ModelBiped(0f, 0f, 64, 64), 0.5f) {
+					private final ResourceLocation texture = new ResourceLocation("narutomod:textures/zetsu_white.png");
+					@Override
+					protected ResourceLocation getEntityTexture(Entity entity) {
+						int playerId = ((EntityCustom) entity).getPlayerId();
+						if (playerId >= 0 && ((EntityLiving) entity).getHealth() > 1f) {
+							Entity player = entity.world.getEntityByID(playerId);
+							if (player instanceof AbstractClientPlayer) {
+								return ((AbstractClientPlayer) player).getLocationSkin();
+							} else if (player instanceof EntityLiving) {
+								Render render = this.renderManager.getEntityRenderObject(player);
+								if (render instanceof RenderBiped) {
+									return ProcedureUtils.invokeMethodByParameters(render, ResourceLocation.class, player);
+								}
+							}
+						}
+						return this.texture;
+					}
+					@Override
+					protected void preRenderCallback(EntityLivingBase entitylivingbaseIn, float partialTickTime) {
+						//if (((EntityCustom) entitylivingbaseIn).getPlayerId() >= 0 && entitylivingbaseIn.getHealth() > 1f) {
+						//	Entity player = entitylivingbaseIn.world.getEntityByID(((EntityCustom) entitylivingbaseIn).getPlayerId());
+						//	if (player instanceof AbstractClientPlayer)
+								GlStateManager.scale(0.9375F, 0.9375F, 0.9375F);
+						//}
+					}
+				};
+				customRender.addLayer(new net.minecraft.client.renderer.entity.layers.LayerBipedArmor(customRender) {
+					protected void initArmor() {
+						this.modelLeggings = new ModelBiped(0.5f);
+						this.modelArmor = new ModelBiped(1);
+					}
+				});
+				return customRender;
+			});
+		}
+	}
+
 	public static class EntityCustom extends EntityMob {
 		private static final DataParameter<Integer> PLAYER_ID = EntityDataManager.<Integer>createKey(EntityCustom.class, DataSerializers.VARINT);
 		
@@ -170,17 +186,17 @@ public class EntityWhiteZetsu extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public net.minecraft.util.SoundEvent getAmbientSound() {
-			return (net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation(""));
+			return null;
 		}
 
 		@Override
 		public net.minecraft.util.SoundEvent getHurtSound(DamageSource ds) {
-			return (net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("entity.witch.hurt"));
+			return SoundEvents.ENTITY_WITCH_HURT;
 		}
 
 		@Override
 		public net.minecraft.util.SoundEvent getDeathSound() {
-			return (net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("entity.witch.death"));
+			return SoundEvents.ENTITY_WITCH_DEATH;
 		}
 
 		@Override

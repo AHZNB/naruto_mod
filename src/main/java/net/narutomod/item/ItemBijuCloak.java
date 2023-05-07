@@ -406,7 +406,7 @@ public class ItemBijuCloak extends ElementsNarutomodMod.ModElement {
 	}
 
 	private static int getCloneId(ItemStack stack) {
-		return stack.hasTagCompound() ? stack.getTagCompound().getInteger("CloneID") : -1;
+		return stack.hasTagCompound() && stack.getTagCompound().hasKey("CloneID") ? stack.getTagCompound().getInteger("CloneID") : -1;
 	}
 
 	private static boolean hasClone(ItemStack stack) {
@@ -427,7 +427,7 @@ public class ItemBijuCloak extends ElementsNarutomodMod.ModElement {
 		EntityJinchurikiClone.EntityCustom clone = getClone(player.world, stack);
 		if (clone != null) {
 			clone.setDead();
-			stack.getTagCompound().setInteger("CloneID", -1);
+			stack.getTagCompound().removeTag("CloneID");
 		}
 	}
 

@@ -26,7 +26,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.init.MobEffects;
 
-import net.narutomod.item.ItemBijuCloak;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.Chakra;
 import net.narutomod.ElementsNarutomodMod;
@@ -123,15 +122,19 @@ public class EntityJinchurikiClone extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public void setDead() {
-			super.setDead();
-			if (!this.world.isRemote && this.getSummoner() instanceof EntityPlayerMP) {
+			if (!this.world.isRemote && this.getSummoner() instanceof EntityPlayerMP && !this.isDead) {
 				EntityPlayerMP user = (EntityPlayerMP)this.getSummoner();
 				user.setGameType(GameType.getByID(this.getEntityData().getInteger("OriginalGameMode")));
 				user.addPotionEffect(new PotionEffect(MobEffects.INVISIBILITY, 2, 0, false, false));
 				if (user.isEntityAlive()) {
-					user.setHealth(this.getHealth());
+					float f = this.getHealth();
+					user.setHealth(f);
+					if (f <= 0.0f) {
+						EntityBijuManager.toggleBijuCloak(user);
+					}
 				}
 			}
+			super.setDead();
 		}
 
 		@Override
