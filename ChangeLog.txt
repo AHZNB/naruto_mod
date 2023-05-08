@@ -40,6 +40,7 @@ Jutsus:
  - added chakra pulse for kekkei mora
  - re-made fire annihilation and great flame jutsus to not go through walls
  - buffed rasengan damage
+ - shadow clones using rasengan will not hurt summoner or other clones of the same summoner
  - increased speed and size of Lava release: magma balls
  - fixed susanoo bug sometimes creating infinite susanoo entities on the client side
 
@@ -56,6 +57,8 @@ Items:
  - truth seeking shakujo no longer drops
  - use custom explosions for shibuki sword
  - fixed nuibari and 3-bladed scythe thrown from off hand bug
+ - nerfed kamui shuriken to do less damage and use more chakra
+ - fixed putting kiba sword in offhand deletes the sword
 
 Entities:
  - added 5 second cooldown for Itachi's genjutsu

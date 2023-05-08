@@ -202,6 +202,15 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 		return null;
 	}
 
+	public static boolean hasItemInMainInventory(EntityPlayer player, Item itemIn) {
+		for (ItemStack stack : player.inventory.mainInventory) {
+			if (!stack.isEmpty() && stack.getItem() == itemIn) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public static ItemStack getMatchingItemStack(EntityPlayer player, ItemStack itemStackIn) {
 		List<NonNullList<ItemStack>> allInv = Arrays.<NonNullList<ItemStack>>asList(player.inventory.mainInventory,
 		 player.inventory.armorInventory, player.inventory.offHandInventory);
@@ -442,12 +451,12 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 			itemstack2.shrink(1);
 		}
 		if (!itemstack1.isEmpty()) {
-			if (itemstack1.getItem() == itemstack.getItem())
-				return;
-			if (itemstack1.getMaxStackSize() > 1)
+			if (itemstack1.getItem() == itemstack.getItem()) return;
+			if (itemstack1.getMaxStackSize() > 1) {
 				ItemHandlerHelper.giveItemToPlayer(entity, itemstack1);
-			else
+			} else {
 				entity.addItemStackToInventory(itemstack1);
+			}
 			entity.getAttributeMap().removeAttributeModifiers(itemstack.getAttributeModifiers(slot));
 		}
 		entity.setItemStackToSlot(slot, itemstack);

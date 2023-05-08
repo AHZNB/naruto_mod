@@ -33,7 +33,7 @@ public class ItemMangekyoSharinganObito extends ElementsNarutomodMod.ModElement 
 	@ObjectHolder("narutomod:mangekyosharinganobitohelmet")
 	public static final Item helmet = null;
 	private static final double INTANGIBLE_CHAKRA_USAGE = 1d; // per tick
-	private static final double TELEPORT_CHAKRA_USAGE = 10d; // per tick
+	private static final double TELEPORT_CHAKRA_USAGE = 20d; // per tick
 	
 	public ItemMangekyoSharinganObito(ElementsNarutomodMod instance) {
 		super(instance, 118);

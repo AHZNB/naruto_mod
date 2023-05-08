@@ -215,9 +215,26 @@ public class EntityRasengan extends ElementsNarutomodMod.ModElement {
 			return true;
 		}
 
+		private boolean bunshinHasSameSummoner(Entity entityIn) {
+			if (this.shootingEntity instanceof EntityKageBunshin.EC) {
+				EntityLivingBase summoner = ((EntityKageBunshin.EC)this.shootingEntity).getSummoner();
+				if (summoner == null) {
+					return false;
+				} else if (summoner.equals(entityIn)) {
+					return true;
+				} else if (entityIn instanceof EntityKageBunshin.EC) {
+					if (summoner.equals(((EntityKageBunshin.EC)entityIn).getSummoner())) {
+						return true;
+					}
+				}
+			}
+			return false;
+		}
+
 		@Override
 		public void applyEntityCollision(Entity entityIn) {
-			if (this.shootingEntity != null && !entityIn.equals(this.shootingEntity) && this.ticksAlive > this.growTime) {
+			if (this.ticksAlive > this.growTime && this.shootingEntity != null
+			 && !entityIn.equals(this.shootingEntity) && !this.bunshinHasSameSummoner(entityIn)) {
 				if (entityIn.attackEntityFrom(ItemJutsu.causeJutsuDamage(this, this.shootingEntity), 10f + this.fullScale * this.fullScale * 20f)) {
 					this.playSound(SoundEvents.ENTITY_GENERIC_EXPLODE, 1.0F, this.rand.nextFloat() * 0.5F + 0.5F);
 					Vec3d vec = ProcedureUtils.pushEntity(this.shootingEntity, entityIn, 20d, 2f);
@@ -244,10 +261,10 @@ public class EntityRasengan extends ElementsNarutomodMod.ModElement {
 			@Override
 			public boolean createJutsu(ItemStack stack, EntityLivingBase entity, float power) {
 				Entity entity1 = stack.hasTagCompound() ? entity.world.getEntityByID(stack.getTagCompound().getInteger(ID_KEY)) : null;
-				if (entity1 instanceof EC) {
+				if (entity1 instanceof EC && entity instanceof EntityPlayer) {
 					entity1.setDead();
-				} else if (!(entity instanceof EntityPlayer)
-				 || (stack.getItem() == ItemNinjutsu.block && power >= 0.5f) || (stack.getItem() == ItemSenjutsu.block && power >= 3.0f)) {
+				} else if ((stack.getItem() == ItemNinjutsu.block && power >= 0.5f)
+				 || (stack.getItem() == ItemSenjutsu.block && power >= 3.0f)) {
 					entity.world.playSound(null, entity.posX, entity.posY, entity.posZ, SoundEvent.REGISTRY
 					  .getObject(new ResourceLocation("narutomod:rasengan_start")), SoundCategory.NEUTRAL, 1.0F, 1.0F);
 					EC entity2 = new EC(entity, power, stack);
