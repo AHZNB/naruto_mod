@@ -89,9 +89,9 @@ public class EntityMeltingJutsu extends ElementsNarutomodMod.ModElement {
 
 		private void solidifyLava(BlockPos pos) {
 			if (this.world.getBlockState(pos).getMaterial() == Material.LAVA) {
-				new net.narutomod.event.EventSetBlocks(this.world, ImmutableMap.of(pos, Blocks.OBSIDIAN.getDefaultState()),
-				 0, 600, false, false);
-				//this.world.setBlockState(pos, Blocks.OBSIDIAN.getDefaultState(), 3);
+				this.world.setBlockToAir(pos);
+				new net.narutomod.event.EventSetBlocks(this.world,
+				 ImmutableMap.of(pos, Blocks.OBSIDIAN.getDefaultState()), 0, 600, false, false);
 				this.solidifyLava(pos.down());
 				//this.solidifyLava(pos.east());
 				//this.solidifyLava(pos.west());

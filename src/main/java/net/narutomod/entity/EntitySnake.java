@@ -619,8 +619,8 @@ public class EntitySnake extends ElementsNarutomodMod.ModElement {
 	                 MathHelper.floor(this.entity.posY), this.targetPosition.getZ()));
 	                double d3 = this.targetPosition.distanceSq(this.entity.getPosition());
 	                if (d3 >= 1.0d && (d2 >= d0 || (d1 <= 8d * this.entity.height && d1 >= -12d * this.entity.height))) {
-	                	this.entity.getMoveHelper().setMoveTo((double)this.targetPosition.getX(),
-	                	 (double)this.targetPosition.getY(), (double)this.targetPosition.getZ(), this.speed);
+	                	this.entity.getMoveHelper().setMoveTo((double)this.targetPosition.getX() + 0.5d,
+	                	 (double)this.targetPosition.getY(), (double)this.targetPosition.getZ() + 0.5d, this.speed);
 	                } else {
 	                    this.targetPosition = null;
 	                }
