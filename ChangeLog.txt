@@ -66,6 +66,7 @@ Entities:
  - gedomazo can be ridden and controlled by rinnegan/tenseigan users
  - fix itachi, kisame, might guy, zabuza and haku renderers crashing with ice and fire
  - added config settings to tweak Itachi, Kisame, Zabuza, white zetsu spawn weight
+ - new 1-tail shukaku model
  - new 4-tails Son Goku model
  - made itachi's real chance configurable
  - patch loophole for sakura to drop anything
