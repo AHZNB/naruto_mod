@@ -233,7 +233,7 @@ public class ItemRaiton extends ElementsNarutomodMod.ModElement {
 				 : this.usingItemstack;
 				if (stack != null) {
 					ItemJutsu.Base item = (ItemJutsu.Base)stack.getItem();
-					item.setJutsuCooldown(stack, CHAKRAMODE, (long)((float)this.ticksExisted * item.getModifier(stack, this.summoner)));
+					item.setJutsuCooldown(stack, CHAKRAMODE, (long)((float)this.ticksExisted * item.getModifier(stack, this.summoner)) + 40);
 				}
 			}
 		}

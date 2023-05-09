@@ -235,7 +235,7 @@ public class EntityChidori extends ElementsNarutomodMod.ModElement {
 
 		protected float damageMultiplier() {
 			if (this.summoner instanceof EntityPlayer) {
-				return (float)PlayerTracker.getNinjaLevel((EntityPlayer)this.summoner) / 25f;
+				return MathHelper.clamp((float)PlayerTracker.getNinjaLevel((EntityPlayer)this.summoner) / 40f, 1f, 6f);
 			}
 			return 1f;
 		}
