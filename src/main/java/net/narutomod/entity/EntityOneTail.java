@@ -317,7 +317,7 @@ public class EntityOneTail extends ElementsNarutomodMod.ModElement {
 				eyes = new ModelRenderer(this);
 				eyes.setRotationPoint(0.0F, -9.6F, -7.0F);
 				bipedHeadwear.addChild(eyes);
-				eyes.cubeList.add(new ModelBox(eyes, 41, 4, -1.5F, -3.0F, -4.75F, 3, 1, 0, 0.0F, false));
+				eyes.cubeList.add(new ModelBox(eyes, 41, 4, -1.5F, -3.0F, -4.7F, 3, 1, 0, 0.0F, false));
 		
 				bipedBody = new ModelRenderer(this);
 				bipedBody.setRotationPoint(0.0F, 21.0F, 3.0F);
