@@ -39,14 +39,14 @@ import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.model.ModelBox;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.block.BlockLiquid;
 
 import net.narutomod.creativetab.TabModTab;
 import net.narutomod.ElementsNarutomodMod;
 import net.narutomod.entity.*;
 import net.narutomod.procedure.ProcedureAirPunch;
 import net.narutomod.procedure.ProcedureRenderView;
-import net.narutomod.procedure.
-		ProcedureSync;
+import net.narutomod.procedure.ProcedureSync;
 
 import java.util.UUID;
 import java.util.Random;
@@ -260,7 +260,7 @@ public class ItemSuiton extends ElementsNarutomodMod.ModElement {
 			super.onUpdate();
 			if (this.shootingEntity != null) {
 				if (this.ticksAlive == 1) {
-					this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation(("narutomod:waterblast"))), 0.5f, this.power / 30f);
+					this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:waterblast")), 0.5f, this.power / 30f);
 				}
 				this.shoot();
 				if (this.ticksAlive % 5 == 1) {
@@ -290,8 +290,9 @@ public class ItemSuiton extends ElementsNarutomodMod.ModElement {
 			protected EntityItem processAffectedBlock(EntityLivingBase player, BlockPos pos, EnumFacing facing) {
 				EntityItem ret = super.processAffectedBlock(player, pos, facing);
 				if (ret != null && player.world.isAirBlock(pos.up())) {
-					new net.narutomod.event.EventSetBlocks(player.world,
-							ImmutableMap.of(pos.up(), Blocks.FLOWING_WATER.getDefaultState()), 0, 10, false, false);
+					new net.narutomod.event.EventSetBlocks(player.world, ImmutableMap.of(pos.up(),
+					 Blocks.FLOWING_WATER.getDefaultState().withProperty(BlockLiquid.LEVEL, Integer.valueOf(1))),
+					 0, 10, false, false);
 				}
 				return ret;
 			}

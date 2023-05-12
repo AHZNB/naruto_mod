@@ -53,10 +53,8 @@ public class EntityTenTails extends ElementsNarutomodMod.ModElement {
 
 	@Override
 	public void initElements() {
-		elements.entities
-.add(() -> EntityEntryBuilder.create().entity(EntityCustom.class)
-		  .id(new ResourceLocation("narutomod", "ten_tails"), ENTITYID)
-.name("ten_tails").tracker(96, 3, true)
+		elements.entities.add(() -> EntityEntryBuilder.create().entity(EntityCustom.class)
+		  .id(new ResourceLocation("narutomod", "ten_tails"), ENTITYID).name("ten_tails").tracker(96, 3, true)
 		  .egg(-13421773, -16777216).build());
 	}
 
@@ -184,7 +182,7 @@ public class EntityTenTails extends ElementsNarutomodMod.ModElement {
 		public void onEntityUpdate() {
 			super.onEntityUpdate();
 			EntityPlayer jinchuriki = this.getBijuManager().getJinchurikiPlayer();
-			if (!this.world.isRemote && this.isBeingRidden() && this.getControllingPassenger().equals(jinchuriki)
+			if (!this.world.isRemote && jinchuriki != null && jinchuriki.equals(this.getControllingPassenger())
 			 && !ItemRinnegan.wearingRinnesharingan(jinchuriki)) {
 				this.setDead();
 			}
@@ -206,6 +204,15 @@ public class EntityTenTails extends ElementsNarutomodMod.ModElement {
 			if (!this.world.isRemote && entity instanceof EntityLivingBase && !this.isRidingSameEntity(entity) && !this.isOnSameTeam(entity))
 				((EntityLivingBase) entity).addPotionEffect(new PotionEffect(MobEffects.WITHER, 200, 5, false, false));
 			super.collideWithEntity(entity);
+		}
+
+		@Override
+		public void onAddedToWorld() {
+			boolean flag = BIJU_MANAGER.getHasLived();
+			super.onAddedToWorld();
+			if (!this.world.isRemote && !flag) {
+				BIJU_MANAGER.setHasLived(!this.spawnedBySpawner);
+			}
 		}
 
 		/*@Override

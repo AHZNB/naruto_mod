@@ -9,6 +9,7 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.translation.I18n;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -27,7 +28,6 @@ import java.util.*;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Lists;
 import com.google.common.collect.ImmutableList;
-import net.minecraft.util.text.TextFormatting;
 
 @ElementsNarutomodMod.ModElement.Tag
 public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {

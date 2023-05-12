@@ -1107,12 +1107,31 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 
     	@Override
     	public int compare(Vec3d vec1, Vec3d vec2) {
-    		double d0 = this.vec.distanceTo(vec1);
-    		double d1 = this.vec.distanceTo(vec2);
+    		double d0 = this.vec.squareDistanceTo(vec1);
+    		double d1 = this.vec.squareDistanceTo(vec2);
             if (d0 < d1) {
                 return this.reverse ? 1 : -1;
             } else {
                 return d0 > d1 ? this.reverse ? -1 : 1 : 0;
+            }
+    	}
+    }
+
+    public static class RayTraceResultSorter implements Comparator<RayTraceResult> {
+    	private final Vec3d vec;
+
+    	public RayTraceResultSorter(Vec3d vecIn) {
+    		this.vec = vecIn;
+    	}
+
+    	@Override
+    	public int compare(RayTraceResult res1, RayTraceResult res2) {
+    		double d0 = this.vec.squareDistanceTo(res1.hitVec);
+    		double d1 = this.vec.squareDistanceTo(res2.hitVec);
+            if (d0 < d1) {
+                return -1;
+            } else {
+                return d0 > d1 ? 1 : 0;
             }
     	}
     }

@@ -171,6 +171,7 @@ public abstract class ProcedureAirPunch {
 					this.affectedTraceList.add(new RayTraceResult(entity1));
 			}
 		}
+		//this.affectedTraceList.sort(new ProcedureUtils.RayTraceResultSorter(vec3d));
 		return !this.affectedTraceList.isEmpty();
 	}
 }

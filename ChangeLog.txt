@@ -45,6 +45,7 @@ Jutsus:
  - shadow clones using rasengan will not hurt summoner or other clones of the same summoner
  - increased speed and size of Lava release: magma balls
  - fixed susanoo bug sometimes creating infinite susanoo entities on the client side
+ - phantom 9 sealing jutsu no longer works on the 10-tails or its jinchuriki
 
 Items:
  - fix using /give command to give nature release items duplicates the item

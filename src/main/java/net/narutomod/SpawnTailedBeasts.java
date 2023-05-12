@@ -3,6 +3,7 @@ package net.narutomod;
 import net.minecraft.block.state.IBlockState;
 import net.minecraftforge.event.GameRuleChangeEvent;
 import net.narutomod.entity.EntityBijuManager;
+import net.narutomod.entity.EntityTailedBeast;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -116,7 +117,8 @@ public class SpawnTailedBeasts extends ElementsNarutomodMod.ModElement {
 				}
 			}
 			if (playerInRange) {
-				bm.spawnEntity(world, spawnPos.getX(), spawnPos.getY(), spawnPos.getZ(), 0.0F);
+				EntityTailedBeast.Base entity = bm.spawnEntity(world, spawnPos.getX(), spawnPos.getY(), spawnPos.getZ(), (world.rand.nextFloat()-0.5f) * 360F);
+				entity.onInitialSpawn(world.getDifficultyForLocation(spawnPos), null);
 			}
 		}
 	}

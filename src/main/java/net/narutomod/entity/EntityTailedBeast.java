@@ -19,6 +19,7 @@ import net.minecraft.world.World;
 //import net.minecraft.world.WorldServer;
 import net.minecraft.world.BossInfo;
 import net.minecraft.world.BossInfoServer;
+import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.storage.WorldSavedData;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.DamageSource;
@@ -30,6 +31,7 @@ import net.minecraft.entity.IRangedAttackMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.EntityCreature;
+import net.minecraft.entity.IEntityLivingData;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
@@ -132,6 +134,7 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 		private int lifeSpan = Integer.MAX_VALUE - 1;
 		private boolean motionHalted;
 		protected boolean canPassengerDismount = true;
+		protected boolean spawnedBySpawner;
 
 		public Base(World world) {
 			super(world);
@@ -741,6 +744,13 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 				this.getBijuManager().onAddedToWorld(this);
 			}
 		}
+
+		@Override
+		@Nullable
+    	public IEntityLivingData onInitialSpawn(DifficultyInstance difficulty, @Nullable IEntityLivingData livingdata) {
+    		this.spawnedBySpawner = true;
+    		return livingdata;
+    	}
 	}
 
 	public static class EntityTailBeastBall extends EntityScalableProjectile.Base {
