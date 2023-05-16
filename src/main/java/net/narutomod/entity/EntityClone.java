@@ -86,7 +86,7 @@ public class EntityClone extends ElementsNarutomodMod.ModElement {
 	@Override
 	public void preInit(FMLPreInitializationEvent event) {
 		RenderingRegistry.registerEntityRenderingHandler(_Base.class, renderManager -> {
-			return new ClientRLM().new RenderClone(renderManager);
+			return ClientRLM.instance.new RenderClone(renderManager);
 		});
 	}
 
@@ -212,6 +212,12 @@ public class EntityClone extends ElementsNarutomodMod.ModElement {
 		@Override
 		public boolean isOnSameTeam(Entity entityIn) {
 			return entityIn.equals(this.getSummoner()) || (entityIn instanceof _Base && this.sameSummoner((_Base)entityIn));
+		}
+
+		@SideOnly(Side.CLIENT)
+		@Override
+		public boolean isInvisibleToPlayer(EntityPlayer player) {
+			return super.isInvisibleToPlayer(player) && !this.isOnSameTeam(player);
 		}
 
 		@Override
@@ -571,6 +577,12 @@ public class EntityClone extends ElementsNarutomodMod.ModElement {
     }
 
     public static class ClientRLM {
+    	private static ClientRLM instance;
+
+    	public ClientRLM() {
+    		instance = this;
+    	}
+
 		@SideOnly(Side.CLIENT)
 		public class RenderClone<T extends _Base> extends RenderLivingBase<T> {
 			private final ModelClone altModel = new ModelClone(0.0F, true);
@@ -630,6 +642,13 @@ public class EntityClone extends ElementsNarutomodMod.ModElement {
 	                model.rightArmPose = offhandpose;
 	                model.leftArmPose = mainhandpose;
 	            }
+		    }
+
+		    @Override
+		    protected void renderLayers(T entity, float f0, float f1, float f2, float f3, float f4, float f5, float f6) {
+		    	if (!entity.isInvisible() || !entity.isInvisibleToPlayer(Minecraft.getMinecraft().player)) {
+		    		super.renderLayers(entity, f0, f1, f2, f3, f4, f5, f6);
+		    	}
 		    }
 		
 		    @Override

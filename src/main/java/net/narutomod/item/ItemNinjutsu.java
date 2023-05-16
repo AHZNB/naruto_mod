@@ -280,7 +280,7 @@ public class ItemNinjutsu extends ElementsNarutomodMod.ModElement {
 		private static final String JUTSUACTIVEKEY = "HidingWithCamouflageActive";
 		@Override
 		public boolean createJutsu(ItemStack stack, EntityLivingBase entity, float power) {
-			boolean flag = this.isActivated(stack);
+			boolean flag = entity instanceof EntityPlayer ? this.isActivated(stack) : false;
 			stack.getTagCompound().setBoolean(JUTSUACTIVEKEY, !flag);
 			return !flag;
 		}

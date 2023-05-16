@@ -848,6 +848,10 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 		}
 		return 0d;
 	}
+
+	public static double getMainhandItemDamage(EntityLivingBase entity) {
+		return getModifiedAttackDamage(entity) - getPunchDamage(entity);
+	}
 	
 	public static double getArmorValue(EntityLivingBase entity) {
 		IAttributeInstance attribute = entity.getEntityAttribute(SharedMonsterAttributes.ARMOR);

@@ -260,6 +260,16 @@ public class EntityKageBunshin extends ElementsNarutomodMod.ModElement {
 			return 1.0f;
 		}
 
+		@Override
+		protected void updateArmSwingProgress() {
+			super.updateArmSwingProgress();
+			for (ItemStack stack : this.getHeldEquipment()) {
+				if (!stack.isEmpty()) {
+					stack.updateAnimation(this.world, this, 0, false);
+				}
+			}
+		}
+
 	    @Override
 	    public void onUpdate() {
 	    	super.onUpdate();

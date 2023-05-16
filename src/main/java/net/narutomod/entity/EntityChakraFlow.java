@@ -6,25 +6,25 @@ import net.minecraftforge.fml.relauncher.Side;
 
 import net.minecraft.world.World;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
+import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.item.ItemStack;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.network.datasync.DataSerializers;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.inventory.EntityEquipmentSlot;
-import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.client.renderer.entity.RenderLivingBase;
 import net.minecraft.client.model.ModelRenderer;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.client.model.ModelBiped;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.init.MobEffects;
 
 import net.narutomod.ElementsNarutomodMod;
 import net.narutomod.procedure.ProcedureUtils;
-import net.minecraft.init.MobEffects;
-import net.minecraft.item.ItemStack;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityChakraFlow extends ElementsNarutomodMod.ModElement {

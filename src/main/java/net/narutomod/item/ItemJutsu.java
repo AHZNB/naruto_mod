@@ -546,9 +546,35 @@ public class ItemJutsu extends ElementsNarutomodMod.ModElement {
 	
 	public interface IJutsuCallback {
 		boolean createJutsu(ItemStack stack, EntityLivingBase entity, float power);
-		default boolean isActivated(ItemStack stack) { return false; }
-		default boolean isActivated(EntityLivingBase entity) { return false; }
-		default float getPower(ItemStack stack) { return 0.0f; }
+		
+		default boolean isActivated(ItemStack stack) {
+			return false;
+		}
+		
+		default boolean isActivated(EntityLivingBase entity) {
+			return false;
+		}
+		
+		default void deactivate(EntityLivingBase entity) {
+		}
+		
+		default float getPower(ItemStack stack) {
+			return 0.0f;
+		}
+		
+		default JutsuData getData(EntityLivingBase entity) {
+			return null;
+		}
+
+		public static class JutsuData {
+			public final Entity entity;
+			public final ItemStack stack;
+
+			public JutsuData(Entity entityIn, ItemStack stackIn) {
+				this.entity = entityIn;
+				this.stack = stackIn;
+			}
+		}
 	}
 
 	public static class JutsuEnum {

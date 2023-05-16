@@ -90,12 +90,19 @@ public class ItemTenseiganChakraMode extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		protected float getPower(ItemStack stack, EntityLivingBase entity, int timeLeft) {
-			if (this.getCurrentJutsu(stack) == SILVERBLAST) {
-				return this.getPower(stack, entity, timeLeft, 10.0f, 20.0f);
-			} else if (this.getCurrentJutsu(stack) == GOLDBLAST) {
-				return this.getPower(stack, entity, timeLeft, 10.0f, 5.0f);
-			}
-			return 1.0F;
+			ItemJutsu.JutsuEnum jutsu = this.getCurrentJutsu(stack);
+			return jutsu == SILVERBLAST ? this.getPower(stack, entity, timeLeft, 10.0f, 20.0f)
+			     : jutsu == GOLDBLAST ? this.getPower(stack, entity, timeLeft, 10.0f, 5.0f)
+			     : 1.0F;
+		}
+
+		@Override
+		protected float getMaxPower(ItemStack stack, EntityLivingBase entity) {
+			float f = super.getMaxPower(stack, entity);
+			ItemJutsu.JutsuEnum jutsu = this.getCurrentJutsu(stack);
+			return jutsu == GOLDBLAST ? Math.min(f, 200.0f)
+			     : jutsu == SILVERBLAST ? Math.min(f, 60.0f)
+			     : f;
 		}
 
 		@Override

@@ -113,10 +113,10 @@ public class ItemSuiton extends ElementsNarutomodMod.ModElement {
 			float ret = super.getMaxPower(stack, entity);
 			ItemJutsu.JutsuEnum jutsu = this.getCurrentJutsu(stack);
 			return jutsu == WATERSHOCK ? Math.min(ret, 25f)
-					: jutsu == WATERBULLET ? Math.min(ret, 30f)
-					: jutsu == WATERSHARK ? Math.min(ret, 5f)
-					: jutsu == WATERDRAGON ? Math.min(ret, 5f)
-					: ret;
+			     : jutsu == WATERBULLET ? Math.min(ret, 30f)
+			     : jutsu == WATERSHARK ? Math.min(ret, 5f)
+			     : jutsu == WATERDRAGON ? Math.min(ret, 5f)
+			     : ret;
 		}
 	}
 
@@ -306,10 +306,13 @@ public class ItemSuiton extends ElementsNarutomodMod.ModElement {
 		public static class Jutsu implements ItemJutsu.IJutsuCallback {
 			@Override
 			public boolean createJutsu(ItemStack stack, EntityLivingBase entity, float power) {
-				EntityStream entityarrow = new EntityStream(entity, power);
-				entityarrow.shoot();
-				entity.world.spawnEntity(entityarrow);
-				return true;
+				if (power >= 5.0f) {
+					EntityStream entityarrow = new EntityStream(entity, power);
+					entityarrow.shoot();
+					entity.world.spawnEntity(entityarrow);
+					return true;
+				}
+				return false;
 			}
 		}
 	}

@@ -48,6 +48,7 @@ import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.procedure.ProcedureRenderView;
 import net.narutomod.item.ItemJutsu;
 import net.narutomod.item.ItemRaiton;
+import net.narutomod.item.ItemFuton;
 import net.narutomod.item.ItemNinjutsu;
 
 import javax.annotation.Nullable;
@@ -82,6 +83,7 @@ public class EntityChidori extends ElementsNarutomodMod.ModElement {
 		private double chakraBurn;
 		private int attackTime;
 		private int ticksSinceLastSwing;
+		private int savedTicksSinceLastSwing;
 		private Entity target;
 
 		public EC(World a) {
@@ -137,13 +139,11 @@ public class EntityChidori extends ElementsNarutomodMod.ModElement {
 			super.setDead();
 			if (!this.world.isRemote && this.summoner != null) {
 				ProcedureSync.EntityNBTTag.removeAndSync(this.summoner, NarutomodModVariables.forceBowPose);
-				if (this.summoner instanceof EntityPlayer) {
-					ItemStack stack = ProcedureUtils.getMatchingItemStack((EntityPlayer)this.summoner, ItemRaiton.block);
-					if (stack != null) {
-						ItemJutsu.Base item = (ItemJutsu.Base)stack.getItem();
-						item.setJutsuCooldown(stack, ItemRaiton.CHIDORI, (long)((float)this.ticksExisted * item.getModifier(stack, this.summoner)));
-						stack.getTagCompound().removeTag(Jutsu.ID_KEY);
-					}
+				ItemJutsu.IJutsuCallback.JutsuData jd = ItemRaiton.CHIDORI.jutsu.getData(this.summoner);
+				if (jd != null) {
+					ItemJutsu.Base item = (ItemJutsu.Base)jd.stack.getItem();
+					item.setJutsuCooldown(jd.stack, ItemRaiton.CHIDORI, (long)((float)this.ticksExisted * item.getModifier(jd.stack, this.summoner)));
+					jd.stack.getTagCompound().removeTag(Jutsu.ID_KEY);
 				}
 			}
 		}
@@ -178,6 +178,8 @@ public class EntityChidori extends ElementsNarutomodMod.ModElement {
 				if (flag2 || (this.summoner instanceof EntityPlayer && this.summoner.swingProgressInt == 1)) {
 					this.target = (flag2 ? new RayTraceResult(((EntityLiving)this.summoner).getAttackTarget())
 					 : ProcedureUtils.objectEntityLookingAt(this.summoner, 20d, 1d, this)).entityHit;
+					this.savedTicksSinceLastSwing = this.ticksSinceLastSwing;
+					this.ticksSinceLastSwing = 0;
 					this.attackTime = 0;
 				}
 				if (this.target instanceof EntityLivingBase && this.attackTime < 12) {
@@ -188,15 +190,12 @@ public class EntityChidori extends ElementsNarutomodMod.ModElement {
 					}
 					if (this.target.getDistanceSq(this.summoner) < 25d) {
 						float damage = flag 
-						 ? (float)ProcedureUtils.getModifiedAttackDamage(this.summoner) * this.damageMultiplier() * 1.3f
+						 ? (float)ProcedureUtils.getMainhandItemDamage(this.summoner) * this.damageMultiplier() * 1.2f
 						 : (25f * this.damageMultiplier());
 						EntityLightningArc.onStruck(this.target,
 						 ItemJutsu.causeJutsuDamage(this, this.summoner), damage * this.getCooledAttackStrength());
 						this.target = null;
 					}
-				}
-				if (this.attackTime == 20) {
-					this.ticksSinceLastSwing = 0;
 				}
 			}
 			if (!this.world.isRemote && (this.summoner == null || this.ticksExisted > this.duration || !this.canUse())) {
@@ -228,7 +227,7 @@ public class EntityChidori extends ElementsNarutomodMod.ModElement {
 		public float getCooledAttackStrength() {
 			if (this.summoner != null) {
 				float f = (float)(1.0D / ProcedureUtils.getAttackSpeed(this.summoner) * 20.0D);
-				return MathHelper.clamp((float)this.ticksSinceLastSwing / f, 0.0F, 1.0F);
+				return MathHelper.clamp((float)this.savedTicksSinceLastSwing / f, 0.0F, 1.0F);
 			}
 			return 0.0f;
 		}
@@ -263,6 +262,9 @@ public class EntityChidori extends ElementsNarutomodMod.ModElement {
 					entity.world.spawnEntity(new Spear(entity, CHAKRA_BURN));
 					return true;
 				} else if (!entity.isRiding()) {
+					if (ItemFuton.CHAKRAFLOW.jutsu.isActivated(entity)) {
+						ItemFuton.CHAKRAFLOW.jutsu.deactivate(entity);
+					}
 					entity.world.playSound(null, entity.posX, entity.posY, entity.posZ,
 					 SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:chidori")), 
 					 SoundCategory.PLAYERS, 1.0F, 1.0F);
@@ -282,6 +284,33 @@ public class EntityChidori extends ElementsNarutomodMod.ModElement {
 			@Override
 			public boolean isActivated(ItemStack stack) {
 				return stack.getTagCompound().hasKey(ID_KEY);
+			}
+
+			@Override
+			public boolean isActivated(EntityLivingBase entity) {
+				return this.getData(entity) != null;
+			}
+
+			@Override
+			public void deactivate(EntityLivingBase entity) {
+				ItemJutsu.IJutsuCallback.JutsuData jd = this.getData(entity);
+				if (jd != null) {
+					jd.entity.setDead();
+					jd.stack.getTagCompound().removeTag(ID_KEY);
+				}
+			}
+
+			@Override
+			@Nullable
+			public ItemJutsu.IJutsuCallback.JutsuData getData(EntityLivingBase entity) {
+				if (entity instanceof EntityPlayer) {
+					ItemStack stack = ProcedureUtils.getMatchingItemStack((EntityPlayer)entity, ItemRaiton.block);
+					if (stack != null && stack.hasTagCompound() && stack.getTagCompound().hasKey(ID_KEY)) {
+						Entity entity1 = entity.world.getEntityByID(stack.getTagCompound().getInteger(ID_KEY));
+						return entity1 instanceof EC ? new JutsuData(entity1, stack) : null;
+					}
+				}
+				return null;
 			}
 		}
 	}

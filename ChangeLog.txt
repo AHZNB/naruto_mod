@@ -3,7 +3,7 @@
 Jutsus:
  - can fly when jinchuriki in full biju mode of 7-tails
  - changed chidori mechanics: swing at a target within 20 blocks to charge at target
- - nerfed chidori damage
+ - nerfed chidori damage, lowered attack speed
  - changed earth sandwich targeting mechanics: point at block instead of entity
  - fix earth sandwich killing people again after killing them
  - nerfed earth sandwich damage
@@ -33,6 +33,8 @@ Jutsus:
  - enabled user movements when using byakugan vision
  - fixed fake death syndrome when dying with shadow clones alive
  - remove shadow clones when user changes dimension
+ - shadow clones using rasengan will not hurt summoner or other clones of the same summoner
+ - shadow clones can use hiding in camouflage
  - added Flying thunder god jutsu and scroll. can be used on blocks, entities and 3-prong kunais
  - flying thunder god jutsu can escape from immobilization jutsus
  - body replacement jutsu now only activates on entity damage source, and user doesn't have paralysis effect
@@ -40,12 +42,12 @@ Jutsus:
  - sharingan users no longer give attackers slowness, instead will highlight the attacker for 15s if in range,
    and lock users eyes on the attacker when mouse right button is pressed
  - added chakra pulse for kekkei mora
- - re-made fire annihilation and great flame jutsus to not go through walls
+ - re-made fire annihilation and great flame jutsus to not go through walls. (optimized)
  - buffed rasengan damage
- - shadow clones using rasengan will not hurt summoner or other clones of the same summoner
  - increased speed and size of Lava release: magma balls
  - fixed susanoo bug sometimes creating infinite susanoo entities on the client side
  - phantom 9 sealing jutsu no longer works on the 10-tails or its jinchuriki
+ - wind release chakra flow cannot be used together with lightning chakra mode or chidori
 
 Items:
  - fix using /give command to give nature release items duplicates the item

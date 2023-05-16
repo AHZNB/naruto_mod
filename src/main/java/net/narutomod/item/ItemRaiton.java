@@ -11,20 +11,19 @@ import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraft.world.World;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Item;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.Entity;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.potion.PotionEffect;
-import net.minecraft.init.MobEffects;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.EnumActionResult;
-import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Item;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.Entity;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.potion.PotionEffect;
+import net.minecraft.init.MobEffects;
 
 import net.narutomod.entity.EntityLightningArc;
 import net.narutomod.entity.EntityLightningBeast;
@@ -37,6 +36,8 @@ import net.narutomod.creativetab.TabModTab;
 import net.narutomod.Particles;
 import net.narutomod.Chakra;
 import net.narutomod.ElementsNarutomodMod;
+
+import javax.annotation.Nullable;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class ItemRaiton extends ElementsNarutomodMod.ModElement {
@@ -250,16 +251,47 @@ public class ItemRaiton extends ElementsNarutomodMod.ModElement {
 			private static final String ID_KEY = "EntityChakraModeIdKey";
 			@Override
 			public boolean createJutsu(ItemStack stack, EntityLivingBase entity, float power) {
-				Entity entity1 = entity.world.getEntityByID(entity.getEntityData().getInteger(ID_KEY));
+				Entity entity1 = entity.world.getEntityByID(stack.getTagCompound().getInteger(ID_KEY));
 				if (entity1 instanceof EntityChakraMode) {
 					entity1.setDead();
+					stack.getTagCompound().removeTag(ID_KEY);
 					return false;
 				} else {
+					if (ItemFuton.CHAKRAFLOW.jutsu.isActivated(entity)) {
+						ItemFuton.CHAKRAFLOW.jutsu.deactivate(entity);
+					}
 					entity1 = new EntityChakraMode(entity, stack);
 					entity.world.spawnEntity(entity1);
-					entity.getEntityData().setInteger(ID_KEY, entity1.getEntityId());
+					stack.getTagCompound().setInteger(ID_KEY, entity1.getEntityId());
 					return true;
 				}
+			}
+
+			@Override
+			public boolean isActivated(EntityLivingBase entity) {
+				return this.getData(entity) != null;
+			}
+
+			@Override
+			public void deactivate(EntityLivingBase entity) {
+				ItemJutsu.IJutsuCallback.JutsuData jd = this.getData(entity);
+				if (jd != null) {
+					jd.entity.setDead();
+					jd.stack.getTagCompound().removeTag(ID_KEY);
+				}
+			}
+
+			@Override
+			@Nullable
+			public ItemJutsu.IJutsuCallback.JutsuData getData(EntityLivingBase entity) {
+				if (entity instanceof EntityPlayer) {
+					ItemStack stack = ProcedureUtils.getMatchingItemStack((EntityPlayer)entity, block);
+					if (stack != null && stack.hasTagCompound() && stack.getTagCompound().hasKey(ID_KEY)) {
+						Entity entity1 = entity.world.getEntityByID(stack.getTagCompound().getInteger(ID_KEY));
+						return entity1 instanceof EntityChakraMode ? new JutsuData(entity1, stack) : null;
+					}
+				}
+				return null;
 			}
 		}
 	}

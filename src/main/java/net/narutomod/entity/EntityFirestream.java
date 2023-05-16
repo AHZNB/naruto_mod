@@ -2,6 +2,7 @@
 package net.narutomod.entity;
 
 import net.narutomod.item.ItemJutsu;
+import net.narutomod.Particles;
 import net.narutomod.ElementsNarutomodMod;
 
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -95,13 +96,21 @@ public class EntityFirestream extends ElementsNarutomodMod.ModElement {
 
 		protected void preExecuteParticles(double range, double radius) {
 			double angle = Math.atan(radius / range) * 180d / Math.PI;
-			for (int i = 0; i < (int)(range * radius * 0.4d); i++) {
+			for (int i = 0; i < 8; i++) {
 				Vec3d vec3d = Vec3d.fromPitchYaw(this.shooter.rotationPitch + (float)((this.rand.nextDouble()-0.5d) * angle * 3.0d),
 				 this.shooter.rotationYaw + (float)((this.rand.nextDouble()-0.5d) * angle * 3.0d)).scale(range * 0.1d);
 				this.world.spawnEntity(new FlameParticle(this.shooter, this.posX, this.posY, this.posZ,
-				 vec3d.x, vec3d.y, vec3d.z, 0xffffcf00, (float)vec3d.lengthVector()*15f + this.rand.nextFloat()*3f,
+				 vec3d.x, vec3d.y, vec3d.z, 0xffffcf00, (float)vec3d.lengthVector()*5f + this.rand.nextFloat()*2f,
 				 (float)range * (this.rand.nextFloat() * 0.5f + 0.5f)));
 			}
+			Particles.Renderer particles = new Particles.Renderer(this.world);
+			for (int i = 0; i < (int)(range * radius * 0.8d); i++) {
+				Vec3d vec3d = Vec3d.fromPitchYaw(this.shooter.rotationPitch + (float)((this.rand.nextDouble()-0.5d) * angle * 3.0d),
+				 this.shooter.rotationYaw + (float)((this.rand.nextDouble()-0.5d) * angle * 3.0d)).scale(range * 0.1d);
+				particles.spawnParticles(Particles.Types.FLAME, this.posX, this.posY, this.posZ, 1, 0, 0, 0,
+				 vec3d.x, vec3d.y, vec3d.z, 0xffffcf00, (int)(vec3d.lengthVector()*50d)+this.rand.nextInt(20));
+			}
+			particles.send();
 		}
 
 		@Override
@@ -128,7 +137,7 @@ public class EntityFirestream extends ElementsNarutomodMod.ModElement {
 		public static class Jutsu2 implements ItemJutsu.IJutsuCallback {
 			@Override
 			public boolean createJutsu(ItemStack stack, EntityLivingBase entity, float power) {
-				EC entity1 = new EC(entity, power * 0.1f, power);
+				EC entity1 = new EC(entity, 1.0f, power);
 				entity1.wait = 0;
 				entity1.maxLife = (int)(power * 10f);
 				entity.world.spawnEntity(entity1);
@@ -184,13 +193,24 @@ public class EntityFirestream extends ElementsNarutomodMod.ModElement {
 		}
 
 		public void onImpact(RayTraceResult result) {
-			int i = this.rand.nextInt(100);
+			/*int i = this.rand.nextInt(100);
 			if (result.entityHit != null) {
 				if (i < 10) {
 					result.entityHit.attackEntityFrom(ItemJutsu.causeJutsuDamage(this, this.shooter)
 					 .setDamageBypassesArmor().setFireDamage(), this.damage);
 					result.entityHit.setFire(10);
 				}
+			} else if (i == 0) {
+				BlockPos pos = result.getBlockPos().offset(result.sideHit);
+				if (this.world.isAirBlock(pos)) {
+					this.world.setBlockState(pos, Blocks.FIRE.getDefaultState(), 3);
+				}
+			}*/
+			int i = this.rand.nextInt(10);
+			if (result.entityHit != null) {
+				result.entityHit.attackEntityFrom(ItemJutsu.causeJutsuDamage(this, this.shooter)
+				 .setDamageBypassesArmor().setFireDamage(), this.damage);
+				result.entityHit.setFire(10);
 			} else if (i == 0) {
 				BlockPos pos = result.getBlockPos().offset(result.sideHit);
 				if (this.world.isAirBlock(pos)) {

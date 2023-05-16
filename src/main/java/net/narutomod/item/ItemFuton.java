@@ -11,6 +11,8 @@ import net.minecraftforge.client.event.ModelRegistryEvent;
 
 import net.minecraft.world.World;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Item;
 import net.minecraft.entity.player.EntityPlayer;
@@ -18,7 +20,6 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.init.MobEffects;
 
@@ -162,11 +163,11 @@ public class ItemFuton extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		protected void addEffects() {
-			if (!this.world.isRemote) {
+			if (!this.world.isRemote && this.ticksExisted % 10 == 0) {
 				EntityLivingBase user = this.getUser();
 				//int strAmp =  user instanceof EntityPlayer ? (int)(PlayerTracker.getNinjaLevel((EntityPlayer)user) / 20d * this.strengthModifier) : 3;
-				user.addPotionEffect(new PotionEffect(MobEffects.STRENGTH, 2, this.strengthModifier + this.ogStrength, false, false));
-				user.addPotionEffect(new PotionEffect(PotionReach.potion, 2, 0, false, false));
+				user.addPotionEffect(new PotionEffect(MobEffects.STRENGTH, 12, this.strengthModifier + this.ogStrength, false, false));
+				user.addPotionEffect(new PotionEffect(PotionReach.potion, 12, 0, false, false));
 			}
 		}
 
@@ -186,16 +187,56 @@ public class ItemFuton extends ElementsNarutomodMod.ModElement {
 			private static final String ID_KEY = "FutonChakraFlowEntityIdKey";
 			@Override
 			public boolean createJutsu(ItemStack stack, EntityLivingBase entity, float power) {
-				Entity entity1 = entity.world.getEntityByID(entity.getEntityData().getInteger(ID_KEY));
+				Entity entity1 = entity.world.getEntityByID(stack.getTagCompound().getInteger(ID_KEY));
 				if (entity1 instanceof ChakraFlow) {
 					entity1.setDead();
+					stack.getTagCompound().removeTag(ID_KEY);
+					if (entity instanceof EntityPlayer && !entity.world.isRemote) {
+						((EntityPlayer)entity).sendStatusMessage(new TextComponentString("Off"), true);
+					}
 					return false;
 				} else {
+					if (ItemRaiton.CHAKRAMODE.jutsu.isActivated(entity)) {
+						ItemRaiton.CHAKRAMODE.jutsu.deactivate(entity);
+					}
+					if (ItemRaiton.CHIDORI.jutsu.isActivated(entity)) {
+						ItemRaiton.CHIDORI.jutsu.deactivate(entity);
+					}
 					entity1 = new ChakraFlow(entity, stack);
 					entity.world.spawnEntity(entity1);
-					entity.getEntityData().setInteger(ID_KEY, entity1.getEntityId());
+					stack.getTagCompound().setInteger(ID_KEY, entity1.getEntityId());
+					if (entity instanceof EntityPlayer && !entity.world.isRemote) {
+						((EntityPlayer)entity).sendStatusMessage(new TextComponentString("On"), true);
+					}
 					return true;
 				}
+			}
+
+			@Override
+			public boolean isActivated(EntityLivingBase entity) {
+				return this.getData(entity) != null;
+			}
+
+			@Override
+			public void deactivate(EntityLivingBase entity) {
+				ItemJutsu.IJutsuCallback.JutsuData jd = this.getData(entity);
+				if (jd != null) {
+					jd.entity.setDead();
+					jd.stack.getTagCompound().removeTag(ID_KEY);
+				}
+			}
+
+			@Override
+			@Nullable
+			public ItemJutsu.IJutsuCallback.JutsuData getData(EntityLivingBase entity) {
+				if (entity instanceof EntityPlayer) {
+					ItemStack stack = ProcedureUtils.getMatchingItemStack((EntityPlayer)entity, block);
+					if (stack != null && stack.hasTagCompound() && stack.getTagCompound().hasKey(ID_KEY)) {
+						Entity entity1 = entity.world.getEntityByID(stack.getTagCompound().getInteger(ID_KEY));
+						return entity1 instanceof ChakraFlow ? new JutsuData(entity1, stack) : null;
+					}
+				}
+				return null;
 			}
 		}
 	}

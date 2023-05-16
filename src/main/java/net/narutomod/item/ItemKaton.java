@@ -82,7 +82,7 @@ public class ItemKaton extends ElementsNarutomodMod.ModElement {
 			if (je == HIDINGINASH) {
 				return this.getPower(stack, entity, timeLeft, 1.0f, 15f);
 			} else if (je == GREATFIREBALL) {
-				return this.getPower(stack, entity, timeLeft, 0.1f, 30f);
+				return this.getPower(stack, entity, timeLeft, 0.5f, 30f);
 			} else {
 				return this.getPower(stack, entity, timeLeft, 1.0f, 30f);
 			}
@@ -176,10 +176,13 @@ public class ItemKaton extends ElementsNarutomodMod.ModElement {
 		public static class Jutsu implements ItemJutsu.IJutsuCallback {
 			@Override
 			public boolean createJutsu(ItemStack stack, EntityLivingBase entity, float power) {
-				this.createJutsu(entity, entity.getLookVec().x, entity.getLookVec().y, entity.getLookVec().z, power);
-				//if (entity instanceof EntityPlayer)
-				//	ItemJutsu.setCurrentJutsuCooldown(stack, (EntityPlayer)entity, (long)(power * 80));
-				return true;
+				if (power >= 0.5f) {
+					this.createJutsu(entity, entity.getLookVec().x, entity.getLookVec().y, entity.getLookVec().z, power);
+					//if (entity instanceof EntityPlayer)
+					//	ItemJutsu.setCurrentJutsuCooldown(stack, (EntityPlayer)entity, (long)(power * 80));
+					return true;
+				}
+				return false;
 			}
 
 			public void createJutsu(EntityLivingBase entity, double x, double y, double z, float power) {
