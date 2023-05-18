@@ -2,8 +2,8 @@
   "_fv": 18,
   "_type": "achievement",
   "definition": {
-    "achievementName": "Rinnesharingan Activated",
-    "achievementDescription": "The Rinnesharingan is a dojutsu kekkei mora and the predecessor to the tenseigan and byakugan.",
+    "achievementName": "RinneSharingan Activated",
+    "achievementDescription": "The Rinne Sharingan is a dojutsu kekkei mora and the predecessor to the Tenseigan and Byakugan.",
     "achievementIcon": {
       "value": "CUSTOM:KekkeiMora"
     },
@@ -20,6 +20,6 @@
     "parent": {
       "value": "CUSTOM:TenseiganAchieved"
     },
-    "triggerxml": "<xml xmlns=\"https://developers.google.com/blockly/xml\"><block type=\"custom_trigger\" x=\"42\" y=\"47\"><next><block type=\"advancement_trigger\" deletable=\"false\"></block></next></block></xml>"
+    "triggerxml": "<xml xmlns=\"https://developers.google.com/blockly/xml\"><block type=\"custom_trigger\" x=\"41\" y=\"42\"><next><block type=\"advancement_trigger\" deletable=\"false\"></block></next></block></xml>"
   }
 }

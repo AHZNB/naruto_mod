@@ -115,6 +115,7 @@ public class ItemSixPathSenjutsu extends ElementsNarutomodMod.ModElement {
 				EntityLivingBase livingEntity = (EntityLivingBase)entity;
 				if (!ItemRinnegan.wearingRinnesharingan(livingEntity) 
 				 && entity instanceof EntityPlayer && !((EntityPlayer)entity).isCreative()) {
+				 	entity.getEntityData().setTag("6pSenjutsuItem", itemstack.writeToNBT(new NBTTagCompound()));
 					itemstack.shrink(1);
 				} else if (livingEntity.getHeldItemMainhand().equals(itemstack) || livingEntity.getHeldItemOffhand().equals(itemstack)) {
 					int[] intarray = itemstack.getTagCompound().getIntArray(SPAWNEDBALLSID);

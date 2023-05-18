@@ -1,8 +1,8 @@
 {
   "id_map": {
-    "GUI": 64,
+    "DIMENSION": 13,
     "ENTITY": 422,
-    "DIMENSION": 13
+    "GUI": 64
   },
   "mod_elements": [
     {
@@ -7046,6 +7046,15 @@
         "1": 422
       },
       "registry_name": "firestream"
+    },
+    {
+      "name": "TenseiByakuganActivated",
+      "type": "achievement",
+      "sortid": 845,
+      "compiles": true,
+      "locked_code": false,
+      "ids": {},
+      "registry_name": "tensei_byakugan_activated"
     }
   ],
   "variable_elements": [
@@ -8370,6 +8379,7 @@
       "item.ninja_armor_anbubody.name": "Chest Armor (Anbu)",
       "item.kabutowari_hammer.name": "Kabutowari Hammer",
       "item.clothes_hokageboots.name": "",
+      "advancements.tensei_byakugan_activated.descr": "The Rinne Sharingan is a dojutsu kekkei mora and the predecessor to the Tenseigan and Byakugan.",
       "entity.katonfireball.name": "Great Fireball jutsu",
       "potion.effect.chakra_regeneration": "Chakra Regeneration",
       "tooltip.senjutsu.rasengan": "Sage Art: Ultra-Big Ball Rasengan",
@@ -8461,6 +8471,7 @@
       "advancements.bakuton_acquired.descr": "Explosion Release is a nature transformation kekkei genkai, a combination of earth and lightning. Explosion Release users utilise explosive chakra in combat.",
       "entity.toad_summon.name": "Toad summon",
       "death.attack.senjutsu_damage": "%1$s was killed by %2$s using senjutsu",
+      "advancements.tensei_byakugan_activated.title": "RinneSharingan Activated",
       "item.military_rations_pill_gold.name": "Military Rations Pill - Gold",
       "item.byakurinnesharinganbody.name": "",
       "entity.kirin.name": "Kirin",

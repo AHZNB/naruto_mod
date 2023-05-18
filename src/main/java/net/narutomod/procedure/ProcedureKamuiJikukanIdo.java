@@ -13,6 +13,7 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.DamageSource;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.item.ItemStack;
 import net.minecraft.init.MobEffects;
@@ -154,10 +155,7 @@ public class ProcedureKamuiJikukanIdo extends ElementsNarutomodMod.ModElement {
 							if (((i) > 0)) {
 								i = (double) ((i)
 										* ((t.entityHit instanceof EntityLivingBase) ? ((EntityLivingBase) t.entityHit).getMaxHealth() : -1));
-								if (t.entityHit instanceof EntityLivingBase)
-									((EntityLivingBase) t.entityHit).setHealth(
-											(float) (((t.entityHit instanceof EntityLivingBase) ? ((EntityLivingBase) t.entityHit).getHealth() : -1)
-													- (i)));
+								t.entityHit.attackEntityFrom(DamageSource.OUT_OF_WORLD.setDamageIsAbsolute(), (float) i);
 							}
 						} else {
 							ProcedureKamuiTeleportEntity.eEntity(t.entityHit, x, z, dimid);

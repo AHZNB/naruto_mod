@@ -3,12 +3,13 @@ package net.narutomod.item;
 
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.event.ModelRegistryEvent;
@@ -329,8 +330,13 @@ public class ItemSenjutsu extends ElementsNarutomodMod.ModElement {
 
 	private static void deactivateSageMode(ItemStack stack, EntityLivingBase entity) {
 		if (stack.hasTagCompound()) {
-			stack.getTagCompound().setBoolean(SAGEMODEACTIVATEDKEY, false);
-			stack.getTagCompound().setDouble(SAGECHAKRADEPLETIONAMOUNT, 0.0d);
+			Chakra.Pathway cp = Chakra.pathway(entity);
+			double d = stack.getTagCompound().getDouble(SAGECHAKRADEPLETIONAMOUNT);
+			if (d > 0.0d && cp.getAmount() > d) {
+				cp.consume(cp.getAmount() - d);
+			}
+			stack.getTagCompound().removeTag(SAGEMODEACTIVATEDKEY);
+			stack.getTagCompound().removeTag(SAGECHAKRADEPLETIONAMOUNT);
 		}
 		if (entity instanceof EntityPlayerMP) {
 			OverlayChakraDisplay.ShowFlamesMessage.send((EntityPlayerMP)entity, false);
@@ -343,8 +349,18 @@ public class ItemSenjutsu extends ElementsNarutomodMod.ModElement {
 			EntityLivingBase entity = event.getEntityLiving();
 			if (entity instanceof EntityPlayer) {
 				ItemStack stack = ProcedureUtils.getMatchingItemStack((EntityPlayer)entity, block);
-				if (stack != null) {
+				if (stack != null && isSageModeActivated(stack)) {
 					deactivateSageMode(stack, entity);
+				}
+			}
+		}
+
+		@SubscribeEvent
+		public void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
+			if (!event.player.world.isRemote) {
+				ItemStack stack = ProcedureUtils.getMatchingItemStack(event.player, block);
+				if (stack != null && isSageModeActivated(stack)) {
+					deactivateSageMode(stack, event.player);
 				}
 			}
 		}

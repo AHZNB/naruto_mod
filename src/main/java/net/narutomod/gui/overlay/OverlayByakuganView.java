@@ -11,6 +11,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
+import net.minecraftforge.client.event.MouseEvent;
 
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.MathHelper;
@@ -31,7 +32,6 @@ import net.narutomod.ElementsNarutomodMod;
 import java.util.List;
 import io.netty.buffer.ByteBuf;
 import com.google.common.collect.Lists;
-import net.minecraftforge.client.event.MouseEvent;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class OverlayByakuganView extends ElementsNarutomodMod.ModElement {

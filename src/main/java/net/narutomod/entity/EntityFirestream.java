@@ -14,6 +14,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.entity.projectile.ProjectileHelper;
@@ -96,7 +97,7 @@ public class EntityFirestream extends ElementsNarutomodMod.ModElement {
 
 		protected void preExecuteParticles(double range, double radius) {
 			double angle = Math.atan(radius / range) * 180d / Math.PI;
-			for (int i = 0; i < 8; i++) {
+			for (int i = 0; i < (int)(MathHelper.sqrt(radius) * 2.5d); i++) {
 				Vec3d vec3d = Vec3d.fromPitchYaw(this.shooter.rotationPitch + (float)((this.rand.nextDouble()-0.5d) * angle * 3.0d),
 				 this.shooter.rotationYaw + (float)((this.rand.nextDouble()-0.5d) * angle * 3.0d)).scale(range * 0.1d);
 				this.world.spawnEntity(new FlameParticle(this.shooter, this.posX, this.posY, this.posZ,
@@ -193,19 +194,6 @@ public class EntityFirestream extends ElementsNarutomodMod.ModElement {
 		}
 
 		public void onImpact(RayTraceResult result) {
-			/*int i = this.rand.nextInt(100);
-			if (result.entityHit != null) {
-				if (i < 10) {
-					result.entityHit.attackEntityFrom(ItemJutsu.causeJutsuDamage(this, this.shooter)
-					 .setDamageBypassesArmor().setFireDamage(), this.damage);
-					result.entityHit.setFire(10);
-				}
-			} else if (i == 0) {
-				BlockPos pos = result.getBlockPos().offset(result.sideHit);
-				if (this.world.isAirBlock(pos)) {
-					this.world.setBlockState(pos, Blocks.FIRE.getDefaultState(), 3);
-				}
-			}*/
 			int i = this.rand.nextInt(10);
 			if (result.entityHit != null) {
 				result.entityHit.attackEntityFrom(ItemJutsu.causeJutsuDamage(this, this.shooter)

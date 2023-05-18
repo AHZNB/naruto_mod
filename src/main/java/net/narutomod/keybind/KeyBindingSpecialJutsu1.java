@@ -22,6 +22,7 @@ import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.client.Minecraft;
 
 import net.narutomod.procedure.ProcedureSpecialJutsu1OnKeyPressed;
+import net.narutomod.procedure.ProcedureSync;
 import net.narutomod.NarutomodMod;
 import net.narutomod.ElementsNarutomodMod;
 
@@ -55,6 +56,14 @@ public class KeyBindingSpecialJutsu1 extends ElementsNarutomodMod.ModElement {
 	public void onClientPostTick(TickEvent.ClientTickEvent event) {
 		if (event.phase == TickEvent.Phase.END) {
 			this.processKeyBind();
+			Minecraft mc = Minecraft.getMinecraft();
+			if (mc.player != null) {
+				boolean flag = mc.currentScreen != null;
+				if (flag != mc.player.getEntityData().getBoolean("hasAnyGuiOpen")) {
+					mc.player.getEntityData().setBoolean("hasAnyGuiOpen", flag);
+					ProcedureSync.EntityNBTTag.sendToServer(mc.player, "hasAnyGuiOpen", flag);
+				}
+			}
 		}
 	}
 

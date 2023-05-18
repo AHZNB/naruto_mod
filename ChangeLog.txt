@@ -64,18 +64,20 @@ Items:
  - fixed nuibari and 3-bladed scythe thrown from off hand bug
  - nerfed kamui shuriken to do less damage and use more chakra
  - fixed putting kiba sword in offhand deletes the sword
+ - remembers 6-path senjutsu jutsuXPs after the item is removed (when rinnesharingan is off)
 
 Entities:
  - added 5 second cooldown for Itachi's genjutsu
  - lowered chances of Itachi dropping mangekyo
  - gedomazo can be ridden and controlled by rinnegan/tenseigan users
- - fix itachi, kisame, might guy, zabuza and haku renderers crashing with ice and fire
+ - fixed entity renderers crashing with ice and fire and custom NPC mods
  - added config settings to tweak Itachi, Kisame, Zabuza, white zetsu spawn weight
  - new 1-tail shukaku model
  - new 4-tails Son Goku model
  - made itachi's real chance configurable
  - patch loophole for sakura to drop anything
  - better NPC/clone water walking and wall climbing AI
+ - snake summons greater than size 4 will break wood/trees when moving
 
 Advancements:
  - associate "Rinnesharingan Activated" advancement to the correct parent (rinnegan/tenseigan) advancement

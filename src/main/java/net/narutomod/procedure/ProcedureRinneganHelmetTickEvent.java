@@ -88,22 +88,30 @@ public class ProcedureRinneganHelmetTickEvent extends ElementsNarutomodMod.ModEl
 						.getItem() == new ItemStack(ItemRinnegan.legs, (int) (1)).getItem()))) {
 					ProcedureUtils.swapItemToSlot((EntityPlayer) entity, EntityEquipmentSlot.LEGS, new ItemStack(ItemRinnegan.legs));
 				}
-				if ((!((entity instanceof EntityPlayer)
-						? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemSixPathSenjutsu.block, (int) (1)))
-						: false))) {
-					if (entity instanceof EntityPlayer) {
-						ItemStack _setstack = new ItemStack(ItemSixPathSenjutsu.block, (int) (1));
-						_setstack.setCount(1);
-						ItemHandlerHelper.giveItemToPlayer(((EntityPlayer) entity), _setstack);
+				if ((!(entity.getEntityData().getBoolean("hasAnyGuiOpen")))) {
+					if ((!((entity instanceof EntityPlayer)
+							? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemSixPathSenjutsu.block, (int) (1)))
+							: false))) {
+						if (entity.getEntityData().hasKey("6pSenjutsuItem", 10)) {
+							stack1 = new ItemStack(entity.getEntityData().getCompoundTag("6pSenjutsuItem"));
+							entity.getEntityData().removeTag("6pSenjutsuItem");
+						} else {
+							stack1 = new ItemStack(ItemSixPathSenjutsu.block, (int) (1));
+						}
+						if (entity instanceof EntityPlayer) {
+							ItemStack _setstack = (stack1);
+							_setstack.setCount(1);
+							ItemHandlerHelper.giveItemToPlayer(((EntityPlayer) entity), _setstack);
+						}
 					}
-				}
-				if ((!((entity instanceof EntityPlayer)
-						? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemSageStaff.block, (int) (1)))
-						: false))) {
-					if (entity instanceof EntityPlayer) {
-						ItemStack _setstack = new ItemStack(ItemSageStaff.block, (int) (1));
-						_setstack.setCount(1);
-						ItemHandlerHelper.giveItemToPlayer(((EntityPlayer) entity), _setstack);
+					if ((!((entity instanceof EntityPlayer)
+							? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemSageStaff.block, (int) (1)))
+							: false))) {
+						if (entity instanceof EntityPlayer) {
+							ItemStack _setstack = new ItemStack(ItemSageStaff.block, (int) (1));
+							_setstack.setCount(1);
+							ItemHandlerHelper.giveItemToPlayer(((EntityPlayer) entity), _setstack);
+						}
 					}
 				}
 			} else {
@@ -175,7 +183,7 @@ public class ProcedureRinneganHelmetTickEvent extends ElementsNarutomodMod.ModEl
 						}
 						world.playSound((EntityPlayer) null, (entity.posX), (entity.posY), (entity.posZ),
 								(net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY
-										.getObject(new ResourceLocation("narutomod:Amaterasu")),
+										.getObject(new ResourceLocation("ui.toast.challenge_complete")),
 								SoundCategory.NEUTRAL, (float) 1, (float) 1);
 					}
 				} else {
