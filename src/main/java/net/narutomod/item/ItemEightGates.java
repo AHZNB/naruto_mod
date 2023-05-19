@@ -235,6 +235,17 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
+	public static int getGatesOpened(EntityLivingBase entity) {
+		ItemStack stack = entity.getHeldItemMainhand();
+		if (stack.getItem() != block) {
+			stack = entity.getHeldItemOffhand();
+		}
+		if (stack.getItem() == block) {
+			return (int)((RangedItem)stack.getItem()).getGateOpened(stack);
+		}
+		return 0;
+	}
+
 	public static class RangedItem extends Item {
 		private final UUID GATE_MODIFIER = UUID.fromString("f6944d0f-5c81-45db-9261-6a9ad9fe4840");
 		private static final String GATE_KEY = "gateOpened";
@@ -412,32 +423,26 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 		public static class AttackHook {
 			@SubscribeEvent
 			public void onLivingAttack(LivingAttackEvent event) {
-				if (event.getSource().getTrueSource() instanceof EntityPlayer
+				if (event.getSource().getTrueSource() instanceof EntityLivingBase
 				 && event.getSource().getTrueSource() == event.getSource().getImmediateSource()) {
-					EntityPlayer player = (EntityPlayer)event.getSource().getTrueSource();
-					ItemStack stack = player.getHeldItemMainhand();
-					if (stack.getItem() != block) {
-						stack = player.getHeldItemOffhand();
+					EntityLivingBase attacker = (EntityLivingBase)event.getSource().getTrueSource();
+					int gateOpened = getGatesOpened(attacker);
+					EntityLivingBase target = event.getEntityLiving();
+					if (gateOpened >= 5) {
+						if (gateOpened >= 7) {
+							target.world.playSound(null, target.posX, target.posY, target.posZ,
+							 SoundEvents.ENTITY_GENERIC_EXPLODE, SoundCategory.NEUTRAL, 1.0F, target.getRNG().nextFloat() * 0.5F + 0.5F);
+						}
+						Vec3d vec = attacker.getPositionVector().subtract(target.getPositionVector()).normalize();
+						for (int i = 1, j = 25; i <= j; i++) {
+							Vec3d vec1 = vec.scale(0.06d * i);
+							Particles.spawnParticle(attacker.world, Particles.Types.SONIC_BOOM, target.posX, target.posY+1.4d, target.posZ,
+							 1, 0d, 0d, 0d, vec1.x, vec1.y, vec1.z, 0x00ffffff | ((int)((1f-(float)i/j)*0x40)<<24),
+							 i * 2, (int)(5f * (1f + ((float)i/j) * 0.5f)));
+						}
 					}
-					if (stack.getItem() == block) {
-						int gateOpened = (int)((RangedItem)stack.getItem()).getGateOpened(stack);
-						EntityLivingBase target = event.getEntityLiving();
-						if (gateOpened >= 5) {
-							if (gateOpened >= 7) {
-								target.world.playSound(null, target.posX, target.posY, target.posZ,
-								 SoundEvents.ENTITY_GENERIC_EXPLODE, SoundCategory.NEUTRAL, 1.0F, target.getRNG().nextFloat() * 0.5F + 0.5F);
-							}
-							Vec3d vec = player.getPositionVector().subtract(target.getPositionVector()).normalize();
-							for (int i = 1, j = 25; i <= j; i++) {
-								Vec3d vec1 = vec.scale(0.06d * i);
-								Particles.spawnParticle(player.world, Particles.Types.SONIC_BOOM, target.posX, target.posY+1.4d, target.posZ,
-								 1, 0d, 0d, 0d, vec1.x, vec1.y, vec1.z, 0x00ffffff | ((int)((1f-(float)i/j)*0x40)<<24),
-								 i * 2, (int)(5f * (1f + ((float)i/j) * 0.5f)));
-							}
-						}
-						if (gateOpened >= 2) {
-							ProcedureUtils.pushEntity(player, target, 10, 0.2f * gateOpened + 2f);
-						}
+					if (gateOpened >= 2) {
+						ProcedureUtils.pushEntity(attacker, target, 10, 0.2f * gateOpened + 2f);
 					}
 				}
 			}

@@ -328,6 +328,20 @@ public class ItemSenjutsu extends ElementsNarutomodMod.ModElement {
 		return stack.hasTagCompound() && stack.getTagCompound().getBoolean(SAGEMODEACTIVATEDKEY);
 	}
 
+	public static boolean isSageModeActivated(EntityPlayer entity) {
+		ItemStack stack = ProcedureUtils.getMatchingItemStack(entity, block);
+		return stack != null ? isSageModeActivated(stack) : false;
+	}
+
+	public static void deactivateSageMode(EntityLivingBase entity) {
+		if (entity instanceof EntityPlayer) {
+			ItemStack stack = ProcedureUtils.getMatchingItemStack((EntityPlayer)entity, block);
+			if (stack != null && isSageModeActivated(stack)) {
+				deactivateSageMode(stack, entity);
+			}
+		}
+	}
+
 	private static void deactivateSageMode(ItemStack stack, EntityLivingBase entity) {
 		if (stack.hasTagCompound()) {
 			Chakra.Pathway cp = Chakra.pathway(entity);
@@ -346,22 +360,13 @@ public class ItemSenjutsu extends ElementsNarutomodMod.ModElement {
 	public static class EventHook {
 		@SubscribeEvent
 		public void onDeath(LivingDeathEvent event) {
-			EntityLivingBase entity = event.getEntityLiving();
-			if (entity instanceof EntityPlayer) {
-				ItemStack stack = ProcedureUtils.getMatchingItemStack((EntityPlayer)entity, block);
-				if (stack != null && isSageModeActivated(stack)) {
-					deactivateSageMode(stack, entity);
-				}
-			}
+			deactivateSageMode(event.getEntityLiving());
 		}
 
 		@SubscribeEvent
 		public void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
 			if (!event.player.world.isRemote) {
-				ItemStack stack = ProcedureUtils.getMatchingItemStack(event.player, block);
-				if (stack != null && isSageModeActivated(stack)) {
-					deactivateSageMode(stack, event.player);
-				}
+				deactivateSageMode(event.player);
 			}
 		}
 	}

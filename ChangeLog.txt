@@ -48,6 +48,7 @@ Jutsus:
  - fixed susanoo bug sometimes creating infinite susanoo entities on the client side
  - phantom 9 sealing jutsu no longer works on the 10-tails or its jinchuriki
  - wind release chakra flow cannot be used together with lightning chakra mode or chidori
+ - shinratensei can aim and throw floating chunks of earth at targets if shift+banshotenin was used to dislodge chunks of earth
 
 Items:
  - fix using /give command to give nature release items duplicates the item

@@ -492,9 +492,9 @@ public class EntityHiraishin extends ElementsNarutomodMod.ModElement {
 		@SubscribeEvent
 		public void onRenderWorldLast(RenderWorldLastEvent event) {
 			Minecraft mc = Minecraft.getMinecraft();
-			if (PlayerTracker.isNinja(mc.player) && !clientMarkerList.isEmpty()) {
+			if (mc.player != null && PlayerTracker.isNinja(mc.player) && !clientMarkerList.isEmpty()) {
 				RenderManager renderManager = mc.getRenderManager();
-				if (renderManager.options.thirdPersonView == 0) {
+				if (renderManager != null && renderManager.options != null && renderManager.options.thirdPersonView == 0) {
 					for (Vector4d vec : clientMarkerList.values()) {
 						if ((int)vec.w == mc.world.provider.getDimension()) {
 							this.renderCustom.renderMarker(vec.x - renderManager.viewerPosX, vec.y - renderManager.viewerPosY,
