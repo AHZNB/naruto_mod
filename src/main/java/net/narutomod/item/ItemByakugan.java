@@ -45,7 +45,7 @@ public class ItemByakugan extends ElementsNarutomodMod.ModElement {
 	private final UUID RINNESHARINGAN_MODIFIER = UUID.fromString("c69907b2-2687-47ab-aca0-49898cd38463");
 	private static final double BYAKUGAN_CHAKRA_USAGE = 10d; //per half sec
 	private static final double ROKUJUYONSHO_CHAKRA_USAGE = 100d;
-	private static final double KAITEN_CHAKRA_USAGE = 4d; // per tick
+	private static final double KAITEN_CHAKRA_USAGE = 5d; // per tick
 	private static final double KUSHO_CHAKRA_USAGE = 0.5d; // x pressDuration
 	
 	public ItemByakugan(ElementsNarutomodMod instance) {

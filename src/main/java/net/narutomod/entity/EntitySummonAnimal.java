@@ -192,10 +192,18 @@ public class EntitySummonAnimal extends ElementsNarutomodMod.ModElement {
 				}
 				if (target != null && !target.equals(this)) {
 					this.setAttackTarget(target);
-				}
+				} 
 				target = this.getAttackTarget();
-				if (target != null && !target.isEntityAlive()) {
-					this.setAttackTarget(null);
+				if (target != null) {
+					if (!target.isEntityAlive()) {
+						this.setAttackTarget(null);
+					}
+				/*} else if (owner.getEntityData().hasKey(ItemSummoningContract.SUMMON_RALLY)) {
+					int[] ia = owner.getEntityData().getIntArray(ItemSummoningContract.SUMMON_RALLY);
+					if (ia.length == 3) {
+						BlockPos pos = new BlockPos(ia[0], ia[1], ia[2]);
+						this. getNavigator().
+					}*/
 				}
 			}
 		}

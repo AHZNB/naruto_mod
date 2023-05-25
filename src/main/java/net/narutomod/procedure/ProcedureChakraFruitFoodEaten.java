@@ -154,12 +154,19 @@ public class ProcedureChakraFruitFoodEaten extends ElementsNarutomodMod.ModEleme
 					SoundCategory.NEUTRAL, (float) 1, (float) 1);
 		}
 		if ((!(world.isRemote))) {
-			PlayerTracker.addBattleXp((EntityPlayerMP) entity, 90000d);
 			d = (double) 100000;
 			while (((d) > 0)) {
 				d1 = EntityXPOrb.getXPSplit((int) d);
 				d = (double) ((d) - (d1));
-				world.spawnEntity(new EntityXPOrb(world, entity.posX, entity.posY, entity.posZ, (int) d1));
+				world.spawnEntity(new EntityXPOrb(world, entity.posX, entity.posY, entity.posZ, (int) d1) {
+					@Override
+					public void onCollideWithPlayer(EntityPlayer entityIn) {
+						if (!this.world.isRemote && this.delayBeforeCanPickup == 0 && entityIn.xpCooldown == 0) {
+							PlayerTracker.addBattleXp(entityIn, this.xpValue);
+						}
+						super.onCollideWithPlayer(entityIn);
+					}
+				});
 			}
 		}
 	}

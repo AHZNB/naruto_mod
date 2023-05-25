@@ -239,7 +239,7 @@ public class ItemYoton extends ElementsNarutomodMod.ModElement {
 		@SideOnly(Side.CLIENT)
 		public class RenderBiggerMe extends EntityClone.ClientRLM.RenderClone<EntityBiggerMe> {
 			public RenderBiggerMe(RenderManager renderManager) {
-				new EntityClone.ClientRLM().super(renderManager);
+				EntityClone.ClientRLM.getInstance().super(renderManager);
 			}
 
 			@Override

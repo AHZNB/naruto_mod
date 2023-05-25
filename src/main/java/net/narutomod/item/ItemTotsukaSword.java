@@ -20,6 +20,7 @@ import net.minecraft.item.Item;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -27,6 +28,7 @@ import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import java.util.Set;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.UUID;
 
 import com.google.common.collect.Multimap;
 
@@ -34,6 +36,8 @@ import com.google.common.collect.Multimap;
 public class ItemTotsukaSword extends ElementsNarutomodMod.ModElement {
 	@GameRegistry.ObjectHolder("narutomod:totsuka_sword")
 	public static final Item block = null;
+	public static final UUID REACH_MODIFIER = UUID.fromString("d91a016b-4d4a-49a1-9f1f-cfaa17fb9a46");
+
 	public ItemTotsukaSword(ElementsNarutomodMod instance) {
 		super(instance, 549);
 	}
@@ -49,6 +53,8 @@ public class ItemTotsukaSword extends ElementsNarutomodMod.ModElement {
 							new AttributeModifier(ATTACK_DAMAGE_MODIFIER, "Weapon modifier", (double) this.getAttackDamage(), 0));
 					multimap.put(SharedMonsterAttributes.ATTACK_SPEED.getName(),
 							new AttributeModifier(ATTACK_SPEED_MODIFIER, "Weapon modifier", -3, 0));
+					multimap.put(EntityPlayer.REACH_DISTANCE.getName(),
+							new AttributeModifier(REACH_MODIFIER, "Weapon modifier", 0.2d, 2));
 				}
 				return multimap;
 			}

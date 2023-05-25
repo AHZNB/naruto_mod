@@ -113,7 +113,7 @@ public class EntityC3 extends ElementsNarutomodMod.ModElement {
 			//}
 			if (!this.world.isRemote && this.ticksExisted > this.growTime) {
 				if (this.effectEntity == null) {
-					this.playSound((SoundEvent)SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:c3")), 50f, 1f);
+					this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:c3")), 50f, 1f);
 					this.effectEntity = EntitySpecialEffect.spawn(this.world, EntitySpecialEffect.Type.ROTATING_LINES_COLOR_END, 
 					 0xFFFF00, 30f, 120, this.posX, this.posY, this.posZ);
 				} else {
@@ -124,13 +124,12 @@ public class EntityC3 extends ElementsNarutomodMod.ModElement {
 				this.setNoGravity(false);
 				if (this.user != null) {
 					this.world.playSound(null, this.user.posX, this.user.posY, this.user.posZ, 
-					 (SoundEvent)SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:katsu")), 
-					 SoundCategory.NEUTRAL, 1f, 1f);
+					 SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:katsu")), SoundCategory.NEUTRAL, 1f, 1f);
 				}
 			}
 			if (!this.world.isRemote && !this.hasNoGravity() && this.onGround) {// && this.detonateTicks == 0) {
 				new EventSphericalExplosion(this.world, null, (int)this.posX, (int)this.posY + 5, (int)this.posZ, 30, 0, 0.3f);
-				ProcedureAoeCommand.set(this, 0d, 30d).damageEntities(ItemJutsu.causeJutsuDamage(this, null).setExplosion(), 30f);
+				ProcedureAoeCommand.set(this, 0d, 30d).damageEntities(ItemJutsu.causeJutsuDamage(this, null).setExplosion(), 400f);
 				this.setDead();
 				if (this.effectEntity != null) {
 					this.effectEntity.setLifespan(50);

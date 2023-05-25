@@ -34,7 +34,7 @@ Jutsus:
  - fixed fake death syndrome when dying with shadow clones alive
  - remove shadow clones when user changes dimension
  - shadow clones using rasengan will not hurt summoner or other clones of the same summoner
- - shadow clones can use hiding in camouflage
+ - shadow clones can use hiding in camouflage, chidori
  - added Flying thunder god jutsu and scroll. can be used on blocks, entities and 3-prong kunais
  - flying thunder god jutsu can escape from immobilization jutsus
  - body replacement jutsu now only activates on entity damage source, and user doesn't have paralysis effect
@@ -49,6 +49,9 @@ Jutsus:
  - phantom 9 sealing jutsu no longer works on the 10-tails or its jinchuriki
  - wind release chakra flow cannot be used together with lightning chakra mode or chidori
  - shinratensei can aim and throw floating chunks of earth at targets if shift+banshotenin was used to dislodge chunks of earth
+ - explosion release C3 now does custom explosion, damage 400 to all within 30 blocks
+ - 7th gate can't fly anymore, only 8th gate can fly
+ - improved 8-trigrams revolving palm animation
 
 Items:
  - fix using /give command to give nature release items duplicates the item
@@ -66,6 +69,7 @@ Items:
  - nerfed kamui shuriken to do less damage and use more chakra
  - fixed putting kiba sword in offhand deletes the sword
  - remembers 6-path senjutsu jutsuXPs after the item is removed (when rinnesharingan is off)
+ - phantom 9 dragons sealing jutsu only works if the target is within 20 blocks
 
 Entities:
  - added 5 second cooldown for Itachi's genjutsu
@@ -76,9 +80,11 @@ Entities:
  - new 1-tail shukaku model
  - new 4-tails Son Goku model
  - made itachi's real chance configurable
+ - smarter itachi in susanoo AI
  - patch loophole for sakura to drop anything
  - better NPC/clone water walking and wall climbing AI
  - snake summons greater than size 4 will break wood/trees when moving
+ - bijus will take less damage if the attacker is in its view and the damage is blockable
 
 Advancements:
  - associate "Rinnesharingan Activated" advancement to the correct parent (rinnegan/tenseigan) advancement

@@ -209,7 +209,7 @@ public class EntityLimboClone extends ElementsNarutomodMod.ModElement {
 	@SideOnly(Side.CLIENT)
 	public class RenderEC extends EntityClone.ClientRLM.RenderClone<EC> {
 		public RenderEC(RenderManager renderManager) {
-			new EntityClone.ClientRLM().super(renderManager);
+			EntityClone.ClientRLM.getInstance().super(renderManager);
 			this.shadowSize = 0.0f;
 		}
 

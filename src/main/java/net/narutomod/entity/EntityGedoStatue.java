@@ -411,8 +411,10 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 								}
 							}
 						}
-					} else if (age > this.riseTime && age < this.riseTime + 100) {
-						if (age % 10 == 1) {
+					} else if (age > this.riseTime) {
+						if (this.fuuinTarget.getDistance(this) > 20d) {
+							this.fuuinTarget = null;
+						} else if (age < this.riseTime + 100 && age % 10 == 1) {
 							this.world.spawnEntity(new EntityPurpleDragon(this, this.fuuinTarget));
 						}
 					}
@@ -620,12 +622,14 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 				return;
 			if (!this.world.isRemote && result.entityHit instanceof EntityLivingBase
 			 && (!(result.entityHit instanceof EntityPlayer) || !((EntityPlayer)result.entityHit).isCreative())) {
-			 	if (this.fuuin && result.entityHit instanceof EntityTailedBeast.Base) {
-					result.entityHit.attackEntityFrom(ItemJutsu.causeSenjutsuDamage(this, this.shootingEntity)
-					 .setDamageBypassesArmor(), this.damage + (this.rand.nextFloat()-0.5f) * 40f);
-			 	}
-				if (!this.fuuin && !result.entityHit.equals(((EntityCustom)this.shootingEntity).getSummoner())) {
-					net.narutomod.Chakra.pathway((EntityLivingBase)result.entityHit).consume(1.0f);
+			 	if (this.fuuin) {
+					Chakra.pathway((EntityLivingBase)result.entityHit).consume(20d);
+			 		if (result.entityHit instanceof EntityTailedBeast.Base) {
+						result.entityHit.attackEntityFrom(ItemJutsu.causeSenjutsuDamage(this, this.shootingEntity)
+						 .setDamageBypassesArmor(), this.damage * 0.25f + (this.rand.nextFloat()-0.5f) * 10f);
+			 		}
+			 	} else if (!result.entityHit.equals(((EntityCustom)this.shootingEntity).getSummoner())) {
+					Chakra.pathway((EntityLivingBase)result.entityHit).consume(1.0f);
 					result.entityHit.attackEntityFrom(ItemJutsu.causeSenjutsuDamage(this, this.shootingEntity)
 					 .setDamageBypassesArmor(), this.damage + (this.rand.nextFloat()-0.5f) * 40f);
 					if (this.targetList.contains(result.entityHit)) {

@@ -1,8 +1,8 @@
 {
   "id_map": {
+    "DIMENSION": 13,
     "GUI": 64,
-    "ENTITY": 422,
-    "DIMENSION": 13
+    "ENTITY": 422
   },
   "mod_elements": [
     {
@@ -3740,7 +3740,7 @@
       "type": "tool",
       "sortid": 549,
       "compiles": true,
-      "locked_code": false,
+      "locked_code": true,
       "ids": {},
       "registry_name": "totsuka_sword"
     },
@@ -8062,7 +8062,7 @@
       "tooltip.rinnegan.jutsu2": "Tendo (Chibaku Tensei / [SHIFT] Tengai Shinsei),  Preta (Shield), Animal (Summoning), Naraka (King of Hell),  Outer (Gedo Mazo NXP:8100)",
       "tooltip.rinnegan.jutsu3": "Universal Pull ([SHIFT] to dislodge blocks)",
       "entity.wood_burial.name": "Wood Burial",
-      "entity.hakkeshokeiten.name": "Hakkesho Keiten",
+      "entity.hakkeshokeiten.name": "8-Trigrams Revolving Heaven",
       "subtitles.snake_hiss": "",
       "tooltip.shikotsumyaku.dancewillow": "Willow Dance",
       "tooltip.shibuki.general": "The Shibuki is one of the swords of the Seven Swordsmen of the Mist. The blade utilises various explosive tags contained within a substantial scroll in order to incorporate explosions into the user\u0027s own swordsmanship earning it the title of \"blastsword\".",

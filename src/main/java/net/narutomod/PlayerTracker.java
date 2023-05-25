@@ -67,7 +67,7 @@ public class PlayerTracker extends ElementsNarutomodMod.ModElement {
 		return MathHelper.sqrt(getBattleXp(player));
 	}
 
-	public static void addBattleXp(EntityPlayerMP entity, double xp) {
+	public static void addBattleXp(EntityPlayer entity, double xp) {
 		addBattleXp(entity, xp, true);
 	}
 

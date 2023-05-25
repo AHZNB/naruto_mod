@@ -86,7 +86,7 @@ public class EntityClone extends ElementsNarutomodMod.ModElement {
 	@Override
 	public void preInit(FMLPreInitializationEvent event) {
 		RenderingRegistry.registerEntityRenderingHandler(_Base.class, renderManager -> {
-			return ClientRLM.instance.new RenderClone(renderManager);
+			return ClientRLM.getInstance().new RenderClone(renderManager);
 		});
 	}
 
@@ -581,6 +581,13 @@ public class EntityClone extends ElementsNarutomodMod.ModElement {
 
     	public ClientRLM() {
     		instance = this;
+    	}
+
+    	public static ClientRLM getInstance() {
+    		if (instance == null) {
+    			new ClientRLM();
+    		}
+    		return instance;
     	}
 
 		@SideOnly(Side.CLIENT)

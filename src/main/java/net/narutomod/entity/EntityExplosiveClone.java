@@ -55,7 +55,7 @@ public class EntityExplosiveClone extends ElementsNarutomodMod.ModElement {
 	@SideOnly(Side.CLIENT)
 	public class CustomRender extends EntityClone.ClientRLM.RenderClone<EC> {
 		public CustomRender(RenderManager renderManagerIn) {
-			new EntityClone.ClientRLM().super(renderManagerIn);
+			EntityClone.ClientRLM.getInstance().super(renderManagerIn);
 		}
 
 	    @Override

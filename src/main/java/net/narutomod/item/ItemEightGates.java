@@ -259,7 +259,7 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 			new Properties(4, I18n.translateToLocal("chattext.eightgates.gate4"), 360, 25, 0x18FFFFFF, 7, 64, 2, 60, 1.2f, false),
 			new Properties(5, I18n.translateToLocal("chattext.eightgates.gate5"), 520, 30, 0x20FFFFFF, 15, 68, 2, 60, 1.4f, false),
 			new Properties(6, I18n.translateToLocal("chattext.eightgates.gate6"), 840, 30, 0x3000FF00, 31, 72, 3, 60, 1.6f, false),
-			new Properties(7, I18n.translateToLocal("chattext.eightgates.gate7"), 1480, 30, 0x300000FF, 84, 76, 3, 60, 1.8f, true),
+			new Properties(7, I18n.translateToLocal("chattext.eightgates.gate7"), 1480, 30, 0x300000FF, 84, 76, 3, 60, 1.8f, false),
 			new Properties(8, I18n.translateToLocal("chattext.eightgates.gate8"), 2760, 30, 0x30FF0000, 349, 80, 4, 60, 2f, true)};
 						
 		public RangedItem() {
@@ -701,7 +701,7 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 			@Override
 			protected void attackEntityFrom(EntityLivingBase player, Entity target) {
 				super.attackEntityFrom(player, target);
-				target.attackEntityFrom(DamageSource.causeMobDamage(player), EntitySekizo.this.damage);
+				target.attackEntityFrom(DamageSource.causeMobDamage(player).setDamageBypassesArmor(), EntitySekizo.this.damage);
 			}
 
 			@Override
@@ -783,7 +783,7 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 				return;
 			if (!this.world.isRemote && this.shootingEntity != null) {
 				ProcedureAoeCommand.set(this, 0.0D, 0.5d * this.getEntityScale()).exclude(this.shootingEntity)
-				 .damageEntities(DamageSource.causeIndirectDamage(this, this.shootingEntity).setDamageBypassesArmor().setDamageIsAbsolute(),
+				 .damageEntities(DamageSource.causeIndirectDamage(this, this.shootingEntity).setDamageBypassesArmor(),
 				 (float) ProcedureUtils.getModifiedAttackDamage(this.shootingEntity) * this.damageMultiplier);
 				this.shootingEntity.getEntityData().setDouble(NarutomodModVariables.InvulnerableTime, 40d);
 				this.world.newExplosion(this.shootingEntity, this.posX, this.posY, this.posZ, 70.0F, false,

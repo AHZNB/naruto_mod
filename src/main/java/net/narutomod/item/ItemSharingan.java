@@ -101,6 +101,10 @@ public class ItemSharingan extends ElementsNarutomodMod.ModElement {
 			}
 		}
 
+		public void forceDamage(ItemStack stack, int damage) {
+			super.setDamage(stack, damage);
+		}
+
 		@Override
 		public int getDamage(ItemStack stack) {
 			int itemDamage = this.getMetadata(stack);

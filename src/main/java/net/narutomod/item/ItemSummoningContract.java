@@ -14,6 +14,9 @@ import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraft.world.World;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Item;
 import net.minecraft.entity.player.EntityPlayer;
@@ -22,8 +25,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraft.util.text.TextFormatting;
 
 import net.narutomod.entity.EntityToad;
 import net.narutomod.entity.EntitySnake;
@@ -48,6 +49,7 @@ public class ItemSummoningContract extends ElementsNarutomodMod.ModElement {
 	public static final int ENTITY2ID = 354;
 	public static final int ENTITY3ID = 333;
 	public static final int ENTITY4ID = 334;
+	public static final String SUMMON_RALLY = "SummonRallyPoint";
 	public static final ItemJutsu.JutsuEnum SUMMONTOAD = new ItemJutsu.JutsuEnum(0, "toad_summon", 'C', 100d, new EntityGenericToad.Jutsu());
 	public static final ItemJutsu.JutsuEnum SUMMONSNAKE = new ItemJutsu.JutsuEnum(1, "snake_summon", 'C', 100d, new EntityGenericSnake.Jutsu());
 	public static final ItemJutsu.JutsuEnum SUMMONSLUG = new ItemJutsu.JutsuEnum(2, "slug", 'C', 100d, new EntitySlug.Jutsu());
@@ -127,7 +129,12 @@ public class ItemSummoningContract extends ElementsNarutomodMod.ModElement {
 		@Override
 		public boolean onLeftClickEntity(ItemStack itemstack, EntityPlayer attacker, Entity target) {
 			if (attacker.equals(target)) {
-				target = ProcedureUtils.objectEntityLookingAt(attacker, 50d).entityHit;
+				RayTraceResult res = ProcedureUtils.objectEntityLookingAt(attacker, 50d, 3d);
+				target = res.entityHit;
+				/*if (res.typeOfHit == RayTraceResult.Type.BLOCK) {
+					int[] ia = {res.getBlockPos().getX(), res.getBlockPos().getY(), res.getBlockPos().getZ()};
+					attacker.getEntityData().setIntArray(SUMMON_RALLY, ia);
+				}*/
 			}
 			if (target instanceof EntityLivingBase) {
 				attacker.setRevengeTarget((EntityLivingBase)target);
@@ -195,7 +202,7 @@ public class ItemSummoningContract extends ElementsNarutomodMod.ModElement {
 					 0xD0FFFFFF, (int)(power * 30));
 				}
 				entity.world.playSound(null, entity.posX, entity.posY, entity.posZ,
-				  net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation(("narutomod:kuchiyosenojutsu"))),
+				  net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:kuchiyosenojutsu")),
 				  net.minecraft.util.SoundCategory.PLAYERS, 1f, 0.8f);
 				EntityToad.EntityCustom entity1 = power >= 16.0f ? new EntityGamabunta.EntityCustom(entity)
 				 : new EntityGenericToad(entity, power);

@@ -7,14 +7,18 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 
 import net.minecraft.world.World;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.ai.EntityAIAttackMelee;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.EntityLivingBase;
@@ -32,12 +36,7 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.client.Minecraft;
-import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.ai.EntityAIAttackMelee;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
 
 import net.narutomod.procedure.ProcedureTotsukaSwordToolInHandTick;
 import net.narutomod.procedure.ProcedureUtils;
@@ -99,10 +98,9 @@ public class EntitySusanooClothed extends ElementsNarutomodMod.ModElement {
 			if (!(entity instanceof EntityPlayer)) {
 				this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).applyModifier(new AttributeModifier("susanoo.maxhealth", 200.0d, 0));
 				this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).applyModifier(new AttributeModifier("susanoo.damage", 40.0d, 0));
-				//this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(32.0d);
-				//this.setNoAI(false);
 				this.setFlameColor(0x20ec1c24);
 				this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(ItemTotsukaSword.block));
+				this.setNoAI(false);
 			} else {
 				this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH)
 				 .applyModifier(new AttributeModifier("susanoo.maxhealth", this.hasLegs() ? 10d : 3d, 2));
@@ -127,12 +125,12 @@ public class EntitySusanooClothed extends ElementsNarutomodMod.ModElement {
 		protected void initEntityAI() {
 			//this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, false));
 			//this.targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, EntityPlayer.class, false, false));
-			this.tasks.addTask(1, new EntityAIAttackMelee(this, 1.5D, true) {
+			this.tasks.addTask(1, new EntitySusanooBase.AIAttackRangedAndMoveTowardsTarget(this, 1.0D, 40, 4F));
+			this.tasks.addTask(2, new EntityAIAttackMelee(this, 1.5D, true) {
 				@Override
 				protected double getAttackReachSqr(EntityLivingBase attackTarget) {
-					double reach = ProcedureUtils.getReachDistance(EntityCustom.this);
-					return reach * reach + 
-					 (EntityCustom.this.getHeldItemMainhand().getItem() == ItemTotsukaSword.block ? 16.0d : 0d);
+					return ProcedureUtils.getReachDistanceSq(EntityCustom.this);
+					 //+ (EntityCustom.this.getHeldItemMainhand().getItem() == ItemTotsukaSword.block ? 16.0d : 0d);
 				}
 			});
 		}
@@ -186,7 +184,7 @@ public class EntitySusanooClothed extends ElementsNarutomodMod.ModElement {
 		protected void showHeldWeapons() {
 			super.showHeldWeapons();
 			EntityLivingBase owner = this.getOwnerPlayer();
-			if (owner != null) {
+			if (owner instanceof EntityPlayer) {
 				ItemStack ownerheldstack = owner.getHeldItemMainhand();
 				ItemStack thisHeldstack = this.getHeldItemMainhand();
 				if (ownerheldstack.getItem() == ItemTotsukaSword.block) {
@@ -240,10 +238,12 @@ public class EntitySusanooClothed extends ElementsNarutomodMod.ModElement {
 	        return ((Boolean)this.dataManager.get(SWINGING_ARMS)).booleanValue();
 	    }
 	
+	    @Override
 	    public void setSwingingArms(boolean swingingArms) {
 	        this.dataManager.set(SWINGING_ARMS, Boolean.valueOf(swingingArms));
 	    }
 
+	    @Override
 	    public void attackEntityWithRangedAttack(EntityLivingBase target, float distanceFactor) {
 	    	if (this.bulletEntity == null) {
 	    		this.createBullet(MODELSCALE * 0.5f);
@@ -257,7 +257,7 @@ public class EntitySusanooClothed extends ElementsNarutomodMod.ModElement {
 	    	if (this.bulletEntity == null) {
 	    		this.createBullet(MODELSCALE * 0.5f);
 	    	}
-	    	this.bulletEntity.shoot(x, y, z, 0.95f, 0.0f);
+	    	this.bulletEntity.shoot(x, y, z, 0.99f, 0.0f);
 	    	this.bulletEntity = null;
 	    	this.setSwingingArms(false);
 	    }
@@ -433,9 +433,8 @@ public class EntitySusanooClothed extends ElementsNarutomodMod.ModElement {
 					model.bipedLeftLeg.showModel = false;
 					model.bipedRightLeg.showModel = false;
 				}
-				if (Minecraft.getMinecraft().getRenderViewEntity().equals(entity.getControllingPassenger())
-						&& this.renderManager.options.thirdPersonView == 0)
-				{
+				if (this.renderManager.renderViewEntity.equals(entity.getControllingPassenger())
+				 && this.renderManager.options.thirdPersonView == 0) {
 					model.bipedBody.showModel = false;
 					model.bipedHead.showModel = false;
 					model.bipedHeadwear.showModel = false;

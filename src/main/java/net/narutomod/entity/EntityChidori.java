@@ -198,7 +198,7 @@ public class EntityChidori extends ElementsNarutomodMod.ModElement {
 					}
 				}
 			}
-			if (!this.world.isRemote && (this.summoner == null || this.ticksExisted > this.duration || !this.canUse())) {
+			if (!this.world.isRemote && (this.summoner == null || !this.summoner.isEntityAlive() || this.ticksExisted > this.duration || !this.canUse())) {
 				this.setDead();
 			}
 			++this.ticksSinceLastSwing;

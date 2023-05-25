@@ -809,7 +809,7 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 	public static abstract class RenderBase<T extends Base> extends RenderBiped<T> {
 		public RenderBase(RenderManager renderManager, ModelBiped model) {
 			super(renderManager, model, 0.5f);
-			this.addLayer(new EntityClone.ClientRLM().new BipedArmorLayer(this));
+			this.addLayer(EntityClone.ClientRLM.getInstance().new BipedArmorLayer(this));
 			this.addLayer(new LayerInventoryItem(this));
 		}
 

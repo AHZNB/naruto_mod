@@ -152,9 +152,8 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 			this.tasks.addTask(1, new EntityNinjaMob.AIAttackRangedTactical(this, 1.0D, 50, 16.0F) {
 				@Override
 				public boolean shouldExecute() {
-					return super.shouldExecute()
-							&& EntityCustom.this.getAttackTarget().getDistance(EntityCustom.this)
-							> (EntityCustom.this.isSusanooActive() ? ProcedureUtils.getReachDistance(EntityCustom.this.susanooEntity) : 4d);
+					return super.shouldExecute() && !EntityCustom.this.isSusanooActive()
+							&& EntityCustom.this.getAttackTarget().getDistance(EntityCustom.this) > 4d;
 				}
 			});
 			this.tasks.addTask(2, new EntityNinjaMob.AILeapAtTarget(this, 1.0F) {
@@ -167,11 +166,10 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 			this.tasks.addTask(3, new EntityAIAttackMelee(this, 1.0d, true) {
 				@Override
 				public boolean shouldExecute() {
-					return super.shouldExecute()
-							&& EntityCustom.this.getAttackTarget().getDistance(EntityCustom.this)
-							<= (EntityCustom.this.isSusanooActive() ? ProcedureUtils.getReachDistance(EntityCustom.this.susanooEntity) : 4d);
+					return super.shouldExecute() && !EntityCustom.this.isRiding()
+							&& EntityCustom.this.getAttackTarget().getDistance(EntityCustom.this) <= 4d;
 				}
-				@Override
+				/*@Override
 				protected double getAttackReachSqr(EntityLivingBase attackTarget) {
 					return EntityCustom.this.isSusanooActive() ? ProcedureUtils.getReachDistanceSq(EntityCustom.this.susanooEntity)
 							: super.getAttackReachSqr(attackTarget);
@@ -187,7 +185,7 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 					} else {
 						super.checkAndPerformAttack(p_190102_1_, p_190102_2_);
 					}
-				}
+				}*/
 			});
 			this.tasks.addTask(4, new EntityAIWatchClosest2(this, EntityPlayer.class, 15.0F, 1.0F));
 			this.tasks.addTask(5, new EntityAIWander(this, 0.3));
@@ -219,6 +217,7 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 					stack = this.getItemFromInventory(1);
 				}
 				if (stack.getItem() == ItemMangekyoSharingan.helmet) {
+				 	((ItemSharingan.Base)stack.getItem()).forceDamage(stack, this.rand.nextInt(stack.getMaxDamage()));
 					this.entityDropItem(stack, 0.0f);
 				}
 			}
@@ -287,13 +286,16 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 			super.updateAITasks();
 			EntityLivingBase target = this.getAttackTarget();
 			if (target != null && target.isEntityAlive()) {
+				if (this.isSusanooActive()) {
+					this.susanooEntity.setAttackTarget(target);
+				}
 				if (this.lookedAtTime >= 5 && this.ticksExisted > this.lastGenjutsuTime + this.genjutsuDuration + GENJUTSU_COOLDOWN
 						&& this.consumeChakra(GENJUTSU_CHAKRA)) {
 					if (target instanceof EntityPlayerMP) {
 						ProcedureSync.MobAppearanceParticle.send((EntityPlayerMP)target, ENTITYID_RANGED);
 					}
 					this.world.playSound(null, target.posX, target.posY, target.posZ,
-							SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:genjutsu")), SoundCategory.NEUTRAL, 1f, 1f);
+					 SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:genjutsu")), SoundCategory.NEUTRAL, 1f, 1f);
 					if (!this.world.isRemote) {
 						target.addPotionEffect(new PotionEffect(PotionParalysis.potion, this.genjutsuDuration, 1, false, false));
 						target.addPotionEffect(new PotionEffect(MobEffects.NAUSEA, this.genjutsuDuration+40, 0, false, true));
@@ -341,14 +343,12 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 		public void attackEntityWithRangedAttack(EntityLivingBase target, float distanceFactor) {
 			int chance = this.rand.nextInt(12);
 			if (this.getRidingEntity() instanceof EntitySusanooClothed.EntityCustom) {
-				if (chance < 5) {
-					((EntitySusanooClothed.EntityCustom)this.getRidingEntity()).attackEntityWithRangedAttack(target, distanceFactor);
-				}
+				((EntitySusanooClothed.EntityCustom)this.getRidingEntity()).attackEntityWithRangedAttack(target, distanceFactor);
 			} else {
 				if (chance == 0 && distanceFactor > 0.3333f && this.consumeChakra(AMATERASU_CHAKRA)) {
 					this.world.playSound(null, target.posX, target.posY, target.posZ, SoundEvent.REGISTRY
 							.getObject(new ResourceLocation("narutomod:sharingansfx")), SoundCategory.NEUTRAL, 1f, 1f);
-					target.addPotionEffect(new PotionEffect(PotionAmaterasuFlame.potion, 1200, 1, false, false));
+					target.addPotionEffect(new PotionEffect(PotionAmaterasuFlame.potion, 1200, 3, false, false));
 				} else if (chance <= 2 && distanceFactor >= 0.5333f && this.consumeChakra(FIREBALL_CHAKRA)) {
 					double d0 = target.posX - this.posX;
 					double d1 = target.posY - (this.posY + this.getEyeHeight());

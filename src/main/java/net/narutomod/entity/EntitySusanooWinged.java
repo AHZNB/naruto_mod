@@ -305,6 +305,7 @@ public class EntitySusanooWinged extends ElementsNarutomodMod.ModElement {
 	        return ((Boolean)this.dataManager.get(SWINGING_ARMS)).booleanValue();
 	    }
 	
+	    @Override
 	    public void setSwingingArms(boolean swingingArms) {
 	        this.dataManager.set(SWINGING_ARMS, Boolean.valueOf(swingingArms));
 	    }
@@ -314,7 +315,7 @@ public class EntitySusanooWinged extends ElementsNarutomodMod.ModElement {
 	    	if (this.bulletEntity == null) {
 	    		this.createBullet(MODELSCALE * 0.5f);
 	    	}
-	    	this.bulletEntity.shoot(x, y, z, 0.95f, 0.0f);
+	    	this.bulletEntity.shoot(x, y, z, 0.99f, 0.0f);
 	    	this.bulletEntity = null;
 	    	this.setSwingingArms(false);
 	    }

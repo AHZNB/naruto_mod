@@ -482,6 +482,17 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 			if (this.equals(source.getTrueSource())) {
 				return false;
 			}
+			if (!source.isUnblockable()) {
+				Vec3d vec3d = source.getDamageLocation();
+				if (vec3d != null) {
+					Vec3d vec3d1 = this.getLook(1.0F);
+					Vec3d vec3d2 = vec3d.subtractReverse(new Vec3d(this.posX, this.posY, this.posZ)).normalize();
+					vec3d2 = new Vec3d(vec3d2.x, 0.0D, vec3d2.z);
+					if (vec3d2.dotProduct(vec3d1) < 0.0D) {
+						amount *= this.rand.nextFloat();
+					}
+				}
+			}
 			if (source.getTrueSource() instanceof EntityLivingBase) {
 				float hp = this.getHealth();
 				float maxhp = this.getMaxHealth();
