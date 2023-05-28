@@ -82,13 +82,12 @@ public class EntitySusanooClothed extends ElementsNarutomodMod.ModElement {
 			this.setSize(MODELSCALE * 0.8F, MODELSCALE * (this.hasLegs() ? 2.0F : 1.25F));
 			this.getEntityData().setDouble("entityModelScale", (double)MODELSCALE);
 			this.lifeSpan = Integer.MAX_VALUE;
-			this.chakraUsage = this.hasLegs() ? 90d : 70d;
+			this.chakraUsage = this.hasLegs() ? 70d : 60d;
 		}
 
 		public EntityCustom(EntityLivingBase entity, boolean fullBody) {
 			super(entity);
 			this.setLegs(fullBody);
-			this.setSize(MODELSCALE * 0.8F, MODELSCALE * (this.hasLegs() ? 2.0F : 1.25F));
 			this.getEntityData().setDouble("entityModelScale", (double)MODELSCALE);
 			//this.setFlameColor(0x20b83dba);
 			if (this.hasLegs()) {
@@ -105,10 +104,10 @@ public class EntitySusanooClothed extends ElementsNarutomodMod.ModElement {
 				this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH)
 				 .applyModifier(new AttributeModifier("susanoo.maxhealth", this.hasLegs() ? 10d : 3d, 2));
 				this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE)
-				 .setBaseValue(Math.min(this.playerXp, this.hasLegs() ? EntitySusanooBase.BXP_REQUIRED_L4 : EntitySusanooBase.BXP_REQUIRED_L3) * 0.005d);
+				 .setBaseValue(Math.min(this.playerXp, this.hasLegs() ? EntitySusanooBase.BXP_REQUIRED_L4 : EntitySusanooBase.BXP_REQUIRED_L3) * 0.003d);
 			}
 			this.setHealth(this.getMaxHealth());
-			this.chakraUsage = this.hasLegs() ? 60d : 50d;
+			this.chakraUsage = this.hasLegs() ? 70d : 60d;
 			this.stepHeight = this.height / 3.0F;
 			this.lifeSpan = Integer.MAX_VALUE;
 		}
@@ -141,6 +140,15 @@ public class EntitySusanooClothed extends ElementsNarutomodMod.ModElement {
 
 		protected void setLegs(boolean hasLegs) {
 			this.getDataManager().set(HAS_LEGS, Boolean.valueOf(hasLegs));
+			this.setSize(MODELSCALE * 0.8F, MODELSCALE * (hasLegs ? 2.0F : 1.25F));
+		}
+
+		@Override
+		public void notifyDataManagerChange(DataParameter<?> key) {
+			super.notifyDataManagerChange(key);
+			if (HAS_LEGS.equals(key) && this.world.isRemote) {
+				this.setSize(MODELSCALE * 0.8F, MODELSCALE * (this.hasLegs() ? 2.0F : 1.25F));
+			}
 		}
 
 		@Override
@@ -162,11 +170,6 @@ public class EntitySusanooClothed extends ElementsNarutomodMod.ModElement {
 	    
 	    protected void setOwnerPlayer(EntityPlayer entity) {
 			super.setOwnerPlayer(entity);
-		}
-
-		@Override
-		protected void setSize(float width, float height) {
-			super.setSize(width, height);
 		}
 
 		public void setLifeSpan(int ticks) {
@@ -207,9 +210,9 @@ public class EntitySusanooClothed extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public void onEntityUpdate() {
-			if (this.hasLegs() && this.height < MODELSCALE * 2f) {
-				this.setSize(this.width, MODELSCALE * 2f);
-			}
+			//if (this.hasLegs() && this.height < MODELSCALE * 2f) {
+			//	this.setSize(this.width, MODELSCALE * 2f);
+			//}
 			super.onEntityUpdate();
 			if (this.lifeSpan-- <= 0) {
 				this.setDead();

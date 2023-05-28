@@ -15,6 +15,7 @@ Jutsus:
  - fixed eternal mangekyo intangible not negating damage 
  - susanoo, shield based entities and riding on bijus will no longer protect you from
    damage done to yourself by opening your gates, only king of hell can protect you
+ - if susanoo or shield based jutsus gets killed by enough damage, residual damage will be transfered to player
  - fixed water jutsus leaving behind residual water blocks
  - biju cloak now force closes if you don't have anymore chakra
  - biju cloak 2 bijudama charge time is dependant on cloak XP, cooldown 5 seconds
@@ -45,13 +46,16 @@ Jutsus:
  - re-made fire annihilation and great flame jutsus to not go through walls. (optimized)
  - buffed rasengan damage
  - increased speed and size of Lava release: magma balls
- - fixed susanoo bug sometimes creating infinite susanoo entities on the client side
  - phantom 9 sealing jutsu no longer works on the 10-tails or its jinchuriki
+ - phantom 9 dragons sealing jutsu only works if the target is within 20 blocks
  - wind release chakra flow cannot be used together with lightning chakra mode or chidori
  - shinratensei can aim and throw floating chunks of earth at targets if shift+banshotenin was used to dislodge chunks of earth
  - explosion release C3 now does custom explosion, damage 400 to all within 30 blocks
  - 7th gate can't fly anymore, only 8th gate can fly
  - improved 8-trigrams revolving palm animation
+ - fixed susanoo bug sometimes creating infinite susanoo entities on the client side
+ - susanoo re-balance: added ribcage stage and requires 2000 nxp, skeleton: 5000 nxp, half body: 10000, full body: 20000, perfect 36000
+   susanoo damage nerfed a bit
 
 Items:
  - fix using /give command to give nature release items duplicates the item
@@ -69,7 +73,7 @@ Items:
  - nerfed kamui shuriken to do less damage and use more chakra
  - fixed putting kiba sword in offhand deletes the sword
  - remembers 6-path senjutsu jutsuXPs after the item is removed (when rinnesharingan is off)
- - phantom 9 dragons sealing jutsu only works if the target is within 20 blocks
+ - fixed learning jutsu scrolls on off-hand deletes item in main-hand bug
 
 Entities:
  - added 5 second cooldown for Itachi's genjutsu
@@ -85,6 +89,7 @@ Entities:
  - better NPC/clone water walking and wall climbing AI
  - snake summons greater than size 4 will break wood/trees when moving
  - bijus will take less damage if the attacker is in its view and the damage is blockable
+ - tweaked pricing for ninja merchants trade items
 
 Advancements:
  - associate "Rinnesharingan Activated" advancement to the correct parent (rinnegan/tenseigan) advancement

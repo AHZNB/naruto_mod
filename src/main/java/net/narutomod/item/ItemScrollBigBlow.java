@@ -44,7 +44,7 @@ public class ItemScrollBigBlow extends ElementsNarutomodMod.ModElement {
 	}
 	public static class ItemCustom extends Item {
 		public ItemCustom() {
-			setMaxDamage(0);
+			setMaxDamage(1);
 			maxStackSize = 1;
 			setUnlocalizedName("scroll_big_blow");
 			setRegistryName("scroll_big_blow");

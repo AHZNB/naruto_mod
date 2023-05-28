@@ -87,13 +87,13 @@ public class EntityTenten extends ElementsNarutomodMod.ModElement {
 			Map<EntityNinjaMerchant.TradeLevel, MerchantRecipeList> trades = Maps.newHashMap();
 
 			MerchantRecipeList commonTrades = new MerchantRecipeList();
-			commonTrades.add(new MerchantRecipe(new ItemStack(Items.EMERALD, 1), ItemStack.EMPTY, new ItemStack(ItemShuriken.block, 24), 0, 1));
-			commonTrades.add(new MerchantRecipe(new ItemStack(Items.EMERALD, 1), ItemStack.EMPTY, new ItemStack(ItemKunai.block, 3), 0, 1));
-			commonTrades.add(new MerchantRecipe(new ItemStack(Items.EMERALD, 1), ItemStack.EMPTY, new ItemStack(BlockExplosiveTag.block, 3), 0, 1));
+			commonTrades.add(new MerchantRecipe(new ItemStack(Items.EMERALD, 2), ItemStack.EMPTY, new ItemStack(ItemShuriken.block, 24), 0, 1));
+			commonTrades.add(new MerchantRecipe(new ItemStack(Items.EMERALD, 2), ItemStack.EMPTY, new ItemStack(ItemKunai.block, 3), 0, 1));
+			commonTrades.add(new MerchantRecipe(new ItemStack(Items.EMERALD, 2), ItemStack.EMPTY, new ItemStack(BlockExplosiveTag.block, 3), 0, 1));
 
 			MerchantRecipeList uncommonTrades = new MerchantRecipeList();
-			uncommonTrades.add(new MerchantRecipe(new ItemStack(Items.EMERALD, 1), ItemStack.EMPTY, new ItemStack(ItemKunaiExplosive.block, 2), 0, 1));
-			uncommonTrades.add(new MerchantRecipe(new ItemStack(Items.EMERALD, 3), ItemStack.EMPTY, new ItemStack(ItemChokuto.block, 1), 0, 1));
+			uncommonTrades.add(new MerchantRecipe(new ItemStack(Items.EMERALD, 2), ItemStack.EMPTY, new ItemStack(ItemKunaiExplosive.block, 2), 0, 1));
+			uncommonTrades.add(new MerchantRecipe(new ItemStack(Items.EMERALD, 15), ItemStack.EMPTY, new ItemStack(ItemChokuto.block, 1), 0, 1));
 
 			trades.put(EntityNinjaMerchant.TradeLevel.COMMON, commonTrades);
 			trades.put(EntityNinjaMerchant.TradeLevel.UNCOMMON, uncommonTrades);

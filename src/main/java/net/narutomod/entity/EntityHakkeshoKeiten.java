@@ -102,11 +102,11 @@ public class EntityHakkeshoKeiten extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public boolean attackEntityFrom(DamageSource source, float amount) {
-			if (source.getTrueSource() instanceof EntityLivingBase 
-			 && !source.getTrueSource().equals(this.getSummoner()) && !this.equals(source.getTrueSource())) {
-				((EntityLivingBase) source.getTrueSource()).attackEntityFrom(source, amount);
+			Entity attacker = source.getTrueSource();
+			if (attacker instanceof EntityLivingBase && !attacker.equals(this.getSummoner()) && !this.equals(attacker)) {
+				attacker.attackEntityFrom(source, amount);
 			}
-			return false;
+			return super.attackEntityFrom(source, amount);
 		}
 
 		@Override

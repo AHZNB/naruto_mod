@@ -26,6 +26,9 @@ import net.minecraft.client.entity.AbstractClientPlayer;
 import net.narutomod.potion.PotionAmaterasuFlame;
 import net.narutomod.item.ItemMangekyoSharingan;
 import net.narutomod.ElementsNarutomodMod;
+import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraft.network.datasync.DataParameter;
+import net.minecraft.network.datasync.DataSerializers;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntitySusanooSkeleton extends ElementsNarutomodMod.ModElement {
@@ -42,18 +45,52 @@ public class EntitySusanooSkeleton extends ElementsNarutomodMod.ModElement {
 	}
 	
 	public static class EntityCustom extends EntitySusanooBase {
+		private static final DataParameter<Boolean> FULL_BODY = EntityDataManager.<Boolean>createKey(EntityCustom.class, DataSerializers.BOOLEAN);
+
 		public EntityCustom(World world) {
 			super(world);
-			this.setSize(2.4F, 3.6F);
+			this.setSize(2.4F, 2.4F);
 		}
 
 		public EntityCustom(EntityPlayer player) {
+			this(player, false);
+		}
+
+		public EntityCustom(EntityPlayer player, boolean full) {
 			super(player);
-			this.setSize(2.4F, 3.6F);
-			this.stepHeight = this.height / 3.0F;
+			this.setSize(2.4F, 2.4F);
 			this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE)
-			 .setBaseValue(Math.min(this.playerXp, EntitySusanooBase.BXP_REQUIRED_L2) * 0.005d);
-			//this.setFlameColor(0x20b83dba);
+			 .setBaseValue(Math.min(this.playerXp, EntitySusanooBase.BXP_REQUIRED_L2) * 0.003d);
+			if (!full) {
+				this.getEntityAttribute(EntityPlayer.REACH_DISTANCE).setBaseValue(0.0D);
+				this.chakraUsage = 30d;
+			} else {
+				this.setFullBody(true);
+			}
+			this.stepHeight = this.height / 3.0F;
+		}
+
+		@Override
+		protected void entityInit() {
+			super.entityInit();
+			this.getDataManager().register(FULL_BODY, Boolean.valueOf(false));
+		}
+
+		public boolean isFullBody() {
+			return ((Boolean)this.getDataManager().get(FULL_BODY)).booleanValue();
+		}
+
+		protected void setFullBody(boolean b) {
+			this.getDataManager().set(FULL_BODY, Boolean.valueOf(b));
+			this.setSize(2.4f, b ? 3.6f : 2.4f);
+		}
+
+		@Override
+		public void notifyDataManagerChange(DataParameter<?> key) {
+			super.notifyDataManagerChange(key);
+			if (FULL_BODY.equals(key) && this.world.isRemote) {
+				this.setSize(2.4f, this.isFullBody() ? 3.6f : 2.4f);
+			}
 		}
 
 		@Override
@@ -101,7 +138,7 @@ public class EntitySusanooSkeleton extends ElementsNarutomodMod.ModElement {
 				if (entity.isBeingRidden()) {
 					AbstractClientPlayer passenger = (AbstractClientPlayer) entity.getControllingPassenger();
 					this.copyLimbSwing(entity, passenger);
-					this.setModelVisibilities(passenger);
+					this.setModelVisibilities(entity);
 				}
 				super.doRender(entity, x, y, z, entityYaw, partialTicks);
 			}
@@ -114,10 +151,15 @@ public class EntitySusanooSkeleton extends ElementsNarutomodMod.ModElement {
 				entity.swingingHand = rider.swingingHand;
 			}
 
-			private void setModelVisibilities(AbstractClientPlayer clientPlayer) {
+			private void setModelVisibilities(EntityCustom entity) {
 				ModelSusanooSkeleton model = (ModelSusanooSkeleton) this.getMainModel();
 				model.bipedLeftLeg.showModel = false;
 				model.bipedRightLeg.showModel = false;
+				boolean flag = entity.isFullBody();
+				model.bipedHead.showModel = flag;
+				model.bipedHeadwear.showModel = flag;
+				model.bipedRightArm.showModel = flag;
+				model.bipedLeftArm.showModel = flag;
 			}
 
 			@Override

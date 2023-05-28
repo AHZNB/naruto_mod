@@ -5,7 +5,7 @@
     "renderType": 1,
     "texture": "scroll_c",
     "customModelName": "scrolls:default",
-    "name": "Kirin",
+    "name": "Lightning Release - Kirin",
     "rarity": "COMMON",
     "creativeTab": {
       "value": "CUSTOM:ModTab"
@@ -14,7 +14,7 @@
     "enchantability": 0,
     "useDuration": 0,
     "toolType": 0.0,
-    "damageCount": 0,
+    "damageCount": 1,
     "recipeRemainder": {
       "value": ""
     },

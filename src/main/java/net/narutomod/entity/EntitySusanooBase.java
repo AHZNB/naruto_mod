@@ -23,6 +23,7 @@ import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.item.ItemStack;
+import net.minecraft.init.SoundEvents;
 
 import net.narutomod.item.ItemTotsukaSword;
 import net.narutomod.item.ItemChokuto;
@@ -42,11 +43,12 @@ import javax.annotation.Nullable;
 public abstract class EntitySusanooBase extends EntityMob implements IRangedAttackMob {
 	private static final DataParameter<Integer> OWNER_ID = EntityDataManager.<Integer>createKey(EntitySusanooBase.class, DataSerializers.VARINT);
 	private static final DataParameter<Integer> FLAME_COLOR = EntityDataManager.<Integer>createKey(EntitySusanooBase.class, DataSerializers.VARINT);
-	public static final double BXP_REQUIRED_L1 = 2000.0d;
-	public static final double BXP_REQUIRED_L2 = 6000.0d;
-	public static final double BXP_REQUIRED_L3 = 12000.0d;
-	public static final double BXP_REQUIRED_L4 = 24000.0d;
-	protected double chakraUsage = 50d; // per second
+	public static final double BXP_REQUIRED_L0 = 2000.0d;
+	public static final double BXP_REQUIRED_L1 = 5000.0d;
+	public static final double BXP_REQUIRED_L2 = 10000.0d;
+	public static final double BXP_REQUIRED_L3 = 20000.0d;
+	public static final double BXP_REQUIRED_L4 = 36000.0d;
+	protected double chakraUsage = 30d; // per second
 	protected double chakraUsageModifier = 2d;
 	protected double playerXp;
 	//private EntityLivingBase ownerPlayer = null;
@@ -342,6 +344,12 @@ public abstract class EntitySusanooBase extends EntityMob implements IRangedAtta
 			double d2 = this.posZ + (this.rand.nextFloat() - 0.5D) * this.width;
 			this.world.spawnAlwaysVisibleParticle(Particles.Types.FLAME.getID(), d0, d1, d2, 0.0D, 0.05D, 0.0D, this.getFlameColor(), (int)(this.width * 15f));
 		}
+	}
+
+	@Override
+	protected void onDeathUpdate() {
+		this.playSound(SoundEvents.ITEM_SHIELD_BREAK, 1.0f, this.rand.nextFloat() * 0.4f + 0.7f);
+		this.setDead();
 	}
 
 	@Override

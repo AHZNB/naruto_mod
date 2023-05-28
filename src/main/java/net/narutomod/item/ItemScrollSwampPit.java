@@ -44,7 +44,7 @@ public class ItemScrollSwampPit extends ElementsNarutomodMod.ModElement {
 	}
 	public static class ItemCustom extends Item {
 		public ItemCustom() {
-			setMaxDamage(0);
+			setMaxDamage(1);
 			maxStackSize = 1;
 			setUnlocalizedName("scroll_swamp_pit");
 			setRegistryName("scroll_swamp_pit");

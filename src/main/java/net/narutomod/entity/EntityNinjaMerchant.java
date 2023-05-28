@@ -96,7 +96,10 @@ public class EntityNinjaMerchant extends ElementsNarutomodMod.ModElement {
 
 		// This code can be used in the future to add rare trades
 		private void addRareTrades() {
-			MerchantRecipeList rareTrades = new MerchantRecipeList();
+			MerchantRecipeList rareTrades = this.trades.get(TradeLevel.RARE);
+			if (rareTrades == null) {
+				rareTrades = new MerchantRecipeList();
+			}
 
 			if (this.rand.nextInt(5) == 0) {
 				rareTrades.add(new MerchantRecipe(new ItemStack(Items.EMERALD, 64), ItemStack.EMPTY, new ItemStack(ItemBijuMap.block, 1), 0, 1));

@@ -85,7 +85,7 @@ public class EntitySusanooWinged extends ElementsNarutomodMod.ModElement {
 			super(world);
 			this.setSize(MODELSCALE * 0.8f, MODELSCALE * 2.0f);
 			this.getEntityData().setDouble("entityModelScale", (double)MODELSCALE);
-			this.chakraUsage = 120d;
+			this.chakraUsage = 90d;
 		}
 
 		public EntityCustom(EntityPlayer player) {
@@ -93,14 +93,14 @@ public class EntitySusanooWinged extends ElementsNarutomodMod.ModElement {
 			this.setSize(MODELSCALE * 0.8f, MODELSCALE * 2.0f);
 			this.stepHeight = this.height / 3.0F;
 			//this.setFlameColor(0x20b83dba);
-			this.chakraUsage = 70d;
+			this.chakraUsage = 90d;
 			this.wingSwingProgressInt = 0;
 			this.isWingDetracting = false;
 			this.isWingExtending = false;
 			this.getEntityAttribute(EntityPlayer.REACH_DISTANCE).applyModifier(new AttributeModifier("susanoo.reachExtension", 12.0D, 0));
 			this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).applyModifier(new AttributeModifier("susanoo.speedboost", 0.5D, 0));
 			this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).applyModifier(new AttributeModifier("susanoo.maxhealth", 43d, 2));
-			this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(this.playerXp * 0.005d);
+			this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(this.playerXp * 0.003d);
 			this.getEntityData().setDouble("entityModelScale", (double)MODELSCALE);
 			Item helmet = player.getItemStackFromSlot(EntityEquipmentSlot.HEAD).getItem();
 			if (helmet == ItemMangekyoSharingan.helmet || helmet == ItemMangekyoSharinganEternal.helmet) {

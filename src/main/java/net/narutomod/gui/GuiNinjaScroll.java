@@ -90,8 +90,10 @@ public class GuiNinjaScroll extends ElementsNarutomodMod.ModElement {
 
 		protected void handleButtonAction(EntityPlayer player, int buttonID) {
 			if (player instanceof EntityPlayerMP) {
-				if (!player.getHeldItemMainhand().isEmpty()) {
+				if (player.getHeldItemMainhand().getMaxDamage() == 1) {
 					player.getHeldItemMainhand().shrink(1);
+				} else if (player.getHeldItemOffhand().getMaxDamage() == 1) {
+					player.getHeldItemOffhand().shrink(1);
 				}
 				if (!ProcedureUtils.advancementAchieved((EntityPlayerMP)player, "narutomod:learned_1st_jutsu")) {
 					ProcedureUtils.grantAdvancement((EntityPlayerMP)player, "narutomod:learned_1st_jutsu", true);

@@ -58,7 +58,7 @@ public class ProcedureSusanoo extends ElementsNarutomodMod.ModElement {
 			if (helmet.hasTagCompound() && !helmet.getTagCompound().getBoolean("sharingan_blinded")) {
 				//if (flag || NarutomodModVariables.world_tick < player.getEntityData().getDouble("susanoo_cd") - 2400.0D
 				//		|| NarutomodModVariables.world_tick > player.getEntityData().getDouble("susanoo_cd")) {
-					if (PlayerTracker.getBattleXp(player) >= EntitySusanooBase.BXP_REQUIRED_L1
+					if (PlayerTracker.getBattleXp(player) >= EntitySusanooBase.BXP_REQUIRED_L0
 					 && Chakra.pathway(player).consume(BASE_CHAKRA_USAGE)) {
 						player.getEntityData().setBoolean("susanoo_activated", true);
 						player.getEntityData().setDouble("susanoo_cd", NarutomodModVariables.world_tick + 2400.0D);
@@ -125,12 +125,22 @@ public class ProcedureSusanoo extends ElementsNarutomodMod.ModElement {
 		Entity susanoo = player.getRidingEntity();
 		double playerXp = PlayerTracker.getBattleXp(player);
 		if (susanoo instanceof EntitySusanooBase) {
-			if (susanoo instanceof EntitySusanooSkeleton.EntityCustom && playerXp >= EntitySusanooBase.BXP_REQUIRED_L2) {
-				if (Chakra.pathway(player).consume(BASE_CHAKRA_USAGE)) {
-					susanoo.setDead();
-					EntitySusanooBase entityCustom = new EntitySusanooClothed.EntityCustom(player, false);
-					player.world.spawnEntity(entityCustom);
-					player.getEntityData().setInteger(SUMMONED_SUSANOO, entityCustom.getEntityId());
+			if (susanoo instanceof EntitySusanooSkeleton.EntityCustom) {
+				boolean fullBody = ((EntitySusanooSkeleton.EntityCustom)susanoo).isFullBody();
+				if (!fullBody && playerXp >= EntitySusanooBase.BXP_REQUIRED_L1) {
+					if (Chakra.pathway(player).consume(BASE_CHAKRA_USAGE)) {
+						susanoo.setDead();
+						EntitySusanooBase entityCustom = new EntitySusanooSkeleton.EntityCustom(player, true);
+						player.world.spawnEntity(entityCustom);
+						player.getEntityData().setInteger(SUMMONED_SUSANOO, entityCustom.getEntityId());
+					}
+				} else if (fullBody && playerXp >= EntitySusanooBase.BXP_REQUIRED_L2) {
+					if (Chakra.pathway(player).consume(BASE_CHAKRA_USAGE)) {
+						susanoo.setDead();
+						EntitySusanooBase entityCustom = new EntitySusanooClothed.EntityCustom(player, false);
+						player.world.spawnEntity(entityCustom);
+						player.getEntityData().setInteger(SUMMONED_SUSANOO, entityCustom.getEntityId());
+					}
 				}
 			} else if (susanoo instanceof EntitySusanooClothed.EntityCustom) {
 				boolean hasLegs = ((EntitySusanooClothed.EntityCustom)susanoo).hasLegs();

@@ -322,9 +322,10 @@ public class EntityToad extends ElementsNarutomodMod.ModElement {
 						}
 					} else {
 						++this.ticksInJump;
-						if (!this.doubleJumpInProgress && this.attempts > 3 && this.ticksInJump == (this.attempts-3) * 10) {
+						//if (!this.doubleJumpInProgress && this.attempts > 3 && this.ticksInJump == (this.attempts-3) * 10) {
+						if (!this.doubleJumpInProgress && this.attempts > 3 && this.ticksInJump > 3 && this.entity.motionY < 0.2d) {
 							this.entity.getMoveHelper().setMoveTo(this.target.x, this.target.y, this.target.z, 1.0d);
-							++this.attempts;
+							//++this.attempts;
 							this.doubleJumpInProgress = true;
 						}
 					}
@@ -533,7 +534,7 @@ public class EntityToad extends ElementsNarutomodMod.ModElement {
 		            this.entity.rotationYaw = (float)(MathHelper.atan2(d1, d0) * (180D / Math.PI)) - 90.0F;
 		            this.entity.motionX = d0 * 0.145d;
 		            this.entity.motionZ = d1 * 0.145d;
-		            this.entity.motionY = 0.32d + (d2 + d3 * 0.6d) * 0.1d;
+		            this.entity.motionY = 0.32d + (Math.max(d2, 0.0d) + d3 * 0.6d) * 0.1d;
 				}
 			}
 		}

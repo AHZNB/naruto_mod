@@ -79,10 +79,10 @@ public class EntityIrukaSensei extends ElementsNarutomodMod.ModElement {
 
 			MerchantRecipeList commonTrades = new MerchantRecipeList();
 			commonTrades.add(new MerchantRecipe(new ItemStack(Items.EMERALD, 3), ItemStack.EMPTY, new ItemStack(Items.GOLDEN_APPLE, 1), 0, 1));
-			commonTrades.add(new MerchantRecipe(new ItemStack(Items.EMERALD, 1), ItemStack.EMPTY, new ItemStack(ItemScrollBodyReplacement.block, 1), 0, 1));
+			commonTrades.add(new MerchantRecipe(new ItemStack(Items.EMERALD, 5), ItemStack.EMPTY, new ItemStack(ItemScrollBodyReplacement.block, 1), 0, 1));
 
 			MerchantRecipeList uncommonTrades = new MerchantRecipeList();
-			uncommonTrades.add(new MerchantRecipe(new ItemStack(Items.EMERALD, 5), ItemStack.EMPTY, new ItemStack(ItemScrollKageBunshin.block, 1), 0, 1));
+			uncommonTrades.add(new MerchantRecipe(new ItemStack(Items.EMERALD, 15), ItemStack.EMPTY, new ItemStack(ItemScrollKageBunshin.block, 1), 0, 1));
 			uncommonTrades.add(new MerchantRecipe(new ItemStack(Items.EMERALD, 30), ItemStack.EMPTY, new ItemStack(Items.GOLDEN_APPLE, 1, 1), 0, 1));
 
 			trades.put(EntityNinjaMerchant.TradeLevel.COMMON, commonTrades);

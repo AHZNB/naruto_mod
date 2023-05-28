@@ -42,7 +42,7 @@ import net.narutomod.NarutomodModVariables;
 import net.narutomod.PlayerTracker;
 import net.narutomod.Particles;
 import net.narutomod.Chakra;
-import net.narutomod.procedure.ProcedureLightSourceSetBlock;
+//import net.narutomod.procedure.ProcedureLightSourceSetBlock;
 import net.narutomod.procedure.ProcedureSync;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.procedure.ProcedureRenderView;
@@ -50,9 +50,11 @@ import net.narutomod.item.ItemJutsu;
 import net.narutomod.item.ItemRaiton;
 import net.narutomod.item.ItemFuton;
 import net.narutomod.item.ItemNinjutsu;
+import net.narutomod.block.BlockLightSource;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import com.google.common.collect.ImmutableMap;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityChidori extends ElementsNarutomodMod.ModElement {
@@ -170,7 +172,8 @@ public class EntityChidori extends ElementsNarutomodMod.ModElement {
 			if (this.ticksExisted > this.growTime / 2) {
 				BlockPos pos = this.getPosition();
 				if (this.world.isAirBlock(pos)) {
-					ProcedureLightSourceSetBlock.execute(this.world, pos.getX(), pos.getY(), pos.getZ());
+					//ProcedureLightSourceSetBlock.execute(this.world, pos.getX(), pos.getY(), pos.getZ());
+					new net.narutomod.event.EventSetBlocks(this.world, ImmutableMap.of(pos, BlockLightSource.block.getDefaultState()), 0, 2, false, false);
 				}
 			}
 			if (this.summoner != null && this.ticksExisted > this.growTime) {

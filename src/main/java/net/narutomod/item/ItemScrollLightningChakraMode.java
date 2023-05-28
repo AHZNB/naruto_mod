@@ -44,7 +44,7 @@ public class ItemScrollLightningChakraMode extends ElementsNarutomodMod.ModEleme
 	}
 	public static class ItemCustom extends Item {
 		public ItemCustom() {
-			setMaxDamage(0);
+			setMaxDamage(1);
 			maxStackSize = 1;
 			setUnlocalizedName("scroll_lightning_chakra_mode");
 			setRegistryName("scroll_lightning_chakra_mode");

@@ -44,7 +44,7 @@ public class ItemScrollKikaichuSphere extends ElementsNarutomodMod.ModElement {
 	}
 	public static class ItemCustom extends Item {
 		public ItemCustom() {
-			setMaxDamage(0);
+			setMaxDamage(1);
 			maxStackSize = 1;
 			setUnlocalizedName("scroll_kikaichu_sphere");
 			setRegistryName("scroll_kikaichu_sphere");

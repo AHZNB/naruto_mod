@@ -46,6 +46,7 @@ import net.minecraft.village.Village;
 import net.minecraft.potion.PotionEffect;
 
 import net.narutomod.item.ItemScrollHealing;
+import net.narutomod.item.ItemScrollEnhancedStrength;
 import net.narutomod.item.ItemMilitaryRationsPill;
 import net.narutomod.item.ItemMilitaryRationsPillGold;
 import net.narutomod.item.ItemIryoJutsu;
@@ -108,14 +109,18 @@ public class EntitySakuraHaruno extends ElementsNarutomodMod.ModElement {
 
 			MerchantRecipeList commonTrades = new MerchantRecipeList();
 			commonTrades.add(new MerchantRecipe(new ItemStack(Items.EMERALD, 1), ItemStack.EMPTY, new ItemStack(Items.BAKED_POTATO, 3), 0, 1));
-			commonTrades.add(new MerchantRecipe(new ItemStack(Items.EMERALD, 1), ItemStack.EMPTY, new ItemStack(ItemMilitaryRationsPill.block, 2), 0, 1));
+			commonTrades.add(new MerchantRecipe(new ItemStack(Items.EMERALD, 5), ItemStack.EMPTY, new ItemStack(ItemMilitaryRationsPill.block, 2), 0, 1));
 
 			MerchantRecipeList uncommonTrades = new MerchantRecipeList();
-			uncommonTrades.add(new MerchantRecipe(new ItemStack(Items.EMERALD, 5), ItemStack.EMPTY, new ItemStack(ItemScrollHealing.block, 1), 0, 1));
-			uncommonTrades.add(new MerchantRecipe(new ItemStack(Items.EMERALD, 5), ItemStack.EMPTY, new ItemStack(ItemMilitaryRationsPillGold.block, 1, 1), 0, 1));
+			uncommonTrades.add(new MerchantRecipe(new ItemStack(Items.EMERALD, 20), ItemStack.EMPTY, new ItemStack(ItemScrollHealing.block, 1), 0, 1));
+			uncommonTrades.add(new MerchantRecipe(new ItemStack(Items.EMERALD, 15), ItemStack.EMPTY, new ItemStack(ItemMilitaryRationsPillGold.block, 1, 1), 0, 1));
+
+			MerchantRecipeList rareTrades = new MerchantRecipeList();
+			rareTrades.add(new MerchantRecipe(new ItemStack(Items.EMERALD, 45), ItemStack.EMPTY, new ItemStack(ItemScrollEnhancedStrength.block, 1), 0, 1));
 
 			trades.put(EntityNinjaMerchant.TradeLevel.COMMON, commonTrades);
 			trades.put(EntityNinjaMerchant.TradeLevel.UNCOMMON, uncommonTrades);
+			trades.put(EntityNinjaMerchant.TradeLevel.RARE, rareTrades);
 
 			return trades;
 		}

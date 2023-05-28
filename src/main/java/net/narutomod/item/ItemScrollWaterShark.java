@@ -44,7 +44,7 @@ public class ItemScrollWaterShark extends ElementsNarutomodMod.ModElement {
 	}
 	public static class ItemCustom extends Item {
 		public ItemCustom() {
-			setMaxDamage(0);
+			setMaxDamage(1);
 			maxStackSize = 1;
 			setUnlocalizedName("scroll_water_shark");
 			setRegistryName("scroll_water_shark");
@@ -69,7 +69,7 @@ public class ItemScrollWaterShark extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void addInformation(ItemStack itemstack, World world, List<String> list, ITooltipFlag flag) {
 			super.addInformation(itemstack, world, list, flag);
-			list.add("B-rank jutsu scroll");
+			list.add("B-rank justu scroll");
 		}
 
 		@Override

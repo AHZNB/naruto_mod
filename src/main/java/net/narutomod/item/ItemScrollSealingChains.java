@@ -44,7 +44,7 @@ public class ItemScrollSealingChains extends ElementsNarutomodMod.ModElement {
 	}
 	public static class ItemCustom extends Item {
 		public ItemCustom() {
-			setMaxDamage(0);
+			setMaxDamage(1);
 			maxStackSize = 1;
 			setUnlocalizedName("scroll_sealing_chains");
 			setRegistryName("scroll_sealing_chains");

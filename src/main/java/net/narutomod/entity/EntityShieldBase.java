@@ -219,6 +219,11 @@ public abstract class EntityShieldBase extends EntityLivingBase {
 		}
 	}
 
+	@Override
+	protected void onDeathUpdate() {
+		this.setDead();
+	}
+
 	//@Override
 	//public Vec3d getLookVec() {
 	//	return this.getVectorForRotation(this.rotationPitch, this.rotationYawHead);

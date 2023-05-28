@@ -13,15 +13,16 @@ import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 
 import net.minecraft.init.Biomes;
+import net.minecraft.init.Items;
 import net.minecraft.init.MobEffects;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.world.World;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.BossInfoServer;
 import net.minecraft.world.BossInfo;
-import net.minecraft.village.Village;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.translation.I18n;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.BlockPos;
@@ -30,6 +31,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.EntitySelectors;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreObjective;
 import net.minecraft.scoreboard.ScoreCriteria;
@@ -53,17 +55,17 @@ import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.client.renderer.entity.RenderBiped;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.model.ModelBox;
-//import net.minecraft.client.model.ModelRenderer;
-import net.minecraft.util.EntitySelectors;
-import net.minecraft.util.text.translation.I18n;
 import net.minecraft.entity.monster.IMob;
+import net.minecraft.village.Village;
 import net.minecraft.village.MerchantRecipeList;
+import net.minecraft.village.MerchantRecipe;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.item.ItemEightGates;
+import net.narutomod.item.ItemNinjaArmorJumpsuit;
 import net.narutomod.event.SpecialEvent;
 import net.narutomod.event.EventVillageSiege;
 import net.narutomod.Chakra;
@@ -123,7 +125,11 @@ public class EntityMightGuy extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public Map<EntityNinjaMerchant.TradeLevel, MerchantRecipeList> getTrades() {
-			return Maps.newHashMap();
+			Map<EntityNinjaMerchant.TradeLevel, MerchantRecipeList> trades = Maps.newHashMap();
+			MerchantRecipeList commonTrades = new MerchantRecipeList();
+			commonTrades.add(new MerchantRecipe(new ItemStack(Items.EMERALD, 2), ItemStack.EMPTY, new ItemStack(ItemNinjaArmorJumpsuit.legs, 1), 0, 1));
+			trades.put(EntityNinjaMerchant.TradeLevel.COMMON, commonTrades);
+			return trades;
 		}
 
 		@Override
@@ -378,18 +384,17 @@ public class EntityMightGuy extends ElementsNarutomodMod.ModElement {
 		public boolean processInteract(EntityPlayer player, EnumHand hand) {
 			if (!this.world.isRemote && this.getVillage() != null) {
 				Village village = this.getVillage();
-				if (this.customer == null && village.getPlayerReputation(player.getUniqueID()) >= 0) {
+				if (this.customer == null && village.getPlayerReputation(player.getUniqueID()) >= 0 && !this.isTrading()) {
 					this.customer = player;
 					ProcedureUtils.sendChat(player, TextFormatting.GREEN + I18n.translateToLocal("entity.mightguy.name") + ": "
 							+ TextFormatting.WHITE + I18n.translateToLocal("chattext.mightguy.interact1"));
 					long startTime = this.world.getTotalWorldTime() + 18000L - (this.world.getWorldTime() % 24000L);
 					new EventVillageSiege(this.world, null, village.getCenter().getX(), village.getCenter().getY(),
-							village.getCenter().getZ(), startTime, village.getVillageRadius() + 5, 80) {
+							village.getCenter().getZ(), startTime, village.getVillageRadius() + 5, 60) {
+						@Override
 						protected void doOnTick(int currentTick) {
-							if (currentTick == 0)
-								startTrackingCustomer();
-							else
-								stopTrackingCustomer();
+							if (currentTick == 0) startTrackingCustomer();
+							else stopTrackingCustomer();
 						}
 					};
 					return true;
