@@ -276,6 +276,11 @@ public class ItemBakuton extends ElementsNarutomodMod.ModElement {
 	    protected void playStepSound(BlockPos pos, Block blockIn) {
 	    }
 
+	    @Override
+	    public boolean isOnSameTeam(Entity entityIn) {
+	    	return super.isOnSameTeam(entityIn) || entityIn.equals(this.owner);
+	    }
+
 		@Override
 		public boolean attackEntityFrom(DamageSource source, float amount) {
 			if (source.isExplosion() || source == DamageSource.FALL) {

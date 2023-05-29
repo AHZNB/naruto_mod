@@ -29,6 +29,7 @@ import net.minecraft.util.EnumParticleTypes;
 
 import net.narutomod.item.ItemJutsu;
 import net.narutomod.procedure.ProcedureUtils;
+import net.narutomod.procedure.ProcedureAoeCommand;
 import net.narutomod.ElementsNarutomodMod;
 
 @ElementsNarutomodMod.ModElement.Tag
@@ -138,8 +139,11 @@ public class EntityExplosiveClone extends ElementsNarutomodMod.ModElement {
 		private void explode() {
 	    	if (!this.world.isRemote) {
 		    	this.dead = true;
-				this.world.createExplosion(this.getSummoner(), this.posX, this.posY, this.posZ, 8f,
-		    	 net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.world, this.getSummoner()));
+		    	EntityLivingBase summoner = this.getSummoner();
+				this.world.createExplosion(summoner, this.posX, this.posY, this.posZ, 8f,
+		    	 net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.world, summoner));
+		    	ProcedureAoeCommand.set(this, 0d, 8d)
+		    	 .damageEntitiesCentered(ItemJutsu.causeJutsuDamage(this, summoner), 50f);
 	    		this.setDead();
 	    	}
 		}
@@ -162,7 +166,7 @@ public class EntityExplosiveClone extends ElementsNarutomodMod.ModElement {
 						EntityLivingBase summoner = this.getSummoner();
 						if (summoner != null) {
 							this.world.playSound(null, summoner.posX, summoner.posY, summoner.posZ, 
-							 (SoundEvent)SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:katsu")), 
+							 SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:katsu")), 
 							 SoundCategory.NEUTRAL, 1f, 1f);
 						}
 					} else if (this.ticksExisted - this.ignitionTime > this.fuse) {
@@ -179,7 +183,7 @@ public class EntityExplosiveClone extends ElementsNarutomodMod.ModElement {
 		}
 
 		private void poof() {
-			this.playSound((SoundEvent)SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:poof")), 1.0F, 1.0F);
+			this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:poof")), 1.0F, 1.0F);
 			((WorldServer)this.world).spawnParticle(EnumParticleTypes.EXPLOSION_NORMAL, this.posX, this.posY+this.height/2, 
 			  this.posZ, 200, this.width * 0.5d, this.height * 0.3d, this.width * 0.5d, 0.02d);
 		}
@@ -188,7 +192,7 @@ public class EntityExplosiveClone extends ElementsNarutomodMod.ModElement {
 			@Override
 			public boolean createJutsu(ItemStack stack, EntityLivingBase entity, float power) {
 				if (!entity.isSneaking()) {
-					entity.world.playSound(null, entity.posX, entity.posY, entity.posZ, (SoundEvent)SoundEvent.REGISTRY
+					entity.world.playSound(null, entity.posX, entity.posY, entity.posZ, SoundEvent.REGISTRY
 					  .getObject(new ResourceLocation("narutomod:kagebunshin")), SoundCategory.NEUTRAL, 1.0F, 1.0F);
 					entity.world.spawnEntity(new EC(entity));
 					return true;

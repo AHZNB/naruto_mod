@@ -16,6 +16,11 @@
       "entries": [
         {
           "type": "item",
+          "name": "narutomod:scroll_hiraishin",
+          "weight": 2
+        },
+        {
+          "type": "item",
           "name": "narutomod:scroll_sealing_4_symbols",
           "weight": 5
         },

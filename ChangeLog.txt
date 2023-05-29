@@ -12,6 +12,7 @@ Jutsus:
  - limit bug sphere to max 10, reduce chakra absorption rate from target
  - tweaked kamui teleport to use more chakra/time, give nausea effect after use
  - fixed kamui intangibility running out of chakra leaves you intangible forever
+ - kamui intangible now has a 30 second limit, after which it goes on a 10s cooldown
  - fixed eternal mangekyo intangible not negating damage 
  - susanoo, shield based entities and riding on bijus will no longer protect you from
    damage done to yourself by opening your gates, only king of hell can protect you
@@ -51,6 +52,7 @@ Jutsus:
  - wind release chakra flow cannot be used together with lightning chakra mode or chidori
  - shinratensei can aim and throw floating chunks of earth at targets if shift+banshotenin was used to dislodge chunks of earth
  - explosion release C3 now does custom explosion, damage 400 to all within 30 blocks
+ - buffed explosion release C2 and explosive clone damage
  - 7th gate can't fly anymore, only 8th gate can fly
  - improved 8-trigrams revolving palm animation
  - fixed susanoo bug sometimes creating infinite susanoo entities on the client side

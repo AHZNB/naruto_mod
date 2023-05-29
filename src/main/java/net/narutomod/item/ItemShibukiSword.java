@@ -24,13 +24,11 @@ import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.MathHelper;
 
 import net.narutomod.creativetab.TabModTab;
 import net.narutomod.block.BlockExplosiveTag;
 import net.narutomod.procedure.ProcedureAoeCommand;
-//import net.narutomod.event.EventVanillaExplosion;
 import net.narutomod.event.EventSphericalExplosion;
 import net.narutomod.ElementsNarutomodMod;
 
@@ -119,7 +117,7 @@ public class ItemShibukiSword extends ElementsNarutomodMod.ModElement {
 							this.z0 = MathHelper.floor(target.posZ);
 							if (currentTick == 1) {
 								ProcedureAoeCommand.set(target, 0d, 4d)
-								 .damageEntitiesCentered(DamageSource.causeExplosionDamage(sourceentity), 40f);
+								 .damageEntitiesCentered(ItemJutsu.causeJutsuDamage(sourceentity, null), 40f);
 							}
 						}
 					}

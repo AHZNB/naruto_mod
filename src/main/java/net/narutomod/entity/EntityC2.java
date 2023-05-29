@@ -135,7 +135,7 @@ public class EntityC2 extends ElementsNarutomodMod.ModElement {
 	    		this.setDead();
 	    	}
     		entityIn.hurtResistantTime = 10;
-	    	return entityIn.attackEntityFrom(ItemJutsu.causeJutsuDamage(this, this.getOwner()).setExplosion(), 10f);
+	    	return entityIn.attackEntityFrom(ItemJutsu.causeJutsuDamage(this, this.getOwner()), 40f + this.rand.nextFloat() * 10f);
 	    }
 
 	    @Override
