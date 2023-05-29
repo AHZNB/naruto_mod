@@ -63,13 +63,14 @@ public class EntityC1 extends ElementsNarutomodMod.ModElement {
 
 	    @Override
 	    public boolean attackEntityAsMob(Entity entityIn) {
-	    	boolean flag = entityIn.attackEntityFrom(DamageSource.causeExplosionDamage(this.world
-	    	 .newExplosion(this.getOwner(), entityIn.posX, entityIn.posY, entityIn.posZ, 4f, false, 
-	    	 net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.world, this.getOwner()))), 4f);
+	    	EntityLivingBase owner = this.getOwner();
 	    	if (!this.world.isRemote) {
+		    	this.world.createExplosion(owner, entityIn.posX, entityIn.posY, entityIn.posZ,
+			     4f, net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.world, owner));
 	    		this.setDead();
 	    	}
-	    	return flag;
+	    	entityIn.hurtResistantTime = 10;
+	    	return entityIn.attackEntityFrom(ItemJutsu.causeJutsuDamage(this, owner), 8f + this.rand.nextFloat() * 4f);
 	    }
 
 	    /*public static class Jutsu implements ItemJutsu.IJutsuCallback {

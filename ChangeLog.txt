@@ -52,7 +52,7 @@ Jutsus:
  - wind release chakra flow cannot be used together with lightning chakra mode or chidori
  - shinratensei can aim and throw floating chunks of earth at targets if shift+banshotenin was used to dislodge chunks of earth
  - explosion release C3 now does custom explosion, damage 400 to all within 30 blocks
- - buffed explosion release C2 and explosive clone damage
+ - buffed explosion release C1, C2 and explosive clone damage
  - 7th gate can't fly anymore, only 8th gate can fly
  - improved 8-trigrams revolving palm animation
  - fixed susanoo bug sometimes creating infinite susanoo entities on the client side
