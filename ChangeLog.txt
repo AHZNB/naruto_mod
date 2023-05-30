@@ -23,6 +23,7 @@ Jutsus:
  - buffed 7/8 gate: user can punch targets 15 blocks away by jumping right in front of them
  - 8th gate sekizo and yagai damage can't be reduced by resistance effects,
    7th gate resistence effect reduced to level 4
+ - 7th gate can't fly anymore, only 8th gate can fly
  - increased non-affinity releases jutsuXP requirements to 2.5 times affinity requirements
  - susanoo half-body and higher class can hold totsuka sword if the user has it
  - scorch balls damage and duration increased, targeting is much better
@@ -53,7 +54,6 @@ Jutsus:
  - shinratensei can aim and throw floating chunks of earth at targets if shift+banshotenin was used to dislodge chunks of earth
  - explosion release C3 now does custom explosion, damage 400 to all within 30 blocks
  - buffed explosion release C1, C2 and explosive clone damage
- - 7th gate can't fly anymore, only 8th gate can fly
  - improved 8-trigrams revolving palm animation
  - fixed susanoo bug sometimes creating infinite susanoo entities on the client side
  - susanoo re-balance: added ribcage stage and requires 2000 nxp, skeleton: 5000 nxp, half body: 10000, full body: 20000, perfect 36000
@@ -76,6 +76,7 @@ Items:
  - fixed putting kiba sword in offhand deletes the sword
  - remembers 6-path senjutsu jutsuXPs after the item is removed (when rinnesharingan is off)
  - fixed learning jutsu scrolls on off-hand deletes item in main-hand bug
+ - eating white zetsu flesh will only gain rinnegan if player has ems+achievement and doesn't have rinnegan+achievement
 
 Entities:
  - added 5 second cooldown for Itachi's genjutsu
@@ -91,8 +92,7 @@ Entities:
  - better NPC/clone water walking and wall climbing AI
  - snake summons greater than size 4 will break wood/trees when moving
  - bijus will take less damage if the attacker is in its view and the damage is blockable
- - tweaked pricing for ninja merchants trade items
- - changed the way trade levels work
+ - tweaked pricing for ninja merchants trade items, trading works the same as vanilla, trading unlocks more trades
 
 Advancements:
  - associate "Rinnesharingan Activated" advancement to the correct parent (rinnegan/tenseigan) advancement

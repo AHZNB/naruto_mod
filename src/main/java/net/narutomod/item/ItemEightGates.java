@@ -1039,6 +1039,7 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 		private final ModelRenderer teethUpper;
 		private final ModelRenderer bone;
 		private final ModelRenderer bone2;
+		private final ModelRenderer bone3;
 		private final ModelRenderer jaw;
 		private final ModelRenderer teethLower;
 		private final ModelRenderer hornRight;
@@ -1093,6 +1094,12 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 			setRotationAngle(bone2, 0.0F, 0.7854F, 0.0F);
 			bone2.cubeList.add(new ModelBox(bone2, 0, 200, -10.0F, -8.0F, 0.0F, 10, 16, 0, 0.0F, true));
 	
+			bone3 = new ModelRenderer(this);
+			bone3.setRotationPoint(0.0F, -2.0F, -11.0F);
+			head.addChild(bone3);
+			setRotationAngle(bone3, -0.8727F, 0.0F, 0.0F);
+			bone3.cubeList.add(new ModelBox(bone3, 0, 50, -8.0F, -10.0F, 0.0F, 16, 10, 0, 0.0F, false));
+
 			jaw = new ModelRenderer(this);
 			jaw.setRotationPoint(0.0F, 11.0F, -9.0F);
 			head.addChild(jaw);
@@ -1314,12 +1321,13 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 			GlStateManager.enableAlpha();
 			GlStateManager.enableBlend();
 			GlStateManager.disableLighting();
-			GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+			GlStateManager.color(1.0F, 1.0F, 1.0F, 0.7F);
 			GlStateManager.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE);
 			OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240.0F, 240.0F);
 			this.head.render(f5);
 			this.spine.render(f5);
 			this.eyes.render(f5);
+			GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 			GlStateManager.enableLighting();
 			GlStateManager.disableBlend();
 			GlStateManager.disableAlpha();

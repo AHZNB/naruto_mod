@@ -326,6 +326,7 @@ public class EntityKirin extends ElementsNarutomodMod.ModElement {
 		private final ModelRenderer head;
 		private final ModelRenderer bone;
 		private final ModelRenderer bone2;
+		private final ModelRenderer bone3;
 		private final ModelRenderer teethUpper;
 		private final ModelRenderer teethLower;
 		private final ModelRenderer jaw;
@@ -374,6 +375,12 @@ public class EntityKirin extends ElementsNarutomodMod.ModElement {
 			setRotationAngle(bone2, 0.0F, 0.7854F, 0.0F);
 			bone2.cubeList.add(new ModelBox(bone2, 0, 200, -8.0F, -8.0F, 0.0F, 8, 16, 0, 0.0F, true));
 	
+			bone3 = new ModelRenderer(this);
+			bone3.setRotationPoint(0.0F, -2.0F, -11.0F);
+			head.addChild(bone3);
+			setRotationAngle(bone3, -0.8727F, 0.0F, 0.0F);
+			bone3.cubeList.add(new ModelBox(bone3, 0, 50, -8.0F, -10.0F, 0.0F, 16, 10, 0, 0.0F, false));
+
 			jaw = new ModelRenderer(this);
 			jaw.setRotationPoint(0.0F, 11.0F, -9.0F);
 			head.addChild(jaw);

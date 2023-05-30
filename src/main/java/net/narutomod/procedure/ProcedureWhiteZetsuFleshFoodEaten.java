@@ -66,9 +66,16 @@ public class ProcedureWhiteZetsuFleshFoodEaten extends ElementsNarutomodMod.ModE
 					: false)
 					&& (((entity instanceof EntityPlayer) ? ((EntityPlayer) entity).inventory.armorInventory.get(3) : ItemStack.EMPTY)
 							.getItem() == new ItemStack(ItemMangekyoSharinganEternal.helmet, (int) (1)).getItem()))
-					&& ((!((entity instanceof EntityPlayer)
-							? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemRinnegan.helmet, (int) (1)))
-							: false)) && (Math.random() < 0.2)))) {
+					&& (((!(((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
+							? ((EntityPlayerMP) entity).getAdvancements()
+									.getProgress(((WorldServer) (entity).world).getAdvancementManager()
+											.getAdvancement(new ResourceLocation("narutomod:rinneganawakened")))
+									.isDone()
+							: false))
+							&& (!((entity instanceof EntityPlayer)
+									? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemRinnegan.helmet, (int) (1)))
+									: false)))
+							&& (Math.random() < 0.2)))) {
 				rinneganstack = new ItemStack(ItemRinnegan.helmet, (int) (1));
 				((ItemDojutsu.Base) rinneganstack.getItem()).setOwner(rinneganstack, (EntityLivingBase) entity);
 				if (entity instanceof EntityPlayer) {
@@ -76,29 +83,22 @@ public class ProcedureWhiteZetsuFleshFoodEaten extends ElementsNarutomodMod.ModE
 					_setstack.setCount(1);
 					ItemHandlerHelper.giveItemToPlayer(((EntityPlayer) entity), _setstack);
 				}
-				if ((!(((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
-						? ((EntityPlayerMP) entity).getAdvancements()
-								.getProgress(((WorldServer) (entity).world).getAdvancementManager()
-										.getAdvancement(new ResourceLocation("narutomod:rinneganawakened")))
-								.isDone()
-						: false))) {
-					if (entity instanceof EntityPlayerMP) {
-						Advancement _adv = ((MinecraftServer) ((EntityPlayerMP) entity).mcServer).getAdvancementManager()
-								.getAdvancement(new ResourceLocation("narutomod:rinneganawakened"));
-						AdvancementProgress _ap = ((EntityPlayerMP) entity).getAdvancements().getProgress(_adv);
-						if (!_ap.isDone()) {
-							Iterator _iterator = _ap.getRemaningCriteria().iterator();
-							while (_iterator.hasNext()) {
-								String _criterion = (String) _iterator.next();
-								((EntityPlayerMP) entity).getAdvancements().grantCriterion(_adv, _criterion);
-							}
+				if (entity instanceof EntityPlayerMP) {
+					Advancement _adv = ((MinecraftServer) ((EntityPlayerMP) entity).mcServer).getAdvancementManager()
+							.getAdvancement(new ResourceLocation("narutomod:rinneganawakened"));
+					AdvancementProgress _ap = ((EntityPlayerMP) entity).getAdvancements().getProgress(_adv);
+					if (!_ap.isDone()) {
+						Iterator _iterator = _ap.getRemaningCriteria().iterator();
+						while (_iterator.hasNext()) {
+							String _criterion = (String) _iterator.next();
+							((EntityPlayerMP) entity).getAdvancements().grantCriterion(_adv, _criterion);
 						}
 					}
-					world.playSound((EntityPlayer) null, (entity.posX), (entity.posY), (entity.posZ),
-							(net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY
-									.getObject(new ResourceLocation("ui.toast.challenge_complete")),
-							SoundCategory.NEUTRAL, (float) 1, (float) 1);
 				}
+				world.playSound((EntityPlayer) null, (entity.posX), (entity.posY), (entity.posZ),
+						(net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY
+								.getObject(new ResourceLocation("ui.toast.challenge_complete")),
+						SoundCategory.NEUTRAL, (float) 1, (float) 1);
 			}
 			if ((((((entity instanceof EntityPlayer)
 					? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemSuiton.block, (int) (1)))
