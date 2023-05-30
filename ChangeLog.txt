@@ -92,6 +92,7 @@ Entities:
  - snake summons greater than size 4 will break wood/trees when moving
  - bijus will take less damage if the attacker is in its view and the damage is blockable
  - tweaked pricing for ninja merchants trade items
+ - changed the way trade levels work
 
 Advancements:
  - associate "Rinnesharingan Activated" advancement to the correct parent (rinnegan/tenseigan) advancement

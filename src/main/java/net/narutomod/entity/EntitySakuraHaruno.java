@@ -168,12 +168,6 @@ public class EntitySakuraHaruno extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
-		protected int getTradeLevel(EntityPlayer player) {
-			Village village = this.getVillage();
-			return village != null ? village.getPlayerReputation(player.getUniqueID()) / 3 : 0;
-		}
-
-		@Override
 		public boolean getCanSpawnHere() {
 			return super.getCanSpawnHere() 
 			 && this.world.getEntitiesWithinAABB(EntityCustom.class, this.getEntityBoundingBox().grow(128d, 16d, 128d)).isEmpty();

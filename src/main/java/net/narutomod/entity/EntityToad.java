@@ -228,7 +228,7 @@ public class EntityToad extends ElementsNarutomodMod.ModElement {
 		}
 
 		@SideOnly(Side.CLIENT)
-		private float getJumpProgress(float partialTicks) {
+		float getJumpProgress(float partialTicks) {
 			return this.prevJumpProgress + (this.jumpProgress - this.prevJumpProgress) * partialTicks;
 		}
 

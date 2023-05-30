@@ -73,6 +73,7 @@ public class EntityNinjaMerchant extends ElementsNarutomodMod.ModElement {
 		private Village village;
 		private int recipeResetTime;
 		private boolean hasTraded;
+		private int level;
 		protected EntityNinjaMob.AILeapAtTarget leapAI = new EntityNinjaMob.AILeapAtTarget(this, 1.0F);
 
 		public Base(World worldIn, int level) {
@@ -97,19 +98,18 @@ public class EntityNinjaMerchant extends ElementsNarutomodMod.ModElement {
 		// This code can be used in the future to add rare trades
 		private void addRareTrades() {
 			MerchantRecipeList rareTrades = this.trades.get(TradeLevel.RARE);
+
 			if (rareTrades == null) {
 				rareTrades = new MerchantRecipeList();
 			}
-
-			if (this.rand.nextInt(5) == 0) {
-				rareTrades.add(new MerchantRecipe(new ItemStack(Items.EMERALD, 64), ItemStack.EMPTY, new ItemStack(ItemBijuMap.block, 1), 0, 1));
-			}
+			rareTrades.add(new MerchantRecipe(new ItemStack(Items.EMERALD, 64), ItemStack.EMPTY, new ItemStack(ItemBijuMap.block, 1), 0, 1));
 			this.trades.put(TradeLevel.RARE, rareTrades);
 		}
 
 		@Override
 		public NBTTagCompound writeToNBT(NBTTagCompound compound) {
 			compound.setBoolean("hasTraded", this.hasTraded);
+			compound.setInteger("level", this.level);
 
 			NBTTagCompound tradesTag = new NBTTagCompound();
 
@@ -126,6 +126,7 @@ public class EntityNinjaMerchant extends ElementsNarutomodMod.ModElement {
 			super.readFromNBT(compound);
 
 			this.hasTraded = compound.getBoolean("hasTraded");
+			this.level = compound.getInteger("level");
 
 			NBTTagCompound tradesTag = compound.getCompoundTag("trades");
 
@@ -176,16 +177,11 @@ public class EntityNinjaMerchant extends ElementsNarutomodMod.ModElement {
 			return this.customer != null;
 		}
 
-		protected int getTradeLevel(EntityPlayer player) {
-			return 0;
-		}
-
 		@Override
 		@Nullable
 		public MerchantRecipeList getRecipes(EntityPlayer player) {
-			int level = this.getTradeLevel(player) + 1; // Add 1 to it to get the ordinal ;o
 			MerchantRecipeList recipes = this.trades.entrySet().stream()
-					.filter(entry -> entry.getKey().ordinal() <= level)
+					.filter(entry -> entry.getKey().ordinal() <= this.level)
 					.flatMap(entry -> entry.getValue().stream())
 					.collect(Collectors.toCollection(MerchantRecipeList::new));
 			return recipes.isEmpty() ? null : recipes;
@@ -215,6 +211,7 @@ public class EntityNinjaMerchant extends ElementsNarutomodMod.ModElement {
 				this.livingSoundTime = -this.getTalkInterval();
 				this.playSound(stack.isEmpty() ? SoundEvents.ENTITY_VILLAGER_NO : SoundEvents.ENTITY_VILLAGER_YES, this.getSoundVolume(), this.getSoundPitch());
 				this.hasTraded = true;
+				this.level++;
 			}
 		}
 
