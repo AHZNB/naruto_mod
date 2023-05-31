@@ -171,15 +171,15 @@ public class EntityFiveTails extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public double getMountedYOffset() {
-			return this.isFaceDown() ? 3.0d * 0.0625d * MODELSCALE : (double)this.height + 0.35D;
+			return this.isFaceDown() ? 3.0d * 0.0625d * MODELSCALE : (12.0d * 0.0625d * MODELSCALE);
 		}
 
 		@Override
 		public void updatePassenger(Entity passenger) {
-			Vec3d vec[] = { new Vec3d(0.25d * MODELSCALE, 0d, 0d) };
+			Vec3d vec[] = { new Vec3d(0.0d, 0.0d, 0.5d * MODELSCALE) };
 			if (this.isPassenger(passenger)) {
 				int i = this.getPassengers().indexOf(passenger);
-				Vec3d vec2 = vec[i].rotateYaw(-this.rotationYaw * 0.017453292F - ((float)Math.PI / 2F));
+				Vec3d vec2 = vec[i].rotateYaw(-this.rotationYaw * 0.017453292F);
 				passenger.setPosition(this.posX + vec2.x, this.posY + this.getMountedYOffset() + passenger.getYOffset(), this.posZ + vec2.z);
 			}
 		}
@@ -191,17 +191,17 @@ public class EntityFiveTails extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public net.minecraft.util.SoundEvent getAmbientSound() {
-			return (net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation(""));
+			return null;
 		}
 
 		@Override
 		public net.minecraft.util.SoundEvent getHurtSound(DamageSource ds) {
-			return (net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation(""));
+			return null;
 		}
 
 		@Override
 		public net.minecraft.util.SoundEvent getDeathSound() {
-			return (net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation(""));
+			return null;
 		}
 	}
 
@@ -220,7 +220,7 @@ public class EntityFiveTails extends ElementsNarutomodMod.ModElement {
 
 		@SideOnly(Side.CLIENT)
 		public class RenderCustom extends EntityTailedBeast.ClientOnly.Renderer<EntityCustom> {
-			private final ResourceLocation TEXTURE = new ResourceLocation("narutomod:textures/fivetails.png");
+			private final ResourceLocation texture = new ResourceLocation("narutomod:textures/fivetails.png");
 
 			public RenderCustom(RenderManager renderManagerIn) {
 				super(renderManagerIn, new ModelFiveTails(), MODELSCALE * 0.5F);
@@ -228,7 +228,7 @@ public class EntityFiveTails extends ElementsNarutomodMod.ModElement {
 
 			@Override
 			protected ResourceLocation getEntityTexture(EntityCustom entity) {
-				return TEXTURE;
+				return this.texture;
 			}
 		}
 
@@ -269,7 +269,7 @@ public class EntityFiveTails extends ElementsNarutomodMod.ModElement {
 			private final ModelRenderer eye2_r1;
 			private final ModelRenderer eye1_r1;
 			private final ModelRenderer eye1_r2;
-			private final ModelRenderer Jaw;
+			private final ModelRenderer jaw;
 			private final ModelRenderer cube_r18;
 			private final ModelRenderer cube_r19;
 			private final ModelRenderer bone2;
@@ -508,25 +508,25 @@ public class EntityFiveTails extends ElementsNarutomodMod.ModElement {
 				setRotationAngle(eye1_r2, 0.2618F, 0.1745F, 0.0436F);
 				eye1_r2.cubeList.add(new ModelBox(eye1_r2, 19, 13, -0.6F, -1.0F, -0.5F, 1, 2, 2, -0.4F, true));
 
-				Jaw = new ModelRenderer(this);
-				Jaw.setRotationPoint(-0.0099F, 2.5605F, -2.9564F);
-				head.addChild(Jaw);
-				Jaw.cubeList.add(new ModelBox(Jaw, 15, 38, -2.1901F, -1.4605F, -3.1436F, 1, 2, 3, 0.0F, false));
-				Jaw.cubeList.add(new ModelBox(Jaw, 15, 38, 1.2099F, -1.4605F, -3.1436F, 1, 2, 3, 0.0F, true));
-				Jaw.cubeList.add(new ModelBox(Jaw, 36, 4, -1.4901F, -1.4605F, -6.1436F, 3, 2, 1, 0.0F, false));
-				Jaw.cubeList.add(new ModelBox(Jaw, 19, 13, -1.5F, -0.1F, -5.7F, 3, 1, 6, -0.3F, false));
-				Jaw.cubeList.add(new ModelBox(Jaw, 0, 17, -2.4901F, -2.0605F, -2.3436F, 1, 1, 2, -0.3F, false));
-				Jaw.cubeList.add(new ModelBox(Jaw, 0, 17, 1.5099F, -2.0605F, -2.3436F, 1, 1, 2, -0.3F, true));
+				jaw = new ModelRenderer(this);
+				jaw.setRotationPoint(-0.0099F, 1.0605F, -4.2064F);
+				head.addChild(jaw);
+				jaw.cubeList.add(new ModelBox(jaw, 15, 38, -2.1901F, 0.0395F, -1.8936F, 1, 2, 3, 0.0F, false));
+				jaw.cubeList.add(new ModelBox(jaw, 15, 38, 1.2099F, 0.0395F, -1.8936F, 1, 2, 3, 0.0F, true));
+				jaw.cubeList.add(new ModelBox(jaw, 36, 4, -1.4901F, 0.0395F, -4.8936F, 3, 2, 1, 0.0F, false));
+				jaw.cubeList.add(new ModelBox(jaw, 19, 13, -1.5F, 1.4F, -4.45F, 3, 1, 6, -0.3F, false));
+				jaw.cubeList.add(new ModelBox(jaw, 0, 17, -2.4901F, -0.5605F, -1.0936F, 1, 1, 2, -0.3F, false));
+				jaw.cubeList.add(new ModelBox(jaw, 0, 17, 1.5099F, -0.5605F, -1.0936F, 1, 1, 2, -0.3F, true));
 
 				cube_r18 = new ModelRenderer(this);
-				cube_r18.setRotationPoint(-1.6901F, -0.4605F, -4.5436F);
-				Jaw.addChild(cube_r18);
+				cube_r18.setRotationPoint(-1.6901F, 1.0395F, -3.2936F);
+				jaw.addChild(cube_r18);
 				setRotationAngle(cube_r18, 0.0F, -0.2182F, 0.0F);
 				cube_r18.cubeList.add(new ModelBox(cube_r18, 36, 19, -0.2F, -1.0F, -1.5F, 1, 2, 3, 0.0F, false));
-
+		
 				cube_r19 = new ModelRenderer(this);
-				cube_r19.setRotationPoint(1.7099F, -0.4605F, -4.5436F);
-				Jaw.addChild(cube_r19);
+				cube_r19.setRotationPoint(1.7099F, 1.0395F, -3.2936F);
+				jaw.addChild(cube_r19);
 				setRotationAngle(cube_r19, 0.0F, 0.2182F, 0.0F);
 				cube_r19.cubeList.add(new ModelBox(cube_r19, 37, 25, -0.8F, -1.0F, -1.5F, 1, 2, 3, 0.0F, true));
 
@@ -1010,9 +1010,9 @@ public class EntityFiveTails extends ElementsNarutomodMod.ModElement {
 				}
 				if (((EntityCustom) e).isShooting()) {
 					head.rotateAngleX += -0.1745F;
-					Jaw.rotateAngleX = 0.7854F;
+					jaw.rotateAngleX = 0.7854F;
 				} else {
-					Jaw.rotateAngleX = 0.0F;
+					jaw.rotateAngleX = 0.0F;
 				}
 				if (((EntityCustom) e).isFaceDown()) {
 					body.rotationPointY = 19.0F;

@@ -65,11 +65,16 @@ public class ProcedureRenderView extends ElementsNarutomodMod.ModElement {
 	@SideOnly(Side.CLIENT)
 	@SubscribeEvent
 	public void onChangeDensity(EntityViewRenderEvent.FogDensity event) {
-		if (this.shouldChangeDensity > Minecraft.getMinecraft().world.getTotalWorldTime()) {
+		long l = Minecraft.getMinecraft().world.getTotalWorldTime();
+		if (this.shouldChangeDensity > l) {
 			GlStateManager.setFog(GlStateManager.FogMode.EXP);
 			event.setDensity(this.newDensity);
 			event.setCanceled(true);
 			//--this.shouldChangeDensity;
+		} else if (l < this.shouldChangeDensity + 40) {
+			GlStateManager.setFog(GlStateManager.FogMode.EXP);
+			event.setDensity(this.newDensity * (this.shouldChangeDensity + 40 - l) / 40f);
+			event.setCanceled(true);
 		}
 	}
 
