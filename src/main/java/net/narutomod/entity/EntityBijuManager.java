@@ -37,6 +37,7 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 	private static final Map<Integer, EntityBijuManager> mapByTailnum = Maps.newHashMap();
 	private static final int[] ZERO = {0, 0, 0};
 	private UUID vesselUuid;
+	private long vesselSetTime;
 	private EntityPlayer jinchurikiPlayer;
 	private String vesselName = "";
 	private T entity;
@@ -405,6 +406,7 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 
 	public void setVesselEntity(@Nullable Entity entityIn) {
 		this.setVesselEntity(entityIn, true);
+		this.vesselSetTime = entityIn != null ? entityIn.world.getTotalWorldTime() : 0;
 	}
 
 	public void setVesselEntity(@Nullable Entity entityIn, boolean dirty) {
@@ -429,6 +431,14 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 		if (dirty) {
 			this.markDirty();
 		}
+	}
+
+	public void setVesselTime(long time) {
+		this.vesselSetTime = time;
+	}
+
+	public long getVesselSetTime() {
+		return this.isSealed() ? this.vesselSetTime : 0;
 	}
 
 	public void verifyVesselEntity(Entity entityIn) {
@@ -578,18 +588,22 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 		return this.tails;
 	}
 
-	public T spawnEntity(World world, double x, double y, double z, float yaw) {
+	private T createEntity(World world) {
 		try {
-			T biju = this.entityClass.getConstructor(World.class).newInstance(world);
-			biju.forceSpawn = true;
-			biju.rotationYawHead = yaw;
-			biju.setLocationAndAngles(x, y, z, yaw, 0f);
-			world.spawnEntity(biju);
-			biju.forceSpawn = false;
-			return biju;
+			return this.entityClass.getConstructor(World.class).newInstance(world);
 		} catch (Exception exception) {
 			throw new Error(exception);
 		}
+	}
+
+	public T spawnEntity(World world, double x, double y, double z, float yaw) {
+		T biju = this.createEntity(world);
+		biju.forceSpawn = true;
+		biju.rotationYawHead = yaw;
+		biju.setLocationAndAngles(x, y, z, yaw, 0f);
+		world.spawnEntity(biju);
+		biju.forceSpawn = false;
+		return biju;
 	}
 
 	private T spawnEntity(EntityPlayer jinchuriki) {

@@ -31,6 +31,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.potion.PotionEffect;
 
 import net.narutomod.potion.PotionAmaterasuFlame;
+import net.narutomod.ModConfig;
 import net.narutomod.ElementsNarutomodMod;
 
 import java.util.Random;
@@ -40,7 +41,7 @@ public class BlockAmaterasuBlock extends ElementsNarutomodMod.ModElement {
 	@GameRegistry.ObjectHolder("narutomod:amaterasublock")
 	public static final Block block = null;
 	public static final Material AMATERASU = new MaterialImmortalFire();
-	private static final int AGING_DELAY = 1000;
+	private static final int AGING_DELAY = ModConfig.AMATERASU_BLOCK_DURATION;
 
 	public BlockAmaterasuBlock(ElementsNarutomodMod instance) {
 		super(instance, 269);
@@ -415,8 +416,8 @@ public class BlockAmaterasuBlock extends ElementsNarutomodMod.ModElement {
 							if (k2 > 0) {
 								int l2 = (k2 + 40 + worldIn.getDifficulty().getDifficultyId() * 7) / (i + 30);
 								if (l2 > 0 && rand.nextInt(j1) <= l2 && !this.canDie(worldIn, blockpos)) {
-									int i3 = i + rand.nextInt(15001) / 15000;
-									if (i3 > 15) {
+									int i3 = i + rand.nextInt(AGING_DELAY * 2 + 1) / (AGING_DELAY * 2);
+									if (i3 > 15) {
 										i3 = 15;
 									}
 									worldIn.setBlockState(blockpos, state.withProperty(AGE, Integer.valueOf(i3)), 3);

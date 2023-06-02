@@ -1383,6 +1383,7 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 				UUID vesseluuid = compound.getUniqueId("JinchurikiUUID");
 				this.getBijuManager().setVesselUuid(vesseluuid);
 				this.getBijuManager().setVesselName(compound.getString("VesselName"));
+				this.getBijuManager().setVesselTime(compound.getLong("VesselSetTime"));
 				this.getBijuManager().setCloakXPs(compound.getIntArray("JinchurikiCloakXp"));
 				this.getBijuManager().setCloakCD(compound.getLong("JinchurikiCloakCD"));
 				Entity entity = FMLCommonHandler.instance().getMinecraftServerInstance().getEntityFromUuid(vesseluuid);
@@ -1410,12 +1411,14 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 			if (vesseluuid != null) {
 				compound.setUniqueId("JinchurikiUUID", vesseluuid);
 				compound.setString("VesselName", this.getBijuManager().getVesselName());
+				compound.setLong("VesselSetTime", this.getBijuManager().getVesselSetTime());
 				compound.setIntArray("JinchurikiCloakXp", this.getBijuManager().getCloakXPs());
 				compound.setLong("JinchurikiCloakCD", this.getBijuManager().getCloakCD());
 			} else {
 				compound.removeTag("JinchurikiUUIDMost");
 				compound.removeTag("JinchurikiUUIDLeast");
 				compound.removeTag("VesselName");
+				compound.removeTag("VesselSetTime");
 				compound.removeTag("JinchurikiCloakXp");
 				compound.removeTag("JinchurikiCloakCD");
 			}

@@ -41,6 +41,9 @@ public class ModConfig extends ElementsNarutomodMod.ModElement {
 	@Config.Comment("Disable this to not allow any jutsu scrolls in loot chests")
 	public static boolean ENABLE_JUTSU_SCROLLS_IN_LOOTCHESTS = true;
 
+	@Config.Comment("Amaterasu flame on block duration (reference: vanilla fire is 3)")
+	public static int AMATERASU_BLOCK_DURATION = 100;
+
 	public ModConfig(ElementsNarutomodMod instance) {
 		super(instance, 837);
 	}

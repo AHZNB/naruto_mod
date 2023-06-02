@@ -463,7 +463,7 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 	}	
 
 	public static class AIAttackRangedTactical<T extends EntityCreature & IRangedAttackMob> extends EntityAIBase {
-	    private final T entity;
+	    protected final T entity;
 	    private final double moveSpeedAmp;
 	    private int attackCooldown;
 	    private final float attackRadius;
@@ -562,7 +562,7 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static class AIAttackRangedJutsu<T extends EntityLiving & IRangedAttackMob> extends EntityAIBase {
-	    private final T entity;
+	    protected final T entity;
 	    private int attackCooldown;
 	    private final float attackRadius;
 	    private int attackTime;

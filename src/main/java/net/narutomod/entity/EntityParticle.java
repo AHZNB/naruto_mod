@@ -120,6 +120,11 @@ public class EntityParticle extends ElementsNarutomodMod.ModElement {
 			this.dataManager.set(SCALE, Float.valueOf(f));
 		}
 
+		public int getColorInt() {
+			Vector4f vec = this.getColor();
+			return ((int)(vec.w * 255) << 24) | ((int)(vec.x * 255) << 16) | ((int)(vec.y * 255) << 8) | (int)(vec.z * 255);
+		}
+
 		public Vector4f getColor() {
 			return new Vector4f(((Float)this.dataManager.get(RED)).floatValue(), ((Float)this.dataManager.get(GREEN)).floatValue(),
 			                    ((Float)this.dataManager.get(BLUE)).floatValue(), ((Float)this.dataManager.get(ALPHA)).floatValue());

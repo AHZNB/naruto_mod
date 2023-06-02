@@ -250,6 +250,11 @@ public class EntitySakuraHaruno extends ElementsNarutomodMod.ModElement {
 		protected void dropLoot(boolean wasRecentlyHit, int lootingModifier, DamageSource source) {
 		}
 
+		@Override
+		protected boolean canDropLoot() {
+			return false;
+		}
+
 		public class AIHeal extends EntityAIBase {
 			private final EntityCustom entity;
 			private final double speed;

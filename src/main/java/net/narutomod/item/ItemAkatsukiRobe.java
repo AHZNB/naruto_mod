@@ -41,8 +41,7 @@ public class ItemAkatsukiRobe extends ElementsNarutomodMod.ModElement {
 	@Override
 	public void initElements() {
 		ItemArmor.ArmorMaterial enuma = EnumHelper.addArmorMaterial("AKATSUKI_ROBE", "narutomod:sasuke_",
-		 100, new int[]{1, 2, 3, 1}, 9,
- SoundEvents.ITEM_ARMOR_EQUIP_LEATHER, 0f);
+		 100, new int[]{1, 2, 3, 1}, 9, SoundEvents.ITEM_ARMOR_EQUIP_LEATHER, 0f);
 		elements.items.add(() -> new ItemArmor(enuma, 0, EntityEquipmentSlot.HEAD) {
 			@SideOnly(Side.CLIENT)
 			private ModelBiped armorModel;

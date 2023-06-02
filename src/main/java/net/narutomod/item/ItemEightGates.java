@@ -166,7 +166,7 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 					entity.addPotionEffect(new PotionEffect(MobEffects.STRENGTH, 12, this.strength, false, false));
 					entity.addPotionEffect(new PotionEffect(MobEffects.RESISTANCE, 12, this.resistance, false, false));
 					entity.addPotionEffect(new PotionEffect(MobEffects.SPEED, 12, this.speed, false, false));
-					if (entity.getHealth() > 0 && (!(entity instanceof EntityPlayer) || !((EntityPlayer) entity).isCreative())) {
+					if (entity.getHealth() > 0.0f && (!(entity instanceof EntityPlayer) || !((EntityPlayer) entity).isCreative())) {
 						if (this.damage >= 0.0f) {
 							entity.attackEntityFrom(ProcedureUtils.SPECIAL_DAMAGE, this.damage);
 						} else {
@@ -543,7 +543,9 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 					}
 					((EntityPlayer) player).sendStatusMessage(new TextComponentString(this.GATE[(int) gateOpened].name), true);
 				}
-				player.getEntityData().setDouble(NarutomodModVariables.InvulnerableTime, 4d);
+				if (gateOpened < 8.0f) {
+					player.getEntityData().setDouble(NarutomodModVariables.InvulnerableTime, 4d);
+				}
 				this.setGateOpened(stack, player, gateOpened + increments);
 			}
 		}

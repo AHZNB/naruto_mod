@@ -48,6 +48,7 @@ import net.narutomod.entity.EntitySandLevitation;
 import net.narutomod.entity.EntityBijuManager;
 import net.narutomod.PlayerTracker;
 import net.narutomod.Chakra;
+//import net.narutomod.Particles;
 import net.narutomod.creativetab.TabModTab;
 import net.narutomod.ElementsNarutomodMod;
 
@@ -419,8 +420,12 @@ public class ItemJiton extends ElementsNarutomodMod.ModElement {
 			super.onUpdate();
 			double d = this.getVelocity();
 			this.idleTime = d < 0.001d ? this.idleTime + 1 : 0;
-			this.setParticleTextureOffset(this.texU + (d > 0.01d ? 1 : 0) % 8);
-			if (this.idleTime > 1000) {
+			if (this.world.isRemote) {
+				this.setParticleTextureOffset(this.texU + (d > 0.01d ? 1 : 0) % 8);
+				/*Particles.spawnParticle(this.world, Particles.Types.SMOKE, this.posX, this.posY, this.posZ, 10,
+				 this.width * 0.4, this.height * 0.4, this.width * 0.4, this.motionX, this.motionY, this.motionZ,
+				 this.getColorInt(), (int)(this.getScale() * 10), 3);*/
+			} else if (this.idleTime > 1000) {
 				this.setAge(this.getMaxAge());
 			}
 		}

@@ -77,6 +77,7 @@ Items:
  - remembers 6-path senjutsu jutsuXPs after the item is removed (when rinnesharingan is off)
  - fixed learning jutsu scrolls on off-hand deletes item in main-hand bug
  - eating white zetsu flesh will only gain rinnegan if player has ems+achievement and doesn't have rinnegan+achievement
+ - fixed sage mode facial textures not rendering when senjutsu item held in offhand
 
 Entities:
  - added 5 second cooldown for Itachi's genjutsu
@@ -93,6 +94,7 @@ Entities:
  - snake summons greater than size 4 will break wood/trees when moving
  - bijus will take less damage if the attacker is in its view and the damage is blockable
  - tweaked pricing for ninja merchants trade items, trading works the same as vanilla, trading unlocks more trades
+ - clones don't naturally drop loot
 
 Advancements:
  - associate "Rinnesharingan Activated" advancement to the correct parent (rinnegan/tenseigan) advancement
@@ -113,6 +115,7 @@ General:
  - added config option ENABLE_JUTSU_SCROLLS_IN_LOOTCHESTS to disable jutsu scrolls in loot chests
  - chakra does not regenerate when using jutsus
  - fixed dying from chakra overload causes immortality when revived with king of hell
+ - added config to change amaterasu block duration
 
 0.2.11-beta ===============================================================================
 

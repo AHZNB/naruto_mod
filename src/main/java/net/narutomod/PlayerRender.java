@@ -284,8 +284,9 @@ public class PlayerRender extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void doRenderLayer(AbstractClientPlayer entityIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
 			if (!entityIn.isSpectator()) {
-				for (int i = 0; i < entityIn.inventory.mainInventory.size(); i++) {
-					ItemStack stack = entityIn.inventory.mainInventory.get(i);
+				for (int i = 0; i < entityIn.inventory.getSizeInventory(); i++) {
+					ItemStack stack = entityIn.inventory.getStackInSlot(i);
+					//if ((i < entityIn.inventory.mainInventory.size() || i >= entityIn.inventory.mainInventory.size() + entityIn.inventory.armorInventory.size())
 					if (stack.getItem() instanceof ItemOnBody.Interface) {
 						ItemOnBody.Interface item = (ItemOnBody.Interface)stack.getItem();
 						if (item.showSkinLayer()) {

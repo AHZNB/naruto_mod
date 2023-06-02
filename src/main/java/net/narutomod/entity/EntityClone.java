@@ -350,6 +350,19 @@ public class EntityClone extends ElementsNarutomodMod.ModElement {
 		public int getMaxFallHeight() {
 			return 12;
 		}
+
+		@Override
+		protected boolean canDropLoot() {
+			return false;
+		}
+
+		@Override
+		protected void dropLoot(boolean wasRecentlyHit, int lootingModifier, DamageSource source) {
+		}
+
+		@Override
+		protected void dropEquipment(boolean wasRecentlyHit, int lootingModifier) {
+		}
 	}
 
 	public static class ModifiedXPOrb extends EntityXPOrb {
