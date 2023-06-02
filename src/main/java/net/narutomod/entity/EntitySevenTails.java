@@ -53,8 +53,7 @@ public class EntitySevenTails extends ElementsNarutomodMod.ModElement {
 
 	@Override
 	public void initElements() {
-		elements.entities
-.add(() -> EntityEntryBuilder.create().entity(EntityCustom.class)
+		elements.entities.add(() -> EntityEntryBuilder.create().entity(EntityCustom.class)
 		 .id(new ResourceLocation("narutomod", "seven_tails"), ENTITYID)
 		 .name("seven_tails").tracker(96, 3, true).egg(-10066330, -13312).build());
 	}
@@ -165,8 +164,8 @@ public class EntitySevenTails extends ElementsNarutomodMod.ModElement {
 			super.applyEntityAttributes();
 			this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(100.0D);
 			this.getAttributeMap().registerAttribute(SharedMonsterAttributes.FLYING_SPEED);
-			this.getEntityAttribute(SharedMonsterAttributes.FLYING_SPEED).setBaseValue(0.8D);
-			this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.8D);
+			this.getEntityAttribute(SharedMonsterAttributes.FLYING_SPEED).setBaseValue(1.2D);
+			this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(1.2D);
 			this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(10000.0D);
 			this.getEntityAttribute(EntityPlayer.REACH_DISTANCE).setBaseValue(30.0D);
 		}
