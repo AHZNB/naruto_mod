@@ -22,8 +22,30 @@ import net.minecraft.world.BossInfoServer;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.storage.WorldSavedData;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.CombatRules;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.EntitySelectors;
+import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.util.SoundEvent;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.translation.I18n;
 import net.minecraft.item.Item;
+import net.minecraft.entity.ai.RandomPositionGenerator;
+import net.minecraft.entity.ai.EntityAIBase;
+import net.minecraft.entity.ai.EntityAIHurtByTarget;
+import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
+import net.minecraft.entity.ai.EntityAIAttackMelee;
+import net.minecraft.entity.ai.EntityAIAttackRanged;
+import net.minecraft.entity.ai.EntityAIMoveTowardsTarget;
+import net.minecraft.entity.ai.EntityAIWander;
+import net.minecraft.entity.ai.attributes.IAttribute;
+import net.minecraft.entity.ai.attributes.IAttributeInstance;
+import net.minecraft.entity.ai.attributes.RangedAttribute;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.EnumCreatureAttribute;
@@ -38,10 +60,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.EntityDataManager;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.EnumParticleTypes;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.model.ModelBox;
@@ -59,24 +77,6 @@ import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.pathfinding.Path;
-import net.minecraft.entity.ai.RandomPositionGenerator;
-import net.minecraft.entity.ai.EntityAIBase;
-import net.minecraft.entity.ai.EntityAIHurtByTarget;
-import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
-import net.minecraft.entity.ai.EntityAIAttackMelee;
-import net.minecraft.entity.ai.EntityAIAttackRanged;
-import net.minecraft.entity.ai.EntityAIMoveTowardsTarget;
-import net.minecraft.entity.ai.EntityAIWander;
-import net.minecraft.entity.ai.attributes.IAttribute;
-import net.minecraft.entity.ai.attributes.IAttributeInstance;
-import net.minecraft.entity.ai.attributes.RangedAttribute;
-import net.minecraft.util.SoundEvent;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.RayTraceResult;
-//import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.EntitySelectors;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.translation.I18n;
 
 import net.narutomod.item.ItemJutsu;
 import net.narutomod.procedure.ProcedureUtils;
@@ -493,13 +493,18 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 					}
 				}
 			}
+			float hp = this.getHealth();
 			if (source.getTrueSource() instanceof EntityLivingBase) {
-				float hp = this.getHealth();
 				float maxhp = this.getMaxHealth();
 				this.setAngerLevel(hp < 0.5f * maxhp ? 2 : hp < maxhp - 500f ? 1 : 0);
 			}
-			//amount = MathHelper.clamp(amount * 0.2f, 0.0F, 1000.0F);
-			return super.attackEntityFrom(source, amount);
+			//return super.attackEntityFrom(source, amount);
+			boolean flag = super.attackEntityFrom(source, amount);
+			EntityPlayer jin = this.getBijuManager().getJinchurikiPlayer();
+			if (flag && jin != null && !this.isEntityAlive()) {
+				jin.attackEntityFrom(source, CombatRules.getDamageAfterAbsorb(amount, (float)this.getTotalArmorValue(), 0f) - hp);
+			}
+			return flag;
 		}
 
 		@Override
@@ -1376,7 +1381,7 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 				World world = FMLCommonHandler.instance().getMinecraftServerInstance().getWorld(compound.getInteger("dimension"));
 				if (world != null) {
 					this.getBijuManager().onAddedToWorld(this.createEntity(world), false);
-					this.getBijuManager().loadEntityFromNBT(compound);
+					this.getBijuManager().loadEntityFromNBT(compound.getCompoundTag("entityNBT"));
 				}
 			}
 			if (compound.hasUniqueId("JinchurikiUUID")) {
@@ -1405,7 +1410,7 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 			compound.setBoolean("spawned", entity != null);
 			if (entity != null) {
 				compound.setInteger("dimension", entity.dimension);
-				entity.writeToNBT(compound);
+				compound.setTag("entityNBT", entity.writeToNBT(new NBTTagCompound()));
 			}
 			UUID vesseluuid = this.getBijuManager().getVesselUuid();
 			if (vesseluuid != null) {

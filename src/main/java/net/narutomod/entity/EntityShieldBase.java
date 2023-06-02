@@ -2,6 +2,7 @@ package net.narutomod.entity;
 
 import net.minecraft.world.World;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.CombatRules;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumHandSide;
@@ -111,7 +112,13 @@ public abstract class EntityShieldBase extends EntityLivingBase {
 			return false;
 		if (source == DamageSource.FALL || source == DamageSource.CACTUS || source == DamageSource.IN_WALL)
 			return false;
-		return super.attackEntityFrom(source, amount);
+		float f = this.getHealth();
+		boolean flag = super.attackEntityFrom(source, amount);
+		EntityLivingBase summoner = this.getSummoner();
+		if (flag && summoner != null && !this.isEntityAlive()) {
+			summoner.attackEntityFrom(source, CombatRules.getDamageAfterAbsorb(amount, (float)this.getTotalArmorValue(), 0f) - f);
+		}
+		return flag;
 	}
 
 	@Override

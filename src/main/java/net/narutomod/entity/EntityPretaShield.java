@@ -71,7 +71,7 @@ public class EntityPretaShield extends ElementsNarutomodMod.ModElement {
 		}
 
 		private void weakenEntity(EntityLivingBase entity, float amount) {
-			int duration = 400;
+			int duration = 200;
 			int amplifier = (int) Math.ceil((amount / 4.0F));
 			if (entity.isPotionActive(MobEffects.WEAKNESS) && amount > 0.1F) {
 				PotionEffect effect = entity.getActivePotionEffect(MobEffects.WEAKNESS);
@@ -79,8 +79,8 @@ public class EntityPretaShield extends ElementsNarutomodMod.ModElement {
 				duration = effect.getDuration() + 60;
 			}
 			entity.addPotionEffect(new PotionEffect(MobEffects.WEAKNESS, duration, amplifier));
-			entity.addPotionEffect(new PotionEffect(MobEffects.MINING_FATIGUE, 300, 4));
-			entity.addPotionEffect(new PotionEffect(MobEffects.SLOWNESS, 300, 4));
+			entity.addPotionEffect(new PotionEffect(MobEffects.MINING_FATIGUE, 200, 4));
+			entity.addPotionEffect(new PotionEffect(MobEffects.SLOWNESS, 200, 4));
 			EntityLivingBase summoner = this.getSummoner();
 			summoner.heal(amount / 2.0F);
 			if (summoner instanceof EntityPlayer) {

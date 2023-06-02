@@ -1,3 +1,11 @@
+0.3.0-beta ================================================================================
+
+Jutsus:
+ - if susanoo or shield based jutsus gets killed by enough damage, residual damage will be transfered to player
+ - properly set 8-trigrams heavenly rotation cooldown
+ - reduced debuff duration when chakra/attack absorbed by preta path
+
+
 0.2.12-beta ===============================================================================
 
 Jutsus:
@@ -16,7 +24,6 @@ Jutsus:
  - fixed eternal mangekyo intangible not negating damage 
  - susanoo, shield based entities and riding on bijus will no longer protect you from
    damage done to yourself by opening your gates, only king of hell can protect you
- - if susanoo or shield based jutsus gets killed by enough damage, residual damage will be transfered to player
  - fixed water jutsus leaving behind residual water blocks
  - biju cloak now force closes if you don't have anymore chakra
  - biju cloak 2 bijudama charge time is dependant on cloak XP, cooldown 5 seconds

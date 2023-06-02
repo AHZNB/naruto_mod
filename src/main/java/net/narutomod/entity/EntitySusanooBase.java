@@ -1,6 +1,7 @@
 package net.narutomod.entity;
 
 import net.minecraft.world.World;
+import net.minecraft.util.CombatRules;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.EnumHand;
@@ -34,8 +35,8 @@ import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.procedure.ProcedureSusanoo;
 import net.narutomod.PlayerTracker;
 import net.narutomod.Particles;
-import net.narutomod.ElementsNarutomodMod;
 import net.narutomod.Chakra;
+import net.narutomod.ElementsNarutomodMod;
 
 import javax.annotation.Nullable;
 
@@ -152,7 +153,13 @@ public abstract class EntitySusanooBase extends EntityMob implements IRangedAtta
 			return false;
 		if (source == ProcedureUtils.AMATERASU)
 			return false;
-		return super.attackEntityFrom(source, amount);
+		float f = this.getHealth();
+		boolean flag = super.attackEntityFrom(source, amount);
+		EntityLivingBase summoner = this.getOwnerPlayer();
+		if (flag && summoner != null && !this.isEntityAlive()) {
+			summoner.attackEntityFrom(source, CombatRules.getDamageAfterAbsorb(amount, (float)this.getTotalArmorValue(), 0f) - f);
+		}
+		return flag;
 	}
 
 	@Override

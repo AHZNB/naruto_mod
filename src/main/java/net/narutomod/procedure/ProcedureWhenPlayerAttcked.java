@@ -44,7 +44,7 @@ public class ProcedureWhenPlayerAttcked extends ElementsNarutomodMod.ModElement 
 		Entity entity = (Entity) dependencies.get("entity");
 		World world = (World) dependencies.get("world");
 		Object evtobj = dependencies.get("event");
-		if (entity == null) {
+		if (!(entity instanceof EntityLivingBase)) {
 			System.err.println("Failed to load dependency entity for procedure ProcedureWhenPlayerAttcked!");
 			return;
 		}
@@ -58,10 +58,10 @@ public class ProcedureWhenPlayerAttcked extends ElementsNarutomodMod.ModElement 
 		}
 		Entity attacker = null;
 		LivingAttackEvent evt = (LivingAttackEvent) evtobj;
-		if (evt.getSource() != null) {
+		if (evt.getSource() != null) {
 			attacker = evt.getSource().getTrueSource();
 		}
-		if (entity instanceof EntityLivingBase) {
+		if (!world.isRemote) {
 			if (entity.getEntityData().getDouble(NarutomodModVariables.InvulnerableTime) > 0.0D) {
 				evt.setCanceled(true);
 			}
@@ -78,27 +78,27 @@ public class ProcedureWhenPlayerAttcked extends ElementsNarutomodMod.ModElement 
 			  || ridingEntity instanceof EntityTailedBeast.Base)
 			 && ridingEntity.isEntityAlive() && evt.getSource() != ProcedureUtils.SPECIAL_DAMAGE) {
 				evt.setCanceled(true);
-				//ridingEntity.attackEntityFrom(evt.getSource(), evt.getAmount());
-				float f = ((EntityLivingBase)ridingEntity).getHealth();
+				ridingEntity.attackEntityFrom(evt.getSource(), evt.getAmount());
+				/*float f = ((EntityLivingBase)ridingEntity).getHealth();
 				if (ridingEntity.attackEntityFrom(evt.getSource(), evt.getAmount()) && !ridingEntity.isEntityAlive()) {
 					entity.attackEntityFrom(evt.getSource(), CombatRules.getDamageAfterAbsorb(evt.getAmount(),
 					 (float)((EntityLivingBase)ridingEntity).getTotalArmorValue(), 0f) - f);
-				}
+				}*/
 			}
-			if (entity.getRidingEntity() instanceof EntityKingOfHell.EntityCustom) {
+			if (ridingEntity instanceof EntityKingOfHell.EntityCustom) {
 				evt.setCanceled(true);
-				entity.getRidingEntity().attackEntityFrom(evt.getSource(), evt.getAmount());
+				ridingEntity.attackEntityFrom(evt.getSource(), evt.getAmount());
 			}
-			if (attacker instanceof EntityPlayer && !evt.getSource().getImmediateSource().equals(attacker)) {
-				((EntityLivingBase)attacker).setLastAttackedEntity(entity);
-			}
+		}
+		if (attacker instanceof EntityPlayer && !evt.getSource().getImmediateSource().equals(attacker)) {
+			((EntityLivingBase)attacker).setLastAttackedEntity(entity);
 		}
 	}
 
 	@SubscribeEvent
 	public void onLivingAttacked(LivingAttackEvent event) {
-		if (event != null && event.getEntity() != null) {
-			Entity entity = event.getEntity();
+		if (event != null && event.getEntityLiving() != null) {
+			EntityLivingBase entity = event.getEntityLiving();
 			World world = entity.world;
 			HashMap<String, Object> dependencies = new HashMap<>();
 			dependencies.put("world", world);

@@ -7,9 +7,16 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 
 import net.minecraft.world.World;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.ActionResult;
+import net.minecraft.util.EntityDamageSourceIndirect;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Item;
 import net.minecraft.item.EnumAction;
@@ -17,16 +24,8 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.text.TextComponentString;
 import net.minecraft.client.util.ITooltipFlag;
-
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.EntityDamageSourceIndirect;
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraft.util.ResourceLocation;
 
 import net.narutomod.ElementsNarutomodMod;
 import net.narutomod.procedure.ProcedureUtils;
@@ -180,14 +179,13 @@ public class ItemJutsu extends ElementsNarutomodMod.ModElement {
 					((EntityPlayer)player).sendStatusMessage(
 						new TextComponentString(String.format("%.1f", this.getPower(stack, player, timeLeft))), true);
 				}
-				if (player.world.isRemote) {
+				if (!player.world.isRemote) {
 					Particles.spawnParticle(player.world, Particles.Types.SMOKE, player.posX, player.posY, player.posZ, 
 					 40, 0.2d, 0d, 0.2d, 0d, 0.5d, 0d, 0x106AD1FF, 40, 5, 0xF0, player.getEntityId());
 				}
 				if (timeLeft % 10 == 0) {
 					player.world.playSound(null, player.posX, player.posY, player.posZ,
-					 (net.minecraft.util.SoundEvent)net.minecraft.util.SoundEvent.REGISTRY
-					 .getObject(new ResourceLocation("narutomod:charging_chakra")),
+					 net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:charging_chakra")),
 					 net.minecraft.util.SoundCategory.PLAYERS, 0.05F, itemRand.nextFloat() + 0.5F);
 				}
 			}

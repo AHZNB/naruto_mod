@@ -13,7 +13,6 @@ import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.item.ItemStack;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.EntityLivingBase;
@@ -76,42 +75,32 @@ public class ProcedureHakkeshoKaiten extends ElementsNarutomodMod.ModElement {
 					|| ((f1) && (PlayerTracker.getBattleXp((EntityPlayer) entity) >= 1500))))) {
 				return;
 			}
-			if ((is_pressed)) {
-				if (!(entity.getRidingEntity() instanceof EntityHakkeshoKeiten.EntityCustom)) {
-					cooldown = (double) ((helmetstack).hasTagCompound() ? (helmetstack).getTagCompound().getDouble("HakkeshoKaitenCD") : -1);
-					if ((((entity instanceof EntityPlayer) ? ((EntityPlayer) entity).capabilities.isCreativeMode : false)
-							|| (((NarutomodModVariables.world_tick) > (cooldown)) || ((NarutomodModVariables.world_tick) < ((cooldown) - 6000))))) {
-						if ((Chakra.pathway((EntityPlayer) entity).getAmount() >= ItemByakugan.getKaitenChakraUsage((EntityLivingBase) entity))) {
-							world.playSound((EntityPlayer) null, (entity.posX), (entity.posY), (entity.posZ),
-									(net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY
-											.getObject(new ResourceLocation("narutomod:HakkeshoKaiten")),
-									SoundCategory.NEUTRAL, (float) 1, (float) 1);
-							entity.world.spawnEntity(new EntityHakkeshoKeiten.EntityCustom((EntityPlayer) entity));
-						}
-					} else {
-						if (((!(world.isRemote)) && (entity instanceof EntityPlayer))) {
-							((EntityPlayer) entity).sendStatusMessage(
-									new TextComponentTranslation("chattext.cooldown.formatted", (cooldown - NarutomodModVariables.world_tick) / 20),
-									true);
+			if ((!(world.isRemote))) {
+				if ((is_pressed)) {
+					if (!(entity.getRidingEntity() instanceof EntityHakkeshoKeiten.EntityCustom)) {
+						cooldown = (double) ((helmetstack).hasTagCompound() ? (helmetstack).getTagCompound().getDouble("HakkeshoKaitenCD") : -1);
+						if ((((entity instanceof EntityPlayer) ? ((EntityPlayer) entity).capabilities.isCreativeMode : false)
+								|| (((NarutomodModVariables.world_tick) > (cooldown))
+										|| ((NarutomodModVariables.world_tick) < ((cooldown) - 6000))))) {
+							if ((Chakra.pathway((EntityPlayer) entity).getAmount() >= ItemByakugan.getKaitenChakraUsage((EntityLivingBase) entity))) {
+								world.playSound((EntityPlayer) null, (entity.posX), (entity.posY), (entity.posZ),
+										(net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY
+												.getObject(new ResourceLocation("narutomod:HakkeshoKaiten")),
+										SoundCategory.NEUTRAL, (float) 1, (float) 1);
+								entity.world.spawnEntity(new EntityHakkeshoKeiten.EntityCustom((EntityPlayer) entity));
+							}
+						} else {
+							if ((entity instanceof EntityPlayer)) {
+								((EntityPlayer) entity).sendStatusMessage(new TextComponentTranslation("chattext.cooldown.formatted",
+										(int) ((cooldown - NarutomodModVariables.world_tick) / 20)), true);
+							}
 						}
 					}
-				}
-			} else {
-				Entity entitySpawned = entity.getRidingEntity();
-				if (entitySpawned instanceof EntityHakkeshoKeiten.EntityCustom) {
-					ticksExisted = (double) (double) entitySpawned.ticksExisted;
-					entity.world.removeEntity(entitySpawned);
-					cooldown = (double) (ProcedureUtils.getCooldownModifier((EntityPlayer) entity) * ((ticksExisted) * 5));
-					{
-						ItemStack _stack = (helmetstack);
-						if (!_stack.hasTagCompound())
-							_stack.setTagCompound(new NBTTagCompound());
-						_stack.getTagCompound().setDouble("HakkeshoKaitenCD", ((NarutomodModVariables.world_tick) + (cooldown)));
+				} else {
+					Entity entitySpawned = entity.getRidingEntity();
+					if (entitySpawned instanceof EntityHakkeshoKeiten.EntityCustom) {
+						entitySpawned.setDead();
 					}
-					if (entity instanceof EntityPlayer)
-						((EntityPlayer) entity).getFoodStats()
-								.setFoodLevel((int) (((entity instanceof EntityPlayer) ? ((EntityPlayer) entity).getFoodStats().getFoodLevel() : 0)
-										- (((ticksExisted) / 60) + 1)));
 				}
 			}
 		}
