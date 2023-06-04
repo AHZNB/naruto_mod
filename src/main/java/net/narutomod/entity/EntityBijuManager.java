@@ -16,6 +16,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.MinecraftServer;
 
 import net.narutomod.item.ItemBijuCloak;
 import net.narutomod.procedure.ProcedureUtils;
@@ -39,6 +40,7 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 	private UUID vesselUuid;
 	private long vesselSetTime;
 	private EntityPlayer jinchurikiPlayer;
+	private long jinchurikiLastActiveTime;
 	private String vesselName = "";
 	private T entity;
 	private final Class<T> entityClass;
@@ -46,6 +48,7 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 	private int cloakLevel;
 	private long cloakCD;
 	private final int[] cloakXp = new int[3];
+	private double cloakChakra;
 	private BlockPos spawnPos;
 	private int ticksSinceDeath;
 	private boolean hasLived;
@@ -406,7 +409,7 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 
 	public void setVesselEntity(@Nullable Entity entityIn) {
 		this.setVesselEntity(entityIn, true);
-		this.vesselSetTime = entityIn != null ? entityIn.world.getTotalWorldTime() : 0;
+		this.vesselSetTime = entityIn != null ? MinecraftServer.getCurrentTimeMillis() : 0;
 	}
 
 	public void setVesselEntity(@Nullable Entity entityIn, boolean dirty) {
@@ -427,7 +430,13 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 				this.entity.setDead();
 			}
 		}
-		this.jinchurikiPlayer = entityIn instanceof EntityPlayer ? (EntityPlayer)entityIn : null;
+		if (entityIn instanceof EntityPlayer) {
+			this.jinchurikiPlayer = (EntityPlayer)entityIn;
+			this.setJinchurikiLastActiveTime(MinecraftServer.getCurrentTimeMillis(), false);
+		} else {
+			this.jinchurikiPlayer = null;
+			this.setJinchurikiLastActiveTime(0, false);
+		}
 		if (dirty) {
 			this.markDirty();
 		}
@@ -439,6 +448,21 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 
 	public long getVesselSetTime() {
 		return this.isSealed() ? this.vesselSetTime : 0;
+	}
+
+	public void setJinchurikiLastActiveTime(long time) {
+		this.setJinchurikiLastActiveTime(time, true);
+	}
+
+	public void setJinchurikiLastActiveTime(long time, boolean markDirty) {
+		this.jinchurikiLastActiveTime = time;
+		if (markDirty) {
+			this.markDirty();
+		}
+	}
+
+	public long getJinchurikiLastActiveTime() {
+		return this.jinchurikiPlayer != null ? this.jinchurikiLastActiveTime : 0;
 	}
 
 	public void verifyVesselEntity(Entity entityIn) {
@@ -509,7 +533,8 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 					return;
 				}
 				double d1 = cp.getMax() * 4d - cp.getAmount();
-				cp.consume(d <= d1 || this.jinchurikiPlayer.isCreative() ? -d : -d1, true);
+				this.cloakChakra = d <= d1 || this.jinchurikiPlayer.isCreative() ? d : d1;
+				cp.consume(-this.cloakChakra, true);
 				this.cloakCD = l;
 				if (this.jinchurikiPlayer.inventory.armorInventory.get(3).getItem() != ItemBijuCloak.helmet) {
 					ItemStack stack = new ItemStack(ItemBijuCloak.helmet);
@@ -558,6 +583,7 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 					this.jinchurikiPlayer.sendStatusMessage(new TextComponentTranslation("chattext.bijumanager.tooweak",
 					 this.getEntityLocalizedName()), false);
 				} else {
+					this.cloakChakra += d;
 					chakra.consume(-d, true);
 					this.saveAndResetWearingTicks(this.cloakLevel++);
 				}

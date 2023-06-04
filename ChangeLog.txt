@@ -4,7 +4,10 @@ Jutsus:
  - if susanoo or shield based jutsus gets killed by enough damage, residual damage will be transfered to player
  - properly set 8-trigrams heavenly rotation cooldown
  - reduced debuff duration when chakra/attack absorbed by preta path
+ - optimize sand jutsus on server side
 
+Items:
+ - fixed explosive tags breaking blocks when mobGriefing false
 
 0.2.12-beta ===============================================================================
 
@@ -72,7 +75,6 @@ Items:
  - add config to force remove rinnegan/tenseigan/ems if obtained without prerequisite achievements
  - medical scroll to combine dojutsus now require the appropriate achievements to combine
  - fixed forceDojutsuDropOnDeath not dropping mangekyos
- - fixed explosive tags breaking blocks when mobGriefing false
  - fixed after gaining mangekyo naturally susanoo color always black
  - added 3-prong kunai weapon and recipe
  - added some horns on 6-path rinnegan and tenseigan chakra mode

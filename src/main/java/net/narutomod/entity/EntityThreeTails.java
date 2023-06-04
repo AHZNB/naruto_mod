@@ -45,10 +45,8 @@ public class EntityThreeTails extends ElementsNarutomodMod.ModElement {
 
 	@Override
 	public void initElements() {
-		elements.entities
-.add(() -> EntityEntryBuilder.create().entity(EntityCustom.class)
-		 .id(new ResourceLocation("narutomod", "three_tails"), ENTITYID)
-.name("three_tails").tracker(96, 3, true)
+		elements.entities.add(() -> EntityEntryBuilder.create().entity(EntityCustom.class)
+		 .id(new ResourceLocation("narutomod", "three_tails"), ENTITYID).name("three_tails").tracker(96, 3, true)
 		 .egg(-10066330, -6750208).build());
 	}
 

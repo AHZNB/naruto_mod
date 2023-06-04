@@ -364,7 +364,7 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 
 	@SideOnly(Side.CLIENT)
 	public static class LayerChakraStrings implements LayerRenderer<Base> {
-		private final ResourceLocation FUUIN_TEXTURE = new ResourceLocation("narutomod:textures/fuuin_beam.png");
+		private static final ResourceLocation FUUIN_TEXTURE = new ResourceLocation("narutomod:textures/fuuin_beam_blue.png");
 		private final RenderLiving renderer;
 
 		public LayerChakraStrings(RenderLiving rendererIn) {

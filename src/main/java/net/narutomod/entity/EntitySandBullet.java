@@ -198,7 +198,7 @@ public class EntitySandBullet extends ElementsNarutomodMod.ModElement {
 			list = Lists.newArrayList();
 			posMap.put(stack, list);
 		}
-		list.add(new ItemJiton.SwarmTarget(entity.world, 10, ItemGourd.getMouthPos(entity), 
+		list.add(new ItemJiton.SwarmTarget(entity.world, 1, ItemGourd.getMouthPos(entity), 
 		 new Vec3d(entity.posX + (entity.getRNG().nextDouble()-0.5d) * power * 2, entity.posY + entity.getEyeHeight() + (entity.getRNG().nextDouble()-0.5d) * 2d, entity.posZ + (entity.getRNG().nextDouble()-0.5d) * power * 2),
 		 new Vec3d(0.1d, 0.2d, 0.1d), 0.5f, 0.01f, false, 0.5f, ItemJiton.getSandType(stack).getColor()));
 	}

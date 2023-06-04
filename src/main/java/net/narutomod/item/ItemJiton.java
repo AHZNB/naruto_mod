@@ -48,7 +48,7 @@ import net.narutomod.entity.EntitySandLevitation;
 import net.narutomod.entity.EntityBijuManager;
 import net.narutomod.PlayerTracker;
 import net.narutomod.Chakra;
-//import net.narutomod.Particles;
+import net.narutomod.Particles;
 import net.narutomod.creativetab.TabModTab;
 import net.narutomod.ElementsNarutomodMod;
 
@@ -315,7 +315,7 @@ public class ItemJiton extends ElementsNarutomodMod.ModElement {
 			if (!this.world.isRemote && this.getHealth() > 0.0f && source.getImmediateSource() != null) {
 				Entity entity = source.getImmediateSource();
 				//this.moveSand(this.getGourdMouthPos(), entity.getPositionVector().addVector(0, entity.height/2, 0), 100);
-				this.moveSand(this.getTargetPosition(entity), this.getTargetPosition(entity), 20);
+				this.moveSand(this.getTargetPosition(entity), this.getTargetPosition(entity), 2);
 				if (entity instanceof EntityLivingBase) {
 					ProcedureUtils.pushEntity(this.getSummoner(), entity, 5d, 1.5f);
 				}
@@ -422,9 +422,17 @@ public class ItemJiton extends ElementsNarutomodMod.ModElement {
 			this.idleTime = d < 0.001d ? this.idleTime + 1 : 0;
 			if (this.world.isRemote) {
 				this.setParticleTextureOffset(this.texU + (d > 0.01d ? 1 : 0) % 8);
-				/*Particles.spawnParticle(this.world, Particles.Types.SMOKE, this.posX, this.posY, this.posZ, 10,
-				 this.width * 0.4, this.height * 0.4, this.width * 0.4, this.motionX, this.motionY, this.motionZ,
-				 this.getColorInt(), (int)(this.getScale() * 10), 3);*/
+				for (int i = 0; i < 10; i++) {
+					Particles.spawnParticle(this.world, Particles.Types.SAND,
+					 this.posX + (this.rand.nextDouble()-0.5d) * this.width,
+					 this.posY + this.rand.nextDouble() * this.height,
+					 this.posZ + (this.rand.nextDouble()-0.5d) * this.width,
+					 1, 0d, 0d, 0d,
+					 this.motionX * (this.rand.nextDouble() * 0.2d + 0.9d),
+					 this.motionY * (this.rand.nextDouble() * 0.2d + 0.9d),
+					 this.motionZ * (this.rand.nextDouble() * 0.2d + 0.9d),
+					 this.getColorInt(), (int)(this.getScale() * 8), 5);
+				}
 			} else if (this.idleTime > 1000) {
 				this.setAge(this.getMaxAge());
 			}
@@ -494,7 +502,7 @@ public class ItemJiton extends ElementsNarutomodMod.ModElement {
 		}
 
 		private void spawnNewParticles() {
-			for (int i = 0; this.spawned < this.total && i < 50; i++, this.spawned++) {
+			for (int i = 0; this.spawned < this.total && i < 5; i++, this.spawned++) {
 				Entity p = this.createParticle(this.startPos.x, this.startPos.y, this.startPos.z,
 				 (this.rand.nextDouble()-0.5d) * 2d * this.spawnMotion.x, this.spawnMotion.y,
 				 (this.rand.nextDouble()-0.5d) * 2d * this.spawnMotion.z, this.color,

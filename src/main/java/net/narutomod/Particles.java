@@ -46,10 +46,10 @@ import java.util.List;
 import io.netty.buffer.ByteBuf;
 import com.google.common.collect.Maps;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
 import org.lwjgl.util.glu.Sphere;
 import org.lwjgl.util.glu.GLU;
 import javax.annotation.Nullable;
-import com.google.common.collect.Lists;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class Particles extends ElementsNarutomodMod.ModElement {
@@ -83,6 +83,7 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 		Minecraft.getMinecraft().effectRenderer.registerParticle(Types.WHIRLPOOL.getID(), new Whirlpool.Factory());
 		Minecraft.getMinecraft().effectRenderer.registerParticle(Types.SONIC_BOOM.getID(), new SonicBoom.Factory());
 		Minecraft.getMinecraft().effectRenderer.registerParticle(Types.BLOCK_DUST.getID(), new BlockDust.Factory());
+		Minecraft.getMinecraft().effectRenderer.registerParticle(Types.SAND.getID(), new Sand.Factory());
 	}
 
 	public static void spawnParticle(World world, Types type, double x, double y, double z, int count, 
@@ -305,8 +306,8 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 	@SideOnly(Side.CLIENT)
 	public static class Smoke extends Particle {
 		private static final ResourceLocation TEXTURE = new ResourceLocation("narutomod:textures/particles.png");
-		private final TextureManager textureManager;
-		private float smokeParticleScale;
+		protected final TextureManager textureManager;
+		protected float smokeParticleScale;
 		private int particleBrightness;
 		protected double floatMotionY;
 		private int viewerId;
@@ -1371,6 +1372,81 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 	    }
 	}
 
+	@SideOnly(Side.CLIENT)
+	public static class Sand extends Smoke {
+		protected Sand(World worldIn, double xCoordIn, double yCoordIn, double zCoordIn, 
+		 double motionX, double motionY, double motionZ, int color, float scale, int maxAge, double floatSpeed) {
+			super(worldIn, xCoordIn, yCoordIn, zCoordIn, motionX, motionY, motionZ, color, scale, maxAge, 0, -1, floatSpeed);
+			this.particleTextureIndexY = 0;
+			this.particleScale = scale;
+			this.motionX = motionX;
+			this.motionY = motionY;
+			this.motionZ = motionZ;
+		}
+
+		@Override
+		public void renderParticle(BufferBuilder buffer, Entity entityIn, float partialTicks, float rotationX, float rotationZ, float rotationYZ,
+				float rotationXY, float rotationXZ) {
+	     	this.textureManager.bindTexture(Smoke.TEXTURE);
+	        float f0 = (float)this.particleTextureIndexX / 8.0F;
+	        float f1 = f0 + 0.124875F;
+	        float f2 = (float)this.particleTextureIndexY / 8.0F;
+	        float f3 = f2 + 0.124875F;
+	        float f4 = 0.1F * this.particleScale;
+	        float f5 = (float)(this.prevPosX + (this.posX - this.prevPosX) * (double)partialTicks - interpPosX);
+	        float f6 = (float)(this.prevPosY + (this.posY - this.prevPosY) * (double)partialTicks - interpPosY);
+	        float f7 = (float)(this.prevPosZ + (this.posZ - this.prevPosZ) * (double)partialTicks - interpPosZ);
+	        float f8 = this.particleAlpha;
+	        int i = this.getBrightnessForRender(partialTicks);
+	        int j = i >> 16 & 65535;
+	        int k = i & 65535;
+	        Vec3d[] avec3d = new Vec3d[] {new Vec3d((double)(-rotationX * f4 - rotationXY * f4), (double)(-rotationZ * f4), (double)(-rotationYZ * f4 - rotationXZ * f4)), new Vec3d((double)(-rotationX * f4 + rotationXY * f4), (double)(rotationZ * f4), (double)(-rotationYZ * f4 + rotationXZ * f4)), new Vec3d((double)(rotationX * f4 + rotationXY * f4), (double)(rotationZ * f4), (double)(rotationYZ * f4 + rotationXZ * f4)), new Vec3d((double)(rotationX * f4 - rotationXY * f4), (double)(-rotationZ * f4), (double)(rotationYZ * f4 - rotationXZ * f4))};
+	        buffer.pos((double)f5 + avec3d[0].x, (double)f6 + avec3d[0].y, (double)f7 + avec3d[0].z).tex((double)f1, (double)f3).color(this.particleRed, this.particleGreen, this.particleBlue, f8).lightmap(j, k).endVertex();
+	        buffer.pos((double)f5 + avec3d[1].x, (double)f6 + avec3d[1].y, (double)f7 + avec3d[1].z).tex((double)f1, (double)f2).color(this.particleRed, this.particleGreen, this.particleBlue, f8).lightmap(j, k).endVertex();
+	        buffer.pos((double)f5 + avec3d[2].x, (double)f6 + avec3d[2].y, (double)f7 + avec3d[2].z).tex((double)f0, (double)f2).color(this.particleRed, this.particleGreen, this.particleBlue, f8).lightmap(j, k).endVertex();
+	        buffer.pos((double)f5 + avec3d[3].x, (double)f6 + avec3d[3].y, (double)f7 + avec3d[3].z).tex((double)f0, (double)f3).color(this.particleRed, this.particleGreen, this.particleBlue, f8).lightmap(j, k).endVertex();
+		}
+
+		@Override
+		public void onUpdate() {
+			this.prevPosX = this.posX;
+			this.prevPosY = this.posY;
+			this.prevPosZ = this.posZ;
+			if (this.particleMaxAge == 0 || this.particleAge++ >= this.particleMaxAge) {
+				this.setExpired();
+				return;
+			}
+			double d = MathHelper.sqrt(this.motionX * this.motionX + this.motionY * this.motionY + this.motionZ * this.motionZ);
+			this.particleTextureIndexX = (this.particleTextureIndexX + (d > 0.01d ? 1 : 0)) % 8;
+			this.motionY += this.floatMotionY;
+			this.move(this.motionX, this.motionY, this.motionZ);
+			this.motionX *= 0.96D;
+			this.motionY *= 0.96D;
+			this.motionZ *= 0.96D;
+			if (this.onGround) {
+				this.motionX *= 0.7D;
+				this.motionZ *= 0.7D;
+			}
+		}
+
+		@Override
+		public boolean shouldDisableDepth() {
+			return false;
+		}
+
+		@SideOnly(Side.CLIENT)
+		public static class Factory implements IParticleFactory {
+			public Particle createParticle(int particleID, World worldIn, double xCoordIn, double yCoordIn, double zCoordIn, double xSpeedIn,
+					double ySpeedIn, double zSpeedIn, int... parameters) {
+				double arg3 = (parameters.length > 3) ? (double)parameters[3] / 1000.0D : -0.004D;
+				int arg2 = (parameters.length > 2) ? parameters[2] : 0;
+				float arg1 = (parameters.length > 1) ? ((float)parameters[1] / 10.0F) : 1.0F;
+				int arg0 = (parameters.length > 0) ? parameters[0] : -1;
+				return new Sand(worldIn, xCoordIn, yCoordIn, zCoordIn, xSpeedIn, ySpeedIn, zSpeedIn, arg0, arg1, arg2, arg3);
+			}
+		}
+	}
+
 	public enum Types {
 		SMOKE("smoke_colored", 54678400, 6), 
 		SUSPENDED("suspended_colored", 54678401, 3), 
@@ -1385,7 +1461,8 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 		ACID_SPIT("acid_spit", 54678410, 2),
 		WHIRLPOOL("whirlpool", 54678411, 4),
 		BLOCK_DUST("block_dust", 54678412, 2),
-		SONIC_BOOM("sonic_boom", 54678413, 4);
+		SONIC_BOOM("sonic_boom", 54678413, 4),
+		SAND("sand_colored", 54678414, 4);
 		
 		private final String particleName;
 		private final int particleID;

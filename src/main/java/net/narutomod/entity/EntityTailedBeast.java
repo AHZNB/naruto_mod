@@ -10,10 +10,11 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.event.entity.EntityTravelToDimensionEvent;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 
 import net.minecraft.world.World;
 //import net.minecraft.world.WorldServer;
@@ -1389,6 +1390,7 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 				this.getBijuManager().setVesselUuid(vesseluuid);
 				this.getBijuManager().setVesselName(compound.getString("VesselName"));
 				this.getBijuManager().setVesselTime(compound.getLong("VesselSetTime"));
+				this.getBijuManager().setJinchurikiLastActiveTime(compound.getLong("JinchurikiLastActiveTime"), false);
 				this.getBijuManager().setCloakXPs(compound.getIntArray("JinchurikiCloakXp"));
 				this.getBijuManager().setCloakCD(compound.getLong("JinchurikiCloakCD"));
 				Entity entity = FMLCommonHandler.instance().getMinecraftServerInstance().getEntityFromUuid(vesseluuid);
@@ -1417,6 +1419,7 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 				compound.setUniqueId("JinchurikiUUID", vesseluuid);
 				compound.setString("VesselName", this.getBijuManager().getVesselName());
 				compound.setLong("VesselSetTime", this.getBijuManager().getVesselSetTime());
+				compound.setLong("JinchurikiLastActiveTime", this.getBijuManager().getJinchurikiLastActiveTime());
 				compound.setIntArray("JinchurikiCloakXp", this.getBijuManager().getCloakXPs());
 				compound.setLong("JinchurikiCloakCD", this.getBijuManager().getCloakCD());
 			} else {
@@ -1424,6 +1427,7 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 				compound.removeTag("JinchurikiUUIDLeast");
 				compound.removeTag("VesselName");
 				compound.removeTag("VesselSetTime");
+				compound.removeTag("JinchurikiLastActiveTime");
 				compound.removeTag("JinchurikiCloakXp");
 				compound.removeTag("JinchurikiCloakCD");
 			}
@@ -1482,6 +1486,19 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 			EntityBijuManager bm = EntityBijuManager.getBijuManagerFrom(event.getOriginal());
 			if (bm != null) {
 				bm.setVesselEntity(event.getEntityPlayer(), false);
+			}
+		}
+
+		@SubscribeEvent
+		public void onPlayerTick(TickEvent.PlayerTickEvent event) {
+			if (event.phase == TickEvent.Phase.END && event.player instanceof EntityPlayerMP && event.player.ticksExisted % 40 == 1) {
+				EntityBijuManager bm = EntityBijuManager.getBijuManagerFrom(event.player);
+				if (bm != null) {
+					long l = ((EntityPlayerMP)event.player).getLastActiveTime();
+					if (l != bm.getJinchurikiLastActiveTime()) {
+						bm.setJinchurikiLastActiveTime(l);
+					}
+				}
 			}
 		}
 	}

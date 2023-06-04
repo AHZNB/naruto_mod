@@ -80,7 +80,7 @@ public class EntitySandLevitation extends ElementsNarutomodMod.ModElement {
 			Vec3d vec = summonerIn.getLookVec().scale(2d);
 			vec = summonerIn.getPositionVector().addVector(vec.x, 0d, vec.z);
 			this.setPosition(vec.x, vec.y, vec.z);
-			this.sandCloud = new ItemJiton.SwarmTarget(this.world, 100, this.getGourdMouthPos(), 
+			this.sandCloud = new ItemJiton.SwarmTarget(this.world, 15, this.getGourdMouthPos(), 
 			 vec, new Vec3d(0.1d, 0.4d, 0.1d), 0.5f, 0.03f, false, 2f, this.getSandType().getColor());
 		}
 
@@ -198,7 +198,7 @@ public class EntitySandLevitation extends ElementsNarutomodMod.ModElement {
 					this.sandCloud.onUpdate();
 				}
 			} else if (this.firstRidden && !this.isSummonerControlling()) {
-				this.sandCloud = new ItemJiton.SwarmTarget(this.world, 100, this.getPositionVector(), 
+				this.sandCloud = new ItemJiton.SwarmTarget(this.world, 15, this.getPositionVector(), 
 			 	 this.getGourdMouthPos(), new Vec3d(0.1d, 0.2d, 0.1d), 0.5f, 0.03f, true, 2f, this.getSandType().getColor());
 			 	 this.setIsDead(true);
 			}

@@ -89,7 +89,7 @@ public class EntitySandBind extends ElementsNarutomodMod.ModElement {
 			this.targetEntity = targetIn;
 			Vec3d vec = this.getGourdMouthPos();
 			this.setPosition(vec.x, vec.y, vec.z);
-			this.sandTarget = new ItemJiton.SwarmTarget(this.world, 1000, vec, 
+			this.sandTarget = new ItemJiton.SwarmTarget(this.world, 100, vec, 
 			 this.getTargetVector(), new Vec3d(0.1d, 0.4d, 0.1d), 0.95f, 0.03f, false, 2f, sandType.getColor());
 		}
 
@@ -110,12 +110,18 @@ public class EntitySandBind extends ElementsNarutomodMod.ModElement {
 		}
 
 		private boolean isTargetCaptured() {
-			boolean flag = false;
-			if (ItemJutsu.canTarget(this.targetEntity)
-			 && this.getEntityBoundingBox().intersects(this.targetEntity.getEntityBoundingBox())) {
-				double d = this.getEntityBoundingBox().intersect(this.targetEntity.getEntityBoundingBox()).getAverageEdgeLength();
-				flag = d > this.targetEntity.getEntityBoundingBox().getAverageEdgeLength() * 0.5d 
-				 && d > this.getEntityBoundingBox().getAverageEdgeLength() * 0.2d;
+			if (!ItemJutsu.canTarget(this.targetEntity)) {
+				this.capturedVec = null;
+				return false;
+			}
+			boolean flag = this.capturedVec != null;
+			if (!flag && this.getEntityBoundingBox().intersects(this.targetEntity.getEntityBoundingBox())) {
+				//double d = this.getEntityBoundingBox().intersect(this.targetEntity.getEntityBoundingBox()).getAverageEdgeLength();
+				//flag = d > this.targetEntity.getEntityBoundingBox().getAverageEdgeLength() * 0.5d 
+				// && d > this.getEntityBoundingBox().getAverageEdgeLength() * 0.2d;
+				AxisAlignedBB bb = this.getEntityBoundingBox().intersect(this.targetEntity.getEntityBoundingBox());
+				flag = bb.equals(this.targetEntity.getEntityBoundingBox())
+				 && this.getEntityBoundingBox().getAverageEdgeLength() < this.targetEntity.getEntityBoundingBox().getAverageEdgeLength() * 1.5d;
 			}
 			if (flag && this.capturedVec == null) {
 				this.capturedVec = this.targetEntity.getPositionVector();
@@ -242,7 +248,7 @@ public class EntitySandBind extends ElementsNarutomodMod.ModElement {
 	public static boolean sandFuneral(EntityLivingBase attacker) {
 		RayTraceResult res = ProcedureUtils.objectEntityLookingAt(attacker, 50, true);
 		if (res != null && res.entityHit instanceof EC && Chakra.pathway(attacker).consume(50d)) {
-			attacker.world.playSound(null, attacker.posX, attacker.posY, attacker.posZ, (net.minecraft.util.SoundEvent) 
+			attacker.world.playSound(null, attacker.posX, attacker.posY, attacker.posZ,
 			 net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:sabakusoso")),
 			 net.minecraft.util.SoundCategory.PLAYERS, 1f, 1f);
 			((EC)res.entityHit).sandFuneral();
