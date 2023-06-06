@@ -45,6 +45,7 @@ import net.minecraft.init.MobEffects;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.nbt.NBTTagCompound;
 
+import net.narutomod.entity.EntityBijuManager;
 import net.narutomod.entity.EntityRendererRegister;
 import net.narutomod.entity.EntityRasengan;
 import net.narutomod.entity.EntityRasenshuriken;
@@ -237,8 +238,9 @@ public class ItemSenjutsu extends ElementsNarutomodMod.ModElement {
 			if (!player.world.isRemote && this.getCurrentJutsu(stack) == SAGEMODE
 			 && !(player.getRidingEntity() instanceof EntitySitPlatform)) {
 				player.resetActiveHand();
+			} else {
+				super.onUsingTick(stack, player, timeLeft);
 			}
-			super.onUsingTick(stack, player, timeLeft);
 		}
 
 		@Override
@@ -254,6 +256,11 @@ public class ItemSenjutsu extends ElementsNarutomodMod.ModElement {
 			}
 			ActionResult<ItemStack> res = super.onItemRightClick(world, entity, hand);
 			if (jutsu == SAGEMODE && res.getType() == EnumActionResult.SUCCESS && !world.isRemote) {
+				if (EntityBijuManager.cloakLevel(entity) > 0 && EntityBijuManager.getCloakXp(entity, 1) < 800) {
+					entity.sendStatusMessage(new TextComponentTranslation("chattext.senjutsu.denied", 
+				 	 EntityBijuManager.getNameOfJinchurikisBiju(entity)), true);
+					return new ActionResult<ItemStack>(EnumActionResult.FAIL, stack);
+				}
 				entity.world.spawnEntity(new EntitySitPlatform(entity));
 			}
 			return res;

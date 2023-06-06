@@ -35,6 +35,7 @@ import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.client.renderer.entity.RenderBiped;
+import net.minecraft.client.model.ModelBox;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.renderer.GlStateManager;
@@ -82,13 +83,37 @@ public class EntityWhiteZetsu extends ElementsNarutomodMod.ModElement {
 		@SideOnly(Side.CLIENT)
 		@Override
 		public void register() {
+			final ModelBiped model = new ModelBiped(0f, 0f, 64, 64) {
+				{
+					bipedBody.cubeList.add(new ModelBox(bipedBody, 16, 32, -4.0F, 0.0F, -2.0F, 8, 12, 4, 0.3F, false));
+					bipedRightArm.cubeList.add(new ModelBox(bipedRightArm, 40, 32, -3.0F, -2.0F, -2.0F, 4, 12, 4, 0.3F, false));
+					bipedLeftArm.cubeList.add(new ModelBox(bipedLeftArm, 40, 32, -1.0F, -2.0F, -2.0F, 4, 12, 4, 0.3F, true));
+					bipedRightLeg.cubeList.add(new ModelBox(bipedRightLeg, 0, 32, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.3F, false));
+					bipedLeftLeg.cubeList.add(new ModelBox(bipedLeftLeg, 0, 32, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.3F, true));
+				}
+			};
 			RenderingRegistry.registerEntityRenderingHandler(EntityCustom.class, renderManager -> {
-				RenderBiped customRender = new RenderBiped(renderManager, new ModelBiped(0f, 0f, 64, 64), 0.5f) {
-					private final ResourceLocation texture = new ResourceLocation("narutomod:textures/zetsu_white.png");
+				RenderBiped customRender = new RenderBiped<EntityCustom>(renderManager, model, 0.5f) {
+					private final ResourceLocation texture = new ResourceLocation("narutomod:textures/zetsu_white_256.png");
 					@Override
-					protected ResourceLocation getEntityTexture(Entity entity) {
-						int playerId = ((EntityCustom) entity).getPlayerId();
-						if (playerId >= 0 && ((EntityLiving) entity).getHealth() > 1f) {
+					public void doRender(EntityCustom entityIn, double x, double y, double z, float entityYaw, float partialTicks) {
+						int playerId = entityIn.getPlayerId();
+						if (playerId >= 0 && entityIn.getHealth() > 1f) {
+							Entity entity = entityIn.world.getEntityByID(playerId);
+							if (entity instanceof EntityLiving) {
+								Render render = this.renderManager.getEntityRenderObject(entity);
+								if (render instanceof RenderBiped) {
+									this.mainModel = ((RenderBiped)render).getMainModel();
+								}
+							}
+						}
+						super.doRender(entityIn, x, y, z, entityYaw, partialTicks);
+						this.mainModel = model;
+					}
+					@Override
+					protected ResourceLocation getEntityTexture(EntityCustom entity) {
+						int playerId = entity.getPlayerId();
+						if (playerId >= 0 && entity.getHealth() > 1f) {
 							Entity player = entity.world.getEntityByID(playerId);
 							if (player instanceof AbstractClientPlayer) {
 								return ((AbstractClientPlayer) player).getLocationSkin();
@@ -102,7 +127,7 @@ public class EntityWhiteZetsu extends ElementsNarutomodMod.ModElement {
 						return this.texture;
 					}
 					@Override
-					protected void preRenderCallback(EntityLivingBase entitylivingbaseIn, float partialTickTime) {
+					protected void preRenderCallback(EntityCustom entityIn, float partialTickTime) {
 						//if (((EntityCustom) entitylivingbaseIn).getPlayerId() >= 0 && entitylivingbaseIn.getHealth() > 1f) {
 						//	Entity player = entitylivingbaseIn.world.getEntityByID(((EntityCustom) entitylivingbaseIn).getPlayerId());
 						//	if (player instanceof AbstractClientPlayer)

@@ -135,6 +135,7 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 			ItemStack stack = new ItemStack(ItemMangekyoSharingan.helmet, 1);
 			((ItemDojutsu.Base)stack.getItem()).setOwner(stack, this);
 			this.setItemStackToSlot(EntityEquipmentSlot.HEAD, stack);
+			this.setItemStackToSlot(EntityEquipmentSlot.CHEST, new ItemStack(ItemAkatsukiRobe.body, 1));
 			this.setItemToInventory(new ItemStack(ItemKunai.block), 0);
 			this.setItemToInventory(new ItemStack(ItemAkatsukiRobe.helmet), 1);
 			this.setIsReal(this.rand.nextInt(ModConfig.ITACHI_REAL_CHANCE) == 0);

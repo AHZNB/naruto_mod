@@ -19,6 +19,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
 
 import net.narutomod.item.ItemBijuCloak;
+import net.narutomod.item.ItemSenjutsu;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.Chakra;
 import net.narutomod.ElementsNarutomodMod;
@@ -48,7 +49,7 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 	private int cloakLevel;
 	private long cloakCD;
 	private final int[] cloakXp = new int[3];
-	private double cloakChakra;
+	private double chakraBeforeCloak;
 	private BlockPos spawnPos;
 	private int ticksSinceDeath;
 	private boolean hasLived;
@@ -227,6 +228,11 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 	public static int getCloakXp(EntityPlayer player) {
 		EntityBijuManager bm = getBijuManagerFrom(player);
 		return bm != null ? bm.getCloakXp() : 0;
+	}
+
+	public static int getCloakXp(EntityPlayer player, int level) {
+		EntityBijuManager bm = getBijuManagerFrom(player);
+		return bm != null && level >= 0 && level < bm.cloakXp.length ? bm.getCloakXPs()[level] : 0;
 	}
 
 	public static List<String> listJinchuriki() {
@@ -526,6 +532,9 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 					}
 					return;
 				}
+				if (ItemSenjutsu.isSageModeActivated(this.jinchurikiPlayer) && this.cloakXp[1] < 800) {
+					ItemSenjutsu.deactivateSageMode(this.jinchurikiPlayer);
+				}
 				double d = 5000d + this.getCloakXp();
 				if (d > cp.getMax() * 4d && !this.jinchurikiPlayer.isCreative()) {
 					this.jinchurikiPlayer.sendStatusMessage(new TextComponentTranslation("chattext.bijumanager.tooweak",
@@ -533,8 +542,9 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 					return;
 				}
 				double d1 = cp.getMax() * 4d - cp.getAmount();
-				this.cloakChakra = d <= d1 || this.jinchurikiPlayer.isCreative() ? d : d1;
-				cp.consume(-this.cloakChakra, true);
+				d1 = d <= d1 || this.jinchurikiPlayer.isCreative() ? d : d1;
+				this.chakraBeforeCloak = cp.getAmount();
+				cp.consume(-d1, true);
 				this.cloakCD = l;
 				if (this.jinchurikiPlayer.inventory.armorInventory.get(3).getItem() != ItemBijuCloak.helmet) {
 					ItemStack stack = new ItemStack(ItemBijuCloak.helmet);
@@ -565,8 +575,9 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 				if (biju != null && !biju.isDead) {
 					biju.setDead();
 				}
-				if (cp.isFull()) {
-					cp.consume(cp.getAmount() - cp.getMax());
+				if (cp.getAmount() > this.chakraBeforeCloak && this.chakraBeforeCloak > 0d) {
+					cp.consume(cp.getAmount() - this.chakraBeforeCloak);
+					this.chakraBeforeCloak = 0d;
 				}
 			}
 			this.cloakLevel = i;
@@ -583,7 +594,6 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 					this.jinchurikiPlayer.sendStatusMessage(new TextComponentTranslation("chattext.bijumanager.tooweak",
 					 this.getEntityLocalizedName()), false);
 				} else {
-					this.cloakChakra += d;
 					chakra.consume(-d, true);
 					this.saveAndResetWearingTicks(this.cloakLevel++);
 				}
