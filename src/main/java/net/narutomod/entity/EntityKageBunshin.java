@@ -171,6 +171,7 @@ public class EntityKageBunshin extends ElementsNarutomodMod.ModElement {
 			if (!this.world.isRemote) {
 				EntityLivingBase summoner = this.getSummoner();
 				boolean flag = false;
+				boolean flag2 = false;
 				if (this.isOriginal) {
 					this.poof(summoner);
 					summoner.rotationYaw = this.rotationYaw;
@@ -180,6 +181,7 @@ public class EntityKageBunshin extends ElementsNarutomodMod.ModElement {
 						summoner.attackEntityFrom(this.deathCause != null ? this.deathCause : DamageSource.GENERIC, Float.MAX_VALUE);
 					} else {
 						flag = true;
+						flag2 = true;
 					}
 				} else {
 					this.poof(this);
@@ -188,7 +190,7 @@ public class EntityKageBunshin extends ElementsNarutomodMod.ModElement {
 				if (flag && summoner != null) {
 					Jutsu.updateClones(summoner, false);
 					Chakra.pathway(summoner).consume(-Chakra.pathway(this).getAmount() * 0.9d, false);
-					if (summoner.getHealth() > 0.0f) {
+					if (summoner.getHealth() > 0.0f || flag2) {
 						summoner.setHealth(summoner.getHealth() + this.getHealth() * 0.9f);
 					}
 				}

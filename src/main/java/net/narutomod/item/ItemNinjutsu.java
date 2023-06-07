@@ -249,7 +249,8 @@ public class ItemNinjutsu extends ElementsNarutomodMod.ModElement {
 				public void onAttacked(LivingHurtEvent event) {
 					EntityLivingBase entity = event.getEntityLiving();
 					if (entity instanceof EntityPlayer && !entity.world.isRemote && !entity.isPotionActive(PotionParalysis.potion)
-					 && event.getSource() != DamageSource.OUT_OF_WORLD && event.getSource().getTrueSource() instanceof EntityLivingBase) {
+					 && event.getSource() != DamageSource.OUT_OF_WORLD && event.getSource().getTrueSource() instanceof EntityLivingBase
+					 && !event.getSource().getTrueSource().equals(entity)) {
 						ItemStack stack = ProcedureUtils.getMatchingItemStack((EntityPlayer)entity, block);
 						if (stack != null && REPLACEMENT.jutsu.isActivated(stack)) {
 							long l = entity.world.getTotalWorldTime();

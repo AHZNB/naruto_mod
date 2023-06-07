@@ -943,5 +943,14 @@
         "stream": false
       }
     ]
+  },
+  "highpitch": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "narutomod:highpitch",
+        "stream": false
+      }
+    ]
   }
 }

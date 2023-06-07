@@ -6,9 +6,11 @@ Jutsus:
  - reduced debuff duration when chakra/attack absorbed by preta path
  - optimize sand jutsus on server side
  - biju cloak cannot be used with sage mode if your level 2 cloak xp is less than 800
+ - fixed dying as shadow clone won't revert player back to original
 
 Items:
  - fixed explosive tags breaking blocks when mobGriefing false
+ - implemented Sound Reflecting Gauntlet and recipe. left click to shoot soundwaves, right click to block
  
 Entities:
  - re-textured white zetsu, itachi

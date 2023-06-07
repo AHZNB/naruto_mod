@@ -142,7 +142,7 @@ public class EntityFingerBone extends ElementsNarutomodMod.ModElement {
 				bullet.motionX = vec.x * 0.1d;
 				bullet.motionY = vec.y * 0.1d;
 				bullet.motionZ = vec.z * 0.1d;
-				bullet.shoot(vec.x, vec.y, vec.z, 0.95f, 0.05f);
+				bullet.shoot(vec.x, vec.y, vec.z, 1.2f, 0.05f);
 				entity.world.spawnEntity(bullet);
 			}
 		}

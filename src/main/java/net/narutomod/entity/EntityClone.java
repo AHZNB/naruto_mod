@@ -251,7 +251,7 @@ public class EntityClone extends ElementsNarutomodMod.ModElement {
 				 && this.summoner.ticksExisted - this.summoner.getLastAttackedEntityTime() < 200) {
 					target = this.summoner.getLastAttackedEntity();
 				}
-				if (target != null) {
+				if (target != null && EntityAITarget.isSuitableTarget(this, target, false, false)) {
 					this.setAttackTarget(target);
 				} else if (this.getAttackTarget() != null && !this.getAttackTarget().isEntityAlive()) {
 					this.setAttackTarget(null);
