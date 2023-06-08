@@ -107,6 +107,13 @@ public class EntityHiraishin extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
+	private static void removeAllMarkersFrom(EntityPlayerMP owner) {
+		if (serverMarkerMap.containsKey(owner.getUniqueID())) {
+			serverMarkerMap.remove(owner.getUniqueID());
+			UpdateMarkerMessage.clearClientMarkers(owner);
+		}
+	}
+
 	public static class EC extends Entity {
 		private static final DataParameter<Optional<UUID>> TARGET_UUID = EntityDataManager.<Optional<UUID>>createKey(EC.class, DataSerializers.OPTIONAL_UNIQUE_ID);
 		private static final DataParameter<Float> OFFSET_X = EntityDataManager.<Float>createKey(EC.class, DataSerializers.FLOAT);
@@ -288,16 +295,24 @@ public class EntityHiraishin extends ElementsNarutomodMod.ModElement {
 			NarutomodMod.PACKET_HANDLER.sendTo(new UpdateMarkerMessage(id, v4d), entity);
 		}
 
+		public static void clearClientMarkers(EntityPlayerMP entity) {
+			NarutomodMod.PACKET_HANDLER.sendTo(new UpdateMarkerMessage(), entity);
+		}
+
 		public static class Handler implements IMessageHandler<UpdateMarkerMessage, IMessage> {
 			@SideOnly(Side.CLIENT)
 			@Override
 			public IMessage onMessage(UpdateMarkerMessage message, MessageContext context) {
 				Minecraft.getMinecraft().addScheduledTask(() -> {
-					UUID uuid = UUID.fromString(message.uuid);
-					if (message.vec != null) {
-						clientMarkerList.put(uuid, message.vec);
+					if (message.uuid == null) {
+						clientMarkerList.clear();
 					} else {
-						clientMarkerList.remove(uuid);
+						UUID uuid = UUID.fromString(message.uuid);
+						if (message.vec != null) {
+							clientMarkerList.put(uuid, message.vec);
+						} else {
+							clientMarkerList.remove(uuid);
+						}
 					}
 				});
 				return null;
@@ -305,7 +320,12 @@ public class EntityHiraishin extends ElementsNarutomodMod.ModElement {
 		}
 	
 		public void toBytes(ByteBuf buf) {
-			ProcedureSync.writeString(buf, this.uuid);
+			if (this.uuid != null) {
+				buf.writeBoolean(true);
+				ProcedureSync.writeString(buf, this.uuid);
+			} else {
+				buf.writeBoolean(false);
+			}
 			if (this.vec != null) {
 				buf.writeBoolean(true);
 				buf.writeDouble(this.vec.x);
@@ -318,7 +338,7 @@ public class EntityHiraishin extends ElementsNarutomodMod.ModElement {
 		}
 	
 		public void fromBytes(ByteBuf buf) {
-			this.uuid = ProcedureSync.readString(buf);
+			this.uuid = buf.readBoolean() ? ProcedureSync.readString(buf) : null;
 			this.vec = buf.readBoolean() ? new Vector4d(buf.readDouble(), buf.readDouble(), buf.readDouble(), buf.readDouble()) : null;
 		}
 	}

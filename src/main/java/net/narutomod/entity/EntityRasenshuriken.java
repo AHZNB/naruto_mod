@@ -134,12 +134,14 @@ public class EntityRasenshuriken extends ElementsNarutomodMod.ModElement {
 				this.doImpactDamage();
 				new EventSphericalExplosion(this.world, null, (int)Math.floor(this.impactVec.x), (int)this.impactVec.y, 
 				  (int)Math.floor(this.impactVec.z), (int) Math.ceil(this.width/2) + 1, 0, 0f, false, false);
+				Particles.Renderer particles = new Particles.Renderer(this.world);
 				for (int i = 0; i < 300; i++) {
-					Particles.spawnParticle(this.world, Particles.Types.SMOKE, this.posX, this.posY+this.height*0.5, this.posZ,
+					particles.spawnParticles(Particles.Types.SMOKE, this.posX, this.posY+this.height*0.5, this.posZ,
 					  1, 1d, 0d, 1d, (this.rand.nextDouble()-0.5d) * this.fullScale * 2.0d,
 					  0.5d * this.rand.nextGaussian(), 2.0d * (this.rand.nextDouble()-0.5d) * this.fullScale,
 					  0x10FFFFFF, 80 + (int)scale, 0);
 				}
+				particles.send();
 				if (impactTicks >= 200) {
 					this.setDead();
 				}
@@ -171,17 +173,19 @@ public class EntityRasenshuriken extends ElementsNarutomodMod.ModElement {
 					}
 				}
 			}
+			Particles.Renderer particles = new Particles.Renderer(this.world);
 			for (int i = 0; i < Math.min(this.ticksAlive, this.growTime) * 10; i++) {
-				Particles.spawnParticle(this.world, Particles.Types.SMOKE, this.posX, this.posY+this.height*0.5, this.posZ, 1, 1d, 0d, 1d, 
+				particles.spawnParticles(Particles.Types.SMOKE, this.posX, this.posY+this.height*0.5, this.posZ, 1, 1d, 0d, 1d, 
 				  0.6d * this.rand.nextGaussian(), 0.1d * this.rand.nextGaussian(), 0.6d * this.rand.nextGaussian(), 0x10FFFFFF,
 				  (int)(this.fullScale * 12), 0);
 			}
+			particles.send();
 			if (this.fullScale >= 4.0f) {
 				ProcedureLightSourceSetBlock.execute(this.world, MathHelper.floor(this.posX), MathHelper.floor(this.posY), MathHelper.floor(this.posZ));
 			}
 			if (this.ticksAlive % 80 == 79) {
 				this.world.playSound(null, this.posX, this.posY, this.posZ, 
-				  (SoundEvent)SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:wind")), SoundCategory.NEUTRAL, 1, 1f);
+				 SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:wind")), SoundCategory.NEUTRAL, 1, 1f);
 			}
 			if (this.ticksInAir > 200 || (!this.world.isRemote && this.shootingEntity == null && !this.isLaunched())) {
 				this.setDead();
@@ -273,7 +277,6 @@ public class EntityRasenshuriken extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-	@SideOnly(Side.CLIENT)
 	@Override
 	public void preInit(FMLPreInitializationEvent event) {
 		new Renderer().register();

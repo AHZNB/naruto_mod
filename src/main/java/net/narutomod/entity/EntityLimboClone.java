@@ -71,7 +71,7 @@ public class EntityLimboClone extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static class EC extends EntityClone._Base {
-		private final int lifeSpan = 600;
+		private final int lifeSpan = 400;
 
 		public EC(World world) {
 			super(world);
@@ -187,7 +187,7 @@ public class EntityLimboClone extends ElementsNarutomodMod.ModElement {
 				}
 				entity.getEntityData().setIntArray(ID_KEY, ids);
 				if (entity instanceof EntityPlayer) {
-					ItemJutsu.setCurrentJutsuCooldown(stack, (EntityPlayer)entity, 1800);
+					ItemJutsu.setCurrentJutsuCooldown(stack, (EntityPlayer)entity, 2000);
 				}
 				return true;
 			}

@@ -8,8 +8,8 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.gameevent.InputEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
@@ -53,21 +53,6 @@ public class KeyBindingSpecialJutsu3 extends ElementsNarutomodMod.ModElement {
 	/*@SubscribeEvent
 	@SideOnly(Side.CLIENT)
 	public void onKeyInput(InputEvent.KeyInputEvent event) {
-		if (Minecraft.getMinecraft().currentScreen == null) {
-			int key = this.keys.getKeyCode();
-			boolean isKeyDown = Keyboard.isKeyDown(key);
-			if (isKeyDown || Keyboard.getEventKey() == key) {
-				NarutomodMod.PACKET_HANDLER.sendToServer(new KeyBindingPressedMessage(isKeyDown));
-				pressAction(Minecraft.getMinecraft().player, isKeyDown);
-			}
-			if (!Keyboard.areRepeatEventsEnabled())
-				Keyboard.enableRepeatEvents(true);
-		}
-	}*/
-	
-	@SubscribeEvent
-	@SideOnly(Side.CLIENT)
-	public void onKeyInput(InputEvent.KeyInputEvent event) {
 		if (Minecraft.getMinecraft().currentScreen == null && this.keys.getKeyCode() > 0) {
 			this.processKeyBind();
 			if (!Keyboard.areRepeatEventsEnabled()) {
@@ -90,6 +75,27 @@ public class KeyBindingSpecialJutsu3 extends ElementsNarutomodMod.ModElement {
 		if (isKeyDown || this.wasKeyDown) {
 			NarutomodMod.PACKET_HANDLER.sendToServer(new KeyBindingPressedMessage(isKeyDown));
 			pressAction(Minecraft.getMinecraft().player, isKeyDown);
+		}
+		this.wasKeyDown = isKeyDown;
+	}*/
+
+	@SubscribeEvent
+	@SideOnly(Side.CLIENT)
+	public void onClientPostTick(TickEvent.ClientTickEvent event) {
+		if (event.phase == TickEvent.Phase.END && Minecraft.getMinecraft().currentScreen == null) {
+			this.processKeyBind();
+		}
+	}
+
+	@SideOnly(Side.CLIENT)
+	private void processKeyBind() {
+		boolean isKeyDown = this.keys.isKeyDown();
+		if (isKeyDown || this.wasKeyDown) {
+			NarutomodMod.PACKET_HANDLER.sendToServer(new KeyBindingPressedMessage(isKeyDown));
+			EntityPlayer player = Minecraft.getMinecraft().player;
+			if (player != null) {
+				pressAction(player, isKeyDown);
+			}
 		}
 		this.wasKeyDown = isKeyDown;
 	}

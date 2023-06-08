@@ -72,11 +72,12 @@ public class ItemSoundGaunlet extends ElementsNarutomodMod.ModElement {
 				entity.world.playSound(null, vec2.x, vec2.y, vec2.z,
 					 net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:highpitch")),
 					 SoundCategory.NEUTRAL, 1.0f, 1.0f + this.itemRand.nextFloat() * 0.3f);
-				for (int i = 1, j = 25; i <= j; i++) {
-					Vec3d vec3 = vec1.scale(0.06d * i);
+				for (int i = 1, j = 20; i <= j; i++) {
+					float f = (float)i / j;
+					Vec3d vec3 = vec1.scale(1.5d * f);
 					Particles.spawnParticle(entity.world, Particles.Types.SONIC_BOOM, vec2.x, vec2.y, vec2.z,
-					 1, 0d, 0d, 0d, vec3.x, vec3.y, vec3.z, 0x00ffffff | ((int)((1f-(float)i/j)*0x20)<<24),
-					 i * 2, (int)(5f * (1f + ((float)i/j) * 0.5f)));
+					 1, 0d, 0d, 0d, vec3.x, vec3.y, vec3.z, 0x00ffffff | ((int)((1f - f) * 0x20) << 24),
+					 i * 2, (int)(5f * (1f + f * 0.5f)));
 				}
 				vec1 = vec1.scale(15d);
 				vec2 = vec1.add(vec0);
@@ -90,6 +91,9 @@ public class ItemSoundGaunlet extends ElementsNarutomodMod.ModElement {
 						entity1.hurtResistantTime = 10;
 						entity1.attackEntityFrom(ItemJutsu.causeJutsuDamage(entity, null).setDamageBypassesArmor(), (float)d1 * 3f);
 					}
+				}
+				if (!(entity instanceof EntityPlayer) || !((EntityPlayer)entity).isCreative()) {
+					stack.damageItem(1, entity);
 				}
 			}
 			return false;

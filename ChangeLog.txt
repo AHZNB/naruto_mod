@@ -7,6 +7,7 @@ Jutsus:
  - optimize sand jutsus on server side
  - biju cloak cannot be used with sage mode if your level 2 cloak xp is less than 800
  - fixed dying as shadow clone won't revert player back to original
+ - reduced limbo clone duration, increased cooldown
 
 Items:
  - fixed explosive tags breaking blocks when mobGriefing false
@@ -14,6 +15,7 @@ Items:
  
 Entities:
  - re-textured white zetsu, itachi
+ - buffed toad/slug/snake attack damage
 
 0.2.12-beta ===============================================================================
 

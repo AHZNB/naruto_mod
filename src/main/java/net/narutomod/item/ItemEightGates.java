@@ -1076,8 +1076,8 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 			head.setRotationPoint(0.0F, 0.0F, 0.0F);
 			head.cubeList.add(new ModelBox(head, 176, 44, -6.0F, 6.0F, -26.0F, 12, 5, 16, 1.0F, false));
 			head.cubeList.add(new ModelBox(head, 112, 30, -8.0F, -1.0F, -11.0F, 16, 16, 16, 1.0F, false));
-			head.cubeList.add(new ModelBox(head, 112, 0, -5.0F, 5.0F, -27.0F, 2, 2, 4, 1.0F, false));
-			head.cubeList.add(new ModelBox(head, 112, 0, 3.0F, 5.0F, -27.0F, 2, 2, 4, 1.0F, true));
+			head.cubeList.add(new ModelBox(head, 112, 0, 2.0F, 4.0F, -28.0F, 4, 4, 6, 0.0F, true));
+			head.cubeList.add(new ModelBox(head, 112, 0, -6.0F, 4.0F, -28.0F, 4, 4, 6, 0.0F, false));
 	
 			teethUpper = new ModelRenderer(this);
 			teethUpper.setRotationPoint(0.0F, 24.0F, 0.0F);
@@ -1324,7 +1324,8 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 			GlStateManager.enableBlend();
 			GlStateManager.disableLighting();
 			GlStateManager.color(1.0F, 1.0F, 1.0F, 0.7F);
-			GlStateManager.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE);
+			//GlStateManager.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE);
+			GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 			OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240.0F, 240.0F);
 			this.head.render(f5);
 			this.spine.render(f5);
