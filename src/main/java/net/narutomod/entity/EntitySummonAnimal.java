@@ -4,6 +4,7 @@ package net.narutomod.entity;
 //import net.minecraftforge.fml.relauncher.SideOnly;
 //import net.minecraftforge.fml.relauncher.Side;
 
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.EnumDifficulty;
@@ -11,10 +12,12 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.ai.attributes.IAttribute;
+import net.minecraft.entity.MoverType;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.EntityCreature;
@@ -27,6 +30,11 @@ import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.network.play.server.SPacketSetPassengers;
 import net.minecraft.item.Item;
+import net.minecraft.block.material.Material;
+import net.minecraft.pathfinding.PathNavigateGround;
+import net.minecraft.pathfinding.WalkNodeProcessor;
+import net.minecraft.pathfinding.PathFinder;
+import net.minecraft.pathfinding.PathNodeType;
 
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.Particles;
@@ -34,7 +42,9 @@ import net.narutomod.ElementsNarutomodMod;
 
 import javax.annotation.Nullable;
 import java.util.UUID;
+import java.util.List;
 import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntitySummonAnimal extends ElementsNarutomodMod.ModElement {
@@ -46,6 +56,8 @@ public class EntitySummonAnimal extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static abstract class Base extends EntityCreature {
+		protected static final List<Material> canBreakList = Lists.newArrayList(Material.WOOD, Material.CACTUS,
+		 Material.GLASS, Material.LEAVES, Material.PLANTS, Material.SNOW, Material.VINE, Material.WEB);
 		protected static final DataParameter<Float> SCALE = EntityDataManager.<Float>createKey(Base.class, DataSerializers.FLOAT);
 		protected static final DataParameter<Integer> AGE = EntityDataManager.<Integer>createKey(Base.class, DataSerializers.VARINT);
 		protected static final DataParameter<Optional<UUID>> OWNER_UNIQUE_ID = EntityDataManager.<Optional<UUID>>createKey(Base.class, DataSerializers.OPTIONAL_UNIQUE_ID);
@@ -258,6 +270,25 @@ public class EntitySummonAnimal extends ElementsNarutomodMod.ModElement {
 			super.setPosition(x, y, z);
 		}
 
+		public boolean couldBreakBlocks() {
+			return false;
+		}
+
+		@Override
+		public void move(MoverType type, double x, double y, double z) {
+			if (this.couldBreakBlocks()) {
+				for (BlockPos pos : ProcedureUtils.getNonAirBlocks(this.world, this.getEntityBoundingBox().grow(0.5d).expand(x, y, z), true)) {
+					if (canBreakList.contains(this.world.getBlockState(pos).getMaterial())) {
+						this.world.destroyBlock(pos, this.rand.nextFloat() < 0.3f);
+						x *= 0.98d;
+						y *= 0.98d;
+						z *= 0.98d;
+					}
+				}
+			}
+			super.move(type, x, y, z);
+		}
+
 		@Override
 		public void travel(float ti, float tj, float tk) {
 			if (this.isRiding()) {
@@ -391,6 +422,31 @@ public class EntitySummonAnimal extends ElementsNarutomodMod.ModElement {
 			compound.setInteger("lifeSpan", this.lifeSpan);
 			compound.setFloat("scale", this.getScale());
 			compound.setString("OwnerUUID", this.getOwnerId() == null ? "" : this.getOwnerId().toString());
+		}
+	}
+
+	public static class NavigateGround extends PathNavigateGround {
+		private Base navigatingEntity;
+
+		public NavigateGround(Base entityLivingIn, World worldIn) {
+			super(entityLivingIn, worldIn);
+			this.navigatingEntity = entityLivingIn;
+		}
+
+		@Override
+		protected PathFinder getPathFinder() {
+			this.nodeProcessor = new WalkNodeProcessor() {
+				@Override
+				protected PathNodeType getPathNodeTypeRaw(IBlockAccess world, int x, int y, int z) {
+					PathNodeType nodetype = super.getPathNodeTypeRaw(world, x, y, z);
+					if (nodetype != PathNodeType.OPEN && NavigateGround.this.navigatingEntity.couldBreakBlocks()
+					 && Base.canBreakList.contains(world.getBlockState(new BlockPos(x, y, z)).getMaterial())) {
+						return PathNodeType.OPEN;
+					}
+					return nodetype;
+				}
+			};
+			return new PathFinder(this.nodeProcessor);
 		}
 	}
 }

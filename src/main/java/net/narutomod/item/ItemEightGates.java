@@ -187,7 +187,6 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 			}
 			if (!entity.world.isRemote && this.gate > 1 && (!(entity instanceof EntityPlayer) || !((EntityPlayer) entity).isCreative())) {
 				if (this.gate == 8) {
-					//PlayerRender.setColorMultiplier((EntityPlayer)entity, 0xB0000000);
 					ProcedureUtils.setDeathAnimations(entity, 2, 200);
 				}
 				entity.addPotionEffect(new PotionEffect(MobEffects.WEAKNESS, this.gate * 600, (this.gate - 2) * 2));

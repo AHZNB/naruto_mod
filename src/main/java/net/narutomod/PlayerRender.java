@@ -194,13 +194,7 @@ public class PlayerRender extends ElementsNarutomodMod.ModElement {
 					model.bipedRightArm.showModel = false;
 					model.bipedLeftArm.showModel = true;
 					super.renderModel(entityIn, 0.0f, 1.1345f, f2, f3, f4, f5);
-					model.bipedHead.showModel = true;
-					model.bipedHeadwear.showModel = true;
-					model.bipedBody.showModel = true;
-					model.bipedRightLeg.showModel = true;
-					model.bipedLeftLeg.showModel = true;
-					model.bipedRightArm.showModel = true;
-					model.bipedLeftArm.showModel = true;
+					model.setVisible(true);
 				} else {
 					super.renderModel(entityIn, f0, f1, f2, f3, f4, f5);
 				}
@@ -293,7 +287,7 @@ public class PlayerRender extends ElementsNarutomodMod.ModElement {
 							this.renderSkinLayer(stack, entityIn, limbSwing, limbSwingAmount, partialTicks, ageInTicks, netHeadYaw, headPitch, scale);
 						}
 						if (item.showOnBody() != ItemOnBody.BodyPart.NONE && i != entityIn.inventory.currentItem) {
-							this.renderItemOnBody(stack, entityIn, item.showOnBody());
+							this.renderItemOnBody(stack, entityIn, limbSwing, limbSwingAmount, partialTicks, ageInTicks, netHeadYaw, headPitch, scale);
 						}
 					}
 				}
@@ -318,10 +312,15 @@ public class PlayerRender extends ElementsNarutomodMod.ModElement {
 			}
 		}
 
-		private void renderItemOnBody(ItemStack stack, AbstractClientPlayer entityIn, ItemOnBody.BodyPart bodypart) {
+		private void renderItemOnBody(ItemStack stack, AbstractClientPlayer entityIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
 			Vec3d offset = ((ItemOnBody.Interface)stack.getItem()).getOffset();
+			ItemOnBody.BodyPart bodypart = ((ItemOnBody.Interface)stack.getItem()).showOnBody();
 			GlStateManager.pushMatrix();
 			ModelBiped model = this.playerRenderer.getMainModel();
+			model.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale, entityIn);
+			if (model.isSneak) {
+				GlStateManager.translate(0.0F, 0.2F, 0.0F);
+			}
 			switch (bodypart) {
 				case HEAD:
 					model.bipedHead.postRender(0.0625F);

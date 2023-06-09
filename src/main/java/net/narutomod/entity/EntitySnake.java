@@ -3,16 +3,13 @@ package net.narutomod.entity;
 
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.relauncher.Side;
-//import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-//import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
 import net.minecraft.init.Blocks;
-import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.util.ResourceLocation;
@@ -30,7 +27,6 @@ import net.minecraft.entity.MultiPartEntityPart;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.MoverType;
 import net.minecraft.entity.ai.EntityAIWander;
 import net.minecraft.entity.ai.EntityAISwimming;
 import net.minecraft.entity.ai.EntityAIHurtByTarget;
@@ -38,9 +34,6 @@ import net.minecraft.entity.ai.EntityAIAttackMelee;
 import net.minecraft.entity.ai.EntityAIWatchClosest;
 import net.minecraft.entity.ai.EntityMoveHelper;
 import net.minecraft.entity.ai.RandomPositionGenerator;
-import net.minecraft.pathfinding.PathFinder;
-import net.minecraft.pathfinding.WalkNodeProcessor;
-import net.minecraft.pathfinding.PathNodeType;
 import net.minecraft.pathfinding.PathNavigateGround;
 import net.minecraft.pathfinding.Path;
 import net.minecraft.pathfinding.PathNavigate;
@@ -90,8 +83,6 @@ public class EntitySnake extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static abstract class EntityCustom extends EntitySummonAnimal.Base implements IEntityMultiPart {
-		private static final List<Material> canBreakList = Lists.newArrayList(Material.WOOD, Material.CACTUS,
-		 Material.GLASS, Material.LEAVES, Material.PLANTS, Material.SNOW, Material.VINE, Material.WEB);
 		private static final DataParameter<Integer> PHASE = EntityDataManager.<Integer>createKey(EntityCustom.class, DataSerializers.VARINT);
 		private SnakeSegment[] parts = new SnakeSegment[22];
 		private List<ProcedureUtils.Vec2f> partRot = Lists.newArrayList();
@@ -181,7 +172,7 @@ public class EntitySnake extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		protected PathNavigate createNavigator(World worldIn) {
-			PathNavigateGround navi = new NavigateGround(this, worldIn);
+			PathNavigateGround navi = new Navigate(this, worldIn);
 			navi.setCanSwim(true);
 			return navi;
 		}
@@ -321,23 +312,9 @@ public class EntitySnake extends ElementsNarutomodMod.ModElement {
 			super.updateAITasks();
 		}
 
-		private boolean couldBreakBlocks() {
-			return this.world.getGameRules().getBoolean("mobGriefing") && this.getScale() >= 4f;
-		}
-
 		@Override
-		public void move(MoverType type, double x, double y, double z) {
-			if (this.couldBreakBlocks()) {
-				for (BlockPos pos : ProcedureUtils.getNonAirBlocks(this.world, this.getEntityBoundingBox().grow(0.5d).expand(x, y, z), true)) {
-					if (canBreakList.contains(this.world.getBlockState(pos).getMaterial())) {
-						this.world.destroyBlock(pos, this.rand.nextFloat() < 0.3f);
-						x *= 0.98d;
-						y *= 0.98d;
-						z *= 0.98d;
-					}
-				}
-			}
-			super.move(type, x, y, z);
+		public boolean couldBreakBlocks() {
+			return this.world.getGameRules().getBoolean("mobGriefing") && this.getScale() >= 4f;
 		}
 
 		@Override
@@ -577,29 +554,11 @@ public class EntitySnake extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-	static class NavigateGround extends PathNavigateGround {
+	static class Navigate extends EntitySummonAnimal.NavigateGround {
 		private BlockPos targetPosition;
-		private EntityCustom navigatingEntity;
 
-		public NavigateGround(EntityCustom entityLivingIn, World worldIn) {
+		public Navigate(EntityCustom entityLivingIn, World worldIn) {
 			super(entityLivingIn, worldIn);
-			this.navigatingEntity = entityLivingIn;
-		}
-
-		@Override
-		protected PathFinder getPathFinder() {
-			this.nodeProcessor = new WalkNodeProcessor() {
-				@Override
-				protected PathNodeType getPathNodeTypeRaw(IBlockAccess world, int x, int y, int z) {
-					PathNodeType nodetype = super.getPathNodeTypeRaw(world, x, y, z);
-					if (nodetype != PathNodeType.OPEN && NavigateGround.this.navigatingEntity.couldBreakBlocks()
-					 && EntityCustom.canBreakList.contains(world.getBlockState(new BlockPos(x, y, z)).getMaterial())) {
-						return PathNodeType.OPEN;
-					}
-					return nodetype;
-				}
-			};
-			return new PathFinder(this.nodeProcessor);
 		}
 
 		@Override

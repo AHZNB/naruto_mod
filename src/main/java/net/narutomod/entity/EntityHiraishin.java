@@ -3,6 +3,7 @@ package net.narutomod.entity;
 
 import net.narutomod.item.ItemKunaiHiraishin;
 import net.narutomod.item.ItemKunai3prong;
+import net.narutomod.item.ItemNinjutsu;
 import net.narutomod.item.ItemJutsu;
 import net.narutomod.procedure.ProcedureOnLivingUpdate;
 import net.narutomod.procedure.ProcedureSync;
@@ -35,12 +36,14 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.client.renderer.entity.RenderManager;
@@ -112,6 +115,12 @@ public class EntityHiraishin extends ElementsNarutomodMod.ModElement {
 			serverMarkerMap.remove(owner.getUniqueID());
 			UpdateMarkerMessage.clearClientMarkers(owner);
 		}
+	}
+
+	public static boolean canUseJutsu(EntityPlayer player) {
+		ItemStack stack = ProcedureUtils.getMatchingItemStack(player, ItemNinjutsu.block);
+		return stack != null && ((ItemNinjutsu.RangedItem)stack.getItem())
+		 .canActivateJutsu(stack, ItemNinjutsu.HIRAISHIN, player) == EnumActionResult.SUCCESS;
 	}
 
 	public static class EC extends Entity {
@@ -528,24 +537,25 @@ public class EntityHiraishin extends ElementsNarutomodMod.ModElement {
 		@SideOnly(Side.CLIENT)
 		@SubscribeEvent
 		public void onLeftClickEmpty(PlayerInteractEvent.LeftClickEmpty event) {
-			if (PlayerTracker.isNinja(event.getEntityPlayer()) && !clientMarkerList.isEmpty()) {
-				Vec3d vec1 = event.getEntityPlayer().getPositionEyes(1f);
+			EntityPlayer player = event.getEntityPlayer();
+			if (PlayerTracker.isNinja(player) && !clientMarkerList.isEmpty() && canUseJutsu(player)) {
+				Vec3d vec1 = player.getPositionEyes(1f);
 				for (Vector4d vec4d : clientMarkerList.values()) {
 					if ((int)vec4d.w == Minecraft.getMinecraft().world.provider.getDimension()) {
 						Vec3d vec = new Vec3d(vec4d.x, vec4d.y, vec4d.z);
 						double d = vec.subtract(vec1).lengthVector();
-						Vec3d vec2 = vec1.add(event.getEntityPlayer().getLookVec().scale(d + 10d));
+						Vec3d vec2 = vec1.add(player.getLookVec().scale(d + 10d));
 						AxisAlignedBB aabb = new AxisAlignedBB(vec.x-0.5d, vec.y, vec.z-0.5d, vec.x+0.5d, vec.y+1.0d, vec.z+0.5d);
 						if (aabb.grow(d/20d).calculateIntercept(vec1, vec2) != null) {
-							Chakra.Pathway chakra = Chakra.pathway(event.getEntityPlayer());
+							Chakra.Pathway chakra = Chakra.pathway(player);
 							double chakraUsage = MathHelper.sqrt(d) * 10d;
 							if (chakra.getAmount() > chakraUsage) {
-								ProcedureOnLivingUpdate.setUntargetable(event.getEntityPlayer(), 5);
+								ProcedureOnLivingUpdate.setUntargetable(player, 5);
 								ProcedureSync.SoundEffectMessage.sendToServer(vec.x, vec.y, vec.z,
 								 net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:swoosh")),
-								 net.minecraft.util.SoundCategory.NEUTRAL, 0.8f, event.getEntityPlayer().getRNG().nextFloat() * 0.4f + 0.8f);
-								event.getEntityPlayer().setPosition(vec.x, vec.y, vec.z);
-								ProcedureSync.ResetBoundingBox.sendToServer(event.getEntityPlayer());
+								 net.minecraft.util.SoundCategory.NEUTRAL, 0.8f, player.getRNG().nextFloat() * 0.4f + 0.8f);
+								player.setPosition(vec.x, vec.y, vec.z);
+								ProcedureSync.ResetBoundingBox.sendToServer(player);
 								Chakra.PathwayPlayer.ConsumeMessage.sendToServer(chakraUsage);
 							} else {
 								chakra.warningDisplay();

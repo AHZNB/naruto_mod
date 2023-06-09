@@ -113,20 +113,16 @@ public class EntityThreeTails extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static class EntityCustom extends EntityTailedBeast.Base {
-		private final PathNavigate altNavigator;
-		private final PathNavigate mainNavigator;
-		private final EntityMoveHelper altMoveHelper;
-		private final EntityMoveHelper mainMoveHelper;
+		private PathNavigate altNavigator;
+		private PathNavigate mainNavigator;
+		private EntityMoveHelper altMoveHelper;
+		private EntityMoveHelper mainMoveHelper;
 
 		public EntityCustom(World worldIn) {
 			super(worldIn);
 			this.setSize(MODELSCALE * 0.5F, MODELSCALE * 0.7F);
 			this.experienceValue = 12000;
 			this.stepHeight = this.height / 3.0F;
-			this.mainNavigator = this.navigator;
-			this.altNavigator = new PathNavigateSwimmer(this, worldIn);
-			this.mainMoveHelper = this.moveHelper;
-			this.altMoveHelper = new EntityNinjaMob.SwimHelper(this);
 		}
 
 		public EntityCustom(EntityPlayer player) {
@@ -134,10 +130,15 @@ public class EntityThreeTails extends ElementsNarutomodMod.ModElement {
 			this.setSize(MODELSCALE * 0.5F, MODELSCALE * 0.7F);
 			this.experienceValue = 12000;
 			this.stepHeight = this.height / 3.0F;
-			this.mainNavigator = this.navigator;
-			this.altNavigator = new PathNavigateSwimmer(this, player.world);
+		}
+
+		@Override
+		protected PathNavigate createNavigator(World worldIn) {
+			this.mainNavigator = super.createNavigator(worldIn);
+			this.altNavigator = new PathNavigateSwimmer(this, worldIn);
 			this.mainMoveHelper = this.moveHelper;
 			this.altMoveHelper = new EntityNinjaMob.SwimHelper(this);
+			return this.mainNavigator;
 		}
 
 		@Override

@@ -8,6 +8,8 @@ Jutsus:
  - biju cloak cannot be used with sage mode if your level 2 cloak xp is less than 800
  - fixed dying as shadow clone won't revert player back to original
  - reduced limbo clone duration, increased cooldown
+ - must fully learn flying thunder god jutsu to tp to the markers
+ - fixed ice release crystal mirrors preventing death from opening all 8-gates or all killing ash bone
 
 Items:
  - fixed explosive tags breaking blocks when mobGriefing false
@@ -16,6 +18,7 @@ Items:
 Entities:
  - re-textured white zetsu, itachi
  - buffed toad/slug/snake attack damage
+ - tailed beasts and toads greater than size 4 can break leaves/wood blocks when moving
 
 0.2.12-beta ===============================================================================
 

@@ -16,8 +16,8 @@ import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.event.entity.EntityTravelToDimensionEvent;
 import net.minecraftforge.common.MinecraftForge;
 
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-//import net.minecraft.world.WorldServer;
 import net.minecraft.world.BossInfo;
 import net.minecraft.world.BossInfoServer;
 import net.minecraft.world.DifficultyInstance;
@@ -47,6 +47,7 @@ import net.minecraft.entity.ai.EntityAIWander;
 import net.minecraft.entity.ai.attributes.IAttribute;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.ai.attributes.RangedAttribute;
+import net.minecraft.entity.MoverType;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.EnumCreatureAttribute;
@@ -78,6 +79,12 @@ import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.pathfinding.Path;
+import net.minecraft.pathfinding.PathNavigateGround;
+import net.minecraft.pathfinding.PathFinder;
+import net.minecraft.pathfinding.PathNodeType;
+import net.minecraft.pathfinding.PathNavigate;
+import net.minecraft.pathfinding.WalkNodeProcessor;
+import net.minecraft.block.material.Material;
 
 import net.narutomod.item.ItemJutsu;
 import net.narutomod.procedure.ProcedureUtils;
@@ -91,10 +98,12 @@ import net.narutomod.ElementsNarutomodMod;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Lists;
 import javax.annotation.Nullable;
 import java.util.UUID;
 import java.util.Map;
 import java.util.Iterator;
+import java.util.List;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
@@ -118,6 +127,8 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static abstract class Base extends EntityMob implements IRangedAttackMob, EntityBijuManager.ITailBeast {
+		protected static final List<Material> canBreakList = Lists.newArrayList(Material.WOOD, Material.CACTUS,
+		 Material.GLASS, Material.LEAVES, Material.PLANTS, Material.SNOW, Material.VINE, Material.WEB);
 		private static final DataParameter<Integer> AGE = EntityDataManager.<Integer>createKey(Base.class, DataSerializers.VARINT);
 		private static final DataParameter<Integer> VESSEL = EntityDataManager.<Integer>createKey(Base.class, DataSerializers.VARINT);
 		private static final DataParameter<Boolean> SHOOT = EntityDataManager.<Boolean>createKey(Base.class, DataSerializers.BOOLEAN);
@@ -159,6 +170,13 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 				this.setLocationAndAngles(vec.x, player.posY + 10d, vec.z, player.rotationYaw - 180f, 0f);
 				this.setSummoningPlayer(player);
 			}
+		}
+
+		@Override
+		protected PathNavigate createNavigator(World worldIn) {
+			PathNavigateGround navi = new NavigateGround(this, worldIn);
+			navi.setCanSwim(true);
+			return navi;
 		}
 
 		@Override
@@ -519,6 +537,25 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 				return true;
 			}
 			return false;
+		}
+
+		public boolean couldBreakBlocks() {
+			return this.world.getGameRules().getBoolean("mobGriefing");
+		}
+
+		@Override
+		public void move(MoverType type, double x, double y, double z) {
+			if (this.couldBreakBlocks()) {
+				for (BlockPos pos : ProcedureUtils.getNonAirBlocks(this.world, this.getEntityBoundingBox().grow(0.5d).expand(x, y, z), true)) {
+					if (canBreakList.contains(this.world.getBlockState(pos).getMaterial())) {
+						this.world.destroyBlock(pos, this.rand.nextFloat() < 0.3f);
+						x *= 0.96d;
+						y *= 0.96d;
+						z *= 0.96d;
+					}
+				}
+			}
+			super.move(type, x, y, z);
 		}
 
 		@Override
@@ -1109,6 +1146,31 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 	    protected double getAttackReachSqr(EntityLivingBase attackTarget) {
 	        return (double)(this.attacker.width * 2.0F * this.attacker.width * 2.0F + attackTarget.width);
 	    }
+	}
+
+	public static class NavigateGround extends PathNavigateGround {
+		private Base navigatingEntity;
+
+		public NavigateGround(Base entityLivingIn, World worldIn) {
+			super(entityLivingIn, worldIn);
+			this.navigatingEntity = entityLivingIn;
+		}
+
+		@Override
+		protected PathFinder getPathFinder() {
+			this.nodeProcessor = new WalkNodeProcessor() {
+				@Override
+				protected PathNodeType getPathNodeTypeRaw(IBlockAccess world, int x, int y, int z) {
+					PathNodeType nodetype = super.getPathNodeTypeRaw(world, x, y, z);
+					if (nodetype != PathNodeType.OPEN && NavigateGround.this.navigatingEntity.couldBreakBlocks()
+					 && Base.canBreakList.contains(world.getBlockState(new BlockPos(x, y, z)).getMaterial())) {
+						return PathNodeType.OPEN;
+					}
+					return nodetype;
+				}
+			};
+			return new PathFinder(this.nodeProcessor);
+		}
 	}
 
 	@SideOnly(Side.CLIENT)

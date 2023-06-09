@@ -9,14 +9,22 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.common.MinecraftForge;
 
 import net.minecraft.world.World;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.SoundEvent;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.model.ModelBox;
@@ -24,15 +32,9 @@ import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.entity.Render;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.EnumHand;
+import net.minecraft.init.MobEffects;
+import net.minecraft.potion.PotionEffect;
 
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.procedure.ProcedureSync;
@@ -97,13 +99,16 @@ public class EntityIceDome extends ElementsNarutomodMod.ModElement {
 		public void setDead() {
 			super.setDead();
 			if (!this.world.isRemote) {
-				this.playSound((net.minecraft.util.SoundEvent)
-				 net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:ice_shoot_small")), 
+				this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:ice_shoot_small")),
 				 0.8f, this.rand.nextFloat() * 0.4f + 0.8f);
 				for (int i = 0; i < this.rand.nextInt(50) + 100; i++) {
 					EntityIceSpear.EC.spawnShatteredShard(this.world, this.posX + this.width * (this.rand.nextFloat()-0.5f), 
 					 this.posY + this.height * this.rand.nextFloat(), this.posZ + this.width * (this.rand.nextFloat()-0.5f),
 					 (this.rand.nextDouble()-0.5d) * 0.05d, 0d, (this.rand.nextDouble()-0.5d) * 0.05d);
+				}
+				EntityLivingBase summoner = this.getSummoner();
+				if (summoner != null && summoner.isPotionActive(MobEffects.INVISIBILITY)) {
+					summoner.removePotionEffect(MobEffects.INVISIBILITY);
 				}
 			}
 		}
@@ -128,10 +133,12 @@ public class EntityIceDome extends ElementsNarutomodMod.ModElement {
 				ProcedureSync.ResetBoundingBox.sendToServer(this);
 			}
 			if (!this.world.isRemote && this.ticksExisted == this.talkTime) {
-				this.playSound((net.minecraft.util.SoundEvent)
-				 net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:ice_formation")), 1f, 1f);
+				this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:ice_formation")), 1f, 1f);
 			}
 			EntityLivingBase summoner = this.getSummoner();
+			if (!this.world.isRemote && summoner != null && this.ticksExisted % 20 == 1) {
+				summoner.addPotionEffect(new PotionEffect(MobEffects.INVISIBILITY, 23, 0, false, false));
+			}
 			if (this.ticksExisted < 5) {
 				for (Entity entity : this.world.getEntitiesWithinAABBExcludingEntity(this, this.getEntityBoundingBox())) {
 					if (entity instanceof EntityLivingBase && !entity.equals(summoner)
@@ -323,7 +330,7 @@ public class EntityIceDome extends ElementsNarutomodMod.ModElement {
 
 			public EC createJutsu(EntityLivingBase entity, double x, double y, double z) {
 				entity.world.playSound(null, entity.posX, entity.posY, entity.posZ,
-				 net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:makyohyosho")),
+				 SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:makyohyosho")),
 				 net.minecraft.util.SoundCategory.NEUTRAL, 1f, 0.9f);
 				EC entity1 = new EC(entity, x, y, z);
 				entity.world.spawnEntity(entity1);
@@ -332,25 +339,19 @@ public class EntityIceDome extends ElementsNarutomodMod.ModElement {
 		}
 
 		public static class LivingHook {
-			@SideOnly(Side.CLIENT)
-			@SubscribeEvent
-			public void onRenderLiving(RenderLivingEvent.Pre event) {
-				if (event.getEntity().getRidingEntity() instanceof EC) {
-					event.setCanceled(true);
-				}
-			}
-
 			@SubscribeEvent
 			public void onAttackedInsideDome(LivingAttackEvent event) {
 				EntityLivingBase target = event.getEntityLiving();
-				if (!target.world.isRemote) {
+				if (!target.world.isRemote && !(target instanceof EC)) {
 					EC dome = (EC)target.world.findNearestEntityWithinAABB(EC.class, target.getEntityBoundingBox().grow(ENTITY_SCALE), target);
 					if (dome != null) {
 						Entity attacker = event.getSource().getTrueSource();
 						EntityLivingBase summoner = dome.getSummoner();
-						if (target.equals(summoner) 
-						 || (dome.entitiesInside.contains(target) == !dome.entitiesInside.contains(attacker)
-					      && !summoner.equals(attacker))) {
+						//if (target.equals(summoner) 
+						// || (dome.entitiesInside.contains(target) == !dome.entitiesInside.contains(attacker)
+					    //  && !summoner.equals(attacker))) {
+						if (dome.entitiesInside.contains(target) == !dome.entitiesInside.contains(attacker)
+						 && !summoner.equals(attacker) && !target.equals(summoner)) {
 							event.setCanceled(true);
 							dome.attackEntityFrom(event.getSource(), event.getAmount());
 					    }

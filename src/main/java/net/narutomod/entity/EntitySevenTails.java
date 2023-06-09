@@ -33,6 +33,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.item.ItemStack;
 import net.minecraft.pathfinding.PathNavigateFlying;
+import net.minecraft.pathfinding.PathNavigate;
 
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.ElementsNarutomodMod;
@@ -135,8 +136,6 @@ public class EntitySevenTails extends ElementsNarutomodMod.ModElement {
 			this.setSize(MODELSCALE * 0.3F, MODELSCALE * 1.6F);
 			this.experienceValue = 12000;
 			this.stepHeight = this.height / 3.0F;
-			this.navigator = new PathNavigateFlying(this, worldIn);
-			this.moveHelper = new FlyHelper(this);
 		}
 
 		public EntityCustom(EntityPlayer player) {
@@ -144,8 +143,12 @@ public class EntitySevenTails extends ElementsNarutomodMod.ModElement {
 			this.setSize(MODELSCALE * 0.3F, MODELSCALE * 1.6F);
 			this.experienceValue = 12000;
 			this.stepHeight = this.height / 3.0F;
-			this.navigator = new PathNavigateFlying(this, player.world);
+		}
+
+		@Override
+		protected PathNavigate createNavigator(World worldIn) {
 			this.moveHelper = new FlyHelper(this);
+			return new PathNavigateFlying(this, worldIn);
 		}
 
 		@Override

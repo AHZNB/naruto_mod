@@ -152,6 +152,11 @@ public class EntityToad extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
+		public boolean couldBreakBlocks() {
+			return this.world.getGameRules().getBoolean("mobGriefing") && this.getScale() >= 4f;
+		}
+
+		@Override
 		protected void updateAITasks() {
 			super.updateAITasks();
 			this.jumpNavigator.updateNavigation();
