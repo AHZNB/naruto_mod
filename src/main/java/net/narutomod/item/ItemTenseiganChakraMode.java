@@ -164,7 +164,7 @@ public class ItemTenseiganChakraMode extends ElementsNarutomodMod.ModElement {
 						}
 						if (stack1.getItem() == ItemTenseigan.body && stack2.getItem() == ItemTenseigan.legs
 								&& (stack1.getItemDamage() >= stack1.getMaxDamage() || stack2.getItemDamage() >= stack2.getMaxDamage())) {
-							livingEntity.getCooldownTracker().setCooldown(block, 2400);
+							livingEntity.getCooldownTracker().setCooldown(block, 3600);
 							stack1.shrink(1);
 							stack2.shrink(1);
 							itemstack.getTagCompound().setInteger("ChestArmorDamage", 0);

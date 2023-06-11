@@ -1218,7 +1218,7 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 		public double dx;
 		public double dy;
 		public double dz;
-		public int hitsOnSide[] = { 0, 0, 0, 0, 0, 0 };
+		private int hitsOnSide[] = { 0, 0, 0, 0, 0, 0 };
 
 		public CollisionHelper(AxisAlignedBB sourceBB) {
 			this.source = sourceBB;
@@ -1255,6 +1255,24 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 
 		public double minZ(double z) {
 			return Math.signum(z) != Math.signum(this.dz) ? 0d : Math.abs(z) < Math.abs(this.dz) ? z : this.dz;
+		}
+
+		public boolean hitOnSide(EnumFacing face) {
+			for (int i = 0; i < this.hitsOnSide.length; i++) {
+				if (this.hitsOnSide[i] > 0 && EnumFacing.getFront(i) == face) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		public boolean hitOnAxis(EnumFacing.Axis axis) {
+			for (int i = 0; i < this.hitsOnSide.length; i++) {
+				if (this.hitsOnSide[i] > 0 && EnumFacing.getFront(i).getAxis() == axis) {
+					return true;
+				}
+			}
+			return false;
 		}
 	}
 

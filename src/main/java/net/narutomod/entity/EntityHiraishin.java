@@ -280,8 +280,15 @@ public class EntityHiraishin extends ElementsNarutomodMod.ModElement {
 						ItemStack stack1 = new ItemStack(ItemKunaiHiraishin.block, 1);
 						ItemKunaiHiraishin.RangedItem.setOwner(stack1, entity);
 						((EntityItem)res.entityHit).setItem(stack1);
-					} else if (res.entityHit instanceof EntityLivingBase || res.typeOfHit == RayTraceResult.Type.BLOCK) {
+					} else if (res.typeOfHit == RayTraceResult.Type.BLOCK) {
 						return entity.world.spawnEntity(new EC(entity, res));
+					} else if (res.entityHit instanceof EntityLivingBase) {
+						EC entity1 = (EC)entity.world.findNearestEntityWithinAABB(EC.class, res.entityHit.getEntityBoundingBox(), res.entityHit);
+						if (entity1 != null && entity1.getDistanceSq(res.entityHit) < 0.01d) {
+							entity1.setDead();
+						} else {
+							return entity.world.spawnEntity(new EC(entity, res));
+						}
 					}
 				}
 				return false;

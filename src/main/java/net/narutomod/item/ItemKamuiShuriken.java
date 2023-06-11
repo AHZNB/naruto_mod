@@ -100,7 +100,7 @@ public class ItemKamuiShuriken extends ElementsNarutomodMod.ModElement {
 				float power = 0.5f;
 				EntityKamuiShuriken entityarrow = new EntityKamuiShuriken(world, entity);
 				if (entity.isRiding() && entity.getRidingEntity() instanceof EntitySusanooWinged.EntityCustom) {
-					entityarrow.setScale((float) entity.getRidingEntity().getEntityData().getDouble("entityModelScale"));
+					entityarrow.setScale((float)entity.getRidingEntity().getEntityData().getDouble("entityModelScale"));
 				}
 				entityarrow.shoot(entity.getLookVec().x, entity.getLookVec().y, entity.getLookVec().z, power * 2, 0);
 				world.spawnEntity(entityarrow);
@@ -163,6 +163,15 @@ public class ItemKamuiShuriken extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
+		public void notifyDataManagerChange(DataParameter<?> key) {
+			super.notifyDataManagerChange(key);
+			if (SCALE.equals(key) && this.world.isRemote) {
+				float f = this.getScale();
+				this.setSize(this.ogWidth * f, this.ogWidth * f);
+			}
+		}
+
+		@Override
 		protected void onImpact(RayTraceResult result) {
 			if (result.entityHit != null) {
 				for (Entity entity = this.thrower; entity != null; entity = entity.getRidingEntity())
@@ -172,7 +181,7 @@ public class ItemKamuiShuriken extends ElementsNarutomodMod.ModElement {
 			if (!this.world.isRemote) {
 				if (result.entityHit != null && this.thrower instanceof EntityPlayer) {
 					EntityPlayer thrower = (EntityPlayer) this.thrower;
-					double d = 0.00005d * PlayerTracker.getBattleXp(thrower)
+					double d = 0.00000625d * this.getScale() * PlayerTracker.getBattleXp(thrower)
 							/ result.entityHit.getEntityBoundingBox().getAverageEdgeLength();
 					if (result.entityHit instanceof EntityLivingBase) {
 						EntityLivingBase elb = (EntityLivingBase) result.entityHit;
@@ -187,13 +196,9 @@ public class ItemKamuiShuriken extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public void onUpdate() {
-			if (this.width < this.getScale() * this.ogWidth) {
-				this.setSize(this.ogWidth * this.getScale(), this.height * this.getScale());
-			}
 			super.onUpdate();
 			if (this.ticksExisted % 40 == 2) {
-				this.playSound((net.minecraft.util.SoundEvent)net.minecraft.util.SoundEvent.REGISTRY
-				 .getObject(new ResourceLocation(("narutomod:KamuiSFX"))), 
+				this.playSound(net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:KamuiSFX")),
 				 1, 1f / (this.rand.nextFloat() * 0.5f + 1f) + 0.25f);
 			}
 			if (this.inGround) {

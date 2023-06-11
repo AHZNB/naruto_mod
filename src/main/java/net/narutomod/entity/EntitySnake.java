@@ -715,7 +715,8 @@ public class EntitySnake extends ElementsNarutomodMod.ModElement {
 	            } else {
 	            	this.entity.setAIMoveSpeed(f);
 	            }
-	            if (vec0.y > 0.01d && this.entity.collidedHorizontally) {
+	            if (this.entity.collidedHorizontally) {
+	             //&& vec0.y > 0.01d) {
 	                this.entity.motionY = 0.2d + 0.2d * this.entity.height;
 	            }
 			} else {

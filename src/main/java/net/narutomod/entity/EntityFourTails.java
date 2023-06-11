@@ -1020,6 +1020,17 @@ public class EntityFourTails extends ElementsNarutomodMod.ModElement {
 						//Tail[i][j].rotateAngleY = MathHelper.sin((f2 - j) * 0.1F) * tailSwayY[i][j];
 					}
 				}
+				if (!e.onGround) {
+					setRotationAngle(rightLeg, 0.383F, -0.3089F, -1.0426F);
+					rightCalf.rotateAngleZ = 0.2618F;
+					setRotationAngle(leftLeg, 0.383F, 0.3089F, 1.0426F);
+					leftCalf.rotateAngleZ = -0.2618F;
+				} else {
+					setRotationAngle(rightLeg, 0.0873F, -0.48F, -0.3054F);
+					rightCalf.rotateAngleZ = 0.0F;
+					setRotationAngle(leftLeg, 0.0873F, 0.48F, 0.3054F);
+					leftCalf.rotateAngleZ = 0.0F;
+				}
 				if (((EntityCustom)e).isShooting()) {
 					bipedHead.rotateAngleX += -0.5236F;
 					jaw.rotateAngleX = 0.7418F;

@@ -155,7 +155,7 @@ public class EntityTenTails extends ElementsNarutomodMod.ModElement {
 			this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(100000.0D);
 			this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(1000.0D);
 			//this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(24.0D);
-			this.getEntityAttribute(EntityPlayer.REACH_DISTANCE).setBaseValue(30.0D);
+			this.getEntityAttribute(EntityPlayer.REACH_DISTANCE).setBaseValue(40.0D);
 		}
 
 		@Override
@@ -213,6 +213,12 @@ public class EntityTenTails extends ElementsNarutomodMod.ModElement {
 			if (!this.world.isRemote && !flag) {
 				BIJU_MANAGER.setHasLived(!this.spawnedBySpawner);
 			}
+		}
+
+		@Override
+		public Vec3d getPositionMouth() {
+			return Vec3d.fromPitchYaw(this.rotationPitch, this.rotationYawHead)
+			 .scale(0.625d * MODELSCALE).addVector(this.posX, this.posY + 0.5d * MODELSCALE, this.posZ);
 		}
 
 		/*@Override
@@ -1107,7 +1113,7 @@ public class EntityTenTails extends ElementsNarutomodMod.ModElement {
 		
 				Tail[0][0] = new ModelRenderer(this);
 				Tail[0][0].setRotationPoint(-0.25F, 21.5F, 5.0F);
-				setRotationAngle(Tail[0][0], -1.0472F, -0.2618F, 0.0F);
+				setRotationAngle(Tail[0][0], -1.1345F, -0.2618F, 0.0F);
 				Tail[0][0].cubeList.add(new ModelBox(Tail[0][0], 0, 13, -1.0F, -3.5F, -1.0F, 2, 4, 2, 0.5F, false));
 		
 				Tail[0][1] = new ModelRenderer(this);
@@ -1166,7 +1172,7 @@ public class EntityTenTails extends ElementsNarutomodMod.ModElement {
 		
 				Tail[1][0] = new ModelRenderer(this);
 				Tail[1][0].setRotationPoint(0.25F, 21.5F, 5.0F);
-				setRotationAngle(Tail[1][0], -1.2217F, 0.2618F, 0.0F);
+				setRotationAngle(Tail[1][0], -1.309F, 0.2618F, 0.0F);
 				Tail[1][0].cubeList.add(new ModelBox(Tail[1][0], 0, 13, -1.0F, -3.5F, -1.0F, 2, 4, 2, 0.5F, false));
 		
 				Tail[1][1] = new ModelRenderer(this);
@@ -1225,7 +1231,7 @@ public class EntityTenTails extends ElementsNarutomodMod.ModElement {
 		
 				Tail[2][0] = new ModelRenderer(this);
 				Tail[2][0].setRotationPoint(0.75F, 21.5F, 5.0F);
-				setRotationAngle(Tail[2][0], -1.0472F, 0.7854F, 0.0F);
+				setRotationAngle(Tail[2][0], -1.1345F, 0.7854F, 0.0F);
 				Tail[2][0].cubeList.add(new ModelBox(Tail[2][0], 0, 13, -1.0F, -3.5F, -1.0F, 2, 4, 2, 0.5F, false));
 		
 				Tail[2][1] = new ModelRenderer(this);
@@ -1284,7 +1290,7 @@ public class EntityTenTails extends ElementsNarutomodMod.ModElement {
 		
 				Tail[3][0] = new ModelRenderer(this);
 				Tail[3][0].setRotationPoint(1.25F, 21.5F, 5.0F);
-				setRotationAngle(Tail[3][0], -1.309F, 1.0472F, 0.0F);
+				setRotationAngle(Tail[3][0], -1.3963F, 1.0472F, 0.0F);
 				Tail[3][0].cubeList.add(new ModelBox(Tail[3][0], 0, 13, -1.0F, -3.5F, -1.0F, 2, 4, 2, 0.5F, false));
 		
 				Tail[3][1] = new ModelRenderer(this);
@@ -1343,7 +1349,7 @@ public class EntityTenTails extends ElementsNarutomodMod.ModElement {
 		
 				Tail[4][0] = new ModelRenderer(this);
 				Tail[4][0].setRotationPoint(1.75F, 21.5F, 5.0F);
-				setRotationAngle(Tail[4][0], -1.5708F, 1.309F, 0.0F);
+				setRotationAngle(Tail[4][0], -1.6581F, 1.309F, 0.0F);
 				Tail[4][0].cubeList.add(new ModelBox(Tail[4][0], 0, 13, -1.0F, -3.5F, -1.0F, 2, 4, 2, 0.5F, false));
 		
 				Tail[4][1] = new ModelRenderer(this);
@@ -1402,7 +1408,7 @@ public class EntityTenTails extends ElementsNarutomodMod.ModElement {
 		
 				Tail[5][0] = new ModelRenderer(this);
 				Tail[5][0].setRotationPoint(2.25F, 21.5F, 5.0F);
-				setRotationAngle(Tail[5][0], -1.8326F, 1.5708F, 0.0F);
+				setRotationAngle(Tail[5][0], -1.9199F, 1.5708F, 0.0F);
 				Tail[5][0].cubeList.add(new ModelBox(Tail[5][0], 0, 13, -1.0F, -3.5F, -1.0F, 2, 4, 2, 0.5F, false));
 		
 				Tail[5][1] = new ModelRenderer(this);
@@ -1461,7 +1467,7 @@ public class EntityTenTails extends ElementsNarutomodMod.ModElement {
 		
 				Tail[6][0] = new ModelRenderer(this);
 				Tail[6][0].setRotationPoint(-0.75F, 21.5F, 5.0F);
-				setRotationAngle(Tail[6][0], -1.0472F, -0.7854F, 0.0F);
+				setRotationAngle(Tail[6][0], -1.1345F, -0.7854F, 0.0F);
 				Tail[6][0].cubeList.add(new ModelBox(Tail[6][0], 0, 13, -1.0F, -3.5F, -1.0F, 2, 4, 2, 0.5F, false));
 		
 				Tail[6][1] = new ModelRenderer(this);
@@ -1520,7 +1526,7 @@ public class EntityTenTails extends ElementsNarutomodMod.ModElement {
 		
 				Tail[7][0] = new ModelRenderer(this);
 				Tail[7][0].setRotationPoint(-1.25F, 21.5F, 5.0F);
-				setRotationAngle(Tail[7][0], -1.309F, -1.0472F, 0.0F);
+				setRotationAngle(Tail[7][0], -1.3963F, -1.0472F, 0.0F);
 				Tail[7][0].cubeList.add(new ModelBox(Tail[7][0], 0, 13, -1.0F, -3.5F, -1.0F, 2, 4, 2, 0.5F, false));
 		
 				Tail[7][1] = new ModelRenderer(this);
@@ -1579,7 +1585,7 @@ public class EntityTenTails extends ElementsNarutomodMod.ModElement {
 		
 				Tail[8][0] = new ModelRenderer(this);
 				Tail[8][0].setRotationPoint(-1.75F, 21.5F, 5.0F);
-				setRotationAngle(Tail[8][0], -1.5708F, -1.309F, 0.0F);
+				setRotationAngle(Tail[8][0], -1.6581F, -1.309F, 0.0F);
 				Tail[8][0].cubeList.add(new ModelBox(Tail[8][0], 0, 13, -1.0F, -3.5F, -1.0F, 2, 4, 2, 0.5F, false));
 		
 				Tail[8][1] = new ModelRenderer(this);
@@ -1638,7 +1644,7 @@ public class EntityTenTails extends ElementsNarutomodMod.ModElement {
 		
 				Tail[9][0] = new ModelRenderer(this);
 				Tail[9][0].setRotationPoint(-2.25F, 21.5F, 5.0F);
-				setRotationAngle(Tail[9][0], -1.8326F, -1.5708F, 0.0F);
+				setRotationAngle(Tail[9][0], -1.9199F, -1.5708F, 0.0F);
 				Tail[9][0].cubeList.add(new ModelBox(Tail[9][0], 0, 13, -1.0F, -3.5F, -1.0F, 2, 4, 2, 0.5F, false));
 		
 				Tail[9][1] = new ModelRenderer(this);
@@ -1708,7 +1714,7 @@ public class EntityTenTails extends ElementsNarutomodMod.ModElement {
 				bipedLeftLeg.showModel = false;
 				bipedRightLeg.showModel = false;
 				GlStateManager.pushMatrix();
-				GlStateManager.translate(0.0F, 1.5F - 1.5F * MODELSCALE, 0.375F * MODELSCALE);
+				GlStateManager.translate(0.0F, 1.5F - 1.5F * MODELSCALE, 0.0F); //0.375F * MODELSCALE);
 				GlStateManager.scale(MODELSCALE, MODELSCALE, MODELSCALE);
 				//super.render(entity, f0, f1, f2, f3, f4, f5);
 				bipedBody.render(f5);

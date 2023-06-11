@@ -283,6 +283,10 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 					 && this.attacker.getDistance(this.attacker.getAttackTarget()) <= ProcedureUtils.getFollowRange(this.attacker)
 					 && super.shouldExecute();
 				}
+				@Override
+				protected double getAttackReachSqr(EntityLivingBase attackTarget) {
+					return ProcedureUtils.getReachDistanceSq(this.attacker) * 0.25d;
+				}
 			});
 			this.tasks.addTask(2, new EntityAIMoveTowardsTarget(this, 1.2D, (float)TARGET_RANGE * 0.5f) {
 				@Override
