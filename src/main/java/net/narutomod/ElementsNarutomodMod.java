@@ -274,6 +274,16 @@ public class ElementsNarutomodMod implements IFuelHandler, IWorldGenerator {
 		sounds.put(new ResourceLocation("narutomod", "dojutsu"), new net.minecraft.util.SoundEvent(new ResourceLocation("narutomod", "dojutsu")));
 		sounds.put(new ResourceLocation("narutomod", "swoosh"), new net.minecraft.util.SoundEvent(new ResourceLocation("narutomod", "swoosh")));
 		sounds.put(new ResourceLocation("narutomod", "highpitch"), new net.minecraft.util.SoundEvent(new ResourceLocation("narutomod", "highpitch")));
+		sounds.put(new ResourceLocation("narutomod", "fourtails_idle1"),
+				new net.minecraft.util.SoundEvent(new ResourceLocation("narutomod", "fourtails_idle1")));
+		sounds.put(new ResourceLocation("narutomod", "fourtails_idle2"),
+				new net.minecraft.util.SoundEvent(new ResourceLocation("narutomod", "fourtails_idle2")));
+		sounds.put(new ResourceLocation("narutomod", "fourtails_hurt"),
+				new net.minecraft.util.SoundEvent(new ResourceLocation("narutomod", "fourtails_hurt")));
+		sounds.put(new ResourceLocation("narutomod", "fourtails_defeat"),
+				new net.minecraft.util.SoundEvent(new ResourceLocation("narutomod", "fourtails_defeat")));
+		sounds.put(new ResourceLocation("narutomod", "shukaku_roar"),
+				new net.minecraft.util.SoundEvent(new ResourceLocation("narutomod", "shukaku_roar")));
 	}
 
 	public void preInit(FMLPreInitializationEvent event) {

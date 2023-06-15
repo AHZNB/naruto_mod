@@ -326,7 +326,7 @@ public class EntityEarthBlocks extends ElementsNarutomodMod.ModElement {
 			double dy = y;
 			double dz = z;
 			List<AxisAlignedBB> list = this.world.getCollisionBoxes(this, this.getCollisionBoundingBox().expand(x, y, z));
-			ProcedureUtils.CollisionHelper ch = new ProcedureUtils.CollisionHelper(this.getCollisionBoundingBox());
+			ProcedureUtils.CollisionHelper ch = new ProcedureUtils.CollisionHelper(this);
 			ch.collideWithAABBs(list, x, y, z);
 			x = ch.minX(x);
 			y = ch.minY(y);
@@ -340,7 +340,7 @@ public class EntityEarthBlocks extends ElementsNarutomodMod.ModElement {
 				boolean canMoveThrough = true;
 				//this.breakOnImpact = this.collisionForce() > 1000.0f;
 				if (dx != x || dy != y || dz != z) {
-					List<BlockPos> list1 = BlocksMoveHelper.convert2BlockposList(list);
+					List<BlockPos> list1 = ch.getHitBoxes();
 					float f = BlocksMoveHelper.getBlocksTotalResistance(this.world, list1);
 					//float hitarea = (float)list.size() / this.collisionForce();
 					float hitarea = f / this.collisionForce() * 0.2f;
@@ -559,7 +559,7 @@ public class EntityEarthBlocks extends ElementsNarutomodMod.ModElement {
 				for (EntityFallingBlock entity : this.toMove) {
 					AxisAlignedBB aabb = entity.getEntityBoundingBox().expand(mX, mY, mZ);
 					List<AxisAlignedBB> list1 = entity.world.getCollisionBoxes(null, aabb);
-					ProcedureUtils.CollisionHelper stat = new ProcedureUtils.CollisionHelper(entity.getEntityBoundingBox());
+					ProcedureUtils.CollisionHelper stat = new ProcedureUtils.CollisionHelper(entity);
 					stat.collideWithAABBs(list1, mX, mY, mZ);
 					this.addToCollidedBlocks(this.convert2BlockposList(list1));
 					dX = stat.minX(dX);
@@ -571,7 +571,7 @@ public class EntityEarthBlocks extends ElementsNarutomodMod.ModElement {
 							return p_apply_1_ != null && !BlocksMoveHelper.this.toMove.contains(p_apply_1_);
 						}
 					});
-					ProcedureUtils.CollisionHelper stat2 = new ProcedureUtils.CollisionHelper(entity.getEntityBoundingBox());
+					ProcedureUtils.CollisionHelper stat2 = new ProcedureUtils.CollisionHelper(entity);
 					List<AxisAlignedBB> list3 = this.convert2BoundingboxList(list2);
 					stat2.collideWithAABBs(list3, mX, mY, mZ);
 					this.addToCollidedAABB(list3);

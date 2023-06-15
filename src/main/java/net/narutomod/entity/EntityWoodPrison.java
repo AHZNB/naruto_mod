@@ -107,7 +107,7 @@ public class EntityWoodPrison extends ElementsNarutomodMod.ModElement {
 				 BlockPos.getAllInBoxMutable(this.blockpos.add(this.radius, -3, -this.radius), this.blockpos.add(this.radius, this.tHeight, this.radius)),
 				 BlockPos.getAllInBoxMutable(this.blockpos.add(-this.radius, -3, this.radius), this.blockpos.add(this.radius, this.tHeight, this.radius)),
  				 BlockPos.getAllInBoxMutable(this.blockpos.add(-this.radius, this.tHeight, -this.radius), this.blockpos.add(this.radius, this.tHeight, this.radius)) )) {
-					if (this.world.isAirBlock(pos)) {
+					if (this.world.getBlockState(pos).getCollisionBoundingBox(this.world, pos) == null) {
 						map.put(pos.toImmutable(), pos.getY() - this.blockpos.getY() == this.tHeight 
 						 ? Blocks.WOODEN_SLAB.getDefaultState() : Blocks.OAK_FENCE.getDefaultState());
 					}

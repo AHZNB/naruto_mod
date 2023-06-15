@@ -952,5 +952,50 @@
         "stream": false
       }
     ]
+  },
+  "fourtails_idle1": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "narutomod:4tails_idle1",
+        "stream": false
+      }
+    ]
+  },
+  "fourtails_idle2": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "narutomod:4tails_idle2",
+        "stream": false
+      }
+    ]
+  },
+  "fourtails_hurt": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "narutomod:4tails_hurt",
+        "stream": false
+      }
+    ]
+  },
+  "fourtails_defeat": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "narutomod:4tails_defeat",
+        "stream": false
+      }
+    ]
+  },
+  "shukaku_roar": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "narutomod:1tails_roar",
+        "stream": false
+      }
+    ]
   }
 }

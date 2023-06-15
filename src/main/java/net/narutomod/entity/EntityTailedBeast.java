@@ -25,6 +25,7 @@ import net.minecraft.world.storage.WorldSavedData;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.CombatRules;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.EntitySelectors;
 import net.minecraft.util.EnumParticleTypes;
@@ -36,14 +37,13 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.translation.I18n;
 import net.minecraft.item.Item;
-import net.minecraft.entity.ai.RandomPositionGenerator;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.ai.EntityAIHurtByTarget;
 import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
 import net.minecraft.entity.ai.EntityAIAttackMelee;
 import net.minecraft.entity.ai.EntityAIAttackRanged;
-import net.minecraft.entity.ai.EntityAIMoveTowardsTarget;
 import net.minecraft.entity.ai.EntityAIWander;
+import net.minecraft.entity.ai.EntityMoveHelper;
 import net.minecraft.entity.ai.attributes.IAttribute;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.ai.attributes.RangedAttribute;
@@ -54,7 +54,6 @@ import net.minecraft.entity.EnumCreatureAttribute;
 import net.minecraft.entity.IRangedAttackMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.IEntityLivingData;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
@@ -78,12 +77,12 @@ import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.Minecraft;
+import net.minecraft.pathfinding.PathPoint;
 import net.minecraft.pathfinding.Path;
 import net.minecraft.pathfinding.PathNavigateGround;
 import net.minecraft.pathfinding.PathFinder;
 import net.minecraft.pathfinding.PathNodeType;
 import net.minecraft.pathfinding.PathNavigate;
-import net.minecraft.pathfinding.WalkNodeProcessor;
 import net.minecraft.block.material.Material;
 
 import net.narutomod.item.ItemJutsu;
@@ -147,9 +146,12 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 		private boolean motionHalted;
 		protected boolean canPassengerDismount = true;
 		protected boolean spawnedBySpawner;
+		private final ProcedureUtils.CollisionHelper collisionData;
 
 		public Base(World world) {
 			super(world);
+			this.collisionData = new ProcedureUtils.CollisionHelper(this);
+			this.moveHelper = new MoveHelper(this);
 			this.isImmuneToFire = true;
 			//this.stepHeight = this.height / 3.0F;
 			this.deathTicks = 0;
@@ -175,7 +177,7 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 		@Override
 		protected PathNavigate createNavigator(World worldIn) {
 			PathNavigateGround navi = new NavigateGround(this, worldIn);
-			navi.setCanSwim(true);
+			//navi.setCanSwim(true);
 			return navi;
 		}
 
@@ -259,7 +261,7 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 			super.applyEntityAttributes();
 			this.getAttributeMap().registerAttribute(ProcedureUtils.MAXHEALTH);
 			this.getAttributeMap().registerAttribute(EntityPlayer.REACH_DISTANCE);
-			this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(16.0D);
+			this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(TARGET_RANGE);
 			this.getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(1.0D);
 			this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(200.0D);
 		}
@@ -279,19 +281,11 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 			this.tasks.addTask(1, new EntityAIAttackMelee(this, 1.2D, true) {
 				@Override
 				public boolean shouldExecute() {
-					return !Base.this.isMotionHalted() && this.attacker.getAttackTarget() != null
-					 && this.attacker.getDistance(this.attacker.getAttackTarget()) <= ProcedureUtils.getFollowRange(this.attacker)
-					 && super.shouldExecute();
+					return !Base.this.isMotionHalted() && super.shouldExecute();
 				}
 				@Override
 				protected double getAttackReachSqr(EntityLivingBase attackTarget) {
-					return ProcedureUtils.getReachDistanceSq(this.attacker) * 0.25d;
-				}
-			});
-			this.tasks.addTask(2, new EntityAIMoveTowardsTarget(this, 1.2D, (float)TARGET_RANGE * 0.5f) {
-				@Override
-				public boolean shouldExecute() {
-					return !Base.this.isMotionHalted() && super.shouldExecute();
+					return ProcedureUtils.getReachDistanceSq(this.attacker) * 0.36d;
 				}
 			});
 		}
@@ -325,7 +319,7 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 					return TARGET_RANGE * 0.5d;
 				}
 			});
-			this.tasks.addTask(3, new EntityAIAttackRanged(this, 1.5D, BIJUDAMA_CD, (float)TARGET_RANGE) {
+			this.tasks.addTask(3, new EntityAIAttackRanged(this, 1.2D, BIJUDAMA_CD, (float)TARGET_RANGE + 64f) {
 				@Override
 				public boolean shouldExecute() {
 					return super.shouldExecute() && !Base.this.isMotionHalted() && Base.this.canShootBijudama()
@@ -549,8 +543,9 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public void move(MoverType type, double x, double y, double z) {
+			this.collisionData.collideWithAABBs(this.world.getCollisionBoxes(this, this.getEntityBoundingBox().expand(x, y, z)), x, y, z);
 			if (this.couldBreakBlocks()) {
-				for (BlockPos pos : ProcedureUtils.getNonAirBlocks(this.world, this.getEntityBoundingBox().grow(0.5d).expand(x, y, z), true)) {
+				for (BlockPos pos : this.collisionData.getHitBoxes()) {
 					if (canBreakList.contains(this.world.getBlockState(pos).getMaterial())) {
 						this.world.destroyBlock(pos, this.rand.nextFloat() < 0.3f);
 						x *= 0.96d;
@@ -884,11 +879,6 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 			}
 		}
 
-		/*protected void eventOnTick(World world, int x, int y, int z, int radius, Entity entity, int tick) {
-			radius += 2;
-			ProcedureCameraShake.sendToClients(world.provider.getDimension(), x, y, z, radius+32, 80, 8);
-		}*/
-
 		@Override
 		protected void onImpact(RayTraceResult result) {
 			if (result.entityHit != null && result.entityHit.equals(this.shootingEntity))
@@ -904,11 +894,7 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 				}
 				float radius = MathHelper.sqrt(this.getEntityScale()) * 6f;
 				new EventSphericalExplosion(this.world, this.shootingEntity, (int) this.posX, (int) this.posY,
-				 (int) this.posZ, (int)radius, 0, 0.33f); /*{
-					protected void doOnTick(int currentTick) {
-						eventOnTick(getWorld(), getX0(), getY0(), getZ0(), getRadius(), getEntity(), currentTick);
-					}
-				};*/
+				 (int) this.posZ, (int)radius, 0, 0.33f);
 				ProcedureAoeCommand.set(this, 0d, radius * 1.2).exclude(excludePlayer)
 				 .damageEntitiesCentered(ItemJutsu.causeJutsuDamage(this, this.shootingEntity), this.maxDamage);
 				this.setDead();
@@ -1032,148 +1018,196 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 	    		this.leaper.motionZ += d1 / (double)f * (double)this.leapStrength * 0.4D + this.leaper.motionZ * 0.2D;
 	    	}
 	    	this.leaper.motionY = (double)this.leapStrength;
-	    }
-	}
-
-	public static class AIAttackMelee extends EntityAIBase {
-	    //World world;
-	    protected EntityCreature attacker;
-	    protected int attackTick;
-	    double speedTowardsTarget;
-	    boolean longMemory;
-	    Path path;
-	    private int delayCounter;
-	    private double targetX;
-	    private double targetY;
-	    private double targetZ;
-	    //protected final int attackInterval = 20;
-	    //private int failedPathFindingPenalty = 0;
-	    //private boolean canPenalize = false;
-	
-	    public AIAttackMelee(EntityCreature creature, double speedIn, boolean useLongMemory) {
-	        this.attacker = creature;
-	        //this.world = creature.world;
-	        this.speedTowardsTarget = speedIn;
-	        this.longMemory = useLongMemory;
-	        this.setMutexBits(3);
-	    }
-	
-	    @Override
-	    public boolean shouldExecute() {
-	        EntityLivingBase target = this.attacker.getAttackTarget();
-	        if (target == null || !target.isEntityAlive()) {
-	            return false;
-	        } else {
-	        	double d0 = this.attacker.getDistanceSq(target);
-	        	if (MathHelper.sqrt(d0) > ProcedureUtils.getFollowRange(target)) {
-	        		Vec3d vec = RandomPositionGenerator.findRandomTargetBlockTowards(this.attacker, 16, 7, target.getPositionVector());
-	        		this.path = this.attacker.getNavigator().getPathToXYZ(vec.x, vec.y, vec.z);
-	        	} else {
-	            	this.path = this.attacker.getNavigator().getPathToEntityLiving(target);	
-	        	}
-	            if (this.path != null) {
-	                return true;
-	            } else {
-	                return this.getAttackReachSqr(target) >= d0;
-	            }
-	        }
-	    }
-	
-	    @Override
-	    public boolean shouldContinueExecuting() {
-	        EntityLivingBase target = this.attacker.getAttackTarget();
-	        if (target == null || !target.isEntityAlive()) {
-	            return false;
-	        } else if (!this.longMemory) {
-	            return !this.attacker.getNavigator().noPath();
-	        } else if (!this.attacker.isWithinHomeDistanceFromPosition(new BlockPos(target))) {
-	            return false;
-	        } else {
-	            return !(target instanceof EntityPlayer) || !((EntityPlayer)target).isSpectator() && !((EntityPlayer)target).isCreative();
-	        }
-	    }
-	
-		@Override
-	    public void startExecuting() {
-	        this.attacker.getNavigator().setPath(this.path, this.speedTowardsTarget);
-	        this.delayCounter = 0;
-	    }
-	
-		@Override
-	    public void resetTask() {
-	        EntityLivingBase target = this.attacker.getAttackTarget();
-	        if (target instanceof EntityPlayer && (((EntityPlayer)target).isSpectator() || ((EntityPlayer)target).isCreative())) {
-	            this.attacker.setAttackTarget(null);
-	        }
-	        this.attacker.getNavigator().clearPath();
-	    }
-	
-		@Override
-	    public void updateTask() {
-	        EntityLivingBase target = this.attacker.getAttackTarget();
-	        this.attacker.getLookHelper().setLookPositionWithEntity(target, 30.0F, 30.0F);
-	        double d0 = this.attacker.getDistanceSq(target);
-	        --this.delayCounter;
-	        if ((this.longMemory || this.attacker.getEntitySenses().canSee(target)) && this.delayCounter <= 0
-	         && (this.targetX == 0.0D && this.targetY == 0.0D && this.targetZ == 0.0D
-	          || target.getDistanceSq(this.targetX, this.targetY, this.targetZ) >= 1.0D
-	          || this.attacker.getRNG().nextFloat() < 0.05F)) {
-	            this.targetX = target.posX;
-	            this.targetY = target.getEntityBoundingBox().minY;
-	            this.targetZ = target.posZ;
-	            this.delayCounter = 4 + this.attacker.getRNG().nextInt(7);
-	            if (d0 > 1024.0D) {
-	                this.delayCounter += 5;
-	            }
-	            if (MathHelper.sqrt(d0) > ProcedureUtils.getFollowRange(target)) {
-	        		Vec3d vec = RandomPositionGenerator.findRandomTargetBlockTowards(this.attacker, 16, 7, target.getPositionVector());
-	        		if (vec == null || !this.attacker.getNavigator().tryMoveToXYZ(vec.x, vec.y, vec.z, this.speedTowardsTarget)) {
-	                	this.delayCounter += 15;
-	        		}
-	            } else if (!this.attacker.getNavigator().tryMoveToEntityLiving(target, this.speedTowardsTarget)) {
-	                this.delayCounter += 15;
-	            }
-	        }
-	        this.attackTick = Math.max(this.attackTick - 1, 0);
-	        this.checkAndPerformAttack(target, d0);
-	    }
-	
-	    protected void checkAndPerformAttack(EntityLivingBase p_190102_1_, double p_190102_2_) {
-	        double d0 = this.getAttackReachSqr(p_190102_1_);
-	        if (p_190102_2_ <= d0 && this.attackTick <= 0) {
-	            this.attackTick = 20;
-	            this.attacker.swingArm(EnumHand.MAIN_HAND);
-	            this.attacker.attackEntityAsMob(p_190102_1_);
-	        }
-	    }
-	
-	    protected double getAttackReachSqr(EntityLivingBase attackTarget) {
-	        return (double)(this.attacker.width * 2.0F * this.attacker.width * 2.0F + attackTarget.width);
+	        this.leaper.rotationYaw = (float)(MathHelper.atan2(d1, d0) * (180D / Math.PI)) - 90.0F;
 	    }
 	}
 
 	public static class NavigateGround extends PathNavigateGround {
-		private Base navigatingEntity;
+		private BlockPos targetPos;
 
 		public NavigateGround(Base entityLivingIn, World worldIn) {
 			super(entityLivingIn, worldIn);
-			this.navigatingEntity = entityLivingIn;
 		}
 
 		@Override
 		protected PathFinder getPathFinder() {
-			this.nodeProcessor = new WalkNodeProcessor() {
-				@Override
-				protected PathNodeType getPathNodeTypeRaw(IBlockAccess world, int x, int y, int z) {
-					PathNodeType nodetype = super.getPathNodeTypeRaw(world, x, y, z);
-					if (nodetype != PathNodeType.OPEN && NavigateGround.this.navigatingEntity.couldBreakBlocks()
-					 && Base.canBreakList.contains(world.getBlockState(new BlockPos(x, y, z)).getMaterial())) {
-						return PathNodeType.OPEN;
+			return null;
+		}
+
+		@Override
+		public float getPathSearchRange() {
+			return (float)this.entity.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).getAttributeValue();
+		}
+
+		@Override
+		protected boolean canNavigate() {
+			return true;
+		}
+
+		@Override
+		protected Vec3d getEntityPosition() {
+			return this.entity.getPositionVector();
+		}
+
+		@Override
+		public Path getPathToPos(BlockPos pos) {
+	        if (this.world.getBlockState(pos).getMaterial() == Material.AIR) {
+	            BlockPos blockpos;
+	            for (blockpos = pos.down(); blockpos.getY() > 0
+	             && this.world.getBlockState(blockpos).getMaterial() == Material.AIR; blockpos = blockpos.down()) ;
+	            if (blockpos.getY() > 0) {
+	                return this.getPathTo(blockpos.up());
+	            }
+	            while (blockpos.getY() < this.world.getHeight() && this.world.getBlockState(blockpos).getMaterial() == Material.AIR) {
+	                blockpos = blockpos.up();
+	            }
+	            pos = blockpos;
+	        }
+	        if (!this.world.getBlockState(pos).getMaterial().isSolid()) {
+	            return this.getPathTo(pos);
+	        } else {
+	            BlockPos blockpos1;
+	            for (blockpos1 = pos.up(); blockpos1.getY() < this.world.getHeight()
+	             && this.world.getBlockState(blockpos1).getMaterial().isSolid(); blockpos1 = blockpos1.up()) ;
+	            return this.getPathTo(blockpos1);
+	        }
+		}
+
+		private Path getPathTo(BlockPos pos) {
+			if (!this.canNavigate() || MathHelper.sqrt(this.getEntityPosition()
+			 .squareDistanceTo(0.5d+pos.getX(), this.entity.posY, 0.5d+pos.getZ())) > this.getPathSearchRange()) {
+				return null;
+			} else if (this.currentPath != null && !this.currentPath.isFinished() && pos.equals(this.targetPos)) {
+				return this.currentPath;
+			} else {
+				this.targetPos = pos;
+				BlockPos blockpos = new BlockPos(this.entity);
+				PathPoint[] pathpoints = { new PathPoint(blockpos.getX(), blockpos.getY(), blockpos.getZ()),
+				 new PathPoint(pos.getX(), pos.getY(), pos.getZ()) };
+				return new Path(pathpoints);
+			}
+		}
+
+		@Override
+		public void onUpdateNavigation() {
+			++this.totalTicks;
+//this.debugPath("++++++ 1: ");
+			if (!this.noPath()) {
+				this.checkForStuck(this.getEntityPosition());
+//this.debugPath("++++++ 2: ");
+				if (!this.noPath()) {
+					int i = this.currentPath.getCurrentPathIndex();
+					PathPoint pp = this.currentPath.getPathPointFromIndex(i);
+					if (MathHelper.sqrt(this.getEntityPosition().squareDistanceTo(0.5d+pp.x, pp.y, 0.5d+pp.z))
+					 < 0.5d * (this.entity.width + 1.0d)) {
+						this.currentPath.setCurrentPathIndex(i + 1);
+					} else {
+		                Vec3d vec3d2 = this.currentPath.getPosition(this.entity);
+		                this.entity.getMoveHelper().setMoveTo(vec3d2.x, vec3d2.y, vec3d2.z, this.speed);
 					}
-					return nodetype;
 				}
-			};
-			return new PathFinder(this.nodeProcessor);
+			}
+		}
+
+		/*private void debugPath(String str) {
+			String s = str + "currentPath:";
+			if (currentPath != null) {
+				for (int i = 0; i < currentPath.getCurrentPathLength(); i++) {
+					s = s+" ("+currentPath.getPathPointFromIndex(i)+")";
+				}
+			} else {
+				s += "nul";
+			}
+			System.out.println(s);
+		}
+
+		@Override
+		public boolean setPath(@Nullable Path pathentityIn, double speedIn) {
+			boolean flag = super.setPath(pathentityIn, speedIn);
+			if (flag) {
+				this.debugPath(">>>>>> pos:"+this.entity.getPosition()+", ");
+			} else {
+				System.out.println(">>>>>> nul");
+			}
+			return flag;
+		}*/
+
+		@Override
+		protected void removeSunnyPath() {
+		}
+
+	    @Override
+	    public void setBreakDoors(boolean canBreakDoors) {
+	    }
+	
+	    @Override
+	    public void setEnterDoors(boolean enterDoors) {
+	    }
+	
+	    @Override
+	    public boolean getEnterDoors() {
+	        return false;
+	    }
+	
+	    @Override
+	    public void setCanSwim(boolean canSwim) {
+	    }
+	
+	    @Override
+	    public boolean getCanSwim() {
+	        return false;
+	    }
+	}
+
+	public static class MoveHelper extends EntityMoveHelper {
+		private Base baseEntity;
+		
+		public MoveHelper(Base entity) {
+			super(entity);
+			this.baseEntity = entity;
+		}
+
+		@Override
+		public void onUpdateMoveHelper() {
+			if (this.isUpdating()) {
+	            this.action = EntityMoveHelper.Action.WAIT;
+	            double d0 = this.posX - this.entity.posX;
+	            double d1 = this.posZ - this.entity.posZ;
+	            double d2 = this.posY - this.entity.posY;
+	            double d3 = d0 * d0 + d2 * d2 + d1 * d1;
+	            if (d3 < 2.5E-7D) {
+	                this.entity.setMoveForward(0.0F);
+	                return;
+	            }
+				if (this.entity.collidedHorizontally) {
+					double d5 = this.entity.posY;
+					for (EnumFacing face : EnumFacing.HORIZONTALS) {
+						for (BlockPos pos : this.baseEntity.collisionData.hitsOnSide(face)) {
+							double d6 = this.entity.world.getBlockState(pos).getBoundingBox(this.entity.world, pos).maxY + pos.getY();
+							if (d6 > d5) {
+								d5 = d6;
+							}
+						}
+					}
+					if (!this.baseEntity.collisionData.hitsOnSide(EnumFacing.UP).isEmpty()) {
+						if (this.baseEntity.collisionData.hitOnAxis(EnumFacing.Axis.X)) {
+							d0 = 0.0d;
+						}
+						if (this.baseEntity.collisionData.hitOnAxis(EnumFacing.Axis.Z)) {
+							d1 = 0.0d;
+						}
+					} else if (this.entity.onGround) {
+						this.entity.motionY = 0.8d + (d5 - this.entity.posY) * 0.1d;
+					} else {
+						this.entity.motionY += 0.1d;
+					}
+				}
+	            float f9 = (float)(MathHelper.atan2(d1, d0) * (180D / Math.PI)) - 90.0F;
+	            this.entity.rotationYaw = this.limitAngle(this.entity.rotationYaw, f9, 90.0F);
+	            this.entity.setAIMoveSpeed((float)(this.speed * this.entity.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).getAttributeValue()));
+			} else {
+				super.onUpdateMoveHelper();
+			}
 		}
 	}
 

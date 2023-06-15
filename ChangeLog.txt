@@ -10,6 +10,7 @@ Jutsus:
  - reduced limbo clone duration, increased cooldown
  - must fully learn flying thunder god jutsu to tp to the markers
  - fixed ice release crystal mirrors preventing death from opening all 8-gates or all killing ash bone
+ - fixed opening 4+ gates not getting damaged when receiving other potion damage
 
 Items:
  - fixed explosive tags breaking blocks when mobGriefing false
@@ -19,6 +20,8 @@ Entities:
  - re-textured white zetsu, itachi
  - buffed toad/slug/snake attack damage
  - tailed beasts and toads greater than size 4 can break leaves/wood blocks when moving
+ - better tailed beasts movement AI
+ - added ambient sounds for shukaku & songoku
 
 0.2.12-beta ===============================================================================
 

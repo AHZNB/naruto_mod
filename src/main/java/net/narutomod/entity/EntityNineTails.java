@@ -128,7 +128,7 @@ public class EntityNineTails extends ElementsNarutomodMod.ModElement {
 
 		public EntityCustom(World world) {
 			super(world);
-			this.setSize(MODELSCALE * 0.6F, MODELSCALE * 2.1F);
+			this.setSize(MODELSCALE * 0.6F, MODELSCALE * 2.0625F);
 			this.experienceValue = 12000;
 			this.stepHeight = this.height / 3.0F;
 		}
@@ -139,7 +139,7 @@ public class EntityNineTails extends ElementsNarutomodMod.ModElement {
 
 		public EntityCustom(EntityPlayer player, boolean is_kcm) {
 			super(player);
-			this.setSize(MODELSCALE * 0.6F, MODELSCALE * 2.1F);
+			this.setSize(MODELSCALE * 0.6F, MODELSCALE * 2.0625F);
 			this.experienceValue = 12000;
 			this.stepHeight = this.height / 3.0F;
 			this.setKCM(is_kcm);
@@ -224,6 +224,12 @@ public class EntityNineTails extends ElementsNarutomodMod.ModElement {
 		@Override
 		public SoundEvent getDeathSound() {
 			return SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:kyuubi_death"));
+		}
+
+		@Override
+		public Vec3d getPositionMouth() {
+			return Vec3d.fromPitchYaw(this.rotationPitch, this.rotationYawHead)
+			 .scale(1.125d * MODELSCALE).addVector(this.posX, this.posY + 1.625d * MODELSCALE, this.posZ);
 		}
 	}
 
@@ -1516,7 +1522,7 @@ public class EntityNineTails extends ElementsNarutomodMod.ModElement {
 			public void render(Entity entity, float f0, float f1, float f2, float f3, float f4, float f5) {
 				GlStateManager.pushMatrix();
 				GlStateManager.translate(0.0F, 1.5F - 1.5F * MODELSCALE, 0.0F);
-				GlStateManager.translate(0.0F, 0.0F, 0.375F * MODELSCALE);
+				//GlStateManager.translate(0.0F, 0.0F, 0.375F * MODELSCALE);
 				GlStateManager.scale(MODELSCALE, MODELSCALE, MODELSCALE);
 				body.render(f5);
 				OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240.0F, 240.0F);
@@ -1535,7 +1541,7 @@ public class EntityNineTails extends ElementsNarutomodMod.ModElement {
 
 			@Override
 			public void setRotationAngles(float f0, float f1, float f2, float f3, float f4, float f5, Entity e) {
-				super.setRotationAngles(f0 * 2.0F / e.height, f1, f2, f3, f4, f5, e);
+				super.setRotationAngles(f0 * 4.0F / MODELSCALE, f1, f2, f3, f4, f5, e);
 				bipedHead.setRotationPoint(0.0F, -25.0F, -4.0F);
 				bipedRightArm.setRotationPoint(-6.0F, -23.0F, -3.0F);
 				bipedLeftArm.setRotationPoint(6.0F, -23.0F, -3.0F);

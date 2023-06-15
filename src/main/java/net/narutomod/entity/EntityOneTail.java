@@ -14,6 +14,7 @@ import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraft.world.World;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.SoundEvent;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.Entity;
 import net.minecraft.client.model.ModelRenderer;
@@ -196,18 +197,18 @@ public class EntityOneTail extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
-		public net.minecraft.util.SoundEvent getAmbientSound() {
-			return (net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation(""));
+		public SoundEvent getAmbientSound() {
+			return SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:shukaku_roar"));
 		}
 
 		@Override
-		public net.minecraft.util.SoundEvent getHurtSound(DamageSource ds) {
-			return (net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation(""));
+		public SoundEvent getHurtSound(DamageSource ds) {
+			return SoundEvent.REGISTRY.getObject(new ResourceLocation(""));
 		}
 
 		@Override
-		public net.minecraft.util.SoundEvent getDeathSound() {
-			return (net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation(""));
+		public SoundEvent getDeathSound() {
+			return SoundEvent.REGISTRY.getObject(new ResourceLocation(""));
 		}
 	}
 

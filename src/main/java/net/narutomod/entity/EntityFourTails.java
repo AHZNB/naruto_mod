@@ -52,10 +52,8 @@ public class EntityFourTails extends ElementsNarutomodMod.ModElement {
 
 	@Override
 	public void initElements() {
-		elements.entities
-.add(() -> EntityEntryBuilder.create().entity(EntityCustom.class)
-		 .id(new ResourceLocation("narutomod", "four_tails"), ENTITYID)
-.name("four_tails")
+		elements.entities.add(() -> EntityEntryBuilder.create().entity(EntityCustom.class)
+		 .id(new ResourceLocation("narutomod", "four_tails"), ENTITYID).name("four_tails")
 		 .tracker(96, 3, true).egg(-3407872, -6697984).build());
 	}
 
@@ -199,17 +197,17 @@ public class EntityFourTails extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public SoundEvent getAmbientSound() {
-			return SoundEvent.REGISTRY.getObject(new ResourceLocation(""));
+			return SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:fourtails_idle"+(this.rand.nextInt(2)+1)));
 		}
 
 		@Override
 		public SoundEvent getHurtSound(DamageSource ds) {
-			return SoundEvent.REGISTRY.getObject(new ResourceLocation(""));
+			return SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:fourtails_hurt"));
 		}
 
 		@Override
 		public SoundEvent getDeathSound() {
-			return SoundEvent.REGISTRY.getObject(new ResourceLocation(""));
+			return SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:fourtails_defeat"));
 		}
 	}
 

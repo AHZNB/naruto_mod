@@ -73,6 +73,7 @@ import java.lang.reflect.Method;
 import com.google.common.collect.Lists;
 import com.google.common.base.Predicates;
 import com.google.common.base.Predicate;
+import net.minecraft.util.math.Vec3i;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
@@ -1214,34 +1215,53 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
     }
 
 	public static class CollisionHelper {
-		private AxisAlignedBB source;
+		private Entity entity;
 		public double dx;
 		public double dy;
 		public double dz;
-		private int hitsOnSide[] = { 0, 0, 0, 0, 0, 0 };
+		//private int hitsOnSide[] = { 0, 0, 0, 0, 0, 0 };
+		private List<AxisAlignedBB>[] hitsList = new List[6];
 
-		public CollisionHelper(AxisAlignedBB sourceBB) {
-			this.source = sourceBB;
+		public CollisionHelper(Entity entityIn) {
+			this.entity = entityIn;
+			for (int i = 0; i < this.hitsList.length; i++) {
+				this.hitsList[i] = Lists.newArrayList();
+			}
 		}
 
 		public void collideWithAABBs(List<AxisAlignedBB> list, double x, double y, double z) {
 			this.dx = x;
 			this.dy = y;
 			this.dz = z;
+			for (int i = 0; i < this.hitsList.length; i++) {
+				this.hitsList[i].clear();
+			}
 	       	if (x != 0.0D) for (AxisAlignedBB aabb : list) {
-	       		double d = aabb.calculateXOffset(this.source, x);
+	       		double d = aabb.calculateXOffset(this.entity.getEntityBoundingBox(), x);
 		    	if (Math.abs(d) < Math.abs(this.dx)) this.dx = d;
-		    	if (d != x) this.hitsOnSide[(x > 0d ? EnumFacing.WEST : EnumFacing.EAST).getIndex()]++;
+		    	if (d != x) {
+		    		int i = (x > 0d ? EnumFacing.WEST : EnumFacing.EAST).getIndex();
+		    		//this.hitsOnSide[i]++;
+		    		this.hitsList[i].add(aabb);
+		    	}
 	       	}
 		    if (y != 0.0D) for (AxisAlignedBB aabb : list) {
-	       		double d = aabb.calculateYOffset(this.source, y);
+	       		double d = aabb.calculateYOffset(this.entity.getEntityBoundingBox(), y);
 		    	if (Math.abs(d) < Math.abs(this.dy)) this.dy = d;
-		    	if (d != y) this.hitsOnSide[(y > 0d ? EnumFacing.UP : EnumFacing.DOWN).getIndex()]++;
+		    	if (d != y) {
+		    		int i = (y > 0d ? EnumFacing.UP : EnumFacing.DOWN).getIndex();
+		    		//this.hitsOnSide[i]++;
+		    		this.hitsList[i].add(aabb);
+		    	}
 		    }
 		    if (z != 0.0D) for (AxisAlignedBB aabb : list) {
-	       		double d = aabb.calculateZOffset(this.source, z);
+	       		double d = aabb.calculateZOffset(this.entity.getEntityBoundingBox(), z);
 		    	if (Math.abs(d) < Math.abs(this.dz)) this.dz = d;
-		    	if (d != z) this.hitsOnSide[(z > 0d ? EnumFacing.NORTH : EnumFacing.SOUTH).getIndex()]++;
+		    	if (d != z) {
+		    		int i = (z > 0d ? EnumFacing.NORTH : EnumFacing.SOUTH).getIndex();
+		    		//this.hitsOnSide[i]++;
+		    		this.hitsList[i].add(aabb);
+		    	}
 		    }
 		}
 
@@ -1257,22 +1277,50 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 			return Math.signum(z) != Math.signum(this.dz) ? 0d : Math.abs(z) < Math.abs(this.dz) ? z : this.dz;
 		}
 
-		public boolean hitOnSide(EnumFacing face) {
-			for (int i = 0; i < this.hitsOnSide.length; i++) {
-				if (this.hitsOnSide[i] > 0 && EnumFacing.getFront(i) == face) {
+		@Nullable
+		public BlockPos hitOnSide(EnumFacing face) {
+			double d = 1000d;
+			BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
+			for (AxisAlignedBB aabb : this.hitsList[face.getIndex()]) {
+				Vec3d vec = BB.getCenter(aabb);
+				Vec3i veci = face.getDirectionVec();
+				Vec3d vec1 = new Vec3d(vec.x * Math.abs(veci.getX()), vec.y * Math.abs(veci.getY()), vec.z * Math.abs(veci.getZ()));
+				Vec3d vec2 = BB.getCenter(this.entity.getEntityBoundingBox());
+				Vec3d vec3 = new Vec3d(vec2.x * Math.abs(veci.getX()), vec2.y * Math.abs(veci.getY()), vec2.z * Math.abs(veci.getZ()));
+				double d1 = vec1.squareDistanceTo(vec3);
+				if (d1 < d) {
+					pos.setPos(vec.x, vec.y, vec.z);
+					d = d1;
+				}
+			}
+			return d == 40000d ? null : pos.toImmutable();
+		}
+
+		public List<BlockPos> hitsOnSide(EnumFacing face) {
+			List<BlockPos> newlist = Lists.<BlockPos>newArrayList();
+			for (AxisAlignedBB aabb : this.hitsList[face.getIndex()]) {
+				newlist.add(new BlockPos(BB.getCenter(aabb)));
+			}
+			return newlist;
+		}
+
+		public boolean hitOnAxis(EnumFacing.Axis axis) {
+			for (int i = 0; i < this.hitsList.length; i++) {
+				if (!this.hitsList[i].isEmpty() && EnumFacing.getFront(i).getAxis() == axis) {
 					return true;
 				}
 			}
 			return false;
 		}
 
-		public boolean hitOnAxis(EnumFacing.Axis axis) {
-			for (int i = 0; i < this.hitsOnSide.length; i++) {
-				if (this.hitsOnSide[i] > 0 && EnumFacing.getFront(i).getAxis() == axis) {
-					return true;
+		public List<BlockPos> getHitBoxes() {
+			List<BlockPos> newlist = Lists.<BlockPos>newArrayList();
+			for (List<AxisAlignedBB> list : this.hitsList) {
+				for (AxisAlignedBB aabb : list) {
+					newlist.add(new BlockPos(BB.getCenter(aabb)));
 				}
 			}
-			return false;
+			return newlist;
 		}
 	}
 
