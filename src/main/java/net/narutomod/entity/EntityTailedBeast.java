@@ -47,6 +47,7 @@ import net.minecraft.entity.ai.EntityMoveHelper;
 import net.minecraft.entity.ai.attributes.IAttribute;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.ai.attributes.RangedAttribute;
+import net.minecraft.entity.ai.RandomPositionGenerator;
 import net.minecraft.entity.MoverType;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.SharedMonsterAttributes;
@@ -146,12 +147,11 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 		private boolean motionHalted;
 		protected boolean canPassengerDismount = true;
 		protected boolean spawnedBySpawner;
-		private final ProcedureUtils.CollisionHelper collisionData;
+		protected final ProcedureUtils.CollisionHelper collisionData;
 
 		public Base(World world) {
 			super(world);
 			this.collisionData = new ProcedureUtils.CollisionHelper(this);
-			this.moveHelper = new MoveHelper(this);
 			this.isImmuneToFire = true;
 			//this.stepHeight = this.height / 3.0F;
 			this.deathTicks = 0;
@@ -177,7 +177,7 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 		@Override
 		protected PathNavigate createNavigator(World worldIn) {
 			PathNavigateGround navi = new NavigateGround(this, worldIn);
-			//navi.setCanSwim(true);
+			this.moveHelper = new MoveHelper(this);
 			return navi;
 		}
 
@@ -324,7 +324,7 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 				public boolean shouldExecute() {
 					return super.shouldExecute() && !Base.this.isMotionHalted() && Base.this.canShootBijudama()
 					 && Base.this.getDistance(Base.this.getAttackTarget()) > 32d
-					 && !Base.this.isInsideOfMaterial(net.minecraft.block.material.Material.WATER);
+					 && !Base.this.isInsideOfMaterial(Material.WATER);
 				}
 				@Override
 				public void resetTask() {
@@ -336,6 +336,10 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 				@Override
 				public boolean shouldExecute() {
 					return !Base.this.isMotionHalted() && super.shouldExecute();
+				}
+				@Override @Nullable
+				protected Vec3d getPosition() {
+					return RandomPositionGenerator.getLandPos(this.entity, (int)(this.entity.width * 8), (int)this.entity.height + 1);
 				}
 			});
 		}
@@ -846,7 +850,7 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 			if (this.shootingEntity != null && !this.isDead) {
 				if (this.ticksExisted <= this.buildupTime) {
 					if (this.ticksExisted == 1) {
-						this.playSound((SoundEvent)SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:bijudama")), 10f, 1f);
+						this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:bijudama")), 10f, 1f);
 					}
 					this.setBuildupPosition();
 					this.setEntityScale(this.maxScale * (float)this.ticksExisted / this.buildupTime);
@@ -861,7 +865,7 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 					}
 					if (!this.isLaunched()) {
 						if (living.getAttackTarget() != null) {
-							this.playSound((SoundEvent)SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:nagiharai")), 10f, 1f);
+							this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:nagiharai")), 10f, 1f);
 							this.shoot(living.getAttackTarget().posX - this.posX, living.getAttackTarget().posY - this.posY - (this.height / 2.0F), 
 							  living.getAttackTarget().posZ - this.posZ, 1.05F, 0.0F);
 						} else {
@@ -869,7 +873,7 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 						}
 					}
 				} else if (!this.isLaunched()) {
-					this.playSound((SoundEvent)SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:nagiharai")), 10f, 1f);
+					this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:nagiharai")), 10f, 1f);
 					Vec3d vec = this.shootingEntity.getLookVec();
 					this.shoot(vec.x, vec.y, vec.z, 1.05F, 0.0F);
 					if (this.shootingEntity instanceof Base) {
@@ -918,7 +922,7 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 			if (user == null) {
 				user = summonerIn;
 			}
-			if ((user instanceof Base && ((Base)user).consumeHealthAsChakra((float)chakraUsage))
+			if ((user instanceof Base && ((Base)user).consumeHealthAsChakra((float)chakraUsage * 0.2f))
 			 || (user != null && net.narutomod.Chakra.pathway(user).consume(chakraUsage))) {
 				return summonerIn.world.spawnEntity(new EntityTailBeastBall(summonerIn, maxscale, maxdamage));
 			}
@@ -1023,10 +1027,14 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static class NavigateGround extends PathNavigateGround {
+		protected Base baseEntity; 
 		private BlockPos targetPos;
+		//private int stuckCount;
+		//private int lastTimeAtPathIndex;
 
 		public NavigateGround(Base entityLivingIn, World worldIn) {
 			super(entityLivingIn, worldIn);
+			this.baseEntity = entityLivingIn;
 		}
 
 		@Override
@@ -1073,9 +1081,12 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 	        }
 		}
 
-		private Path getPathTo(BlockPos pos) {
-			if (!this.canNavigate() || MathHelper.sqrt(this.getEntityPosition()
-			 .squareDistanceTo(0.5d+pos.getX(), this.entity.posY, 0.5d+pos.getZ())) > this.getPathSearchRange()) {
+		private double distanceTo(double x, double y, double z) {
+			return MathHelper.sqrt(this.getEntityPosition().squareDistanceTo(x, y, z));
+		}
+
+		protected Path getPathTo(BlockPos pos) {
+			if (!this.canNavigate() || this.distanceTo(0.5d+pos.getX(), this.entity.posY, 0.5d+pos.getZ()) > this.getPathSearchRange()) {
 				return null;
 			} else if (this.currentPath != null && !this.currentPath.isFinished() && pos.equals(this.targetPos)) {
 				return this.currentPath;
@@ -1091,18 +1102,15 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void onUpdateNavigation() {
 			++this.totalTicks;
-//this.debugPath("++++++ 1: ");
+//debugPath("++++++ 1: ");
 			if (!this.noPath()) {
 				this.checkForStuck(this.getEntityPosition());
-//this.debugPath("++++++ 2: ");
+//debugPath("++++++ 2: ");
 				if (!this.noPath()) {
-					int i = this.currentPath.getCurrentPathIndex();
-					PathPoint pp = this.currentPath.getPathPointFromIndex(i);
-					if (MathHelper.sqrt(this.getEntityPosition().squareDistanceTo(0.5d+pp.x, pp.y, 0.5d+pp.z))
-					 < 0.5d * (this.entity.width + 1.0d)) {
-						this.currentPath.setCurrentPathIndex(i + 1);
+					Vec3d vec3d2 = this.currentPath.getPosition(this.entity);
+					if (this.distanceTo(vec3d2.x, vec3d2.y, vec3d2.z) < 0.5d * (this.entity.width + 1.0d)) {
+						this.currentPath.incrementPathIndex();
 					} else {
-		                Vec3d vec3d2 = this.currentPath.getPosition(this.entity);
 		                this.entity.getMoveHelper().setMoveTo(vec3d2.x, vec3d2.y, vec3d2.z, this.speed);
 					}
 				}
@@ -1115,6 +1123,7 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 				for (int i = 0; i < currentPath.getCurrentPathLength(); i++) {
 					s = s+" ("+currentPath.getPathPointFromIndex(i)+")";
 				}
+				s += ", index:"+currentPath.getCurrentPathIndex();
 			} else {
 				s += "nul";
 			}
@@ -1123,13 +1132,30 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public boolean setPath(@Nullable Path pathentityIn, double speedIn) {
-			boolean flag = super.setPath(pathentityIn, speedIn);
-			if (flag) {
-				this.debugPath(">>>>>> pos:"+this.entity.getPosition()+", ");
+			if (super.setPath(pathentityIn, speedIn)) {
+this.debugPath(">>>>>> pos:"+this.entity.getPosition()+", ");
+				//this.lastTimeAtPathIndex = this.totalTicks;
+				//this.stuckCount = 0;
+				return true;
 			} else {
 				System.out.println(">>>>>> nul");
 			}
-			return flag;
+			return false;
+		}
+
+		@Override
+		protected void checkForStuck(Vec3d positionVec3) {
+			super.checkForStuck(positionVec3);
+			if (this.noPath()) {
+				this.stuckCount++;
+			} else {
+				Vec3d vec = this.currentPath.getPosition(this.entity);
+System.out.println("====== totalTicks:"+totalTicks+", lastTimeAtPathIndex:"+lastTimeAtPathIndex+", distanceTo:"+this.distanceTo(vec.x, vec.y, vec.z));
+				if (this.totalTicks - this.lastTimeAtPathIndex > (int)this.distanceTo(vec.x, vec.y, vec.z) * 5) {
+					this.stuckCount++;
+					this.clearPath();
+				}
+			}
 		}*/
 
 		@Override
@@ -1183,13 +1209,13 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 					double d5 = this.entity.posY;
 					for (EnumFacing face : EnumFacing.HORIZONTALS) {
 						for (BlockPos pos : this.baseEntity.collisionData.hitsOnSide(face)) {
-							double d6 = this.entity.world.getBlockState(pos).getBoundingBox(this.entity.world, pos).maxY + pos.getY();
+							double d6 = this.getHighestSolidTop(this.entity.world, pos);
 							if (d6 > d5) {
 								d5 = d6;
 							}
 						}
 					}
-					if (!this.baseEntity.collisionData.hitsOnSide(EnumFacing.UP).isEmpty()) {
+					if (d5 - this.entity.posY > 2d * this.entity.height || !this.baseEntity.collisionData.hitsOnSide(EnumFacing.UP).isEmpty()) {
 						if (this.baseEntity.collisionData.hitOnAxis(EnumFacing.Axis.X)) {
 							d0 = 0.0d;
 						}
@@ -1202,12 +1228,21 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 						this.entity.motionY += 0.1d;
 					}
 				}
-	            float f9 = (float)(MathHelper.atan2(d1, d0) * (180D / Math.PI)) - 90.0F;
-	            this.entity.rotationYaw = this.limitAngle(this.entity.rotationYaw, f9, 90.0F);
+	            float f = (float)(MathHelper.atan2(d1, d0) * (180D / Math.PI)) - 90.0F;
+	            this.entity.rotationYaw = this.limitAngle(this.entity.rotationYaw, f, 90.0F);
+				f = (float)(-(MathHelper.atan2(d2, MathHelper.sqrt(d0 * d0 + d1 * d1)) * (180D / Math.PI)));
+				this.entity.rotationPitch = this.limitAngle(this.entity.rotationPitch, f, 60.0F);
 	            this.entity.setAIMoveSpeed((float)(this.speed * this.entity.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).getAttributeValue()));
 			} else {
 				super.onUpdateMoveHelper();
 			}
+		}
+
+		private double getHighestSolidTop(World world, BlockPos pos) {
+            while (pos.getY() < world.getHeight() && world.getBlockState(pos.up()).getCollisionBoundingBox(world, pos) != null) {
+                pos = pos.up();
+            }
+            return world.getBlockState(pos).getBoundingBox(world, pos).maxY + pos.getY();
 		}
 	}
 

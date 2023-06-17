@@ -44,7 +44,7 @@ import javax.annotation.Nullable;
 public class EntityOneTail extends ElementsNarutomodMod.ModElement {
 	public static final int ENTITYID = 259;
 	public static final int ENTITYID_RANGED = 260;
-	private static final float MODELSCALE = 20.0F;
+	private static final float MODELSCALE = 19.0F;
 	private static final TailBeastManager tailBeastManager = new TailBeastManager();
 
 	public EntityOneTail(ElementsNarutomodMod instance) {
@@ -139,14 +139,14 @@ public class EntityOneTail extends ElementsNarutomodMod.ModElement {
 	public static class EntityCustom extends EntityTailedBeast.Base {
 		public EntityCustom(World world) {
 			super(world);
-			this.setSize(MODELSCALE * 0.4F, MODELSCALE * 1.1F);
+			this.setSize(MODELSCALE * 0.4F, MODELSCALE * 1.0625F);
 			this.experienceValue = 12000;
 			this.stepHeight = this.height / 3.0F;
 		}
 
 		public EntityCustom(EntityPlayer player) {
 			super(player);
-			this.setSize(MODELSCALE * 0.4F, MODELSCALE * 1.1F);
+			this.setSize(MODELSCALE * 0.4F, MODELSCALE * 1.0625F);
 			this.experienceValue = 12000;
 			this.stepHeight = this.height / 3.0F;
 		}
@@ -159,7 +159,7 @@ public class EntityOneTail extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void setFaceDown(boolean down) {
 			super.setFaceDown(down);
-			this.setSize(this.width, MODELSCALE * (down ? 0.625F : 1.1F));
+			this.setSize(this.width, MODELSCALE * (down ? 0.625F : 1.0625F));
 		}
 
 		@Override

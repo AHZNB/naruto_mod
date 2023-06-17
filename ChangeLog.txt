@@ -21,7 +21,8 @@ Entities:
  - buffed toad/slug/snake attack damage
  - tailed beasts and toads greater than size 4 can break leaves/wood blocks when moving
  - better tailed beasts movement AI
- - added ambient sounds for shukaku & songoku
+ - added ambient sounds for shukaku, songoku, chomei
+ - fixed player's outer skin layer not synced with arms when naruto running
 
 0.2.12-beta ===============================================================================
 

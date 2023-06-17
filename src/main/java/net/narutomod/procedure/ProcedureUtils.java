@@ -1278,7 +1278,7 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Nullable
-		public BlockPos hitOnSide(EnumFacing face) {
+		public BlockPos nearestHitOnSide(EnumFacing face) {
 			double d = 1000d;
 			BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
 			for (AxisAlignedBB aabb : this.hitsList[face.getIndex()]) {
@@ -1302,6 +1302,10 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 				newlist.add(new BlockPos(BB.getCenter(aabb)));
 			}
 			return newlist;
+		}
+
+		public boolean hitOnSide(EnumFacing face) {
+			return !this.hitsList[face.getIndex()].isEmpty();
 		}
 
 		public boolean hitOnAxis(EnumFacing.Axis axis) {

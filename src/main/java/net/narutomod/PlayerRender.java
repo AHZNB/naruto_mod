@@ -44,8 +44,8 @@ import net.minecraft.client.renderer.entity.layers.LayerRenderer;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.entity.RenderPlayer;
 import net.minecraft.client.renderer.entity.RenderLivingBase;
+import net.minecraft.client.model.ModelPlayer;
 import net.minecraft.client.model.ModelBiped;
-import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.Minecraft;
 
 import net.narutomod.item.ItemOnBody;
@@ -176,23 +176,22 @@ public class PlayerRender extends ElementsNarutomodMod.ModElement {
 					GlStateManager.disableBlendProfile(GlStateManager.Profile.TRANSPARENT_MODEL);
 				}
 			} else {
-				ModelBiped model = this.getMainModel();
+				ModelPlayer model = this.getMainModel();
 				if (shouldNarutoRun(entityIn) && model.swingProgress == 0.0f
 				 && model.rightArmPose == ModelBiped.ArmPose.EMPTY && model.leftArmPose == ModelBiped.ArmPose.EMPTY) {
 					model.bipedRightArm.showModel = false;
+					model.bipedRightArmwear.showModel = false;
 					model.bipedLeftArm.showModel = false;
+					model.bipedLeftArmwear.showModel = false;
 					model.isSneak = true;
 					super.renderModel(entityIn, f0, f1, f2, f3, f4, f5);
-					model.bipedHead.showModel = false;
-					model.bipedHeadwear.showModel = false;
-					model.bipedBody.showModel = false;
-					model.bipedRightLeg.showModel = false;
-					model.bipedLeftLeg.showModel = false;
+					model.setVisible(false);
 					model.bipedRightArm.showModel = true;
-					model.bipedLeftArm.showModel = false;
+					model.bipedRightArmwear.showModel = true;
 					super.renderModel(entityIn, 4.7157f, 1.1345f, f2, f3, f4, f5);
-					model.bipedRightArm.showModel = false;
+					model.setVisible(false);
 					model.bipedLeftArm.showModel = true;
+					model.bipedLeftArmwear.showModel = true;
 					super.renderModel(entityIn, 0.0f, 1.1345f, f2, f3, f4, f5);
 					model.setVisible(true);
 				} else {

@@ -12,17 +12,14 @@ import net.minecraft.world.World;
 import net.minecraft.world.storage.MapStorage;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.ai.EntityMoveHelper;
-import net.minecraft.entity.ai.EntityAIWander;
-import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
-import net.minecraft.entity.ai.EntityAIAttackRanged;
+import net.minecraft.entity.ai.EntityAIAttackMelee;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.client.model.ModelRenderer;
@@ -31,9 +28,6 @@ import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.item.ItemStack;
-import net.minecraft.pathfinding.PathNavigateFlying;
-import net.minecraft.pathfinding.PathNavigate;
 
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.ElementsNarutomodMod;
@@ -133,22 +127,18 @@ public class EntitySevenTails extends ElementsNarutomodMod.ModElement {
 	public static class EntityCustom extends EntityTailedBeast.Base {
 		public EntityCustom(World worldIn) {
 			super(worldIn);
-			this.setSize(MODELSCALE * 0.3F, MODELSCALE * 1.6F);
+			this.setSize(MODELSCALE * 0.25F, MODELSCALE * 1.3125F);
+			this.moveHelper = new FlyHelper(this);
 			this.experienceValue = 12000;
 			this.stepHeight = this.height / 3.0F;
 		}
 
 		public EntityCustom(EntityPlayer player) {
 			super(player);
-			this.setSize(MODELSCALE * 0.3F, MODELSCALE * 1.6F);
+			this.setSize(MODELSCALE * 0.25F, MODELSCALE * 1.3125F);
+			this.moveHelper = new FlyHelper(this);
 			this.experienceValue = 12000;
 			this.stepHeight = this.height / 3.0F;
-		}
-
-		@Override
-		protected PathNavigate createNavigator(World worldIn) {
-			this.moveHelper = new FlyHelper(this);
-			return new PathNavigateFlying(this, worldIn);
 		}
 
 		@Override
@@ -159,7 +149,7 @@ public class EntitySevenTails extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void setFaceDown(boolean down) {
 			super.setFaceDown(down);
-			this.setSize(this.width, MODELSCALE * (down ? 0.625F : 1.6F));
+			this.setSize(this.width, MODELSCALE * (down ? 0.625F : 1.3125F));
 		}
 
 		@Override
@@ -175,7 +165,16 @@ public class EntitySevenTails extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		protected void setMeleeAttackTasks() {
-			this.tasks.addTask(1, new AIChargeAttack(this));
+			this.tasks.addTask(1, new EntityAIAttackMelee(this, 1.2D, true) {
+				@Override
+				public boolean shouldExecute() {
+					return !EntityCustom.this.isMotionHalted() && super.shouldExecute();
+				}
+				@Override
+				protected double getAttackReachSqr(EntityLivingBase attackTarget) {
+					return ProcedureUtils.getReachDistanceSq(this.attacker) * 0.36d;
+				}
+			});
 		}
 
 		@Override
@@ -227,6 +226,10 @@ public class EntitySevenTails extends ElementsNarutomodMod.ModElement {
 		public void onUpdate() {
 			this.setNoGravity(true);
 			super.onUpdate();
+			if (!this.onGround && this.ticksExisted % 10 == 0) {
+				this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:chomei_flying")),
+				 5f, this.rand.nextFloat() * 0.4f + 0.8f);
+			}
 		}
 
 		@Override
@@ -241,8 +244,11 @@ public class EntitySevenTails extends ElementsNarutomodMod.ModElement {
 		}
 
 		public class FlyHelper extends EntityMoveHelper {
-			public FlyHelper(EntityLiving entityIn) {
+			private EntityCustom baseEntity;
+			
+			public FlyHelper(EntityCustom entityIn) {
 				super(entityIn);
+				this.baseEntity = entityIn;
 			}
 				
 			@Override
@@ -257,59 +263,36 @@ public class EntitySevenTails extends ElementsNarutomodMod.ModElement {
 						ProcedureUtils.multiplyVelocity(this.entity, 0.0d);
 					} else {
 						float f = (float)(this.speed * this.entity.getEntityAttribute(SharedMonsterAttributes.FLYING_SPEED).getAttributeValue());
+						float f1 = -((float)MathHelper.atan2(d0, d2)) * (180F / (float)Math.PI);
+						this.entity.rotationYaw = this.limitAngle(this.entity.rotationYaw, f1, 60.0F);
+						//this.entity.renderYawOffset = this.entity.rotationYaw;
+						f1 = (float)(-(MathHelper.atan2(d1, MathHelper.sqrt(d0 * d0 + d2 * d2)) * (180D / Math.PI)));
+						this.entity.rotationPitch = this.limitAngle(this.entity.rotationPitch, f1, 30.0F);
+						if (this.entity.collided) {
+							if (this.baseEntity.collisionData.hitOnSide(EnumFacing.UP)) {
+								d1 = 0.0d;
+								if (this.baseEntity.collisionData.hitOnAxis(EnumFacing.Axis.X)) {
+									d0 = 0.0d;
+									d2 = d3;
+								}
+								if (this.baseEntity.collisionData.hitOnAxis(EnumFacing.Axis.Z)) {
+									d2 = 0.0d;
+									d0 = d3;
+								}
+							} else {
+								d1 = 12.0d;
+							}
+						}
+						d3 = MathHelper.sqrt(d0 * d0 + d1 * d1 + d2 * d2);
 						this.entity.motionX = d0 / d3 * f;
 						this.entity.motionY = d1 / d3 * f;
 						this.entity.motionZ = d2 / d3 * f;
-						float f1 = -((float)MathHelper.atan2(this.entity.motionX, this.entity.motionZ)) * (180F / (float)Math.PI);
-						this.entity.rotationYaw = this.limitAngle(this.entity.rotationYaw, f1, 10.0F);
-						this.entity.renderYawOffset = this.entity.rotationYaw;
 					}
+				} else {
+					ProcedureUtils.multiplyVelocity(this.entity, 0.6d);
 				}
 			}
 		}
-
-	    public class AIChargeAttack extends EntityAIBase {
-	    	private EntityLiving attacker;
-
-	        public AIChargeAttack(EntityLiving attackerIn) {
-	        	this.attacker = attackerIn;
-	            this.setMutexBits(1);
-	        }
-	
-	        @Override
-	        public boolean shouldExecute() {
-	            if (this.attacker.getAttackTarget() != null 
-	             && !this.attacker.getMoveHelper().isUpdating() && this.attacker.getRNG().nextInt(5) == 0) {
-	             	double d = this.attacker.getDistanceSq(this.attacker.getAttackTarget());
-	                return d <= 1024.0D;
-	            }
-                return false;
-	        }
-	
-	        @Override
-	        public boolean shouldContinueExecuting() {
-	            return this.attacker.getMoveHelper().isUpdating()
-	             && this.attacker.getAttackTarget() != null && this.attacker.getAttackTarget().isEntityAlive();
-	        }
-	
-	        @Override
-	        public void startExecuting() {
-	            EntityLivingBase target = this.attacker.getAttackTarget();
-	            Vec3d vec3d = target.getPositionEyes(1.0F);
-	            this.attacker.getMoveHelper().setMoveTo(vec3d.x, vec3d.y, vec3d.z, 2.0D);
-	        }
-	
-	        @Override
-	        public void updateTask() {
-	            EntityLivingBase target = this.attacker.getAttackTarget();
-	            if (this.attacker.getDistanceSq(target) < 9.0D) {
-	                this.attacker.attackEntityAsMob(target);
-	            } else {
-	                Vec3d vec3d = target.getPositionEyes(1.0F);
-	                this.attacker.getMoveHelper().setMoveTo(vec3d.x, vec3d.y, vec3d.z, 2.0D);
-	            }
-	        }
-	    }
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -327,7 +310,7 @@ public class EntitySevenTails extends ElementsNarutomodMod.ModElement {
 
 		@SideOnly(Side.CLIENT)
 		public class RenderCustom extends EntityTailedBeast.ClientOnly.Renderer<EntityCustom> {
-			private final ResourceLocation TEXTURE = new ResourceLocation("narutomod:textures/seventails.png");
+			private final ResourceLocation texture = new ResourceLocation("narutomod:textures/seventails.png");
 
 			public RenderCustom(RenderManager renderManagerIn) {
 				super(renderManagerIn, new ModelSevenTails(), MODELSCALE * 0.5F);
@@ -335,21 +318,23 @@ public class EntitySevenTails extends ElementsNarutomodMod.ModElement {
 
 			@Override
 			protected ResourceLocation getEntityTexture(EntityCustom entity) {
-				return TEXTURE;
+				return this.texture;
 			}
 		}
 
 		// Made with Blockbench 3.9.2
 		// Exported for Minecraft version 1.7 - 1.12
 		// Paste this class into your mod and generate all required imports
-		public static class ModelSevenTails extends ModelBiped {
+		@SideOnly(Side.CLIENT)
+		public class ModelSevenTails extends ModelBiped {
 			//private final ModelRenderer bipedHead;
 			private final ModelRenderer chin;
-			private final ModelRenderer mandible;
-			private final ModelRenderer cube_r1;
+			private final ModelRenderer mandibleRight;
 			private final ModelRenderer cube_r2;
-			private final ModelRenderer cube_r3;
 			private final ModelRenderer cube_r4;
+			private final ModelRenderer mandibleLeft;
+			private final ModelRenderer cube_r3;
+			private final ModelRenderer cube_r13;
 			private final ModelRenderer hair;
 			private final ModelRenderer bone31;
 			private final ModelRenderer bone32;
@@ -409,11 +394,12 @@ public class EntitySevenTails extends ElementsNarutomodMod.ModElement {
 			private final ModelRenderer bone15;
 			private final ModelRenderer bone16;
 			private final ModelRenderer bone17;
-			private final ModelRenderer tail[] = new ModelRenderer[6];
+			private final ModelRenderer[] tail = new ModelRenderer[6];
 			private final ModelRenderer[] tail6 = new ModelRenderer[10];
-			private final float tailSwayX[] = new float[10];
-			private final float tailSwayY[] = new float[10];
-			private final float tailSwayZ[] = new float[10];
+			private final float[] tailSwayX = new float[10];
+			private final float[] tailSwayY = new float[10];
+			private final float[] tailSwayZ = new float[10];
+			private final float[] tailSwingX = { -0.5236F, -0.6981F, -0.6109F, -0.3491F, -0.1309F, 0.0873F, 0.1745F, 0.1745F, 0.1745F, 0.1745F };
 			private final Random rand = new Random();
 			//private final ModelRenderer bipedRightArm;
 			private final ModelRenderer arm1;
@@ -476,35 +462,39 @@ public class EntitySevenTails extends ElementsNarutomodMod.ModElement {
 				setRotationAngle(chin, 0.4363F, 0.0F, 0.0F);
 				chin.cubeList.add(new ModelBox(chin, 38, 0, -1.5F, -0.2F, -0.3F, 3, 1, 3, -0.1F, false));
 
-				mandible = new ModelRenderer(this);
-				mandible.setRotationPoint(0.5F, 0.4F, -0.25F);
-				chin.addChild(mandible);
-				setRotationAngle(mandible, 0.5236F, 0.0F, 0.0F);
-
-
-				cube_r1 = new ModelRenderer(this);
-				cube_r1.setRotationPoint(-0.35F, 2.125F, -0.825F);
-				mandible.addChild(cube_r1);
-				setRotationAngle(cube_r1, 0.1309F, 0.1004F, 0.0F);
-				cube_r1.cubeList.add(new ModelBox(cube_r1, 11, 53, -1.575F, -3.475F, -2.9F, 4, 4, 7, -2.28F, true));
-
+				mandibleRight = new ModelRenderer(this);
+				mandibleRight.setRotationPoint(-0.75F, 0.65F, 0.5F);
+				chin.addChild(mandibleRight);
+				setRotationAngle(mandibleRight, 0.5236F, -0.0873F, 0.0F);
+		
 				cube_r2 = new ModelRenderer(this);
-				cube_r2.setRotationPoint(-0.65F, 2.125F, -0.825F);
-				mandible.addChild(cube_r2);
+				cube_r2.setRotationPoint(0.6F, 1.625F, -1.575F);
+				mandibleRight.addChild(cube_r2);
 				setRotationAngle(cube_r2, 0.1309F, -0.1004F, 0.0F);
 				cube_r2.cubeList.add(new ModelBox(cube_r2, 11, 53, -2.425F, -3.475F, -2.9F, 4, 4, 7, -2.28F, false));
-
-				cube_r3 = new ModelRenderer(this);
-				cube_r3.setRotationPoint(-1.1894F, 0.5802F, -0.4707F);
-				mandible.addChild(cube_r3);
-				setRotationAngle(cube_r3, 0.1309F, 0.1004F, 0.0F);
-				cube_r3.cubeList.add(new ModelBox(cube_r3, 40, 35, 0.95F, -0.5F, -1.35F, 1, 1, 3, -0.2F, true));
-
+		
 				cube_r4 = new ModelRenderer(this);
-				cube_r4.setRotationPoint(-1.075F, 0.5998F, -0.6086F);
-				mandible.addChild(cube_r4);
+				cube_r4.setRotationPoint(0.175F, 0.0998F, -1.3586F);
+				mandibleRight.addChild(cube_r4);
 				setRotationAngle(cube_r4, 0.1309F, -0.1004F, 0.0F);
 				cube_r4.cubeList.add(new ModelBox(cube_r4, 40, 35, -0.725F, -0.5F, -1.35F, 1, 1, 3, -0.2F, false));
+		
+				mandibleLeft = new ModelRenderer(this);
+				mandibleLeft.setRotationPoint(0.75F, 0.65F, 0.5F);
+				chin.addChild(mandibleLeft);
+				setRotationAngle(mandibleLeft, 0.5236F, 0.0873F, 0.0F);
+		
+				cube_r3 = new ModelRenderer(this);
+				cube_r3.setRotationPoint(-0.6F, 1.625F, -1.575F);
+				mandibleLeft.addChild(cube_r3);
+				setRotationAngle(cube_r3, 0.1309F, 0.1004F, 0.0F);
+				cube_r3.cubeList.add(new ModelBox(cube_r3, 11, 53, -1.575F, -3.475F, -2.9F, 4, 4, 7, -2.28F, true));
+		
+				cube_r13 = new ModelRenderer(this);
+				cube_r13.setRotationPoint(-0.175F, 0.0998F, -1.3586F);
+				mandibleLeft.addChild(cube_r13);
+				setRotationAngle(cube_r13, 0.1309F, 0.1004F, 0.0F);
+				cube_r13.cubeList.add(new ModelBox(cube_r13, 40, 35, -0.275F, -0.5F, -1.35F, 1, 1, 3, -0.2F, true));
 
 				hair = new ModelRenderer(this);
 				hair.setRotationPoint(0.0F, -1.15F, -1.55F);
@@ -549,8 +539,7 @@ public class EntitySevenTails extends ElementsNarutomodMod.ModElement {
 				arm1 = new ModelRenderer(this);
 				arm1.setRotationPoint(0.0F, 0.0F, 0.0F);
 				bipedRightArm.addChild(arm1);
-				setRotationAngle(arm1, -0.411F, 0.6635F, 0.6582F);
-
+				setRotationAngle(arm1, -0.2364F, 0.7334F, 0.9286F);
 
 				cube_r7 = new ModelRenderer(this);
 				cube_r7.setRotationPoint(0.1F, 3.3F, 2.5F);
@@ -578,8 +567,7 @@ public class EntitySevenTails extends ElementsNarutomodMod.ModElement {
 				arm2 = new ModelRenderer(this);
 				arm2.setRotationPoint(0.0F, 1.0F, -0.75F);
 				bipedRightArm.addChild(arm2);
-				setRotationAngle(arm2, -0.4977F, 0.6059F, 0.5121F);
-
+				setRotationAngle(arm2, -0.4546F, 0.6635F, 0.6582F);
 
 				cube_r8 = new ModelRenderer(this);
 				cube_r8.setRotationPoint(0.1F, 3.3F, 2.5F);
@@ -608,7 +596,6 @@ public class EntitySevenTails extends ElementsNarutomodMod.ModElement {
 				arm3.setRotationPoint(0.25F, 2.0F, -1.75F);
 				bipedRightArm.addChild(arm3);
 				setRotationAngle(arm3, -0.5477F, 0.5623F, 0.4215F);
-
 
 				cube_r9 = new ModelRenderer(this);
 				cube_r9.setRotationPoint(0.1F, 3.3F, 2.5F);
@@ -641,8 +628,7 @@ public class EntitySevenTails extends ElementsNarutomodMod.ModElement {
 				arm4 = new ModelRenderer(this);
 				arm4.setRotationPoint(0.0F, 0.0F, 0.0F);
 				bipedLeftArm.addChild(arm4);
-				setRotationAngle(arm4, -0.411F, -0.6635F, -0.6582F);
-
+				setRotationAngle(arm4, -0.2364F, -0.7334F, -0.9286F);
 
 				cube_r10 = new ModelRenderer(this);
 				cube_r10.setRotationPoint(-0.1F, 3.3F, 2.5F);
@@ -670,8 +656,7 @@ public class EntitySevenTails extends ElementsNarutomodMod.ModElement {
 				arm5 = new ModelRenderer(this);
 				arm5.setRotationPoint(0.0F, 1.0F, -0.75F);
 				bipedLeftArm.addChild(arm5);
-				setRotationAngle(arm5, -0.4977F, -0.6059F, -0.5121F);
-
+				setRotationAngle(arm5, -0.4546F, -0.6635F, -0.6582F);
 
 				cube_r11 = new ModelRenderer(this);
 				cube_r11.setRotationPoint(-0.1F, 3.3F, 2.5F);
@@ -700,7 +685,6 @@ public class EntitySevenTails extends ElementsNarutomodMod.ModElement {
 				arm6.setRotationPoint(-0.25F, 2.0F, -1.75F);
 				bipedLeftArm.addChild(arm6);
 				setRotationAngle(arm6, -0.5477F, -0.5623F, -0.4215F);
-
 
 				cube_r12 = new ModelRenderer(this);
 				cube_r12.setRotationPoint(-0.1F, 3.3F, 2.5F);
@@ -1030,9 +1014,11 @@ public class EntitySevenTails extends ElementsNarutomodMod.ModElement {
 				tail[0].cubeList.add(new ModelBox(tail[0], 44, 39, -0.9779F, -3.7093F, -1.0726F, 2, 4, 2, 0.0F, false));
 				tail[0].cubeList.add(new ModelBox(tail[0], 36, 40, -0.9279F, -9.3593F, -1.0726F, 2, 6, 2, -0.1F, false));
 				tail[0].cubeList.add(new ModelBox(tail[0], 28, 40, -0.9279F, -14.3593F, -1.0726F, 2, 6, 2, -0.2F, false));
-				tail[0].cubeList.add(new ModelBox(tail[0], 20, 39, -0.9279F, -19.6093F, -1.0726F, 2, 6, 2, -0.4F, false));
-				tail[0].cubeList.add(new ModelBox(tail[0], 12, 39, -0.9279F, -24.6093F, -1.0726F, 2, 6, 2, -0.6F, false));
-				tail[0].cubeList.add(new ModelBox(tail[0], 0, 0, -5.4279F, -23.8593F, -0.0726F, 6, 24, 0, 0.0F, false));
+				tail[0].cubeList.add(new ModelBox(tail[0], 20, 39, -0.9279F, -19.6093F, -1.0726F, 2, 6, 2, -0.3F, false));
+				tail[0].cubeList.add(new ModelBox(tail[0], 20, 39, -0.9279F, -23.6093F, -1.0726F, 2, 6, 2, -0.4F, false));
+				tail[0].cubeList.add(new ModelBox(tail[0], 20, 39, -0.9279F, -27.6093F, -1.0726F, 2, 6, 2, -0.5F, false));
+				tail[0].cubeList.add(new ModelBox(tail[0], 12, 39, -0.8279F, -32.4093F, -1.0726F, 2, 6, 2, -0.6F, false));
+				tail[0].cubeList.add(new ModelBox(tail[0], 52, 0, -5.4279F, -31.8593F, -0.0726F, 6, 32, 0, 0.0F, false));
 
 				tail[1] = new ModelRenderer(this);
 				tail[1].setRotationPoint(0.025F, 5.275F, 1.5F);
@@ -1041,9 +1027,11 @@ public class EntitySevenTails extends ElementsNarutomodMod.ModElement {
 				tail[1].cubeList.add(new ModelBox(tail[1], 44, 39, -0.9779F, -3.7093F, -1.0726F, 2, 4, 2, 0.0F, false));
 				tail[1].cubeList.add(new ModelBox(tail[1], 36, 40, -0.9279F, -9.3593F, -1.0726F, 2, 6, 2, -0.1F, false));
 				tail[1].cubeList.add(new ModelBox(tail[1], 28, 40, -0.9279F, -14.3593F, -1.0726F, 2, 6, 2, -0.2F, false));
-				tail[1].cubeList.add(new ModelBox(tail[1], 20, 39, -0.9279F, -19.6093F, -1.0726F, 2, 6, 2, -0.4F, false));
-				tail[1].cubeList.add(new ModelBox(tail[1], 12, 39, -0.9279F, -24.6093F, -1.0726F, 2, 6, 2, -0.6F, false));
-				tail[1].cubeList.add(new ModelBox(tail[1], 0, 0, -5.4279F, -23.8593F, -0.0726F, 6, 24, 0, 0.0F, false));
+				tail[1].cubeList.add(new ModelBox(tail[1], 20, 39, -0.9279F, -19.6093F, -1.0726F, 2, 6, 2, -0.3F, false));
+				tail[1].cubeList.add(new ModelBox(tail[1], 20, 39, -0.9279F, -23.6093F, -1.0726F, 2, 6, 2, -0.4F, false));
+				tail[1].cubeList.add(new ModelBox(tail[1], 20, 39, -0.9279F, -27.6093F, -1.0726F, 2, 6, 2, -0.5F, false));
+				tail[1].cubeList.add(new ModelBox(tail[1], 12, 39, -0.8279F, -32.4093F, -1.0726F, 2, 6, 2, -0.6F, false));
+				tail[1].cubeList.add(new ModelBox(tail[1], 52, 0, -5.4279F, -31.8593F, -0.0726F, 6, 32, 0, 0.0F, false));
 
 				tail[2] = new ModelRenderer(this);
 				tail[2].setRotationPoint(0.025F, 5.275F, 1.5F);
@@ -1052,9 +1040,11 @@ public class EntitySevenTails extends ElementsNarutomodMod.ModElement {
 				tail[2].cubeList.add(new ModelBox(tail[2], 44, 39, -0.9779F, -3.7093F, -1.0726F, 2, 4, 2, 0.0F, false));
 				tail[2].cubeList.add(new ModelBox(tail[2], 36, 40, -0.9279F, -9.3593F, -1.0726F, 2, 6, 2, -0.1F, false));
 				tail[2].cubeList.add(new ModelBox(tail[2], 28, 40, -0.9279F, -14.3593F, -1.0726F, 2, 6, 2, -0.2F, false));
-				tail[2].cubeList.add(new ModelBox(tail[2], 20, 39, -0.9279F, -19.6093F, -1.0726F, 2, 6, 2, -0.4F, false));
-				tail[2].cubeList.add(new ModelBox(tail[2], 12, 39, -0.9279F, -24.6093F, -1.0726F, 2, 6, 2, -0.6F, false));
-				tail[2].cubeList.add(new ModelBox(tail[2], 0, 0, -5.4279F, -23.8593F, -0.0726F, 6, 24, 0, 0.0F, false));
+				tail[2].cubeList.add(new ModelBox(tail[2], 20, 39, -0.9279F, -19.6093F, -1.0726F, 2, 6, 2, -0.3F, false));
+				tail[2].cubeList.add(new ModelBox(tail[2], 20, 39, -0.9279F, -23.6093F, -1.0726F, 2, 6, 2, -0.4F, false));
+				tail[2].cubeList.add(new ModelBox(tail[2], 20, 39, -0.9279F, -27.6093F, -1.0726F, 2, 6, 2, -0.5F, false));
+				tail[2].cubeList.add(new ModelBox(tail[2], 12, 39, -0.8279F, -32.4093F, -1.0726F, 2, 6, 2, -0.6F, false));
+				tail[2].cubeList.add(new ModelBox(tail[2], 52, 0, -5.4279F, -31.8593F, -0.0726F, 6, 32, 0, 0.0F, false));
 
 				tail[3] = new ModelRenderer(this);
 				tail[3].setRotationPoint(-0.025F, 5.275F, 1.5F);
@@ -1063,9 +1053,11 @@ public class EntitySevenTails extends ElementsNarutomodMod.ModElement {
 				tail[3].cubeList.add(new ModelBox(tail[3], 44, 39, -1.0221F, -3.7093F, -1.0726F, 2, 4, 2, 0.0F, true));
 				tail[3].cubeList.add(new ModelBox(tail[3], 36, 40, -1.0721F, -9.3593F, -1.0726F, 2, 6, 2, -0.1F, true));
 				tail[3].cubeList.add(new ModelBox(tail[3], 28, 40, -1.0721F, -14.3593F, -1.0726F, 2, 6, 2, -0.2F, true));
-				tail[3].cubeList.add(new ModelBox(tail[3], 20, 39, -1.0721F, -19.6093F, -1.0726F, 2, 6, 2, -0.4F, true));
-				tail[3].cubeList.add(new ModelBox(tail[3], 12, 39, -1.0721F, -24.6093F, -1.0726F, 2, 6, 2, -0.6F, true));
-				tail[3].cubeList.add(new ModelBox(tail[3], 0, 0, -0.5721F, -23.8593F, -0.0726F, 6, 24, 0, 0.0F, true));
+				tail[3].cubeList.add(new ModelBox(tail[3], 20, 39, -1.0721F, -19.6093F, -1.0726F, 2, 6, 2, -0.3F, true));
+				tail[3].cubeList.add(new ModelBox(tail[3], 20, 39, -1.0721F, -23.6093F, -1.0726F, 2, 6, 2, -0.4F, true));
+				tail[3].cubeList.add(new ModelBox(tail[3], 20, 39, -1.0721F, -27.6093F, -1.0726F, 2, 6, 2, -0.5F, true));
+				tail[3].cubeList.add(new ModelBox(tail[3], 12, 39, -1.1721F, -32.4093F, -1.0726F, 2, 6, 2, -0.6F, true));
+				tail[3].cubeList.add(new ModelBox(tail[3], 52, 0, -0.5721F, -31.8593F, -0.0726F, 6, 32, 0, 0.0F, true));
 
 				tail[4] = new ModelRenderer(this);
 				tail[4].setRotationPoint(-0.025F, 5.275F, 1.5F);
@@ -1074,26 +1066,30 @@ public class EntitySevenTails extends ElementsNarutomodMod.ModElement {
 				tail[4].cubeList.add(new ModelBox(tail[4], 44, 39, -1.0221F, -3.7093F, -1.0726F, 2, 4, 2, 0.0F, true));
 				tail[4].cubeList.add(new ModelBox(tail[4], 36, 40, -1.0721F, -9.3593F, -1.0726F, 2, 6, 2, -0.1F, true));
 				tail[4].cubeList.add(new ModelBox(tail[4], 28, 40, -1.0721F, -14.3593F, -1.0726F, 2, 6, 2, -0.2F, true));
-				tail[4].cubeList.add(new ModelBox(tail[4], 20, 39, -1.0721F, -19.6093F, -1.0726F, 2, 6, 2, -0.4F, true));
-				tail[4].cubeList.add(new ModelBox(tail[4], 12, 39, -1.0721F, -24.6093F, -1.0726F, 2, 6, 2, -0.6F, true));
-				tail[4].cubeList.add(new ModelBox(tail[4], 0, 0, -0.5721F, -23.8593F, -0.0726F, 6, 24, 0, 0.0F, true));
+				tail[4].cubeList.add(new ModelBox(tail[4], 20, 39, -1.0721F, -19.6093F, -1.0726F, 2, 6, 2, -0.3F, true));
+				tail[4].cubeList.add(new ModelBox(tail[4], 20, 39, -1.0721F, -23.6093F, -1.0726F, 2, 6, 2, -0.4F, true));
+				tail[4].cubeList.add(new ModelBox(tail[4], 20, 39, -1.0721F, -27.6093F, -1.0726F, 2, 6, 2, -0.5F, true));
+				tail[4].cubeList.add(new ModelBox(tail[4], 12, 39, -1.1721F, -32.4093F, -1.0726F, 2, 6, 2, -0.6F, true));
+				tail[4].cubeList.add(new ModelBox(tail[4], 52, 0, -0.5721F, -31.8593F, -0.0726F, 6, 32, 0, 0.0F, true));
 
 				tail[5] = new ModelRenderer(this);
 				tail[5].setRotationPoint(-0.025F, 5.275F, 1.5F);
 				bone17.addChild(tail[5]);
 				setRotationAngle(tail[5], -0.5236F, 0.0F, 1.0472F);
 				tail[5].cubeList.add(new ModelBox(tail[5], 44, 39, -1.0221F, -3.7093F, -1.0726F, 2, 4, 2, 0.0F, true));
-				tail[5].cubeList.add(new ModelBox(tail[5], 36, 40, -1.0721F, -9.3593F, -1.0726F, 2, 6, 2, -0.1F, true));
-				tail[5].cubeList.add(new ModelBox(tail[5], 28, 40, -1.0721F, -14.3593F, -1.0726F, 2, 6, 2, -0.2F, true));
-				tail[5].cubeList.add(new ModelBox(tail[5], 20, 39, -1.0721F, -19.6093F, -1.0726F, 2, 6, 2, -0.4F, true));
-				tail[5].cubeList.add(new ModelBox(tail[5], 12, 39, -1.0721F, -24.6093F, -1.0726F, 2, 6, 2, -0.6F, true));
-				tail[5].cubeList.add(new ModelBox(tail[5], 0, 0, -0.5721F, -23.8593F, -0.0726F, 6, 24, 0, 0.0F, true));
+				tail[5].cubeList.add(new ModelBox(tail[5], 36, 40, -1.0721F, -9.5593F, -1.0726F, 2, 6, 2, -0.1F, true));
+				tail[5].cubeList.add(new ModelBox(tail[5], 28, 40, -1.0721F, -15.2593F, -1.0726F, 2, 6, 2, -0.2F, true));
+				tail[5].cubeList.add(new ModelBox(tail[5], 20, 39, -1.0721F, -20.0093F, -1.0726F, 2, 6, 2, -0.3F, true));
+				tail[5].cubeList.add(new ModelBox(tail[5], 20, 39, -1.0721F, -24.3093F, -1.0726F, 2, 6, 2, -0.4F, true));
+				tail[5].cubeList.add(new ModelBox(tail[5], 20, 39, -1.0721F, -28.3093F, -1.0726F, 2, 6, 2, -0.5F, true));
+				tail[5].cubeList.add(new ModelBox(tail[5], 12, 39, -1.1721F, -32.4093F, -1.0726F, 2, 6, 2, -0.6F, true));
+				tail[5].cubeList.add(new ModelBox(tail[5], 52, 0, -0.5721F, -31.8593F, -0.0726F, 6, 32, 0, 0.0F, true));
 
 				tail6[0] = new ModelRenderer(this);
 				tail6[0].setRotationPoint(0.0F, 4.25F, 1.45F);
 				bone17.addChild(tail6[0]);
 				setRotationAngle(tail6[0], 1.309F, 0.0F, 0.0F);
-				tail6[0].cubeList.add(new ModelBox(tail6[0], 0, 43, -1.0F, -0.4048F, -1.0626F, 2, 4, 2, 0.1F, false));
+				tail6[0].cubeList.add(new ModelBox(tail6[0], 0, 43, -1.0F, -0.4048F, -1.0626F, 2, 4, 2, 0.05F, false));
 
 				tail6[1] = new ModelRenderer(this);
 				tail6[1].setRotationPoint(0.0F, 3.0F, 0.0F);
@@ -1111,43 +1107,43 @@ public class EntitySevenTails extends ElementsNarutomodMod.ModElement {
 				tail6[3].setRotationPoint(0.0F, 3.0F, 0.0F);
 				tail6[2].addChild(tail6[3]);
 				setRotationAngle(tail6[3], 0.1745F, 0.0F, 0.0F);
-				tail6[3].cubeList.add(new ModelBox(tail6[3], 0, 43, -1.0F, -0.4048F, -1.0626F, 2, 4, 2, 0.0F, false));
+				tail6[3].cubeList.add(new ModelBox(tail6[3], 0, 43, -1.0F, -0.4048F, -1.0626F, 2, 4, 2, -0.05F, false));
 
 				tail6[4] = new ModelRenderer(this);
 				tail6[4].setRotationPoint(0.0F, 3.0F, 0.0F);
 				tail6[3].addChild(tail6[4]);
 				setRotationAngle(tail6[4], 0.1745F, 0.0F, 0.0F);
-				tail6[4].cubeList.add(new ModelBox(tail6[4], 0, 43, -1.0F, -0.4048F, -1.0626F, 2, 4, 2, 0.0F, false));
+				tail6[4].cubeList.add(new ModelBox(tail6[4], 0, 43, -1.0F, -0.4048F, -1.0626F, 2, 4, 2, -0.1F, false));
 
 				tail6[5] = new ModelRenderer(this);
 				tail6[5].setRotationPoint(0.0F, 3.0F, 0.0F);
 				tail6[4].addChild(tail6[5]);
 				setRotationAngle(tail6[5], 0.1745F, 0.0F, 0.0F);
-				tail6[5].cubeList.add(new ModelBox(tail6[5], 0, 43, -1.0F, -0.4048F, -1.0626F, 2, 4, 2, -0.05F, false));
+				tail6[5].cubeList.add(new ModelBox(tail6[5], 0, 43, -1.0F, -0.4048F, -1.0626F, 2, 4, 2, -0.15F, false));
 
 				tail6[6] = new ModelRenderer(this);
 				tail6[6].setRotationPoint(0.0F, 3.0F, 0.0F);
 				tail6[5].addChild(tail6[6]);
 				setRotationAngle(tail6[6], 0.1745F, 0.0F, 0.0F);
-				tail6[6].cubeList.add(new ModelBox(tail6[6], 0, 43, -1.0F, -0.4048F, -1.0626F, 2, 4, 2, -0.1F, false));
+				tail6[6].cubeList.add(new ModelBox(tail6[6], 0, 43, -1.0F, -0.4048F, -1.0626F, 2, 4, 2, -0.2F, false));
 
 				tail6[7] = new ModelRenderer(this);
 				tail6[7].setRotationPoint(0.0F, 3.0F, 0.0F);
 				tail6[6].addChild(tail6[7]);
 				setRotationAngle(tail6[7], 0.1745F, 0.0F, 0.0F);
-				tail6[7].cubeList.add(new ModelBox(tail6[7], 0, 43, -1.0F, -0.4048F, -1.0626F, 2, 4, 2, -0.15F, false));
+				tail6[7].cubeList.add(new ModelBox(tail6[7], 0, 43, -1.0F, -0.4048F, -1.0626F, 2, 4, 2, -0.3F, false));
 
 				tail6[8] = new ModelRenderer(this);
 				tail6[8].setRotationPoint(0.0F, 3.0F, 0.0F);
 				tail6[7].addChild(tail6[8]);
 				setRotationAngle(tail6[8], 0.1745F, 0.0F, 0.0F);
-				tail6[8].cubeList.add(new ModelBox(tail6[8], 0, 43, -1.0F, -0.4048F, -1.0626F, 2, 4, 2, -0.2F, false));
+				tail6[8].cubeList.add(new ModelBox(tail6[8], 0, 43, -1.0F, -0.4048F, -1.0626F, 2, 4, 2, -0.45F, false));
 
 				tail6[9] = new ModelRenderer(this);
 				tail6[9].setRotationPoint(0.0F, 3.0F, 0.0F);
 				tail6[8].addChild(tail6[9]);
 				setRotationAngle(tail6[9], 0.1745F, 0.0F, 0.0F);
-				tail6[9].cubeList.add(new ModelBox(tail6[9], 0, 43, -1.0F, -0.4048F, -1.0626F, 2, 4, 2, -0.25F, false));
+				tail6[9].cubeList.add(new ModelBox(tail6[9], 0, 43, -1.0F, -0.4048F, -1.0626F, 2, 4, 2, -0.6F, false));
 
 				for (int i = 0; i < 10; i++) {
 					tailSwayX[i] = (rand.nextFloat() * 0.2618F + 0.2618F) * (rand.nextBoolean() ? -1F : 1F);
@@ -1181,22 +1177,28 @@ public class EntitySevenTails extends ElementsNarutomodMod.ModElement {
 
 			@Override
 			public void setRotationAngles(float f0, float f1, float f2, float f3, float f4, float f5, Entity e) {
-				super.setRotationAngles(f0 * 2.0F / e.height, f1, f2, f3, f4, f5, e);
+				float armSwing = this.swingProgress;
+				this.swingProgress = 0.0F;
+				super.setRotationAngles(0.0F, 0.0F, f2, f3, f4, f5, e);
+				this.swingProgress = armSwing;
 				bipedHead.rotationPointY += -19.0F;
 				bipedRightArm.setRotationPoint(-2.25F, -17.65F, 4.15F);
 				bipedLeftArm.setRotationPoint(2.25F, -17.65F, 4.15F);
-				tail[0].rotateAngleY = MathHelper.sin(f2) * 0.0873F;
-				tail[1].rotateAngleY = MathHelper.sin(f2) * 0.0873F + 0.3927F;
-				tail[2].rotateAngleY = MathHelper.sin(f2) * 0.0873F + 0.7854F;
-				tail[3].rotateAngleY = MathHelper.cos(f2) * 0.0873F - 0.7854F;
-				tail[4].rotateAngleY = MathHelper.cos(f2) * 0.0873F - 0.3927F;
-				tail[5].rotateAngleY = MathHelper.cos(f2) * 0.0873F;
+				if (!e.onGround) {
+					float f = MathHelper.sin(f2 * 3F) * 0.1745F;
+					tail[0].rotateAngleY = f;
+					tail[1].rotateAngleY = f + 0.3927F;
+					tail[2].rotateAngleY = f + 0.7854F;
+					tail[3].rotateAngleY = -f - 0.7854F;
+					tail[4].rotateAngleY = -f - 0.3927F;
+					tail[5].rotateAngleY = -f;
+				}
 				for (int i = 1; i < 10; i++) {
 					tail6[i].rotateAngleX = 0.1745F + MathHelper.sin((f2 - i) * 0.05F) * tailSwayX[i];
 					tail6[i].rotateAngleZ = MathHelper.cos((f2 - i) * 0.05F) * tailSwayZ[i];
 					tail6[i].rotateAngleY = MathHelper.sin((f2 - i) * 0.05F) * tailSwayY[i];
 				}
-				if (((EntityCustom) e).isFaceDown()) {
+				if (((EntityCustom)e).isFaceDown()) {
 					bipedBody.rotationPointZ = 15.0F;
 					bipedBody.rotateAngleX = 1.4835F;
 					bipedHead.rotateAngleX = -0.2618F;
@@ -1205,6 +1207,23 @@ public class EntitySevenTails extends ElementsNarutomodMod.ModElement {
 					bipedBody.rotationPointZ = -3.4F;
 					bipedBody.rotateAngleX = 0.0F;
 					tail6[0].rotateAngleX = 1.309F;
+					if (this.swingProgress > 0.0F) {
+						float f = MathHelper.sqrt(MathHelper.sin(this.swingProgress * (float)Math.PI));
+						for (int i = 0; i < 10; i++) {
+							tail6[i].rotateAngleX += (tailSwingX[i] - tail6[i].rotateAngleX) * f;
+							tail6[i].rotateAngleY += -tail6[i].rotateAngleY * f;
+							tail6[i].rotateAngleZ += -tail6[i].rotateAngleZ * f;
+						}
+					}
+					if (((EntityCustom)e).isShooting()) {
+						bipedHead.rotateAngleX += -0.2618F;
+						mandibleRight.rotateAngleY = 0.2182F;
+						mandibleLeft.rotateAngleY = -0.2182F;
+					} else {
+						float f = MathHelper.sin(f2) * 0.0436F;
+						mandibleRight.rotateAngleY = -0.0873F + f;
+						mandibleLeft.rotateAngleY = 0.0873F - f;
+					}
 				}
 				this.copyModelAngles(bipedBody, bipedHeadwear);
 				this.copyModelAngles(bipedHead, eyes);

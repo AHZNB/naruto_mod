@@ -123,8 +123,7 @@ public class OverlayByakuganView extends ElementsNarutomodMod.ModElement {
 					this.setFOV(player);
 					for (EntityLivingBase entitylb : mc.world.getEntitiesWithinAABB(EntityLivingBase.class, 
 					 player.getEntityBoundingBox().grow(mc.gameSettings.renderDistanceChunks * 8))) {
-						if (!entitylb.isGlowing() && !entitylb.equals(player))
- {
+						if (!entitylb.isGlowing() && !entitylb.equals(player)) {
 							entitylb.setGlowing(true);
 							this.glowList.add(entitylb);
 						}

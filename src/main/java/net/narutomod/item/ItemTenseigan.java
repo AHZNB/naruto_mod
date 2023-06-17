@@ -147,10 +147,13 @@ public class ItemTenseigan extends ElementsNarutomodMod.ModElement {
 				if (ItemRinnegan.isRinnesharinganActivated(stack)) {
 					tooltip.add(TextFormatting.RED + I18n.translateToLocal("advancements.rinnesharinganactivated.title") + TextFormatting.WHITE);
 				}
-				tooltip.add(I18n.translateToLocal("key.mcreator.specialjutsu1") + ": " + I18n.translateToLocal("chattext.shinratensei"));
-				tooltip.add(I18n.translateToLocal("key.mcreator.specialjutsu2") + ": " + I18n.translateToLocal("tooltip.rinnegan.jutsu2") + " ("
-						+ I18n.translateToLocal("tooltip.general.powerupkey") + ")");
-				tooltip.add(I18n.translateToLocal("key.mcreator.specialjutsu3") + ": " + I18n.translateToLocal("tooltip.rinnegan.jutsu3"));
+				tooltip.add(TextFormatting.ITALIC + I18n.translateToLocal("key.mcreator.specialjutsu1") + ": "
+				 + TextFormatting.GRAY + I18n.translateToLocal("chattext.shinratensei"));
+				tooltip.add(TextFormatting.ITALIC + I18n.translateToLocal("key.mcreator.specialjutsu2") + ": "
+				 + TextFormatting.GRAY + I18n.translateToLocal("tooltip.rinnegan.jutsu2")
+				 + " (" + I18n.translateToLocal("tooltip.general.powerupkey") + ")");
+				tooltip.add(TextFormatting.ITALIC + I18n.translateToLocal("key.mcreator.specialjutsu3") + ": "
+				 + TextFormatting.GRAY + I18n.translateToLocal("tooltip.rinnegan.jutsu3"));
 			}
 
 			@Override

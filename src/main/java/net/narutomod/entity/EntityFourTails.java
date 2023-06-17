@@ -6,7 +6,6 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
-
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 
@@ -23,7 +22,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.model.ModelBox;
-
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderManager;
@@ -43,7 +41,7 @@ import javax.annotation.Nullable;
 public class EntityFourTails extends ElementsNarutomodMod.ModElement {
 	public static final int ENTITYID = 255;
 	public static final int ENTITYID_RANGED = 256;
-	private static final float MODELSCALE = 20.0F;
+	private static final float MODELSCALE = 18.5F;
 	private static final TailBeastManager tailBeastManager = new TailBeastManager();
 
 	public EntityFourTails(ElementsNarutomodMod instance) {
@@ -138,14 +136,14 @@ public class EntityFourTails extends ElementsNarutomodMod.ModElement {
 	public static class EntityCustom extends EntityTailedBeast.Base {
 		public EntityCustom(World world) {
 			super(world);
-			this.setSize(MODELSCALE * 0.4F, MODELSCALE * 1.0F);
+			this.setSize(MODELSCALE * 0.45F, MODELSCALE * 1.09375F);
 			this.experienceValue = 12000;
 			this.stepHeight = this.height / 3.0F;
 		}
 
 		public EntityCustom(EntityPlayer player) {
 			super(player);
-			this.setSize(MODELSCALE * 0.4F, MODELSCALE * 1.0F);
+			this.setSize(MODELSCALE * 0.45F, MODELSCALE * 1.09375F);
 			this.experienceValue = 12000;
 			this.stepHeight = this.height / 3.0F;
 		}
@@ -158,7 +156,7 @@ public class EntityFourTails extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void setFaceDown(boolean down) {
 			super.setFaceDown(down);
-			this.setSize(this.width, MODELSCALE * (down ? 0.75F : 1.0F));
+			this.setSize(this.width, MODELSCALE * (down ? 0.75F : 1.09375F));
 		}
 
 		@Override
@@ -228,7 +226,7 @@ public class EntityFourTails extends ElementsNarutomodMod.ModElement {
 			private final ResourceLocation texture = new ResourceLocation("narutomod:textures/fourtails.png");
 	
 			public RenderCustom(RenderManager renderManagerIn) {
-				super(renderManagerIn, new ModelFourTails(), MODELSCALE * 0.5F);
+				super(renderManagerIn, new ModelFourTails(), MODELSCALE * 0.25F);
 			}
 	
 		 	@Override
@@ -288,6 +286,9 @@ public class EntityFourTails extends ElementsNarutomodMod.ModElement {
 			private final ModelRenderer beard;
 			private final ModelRenderer cube_r32;
 			private final ModelRenderer cube_r33;
+			private final ModelRenderer bone;
+			private final ModelRenderer cube_r56;
+			private final ModelRenderer cube_r57;
 			//private final ModelRenderer bipedRightArm;
 			private final ModelRenderer cube_r34;
 			private final ModelRenderer cube_r35;
@@ -600,6 +601,23 @@ public class EntityFourTails extends ElementsNarutomodMod.ModElement {
 				setRotationAngle(cube_r33, 0.0155F, 0.0081F, -0.4799F);
 				cube_r33.cubeList.add(new ModelBox(cube_r33, 0, 0, -2.1F, -0.2F, -0.4F, 2, 4, 1, 0.0F, false));
 		
+				bone = new ModelRenderer(this);
+				bone.setRotationPoint(0.0F, 0.0F, 0.75F);
+				beard.addChild(bone);
+				setRotationAngle(bone, -0.2182F, 0.0F, 0.0F);
+				
+				cube_r56 = new ModelRenderer(this);
+				cube_r56.setRotationPoint(0.0F, -0.5F, -0.8F);
+				bone.addChild(cube_r56);
+				setRotationAngle(cube_r56, 0.0155F, -0.0081F, 0.4799F);
+				cube_r56.cubeList.add(new ModelBox(cube_r56, 0, 0, 0.1F, -0.2F, -0.4F, 2, 4, 1, 0.0F, true));
+		
+				cube_r57 = new ModelRenderer(this);
+				cube_r57.setRotationPoint(0.0F, -0.5F, -0.8F);
+				bone.addChild(cube_r57);
+				setRotationAngle(cube_r57, 0.0155F, 0.0081F, -0.4799F);
+				cube_r57.cubeList.add(new ModelBox(cube_r57, 0, 0, -2.1F, -0.2F, -0.4F, 2, 4, 1, 0.0F, false));
+
 				bipedRightArm = new ModelRenderer(this);
 				bipedRightArm.setRotationPoint(-5.25F, -9.25F, -6.25F);
 				bipedBody.addChild(bipedRightArm);

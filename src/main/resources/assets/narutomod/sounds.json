@@ -997,5 +997,14 @@
         "stream": false
       }
     ]
+  },
+  "chomei_flying": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "narutomod:chomei_flying",
+        "stream": false
+      }
+    ]
   }
 }
