@@ -1246,6 +1246,60 @@ System.out.println("====== totalTicks:"+totalTicks+", lastTimeAtPathIndex:"+last
 		}
 	}
 
+	public static class FlySwimHelper extends EntityMoveHelper {
+		private Base baseEntity;
+			
+		public FlySwimHelper(Base entityIn) {
+			super(entityIn);
+			this.baseEntity = entityIn;
+		}
+				
+		@Override
+		public void onUpdateMoveHelper() {
+			if (this.action == EntityMoveHelper.Action.MOVE_TO) {
+				this.action = EntityMoveHelper.Action.WAIT;
+				double d0 = this.posX - this.entity.posX;
+				double d1 = this.posY - this.entity.posY;
+				double d2 = this.posZ - this.entity.posZ;
+				double d3 = MathHelper.sqrt(d0 * d0 + d1 * d1 + d2 * d2);
+				if (d3 < 1.6E-7D) {
+					ProcedureUtils.multiplyVelocity(this.entity, 0.0d);
+				} else {
+					double movementSpeed = this.entity.hasNoGravity() && this.entity.getEntityAttribute(SharedMonsterAttributes.FLYING_SPEED) != null
+					 ? this.entity.getEntityAttribute(SharedMonsterAttributes.FLYING_SPEED).getAttributeValue()
+					 : this.entity.getEntityAttribute(EntityLivingBase.SWIM_SPEED).getAttributeValue();
+					float f = (float)(this.speed * movementSpeed);
+					float f1 = -((float)MathHelper.atan2(d0, d2)) * (180F / (float)Math.PI);
+					this.entity.rotationYaw = this.limitAngle(this.entity.rotationYaw, f1, 60.0F);
+					//this.entity.renderYawOffset = this.entity.rotationYaw;
+					f1 = (float)(-(MathHelper.atan2(d1, MathHelper.sqrt(d0 * d0 + d2 * d2)) * (180D / Math.PI)));
+					this.entity.rotationPitch = this.limitAngle(this.entity.rotationPitch, f1, 30.0F);
+					if (this.entity.collided) {
+						if (this.baseEntity.collisionData.hitOnSide(EnumFacing.UP)) {
+							d1 = 0.0d;
+							if (this.baseEntity.collisionData.hitOnAxis(EnumFacing.Axis.X)) {
+								d0 = 0.0d;
+								d2 = d3;
+							}
+							if (this.baseEntity.collisionData.hitOnAxis(EnumFacing.Axis.Z)) {
+								d2 = 0.0d;
+								d0 = d3;
+							}
+						} else {
+							d1 = 12.0d;
+						}
+					}
+					d3 = MathHelper.sqrt(d0 * d0 + d1 * d1 + d2 * d2);
+					this.entity.motionX = d0 / d3 * f;
+					this.entity.motionY = d1 / d3 * f;
+					this.entity.motionZ = d2 / d3 * f;
+				}
+			} else {
+				ProcedureUtils.multiplyVelocity(this.entity, 0.6d);
+			}
+		}
+	}
+
 	@SideOnly(Side.CLIENT)
 	@Override
 	public void preInit(FMLPreInitializationEvent event) {

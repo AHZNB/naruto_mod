@@ -15,6 +15,7 @@ Jutsus:
 Items:
  - fixed explosive tags breaking blocks when mobGriefing false
  - implemented Sound Reflecting Gauntlet and recipe. left click to shoot soundwaves, right click to block
+ - Ramen is now craftable and gives 25 seconds saturation
  
 Entities:
  - re-textured white zetsu, itachi
@@ -23,6 +24,9 @@ Entities:
  - better tailed beasts movement AI
  - added ambient sounds for shukaku, songoku, chomei
  - fixed player's outer skin layer not synced with arms when naruto running
+
+General:
+ - resets tailed beasts spawn point if natural spawning is disabled in config
 
 0.2.12-beta ===============================================================================
 

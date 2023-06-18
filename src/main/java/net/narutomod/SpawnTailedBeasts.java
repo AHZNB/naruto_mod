@@ -1,22 +1,22 @@
 package net.narutomod;
 
-import net.minecraft.block.state.IBlockState;
-import net.minecraftforge.event.GameRuleChangeEvent;
-import net.narutomod.entity.EntityBijuManager;
-import net.narutomod.entity.EntityTailedBeast;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraft.world.biome.Biome;
-import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.GameRuleChangeEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
-import java.util.Random;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
+import net.minecraft.world.biome.Biome;
+import net.minecraft.world.chunk.Chunk;
+
+import net.narutomod.entity.EntityBijuManager;
+import net.narutomod.entity.EntityTailedBeast;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class SpawnTailedBeasts extends ElementsNarutomodMod.ModElement {
@@ -27,6 +27,7 @@ public class SpawnTailedBeasts extends ElementsNarutomodMod.ModElement {
 	private static final int SPAWN_MIN_RADIUS = 10000;
 	private static final int REQUIRED_DISTANCE = 100;
 	private static final int TIME_FOR_RESPAWN = 3600; // 1 hour
+	private boolean resetSpawnPos = true;
 
 	@EventHandler
 	public void init(FMLInitializationEvent event) {
@@ -46,11 +47,15 @@ public class SpawnTailedBeasts extends ElementsNarutomodMod.ModElement {
 		}
 
 		if (!ModConfig.SPAWN_TAILED_BEASTS) {
+			if (this.resetSpawnPos) {
+				EntityBijuManager.resetAllSpawnPos();
+				this.resetSpawnPos = false;
+			}
 			return;
 		}
 
-		Random rand = new Random();
-
+		this.resetSpawnPos = true;
+		
 		for (EntityBijuManager bm : EntityBijuManager.getBMList()) {
 			if (bm.isAddedToWorld() || bm.isSealed() || bm.getTails() == 10) {
 				continue;
@@ -76,8 +81,8 @@ public class SpawnTailedBeasts extends ElementsNarutomodMod.ModElement {
 				spawnPos = bm.getSpawnPos();
 			}
 			else {
-				final int x = (rand.nextInt(SPAWN_MAX_RADIUS - SPAWN_MIN_RADIUS) + SPAWN_MIN_RADIUS) + world.getSpawnPoint().getX();
-				final int z = (rand.nextInt(SPAWN_MAX_RADIUS - SPAWN_MIN_RADIUS) + SPAWN_MIN_RADIUS) + world.getSpawnPoint().getZ();
+				final int x = (world.rand.nextInt(SPAWN_MAX_RADIUS - SPAWN_MIN_RADIUS) + SPAWN_MIN_RADIUS) + world.getSpawnPoint().getX();
+				final int z = (world.rand.nextInt(SPAWN_MAX_RADIUS - SPAWN_MIN_RADIUS) + SPAWN_MIN_RADIUS) + world.getSpawnPoint().getZ();
 
 				spawnPos = new BlockPos(x, 0.0D, z);
 				Biome biome = world.getBiome(new BlockPos(spawnPos.getX(), spawnPos.getY(), spawnPos.getZ()));

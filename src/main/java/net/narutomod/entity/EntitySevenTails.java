@@ -16,7 +16,6 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.entity.ai.EntityMoveHelper;
 import net.minecraft.entity.ai.EntityAIAttackMelee;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.player.EntityPlayer;
@@ -128,7 +127,7 @@ public class EntitySevenTails extends ElementsNarutomodMod.ModElement {
 		public EntityCustom(World worldIn) {
 			super(worldIn);
 			this.setSize(MODELSCALE * 0.25F, MODELSCALE * 1.3125F);
-			this.moveHelper = new FlyHelper(this);
+			this.moveHelper = new EntityTailedBeast.FlySwimHelper(this);
 			this.experienceValue = 12000;
 			this.stepHeight = this.height / 3.0F;
 		}
@@ -136,7 +135,7 @@ public class EntitySevenTails extends ElementsNarutomodMod.ModElement {
 		public EntityCustom(EntityPlayer player) {
 			super(player);
 			this.setSize(MODELSCALE * 0.25F, MODELSCALE * 1.3125F);
-			this.moveHelper = new FlyHelper(this);
+			this.moveHelper = new EntityTailedBeast.FlySwimHelper(this);
 			this.experienceValue = 12000;
 			this.stepHeight = this.height / 3.0F;
 		}
@@ -241,57 +240,6 @@ public class EntitySevenTails extends ElementsNarutomodMod.ModElement {
 				}
 			}
 			super.travel(ti, tj, tk);
-		}
-
-		public class FlyHelper extends EntityMoveHelper {
-			private EntityCustom baseEntity;
-			
-			public FlyHelper(EntityCustom entityIn) {
-				super(entityIn);
-				this.baseEntity = entityIn;
-			}
-				
-			@Override
-			public void onUpdateMoveHelper() {
-				if (this.action == EntityMoveHelper.Action.MOVE_TO) {
-					this.action = EntityMoveHelper.Action.WAIT;
-					double d0 = this.posX - this.entity.posX;
-					double d1 = this.posY - this.entity.posY;
-					double d2 = this.posZ - this.entity.posZ;
-					double d3 = MathHelper.sqrt(d0 * d0 + d1 * d1 + d2 * d2);
-					if (d3 < 1.6E-7D) {
-						ProcedureUtils.multiplyVelocity(this.entity, 0.0d);
-					} else {
-						float f = (float)(this.speed * this.entity.getEntityAttribute(SharedMonsterAttributes.FLYING_SPEED).getAttributeValue());
-						float f1 = -((float)MathHelper.atan2(d0, d2)) * (180F / (float)Math.PI);
-						this.entity.rotationYaw = this.limitAngle(this.entity.rotationYaw, f1, 60.0F);
-						//this.entity.renderYawOffset = this.entity.rotationYaw;
-						f1 = (float)(-(MathHelper.atan2(d1, MathHelper.sqrt(d0 * d0 + d2 * d2)) * (180D / Math.PI)));
-						this.entity.rotationPitch = this.limitAngle(this.entity.rotationPitch, f1, 30.0F);
-						if (this.entity.collided) {
-							if (this.baseEntity.collisionData.hitOnSide(EnumFacing.UP)) {
-								d1 = 0.0d;
-								if (this.baseEntity.collisionData.hitOnAxis(EnumFacing.Axis.X)) {
-									d0 = 0.0d;
-									d2 = d3;
-								}
-								if (this.baseEntity.collisionData.hitOnAxis(EnumFacing.Axis.Z)) {
-									d2 = 0.0d;
-									d0 = d3;
-								}
-							} else {
-								d1 = 12.0d;
-							}
-						}
-						d3 = MathHelper.sqrt(d0 * d0 + d1 * d1 + d2 * d2);
-						this.entity.motionX = d0 / d3 * f;
-						this.entity.motionY = d1 / d3 * f;
-						this.entity.motionZ = d2 / d3 * f;
-					}
-				} else {
-					ProcedureUtils.multiplyVelocity(this.entity, 0.6d);
-				}
-			}
 		}
 	}
 

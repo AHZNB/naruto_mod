@@ -11,9 +11,9 @@
     "creativeTab": {
       "value": "FOOD"
     },
-    "stackSize": 64,
+    "stackSize": 2,
     "nutritionalValue": 20,
-    "saturation": 10.0,
+    "saturation": 100.0,
     "eatingSpeed": 140,
     "resultItem": {
       "value": ""
@@ -21,6 +21,9 @@
     "forDogs": false,
     "isAlwaysEdible": false,
     "animation": "eat",
-    "hasGlow": false
+    "hasGlow": false,
+    "onEaten": {
+      "name": "IchirakuRamenFoodEaten"
+    }
   }
 }

@@ -1,8 +1,8 @@
 {
   "id_map": {
-    "DIMENSION": 13,
+    "ENTITY": 422,
     "GUI": 64,
-    "ENTITY": 422
+    "DIMENSION": 13
   },
   "mod_elements": [
     {
@@ -7101,6 +7101,32 @@
           }
         ]
       }
+    },
+    {
+      "name": "IchirakuRamenFoodEaten",
+      "type": "procedure",
+      "sortid": 848,
+      "compiles": true,
+      "locked_code": false,
+      "ids": {},
+      "registry_name": "ichiraku_ramen_food_eaten",
+      "metadata": {
+        "dependencies": [
+          {
+            "name": "entity",
+            "type": "entity"
+          }
+        ]
+      }
+    },
+    {
+      "name": "IchirakuRamenRecipe",
+      "type": "recipe",
+      "sortid": 849,
+      "compiles": true,
+      "locked_code": false,
+      "ids": {},
+      "registry_name": "ichiraku_ramen_recipe"
     }
   ],
   "variable_elements": [

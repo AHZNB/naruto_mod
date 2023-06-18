@@ -359,7 +359,7 @@ public class EntityMightGuy extends ElementsNarutomodMod.ModElement {
 			if (!this.world.isRemote && this.customer != null && this.getVillage() != null && this.customerKillCount != null) {
 				int kills = this.world.getScoreboard().getOrCreateScore(this.customer.getName(), this.customerKillCount).getScorePoints();
 				int villagersKilled = this.siegeStartingVillagers - this.getVillage().getNumVillagers();
-				if (villagersKilled > 0 || kills < this.killCount / 2 || !this.customer.isEntityAlive()) {
+				if (villagersKilled > 0 || kills <= this.killCount / 2 || !this.customer.isEntityAlive()) {
 					// failed
 					ProcedureUtils.sendChat(this.customer, TextFormatting.GREEN + I18n.translateToLocal("entity.mightguy.name") + ": "
 							+ TextFormatting.WHITE + I18n.translateToLocal("chattext.mightguy.interact4"));

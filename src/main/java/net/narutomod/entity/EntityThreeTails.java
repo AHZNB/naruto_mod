@@ -12,13 +12,14 @@ import net.minecraft.world.storage.MapStorage;
 import net.minecraft.world.World;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.pathfinding.PathNavigate;
-import net.minecraft.pathfinding.PathNavigateSwimmer;
 import net.minecraft.entity.ai.EntityMoveHelper;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.model.ModelBox;
@@ -26,7 +27,6 @@ import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.item.ItemStack;
 
 import net.narutomod.ElementsNarutomodMod;
 
@@ -113,8 +113,6 @@ public class EntityThreeTails extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static class EntityCustom extends EntityTailedBeast.Base {
-		private PathNavigate altNavigator;
-		private PathNavigate mainNavigator;
 		private EntityMoveHelper altMoveHelper;
 		private EntityMoveHelper mainMoveHelper;
 
@@ -134,11 +132,10 @@ public class EntityThreeTails extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		protected PathNavigate createNavigator(World worldIn) {
-			this.mainNavigator = super.createNavigator(worldIn);
-			this.altNavigator = new PathNavigateSwimmer(this, worldIn);
+			PathNavigate nav = super.createNavigator(worldIn);
 			this.mainMoveHelper = this.moveHelper;
-			this.altMoveHelper = new EntityNinjaMob.SwimHelper(this);
-			return this.mainNavigator;
+			this.altMoveHelper = new EntityTailedBeast.FlySwimHelper(this);
+			return nav;
 		}
 
 		@Override
@@ -156,7 +153,8 @@ public class EntityThreeTails extends ElementsNarutomodMod.ModElement {
 		protected void applyEntityAttributes() {
 			super.applyEntityAttributes();
 			this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(100.0D);
-			this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.8D);
+			this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.4D);
+			this.getEntityAttribute(EntityLivingBase.SWIM_SPEED).setBaseValue(0.8D);
 			this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(10000.0D);
 			this.getEntityAttribute(EntityPlayer.REACH_DISTANCE).setBaseValue(30.0D);
 		}
@@ -184,11 +182,9 @@ public class EntityThreeTails extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void onUpdate() {
 			super.onUpdate();
-			if (this.isInWater() && this.navigator != this.altNavigator) {
-				this.navigator = this.altNavigator;
+			if (this.isInWater() && this.moveHelper != this.altMoveHelper) {
 				this.moveHelper = this.altMoveHelper;
-			} else if (!this.isInWater() && this.navigator != this.mainNavigator) {
-				this.navigator = this.mainNavigator;
+			} else if (!this.isInWater() && this.moveHelper != this.mainMoveHelper) {
 				this.moveHelper = this.mainMoveHelper;
 			}
 		}
@@ -214,18 +210,18 @@ public class EntityThreeTails extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
-		public net.minecraft.util.SoundEvent getAmbientSound() {
-			return (net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation(""));
+		public SoundEvent getAmbientSound() {
+			return SoundEvent.REGISTRY.getObject(new ResourceLocation(""));
 		}
 
 		@Override
-		public net.minecraft.util.SoundEvent getHurtSound(DamageSource ds) {
-			return (net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation(""));
+		public SoundEvent getHurtSound(DamageSource ds) {
+			return SoundEvent.REGISTRY.getObject(new ResourceLocation(""));
 		}
 
 		@Override
-		public net.minecraft.util.SoundEvent getDeathSound() {
-			return (net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation(""));
+		public SoundEvent getDeathSound() {
+			return SoundEvent.REGISTRY.getObject(new ResourceLocation(""));
 		}
 	}
 
@@ -1938,7 +1934,7 @@ public class EntityThreeTails extends ElementsNarutomodMod.ModElement {
 
 			@Override
 			public void setRotationAngles(float f0, float f1, float f2, float f3, float f4, float f5, Entity e) {
-				super.setRotationAngles(f0 * 2.0F / e.height, f1, f2, f3, f4, f5, e);
+				super.setRotationAngles(f0 * 0.25F, f1, f2, f3, f4, f5, e);
 				bipedHead.rotationPointY += -5.0F;
 				bipedRightArm.setRotationPoint(-5.5F, -5.0F, -8.0F);
 				bipedLeftArm.setRotationPoint(5.5F, -5.0F, -8.0F);
