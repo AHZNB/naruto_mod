@@ -1,8 +1,8 @@
 {
   "id_map": {
-    "ENTITY": 422,
     "GUI": 64,
-    "DIMENSION": 13
+    "DIMENSION": 13,
+    "ENTITY": 422
   },
   "mod_elements": [
     {
@@ -8063,6 +8063,30 @@
       ],
       "category": "master",
       "subtitle": ""
+    },
+    {
+      "name": "isobu_roar",
+      "files": [
+        "isobu_roar"
+      ],
+      "category": "master",
+      "subtitle": ""
+    },
+    {
+      "name": "isobu_hurt",
+      "files": [
+        "isobu_hurt"
+      ],
+      "category": "master",
+      "subtitle": ""
+    },
+    {
+      "name": "guttural",
+      "files": [
+        "guttural"
+      ],
+      "category": "master",
+      "subtitle": ""
     }
   ],
   "language_map": {
@@ -8139,6 +8163,7 @@
       "chattext.tentails.sealedintoplayer": "Sealing %s into %s\u0027s body",
       "tooltip.shakuton.scorchblast": "Super Steam Blast",
       "tooltip.cleaver.descr": "Lightning natured users can imbue this sword with lightning chakra to increase its lethality.",
+      "subtitles.isobu_roar": "",
       "subtitles.waterblast": "",
       "item.ninja_armor_war_1helmet.name": "Facial Protector (Konoha)",
       "item.asuracanon.name": "Asura Canon",
@@ -8460,6 +8485,7 @@
       "effect.amaterasuflame": "Amaterasu",
       "subtitles.katsu": "",
       "tooltip.bijucloak.level1": "Requires 400 JXP to master, 3600 JXP to level 2",
+      "subtitles.guttural": "",
       "entity.summon_animal.name": "Summon Animal",
       "item.ichiraku_ramen.name": "Ichiraku Ramen",
       "subtitles.flamethrow": "",
@@ -8637,6 +8663,7 @@
       "item.clothes_raikageboots.name": "Clothes Raikage Boots",
       "entity.entityearthwall.name": "Earth Wall Jutsu",
       "entity.inton_raiha.name": "Sage Art: Yin Release Lightning Dispatch",
+      "subtitles.isobu_hurt": "",
       "item.scroll_body_replacement.name": "Body Replacement jutsu",
       "item.anbu_robebody.name": "Anbu Robe Body",
       "entity.tensei_baku_gold.name": "Golden Wheel Rebirth Blast",

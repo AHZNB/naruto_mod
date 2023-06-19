@@ -159,8 +159,9 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 					 this.particles, 0.2d, 0.4d, 0.2d, 0d, 0.1d, 0d, this.particleColor, 40, 5, 0xF0, entity.getEntityId());
 				}
 				entity.fallDistance = 0;
+				entity.removePotionEffect(MobEffects.SATURATION);
 				if (entity.ticksExisted % 10 == 0) {
-					entity.addPotionEffect(new PotionEffect(MobEffects.SATURATION, 12, 0, false, false));
+					entity.addPotionEffect(new PotionEffect(MobEffects.HUNGER, 42, 3, false, false));
 					entity.addPotionEffect(new PotionEffect(MobEffects.JUMP_BOOST, 12, 8, false, false));
 					entity.addPotionEffect(new PotionEffect(MobEffects.HASTE, 12, 3, false, false));
 					entity.addPotionEffect(new PotionEffect(MobEffects.STRENGTH, 12, this.strength, false, false));
@@ -168,8 +169,10 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 					entity.addPotionEffect(new PotionEffect(MobEffects.SPEED, 12, this.speed, false, false));
 					if (entity.getHealth() > 0.0f && (!(entity instanceof EntityPlayer) || !((EntityPlayer) entity).isCreative())) {
 						if (this.damage >= 0.0f) {
-							entity.hurtResistantTime = 10;
-							entity.attackEntityFrom(ProcedureUtils.SPECIAL_DAMAGE, this.damage);
+							if (entity.ticksExisted % 80 == 0) {
+								entity.hurtResistantTime = 10;
+								entity.attackEntityFrom(ProcedureUtils.SPECIAL_DAMAGE, this.damage * 8);
+							}
 						} else {
 							entity.setHealth(entity.getHealth() - this.damage);
 						}
@@ -257,11 +260,11 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 			new Properties(1, I18n.translateToLocal("chattext.eightgates.gate1"), 220, 0, 0, 3, 2, 0, 10, -1f, false),
 			new Properties(2, I18n.translateToLocal("chattext.eightgates.gate2"), 240, 0, 0, 4, 16, 0, 40, -5f, false),
 			new Properties(3, I18n.translateToLocal("chattext.eightgates.gate3"), 280, 20, 0x10FFFFFF, 5, 32, 1, 60, -3f, false),
-			new Properties(4, I18n.translateToLocal("chattext.eightgates.gate4"), 360, 25, 0x18FFFFFF, 7, 64, 2, 60, 1.2f, false),
-			new Properties(5, I18n.translateToLocal("chattext.eightgates.gate5"), 520, 30, 0x20FFFFFF, 15, 68, 2, 60, 1.4f, false),
-			new Properties(6, I18n.translateToLocal("chattext.eightgates.gate6"), 840, 30, 0x3000FF00, 31, 72, 3, 60, 1.6f, false),
-			new Properties(7, I18n.translateToLocal("chattext.eightgates.gate7"), 1480, 30, 0x300000FF, 84, 76, 3, 60, 1.8f, false),
-			new Properties(8, I18n.translateToLocal("chattext.eightgates.gate8"), 2760, 30, 0x30FF0000, 349, 80, 4, 60, 2f, true)};
+			new Properties(4, I18n.translateToLocal("chattext.eightgates.gate4"), 360, 25, 0x18FFFFFF, 7, 64, 2, 60, 0.4f, false),
+			new Properties(5, I18n.translateToLocal("chattext.eightgates.gate5"), 520, 30, 0x20FFFFFF, 15, 68, 2, 60, 0.6f, false),
+			new Properties(6, I18n.translateToLocal("chattext.eightgates.gate6"), 840, 30, 0x3000FF00, 31, 72, 3, 60, 0.8f, false),
+			new Properties(7, I18n.translateToLocal("chattext.eightgates.gate7"), 1480, 30, 0x300000FF, 84, 76, 3, 60, 1.0f, false),
+			new Properties(8, I18n.translateToLocal("chattext.eightgates.gate8"), 2760, 30, 0x30FF0000, 349, 80, 4, 60, 1.2f, true)};
 						
 		public RangedItem() {
 			this.setMaxDamage(0);

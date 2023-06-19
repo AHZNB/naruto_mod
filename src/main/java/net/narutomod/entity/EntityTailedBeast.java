@@ -339,7 +339,7 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 				}
 				@Override @Nullable
 				protected Vec3d getPosition() {
-					return RandomPositionGenerator.getLandPos(this.entity, (int)(this.entity.width * 8), (int)this.entity.height + 1);
+					return RandomPositionGenerator.findRandomTarget(this.entity, 56, 21);
 				}
 			});
 		}
@@ -1215,7 +1215,7 @@ System.out.println("====== totalTicks:"+totalTicks+", lastTimeAtPathIndex:"+last
 							}
 						}
 					}
-					if (d5 - this.entity.posY > 2d * this.entity.height || !this.baseEntity.collisionData.hitsOnSide(EnumFacing.UP).isEmpty()) {
+					if (d5 - this.entity.posY > 2d * this.entity.height || this.baseEntity.collisionData.hitOnSide(EnumFacing.UP)) {
 						if (this.baseEntity.collisionData.hitOnAxis(EnumFacing.Axis.X)) {
 							d0 = 0.0d;
 						}
@@ -1230,6 +1230,7 @@ System.out.println("====== totalTicks:"+totalTicks+", lastTimeAtPathIndex:"+last
 				}
 	            float f = (float)(MathHelper.atan2(d1, d0) * (180D / Math.PI)) - 90.0F;
 	            this.entity.rotationYaw = this.limitAngle(this.entity.rotationYaw, f, 90.0F);
+	            this.entity.renderYawOffset = this.entity.rotationYaw;
 				f = (float)(-(MathHelper.atan2(d2, MathHelper.sqrt(d0 * d0 + d1 * d1)) * (180D / Math.PI)));
 				this.entity.rotationPitch = this.limitAngle(this.entity.rotationPitch, f, 60.0F);
 	            this.entity.setAIMoveSpeed((float)(this.speed * this.entity.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).getAttributeValue()));

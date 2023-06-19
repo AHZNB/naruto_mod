@@ -58,7 +58,7 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 	private static final List<List<Biome>> spawns = Lists.newArrayList(
 			Arrays.asList(Biomes.DESERT, Biomes.DESERT_HILLS, Biomes.MESA),											  		   // Shukaku
 			Arrays.asList(Biomes.JUNGLE, Biomes.JUNGLE_EDGE, Biomes.JUNGLE_HILLS, Biomes.SWAMPLAND), 						   // Matatabi
-			Arrays.asList(Biomes.OCEAN, Biomes.BEACH),																		   // Isobu
+			Arrays.asList(Biomes.DEEP_OCEAN, Biomes.OCEAN, Biomes.BEACH),													   // Isobu
 			Arrays.asList(Biomes.TAIGA, Biomes.TAIGA_HILLS, Biomes.JUNGLE, Biomes.JUNGLE_EDGE, Biomes.JUNGLE_HILLS), 		   // Son Goku
 			Arrays.asList(Biomes.PLAINS, Biomes.SAVANNA, Biomes.SAVANNA_PLATEAU),											   // Kokuo
 			Arrays.asList(Biomes.RIVER, Biomes.SWAMPLAND),																	   // Saiken

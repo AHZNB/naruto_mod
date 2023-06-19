@@ -9,10 +9,12 @@ import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 
 import net.minecraft.world.storage.MapStorage;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.World;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.pathfinding.PathNavigate;
@@ -27,6 +29,7 @@ import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.init.Biomes;
 
 import net.narutomod.ElementsNarutomodMod;
 
@@ -190,6 +193,13 @@ public class EntityThreeTails extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
+		public float getBlockPathWeight(BlockPos pos) {
+			Biome biome = this.world.getBiome(pos);
+			return biome == Biomes.DEEP_OCEAN ? 50.0F : biome == Biomes.OCEAN ? 20.0F
+			 : biome == Biomes.BEACH || biome == Biomes.STONE_BEACH ? 10.0F : 0.0F;
+		}
+
+		@Override
 		public boolean isPushedByWater() {
 			return false;
 		}
@@ -211,17 +221,17 @@ public class EntityThreeTails extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public SoundEvent getAmbientSound() {
-			return SoundEvent.REGISTRY.getObject(new ResourceLocation(""));
+			return SoundEvent.REGISTRY.getObject(new ResourceLocation(this.rand.nextInt(4) == 0 ? "narutomod:isobu_roar" : "narutomod:guttural"));
 		}
 
 		@Override
 		public SoundEvent getHurtSound(DamageSource ds) {
-			return SoundEvent.REGISTRY.getObject(new ResourceLocation(""));
+			return null;
 		}
 
 		@Override
 		public SoundEvent getDeathSound() {
-			return SoundEvent.REGISTRY.getObject(new ResourceLocation(""));
+			return SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:isobu_hurt"));
 		}
 	}
 
@@ -369,6 +379,7 @@ public class EntityThreeTails extends ElementsNarutomodMod.ModElement {
 			private final ModelRenderer bone65;
 			private final ModelRenderer bone66;
 			private final ModelRenderer torso;
+			private final ModelRenderer bone83;
 			private final ModelRenderer cube_r6;
 			private final ModelRenderer cube_r7;
 			private final ModelRenderer shell;
@@ -1147,7 +1158,6 @@ public class EntityThreeTails extends ElementsNarutomodMod.ModElement {
 				bipedBody.addChild(torso);
 				setRotationAngle(torso, -0.5236F, 0.0F, 0.0F);
 				torso.cubeList.add(new ModelBox(torso, 0, 0, -3.5F, -3.0F, -3.0F, 7, 5, 7, 0.0F, false));
-				torso.cubeList.add(new ModelBox(torso, 20, 31, -3.5F, 1.0F, 6.0F, 7, 3, 2, 0.0F, false));
 				torso.cubeList.add(new ModelBox(torso, 21, 12, -4.5F, 0.0F, 5.0F, 1, 3, 1, 0.0F, false));
 				torso.cubeList.add(new ModelBox(torso, 21, 12, 3.5F, 0.0F, 5.0F, 1, 3, 1, 0.0F, true));
 				torso.cubeList.add(new ModelBox(torso, 3, 4, -4.5F, 1.0F, 6.0F, 1, 2, 1, 0.0F, false));
@@ -1156,16 +1166,23 @@ public class EntityThreeTails extends ElementsNarutomodMod.ModElement {
 				torso.cubeList.add(new ModelBox(torso, 0, 0, 3.5F, -1.0F, 4.0F, 1, 4, 1, 0.0F, true));
 				torso.cubeList.add(new ModelBox(torso, 27, 36, -3.5F, 0.0F, 5.0F, 7, 4, 1, 0.0F, false));
 				torso.cubeList.add(new ModelBox(torso, 32, 17, -3.5F, -1.0F, 4.0F, 7, 5, 1, 0.0F, false));
-				torso.cubeList.add(new ModelBox(torso, 0, 12, -3.6F, 1.2593F, -3.0789F, 7, 3, 7, 0.0F, false));
+				torso.cubeList.add(new ModelBox(torso, 0, 12, -3.6F, 1.2593F, -2.9789F, 7, 3, 7, 0.0F, false));
 				torso.cubeList.add(new ModelBox(torso, 21, 20, -5.5F, -2.0F, -2.7F, 2, 4, 7, 0.0F, false));
 				torso.cubeList.add(new ModelBox(torso, 21, 20, 3.5F, -2.0F, -2.7F, 2, 4, 7, 0.0F, true));
-
+		
+				bone83 = new ModelRenderer(this);
+				bone83.setRotationPoint(0.0F, 4.0F, 6.0F);
+				torso.addChild(bone83);
+				setRotationAngle(bone83, 0.6545F, 0.0F, 0.0F);
+				bone83.cubeList.add(new ModelBox(bone83, 20, 31, -3.5F, -3.0F, 1.35F, 7, 3, 2, 0.0F, false));
+				bone83.cubeList.add(new ModelBox(bone83, 20, 31, -3.5F, -3.0F, 0.0F, 7, 3, 2, 0.0F, false));
+		
 				cube_r6 = new ModelRenderer(this);
 				cube_r6.setRotationPoint(3.0F, 2.7211F, -0.1882F);
 				torso.addChild(cube_r6);
 				setRotationAngle(cube_r6, 0.0F, 0.0873F, 0.7418F);
 				cube_r6.cubeList.add(new ModelBox(cube_r6, 11, 29, 0.3F, -2.1F, -2.55F, 1, 3, 7, 0.0F, true));
-
+		
 				cube_r7 = new ModelRenderer(this);
 				cube_r7.setRotationPoint(-3.0F, 2.7211F, -0.1882F);
 				torso.addChild(cube_r7);
@@ -1899,7 +1916,7 @@ public class EntityThreeTails extends ElementsNarutomodMod.ModElement {
 
 				for (int i = 0; i < 3; i++) {
 					for (int j = 1; j < 8; j++) {
-						tailSwayX[i][j] = (rand.nextFloat() * 0.2618F + 0.2618F) * (rand.nextBoolean() ? -1F : 1F);
+						tailSwayX[i][j] = (rand.nextFloat() * 0.1745F + 0.1745F) * (rand.nextBoolean() ? -1F : 1F);
 						tailSwayZ[i][j] = (rand.nextFloat() * 0.1745F + 0.1745F) * (rand.nextBoolean() ? -1F : 1F);
 						tailSwayY[i][j] = (rand.nextFloat() * 0.0873F + 0.0873F);
 					}

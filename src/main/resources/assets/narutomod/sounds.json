@@ -1006,5 +1006,32 @@
         "stream": false
       }
     ]
+  },
+  "isobu_roar": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "narutomod:isobu_roar",
+        "stream": false
+      }
+    ]
+  },
+  "isobu_hurt": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "narutomod:isobu_hurt",
+        "stream": false
+      }
+    ]
+  },
+  "guttural": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "narutomod:guttural",
+        "stream": false
+      }
+    ]
   }
 }
