@@ -70,6 +70,8 @@ import javax.vecmath.Vector2f;
 import com.google.common.collect.Maps;
 import com.google.common.base.Optional;
 import io.netty.buffer.ByteBuf;
+import net.minecraft.client.renderer.culling.Frustum;
+import net.minecraft.client.renderer.culling.ICamera;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityHiraishin extends ElementsNarutomodMod.ModElement {
@@ -531,10 +533,13 @@ public class EntityHiraishin extends ElementsNarutomodMod.ModElement {
 			if (mc.player != null && PlayerTracker.isNinja(mc.player) && !clientMarkerList.isEmpty()) {
 				RenderManager renderManager = mc.getRenderManager();
 				if (renderManager != null && renderManager.options != null && renderManager.options.thirdPersonView == 0) {
+					ICamera camera = new Frustum();
+					camera.setPosition(renderManager.viewerPosX, renderManager.viewerPosY, renderManager.viewerPosZ);
 					for (Vector4d vec : clientMarkerList.values()) {
-						if ((int)vec.w == mc.world.provider.getDimension()) {
-							this.renderCustom.renderMarker(vec.x - renderManager.viewerPosX, vec.y - renderManager.viewerPosY,
-							 vec.z - renderManager.viewerPosZ, (float)mc.world.getTotalWorldTime() + event.getPartialTicks());
+						Vec3d vec1 = new Vec3d(vec.x, vec.y, vec.z).subtract(renderManager.viewerPosX, renderManager.viewerPosY, renderManager.viewerPosZ);
+						AxisAlignedBB aabb = new AxisAlignedBB(vec.x-0.5d, vec.y, vec.z-0.5d, vec.x+0.5d, vec.y+1.0d, vec.z+0.5d);
+						if ((int)vec.w == mc.world.provider.getDimension() && camera.isBoundingBoxInFrustum(aabb.grow(vec1.lengthVector()/20d))) {
+							this.renderCustom.renderMarker(vec1.x, vec1.y, vec1.z, (float)mc.world.getTotalWorldTime() + event.getPartialTicks());
 						}
 					}
 				}

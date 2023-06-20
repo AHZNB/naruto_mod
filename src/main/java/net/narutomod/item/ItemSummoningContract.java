@@ -29,6 +29,7 @@ import net.minecraft.block.state.IBlockState;
 import net.narutomod.entity.EntityToad;
 import net.narutomod.entity.EntitySnake;
 import net.narutomod.entity.EntitySlug;
+import net.narutomod.entity.EntityEnma;
 import net.narutomod.entity.EntityGamabunta;
 import net.narutomod.entity.EntityManda;
 import net.narutomod.procedure.ProcedureOnLeftClickEmpty;
@@ -53,6 +54,7 @@ public class ItemSummoningContract extends ElementsNarutomodMod.ModElement {
 	public static final ItemJutsu.JutsuEnum SUMMONTOAD = new ItemJutsu.JutsuEnum(0, "toad_summon", 'C', 100d, new EntityGenericToad.Jutsu());
 	public static final ItemJutsu.JutsuEnum SUMMONSNAKE = new ItemJutsu.JutsuEnum(1, "snake_summon", 'C', 100d, new EntityGenericSnake.Jutsu());
 	public static final ItemJutsu.JutsuEnum SUMMONSLUG = new ItemJutsu.JutsuEnum(2, "slug", 'C', 100d, new EntitySlug.Jutsu());
+	public static final ItemJutsu.JutsuEnum SUMMONENMA = new ItemJutsu.JutsuEnum(3, "enma", 'C', 100d, new EntityEnma.EC.Jutsu());
 
 	public ItemSummoningContract(ElementsNarutomodMod instance) {
 		super(instance, 718);
@@ -60,7 +62,7 @@ public class ItemSummoningContract extends ElementsNarutomodMod.ModElement {
 
 	@Override
 	public void initElements() {
-		elements.items.add(() -> new ItemCustom(SUMMONTOAD, SUMMONSNAKE, SUMMONSLUG));
+		elements.items.add(() -> new ItemCustom(SUMMONTOAD, SUMMONSNAKE, SUMMONSLUG, SUMMONENMA));
 		elements.entities.add(() -> EntityEntryBuilder.create().entity(EntityGenericToad.class)
 		 .id(new ResourceLocation("narutomod", "toad_summon"), ENTITYID).name("toad_summon").tracker(96, 3, true).egg(-1, -1).build());
 		elements.entities.add(() -> EntityEntryBuilder.create().entity(EntityGenericSnake.class)
@@ -118,7 +120,16 @@ public class ItemSummoningContract extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		protected float getPower(ItemStack stack, EntityLivingBase entity, int timeLeft) {
-			return this.getPower(stack, entity, timeLeft, 0.0f, 80);
+			ItemJutsu.JutsuEnum jutsu = this.getCurrentJutsu(stack);
+			return jutsu == SUMMONENMA ? this.getPower(stack, entity, timeLeft, 0.0f, 200)
+			 : this.getPower(stack, entity, timeLeft, 0.0f, 80);
+		}
+
+		@Override
+		protected float getMaxPower(ItemStack stack, EntityLivingBase entity) {
+			float ret = super.getMaxPower(stack, entity);
+			ItemJutsu.JutsuEnum jutsu = this.getCurrentJutsu(stack);
+			return jutsu == SUMMONENMA ? Math.min(ret, 1.0f) : ret;
 		}
 
 		@Override
@@ -150,6 +161,7 @@ public class ItemSummoningContract extends ElementsNarutomodMod.ModElement {
 				this.enableJutsu(itemstack, SUMMONTOAD, type.equalsIgnoreCase("toad"));
 				this.enableJutsu(itemstack, SUMMONSNAKE, type.equalsIgnoreCase("snake"));
 				this.enableJutsu(itemstack, SUMMONSLUG, type.equalsIgnoreCase("slug"));
+				this.enableJutsu(itemstack, SUMMONENMA, type.equalsIgnoreCase("enma"));
 			}
 		}
 
@@ -164,6 +176,9 @@ public class ItemSummoningContract extends ElementsNarutomodMod.ModElement {
 				 + new TextComponentTranslation("item.summoning_contract.name").getUnformattedComponentText() + TextFormatting.RESET);
 			} else if (this.isJutsuEnabled(itemstack, SUMMONSLUG)) {
 				list.add(TextFormatting.BLUE + new TextComponentTranslation("entity.slug.name").getUnformattedComponentText() + " "
+				 + new TextComponentTranslation("item.summoning_contract.name").getUnformattedComponentText() + TextFormatting.RESET);
+			} else if (this.isJutsuEnabled(itemstack, SUMMONENMA)) {
+				list.add(TextFormatting.BLUE + new TextComponentTranslation("entity.enma.name").getUnformattedComponentText() + " "
 				 + new TextComponentTranslation("item.summoning_contract.name").getUnformattedComponentText() + TextFormatting.RESET);
 			}
 			super.addInformation(itemstack, world, list, flag);

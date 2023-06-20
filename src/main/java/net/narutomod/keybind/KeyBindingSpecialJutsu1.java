@@ -55,8 +55,10 @@ public class KeyBindingSpecialJutsu1 extends ElementsNarutomodMod.ModElement {
 	@SideOnly(Side.CLIENT)
 	public void onClientPostTick(TickEvent.ClientTickEvent event) {
 		if (event.phase == TickEvent.Phase.END) {
-			this.processKeyBind();
 			Minecraft mc = Minecraft.getMinecraft();
+			if (mc.currentScreen == null) {
+				this.processKeyBind();
+			}
 			if (mc.player != null) {
 				boolean flag = mc.currentScreen != null;
 				if (flag != mc.player.getEntityData().getBoolean("hasAnyGuiOpen")) {

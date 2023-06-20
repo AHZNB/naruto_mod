@@ -1,8 +1,8 @@
 {
   "id_map": {
-    "GUI": 64,
     "DIMENSION": 13,
-    "ENTITY": 422
+    "ENTITY": 424,
+    "GUI": 64
   },
   "mod_elements": [
     {
@@ -7127,6 +7127,18 @@
       "locked_code": false,
       "ids": {},
       "registry_name": "ichiraku_ramen_recipe"
+    },
+    {
+      "name": "Enma",
+      "type": "mob",
+      "sortid": 850,
+      "compiles": true,
+      "locked_code": true,
+      "ids": {
+        "0": 423,
+        "1": 424
+      },
+      "registry_name": "enma"
     }
   ],
   "variable_elements": [
@@ -8091,16 +8103,16 @@
   ],
   "language_map": {
     "en_us": {
-      "item.kiba_blades.name": "Kiba Blades",
       "entity.crow.name": "Crow",
+      "item.kiba_blades.name": "Kiba Blades",
       "chattext.gedomazo.cantspawn": "Can\u0027t summon Gedo Mazo, it\u0027s already in the world",
       "entity.tenten.name": "Tenten",
       "item.futton.name": "Boil Release",
       "item.scroll_water_prison.name": "Water Release - Water Prison jutsu",
       "subtitles.sando_no_jutsi": "",
       "item.steam_armorlegs.name": "Steam Armor Leggings",
-      "item.futon.name": "Wind Release",
       "subtitles.sando_no_jutsu": "",
+      "item.futon.name": "Wind Release",
       "subtitles.laser": "",
       "item.ryo_100.name": "100 Ryo",
       "tooltip.samehada.general": "Samehada is a sentient sword utilised by the Seven Ninja Swordsmen of the Mist and is regarded as the most terrifying out of all the Seven Swordsmen\u0027s blades.",
@@ -8108,18 +8120,18 @@
       "item.shuriken.name": "Shuriken",
       "entity.cellular_activation.name": "Cellular Activation",
       "entity.entityasakujaku.name": "Asakujaku (Morning Peacock)",
-      "item.scroll_water_dragon.name": "Water Release - Water Dragon Bullet",
       "tooltip.kekkeimora.expansivetsb": "Expansive Truth Seeking Ball",
-      "item.gunbai.name": "Gunbai",
+      "item.scroll_water_dragon.name": "Water Release - Water Dragon Bullet",
       "entity.tailed_beast.name": "Tailed Beast",
+      "item.gunbai.name": "Gunbai",
       "item.scroll_rasenshuriken.name": "Wind Release - Rasenshuriken",
       "entity.itachi.name": "Itachi Uchiha",
       "item.scroll_lightning_panther.name": "Lightning Release: Black Panther",
       "item.clothes_raikagehelmet.name": "Raikage Hat",
       "entity.jinchuriki_clone.name": "Tailed Beast Cloak",
       "tipped_arrow.effect.paralysis": "Arrow of Paralysis",
-      "item.byakurinnesharinganhelmet.name": "Fake Rinne Sharingan",
       "tipped_arrow.effect.reach": "Arrow of Reach",
+      "item.byakurinnesharinganhelmet.name": "Fake Rinne Sharingan",
       "chattext.medicalgui.notmedninja": "You are not a medical ninja.",
       "tooltip.shikotsumyaku.dancelarch": "Larch Dance",
       "entity.tensei_baku_silver.name": "Silver Wheel Rebirth Blast",
@@ -8353,6 +8365,7 @@
       "item.ryo_10000.name": "Ryo 10,000",
       "tooltip.futton.musthave": "Must have Water \u0026 Fire release",
       "item.curryand_rice.name": "Curry and Rice",
+      "entity.enma.name": "Enma",
       "entity.chibaku_tensei_ball.name": "Chibaku Tensei Ball",
       "item.steam_armorbody.name": "Steam Armor Shirt",
       "subtitles.kairikimuso": "",

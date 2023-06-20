@@ -17,6 +17,7 @@ Items:
  - fixed explosive tags breaking blocks when mobGriefing false
  - implemented Sound Reflecting Gauntlet and recipe. left click to shoot soundwaves, right click to block
  - Ramen is now craftable and gives 25 seconds saturation
+ - simplified hiraishin/3-prong kunai model to reduce client lag on rendering marker/kunai
  
 Entities:
  - re-textured white zetsu, itachi
@@ -25,6 +26,7 @@ Entities:
  - better tailed beasts movement AI
  - added ambient sounds for shukaku, songoku, chomei, isobu
  - fixed player's outer skin layer not synced with arms when naruto running
+ - added Enma summon (WIP)
 
 General:
  - resets tailed beasts spawn point if natural spawning is disabled in config

@@ -437,7 +437,7 @@ public class EntityClone extends ElementsNarutomodMod.ModElement {
 	
 		@Override
 	    public boolean shouldExecute() {
-	        EntityLivingBase entitylivingbase = ((_Base)this.entity).getSummoner();
+	        EntityLivingBase entitylivingbase = this.getFollowEntity();
 	        if (entitylivingbase == null) {
 	            return false;
 	        } else if (entitylivingbase instanceof EntityPlayer && ((EntityPlayer)entitylivingbase).isSpectator()) {
@@ -492,6 +492,10 @@ public class EntityClone extends ElementsNarutomodMod.ModElement {
 
 	    protected double getSpeed() {
 	    	return this.speedModifier;
+	    }
+
+	    protected EntityLivingBase getFollowEntity() {
+	    	return ((_Base)this.entity).getSummoner();
 	    }
 	}
 
