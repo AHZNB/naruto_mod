@@ -176,28 +176,83 @@ public class PlayerRender extends ElementsNarutomodMod.ModElement {
 					GlStateManager.disableBlendProfile(GlStateManager.Profile.TRANSPARENT_MODEL);
 				}
 			} else {
-				ModelPlayer model = this.getMainModel();
-				if (shouldNarutoRun(entityIn) && model.swingProgress == 0.0f
-				 && model.rightArmPose == ModelBiped.ArmPose.EMPTY && model.leftArmPose == ModelBiped.ArmPose.EMPTY) {
-					model.bipedRightArm.showModel = false;
-					model.bipedRightArmwear.showModel = false;
-					model.bipedLeftArm.showModel = false;
-					model.bipedLeftArmwear.showModel = false;
-					model.isSneak = true;
-					super.renderModel(entityIn, f0, f1, f2, f3, f4, f5);
-					model.setVisible(false);
-					model.bipedRightArm.showModel = true;
-					model.bipedRightArmwear.showModel = true;
-					super.renderModel(entityIn, 4.7157f, 1.1345f, f2, f3, f4, f5);
-					model.setVisible(false);
-					model.bipedLeftArm.showModel = true;
-					model.bipedLeftArmwear.showModel = true;
-					super.renderModel(entityIn, 0.0f, 1.1345f, f2, f3, f4, f5);
-					model.setVisible(true);
-				} else {
-					super.renderModel(entityIn, f0, f1, f2, f3, f4, f5);
+				boolean flag = this.isVisible(entityIn);
+				boolean flag1 = !flag && !entityIn.isInvisibleToPlayer(Minecraft.getMinecraft().player);
+				if (flag || flag1) {
+					if (flag1) {
+						GlStateManager.enableBlendProfile(GlStateManager.Profile.TRANSPARENT_MODEL);
+					}
+					this.bindEntityTexture(entityIn);
+					ModelPlayer model = this.getMainModel();
+					if (shouldNarutoRun(entityIn) && model.swingProgress == 0.0f
+				 	 && model.rightArmPose == ModelBiped.ArmPose.EMPTY && model.leftArmPose == ModelBiped.ArmPose.EMPTY) {
+						this.renderNarutoRun(model, entityIn, f0, f1, f2, f3, f4, f5);
+				 	} else {
+				 		model.render(entityIn, f0, f1, f2, f3, f4, f5);
+				 	}
+					if (flag1) {
+						GlStateManager.disableBlendProfile(GlStateManager.Profile.TRANSPARENT_MODEL);
+					}
 				}
 			}
+		}
+
+		public void renderNarutoRun(ModelBiped model, Entity entityIn, float f0, float f1, float f2, float f3, float f4, float scale) {
+			model.isSneak = true;
+			model.setRotationAngles(f0, f1, f2, f3, f4, scale, entityIn);
+			model.bipedRightArm.rotateAngleX = 1.4835F;
+			model.bipedRightArm.rotateAngleY = -0.3927F;
+			model.bipedLeftArm.rotateAngleX = 1.4835F;
+			model.bipedLeftArm.rotateAngleY = 0.3927F;
+			if (model instanceof ModelPlayer) {
+				((ModelPlayer)model).bipedRightArmwear.rotateAngleX = model.bipedRightArm.rotateAngleX;
+				((ModelPlayer)model).bipedRightArmwear.rotateAngleY = model.bipedRightArm.rotateAngleY;
+				((ModelPlayer)model).bipedLeftArmwear.rotateAngleX = model.bipedLeftArm.rotateAngleX;
+				((ModelPlayer)model).bipedLeftArmwear.rotateAngleY = model.bipedLeftArm.rotateAngleY;
+			}
+			GlStateManager.pushMatrix();
+	        if (model.isChild) {
+	            float f = 2.0F;
+	            GlStateManager.scale(0.75F, 0.75F, 0.75F);
+	            GlStateManager.translate(0.0F, 16.0F * scale, 0.0F);
+	            model.bipedHead.render(scale);
+	            GlStateManager.popMatrix();
+	            GlStateManager.pushMatrix();
+	            GlStateManager.scale(0.5F, 0.5F, 0.5F);
+	            GlStateManager.translate(0.0F, 24.0F * scale, 0.0F);
+	            model.bipedBody.render(scale);
+	            model.bipedRightArm.render(scale);
+	            model.bipedLeftArm.render(scale);
+	            model.bipedRightLeg.render(scale);
+	            model.bipedLeftLeg.render(scale);
+	            model.bipedHeadwear.render(scale);
+	            if (model instanceof ModelPlayer) {
+		            ((ModelPlayer)model).bipedLeftLegwear.render(scale);
+		            ((ModelPlayer)model).bipedRightLegwear.render(scale);
+		            ((ModelPlayer)model).bipedLeftArmwear.render(scale);
+		            ((ModelPlayer)model).bipedRightArmwear.render(scale);
+		            ((ModelPlayer)model).bipedBodyWear.render(scale);
+	            }
+	        } else {
+	            if (entityIn.isSneaking()) {
+	                GlStateManager.translate(0.0F, 0.2F, 0.0F);
+	            }
+	            model.bipedHead.render(scale);
+	            model.bipedBody.render(scale);
+	            model.bipedRightArm.render(scale);
+	            model.bipedLeftArm.render(scale);
+	            model.bipedRightLeg.render(scale);
+	            model.bipedLeftLeg.render(scale);
+	            model.bipedHeadwear.render(scale);
+	            if (model instanceof ModelPlayer) {
+		            ((ModelPlayer)model).bipedLeftLegwear.render(scale);
+		            ((ModelPlayer)model).bipedRightLegwear.render(scale);
+		            ((ModelPlayer)model).bipedLeftArmwear.render(scale);
+		            ((ModelPlayer)model).bipedRightArmwear.render(scale);
+		            ((ModelPlayer)model).bipedBodyWear.render(scale);
+	            }
+	        }
+	        GlStateManager.popMatrix();
 		}
 
 		@Override
@@ -285,7 +340,7 @@ public class PlayerRender extends ElementsNarutomodMod.ModElement {
 						if (item.showSkinLayer()) {
 							this.renderSkinLayer(stack, entityIn, limbSwing, limbSwingAmount, partialTicks, ageInTicks, netHeadYaw, headPitch, scale);
 						}
-						if (item.showOnBody() != ItemOnBody.BodyPart.NONE && i != entityIn.inventory.currentItem) {
+						if (item.showOnBody() != ItemOnBody.BodyPart.NONE && i != entityIn.inventory.currentItem && i != 40) {
 							this.renderItemOnBody(stack, entityIn, limbSwing, limbSwingAmount, partialTicks, ageInTicks, netHeadYaw, headPitch, scale);
 						}
 					}
@@ -362,9 +417,9 @@ public class PlayerRender extends ElementsNarutomodMod.ModElement {
 
 	@SideOnly(Side.CLIENT)
 	public class LayerArmorCustom extends LayerBipedArmor {
-		private final RenderLivingBase<?> renderer;
+		private final Renderer renderer;
 
-		public LayerArmorCustom(RenderLivingBase<?> rendererIn) {
+		public LayerArmorCustom(Renderer rendererIn) {
 			super(rendererIn);
 			this.renderer = rendererIn;
 		}
@@ -412,29 +467,7 @@ public class PlayerRender extends ElementsNarutomodMod.ModElement {
 		private void renderArmorModel(ModelBiped model, Entity entityIn, float f0, float f1, float f2, float f3, float f4, float f5) {
 			if (shouldNarutoRun(entityIn) && model.swingProgress == 0.0f
 			 && model.rightArmPose == ModelBiped.ArmPose.EMPTY && model.leftArmPose == ModelBiped.ArmPose.EMPTY) {
-				boolean showRightArm = model.bipedRightArm.showModel;
-				boolean showLeftArm = model.bipedLeftArm.showModel;
-				model.bipedRightArm.showModel = false;
-				model.bipedLeftArm.showModel = false;
-				model.isSneak = true;
-				model.render(entityIn, f0, f1, f2, f3, f4, f5);
-				if (showLeftArm || showRightArm) {
-					model.bipedHead.showModel = false;
-					model.bipedHeadwear.showModel = false;
-					model.bipedBody.showModel = false;
-					model.bipedRightLeg.showModel = false;
-					model.bipedLeftLeg.showModel = false;
-					if (showRightArm) {
-						model.bipedRightArm.showModel = true;
-						model.bipedLeftArm.showModel = false;
-						model.render(entityIn, 4.7157f, 1.1345f, f2, f3, f4, f5);
-					}
-					if (showLeftArm) {
-						model.bipedRightArm.showModel = false;
-						model.bipedLeftArm.showModel = true;
-						model.render(entityIn, 0.0f, 1.1345f, f2, f3, f4, f5);
-					}
-				}
+				this.renderer.renderNarutoRun(model, entityIn, f0, f1, f2, f3, f4, f5);
 			} else {
 				model.render(entityIn, f0, f1, f2, f3, f4, f5);
 			}

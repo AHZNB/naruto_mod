@@ -971,15 +971,6 @@
       }
     ]
   },
-  "fourtails_hurt": {
-    "category": "master",
-    "sounds": [
-      {
-        "name": "narutomod:4tails_hurt",
-        "stream": false
-      }
-    ]
-  },
   "fourtails_defeat": {
     "category": "master",
     "sounds": [
@@ -1030,6 +1021,15 @@
     "sounds": [
       {
         "name": "narutomod:guttural",
+        "stream": false
+      }
+    ]
+  },
+  "fourtails_hurt": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "narutomod:4tails_hurt",
         "stream": false
       }
     ]

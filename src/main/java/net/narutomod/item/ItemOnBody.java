@@ -125,11 +125,11 @@ public class ItemOnBody extends ElementsNarutomodMod.ModElement {
 			for (int i = 0; i < this.player.inventory.getSizeInventory(); ++i) {
 				ItemStack stack1 = this.player.inventory.getStackInSlot(i);
 				ItemStack stack2 = this.slotMap.get(Integer.valueOf(i));
-				if ((stack2 == null || !ItemStack.areItemsEqual(stack1, stack2))
-				 && (stack1.getItem() instanceof Interface || (stack2 != null && stack2.getItem() instanceof Interface))) {
+				boolean flag = stack2 != null && ItemStack.areItemStacksEqual(stack1, stack2);
+				if (!flag && (stack1.getItem() instanceof Interface || (stack2 != null && stack2.getItem() instanceof Interface))) {
 					this.slotMap.put(Integer.valueOf(i), stack1);
 					update = true;
-				} else if (stack2 != null && ItemStack.areItemsEqual(stack1, stack2) && !(stack2.getItem() instanceof Interface)) {
+				} else if (flag && !(stack2.getItem() instanceof Interface)) {
 					this.slotMap.remove(Integer.valueOf(i));
 				}
 			}

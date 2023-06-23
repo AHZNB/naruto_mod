@@ -34,6 +34,7 @@ import net.minecraft.client.model.ModelBox;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.block.material.Material;
+import net.minecraft.init.SoundEvents;
 
 import com.google.common.base.Predicate;
 import javax.annotation.Nullable;
@@ -51,7 +52,7 @@ public class EntityEnma extends ElementsNarutomodMod.ModElement {
 	@Override
 	public void initElements() {
 		elements.entities.add(() -> EntityEntryBuilder.create().entity(EC.class).id(new ResourceLocation("narutomod", "enma"), ENTITYID)
-				.name("enma").tracker(64, 3, true).egg(-13358295, -3761328).build());
+				.name("enma").tracker(84, 3, true).egg(-13358295, -3761328).build());
 	}
 
 	public static class EC extends EntitySummonAnimal.Base {
@@ -80,12 +81,12 @@ public class EntityEnma extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public SoundEvent getAmbientSound() {
-			return SoundEvent.REGISTRY.getObject(new ResourceLocation(""));
+			return null;
 		}
 
 		@Override
 		public SoundEvent getHurtSound(DamageSource ds) {
-			return SoundEvent.REGISTRY.getObject(new ResourceLocation("entity.generic.hurt"));
+			return SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:fourtails_hurt"));
 		}
 
 		@Override
@@ -100,7 +101,7 @@ public class EntityEnma extends ElementsNarutomodMod.ModElement {
 			this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.5D);
 			this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(1000D);
 			this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(40D);
-			this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(64.0);
+			this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(64.0D);
 		}
 
 		@Override
@@ -134,12 +135,11 @@ public class EntityEnma extends ElementsNarutomodMod.ModElement {
 					} else if (this.entity.getAttackTarget() != null) {
 						this.closestEntity = this.entity.getAttackTarget();
 					} else {
-						this.closestEntity = ProcedureUtils.findNearestEntityWithinAABB(this.entity.world,
-						 this.watchedClass, this.entity.getEntityBoundingBox().grow(this.maxDistanceForPlayer,
-						 3.0D, this.maxDistanceForPlayer), this.entity, new Predicate<Entity>() {
+						this.closestEntity = ProcedureUtils.findNearestEntityWithinAABB(this.entity.world, this.watchedClass,
+						 this.entity.getEntityBoundingBox().grow(this.maxDistanceForPlayer), this.entity, new Predicate<Entity>() {
 							public boolean apply(@Nullable Entity p_apply_1_) {
 								return p_apply_1_ instanceof EntityLivingBase && p_apply_1_.isEntityAlive()
-								 && !p_apply_1_.equals(EC.this.getSummoner())
+								 && !p_apply_1_.equals(EC.this.getSummoner()) && !(p_apply_1_ instanceof EC)
 								 && ProcedureUtils.getModifiedAttackDamage((EntityLivingBase)p_apply_1_) >= 1.0d;
 							}
 						 });
@@ -170,6 +170,18 @@ public class EntityEnma extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void onUpdate() {
 			super.onUpdate();
+			int age = this.getAge();
+			if (age <= 40) {
+				this.playSound(SoundEvents.BLOCK_FIRE_EXTINGUISH, (40f - age) / 40f, this.rand.nextFloat() * 0.4f + 0.8f);
+				Particles.Renderer particles = new Particles.Renderer(this.world);
+				for (int i = 0; i < 50; i++) {
+					particles.spawnParticles(Particles.Types.SMOKE,
+					 this.posX, this.posY + this.rand.nextDouble() * this.height, this.posZ, 1, 0d, 0d, 0d,
+					 (this.rand.nextDouble()-0.5d) * 0.6d, this.rand.nextDouble() * 0.1d,
+					 (this.rand.nextDouble()-0.5d) * 0.6d, 0xD0FFFFFF, 50);
+				}
+				particles.send();
+			}
 			this.fallDistance = 0.0f;
 			BlockPos pos = new BlockPos(this);
 			if (this.world.getBlockState(pos).getMaterial() == Material.WATER
@@ -192,10 +204,9 @@ public class EntityEnma extends ElementsNarutomodMod.ModElement {
 					particles.spawnParticles(Particles.Types.SEAL_FORMULA,
 					 entity.posX, entity.posY + 0.015d, entity.posZ, 1, 0d, 0d, 0d, 0d, 0d, 0d, (int)(power * 40), 0, 60);
 					for (int i = 0; i < 500; i++) {
-						particles.spawnParticles(Particles.Types.SMOKE,
-						 entity.posX, entity.posY + 0.015d, entity.posZ, 1, 0d, 0d, 0d,
-						 (entity.getRNG().nextDouble()-0.5d) * 0.8d, entity.getRNG().nextDouble() * 0.6d + 0.2d, (entity.getRNG().nextDouble()-0.5d) * 0.8d,
-						 0xD0FFFFFF, (int)(power * 30));
+						particles.spawnParticles(Particles.Types.SMOKE, entity.posX, entity.posY, entity.posZ, 1, 0d, 0d, 0d,
+						 (entity.getRNG().nextDouble()-0.5d) * 0.6d, entity.getRNG().nextDouble() * 0.2d,
+						 (entity.getRNG().nextDouble()-0.5d) * 0.6d, 0xD0FFFFFF, 50);
 					}
 					particles.send();
 					entity.world.playSound(null, entity.posX, entity.posY, entity.posZ,
@@ -528,10 +539,10 @@ public class EntityEnma extends ElementsNarutomodMod.ModElement {
 				setRotationAngle(bone3, -0.2618F, 0.4363F, 0.0F);
 				bone3.cubeList.add(new ModelBox(bone3, 48, 0, -1.9F, 1.0F, -2.0F, 4, 6, 4, 0.5F, false));
 				bone4 = new ModelRenderer(this);
-				bone4.setRotationPoint(0.0F, 8.0F, -2.5F);
+				bone4.setRotationPoint(0.0F, 7.5F, -2.0F);
 				bone3.addChild(bone4);
 				setRotationAngle(bone4, 0.2618F, 0.0F, 0.0F);
-				bone4.cubeList.add(new ModelBox(bone4, 16, 45, -1.9F, -0.6028F, 0.5789F, 4, 6, 4, 0.1F, false));
+				bone4.cubeList.add(new ModelBox(bone4, 16, 45, -1.9F, -0.1028F, 0.0789F, 4, 6, 4, 0.1F, false));
 				rightFoot = new ModelRenderer(this);
 				rightFoot.setRotationPoint(0.2F, 5.25F, 2.25F);
 				bone4.addChild(rightFoot);
@@ -592,10 +603,10 @@ public class EntityEnma extends ElementsNarutomodMod.ModElement {
 				setRotationAngle(bone32, -0.2618F, -0.4363F, 0.0F);
 				bone32.cubeList.add(new ModelBox(bone32, 48, 0, -2.1F, 1.0F, -2.0F, 4, 6, 4, 0.5F, true));
 				bone33 = new ModelRenderer(this);
-				bone33.setRotationPoint(0.0F, 8.0F, -2.5F);
+				bone33.setRotationPoint(0.0F, 7.5F, -2.0F);
 				bone32.addChild(bone33);
 				setRotationAngle(bone33, 0.2618F, 0.0F, 0.0F);
-				bone33.cubeList.add(new ModelBox(bone33, 16, 45, -2.1F, -0.6028F, 0.5789F, 4, 6, 4, 0.1F, true));
+				bone33.cubeList.add(new ModelBox(bone33, 16, 45, -2.1F, -0.1028F, 0.0789F, 4, 6, 4, 0.1F, true));
 				leftFoot = new ModelRenderer(this);
 				leftFoot.setRotationPoint(-0.2F, 5.25F, 2.25F);
 				bone33.addChild(leftFoot);

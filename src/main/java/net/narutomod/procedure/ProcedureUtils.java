@@ -204,12 +204,17 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static boolean hasItemInMainInventory(EntityPlayer player, Item itemIn) {
+		return getItemInMainInventory(player, itemIn) != null;
+	}
+
+	@Nullable
+	public static ItemStack getItemInMainInventory(EntityPlayer player, Item itemIn) {
 		for (ItemStack stack : player.inventory.mainInventory) {
 			if (!stack.isEmpty() && stack.getItem() == itemIn) {
-				return true;
+				return stack;
 			}
 		}
-		return false;
+		return null;
 	}
 
 	public static ItemStack getMatchingItemStack(EntityPlayer player, ItemStack itemStackIn) {
@@ -756,6 +761,12 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 			return list.get(0);
 		}
 		return null;
+	}
+
+	public static boolean isSpaceOpenToStandOn(EntityLivingBase entity, BlockPos pos) {
+		AxisAlignedBB bb = entity.getEntityBoundingBox();
+		Vec3d vec = new Vec3d(0.5d+pos.getX(), pos.getY(), 0.5d+pos.getZ()).subtract(entity.posX, bb.minY, entity.posZ);
+		return entity.world.getCollisionBoxes(null, bb.contract(0d, -0.1d, 0d).grow(0.5d, 0d, 0.5d).offset(vec)).isEmpty();
 	}
 
 	public static String animateString(String string, int type, boolean returnToBlack) {

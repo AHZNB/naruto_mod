@@ -92,6 +92,7 @@ public class EntityTruthSeekerBall extends ElementsNarutomodMod.ModElement {
 			this.isImmuneToFire = true;
 			this.setOGSize(0.25F, 0.25F);
 			this.setEntityScale(this.inititalScale);
+			this.setNoGravity(true);
 		}
 
 		public EntityCustom(EntityLivingBase shooter, int posIndex, ItemStack helditem) {
@@ -436,7 +437,7 @@ public class EntityTruthSeekerBall extends ElementsNarutomodMod.ModElement {
 				GlStateManager.translate(x, y + (0.125F * scale), z);
 				GlStateManager.scale(scale, scale, scale);
 				if (!entity.isShieldOn()) {
-					GlStateManager.rotate(((float)entity.ticksExisted + partialTicks) * 60.0F, 1.0F, 1.0F, 0.0F);
+					GlStateManager.rotate(((float)entity.ticksExisted + partialTicks) * 90.0F, 1.0F, 1.0F, 0.0F);
 				}
 				GlStateManager.disableLighting();
 				//OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240.0F, 240.0F);

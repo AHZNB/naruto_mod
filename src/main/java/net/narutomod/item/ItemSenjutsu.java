@@ -163,13 +163,15 @@ public class ItemSenjutsu extends ElementsNarutomodMod.ModElement {
 		public void onUpdate(ItemStack itemstack, World world, Entity entity, int par4, boolean par5) {
 			super.onUpdate(itemstack, world, entity, par4, par5);
 			if (!world.isRemote && entity instanceof EntityLivingBase) {
-				if (this.getSageType(itemstack) == Type.NONE) {
+				Type sageType = this.getSageType(itemstack);
+				if (sageType == Type.NONE) {
 					Type forcedType = itemstack.hasTagCompound() && itemstack.getTagCompound().hasKey("Type", 8)
 					 ? Type.getTypeFromName(itemstack.getTagCompound().getString("Type")) 
 					 : entity instanceof EntityPlayer && ((EntityPlayer)entity).isCreative() ? Type.random() : Type.NONE;
 					if (forcedType != Type.NONE) {
 						this.setSageType(itemstack, forcedType);
 						this.enableJutsu(itemstack, SAGEMODE, true);
+						sageType = forcedType;
 					} else {
 						return;
 					}
@@ -217,6 +219,7 @@ public class ItemSenjutsu extends ElementsNarutomodMod.ModElement {
 					stack1 = ProcedureUtils.getMatchingItemStack((EntityPlayer)entity, ItemMokuton.block);
 					this.enableJutsu(itemstack, WOODBUDDHA,
 					 stack1 != null && ((ItemMokuton.ItemCustom)stack1.getItem()).canUseJutsu(stack1, ItemMokuton.GOLEM, living));
+					this.enableJutsu(itemstack, SNAKE8H, sageType == Type.SNAKE);
 				}
 			}
 		}

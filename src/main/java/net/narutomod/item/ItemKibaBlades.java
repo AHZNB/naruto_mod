@@ -78,6 +78,19 @@ public class ItemKibaBlades extends ElementsNarutomodMod.ModElement {
 		ModelLoader.setCustomModelResourceLocation(block, 0, new ModelResourceLocation("narutomod:kiba_blades", "inventory"));
 	}
 
+	public static void setAsMain(ItemStack stack) {
+		if (stack.getItem() == block) {
+			if (!stack.hasTagCompound()) {
+				stack.setTagCompound(new NBTTagCompound());
+			}
+			NBTTagCompound compound = new NBTTagCompound();
+			long l = new Random().nextLong();
+			compound.setLong("id", l);
+			stack.getTagCompound().setTag("id", compound);
+			stack.getTagCompound().setInteger("id1", compound.hashCode());
+		}
+	}
+
 	public static class RangedItem extends Item implements ItemOnBody.Interface {
 		public RangedItem() {
 			super();
@@ -139,27 +152,45 @@ public class ItemKibaBlades extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
-		public void onUpdate(ItemStack itemstack, World world, Entity entity, int par4, boolean par5) {
-			super.onUpdate(itemstack, world, entity, par4, par5);
+		public void onUpdate(ItemStack itemstack, World world, Entity entity, int inventorySlot, boolean isCurrentItem) {
+			super.onUpdate(itemstack, world, entity, inventorySlot, isCurrentItem);
 			if (!world.isRemote && entity instanceof EntityLivingBase) {
-				if (((EntityLivingBase)entity).getHeldItemMainhand().equals(itemstack)) {
+				if (entity instanceof EntityPlayer && ((EntityPlayer)entity).isCreative() && isCurrentItem && !this.isMain(itemstack)) {
+					setAsMain(itemstack);
+				}
+				ItemStack mainhandStack = ((EntityLivingBase)entity).getHeldItemMainhand();
+				ItemStack offhandStack = ((EntityLivingBase)entity).getHeldItemOffhand();
+				boolean inMainHand = mainhandStack.equals(itemstack);
+				boolean inOffHand = offhandStack.equals(itemstack);
+				boolean ismain = this.isMain(itemstack);
+//System.out.println(">>>>>> inMainHand:"+inMainHand+", inOffHand:"+inOffHand+", slot:"+inventorySlot+", isCurrentItem:"+isCurrentItem+", isMain:"+ismain);
+				if (inMainHand) {
 					EntityCustom entity1 = this.getEntity(itemstack, world);
 					if (entity1 == null) {
 						entity1 = new EntityCustom((EntityLivingBase)entity);
 						world.spawnEntity(entity1);
 						this.setEntity(itemstack, entity1);
 					}
-					if (entity instanceof EntityPlayer && ((EntityLivingBase)entity).getHeldItemOffhand().getItem() != block) {
-						ProcedureUtils.swapItemToSlot((EntityPlayer)entity, EntityEquipmentSlot.OFFHAND, ItemStack.EMPTY);
-						((EntityLivingBase)entity).setItemStackToSlot(EntityEquipmentSlot.OFFHAND, itemstack);
+					if (entity instanceof EntityPlayer && offhandStack.getItem() != block) {
+						if (ismain) {
+							ProcedureUtils.swapItemToSlot((EntityPlayer)entity, EntityEquipmentSlot.OFFHAND, ItemStack.EMPTY);
+							((EntityLivingBase)entity).setItemStackToSlot(EntityEquipmentSlot.OFFHAND, new ItemStack(block));
+						} else {
+							itemstack.shrink(1);
+						}
 					}
-				} else if (((EntityLivingBase)entity).getHeldItemOffhand().getItem() == block && entity instanceof EntityPlayer) {
-					if (ProcedureUtils.hasItemInMainInventory((EntityPlayer)entity, block)) {
-						((EntityLivingBase)entity).setItemStackToSlot(EntityEquipmentSlot.OFFHAND, ItemStack.EMPTY);
-					} else {
-						ProcedureUtils.swapItemToSlot((EntityPlayer)entity, EntityEquipmentSlot.MAINHAND, ItemStack.EMPTY);
-						((EntityLivingBase)entity).setItemStackToSlot(EntityEquipmentSlot.MAINHAND, itemstack);
+				} else if (inOffHand) {
+					if (entity instanceof EntityPlayer && mainhandStack.getItem() != block) {
+						if (ismain) {
+							ProcedureUtils.swapItemToSlot((EntityPlayer)entity, EntityEquipmentSlot.MAINHAND, ItemStack.EMPTY);
+							((EntityLivingBase)entity).setItemStackToSlot(EntityEquipmentSlot.MAINHAND, itemstack);
+							((EntityLivingBase)entity).setItemStackToSlot(EntityEquipmentSlot.OFFHAND, ItemStack.EMPTY);
+						} else {
+							itemstack.shrink(1);
+						}
 					}
+				} else if (!ismain) {
+					itemstack.shrink(1);
 				}
 			}
 		}
@@ -178,6 +209,15 @@ public class ItemKibaBlades extends ElementsNarutomodMod.ModElement {
 				return (entity instanceof EntityCustom && entity.isEntityAlive()) ? (EntityCustom) entity : null;
 			}
 			return null;
+		}
+
+		private boolean isMain(ItemStack stack) {
+			if (stack.hasTagCompound() && stack.getTagCompound().hasKey("id", 10)) {
+				NBTTagCompound compound = stack.getTagCompound().getCompoundTag("id");
+//System.out.println("++++++ hash:"+compound.hashCode()+", id1:"+stack.getTagCompound().getInteger("id1"));
+				return compound.hashCode() == stack.getTagCompound().getInteger("id1");
+			}
+			return false;
 		}
 
 		@Override
@@ -246,7 +286,7 @@ public class ItemKibaBlades extends ElementsNarutomodMod.ModElement {
 			if (!this.world.isRemote && (this.summoner == null || !this.isHoldingWeapon(EnumHand.MAIN_HAND))) {
 				this.setDead();
 			} else if (this.rand.nextFloat() < 0.01f) {
-				this.playSound((SoundEvent)SoundEvent.REGISTRY.getObject(new ResourceLocation(("narutomod:electricity"))),
+				this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:electricity")),
 				  0.1f, this.rand.nextFloat() * 0.5f + 0.4f);
 			}
 		}

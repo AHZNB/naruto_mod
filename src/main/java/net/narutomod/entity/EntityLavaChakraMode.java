@@ -13,6 +13,7 @@ import net.minecraft.world.WorldServer;
 import net.minecraft.world.World;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.EnumHandSide;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -27,6 +28,7 @@ import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.potion.PotionEffect;
 
@@ -37,8 +39,6 @@ import net.narutomod.Chakra;
 import net.narutomod.ElementsNarutomodMod;
 
 import javax.annotation.Nullable;
-import net.minecraft.util.EnumHandSide;
-import net.minecraft.client.model.ModelBiped;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityLavaChakraMode extends ElementsNarutomodMod.ModElement {
@@ -214,8 +214,7 @@ public class EntityLavaChakraMode extends ElementsNarutomodMod.ModElement {
 					GlStateManager.disableLighting();
 					GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 					OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240.0F, 240.0F);
-	                model.setRotationAngles(f6, f5, f, f3, f7, f4, user);
-					model.render(user, f6, f5, f, f3, f7, f4);
+					this.renderModel(model, f6, f5, f, f3, f7, f4, user);
 		            GlStateManager.matrixMode(5890);
 		            GlStateManager.loadIdentity();
 		            GlStateManager.matrixMode(5888);
@@ -223,31 +222,45 @@ public class EntityLavaChakraMode extends ElementsNarutomodMod.ModElement {
 		            GlStateManager.disableBlend();
 		            //GlStateManager.enableDepth();
 		            GlStateManager.popMatrix();
-				/*} else if (model instanceof ModelBiped) {
-					GlStateManager.pushMatrix();
-   		            GlStateManager.translate(x, y + 3.0F, z);
-   		            GlStateManager.rotate(-ProcedureUtils.interpolateRotation(user.prevRotationYaw, user.rotationYaw, pt), 0.0F, 1.0F, 0.0F);
-   		            GlStateManager.rotate(f7, 1.0F, 0.0F, 0.0F);
-   		            GlStateManager.rotate(180F, 0.0F, 1.0F, 0.0F);
-   		            EntityRasengan.rotateArmIn1stPerson(user, pt);
-					GlStateManager.matrixMode(5890);
-					GlStateManager.loadIdentity();
-					GlStateManager.translate(f * 0.01F, f * 0.01F, 0.0F);
-					GlStateManager.matrixMode(5888);
-					GlStateManager.enableBlend();
-					GlStateManager.color(1.0F, 1.0F, 1.0F, 0.6F);
-					GlStateManager.disableLighting();
-					GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-					OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240.0F, 240.0F);
-					(user.getPrimaryHand() == EnumHandSide.LEFT ? ((ModelBiped)model).bipedLeftArm : ((ModelBiped)model).bipedRightArm)
-					 .render(userRenderer.prepareScale(user, pt));
-		            GlStateManager.matrixMode(5890);
-		            GlStateManager.loadIdentity();
-		            GlStateManager.matrixMode(5888);
-		            GlStateManager.enableLighting();
-		            GlStateManager.disableBlend();
-   		            GlStateManager.popMatrix();*/
 				}
+			}
+		}
+
+		private void renderModel(ModelBase modelIn, float f0, float f1, float f2, float f3, float f4, float f5, Entity entityIn) {
+			if (modelIn instanceof ModelBiped) {
+				ModelBiped model = (ModelBiped)modelIn;
+		        GlStateManager.pushMatrix();
+		        if (model.isChild) {
+		            float f = 2.0F;
+		            GlStateManager.scale(0.75F, 0.75F, 0.75F);
+		            GlStateManager.translate(0.0F, 16.0F * f5, 0.0F);
+		            model.bipedHead.render(f5);
+		            GlStateManager.popMatrix();
+		            GlStateManager.pushMatrix();
+		            GlStateManager.scale(0.5F, 0.5F, 0.5F);
+		            GlStateManager.translate(0.0F, 24.0F * f5, 0.0F);
+		            model.bipedBody.render(f5);
+		            model.bipedRightArm.render(f5);
+		            model.bipedLeftArm.render(f5);
+		            model.bipedRightLeg.render(f5);
+		            model.bipedLeftLeg.render(f5);
+		            model.bipedHeadwear.render(f5);
+		        } else {
+		            if (entityIn.isSneaking()) {
+		                GlStateManager.translate(0.0F, 0.2F, 0.0F);
+		            }
+		            model.bipedHead.render(f5);
+		            model.bipedBody.render(f5);
+		            model.bipedRightArm.render(f5);
+		            model.bipedLeftArm.render(f5);
+		            model.bipedRightLeg.render(f5);
+		            model.bipedLeftLeg.render(f5);
+		            model.bipedHeadwear.render(f5);
+		        }
+		        GlStateManager.popMatrix();
+			} else {
+				modelIn.setRotationAngles(f0, f1, f2, f3, f4, f5, entityIn);
+				modelIn.render(entityIn, f0, f1, f2, f3, f4, f5);
 			}
 		}
 

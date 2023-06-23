@@ -72,6 +72,7 @@ import java.lang.reflect.Modifier;
 import java.util.Map;
 import com.google.common.collect.Maps;
 import javax.annotation.Nullable;
+import java.util.List;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityClone extends ElementsNarutomodMod.ModElement {
@@ -476,7 +477,12 @@ public class EntityClone extends ElementsNarutomodMod.ModElement {
 	                this.timeToRecalcPath = 10;
 	                double d = this.entity.getDistance(this.followingEntity);
 	                if (d > (double)this.stopDistance) {
-	                    this.navigation.tryMoveToEntityLiving(this.followingEntity, this.getSpeed());
+	                    if (!this.navigation.tryMoveToEntityLiving(this.followingEntity, this.getSpeed())) {
+	                    	Vec3d vec = this.findOpenSpaceTowardsSummoner(ProcedureUtils.getFollowRange(this.entity) / 2);
+	                    	if (vec != null) {
+	                    		this.entity.setLocationAndAngles(vec.x, vec.y, vec.z, this.entity.rotationYaw, this.entity.rotationPitch);
+	                    	}
+	                    }
 	                } else {
 	                    this.navigation.clearPath();
 	                    if (d <= (double)this.stopDistance * 0.5d) {
@@ -488,6 +494,20 @@ public class EntityClone extends ElementsNarutomodMod.ModElement {
 	            }
 	            this.entity.getLookHelper().setLookPositionWithEntity(this.followingEntity, 10.0F, (float)this.entity.getVerticalFaceSpeed());
 	        }
+	    }
+
+	    @Nullable
+	    protected Vec3d findOpenSpaceTowardsSummoner(double maxDistanceToSummoner) {
+	    	Vec3d vec = this.entity.getPositionVector().subtract(this.followingEntity.getPositionVector()).normalize().scale(maxDistanceToSummoner);
+	    	List<BlockPos> list = ProcedureUtils.getAllAirBlocks(this.entity.world, this.followingEntity.getEntityBoundingBox().expand(vec.x, vec.y, vec.z));
+	    	list.sort(new ProcedureUtils.BlockposSorter(this.entity.getPosition()));
+	    	for (BlockPos pos : list) {
+	    		Material material = this.entity.world.getBlockState(pos.down()).getMaterial();
+	    		if ((material.isSolid() || material == material.WATER) && ProcedureUtils.isSpaceOpenToStandOn(this.entity, pos)) {
+	    			return new Vec3d(0.5d+pos.getX(), pos.getY(), 0.5d+pos.getZ());
+	    		}
+	    	}
+	    	return null;
 	    }
 
 	    protected double getSpeed() {
