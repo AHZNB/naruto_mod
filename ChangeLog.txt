@@ -9,10 +9,14 @@ Jutsus:
  - fixed dying as shadow clone won't revert player back to original
  - reduced limbo clone duration, increased cooldown
  - must fully learn flying thunder god jutsu to tp to the markers
+ - will dismount before teleporting to flying thunder god marker
+ - fixed chunks not generating when teleporting too far with flying thunder god
  - fixed ice release crystal mirrors preventing death from opening all 8-gates or all killing ash bone
  - fixed opening 4+ gates not getting damaged when receiving other potion damage
  - opening 4+ gates damage per 4 seconds, add hunger, remove saturation
  - enabled 8 branch snake when sage mode is type snake
+ - sand funeral can't be used consecutively anymore
+ - sharingan evasion no longer moves you to any unsafe place to stand on
 
 Items:
  - fixed explosive tags breaking blocks when mobGriefing false
@@ -20,6 +24,7 @@ Items:
  - Ramen is now craftable and gives 25 seconds saturation
  - simplified hiraishin/3-prong kunai model to reduce client lag on rendering marker/kunai
  - fixed kiba sword duplication bug
+ - implemented adamantine staff (WIP)
  
 Entities:
  - re-textured white zetsu, itachi

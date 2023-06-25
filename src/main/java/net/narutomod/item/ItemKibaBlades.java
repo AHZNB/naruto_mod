@@ -173,19 +173,16 @@ public class ItemKibaBlades extends ElementsNarutomodMod.ModElement {
 					}
 					if (entity instanceof EntityPlayer && offhandStack.getItem() != block) {
 						if (ismain) {
-							ProcedureUtils.swapItemToSlot((EntityPlayer)entity, EntityEquipmentSlot.OFFHAND, ItemStack.EMPTY);
-							((EntityLivingBase)entity).setItemStackToSlot(EntityEquipmentSlot.OFFHAND, new ItemStack(block));
+							ProcedureUtils.swapItemToSlot((EntityPlayer)entity, EntityEquipmentSlot.OFFHAND, new ItemStack(block));
 						} else {
 							itemstack.shrink(1);
 						}
 					}
 				} else if (inOffHand) {
-					if (entity instanceof EntityPlayer && mainhandStack.getItem() != block) {
+					if (entity instanceof EntityPlayer) {
 						if (ismain) {
-							ProcedureUtils.swapItemToSlot((EntityPlayer)entity, EntityEquipmentSlot.MAINHAND, ItemStack.EMPTY);
-							((EntityLivingBase)entity).setItemStackToSlot(EntityEquipmentSlot.MAINHAND, itemstack);
-							((EntityLivingBase)entity).setItemStackToSlot(EntityEquipmentSlot.OFFHAND, ItemStack.EMPTY);
-						} else {
+							ProcedureUtils.swapItemToSlot((EntityPlayer)entity, EntityEquipmentSlot.MAINHAND, itemstack);
+						} else if (mainhandStack.getItem() != block) {
 							itemstack.shrink(1);
 						}
 					}

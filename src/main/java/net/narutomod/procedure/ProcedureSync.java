@@ -453,7 +453,11 @@ public class ProcedureSync extends ElementsNarutomodMod.ModElement {
 				WorldServer world = context.getServerHandler().player.getServerWorld();
 				world.addScheduledTask(() -> {
 					Entity entity = world.getEntityByID(message.id);
-					if (entity != null) {
+					if (entity instanceof EntityPlayerMP) {
+						entity.dismountRidingEntity();
+						((EntityPlayerMP)entity).connection.setPlayerLocation(message.prp.posX,
+						 message.prp.posY, message.prp.posZ, message.prp.rotationYaw, message.prp.rotationPitch);
+					} else if (entity != null) {
 						entity.setLocationAndAngles(message.prp.posX, message.prp.posY, message.prp.posZ,
 						 message.prp.rotationYaw, message.prp.rotationPitch);
 					}

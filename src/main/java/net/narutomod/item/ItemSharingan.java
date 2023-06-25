@@ -29,9 +29,11 @@ import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.translation.I18n;
+import net.minecraft.block.material.Material;
 
 import net.narutomod.procedure.ProcedureSharinganHelmetTickEvent;
 import net.narutomod.procedure.ProcedureSync;
@@ -180,11 +182,17 @@ public class ItemSharingan extends ElementsNarutomodMod.ModElement {
 			if (wearingAny(entity) && ItemJutsu.canTarget(entity) && !entity.isRiding()
 			 && attacker instanceof EntityLivingBase && !attacker.world.isRemote) {
 			 	if (entity.getRNG().nextFloat() < 0.5f) {
-			 		event.setCanceled(true);
-			 		Vec3d vec = entity.getPositionVector().subtract(attacker.getPositionVector()).normalize()
-			 		 .rotateYaw((entity.getRNG().nextFloat()-0.5f)*(float)Math.PI);
-			 		entity.addVelocity(vec.x, 0.0d, vec.z);
-			 		entity.velocityChanged = true;
+			    	List<BlockPos> list = ProcedureUtils.getAllAirBlocks(entity.world, entity.getEntityBoundingBox().grow(2.5d));
+			    	for (int i = 0; i < list.size(); i++) {
+			    		BlockPos pos = list.get(entity.getRNG().nextInt(list.size()));
+			    		Material material = entity.world.getBlockState(pos.down()).getMaterial();
+			    		if ((material.isSolid() || material == material.WATER)
+			    		 && attacker.getDistanceSqToCenter(pos) > 6.25d && ProcedureUtils.isSpaceOpenToStandOn(entity, pos)) {
+				 			event.setCanceled(true);
+				 			entity.setPositionAndUpdate(0.5d+pos.getX(), pos.getY(), 0.5d+pos.getZ());
+				 			break;
+			    		}
+			    	}
 			 	}
 				if (entity instanceof EntityPlayer) {
 					this.lockOnTarget(entity, (EntityLivingBase)attacker, 300);

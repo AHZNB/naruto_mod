@@ -135,6 +135,10 @@ public class EntitySandBind extends ElementsNarutomodMod.ModElement {
 			this.funeralTime = 20;
 		}
 
+		private boolean canFuneral() {
+			return this.funeralTime < 0 && this.targetEntity != null && this.targetEntity.isEntityAlive() && this.isTargetCaptured();
+		}
+
 		@Override
 		public void setDead() {
 			super.setDead();
@@ -247,7 +251,8 @@ public class EntitySandBind extends ElementsNarutomodMod.ModElement {
 
 	public static boolean sandFuneral(EntityLivingBase attacker) {
 		RayTraceResult res = ProcedureUtils.objectEntityLookingAt(attacker, 50, true);
-		if (res != null && res.entityHit instanceof EC && Chakra.pathway(attacker).consume(50d)) {
+		if (res != null && res.entityHit instanceof EC && ((EC)res.entityHit).canFuneral()
+		 && Chakra.pathway(attacker).consume(50d)) {
 			attacker.world.playSound(null, attacker.posX, attacker.posY, attacker.posZ,
 			 net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:sabakusoso")),
 			 net.minecraft.util.SoundCategory.PLAYERS, 1f, 1f);

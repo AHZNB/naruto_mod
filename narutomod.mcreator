@@ -1,8 +1,8 @@
 {
   "id_map": {
+    "ENTITY": 425,
     "DIMENSION": 13,
-    "GUI": 64,
-    "ENTITY": 425
+    "GUI": 64
   },
   "mod_elements": [
     {
@@ -7136,7 +7136,7 @@
       "type": "gun",
       "sortid": 851,
       "compiles": true,
-      "locked_code": false,
+      "locked_code": true,
       "ids": {
         "0": 425
       },
@@ -8113,8 +8113,8 @@
       "item.scroll_water_prison.name": "Water Release - Water Prison jutsu",
       "subtitles.sando_no_jutsi": "",
       "item.steam_armorlegs.name": "Steam Armor Leggings",
-      "subtitles.sando_no_jutsu": "",
       "item.futon.name": "Wind Release",
+      "subtitles.sando_no_jutsu": "",
       "subtitles.laser": "",
       "item.ryo_100.name": "100 Ryo",
       "tooltip.samehada.general": "Samehada is a sentient sword utilised by the Seven Ninja Swordsmen of the Mist and is regarded as the most terrifying out of all the Seven Swordsmen\u0027s blades.",
@@ -8207,6 +8207,7 @@
       "chattext.intangible": "Intangible: ",
       "tooltip.kabutowari.general": "The Kabutowari (Helmet Splitter) is one of the swords of the Seven Ninja Swordsmen of the Mist. The sword consists of a giant axe and hammer, which together are referred to as a \"bluntsword\" that is said to be able to break through any defence.",
       "item.senbon.name": "Senbon",
+      "tooltip.adamantinenyoi.extend": "Extend",
       "item.sound_gaunlet.name": "Sound Reflecting Gauntlet",
       "item.mangekyosharinganobitohelmet.name": "Mangekyo Sharingan - Kamui",
       "advancements.sharinganopened.title": "Sharingan Activated",
@@ -8517,6 +8518,7 @@
       "entity.finger_bone.name": "Finger Bone Bullets",
       "item.asurapatharmorbody.name": "Asura Path Bodygear",
       "entity.four_tails.name": "Son Goku",
+      "tooltip.adamantinenyoi.block": "Defend",
       "potion.effect.paralysis": "Paralysis",
       "item.shakuton.name": "Scorch Release",
       "entity.firestream.name": "Firestream",

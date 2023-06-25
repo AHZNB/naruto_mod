@@ -451,7 +451,8 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 
 	public static void swapItemToSlot(EntityPlayer entity, EntityEquipmentSlot slot, ItemStack itemstack) {
 		ItemStack itemstack1 = entity.getItemStackFromSlot(slot);
-		ItemStack itemstack2 = getItemStackIgnoreDurability(entity.inventory, itemstack);
+		//ItemStack itemstack2 = getItemStackIgnoreDurability(entity.inventory, itemstack);
+		ItemStack itemstack2 = getMatchingItemStack(entity, itemstack);
 		if (itemstack2 != null && !itemstack2.isEmpty()) {
 			itemstack = itemstack2.copy();
 			itemstack2.shrink(1);

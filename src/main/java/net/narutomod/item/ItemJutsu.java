@@ -179,15 +179,19 @@ public class ItemJutsu extends ElementsNarutomodMod.ModElement {
 					((EntityPlayer)player).sendStatusMessage(
 						new TextComponentString(String.format("%.1f", this.getPower(stack, player, timeLeft))), true);
 				}
-				if (!player.world.isRemote) {
-					Particles.spawnParticle(player.world, Particles.Types.SMOKE, player.posX, player.posY, player.posZ, 
-					 40, 0.2d, 0d, 0.2d, 0d, 0.5d, 0d, 0x106AD1FF, 40, 5, 0xF0, player.getEntityId());
-				}
-				if (timeLeft % 10 == 0) {
-					player.world.playSound(null, player.posX, player.posY, player.posZ,
-					 net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:charging_chakra")),
-					 net.minecraft.util.SoundCategory.PLAYERS, 0.05F, itemRand.nextFloat() + 0.5F);
-				}
+			}
+			this.onUsingEffects(player);
+		}
+
+		protected void onUsingEffects(EntityLivingBase player) {
+			if (!player.world.isRemote) {
+				Particles.spawnParticle(player.world, Particles.Types.SMOKE, player.posX, player.posY, player.posZ, 
+				 40, 0.2d, 0d, 0.2d, 0d, 0.5d, 0d, 0x106AD1FF, 40, 5, 0xF0, player.getEntityId());
+			}
+			if (player.ticksExisted % 10 == 0) {
+				player.world.playSound(null, player.posX, player.posY, player.posZ,
+				 net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:charging_chakra")),
+				 net.minecraft.util.SoundCategory.PLAYERS, 0.05F, itemRand.nextFloat() + 0.5F);
 			}
 		}
 
@@ -257,6 +261,13 @@ public class ItemJutsu extends ElementsNarutomodMod.ModElement {
 			int[] xpmap = this.getJutsuXpMap(stack);
 			xpmap[index] += xp;
 			stack.getTagCompound().setIntArray(XPMAP_KEY, xpmap);
+		}
+
+		public void addJutsuXp(ItemStack stack, JutsuEnum jutsuIn, int xp) {
+			if (this.jutsuList.contains(jutsuIn)) {
+				this.addJutsuXp(stack, jutsuIn.index,
+				 Math.min(this.getRequiredXp(stack, jutsuIn.index) * 3 - this.getJutsuXp(stack, jutsuIn.index), xp));
+			}
 		}
 
 		public void addCurrentJutsuXp(ItemStack stack, int xp) {
@@ -677,7 +688,8 @@ public class ItemJutsu extends ElementsNarutomodMod.ModElement {
 			TENSEIGAN,
 			SENJUTSU,
 			SIXPATHSENJUTSU,
-			KEKKEIMORA;
+			KEKKEIMORA,
+			OTHER;
 		}
 	}
 }
