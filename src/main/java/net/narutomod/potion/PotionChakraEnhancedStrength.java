@@ -38,6 +38,8 @@ import net.narutomod.procedure.ProcedureAirPunch;
 import net.narutomod.Chakra;
 import net.narutomod.Particles;
 import net.narutomod.ElementsNarutomodMod;
+import net.minecraft.util.EntityDamageSource;
+import net.minecraft.util.EntityDamageSourceIndirect;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class PotionChakraEnhancedStrength extends ElementsNarutomodMod.ModElement {
@@ -159,9 +161,10 @@ public class PotionChakraEnhancedStrength extends ElementsNarutomodMod.ModElemen
 
 		@SubscribeEvent
 		public void onLivingHurt(LivingHurtEvent event) {
-			if (event.getSource().getTrueSource() instanceof EntityLivingBase) {
-				EntityLivingBase attacker = (EntityLivingBase)event.getSource().getTrueSource();
-				if (attacker.isPotionActive(potion) && event.getSource().getImmediateSource() == attacker) {
+			if (event.getSource().getImmediateSource() instanceof EntityLivingBase && !event.getSource().isExplosion()
+			 && event.getSource() instanceof EntityDamageSource && !((EntityDamageSource)event.getSource()).getIsThornsDamage()) {
+				EntityLivingBase attacker = (EntityLivingBase)event.getSource().getImmediateSource();
+				if (attacker.isPotionActive(potion)) {
 					int amplifier = attacker.getActivePotionEffect(potion).getAmplifier();
 					if (Chakra.pathway(attacker).consume((double)amplifier)) {
 						EntityLivingBase target = event.getEntityLiving();

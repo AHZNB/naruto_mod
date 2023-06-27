@@ -74,14 +74,14 @@ public class ItemAdamantineNyoi extends ElementsNarutomodMod.ModElement {
 		ModelLoader.setCustomModelResourceLocation(block, 0, new ModelResourceLocation("narutomod:adamantine_nyoi", "inventory"));
 	}
 
-	public static class RangedItem extends ItemJutsu.Base {
+	public static class RangedItem extends ItemJutsu.Base implements ItemOnBody.Interface {
 		private static final UUID REACH_MODIFIER = UUID.fromString("2181075f-90e8-4444-9143-788f588ef58f");
 
 		public RangedItem(ItemJutsu.JutsuEnum... list) {
 			super(ItemJutsu.JutsuEnum.Type.OTHER, list);
-			setUnlocalizedName("adamantine_nyoi");
-			setRegistryName("adamantine_nyoi");
-			setCreativeTab(TabModTab.tab);
+			this.setUnlocalizedName("adamantine_nyoi");
+			this.setRegistryName("adamantine_nyoi");
+			this.setCreativeTab(TabModTab.tab);
 			this.defaultCooldownMap[WEAPON.index] = 0;
 			this.defaultCooldownMap[EXTEND.index] = 0;
 		}
@@ -134,14 +134,14 @@ public class ItemAdamantineNyoi extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		protected float getPower(ItemStack stack, EntityLivingBase entity, int timeLeft) {
-			return this.getCurrentJutsu(stack) == EXTEND ? this.getPower(stack, entity, timeLeft, 1.0f, 20f) : 1.0f;
+			return this.getCurrentJutsu(stack) == EXTEND ? this.getPower(stack, entity, timeLeft, 1.0f, 30f) : 1.0f;
 		}
 
 		@Override
 		protected float getMaxPower(ItemStack stack, EntityLivingBase entity) {
 			float ret = super.getMaxPower(stack, entity);
 			ItemJutsu.JutsuEnum jutsu = this.getCurrentJutsu(stack);
-			return jutsu == EXTEND ? Math.min(ret, 30f) : ret;
+			return jutsu == EXTEND ? Math.min(ret, 15f) : ret;
 		}
 
 		@Override
@@ -154,6 +154,11 @@ public class ItemAdamantineNyoi extends ElementsNarutomodMod.ModElement {
 			return stack.getItem() == block && this.getCurrentJutsu(stack) == WEAPON;
 		}
 
+		@Override
+		public ItemOnBody.BodyPart showOnBody() {
+			return ItemOnBody.BodyPart.LEFT_ARM;
+		}
+
 		public static class Jutsu implements ItemJutsu.IJutsuCallback {
 			@Override
 			public boolean createJutsu(ItemStack stack, EntityLivingBase entity, float power) {
@@ -163,9 +168,12 @@ public class ItemAdamantineNyoi extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static class EntityExtend extends EntityScalableProjectile.Base {
-		protected static final DataParameter<Optional<UUID>> FRONT = EntityDataManager.<Optional<UUID>>createKey(EntityExtend.class, DataSerializers.OPTIONAL_UNIQUE_ID);
+		private static final DataParameter<Optional<UUID>> FRONT = EntityDataManager.<Optional<UUID>>createKey(EntityExtend.class, DataSerializers.OPTIONAL_UNIQUE_ID);
+		private static final DataParameter<Integer> SHOOTERID = EntityDataManager.<Integer>createKey(EntityExtend.class, DataSerializers.VARINT);
 		private EntityExtend tailEnd;
-		private int lifeSpan = 300;
+		private final int lifeSpan = 300;
+		private final float lengthMultiplier = 2.0f;
+		private double renderTick;
 
 		public EntityExtend(World a) {
 			super(a);
@@ -175,6 +183,7 @@ public class ItemAdamantineNyoi extends ElementsNarutomodMod.ModElement {
 
 		public EntityExtend(EntityLivingBase shooter) {
 			super(shooter);
+			this.setShooter(shooter);
 			this.setOGSize(0.125f, 0.125f);
 			this.setIdlePosition();
 			this.setFront(this);
@@ -185,15 +194,16 @@ public class ItemAdamantineNyoi extends ElementsNarutomodMod.ModElement {
 			this.setFront(parent);
 			parent.tailEnd = this;
 			float scale = parent.getEntityScale();
-			Vec3d vec2 = parent.getLookVec().scale(scale * 1.5f * 3.75f).add(parent.getPositionVector()).addVector(0d, scale * 0.0625f, 0d);
+			Vec3d vec2 = parent.getLookVec().scale(scale * this.lengthMultiplier * 3.75f).add(parent.getPositionVector());
 			this.setEntityScale(scale);
-			this.setPositionAndRotation(vec2.x, vec2.y, vec2.z, parent.rotationYaw - 180f, -parent.rotationPitch);
+			this.setLocationAndAngles(vec2.x, vec2.y, vec2.z, parent.rotationYaw - 180f, -parent.rotationPitch);
 		}
 
 		@Override
 		protected void entityInit() {
 			super.entityInit();
 			this.getDataManager().register(FRONT, Optional.absent());
+			this.getDataManager().register(SHOOTERID, Integer.valueOf(-1));
 		}
 
 	    @Nullable
@@ -204,6 +214,18 @@ public class ItemAdamantineNyoi extends ElementsNarutomodMod.ModElement {
 	    public void setFront(EntityExtend entity) {
 	        this.dataManager.set(FRONT, Optional.fromNullable(entity.getUniqueID()));
 	    }
+
+		private void setShooter(EntityLivingBase shooter) {
+			this.getDataManager().set(SHOOTERID, Integer.valueOf(shooter.getEntityId()));
+		}
+
+		public EntityLivingBase getShooter() {
+			if (!this.world.isRemote) {
+				return this.shootingEntity;
+			}
+			Entity entity = this.world.getEntityByID(((Integer)this.getDataManager().get(SHOOTERID)).intValue());
+			return entity instanceof EntityLivingBase ? (EntityLivingBase)entity : null;
+		}
 
 	    @Nullable
 	    public EntityExtend getFront() {
@@ -217,17 +239,16 @@ public class ItemAdamantineNyoi extends ElementsNarutomodMod.ModElement {
 	    }
 
 		private void setIdlePosition() {
-			if (this.shootingEntity != null) {
-				float scale = this.getEntityScale();
-				Vec3d vec0 = this.shootingEntity.getLookVec();
-				Vec3d vec1 = this.shootingEntity.getPositionVector().addVector(0d, 1.1d - scale * 0.0625f, 0d);
-				Vec3d vec2 = vec0.add(vec1);
-				this.setLocationAndAngles(vec2.x, vec2.y, vec2.z, this.shootingEntity.rotationYaw, this.shootingEntity.rotationPitch);
-				if (this.tailEnd != null) {
-					vec2 = this.getLookVec().scale(scale * 1.5f * 3.75f).add(vec2).addVector(0d, scale * 0.0625f, 0d);
-					this.tailEnd.setEntityScale(scale);
-					this.tailEnd.setPositionAndRotation(vec2.x, vec2.y, vec2.z, this.shootingEntity.rotationYaw - 180f, -this.shootingEntity.rotationPitch);
-				}
+			EntityLivingBase shooter = this.getShooter();
+			float scale = this.getEntityScale();
+			if (shooter != null) {
+				Vec3d vec = shooter.getLookVec().add(shooter.getPositionVector().addVector(0d, 1.1d - scale * 0.0625f, 0d));
+				this.setLocationAndAngles(vec.x, vec.y, vec.z, shooter.rotationYaw, shooter.rotationPitch);
+			}
+			if (this.tailEnd != null) {
+				Vec3d vec = this.getLookVec().scale(scale * this.lengthMultiplier * 3.75f).add(this.getPositionVector());
+				this.tailEnd.setEntityScale(scale);
+				this.tailEnd.setLocationAndAngles(vec.x, vec.y, vec.z, this.rotationYaw - 180f, -this.rotationPitch);
 			}
 		}
 
@@ -242,15 +263,18 @@ public class ItemAdamantineNyoi extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void onUpdate() {
 			EntityExtend front = this.getFront();
-			if (this.equals(front) && this.tailEnd == null && !this.world.isRemote) {
+			boolean isFront = this.equals(front);
+			if (isFront && this.tailEnd == null && !this.world.isRemote) {
 				this.world.spawnEntity(new EntityExtend(this));
 			}
 			super.onUpdate();
-			if (this.shootingEntity != null && this.ticksAlive >= this.lifeSpan - 30) {
+			if (isFront && this.ticksAlive >= this.lifeSpan - 30) {
 				float f = this.getEntityScale();
 				this.setEntityScale(f - (f - 1f) * (1f - (float)(this.lifeSpan - this.ticksAlive) / 30f));
 			}
-			this.setIdlePosition();
+			if (isFront) {
+				this.setIdlePosition();
+			}
 			if (!this.world.isRemote && (this.ticksAlive >= this.lifeSpan || front == null || front.isDead)) {
 				this.setDead();
 			}
@@ -310,36 +334,38 @@ public class ItemAdamantineNyoi extends ElementsNarutomodMod.ModElement {
 				this.item = new ItemStack(block);
 				this.itemRenderer = Minecraft.getMinecraft().getRenderItem();
 			}
+
+			@Override
+			public boolean shouldRender(EntityExtend livingEntity, net.minecraft.client.renderer.culling.ICamera camera, double camX, double camY, double camZ) {
+				return true;
+			}
 	
 		    @Override
 		    public void doRender(EntityExtend entity, double x, double y, double z, float entityYaw, float partialTicks) {
 		    	EntityExtend entity1 = entity.getFront();
-		    	if (entity1 != null && !entity.equals(entity1)) {
-		    		entity = entity1;
-		    		x = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * partialTicks - this.renderManager.viewerPosX;
-		    		y = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * partialTicks - this.renderManager.viewerPosY;
-		    		z = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * partialTicks - this.renderManager.viewerPosZ;
+		    	if (entity1 != null) {
+		    		double d = (double)entity.world.getTotalWorldTime() + partialTicks;
+		    		if (d <= entity1.renderTick) {
+		    			return;
+		    		}
+		    		entity1.renderTick = d;
+		    		if (!entity.equals(entity1)) {
+			    		entity = entity1;
+			    		x = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * partialTicks - this.renderManager.viewerPosX;
+			    		y = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * partialTicks - this.renderManager.viewerPosY;
+			    		z = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * partialTicks - this.renderManager.viewerPosZ;
+		    		}
 		    	}
 		    	float scale = entity.getEntityScale();
 		        GlStateManager.pushMatrix();
 		        GlStateManager.translate((float)x, (float)y, (float)z);
 		        GlStateManager.rotate(-ProcedureUtils.interpolateRotation(entity.prevRotationYaw, entity.rotationYaw, partialTicks), 0.0F, 1.0F, 0.0F);
 		        GlStateManager.rotate(entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks, 1.0F, 0.0F, 0.0F);
-		        GlStateManager.translate(0.0F, scale * 0.0625F, scale * 1.5F * 1.875F + 0.125F);
-		        GlStateManager.scale(scale, scale, scale * 1.5F);
+		        GlStateManager.translate(0.0F, scale * 0.0625F, scale * entity.lengthMultiplier * 1.875F);
+		        GlStateManager.scale(scale, scale, scale * entity.lengthMultiplier);
 		        this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
-		        if (this.renderOutlines) {
-		            GlStateManager.enableColorMaterial();
-		            GlStateManager.enableOutlineMode(this.getTeamColor(entity));
-		        }
 		        this.itemRenderer.renderItem(this.item, ItemCameraTransforms.TransformType.GROUND);
-		        if (this.renderOutlines) {
-		            GlStateManager.disableOutlineMode();
-		            GlStateManager.disableColorMaterial();
-		        }
-		        GlStateManager.disableRescaleNormal();
 		        GlStateManager.popMatrix();
-		        super.doRender(entity, x, y, z, entityYaw, partialTicks);
 		    }
 		
 			@Override

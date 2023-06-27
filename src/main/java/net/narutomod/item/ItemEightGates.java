@@ -920,10 +920,6 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 		public float getExplosionResistance(Explosion explosionIn, World worldIn, BlockPos pos, IBlockState blockStateIn) {
 			return Math.max(blockStateIn.getBlock().getExplosionResistance(worldIn, pos, this, explosionIn) - 1999f, 0.1f);
 		}
-
-		private int getTicksAlive() {
-			return this.ticksAlive;
-		}
 	}
 
 	@SideOnly(Side.CLIENT)

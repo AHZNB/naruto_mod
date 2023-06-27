@@ -17,6 +17,7 @@ Jutsus:
  - enabled 8 branch snake when sage mode is type snake
  - sand funeral can't be used consecutively anymore
  - sharingan evasion no longer moves you to any unsafe place to stand on
+ - chakra enhanced strength should only activate on melee attacks
 
 Items:
  - fixed explosive tags breaking blocks when mobGriefing false

@@ -138,7 +138,7 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 		private final BossInfoServer bossInfo = new BossInfoServer(this.getDisplayName(), BossInfo.Color.RED, BossInfo.Overlay.PROGRESS);
 		public static final int BIJUDAMA_CD = 200;
 		protected final double TARGET_RANGE = 108.0D;
-		public int deathTicks;
+		private int deathTicks;
 		private int deathTotalTicks;
 		private EntityPlayer summoningPlayer;
 		private int tailBeastBallTime = BIJUDAMA_CD;
@@ -158,7 +158,7 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 			this.setNoAI(false);
 			this.enablePersistence();
 			this.setHealth(this.getMaxHealth());
-			this.deathTotalTicks = 100;
+			this.deathTotalTicks = 200;
 			this.setMeleeAttackTasks();
 		}
 
@@ -611,7 +611,7 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 			this.setHealth(this.getMaxHealth() * 0.05f);
 			this.setTargetVessel(null);
 			this.deathTicks = 0;
-			this.deathTotalTicks = 100;
+			this.deathTotalTicks = 200;
 		}
 
 		@Override
@@ -635,7 +635,7 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 					if (this.getBijuManager().isSealed() && this.deathTicks == 1) {
 						jinchuriki = null;
 						this.setTargetVessel(null);
-						this.deathTotalTicks = 100;
+						this.deathTotalTicks = 200;
 					}
 				}
 				if (jinchuriki != null && this.ticksExisted % 50 == 1) {
@@ -698,7 +698,7 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 				if (hp >= maxhp * 0.1f && this.isFaceDown()) {
 					this.setFaceDown(false);
 				}
-				if (hp <= 100f && !this.isFaceDown()) {
+				if (hp <= 150f && !this.isFaceDown()) {
 					this.setFaceDown(true);
 				}
 				if (this.isAIDisabled() && jinchuriki != null && jinchuriki.getHealth() <= 0.0F) {

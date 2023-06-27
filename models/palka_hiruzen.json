@@ -371,9 +371,9 @@
 			"scale": [0.8, 0.8, 1]
 		},
 		"head": {
-			"rotation": [120, -45, 0],
-			"translation": [-4, -18, 2],
-			"scale": [1.8, 1.8, 3.4]
+			"rotation": [135, -15, 0],
+			"translation": [-8, -20, 2],
+			"scale": [2, 2, 3.5]
 		},
 		"fixed": {
 			"rotation": [90, 135, 0],

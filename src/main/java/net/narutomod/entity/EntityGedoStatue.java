@@ -412,7 +412,7 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 							}
 						}
 					} else if (age > this.riseTime) {
-						if (this.fuuinTarget.getDistance(this) > 20d) {
+						if (this.fuuinTarget.getDistance(this) > 25d) {
 							this.fuuinTarget = null;
 						} else if (age < this.riseTime + 100 && age % 10 == 1) {
 							this.world.spawnEntity(new EntityPurpleDragon(this, this.fuuinTarget));
@@ -623,8 +623,9 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 			if (!this.world.isRemote && result.entityHit instanceof EntityLivingBase
 			 && (!(result.entityHit instanceof EntityPlayer) || !((EntityPlayer)result.entityHit).isCreative())) {
 			 	if (this.fuuin) {
-					Chakra.pathway((EntityLivingBase)result.entityHit).consume(20d);
-			 		if (result.entityHit instanceof EntityTailedBeast.Base) {
+					Chakra.pathway((EntityLivingBase)result.entityHit).consume(50d);
+			 		if (result.entityHit instanceof EntityTailedBeast.Base
+			 		 && ((EntityLivingBase)result.entityHit).getHealth() > 50.0f) {
 						result.entityHit.attackEntityFrom(ItemJutsu.causeSenjutsuDamage(this, this.shootingEntity)
 						 .setDamageBypassesArmor(), this.damage * 0.25f + (this.rand.nextFloat()-0.5f) * 10f);
 			 		}
