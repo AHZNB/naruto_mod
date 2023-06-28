@@ -103,7 +103,7 @@ public class ItemRanton extends ElementsNarutomodMod.ModElement {
 	public static class EntityRaiunkuha extends Entity {
 		private final double chakrUsage = CLOUD.chakraUsage;
 		private EntityLivingBase summoner;
-		private ItemStack rantonstack;
+		private float damageMultiplier;
 
 		public EntityRaiunkuha(World a) {
 			super(a);
@@ -114,7 +114,7 @@ public class ItemRanton extends ElementsNarutomodMod.ModElement {
 			this(summonerIn.world);
 			this.setSize(0.01f, 0.01f);
 			this.summoner = summonerIn;
-			this.rantonstack = stack;
+			this.damageMultiplier = Math.max(((ItemJutsu.Base)stack.getItem()).getXpRatio(stack, CLOUD), 1f);
 			this.setPosition(summonerIn.posX, summonerIn.posY, summonerIn.posZ);
 		}
 
@@ -159,8 +159,7 @@ public class ItemRanton extends ElementsNarutomodMod.ModElement {
 		}
 
 		private float getDamage() {
-			float f = Math.max(((ItemJutsu.Base)this.rantonstack.getItem()).getXpRatio(this.rantonstack, CLOUD), 1f);
-			return this.rand.nextFloat() * f * 10f;
+			return this.rand.nextFloat() * this.damageMultiplier * 10f;
 		}
 
 		@Override

@@ -2,6 +2,7 @@
 package net.narutomod.item;
 
 import net.narutomod.procedure.ProcedureUtils;
+import net.narutomod.entity.EntityAdamantinePrison;
 import net.narutomod.entity.EntityScalableProjectile;
 import net.narutomod.entity.EntityRendererRegister;
 import net.narutomod.creativetab.TabModTab;
@@ -55,6 +56,7 @@ public class ItemAdamantineNyoi extends ElementsNarutomodMod.ModElement {
 	public static final int ENTITYID = 425;
 	public static final ItemJutsu.JutsuEnum WEAPON = new ItemJutsu.JutsuEnum(0, "tooltip.adamantinenyoi.block", 'D', new RangedItem.Jutsu());
 	public static final ItemJutsu.JutsuEnum EXTEND = new ItemJutsu.JutsuEnum(1, "tooltip.adamantinenyoi.extend", 'D', 10d, new EntityExtend.Jutsu());
+	public static final ItemJutsu.JutsuEnum PRISON = new ItemJutsu.JutsuEnum(2, "adamantine_prison", 'D', 10d, new EntityAdamantinePrison.EC.Jutsu());
 
 	public ItemAdamantineNyoi(ElementsNarutomodMod instance) {
 		super(instance, 851);
@@ -62,7 +64,7 @@ public class ItemAdamantineNyoi extends ElementsNarutomodMod.ModElement {
 
 	@Override
 	public void initElements() {
-		elements.items.add(() -> new RangedItem(WEAPON, EXTEND));
+		elements.items.add(() -> new RangedItem(WEAPON, EXTEND, PRISON));
 		elements.entities.add(() -> EntityEntryBuilder.create().entity(EntityExtend.class)
 				.id(new ResourceLocation("narutomod", "adamantine_nyoi"), ENTITYID).name("adamantine_nyoi")
 				.tracker(96, 1, true).build());

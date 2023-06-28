@@ -1,8 +1,8 @@
 {
   "id_map": {
-    "DIMENSION": 13,
-    "ENTITY": 425,
-    "GUI": 64
+    "GUI": 64,
+    "ENTITY": 427,
+    "DIMENSION": 13
   },
   "mod_elements": [
     {
@@ -7141,6 +7141,18 @@
         "0": 425
       },
       "registry_name": "adamantine_nyoi"
+    },
+    {
+      "name": "AdamantinePrison",
+      "type": "mob",
+      "sortid": 852,
+      "compiles": true,
+      "locked_code": true,
+      "ids": {
+        "0": 426,
+        "1": 427
+      },
+      "registry_name": "adamantine_prison"
     }
   ],
   "variable_elements": [
@@ -8132,8 +8144,8 @@
       "item.clothes_raikagehelmet.name": "Raikage Hat",
       "entity.jinchuriki_clone.name": "Tailed Beast Cloak",
       "tipped_arrow.effect.paralysis": "Arrow of Paralysis",
-      "tipped_arrow.effect.reach": "Arrow of Reach",
       "item.byakurinnesharinganhelmet.name": "Fake Rinne Sharingan",
+      "tipped_arrow.effect.reach": "Arrow of Reach",
       "chattext.medicalgui.notmedninja": "You are not a medical ninja.",
       "tooltip.shikotsumyaku.dancelarch": "Larch Dance",
       "entity.tensei_baku_silver.name": "Silver Wheel Rebirth Blast",
@@ -8318,6 +8330,7 @@
       "entity.futon_vacuum.name": "Vacuum Wave",
       "entity.ninja_kumo.name": "Ninja Kumo",
       "item.clothes_kazekagelegs.name": "",
+      "entity.adamantine_prison.name": "Adamantine Prison",
       "item.fuma_shuriken.name": "Fuma Shuriken",
       "chattext.senjutsu.denied": "%s says no!",
       "advancements.yooton_acquired.descr": "Lava Release (\"Corrosion Style\" or \"Lava Style\") is a nature transformation kekkei genkai, a combination of fire and earth.",

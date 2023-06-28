@@ -217,7 +217,7 @@ public class EntityIceDome extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public void applyEntityCollision(Entity entity) {
-			if (!this.isRidingSameEntity(entity) && !entity.isBeingRidden() && !entity.noClip) {
+			if (!this.isRidingSameEntity(entity) && !entity.isBeingRidden() && !entity.noClip && ItemJutsu.canTarget(entity)) {
 				//ProcedureSync.MotionPacket.sendToServer(entity);
 				this.doCollisions(entity);
 			}
