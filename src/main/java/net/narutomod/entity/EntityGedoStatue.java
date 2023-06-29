@@ -321,6 +321,16 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
+		public boolean attackEntityFrom(DamageSource source, float amount) {
+			if (source == DamageSource.IN_WALL || source == DamageSource.CACTUS || source == DamageSource.CRAMMING
+			 || source == DamageSource.DROWN || source == DamageSource.FALL || source == DamageSource.FLY_INTO_WALL
+			 || source == DamageSource.STARVE) {
+				return false;
+			}
+			return attackEntityFrom(source, amount);
+		}
+
+		@Override
 		public void onUpdate() {
 			super.onUpdate();
 			int age = this.getAge();

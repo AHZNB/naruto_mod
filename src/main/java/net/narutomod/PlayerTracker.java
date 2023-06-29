@@ -74,7 +74,7 @@ public class PlayerTracker extends ElementsNarutomodMod.ModElement {
 	private static void addBattleXp(EntityPlayer entity, double xp, boolean sendMessage) {
 		entity.getEntityData().setDouble(BATTLEXP, Math.min(getBattleXp(entity) + xp, 100000.0d));
 		if (entity instanceof EntityPlayerMP) {
-			sendBattleXPToSelf((EntityPlayerMP)entity);
+			sendBattleXPToTracking((EntityPlayerMP)entity);
 			if (sendMessage) {
 				entity.sendStatusMessage(new TextComponentString(
 				 net.minecraft.util.text.translation.I18n.translateToLocal("chattext.ninjaexperience")+
@@ -96,6 +96,10 @@ public class PlayerTracker extends ElementsNarutomodMod.ModElement {
 
 	private static void sendBattleXPToSelf(EntityPlayerMP player) {
 		ProcedureSync.EntityNBTTag.sendToSelf(player, BATTLEXP, getBattleXp(player));
+	}
+
+	private static void sendBattleXPToTracking(EntityPlayerMP player) {
+		ProcedureSync.EntityNBTTag.sendToTracking(player, BATTLEXP, getBattleXp(player));
 	}
 
 	public static class Deaths {
@@ -130,7 +134,7 @@ public class PlayerTracker extends ElementsNarutomodMod.ModElement {
 			if (!entity.world.getGameRules().getBoolean(KEEPXP_RULE)) {
 				entity.getEntityData().setDouble(BATTLEXP, 0.0D);
 				if (entity instanceof EntityPlayerMP) {
-					sendBattleXPToSelf((EntityPlayerMP)entity);
+					sendBattleXPToTracking((EntityPlayerMP)entity);
 				}
 			}
 		}
@@ -223,7 +227,7 @@ public class PlayerTracker extends ElementsNarutomodMod.ModElement {
 				}
 				if (event.player.getEntityData().getBoolean(FORCE_SEND)) {
 					event.player.getEntityData().removeTag(FORCE_SEND);
-					sendBattleXPToSelf((EntityPlayerMP)event.player);
+					sendBattleXPToTracking((EntityPlayerMP)event.player);
 				}
 				if (event.player.getEntityData().getBoolean(UPDATE_HEALTH)) {
 					event.player.getEntityData().removeTag(UPDATE_HEALTH);

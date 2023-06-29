@@ -1,8 +1,8 @@
 {
   "id_map": {
-    "GUI": 64,
     "ENTITY": 427,
-    "DIMENSION": 13
+    "DIMENSION": 13,
+    "GUI": 64
   },
   "mod_elements": [
     {
@@ -8117,8 +8117,8 @@
   ],
   "language_map": {
     "en_us": {
-      "entity.crow.name": "Crow",
       "item.kiba_blades.name": "Kiba Blades",
+      "entity.crow.name": "Crow",
       "chattext.gedomazo.cantspawn": "Can\u0027t summon Gedo Mazo, it\u0027s already in the world",
       "entity.tenten.name": "Tenten",
       "item.futton.name": "Boil Release",
@@ -8134,10 +8134,10 @@
       "item.shuriken.name": "Shuriken",
       "entity.cellular_activation.name": "Cellular Activation",
       "entity.entityasakujaku.name": "Asakujaku (Morning Peacock)",
-      "tooltip.kekkeimora.expansivetsb": "Expansive Truth Seeking Ball",
       "item.scroll_water_dragon.name": "Water Release - Water Dragon Bullet",
-      "entity.tailed_beast.name": "Tailed Beast",
+      "tooltip.kekkeimora.expansivetsb": "Expansive Truth Seeking Ball",
       "item.gunbai.name": "Gunbai",
+      "entity.tailed_beast.name": "Tailed Beast",
       "item.scroll_rasenshuriken.name": "Wind Release - Rasenshuriken",
       "entity.itachi.name": "Itachi Uchiha",
       "item.scroll_lightning_panther.name": "Lightning Release: Black Panther",

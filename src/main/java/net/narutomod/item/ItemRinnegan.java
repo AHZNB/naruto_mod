@@ -44,6 +44,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.UUID;
 import com.google.common.collect.Multimap;
+import net.minecraft.util.datafix.fixes.ArmorStandSilent;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class ItemRinnegan extends ElementsNarutomodMod.ModElement {
@@ -117,8 +118,8 @@ public class ItemRinnegan extends ElementsNarutomodMod.ModElement {
 	}
 
 	public void initElements() {
-		ItemArmor.ArmorMaterial enuma = EnumHelper.addArmorMaterial("RINNEGAN", "narutomod:rinnegan_", 25, new int[]{2, 5, 6, 2}, 0,
-		 net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:dojutsu")), 5.0F);
+		ItemArmor.ArmorMaterial enuma = EnumHelper.addArmorMaterial("RINNEGAN", "narutomod:rinnegan_", 25, new int[]{2, 5, 6, 15}, 0,
+		 net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:dojutsu")), 2.0F);
 		this.elements.items.add(() -> new ItemDojutsu.Base(enuma) {
 			@SideOnly(Side.CLIENT)
 			@Override
@@ -232,6 +233,11 @@ public class ItemRinnegan extends ElementsNarutomodMod.ModElement {
 				if (this.armorModel == null) {
 					this.armorModel = new ModelSizPathRobe();
 				}
+				boolean show = living instanceof EntityPlayer ? PlayerTracker.getNinjaLevel((EntityPlayer)living) >= 180d : false;
+				this.armorModel.robe.showModel = show;
+				this.armorModel.robeRightArm.showModel = show;
+				this.armorModel.robeLeftArm.showModel = show;
+				this.armorModel.backSpikes.showModel = !show;
 				this.armorModel.isSneak = living.isSneaking();
 				this.armorModel.isRiding = living.isRiding();
 				this.armorModel.isChild = living.isChild();
@@ -271,9 +277,12 @@ public class ItemRinnegan extends ElementsNarutomodMod.ModElement {
 				if (this.armorModel == null) {
 					this.armorModel = new ModelSizPathRobe();
 				}
-
-				//armorModel.ball[0].showModel = living.getHeldItemMainhand().getItem() != ItemExpandedTruthSeekerBall.block;
-				this.armorModel.isSneak = living.isSneaking();
+				boolean show = living instanceof EntityPlayer ? PlayerTracker.getNinjaLevel((EntityPlayer)living) >= 180d : false;
+				this.armorModel.robe.showModel = show;
+				this.armorModel.robeRightArm.showModel = show;
+				this.armorModel.robeLeftArm.showModel = show;
+				this.armorModel.backSpikes.showModel = !show;
+				this.armorModel.isSneak = living.isSneaking();
 				this.armorModel.isRiding = living.isRiding();
 				this.armorModel.isChild = living.isChild();
 				return this.armorModel;
@@ -1241,11 +1250,6 @@ public class ItemRinnegan extends ElementsNarutomodMod.ModElement {
 					this.bipedLeftArm.setRotationPoint(5.0F, 2.5F, 0.0F);
 					this.bipedRightArm.setRotationPoint(-5.0F, 2.5F, 0.0F);
 				}
-				boolean show = PlayerTracker.getNinjaLevel((AbstractClientPlayer)entity) >= 180d;
-				robe.showModel = show;
-				robeRightArm.showModel = show;
-				robeLeftArm.showModel = show;
-				backSpikes.showModel = bipedRightArm.showModel && !show;
 			}
 			/*if (this.bipedLeftArm.showModel) {
 				for (int i = 0; i < 9; i++) {

@@ -55,7 +55,7 @@ public class ItemMangekyoSharinganObito extends ElementsNarutomodMod.ModElement 
 
 	public void initElements() {
 		ItemArmor.ArmorMaterial enuma = EnumHelper.addArmorMaterial("MANGEKYOSHARINGANOBITO", "narutomod:mangekyosharingan_obito_", 1024,
-				new int[]{2, 5, 6, 100}, 0, null, 5.0F);
+				new int[]{2, 5, 6, 10}, 0, null, 1.0F);
 		this.elements.items.add(() -> new ItemSharingan.Base(enuma) {
 			@Override
 			public void onArmorTick(World world, EntityPlayer entity, ItemStack itemstack) {

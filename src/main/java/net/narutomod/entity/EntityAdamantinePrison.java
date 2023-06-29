@@ -8,33 +8,33 @@ import net.narutomod.ElementsNarutomodMod;
 
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.client.registry.RenderingRegistry;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.event.entity.living.LivingAttackEvent;
+import net.minecraftforge.common.MinecraftForge;
 
 import net.minecraft.world.World;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
-import net.minecraft.client.renderer.entity.RenderLiving;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.model.ModelBox;
 import net.minecraft.client.model.ModelBase;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.util.EnumHand;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.item.ItemStack;
+
 import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.Iterator;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.event.entity.living.LivingAttackEvent;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.common.MinecraftForge;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityAdamantinePrison extends ElementsNarutomodMod.ModElement {
@@ -210,12 +210,12 @@ public class EntityAdamantinePrison extends ElementsNarutomodMod.ModElement {
 			@SubscribeEvent
 			public void onAttackedInsideDome(LivingAttackEvent event) {
 				EntityLivingBase target = event.getEntityLiving();
-				if (!target.world.isRemote && !(target instanceof EC)) {
+				if (!target.world.isRemote && !(target instanceof EC) && event.getSource() != ProcedureUtils.SPECIAL_DAMAGE) {
 					EC dome = (EC)target.world.findNearestEntityWithinAABB(EC.class, target.getEntityBoundingBox().grow(ENTITY_SCALE), target);
 					if (dome != null) {
 						Entity attacker = event.getSource().getTrueSource();
 						EntityLivingBase summoner = dome.getSummoner();
-						if (dome.entitiesInside.contains(target) == !dome.entitiesInside.contains(attacker)) {
+						if (attacker != null && dome.entitiesInside.contains(target) == !dome.entitiesInside.contains(attacker)) {
 							event.setCanceled(true);
 							dome.attackEntityFrom(event.getSource(), event.getAmount());
 					    }
@@ -1315,10 +1315,6 @@ public class EntityAdamantinePrison extends ElementsNarutomodMod.ModElement {
 				modelRenderer.rotateAngleX = x;
 				modelRenderer.rotateAngleY = y;
 				modelRenderer.rotateAngleZ = z;
-			}
-	
-			public void setRotationAngles(float f, float f1, float f2, float f3, float f4, float f5, Entity e) {
-				super.setRotationAngles(f, f1, f2, f3, f4, f5, e);
 			}
 		}
 	}

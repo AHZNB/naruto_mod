@@ -39,8 +39,8 @@ public class ItemMangekyoSharinganEternal extends ElementsNarutomodMod.ModElemen
 	}
 
 	public void initElements() {
-		ItemArmor.ArmorMaterial enuma = EnumHelper.addArmorMaterial("MANGEKYOSHARINGANETERNAL", "narutomod:sasuke_", 1024, new int[]{2, 5, 6, 100},
-				0, null, 5.0F);
+		ItemArmor.ArmorMaterial enuma = EnumHelper.addArmorMaterial("MANGEKYOSHARINGANETERNAL", "narutomod:sasuke_",
+		 1024, new int[]{2, 5, 6, 10}, 0, null, 2.0F);
 		this.elements.items.add(() -> new ItemSharingan.Base(enuma) {
 			@Override
 			public void onArmorTick(World world, EntityPlayer entity, ItemStack itemstack) {

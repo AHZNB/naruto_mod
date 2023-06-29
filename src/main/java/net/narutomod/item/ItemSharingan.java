@@ -284,7 +284,7 @@ public class ItemSharingan extends ElementsNarutomodMod.ModElement {
 	@Override
 	public void initElements() {
 		ItemArmor.ArmorMaterial enuma = EnumHelper.addArmorMaterial("SHARINGAN", "narutomod:sharingan_",
-		 1024, new int[]{2, 5, 6, 50}, 0, null, 5.0F);
+		 1024, new int[]{2, 5, 6, 10}, 0, null, 0.0F);
 		this.elements.items.add(() -> new Base(enuma) {
 			public String getArmorTexture(ItemStack stack, Entity entity, EntityEquipmentSlot slot, String type) {
 				return "narutomod:textures/sharinganhelmet.png";
