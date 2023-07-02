@@ -212,8 +212,11 @@ public class EntityMeltingJutsu extends ElementsNarutomodMod.ModElement {
 		public static class Jutsu implements ItemJutsu.IJutsuCallback {
 			@Override
 			public boolean createJutsu(ItemStack stack, EntityLivingBase entity, float power) {
-				entity.world.spawnEntity(new EC(entity, power));
-				return true;
+				if (power >= 1.0f) {
+					entity.world.spawnEntity(new EC(entity, power));
+					return true;
+				}
+				return false;
 			}
 		}
 	}

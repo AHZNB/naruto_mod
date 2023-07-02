@@ -18,6 +18,8 @@ Jutsus:
  - sand funeral can't be used consecutively anymore
  - sharingan evasion no longer moves you to any unsafe place to stand on
  - chakra enhanced strength should only activate on melee attacks
+ - lava melting jutsu must be charged to at least 1.0 to use
+ - storm release thunder cloud no longer stuns enemy
 
 Items:
  - fixed explosive tags breaking blocks when mobGriefing false
@@ -28,6 +30,7 @@ Items:
  - implemented adamantine staff, can block, added extend (WIP) and adamantine prison
  - lowered armor protection values for dojutsus
  - fixed 6-path armor only showing obito variant to other players
+ - fixed dropping owner free kg items
  
 Entities:
  - re-textured white zetsu, itachi
@@ -36,7 +39,7 @@ Entities:
  - better tailed beasts movement AI
  - added ambient sounds for shukaku, songoku, chomei, isobu
  - fixed player's outer skin layer not synced with arms when naruto running
- - added Enma summon (WIP)
+ - added Enma summon (use summon jutsu on Enma to turn him into the staff)
 
 General:
  - resets tailed beasts spawn point if natural spawning is disabled in config

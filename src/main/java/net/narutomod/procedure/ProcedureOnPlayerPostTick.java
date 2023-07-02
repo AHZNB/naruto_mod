@@ -137,6 +137,7 @@ public class ProcedureOnPlayerPostTick extends ElementsNarutomodMod.ModElement {
 							ItemHandlerHelper.giveItemToPlayer(((EntityPlayer) entity), _setstack);
 						}
 						stack = new ItemStack(ItemBakuton.block, (int) (1));
+						((ItemJutsu.Base) stack.getItem()).setOwner(stack, (EntityLivingBase) entity);
 					} else if ((((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
 							? ((EntityPlayerMP) entity).getAdvancements()
 									.getProgress(((WorldServer) (entity).world).getAdvancementManager()
@@ -158,6 +159,7 @@ public class ProcedureOnPlayerPostTick extends ElementsNarutomodMod.ModElement {
 							ItemHandlerHelper.giveItemToPlayer(((EntityPlayer) entity), _setstack);
 						}
 						stack = new ItemStack(ItemRanton.block, (int) (1));
+						((ItemJutsu.Base) stack.getItem()).setOwner(stack, (EntityLivingBase) entity);
 					} else if ((((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
 							? ((EntityPlayerMP) entity).getAdvancements()
 									.getProgress(((WorldServer) (entity).world).getAdvancementManager()
@@ -179,6 +181,7 @@ public class ProcedureOnPlayerPostTick extends ElementsNarutomodMod.ModElement {
 							ItemHandlerHelper.giveItemToPlayer(((EntityPlayer) entity), _setstack);
 						}
 						stack = new ItemStack(ItemFutton.block, (int) (1));
+						((ItemJutsu.Base) stack.getItem()).setOwner(stack, (EntityLivingBase) entity);
 					} else if ((((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
 							? ((EntityPlayerMP) entity).getAdvancements()
 									.getProgress(((WorldServer) (entity).world).getAdvancementManager()
@@ -200,6 +203,7 @@ public class ProcedureOnPlayerPostTick extends ElementsNarutomodMod.ModElement {
 							ItemHandlerHelper.giveItemToPlayer(((EntityPlayer) entity), _setstack);
 						}
 						stack = new ItemStack(ItemJiton.block, (int) (1));
+						((ItemJutsu.Base) stack.getItem()).setOwner(stack, (EntityLivingBase) entity);
 					} else if ((((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
 							? ((EntityPlayerMP) entity).getAdvancements()
 									.getProgress(((WorldServer) (entity).world).getAdvancementManager()
@@ -221,6 +225,7 @@ public class ProcedureOnPlayerPostTick extends ElementsNarutomodMod.ModElement {
 							ItemHandlerHelper.giveItemToPlayer(((EntityPlayer) entity), _setstack);
 						}
 						stack = new ItemStack(ItemYooton.block, (int) (1));
+						((ItemJutsu.Base) stack.getItem()).setOwner(stack, (EntityLivingBase) entity);
 					} else if ((((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
 							? ((EntityPlayerMP) entity).getAdvancements()
 									.getProgress(((WorldServer) (entity).world).getAdvancementManager()
@@ -242,6 +247,7 @@ public class ProcedureOnPlayerPostTick extends ElementsNarutomodMod.ModElement {
 							ItemHandlerHelper.giveItemToPlayer(((EntityPlayer) entity), _setstack);
 						}
 						stack = new ItemStack(ItemHyoton.block, (int) (1));
+						((ItemJutsu.Base) stack.getItem()).setOwner(stack, (EntityLivingBase) entity);
 					} else if ((((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
 							? ((EntityPlayerMP) entity).getAdvancements()
 									.getProgress(((WorldServer) (entity).world).getAdvancementManager()
@@ -263,6 +269,7 @@ public class ProcedureOnPlayerPostTick extends ElementsNarutomodMod.ModElement {
 							ItemHandlerHelper.giveItemToPlayer(((EntityPlayer) entity), _setstack);
 						}
 						stack = new ItemStack(ItemShakuton.block, (int) (1));
+						((ItemJutsu.Base) stack.getItem()).setOwner(stack, (EntityLivingBase) entity);
 					} else if ((((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
 							? ((EntityPlayerMP) entity).getAdvancements()
 									.getProgress(((WorldServer) (entity).world).getAdvancementManager()
@@ -291,6 +298,7 @@ public class ProcedureOnPlayerPostTick extends ElementsNarutomodMod.ModElement {
 							ItemHandlerHelper.giveItemToPlayer(((EntityPlayer) entity), _setstack);
 						}
 						stack = new ItemStack(ItemJinton.block, (int) (1));
+						((ItemJutsu.Base) stack.getItem()).setOwner(stack, (EntityLivingBase) entity);
 					} else {
 						rand = (double) ((EntityLivingBase) entity).getRNG().nextDouble();
 						if (((rand) <= 0.2)) {
@@ -354,6 +362,7 @@ public class ProcedureOnPlayerPostTick extends ElementsNarutomodMod.ModElement {
 											.isDone()
 									: false))) {
 						stack = new ItemStack(ItemShikotsumyaku.block, (int) (1));
+						((ItemJutsu.Base) stack.getItem()).setOwner(stack, (EntityLivingBase) entity);
 						((ItemJutsu.Base) stack.getItem()).setIsAffinity(stack, true);
 						if (entity instanceof EntityPlayer) {
 							ItemStack _setstack = (stack);
@@ -373,8 +382,10 @@ public class ProcedureOnPlayerPostTick extends ElementsNarutomodMod.ModElement {
 							: false);
 					if (((achievedMedical) || ((!(entity.getEntityData().getBoolean("MedicalNinjaChecked")))
 							&& (((EntityLivingBase) entity).getRNG().nextDouble() <= 0.25)))) {
+						stack = new ItemStack(ItemIryoJutsu.block, (int) (1));
+						((ItemJutsu.Base) stack.getItem()).setOwner(stack, (EntityLivingBase) entity);
 						if (entity instanceof EntityPlayer) {
-							ItemStack _setstack = new ItemStack(ItemIryoJutsu.block, (int) (1));
+							ItemStack _setstack = (stack);
 							_setstack.setCount(1);
 							ItemHandlerHelper.giveItemToPlayer(((EntityPlayer) entity), _setstack);
 						}

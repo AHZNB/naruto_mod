@@ -2,6 +2,7 @@
 package net.narutomod.entity;
 
 import net.narutomod.item.ItemJutsu;
+import net.narutomod.item.ItemAdamantineNyoi;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.Particles;
 import net.narutomod.ElementsNarutomodMod;
@@ -16,6 +17,7 @@ import net.minecraft.world.World;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.SoundEvent;
@@ -26,6 +28,7 @@ import net.minecraft.entity.ai.EntityAIWatchClosest;
 import net.minecraft.entity.ai.EntityAIWander;
 import net.minecraft.entity.ai.EntityAILookIdle;
 import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.client.renderer.entity.RenderLiving;
@@ -189,20 +192,31 @@ public class EntityEnma extends ElementsNarutomodMod.ModElement {
 				this.motionY = 0.01d;
 				this.onGround = true;
 			}
+			if (!this.world.isRemote && this.getSummoner() == null) {
+				this.setDead();
+			}
 		}
 
 		@Override
 		public int getMaxFallHeight() {
-			return 20;
+			return 30;
 		}
 
 		public static class Jutsu implements ItemJutsu.IJutsuCallback {
+			private static final String ID_KEY = "EnmaEntityId";
 			@Override
 			public boolean createJutsu(ItemStack stack, EntityLivingBase entity, float power) {
-				if (power >= 1.0f) {
+				RayTraceResult res = ProcedureUtils.objectEntityLookingAt(entity, 50d, 3d);
+				Entity entity1 = stack.hasTagCompound() ? entity.world.getEntityByID(stack.getTagCompound().getInteger(ID_KEY)) : null;
+				if (res != null && res.entityHit instanceof EC && res.entityHit.equals(entity1)) {
+					entity1.setDead();
+					if (entity instanceof EntityPlayer && !ProcedureUtils.hasItemInInventory((EntityPlayer)entity, ItemAdamantineNyoi.block)) {
+						ItemAdamantineNyoi.giveNewStackTo((EntityPlayer)entity);
+					}
+				} else if (!(entity1 instanceof EC) && power >= 1.0f) {
 					Particles.Renderer particles = new Particles.Renderer(entity.world);
 					particles.spawnParticles(Particles.Types.SEAL_FORMULA,
-					 entity.posX, entity.posY + 0.015d, entity.posZ, 1, 0d, 0d, 0d, 0d, 0d, 0d, (int)(power * 40), 0, 60);
+					 entity.posX, entity.posY + 0.015d, entity.posZ, 1, 0d, 0d, 0d, 0d, 0d, 0d, 40, 0, 60);
 					for (int i = 0; i < 500; i++) {
 						particles.spawnParticles(Particles.Types.SMOKE, entity.posX, entity.posY, entity.posZ, 1, 0d, 0d, 0d,
 						 (entity.getRNG().nextDouble()-0.5d) * 0.6d, entity.getRNG().nextDouble() * 0.2d,
@@ -212,9 +226,12 @@ public class EntityEnma extends ElementsNarutomodMod.ModElement {
 					entity.world.playSound(null, entity.posX, entity.posY, entity.posZ,
 					  SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:kuchiyosenojutsu")),
 					  net.minecraft.util.SoundCategory.PLAYERS, 1f, 0.8f);
-					EC entity1 = new EC(entity);
+					entity1 = new EC(entity);
 					entity1.setLocationAndAngles(entity.posX, entity.posY, entity.posZ, entity.rotationYaw, 0.0f);
 					net.narutomod.event.SpecialEvent.setDelayedSpawnEvent(entity.world, entity1, 0, 0, 0, entity.world.getTotalWorldTime() + 20);
+					if (stack.hasTagCompound()) {
+						stack.getTagCompound().setInteger(ID_KEY, entity1.getEntityId());
+					}
 					return true;
 				}
 				return false;

@@ -5,7 +5,6 @@ import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.entity.EntityAdamantinePrison;
 import net.narutomod.entity.EntityScalableProjectile;
 import net.narutomod.entity.EntityRendererRegister;
-import net.narutomod.creativetab.TabModTab;
 import net.narutomod.ElementsNarutomodMod;
 
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -16,8 +15,11 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.event.ModelRegistryEvent;
+import net.minecraftforge.items.ItemHandlerHelper;
 
 import net.minecraft.world.World;
+import net.minecraft.util.EntitySelectors;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.MathHelper;
@@ -42,10 +44,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.network.datasync.DataSerializers;
-import net.minecraft.nbt.NBTTagCompound;
 
 import com.google.common.collect.Multimap;
 import com.google.common.base.Optional;
+import com.google.common.base.Predicate;
 import javax.annotation.Nullable;
 import java.util.UUID;
 
@@ -76,6 +78,17 @@ public class ItemAdamantineNyoi extends ElementsNarutomodMod.ModElement {
 		ModelLoader.setCustomModelResourceLocation(block, 0, new ModelResourceLocation("narutomod:adamantine_nyoi", "inventory"));
 	}
 
+	public static void giveNewStackTo(EntityPlayer player) {
+		ItemStack stack1 = new ItemStack(block);
+		RangedItem item = (RangedItem)stack1.getItem();
+		item.setOwner(stack1, player);
+		item.setIsAffinity(stack1, true);
+		item.addJutsuXp(stack1, WEAPON, item.getRequiredXp(stack1, WEAPON));
+		item.addJutsuXp(stack1, EXTEND, item.getRequiredXp(stack1, EXTEND));
+		item.addJutsuXp(stack1, PRISON, item.getRequiredXp(stack1, PRISON));
+		ItemHandlerHelper.giveItemToPlayer(player, stack1);
+	}
+
 	public static class RangedItem extends ItemJutsu.Base implements ItemOnBody.Interface {
 		private static final UUID REACH_MODIFIER = UUID.fromString("2181075f-90e8-4444-9143-788f588ef58f");
 
@@ -83,9 +96,10 @@ public class ItemAdamantineNyoi extends ElementsNarutomodMod.ModElement {
 			super(ItemJutsu.JutsuEnum.Type.OTHER, list);
 			this.setUnlocalizedName("adamantine_nyoi");
 			this.setRegistryName("adamantine_nyoi");
-			this.setCreativeTab(TabModTab.tab);
+			this.setCreativeTab(null);
 			this.defaultCooldownMap[WEAPON.index] = 0;
 			this.defaultCooldownMap[EXTEND.index] = 0;
+			this.defaultCooldownMap[PRISON.index] = 0;
 		}
 
 		@Override
@@ -170,12 +184,15 @@ public class ItemAdamantineNyoi extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static class EntityExtend extends EntityScalableProjectile.Base {
-		private static final DataParameter<Optional<UUID>> FRONT = EntityDataManager.<Optional<UUID>>createKey(EntityExtend.class, DataSerializers.OPTIONAL_UNIQUE_ID);
+		private static final DataParameter<Integer> FRONT = EntityDataManager.<Integer>createKey(EntityExtend.class, DataSerializers.VARINT);
 		private static final DataParameter<Integer> SHOOTERID = EntityDataManager.<Integer>createKey(EntityExtend.class, DataSerializers.VARINT);
-		private EntityExtend tailEnd;
+		private static final DataParameter<Integer> SEGMENT = EntityDataManager.<Integer>createKey(EntityExtend.class, DataSerializers.VARINT);
+		private final EntityExtend[] segment = new EntityExtend[60];
 		private final int lifeSpan = 300;
 		private final float lengthMultiplier = 2.0f;
 		private double renderTick;
+		private boolean checked;
+		private final ProcedureUtils.CollisionHelper collisionhelper = new ProcedureUtils.CollisionHelper(this);
 
 		public EntityExtend(World a) {
 			super(a);
@@ -187,34 +204,35 @@ public class ItemAdamantineNyoi extends ElementsNarutomodMod.ModElement {
 			super(shooter);
 			this.setShooter(shooter);
 			this.setOGSize(0.125f, 0.125f);
-			this.setIdlePosition();
 			this.setFront(this);
-		}
-
-		private EntityExtend(EntityExtend parent) {
-			this(parent.world);
-			this.setFront(parent);
-			parent.tailEnd = this;
-			float scale = parent.getEntityScale();
-			Vec3d vec2 = parent.getLookVec().scale(scale * this.lengthMultiplier * 3.75f).add(parent.getPositionVector());
-			this.setEntityScale(scale);
-			this.setLocationAndAngles(vec2.x, vec2.y, vec2.z, parent.rotationYaw - 180f, -parent.rotationPitch);
+			this.setSegmentIndex(0);
+			this.segment[0] = this;
+			for (int i = 1; i < this.segment.length; i++) {
+				this.segment[i] = new EntityExtend(this.world);
+				this.segment[i].setSegmentIndex(i);
+				this.segment[i].setFront(this);
+			}
+			this.rotationYaw = shooter.rotationYaw;
+			this.rotationPitch = shooter.rotationPitch;
+			this.setSegmentPosition();
 		}
 
 		@Override
 		protected void entityInit() {
 			super.entityInit();
-			this.getDataManager().register(FRONT, Optional.absent());
+			this.getDataManager().register(FRONT, Integer.valueOf(-1));
 			this.getDataManager().register(SHOOTERID, Integer.valueOf(-1));
+			this.getDataManager().register(SEGMENT, Integer.valueOf(-1));
 		}
 
 	    @Nullable
-	    public UUID getFrontUuid() {
-	        return (UUID)((Optional)this.dataManager.get(FRONT)).orNull();
+	    public EntityExtend getFront() {
+        	Entity entity = this.world.getEntityByID(((Integer)this.getDataManager().get(FRONT)).intValue());
+        	return entity instanceof EntityExtend ? (EntityExtend)entity : null;
 	    }
-	
+
 	    public void setFront(EntityExtend entity) {
-	        this.dataManager.set(FRONT, Optional.fromNullable(entity.getUniqueID()));
+	        this.dataManager.set(FRONT, Integer.valueOf(entity.getEntityId()));
 	    }
 
 		private void setShooter(EntityLivingBase shooter) {
@@ -229,36 +247,93 @@ public class ItemAdamantineNyoi extends ElementsNarutomodMod.ModElement {
 			return entity instanceof EntityLivingBase ? (EntityLivingBase)entity : null;
 		}
 
-	    @Nullable
-	    public EntityExtend getFront() {
-	        UUID uuid = this.getFrontUuid();
-	        if (uuid == null) {
-	        	return null;
-	        } else {
-	        	Entity entity = ProcedureUtils.getEntityFromUUID(this.world, uuid);
-	        	return entity instanceof EntityExtend ? (EntityExtend)entity : null;
-	        }
+	    private void setSegmentIndex(int i) {
+	    	this.getDataManager().set(SEGMENT, Integer.valueOf(i));
 	    }
 
-		private void setIdlePosition() {
-			EntityLivingBase shooter = this.getShooter();
-			float scale = this.getEntityScale();
-			if (shooter != null) {
-				Vec3d vec = shooter.getLookVec().add(shooter.getPositionVector().addVector(0d, 1.1d - scale * 0.0625f, 0d));
-				this.setLocationAndAngles(vec.x, vec.y, vec.z, shooter.rotationYaw, shooter.rotationPitch);
+	    private int getSegmentIndex() {
+	    	return ((Integer)this.getDataManager().get(SEGMENT)).intValue();
+	    }
+
+	    private float updateRotation(float p_75652_1_, float p_75652_2_, float p_75652_3_) {
+	        float f = MathHelper.wrapDegrees(p_75652_2_ - p_75652_1_);
+	        if (f > p_75652_3_) {
+	            f = p_75652_3_;
+	        }
+	        if (f < -p_75652_3_) {
+	            f = -p_75652_3_;
+	        }
+	        return p_75652_1_ + f;
+	    }
+
+	    private void resetSegmentsCheckFlag() {
+			if (this.segment[0] != null) {
+				for (int i = 1; i < this.segment.length; i++) {
+					this.segment[i].checked = false;
+				}
 			}
-			if (this.tailEnd != null) {
-				Vec3d vec = this.getLookVec().scale(scale * this.lengthMultiplier * 3.75f).add(this.getPositionVector());
-				this.tailEnd.setEntityScale(scale);
-				this.tailEnd.setLocationAndAngles(vec.x, vec.y, vec.z, this.rotationYaw - 180f, -this.rotationPitch);
+	    }
+
+		private void setSegmentPosition() {
+			EntityLivingBase shooter = this.getShooter();
+			if (!this.world.isRemote && shooter != null) {
+				float scale = this.getEntityScale();
+				this.resetSegmentsCheckFlag();
+				Vec3d vec0 = shooter.getLookVec();
+				Vec3d frontLook = Vec3d.fromPitchYaw(this.updateRotation(this.rotationPitch, ProcedureUtils.getPitchFromVec(vec0), 5.0f),
+				 this.updateRotation(this.rotationYaw, ProcedureUtils.getYawFromVec(vec0), 5.0f));
+				Vec3d frontVec = frontLook.add(shooter.getPositionVector().addVector(0d, 1.1d - scale * 0.0625f, 0d));
+				if (this.segment[0] != null) {
+					for (int i = 1; i < this.segment.length; i++) {
+						Vec3d vec = frontLook.scale(scale * this.lengthMultiplier * 3.75f * i / this.segment.length).add(frontVec);
+						this.segment[i].setEntityScale(scale);
+						if (this.segment[i].isAddedToWorld() && this.ticksAlive < this.lifeSpan - 30 && !this.segment[i].checked) {
+							this.segment[i].checked = true;
+							Vec3d vec1 = vec.subtract(this.segment[i].getPositionVector());
+							this.segment[i].collisionhelper.collideWithAll(vec1.x, vec1.y, vec1.z, new Predicate<Entity>() {
+								@Override
+								public boolean apply(@Nullable Entity p_apply_1_) {
+									return ItemJutsu.canTarget(p_apply_1_) && !(p_apply_1_ instanceof EntityExtend)
+									 && !p_apply_1_.equals(shooter);
+								}
+							});
+							Vec3d vec2 = this.segment[i].collisionhelper.getUpdatedMotion();
+							for (Entity entity : this.segment[i].collisionhelper.getEntitiesHit()) {
+								ProcedureUtils.addVelocity(entity, vec2);
+							}
+							if (this.segment[i].collisionhelper.anyBlockHits()) {
+								float f = MathHelper.sqrt((float)vec2.lengthVector() * scale);
+								if (f >= 2.5f) {
+									this.world.createExplosion(shooter, this.segment[i].posX, this.segment[i].posY, this.segment[i].posZ,
+									 f, net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.world, shooter));
+								}
+								for (EnumFacing face : EnumFacing.VALUES) {
+									if (this.segment[i].collisionhelper.hitOnSide(face)) {
+										vec2 = vec2.addVector(-0.5d * face.getDirectionVec().getX(),
+										 -0.5d * face.getDirectionVec().getY(), -0.5d * face.getDirectionVec().getZ());
+									}
+								}
+								frontLook = this.segment[i].getPositionVector().add(vec2).subtract(frontVec).normalize();
+								frontVec = frontLook.add(shooter.getPositionVector().addVector(0d, 1.1d - scale * 0.0625f, 0d));
+								i = 1;
+								continue;
+							}
+						}
+						this.segment[i].setLocationAndAngles(vec.x, vec.y, vec.z, this.rotationYaw, this.rotationPitch);
+					}
+				}
+				this.setLocationAndAngles(frontVec.x, frontVec.y, frontVec.z,
+				 ProcedureUtils.getYawFromVec(frontLook), ProcedureUtils.getPitchFromVec(frontLook));
 			}
 		}
 
 		@Override
 		public void setDead() {
 			super.setDead();
-			if (!this.world.isRemote && this.tailEnd != null) {
-				this.tailEnd.setDead();
+			if (!this.world.isRemote && this.segment[0] != null) {
+				for (int i = 1; i < this.segment.length; i++) {
+					this.segment[i].setDead();
+				}
 			}
 		}
 
@@ -266,8 +341,10 @@ public class ItemAdamantineNyoi extends ElementsNarutomodMod.ModElement {
 		public void onUpdate() {
 			EntityExtend front = this.getFront();
 			boolean isFront = this.equals(front);
-			if (isFront && this.tailEnd == null && !this.world.isRemote) {
-				this.world.spawnEntity(new EntityExtend(this));
+			if (!this.world.isRemote && isFront && !this.segment[1].isAddedToWorld()) {
+				for (int i = 1; i < this.segment.length; i++) {
+					this.world.spawnEntity(this.segment[i]);
+				}
 			}
 			super.onUpdate();
 			if (isFront && this.ticksAlive >= this.lifeSpan - 30) {
@@ -275,7 +352,7 @@ public class ItemAdamantineNyoi extends ElementsNarutomodMod.ModElement {
 				this.setEntityScale(f - (f - 1f) * (1f - (float)(this.lifeSpan - this.ticksAlive) / 30f));
 			}
 			if (isFront) {
-				this.setIdlePosition();
+				this.setSegmentPosition();
 			}
 			if (!this.world.isRemote && (this.ticksAlive >= this.lifeSpan || front == null || front.isDead)) {
 				this.setDead();
@@ -284,10 +361,14 @@ public class ItemAdamantineNyoi extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public void onImpact(RayTraceResult result) {
-			
 		}
 
 		@Override
+		public boolean isImmuneToExplosions() {
+			return true;
+		}
+
+		/*@Override
 		protected void readEntityFromNBT(NBTTagCompound compound) {
 			super.readEntityFromNBT(compound);
 			String s = compound.getString("frontUUID");
@@ -301,7 +382,7 @@ public class ItemAdamantineNyoi extends ElementsNarutomodMod.ModElement {
 			super.writeEntityToNBT(compound);
 			UUID uuid = this.getFrontUuid();
 			compound.setString("frontUUID", uuid == null ? "" : uuid.toString());
-		}
+		}*/
 
 		public static class Jutsu implements ItemJutsu.IJutsuCallback {
 			@Override
@@ -345,6 +426,7 @@ public class ItemAdamantineNyoi extends ElementsNarutomodMod.ModElement {
 		    @Override
 		    public void doRender(EntityExtend entity, double x, double y, double z, float entityYaw, float partialTicks) {
 		    	EntityExtend entity1 = entity.getFront();
+		    	float offset = 1.0F;
 		    	if (entity1 != null) {
 		    		double d = (double)entity.world.getTotalWorldTime() + partialTicks;
 		    		if (d <= entity1.renderTick) {
@@ -357,13 +439,19 @@ public class ItemAdamantineNyoi extends ElementsNarutomodMod.ModElement {
 			    		y = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * partialTicks - this.renderManager.viewerPosY;
 			    		z = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * partialTicks - this.renderManager.viewerPosZ;
 		    		}
+		    	} else {
+		    		int i = entity.getSegmentIndex();
+		    		if (i != entity.segment.length / 2 && i != entity.segment.length - 1) {
+		    			return;
+		    		}
+		    		offset = 1.0F - (float)i / entity.segment.length * 2;
 		    	}
 		    	float scale = entity.getEntityScale();
 		        GlStateManager.pushMatrix();
 		        GlStateManager.translate((float)x, (float)y, (float)z);
 		        GlStateManager.rotate(-ProcedureUtils.interpolateRotation(entity.prevRotationYaw, entity.rotationYaw, partialTicks), 0.0F, 1.0F, 0.0F);
 		        GlStateManager.rotate(entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks, 1.0F, 0.0F, 0.0F);
-		        GlStateManager.translate(0.0F, scale * 0.0625F, scale * entity.lengthMultiplier * 1.875F);
+		        GlStateManager.translate(0.0F, scale * 0.0625F, scale * entity.lengthMultiplier * 1.875F * offset);
 		        GlStateManager.scale(scale, scale, scale * entity.lengthMultiplier);
 		        this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
 		        this.itemRenderer.renderItem(this.item, ItemCameraTransforms.TransformType.GROUND);

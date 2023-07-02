@@ -106,11 +106,8 @@ public class ItemKusanagiSword extends ElementsNarutomodMod.ModElement {
 				EntityPlayerMP entity = (EntityPlayerMP) entityLivingBase;
 				float power = 1f;
 				EntityCustom entityarrow = new EntityCustom(entity);
-				//entityarrow.shoot(entity.getLookVec().x, entity.getLookVec().y, entity.getLookVec().z, power, 0);
-				world.playSound(null, entity.posX, entity.posY, entity.posZ,
- net.minecraft.util.SoundEvent.REGISTRY
-				 .getObject(new ResourceLocation(("entity.arrow.shoot"))),
- SoundCategory.NEUTRAL,
+				world.playSound(null, entity.posX, entity.posY, entity.posZ, net.minecraft.util.SoundEvent.REGISTRY
+				 .getObject(new ResourceLocation("entity.arrow.shoot")), SoundCategory.NEUTRAL,
 				 1, 1f / (itemRand.nextFloat() * 0.5f + 1f) + (power / 2));
 				world.spawnEntity(entityarrow);
 				itemstack.shrink(1);

@@ -340,7 +340,7 @@ public class EntityEarthBlocks extends ElementsNarutomodMod.ModElement {
 				boolean canMoveThrough = true;
 				//this.breakOnImpact = this.collisionForce() > 1000.0f;
 				if (dx != x || dy != y || dz != z) {
-					List<BlockPos> list1 = ch.getHitBoxes();
+					List<BlockPos> list1 = ch.getHitBlocks();
 					float f = BlocksMoveHelper.getBlocksTotalResistance(this.world, list1);
 					//float hitarea = (float)list.size() / this.collisionForce();
 					float hitarea = f / this.collisionForce() * 0.2f;

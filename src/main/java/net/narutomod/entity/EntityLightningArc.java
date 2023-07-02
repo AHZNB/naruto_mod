@@ -115,6 +115,7 @@ public class EntityLightningArc extends ElementsNarutomodMod.ModElement {
 		private EntityLivingBase excludeEntity;
 		private float damageAmount;
 		private boolean resetHurtResistantTime;
+		private int paralysisTicks;
 		
 		public Base(World worldIn) {
 			super(worldIn);
@@ -220,14 +221,23 @@ public class EntityLightningArc extends ElementsNarutomodMod.ModElement {
 		}
 
 		public void setDamage(DamageSource source, float amount, @Nullable EntityLivingBase entity) {
-			this.setDamage(source, amount, false, entity);
+			this.setDamage(source, amount, false, entity, 100);
+		}
+
+		public void setDamage(DamageSource source, float amount, @Nullable EntityLivingBase entity, int paralysis) {
+			this.setDamage(source, amount, false, entity, paralysis);
 		}
 
 		public void setDamage(DamageSource source, float amount, boolean resetHurtTime, @Nullable EntityLivingBase entity) {
+			this. setDamage(source, amount, resetHurtTime, entity, 100);
+		}
+
+		public void setDamage(DamageSource source, float amount, boolean resetHurtTime, @Nullable EntityLivingBase entity, int paralysis) {
 			this.damageSource = source;
 			this.excludeEntity = entity;
 			this.damageAmount = amount;
 			this.resetHurtResistantTime = resetHurtTime;
+			this.paralysisTicks = paralysis;
 		}
 
 		@Override
@@ -247,7 +257,7 @@ public class EntityLightningArc extends ElementsNarutomodMod.ModElement {
 						if (this.resetHurtResistantTime) {
 							entity.hurtResistantTime = 10;
 						}
-						onStruck(entity, this.damageSource, this.damageAmount);
+						onStruck(entity, this.damageSource, this.damageAmount, this.paralysisTicks, true);
 					}
 				}
 			}

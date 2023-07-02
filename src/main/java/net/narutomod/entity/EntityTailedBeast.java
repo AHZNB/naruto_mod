@@ -549,7 +549,7 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 		public void move(MoverType type, double x, double y, double z) {
 			this.collisionData.collideWithAABBs(this.world.getCollisionBoxes(this, this.getEntityBoundingBox().expand(x, y, z)), x, y, z);
 			if (this.couldBreakBlocks()) {
-				for (BlockPos pos : this.collisionData.getHitBoxes()) {
+				for (BlockPos pos : this.collisionData.getHitBlocks()) {
 					if (canBreakList.contains(this.world.getBlockState(pos).getMaterial())) {
 						this.world.destroyBlock(pos, this.rand.nextFloat() < 0.3f);
 						x *= 0.96d;

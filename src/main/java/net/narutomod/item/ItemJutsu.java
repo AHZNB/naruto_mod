@@ -280,6 +280,10 @@ public class ItemJutsu extends ElementsNarutomodMod.ModElement {
 			return this.isAffinity(stack) ? requiredXp : (int)((float)requiredXp * 2.5f);
 		}
 
+		public int getRequiredXp(ItemStack stack, JutsuEnum jutsuIn) {
+			return this.jutsuList.contains(jutsuIn) ? this.getRequiredXp(stack, jutsuIn.index) : -1;
+		}
+
 		public float getXpRatio(ItemStack stack, JutsuEnum jutsuIn) {
 			return this.jutsuList.contains(jutsuIn) ?
 			 (float)this.getJutsuXp(stack, jutsuIn.index) / (float)this.getRequiredXp(stack, jutsuIn.index) : 0;

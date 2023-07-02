@@ -638,6 +638,7 @@ public class ProcedureKGDistribution extends ElementsNarutomodMod.ModElement {
 			((ItemDojutsu.Base) stack.getItem()).setOwner(stack, (EntityLivingBase) entity);
 			entity.getEntityData().setLong(NarutomodModVariables.MostRecentWornDojutsuTime, world.getTotalWorldTime());
 		} else if (stack.getItem() instanceof ItemJutsu.Base) {
+			((ItemJutsu.Base) stack.getItem()).setOwner(stack, (EntityLivingBase) entity);
 			((ItemJutsu.Base) stack.getItem()).setIsAffinity(stack, true);
 		}
 		if (entity instanceof EntityPlayer) {

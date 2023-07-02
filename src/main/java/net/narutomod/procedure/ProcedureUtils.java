@@ -8,6 +8,7 @@ import net.minecraft.world.WorldServer;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.BlockPos;
@@ -46,7 +47,6 @@ import net.minecraft.block.SoundType;
 import net.minecraft.block.Block;
 import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.advancements.Advancement;
-
 import net.minecraft.init.Items;
 
 import net.narutomod.item.ItemSharingan;
@@ -73,7 +73,6 @@ import java.lang.reflect.Method;
 import com.google.common.collect.Lists;
 import com.google.common.base.Predicates;
 import com.google.common.base.Predicate;
-import net.minecraft.util.math.Vec3i;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
@@ -458,7 +457,9 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 			itemstack2.shrink(1);
 		}
 		if (!itemstack1.isEmpty()) {
-			if (itemstack1.getItem() == itemstack.getItem()) return;
+			//if (itemstack1.getItem() == itemstack.getItem()) return;
+			if (ItemStack.areItemStacksEqual(itemstack, itemstack1))
+				return;
 			if (itemstack1.getMaxStackSize() > 1) {
 				ItemHandlerHelper.giveItemToPlayer(entity, itemstack1);
 			} else {
@@ -1231,8 +1232,8 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 		public double dx;
 		public double dy;
 		public double dz;
-		//private int hitsOnSide[] = { 0, 0, 0, 0, 0, 0 };
-		private List<AxisAlignedBB>[] hitsList = new List[6];
+		private final List<AxisAlignedBB>[] hitsList = new List[6];
+		private final List<Entity> entitiesList = Lists.newArrayList();
 
 		public CollisionHelper(Entity entityIn) {
 			this.entity = entityIn;
@@ -1251,30 +1252,46 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 	       	if (x != 0.0D) for (AxisAlignedBB aabb : list) {
 	       		double d = aabb.calculateXOffset(this.entity.getEntityBoundingBox(), x);
 		    	if (Math.abs(d) < Math.abs(this.dx)) this.dx = d;
-		    	if (d != x) {
-		    		int i = (x > 0d ? EnumFacing.WEST : EnumFacing.EAST).getIndex();
-		    		//this.hitsOnSide[i]++;
-		    		this.hitsList[i].add(aabb);
-		    	}
+		    	if (d != x) this.hitsList[(x > 0d ? EnumFacing.EAST : EnumFacing.WEST).getIndex()].add(aabb);
 	       	}
 		    if (y != 0.0D) for (AxisAlignedBB aabb : list) {
 	       		double d = aabb.calculateYOffset(this.entity.getEntityBoundingBox(), y);
 		    	if (Math.abs(d) < Math.abs(this.dy)) this.dy = d;
-		    	if (d != y) {
-		    		int i = (y > 0d ? EnumFacing.UP : EnumFacing.DOWN).getIndex();
-		    		//this.hitsOnSide[i]++;
-		    		this.hitsList[i].add(aabb);
-		    	}
+		    	if (d != y) this.hitsList[(y > 0d ? EnumFacing.UP : EnumFacing.DOWN).getIndex()].add(aabb);
 		    }
 		    if (z != 0.0D) for (AxisAlignedBB aabb : list) {
 	       		double d = aabb.calculateZOffset(this.entity.getEntityBoundingBox(), z);
 		    	if (Math.abs(d) < Math.abs(this.dz)) this.dz = d;
-		    	if (d != z) {
-		    		int i = (z > 0d ? EnumFacing.NORTH : EnumFacing.SOUTH).getIndex();
-		    		//this.hitsOnSide[i]++;
-		    		this.hitsList[i].add(aabb);
-		    	}
+		    	if (d != z) this.hitsList[(z > 0d ? EnumFacing.SOUTH : EnumFacing.NORTH).getIndex()].add(aabb);
 		    }
+		}
+
+		public void collideWithEntities(double x, double y, double z, @Nullable Predicate<Entity > predicate) {
+			this.entitiesList.clear();
+			Vec3d vec3d = new Vec3d(this.entity.posX, this.entity.posY + this.entity.height / 2, this.entity.posZ);
+			Vec3d vec3d2 = vec3d.addVector(x, y, z);
+			for (Entity entity1 : this.entity.world.getEntitiesInAABBexcluding(this.entity,
+			 this.entity.getEntityBoundingBox().expand(x, y, z), predicate)) {
+				if (entity1.canBeCollidedWith() && ItemJutsu.canTarget(entity1)) {
+					if (entity1.getEntityBoundingBox().grow(this.entity.width / 2, this.entity.height / 2,
+					 this.entity.width / 2).calculateIntercept(vec3d, vec3d2) != null) {
+						this.entitiesList.add(entity1);
+					}
+				}
+			}
+		}
+
+		public void collideWithAll(double x, double y, double z, @Nullable Predicate<Entity > predicate) {
+			this.collideWithAABBs(this.entity.world.getCollisionBoxes(null, this.entity.getEntityBoundingBox().expand(x, y, z)), x, y, z);
+			this.collideWithEntities(this.dx, this.dy, this.dz, predicate);
+		}
+
+		public AxisAlignedBB getUpdateEntityBoundingBox() {
+			return this.entity.getEntityBoundingBox().offset(this.dx, this.dy, this.dz);
+		}
+
+		public Vec3d getUpdatedMotion() {
+			return new Vec3d(this.dx, this.dy, this.dz);
 		}
 
 		public double minX(double x) {
@@ -1289,9 +1306,13 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 			return Math.signum(z) != Math.signum(this.dz) ? 0d : Math.abs(z) < Math.abs(this.dz) ? z : this.dz;
 		}
 
+		public double distanceToOrigin() {
+			return MathHelper.sqrt(this.dx * this.dx + this.dy * this.dy + this.dz * this.dz);
+		}
+
 		@Nullable
 		public BlockPos nearestHitOnSide(EnumFacing face) {
-			double d = 1000d;
+			double d = 40000d;
 			BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
 			for (AxisAlignedBB aabb : this.hitsList[face.getIndex()]) {
 				Vec3d vec = BB.getCenter(aabb);
@@ -1329,7 +1350,16 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 			return false;
 		}
 
-		public List<BlockPos> getHitBoxes() {
+		public boolean hitOnPlane(EnumFacing.Plane plane) {
+			for (int i = 0; i < this.hitsList.length; i++) {
+				if (!this.hitsList[i].isEmpty() && EnumFacing.getFront(i).getAxis().getPlane() == plane) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		public List<BlockPos> getHitBlocks() {
 			List<BlockPos> newlist = Lists.<BlockPos>newArrayList();
 			for (List<AxisAlignedBB> list : this.hitsList) {
 				for (AxisAlignedBB aabb : list) {
@@ -1337,6 +1367,29 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 				}
 			}
 			return newlist;
+		}
+
+		public boolean anyBlockHits() {
+			for (List<AxisAlignedBB> list : this.hitsList) {
+				if (!list.isEmpty()) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		@Nullable
+		public BlockPos nearestHit() {
+			List<BlockPos> list = this.getHitBlocks();
+			if (!list.isEmpty()) {
+				list.sort(new BlockposSorter(new BlockPos(this.entity.posX, this.entity.posY + this.entity.height * 0.5, this.entity.posZ)));
+				return list.get(0);
+			}
+			return null;
+		}
+
+		public List<Entity> getEntitiesHit() {
+			return this.entitiesList;
 		}
 	}
 

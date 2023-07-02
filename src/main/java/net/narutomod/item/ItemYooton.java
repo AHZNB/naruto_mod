@@ -107,7 +107,7 @@ public class ItemYooton extends ElementsNarutomodMod.ModElement {
 			if (jutsu == ROCKS) {
 				return this.getPower(stack, entity, timeLeft, 1.0f, 50f);
 			} else if (jutsu == STREAM) {
-				return this.getPower(stack, entity, timeLeft, 1.0f, 200f);
+				return this.getPower(stack, entity, timeLeft, 0.5f, 200f);
 			}
 			return 1f;
 		}
