@@ -69,7 +69,7 @@ public class ItemHiramekareiSword extends ElementsNarutomodMod.ModElement {
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void registerModels(ModelRegistryEvent event) {
-		ModelLoader.setCustomModelResourceLocation(block, 0, new ModelResourceLocation("narutomod:hiramekarei_sword", "inventory"));
+		ModelLoader.setCustomModelResourceLocation(block, 0, new ModelResourceLocation("narutomod:hiramekarei", "inventory"));
 	}
 
 	@SideOnly(Side.CLIENT)
