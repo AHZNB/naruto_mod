@@ -119,7 +119,7 @@ public class EntityToad extends ElementsNarutomodMod.ModElement {
 			float f = this.getScale();
 			this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(5D * f);
 			this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(10D * f * f);
-			this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(3D * f);
+			this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(6D * f);
 			this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(13D + 3D * f);
 			super.postScaleFixup();
 			//this.setSize(this.ogWidth * f, this.ogHeight * f);
@@ -149,6 +149,11 @@ public class EntityToad extends ElementsNarutomodMod.ModElement {
 			} else {
 				this.tasks.removeTask(this.aiWander);
 			}
+		}
+
+		@Override
+		public boolean couldBreakBlocks() {
+			return this.world.getGameRules().getBoolean("mobGriefing") && this.getScale() >= 4f;
 		}
 
 		@Override
@@ -228,7 +233,7 @@ public class EntityToad extends ElementsNarutomodMod.ModElement {
 		}
 
 		@SideOnly(Side.CLIENT)
-		private float getJumpProgress(float partialTicks) {
+		float getJumpProgress(float partialTicks) {
 			return this.prevJumpProgress + (this.jumpProgress - this.prevJumpProgress) * partialTicks;
 		}
 
@@ -322,9 +327,10 @@ public class EntityToad extends ElementsNarutomodMod.ModElement {
 						}
 					} else {
 						++this.ticksInJump;
-						if (!this.doubleJumpInProgress && this.attempts > 3 && this.ticksInJump == (this.attempts-3) * 10) {
+						//if (!this.doubleJumpInProgress && this.attempts > 3 && this.ticksInJump == (this.attempts-3) * 10) {
+						if (!this.doubleJumpInProgress && this.attempts > 3 && this.ticksInJump > 3 && this.entity.motionY < 0.2d) {
 							this.entity.getMoveHelper().setMoveTo(this.target.x, this.target.y, this.target.z, 1.0d);
-							++this.attempts;
+							//++this.attempts;
 							this.doubleJumpInProgress = true;
 						}
 					}
@@ -533,7 +539,7 @@ public class EntityToad extends ElementsNarutomodMod.ModElement {
 		            this.entity.rotationYaw = (float)(MathHelper.atan2(d1, d0) * (180D / Math.PI)) - 90.0F;
 		            this.entity.motionX = d0 * 0.145d;
 		            this.entity.motionZ = d1 * 0.145d;
-		            this.entity.motionY = 0.32d + (d2 + d3 * 0.6d) * 0.1d;
+		            this.entity.motionY = 0.32d + (Math.max(d2, 0.0d) + d3 * 0.6d) * 0.1d;
 				}
 			}
 		}

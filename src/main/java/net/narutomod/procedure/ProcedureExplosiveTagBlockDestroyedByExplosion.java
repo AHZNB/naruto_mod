@@ -2,6 +2,8 @@ package net.narutomod.procedure;
 
 import net.narutomod.ElementsNarutomodMod;
 
+import net.minecraftforge.event.ForgeEventFactory;
+
 import net.minecraft.world.World;
 import net.minecraft.util.math.BlockPos;
 
@@ -35,8 +37,8 @@ public class ProcedureExplosiveTagBlockDestroyedByExplosion extends ElementsNaru
 		int z = (int) dependencies.get("z");
 		World world = (World) dependencies.get("world");
 		world.setBlockToAir(new BlockPos((int) x, (int) y, (int) z));
-		if (!world.isRemote) {
-			world.createExplosion(null, (int) x, (int) y, (int) z, (float) 4, true);
+		if ((!(world.isRemote))) {
+			world.createExplosion(null, x, y, z, 4f, ForgeEventFactory.getMobGriefingEvent(world, null));
 		}
 	}
 }

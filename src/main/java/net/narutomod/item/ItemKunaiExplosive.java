@@ -40,7 +40,7 @@ import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.Minecraft;
 
-import net.narutomod.procedure.ProcedureKunaiBulletHitsLivingEntity;
+import net.narutomod.entity.EntityRendererRegister;
 import net.narutomod.creativetab.TabModTab;
 import net.narutomod.ElementsNarutomodMod;
 
@@ -71,14 +71,6 @@ public class ItemKunaiExplosive extends ElementsNarutomodMod.ModElement {
 	@SideOnly(Side.CLIENT)
 	public void registerModels(ModelRegistryEvent event) {
 		ModelLoader.setCustomModelResourceLocation(block, 0, new ModelResourceLocation("narutomod:kunai_explosive", "inventory"));
-	}
-
-	@SideOnly(Side.CLIENT)
-	@Override
-	public void preInit(FMLPreInitializationEvent event) {
-		RenderingRegistry.registerEntityRenderingHandler(EntityArrowCustom.class, renderManager -> {
-			return new RenderCustom(renderManager);
-		});
 	}
 
 	public static class RangedItem extends Item implements ItemOnBody.Interface {
@@ -191,20 +183,17 @@ public class ItemKunaiExplosive extends ElementsNarutomodMod.ModElement {
 		@Override
 		protected void onHit(RayTraceResult raytraceResultIn) {
 			super.onHit(raytraceResultIn);
-			boolean flag = net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.world, this.shootingEntity);
-			this.world.newExplosion(null, raytraceResultIn.hitVec.x, raytraceResultIn.hitVec.y, raytraceResultIn.hitVec.z, 4f, flag, flag);
-			this.setDead();
+			if (!this.world.isRemote) {
+				boolean flag = net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.world, this.shootingEntity);
+				this.world.newExplosion(null, raytraceResultIn.hitVec.x, raytraceResultIn.hitVec.y, raytraceResultIn.hitVec.z, 4f, flag, flag);
+				this.setDead();
+			}
 		}
 
 		@Override
 		protected void arrowHit(EntityLivingBase entity) {
 			super.arrowHit(entity);
-			Entity sourceentity = this.shootingEntity;
-			{
-				Map<String, Object> $_dependencies = new HashMap<>();
-				$_dependencies.put("sourceentity", sourceentity);
-				ProcedureKunaiBulletHitsLivingEntity.executeProcedure($_dependencies);
-			}
+			entity.setArrowCountInEntity(entity.getArrowCountInEntity() - 1);
 		}
 
 		@Override
@@ -235,46 +224,61 @@ public class ItemKunaiExplosive extends ElementsNarutomodMod.ModElement {
 		}*/
 	}
 
-	@SideOnly(Side.CLIENT)
-	public class RenderCustom extends Render<EntityArrowCustom> {
-		protected final Item item;
-		private final RenderItem itemRenderer;
+	@Override
+	public void preInit(FMLPreInitializationEvent event) {
+		new Renderer().register();
+	}
 
-		public RenderCustom(RenderManager renderManagerIn) {
-			super(renderManagerIn);
-			this.item = block;
-			this.itemRenderer = Minecraft.getMinecraft().getRenderItem();
+	public static class Renderer extends EntityRendererRegister {
+		@SideOnly(Side.CLIENT)
+		@Override
+		public void register() {
+			RenderingRegistry.registerEntityRenderingHandler(EntityArrowCustom.class, renderManager -> {
+				return new RenderCustom(renderManager);
+			});
 		}
 
-	    @Override
-	    public void doRender(EntityArrowCustom entity, double x, double y, double z, float entityYaw, float partialTicks) {
-	        GlStateManager.pushMatrix();
-	        GlStateManager.translate((float)x, (float)y, (float)z);
-	        GlStateManager.enableRescaleNormal();
-	        GlStateManager.rotate(entity.prevRotationYaw + (entity.rotationYaw - entity.prevRotationYaw) * partialTicks - 90.0F, 0.0F, 1.0F, 0.0F);
-	        GlStateManager.rotate(entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks, 0.0F, 0.0F, 1.0F);
-	        this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
-	        if (this.renderOutlines) {
-	            GlStateManager.enableColorMaterial();
-	            GlStateManager.enableOutlineMode(this.getTeamColor(entity));
-	        }
-	        this.itemRenderer.renderItem(this.getStackToRender(entity), ItemCameraTransforms.TransformType.GROUND);
-	        if (this.renderOutlines) {
-	            GlStateManager.disableOutlineMode();
-	            GlStateManager.disableColorMaterial();
-	        }
-	        GlStateManager.disableRescaleNormal();
-	        GlStateManager.popMatrix();
-	        super.doRender(entity, x, y, z, entityYaw, partialTicks);
-	    }
+		@SideOnly(Side.CLIENT)
+		public class RenderCustom extends Render<EntityArrowCustom> {
+			protected final Item item;
+			private final RenderItem itemRenderer;
 	
-	    public ItemStack getStackToRender(EntityArrowCustom entityIn) {
-	        return new ItemStack(this.item);
-	    }
+			public RenderCustom(RenderManager renderManagerIn) {
+				super(renderManagerIn);
+				this.item = block;
+				this.itemRenderer = Minecraft.getMinecraft().getRenderItem();
+			}
 	
-		@Override
-	    protected ResourceLocation getEntityTexture(EntityArrowCustom entity) {
-	        return TextureMap.LOCATION_BLOCKS_TEXTURE;
-	    }
+		    @Override
+		    public void doRender(EntityArrowCustom entity, double x, double y, double z, float entityYaw, float partialTicks) {
+		        GlStateManager.pushMatrix();
+		        GlStateManager.translate((float)x, (float)y, (float)z);
+		        GlStateManager.enableRescaleNormal();
+		        GlStateManager.rotate(entity.prevRotationYaw + (entity.rotationYaw - entity.prevRotationYaw) * partialTicks - 90.0F, 0.0F, 1.0F, 0.0F);
+		        GlStateManager.rotate(entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks, 0.0F, 0.0F, 1.0F);
+		        this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+		        if (this.renderOutlines) {
+		            GlStateManager.enableColorMaterial();
+		            GlStateManager.enableOutlineMode(this.getTeamColor(entity));
+		        }
+		        this.itemRenderer.renderItem(this.getStackToRender(entity), ItemCameraTransforms.TransformType.GROUND);
+		        if (this.renderOutlines) {
+		            GlStateManager.disableOutlineMode();
+		            GlStateManager.disableColorMaterial();
+		        }
+		        GlStateManager.disableRescaleNormal();
+		        GlStateManager.popMatrix();
+		        super.doRender(entity, x, y, z, entityYaw, partialTicks);
+		    }
+		
+		    public ItemStack getStackToRender(EntityArrowCustom entityIn) {
+		        return new ItemStack(this.item);
+		    }
+		
+			@Override
+		    protected ResourceLocation getEntityTexture(EntityArrowCustom entity) {
+		        return TextureMap.LOCATION_BLOCKS_TEXTURE;
+		    }
+		}
 	}
 }

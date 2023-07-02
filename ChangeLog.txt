@@ -1,3 +1,269 @@
+0.3.0-beta ================================================================================
+
+Jutsus:
+ - if susanoo or shield based jutsus gets killed by enough damage, residual damage will be transfered to player
+ - properly set 8-trigrams heavenly rotation cooldown
+ - reduced debuff duration when chakra/attack absorbed by preta path
+ - optimize sand jutsus on server side
+ - biju cloak cannot be used with sage mode if your level 2 cloak xp is less than 800
+ - fixed dying as shadow clone won't revert player back to original
+ - reduced limbo clone duration, increased cooldown
+ - must fully learn flying thunder god jutsu to tp to the markers
+ - will dismount before teleporting to flying thunder god marker
+ - fixed chunks not generating when teleporting too far with flying thunder god
+ - fixed ice release crystal mirrors preventing death from opening all 8-gates or all killing ash bone
+ - fixed opening 4+ gates not getting damaged when receiving other potion damage
+ - opening 4+ gates damage per 4 seconds, add hunger, remove saturation
+ - enabled 8 branch snake when sage mode is type snake
+ - sand funeral can't be used consecutively anymore
+ - sharingan evasion no longer moves you to any unsafe place to stand on
+ - chakra enhanced strength should only activate on melee attacks
+
+Items:
+ - fixed explosive tags breaking blocks when mobGriefing false
+ - implemented Sound Reflecting Gauntlet and recipe. left click to shoot soundwaves, right click to block
+ - Ramen is now craftable and gives 25 seconds saturation
+ - simplified hiraishin/3-prong kunai model to reduce client lag on rendering marker/kunai
+ - fixed kiba sword duplication bug
+ - implemented adamantine staff, can block, added extend (WIP) and adamantine prison
+ - lowered armor protection values for dojutsus
+ - fixed 6-path armor only showing obito variant to other players
+ 
+Entities:
+ - re-textured white zetsu, itachi
+ - buffed toad/slug/snake attack damage
+ - tailed beasts and toads greater than size 4 can break leaves/wood blocks when moving
+ - better tailed beasts movement AI
+ - added ambient sounds for shukaku, songoku, chomei, isobu
+ - fixed player's outer skin layer not synced with arms when naruto running
+ - added Enma summon (WIP)
+
+General:
+ - resets tailed beasts spawn point if natural spawning is disabled in config
+ - better naruto run
+
+0.2.12-beta ===============================================================================
+
+Jutsus:
+ - can fly when jinchuriki in full biju mode of 7-tails
+ - changed chidori mechanics: swing at a target within 20 blocks to charge at target
+ - nerfed chidori damage, lowered attack speed
+ - changed earth sandwich targeting mechanics: point at block instead of entity
+ - fix earth sandwich killing people again after killing them
+ - nerfed earth sandwich damage
+ - earth sandwich will also damage the user if caught in the jutsu
+ - unsummon your earth golem by hitting it
+ - limit bug sphere to max 10, reduce chakra absorption rate from target
+ - tweaked kamui teleport to use more chakra/time, give nausea effect after use
+ - fixed kamui intangibility running out of chakra leaves you intangible forever
+ - kamui intangible now has a 30 second limit, after which it goes on a 10s cooldown
+ - fixed eternal mangekyo intangible not negating damage 
+ - susanoo, shield based entities and riding on bijus will no longer protect you from
+   damage done to yourself by opening your gates, only king of hell can protect you
+ - fixed water jutsus leaving behind residual water blocks
+ - biju cloak now force closes if you don't have anymore chakra
+ - biju cloak 2 bijudama charge time is dependant on cloak XP, cooldown 5 seconds
+ - buffed 7/8 gate: user can punch targets 15 blocks away by jumping right in front of them
+ - 8th gate sekizo and yagai damage can't be reduced by resistance effects,
+   7th gate resistence effect reduced to level 4
+ - 7th gate can't fly anymore, only 8th gate can fly
+ - increased non-affinity releases jutsuXP requirements to 2.5 times affinity requirements
+ - susanoo half-body and higher class can hold totsuka sword if the user has it
+ - scorch balls damage and duration increased, targeting is much better
+ - limit unrivaled strength to max 20
+ - boil release unrivaled strength now can punch entities 12 blocks away by jumping right in front of them
+ - lightning chakra mode cooldown increased by 2 seconds to prevent jutsu stacking
+ - lightning chakra mode now can punch entities 12 blocks away by jumping right in front of them
+ - entering biju cloak mode now can punch entities 15 blocks away by jumping right in front of them
+ - increased nausea duration on amaterasu use
+ - enabled user movements when using byakugan vision
+ - fixed fake death syndrome when dying with shadow clones alive
+ - remove shadow clones when user changes dimension
+ - shadow clones using rasengan will not hurt summoner or other clones of the same summoner
+ - shadow clones can use hiding in camouflage, chidori
+ - added Flying thunder god jutsu and scroll. can be used on blocks, entities and 3-prong kunais
+ - flying thunder god jutsu can escape from immobilization jutsus
+ - body replacement jutsu now only activates on entity damage source, and user doesn't have paralysis effect
+   body replacement jutsu won't teleport user into blocks
+ - sharingan users no longer give attackers slowness, instead will highlight the attacker for 15s if in range,
+   and lock users eyes on the attacker when mouse right button is pressed
+ - added chakra pulse for kekkei mora
+ - re-made fire annihilation and great flame jutsus to not go through walls. (optimized)
+ - buffed rasengan damage
+ - increased speed and size of Lava release: magma balls
+ - phantom 9 sealing jutsu no longer works on the 10-tails or its jinchuriki
+ - phantom 9 dragons sealing jutsu only works if the target is within 20 blocks
+ - wind release chakra flow cannot be used together with lightning chakra mode or chidori
+ - shinratensei can aim and throw floating chunks of earth at targets if shift+banshotenin was used to dislodge chunks of earth
+ - explosion release C3 now does custom explosion, damage 400 to all within 30 blocks
+ - buffed explosion release C1, C2 and explosive clone damage
+ - improved 8-trigrams revolving palm animation
+ - fixed susanoo bug sometimes creating infinite susanoo entities on the client side
+ - susanoo re-balance: added ribcage stage and requires 2000 nxp, skeleton: 5000 nxp, half body: 10000, full body: 20000, perfect 36000
+   susanoo damage nerfed a bit
+
+Items:
+ - fix using /give command to give nature release items duplicates the item
+ - remove enchantability on all dojutsus
+ - add config to force remove rinnegan/tenseigan/ems if obtained without prerequisite achievements
+ - medical scroll to combine dojutsus now require the appropriate achievements to combine
+ - fixed forceDojutsuDropOnDeath not dropping mangekyos
+ - fixed after gaining mangekyo naturally susanoo color always black
+ - added 3-prong kunai weapon and recipe
+ - added some horns on 6-path rinnegan and tenseigan chakra mode
+ - truth seeking shakujo no longer drops
+ - use custom explosions for shibuki sword
+ - fixed nuibari and 3-bladed scythe thrown from off hand bug
+ - nerfed kamui shuriken to do less damage and use more chakra
+ - fixed putting kiba sword in offhand deletes the sword
+ - remembers 6-path senjutsu jutsuXPs after the item is removed (when rinnesharingan is off)
+ - fixed learning jutsu scrolls on off-hand deletes item in main-hand bug
+ - eating white zetsu flesh will only gain rinnegan if player has ems+achievement and doesn't have rinnegan+achievement
+ - fixed sage mode facial textures not rendering when senjutsu item held in offhand
+
+Entities:
+ - added 5 second cooldown for Itachi's genjutsu
+ - lowered chances of Itachi dropping mangekyo
+ - gedomazo can be ridden and controlled by rinnegan/tenseigan users
+ - fixed entity renderers crashing with ice and fire and custom NPC mods
+ - added config settings to tweak Itachi, Kisame, Zabuza, white zetsu spawn weight
+ - new 1-tail shukaku model
+ - new 4-tails Son Goku model
+ - made itachi's real chance configurable
+ - smarter itachi in susanoo AI
+ - patch loophole for sakura to drop anything
+ - better NPC/clone water walking and wall climbing AI
+ - snake summons greater than size 4 will break wood/trees when moving
+ - bijus will take less damage if the attacker is in its view and the damage is blockable
+ - tweaked pricing for ninja merchants trade items, trading works the same as vanilla, trading unlocks more trades
+ - clones don't naturally drop loot
+
+Advancements:
+ - associate "Rinnesharingan Activated" advancement to the correct parent (rinnegan/tenseigan) advancement
+
+Commands:
+ - added find gedo mazo location. usage: /locateEntity gedo
+
+General:
+ - Added a config
+ - moved gamerule spawnTailedBeasts to config
+ - added a config option for players being able to spawn as jinchuriki
+ - killing a gedo mazo that has bijus sealed in itself will release the bijus
+ - ninjas can only gain ninjaxp through damaging or getting damaged by hostile mobs or players
+ - added back naruto run and config option NARUTO_RUN to turn off
+ - added a config option AGGRESSIVE_BOSSES to make bosses attack on sight
+ - improve the boss bars when AGGRESSIVE_BOSSES is enabled
+ - added config setting CHAKRA_REGEN_RATE to customize idle chakra regen rate
+ - added config option ENABLE_JUTSU_SCROLLS_IN_LOOTCHESTS to disable jutsu scrolls in loot chests
+ - chakra does not regenerate when using jutsus
+ - fixed dying from chakra overload causes immortality when revived with king of hell
+ - added config to change amaterasu block duration
+
+0.2.11-beta ===============================================================================
+
+Jutsus:
+ - limit earth sandwich jutsu to size 20
+ - removed fall damage from kamui intangible and sand levitation
+ - bone/ice/earth spikes power indicator and chakra usage is based on how many spikes produced
+ - nerfed bone/ice/earth spikes damage
+ - fixed lightning beast/panther crashing when user enters another world/dimension
+ - limit black lightning panther to max 5
+ - limit max jutsuXp to 3x required xp
+ - limit unrivaled strength to max 30
+ - limit sand bullet barrage to max 5
+ - increased amaterasu damage (based on user ninjaxp)
+ - Yomotsu Hirasaka now works in survival
+ - lowered damage on Chakra flow
+ - disallow using sand binding on the same target multiple times
+ - fixed adamantine chains render broken by Radon
+ - fixed when becoming your clone and clone original dies bug
+ - fixed son guko not giving you lava chakra mode upon becoming its jinchuriki
+ - fixed jinchuriki berzerk mode crash when holding senjutsu item
+ - fixed jinchuriki cloak 2 berzerk mode with cloak 1 head texture
+ - fixed 8-gates sekizo only being usable once
+ - fixed 8-gates yagai killing you again after death respawn
+ - force close 8-gates after Night guy use or death
+ - 8-gates item won't disappear if not owner holding it
+ - fix night guy killing player on respawn
+ - added sonic boom effects to 7-gate punches and chakra enhanced strength punches
+ - made some S rank jutsu scrolls findable
+ - limit medical jutsu: poison mist to max 50
+ - limit poison mist to max 35 power
+ - decrease Temari's fan max power to 40 from 60
+ - improved lightning beast control, reduced jutsu duration
+ - reduced lightning panther jutsu duration
+ - fixed skeletal control willow dance infinitely gaining strength
+ - fixed ice mirrors being able to use without chakra
+ - reduced wood burial duration to 10 seconds, damage 10 per second
+ - allow 1-tail jinchuriki in biju cloak to use magnet release without a sand gourd
+ - reduced earth sandwich duration
+ - lava melting jutsu won't spawn lava blocks if mobGriefing disabled
+ - fixed tenseigan users not being able to use asura canon
+ - fixed summoner can't ride summon, and summon can't ride summoner
+ - lightning jutsus now do aoe damage in a 10 block radius if target is in water
+ - added Six Paths Ten-Tails Coffin Seal - to become the 10-tails jinchuriki
+ - after becoming the 10-tails jinchuriki, armor is obito un-controlled outfit if ninjaxp < 32400
+ - hell swamp jutsu mud blocks now reverts back to original blocks after 30 seconds
+ - limit hell swamp jutsu to 30 max
+ - limit explosion release land mine fist to 10 max
+
+Items:
+ - cleaver sword now takes damage when used, attack speed and damage decrease, recipe changed
+ - tweaked ninja armor model sizes to better fit layered player skins
+ - changed dojutsu helmet items textures
+ - fix armor lag by preventing it from creating new instances
+ - added tailed beast maps
+ - made tailed beast maps not show positions if spawnTailedBeasts is false
+ - fixed biju map crashing bug
+ - made biju map icons 50% bigger
+ - limit big folding fan blow power
+ - updated rinnegan's asura path canon to shoot missiles
+ - reduced chances of getting wood release to 1% if keepInvenotry or keepNinjaXp is true
+ - six path staff is given to people that gain 6-path senjutsu. it shoots black receivers
+ - fixed chokuto or shuriken not showing up in susanoo if you have multiple chokutos in inventory
+
+Entities:
+ - increase spawn rates for bosses and remove dungeon spawns
+ - made might guy send messages to current customer instead of server
+ - made tailed beasts respawn after a certain amount of time after death
+ - made Iruka sell tailed beast maps
+ - fixed Itachi, Kisame and Zabuza boss bars flickering issue
+ - made the boss bars red (can be changed just thought it would be better)
+ - expanded Kisame, Itachi, Zabuza, MightGuy, Tenten, Sakura, Iruka spawn biomes and spawn weight
+ - made merhcants not despawn if they've traded with a player
+ - rewrote ninja merchant code
+ - fixed ninja merchants player blacklist not working correctly
+ - fixed ninja merchants occasional empty trade list
+ - fixed ninja merchants crashing with LootBags mod
+ - increased NPCs health and chakra
+ - fixed real Itachi not dropping his mangekyo
+ - fixed Itachi's genjutsu not showing his sharingan
+ - add cooldown text for tailed beast bomb in stage 3
+
+Commands:
+ - addxp2jutsu command now requires level 4 permision
+ - added optional [player] parameter to addxp2jutsu
+ - locateEntity command now requires level 4 permision
+
+General:
+ - removed japanese localization
+ - on respawn, kg item will now be given to player at the same time as other basic nature
+   release items (once per lifetime) if the player has already achieved kg naturally
+ - chakra regeneration amount when idle is now based on player's saturation level
+ - omit the 10 tails becoming a player's naturally sealed biju
+ - added gamerule:spawnTailedBeasts to spawn bijus naturally in a 10k - 100k radius from 0 0
+ - properly flushed world biju save data on world close
+ - properly capitalized translations
+ - fixed dying as jinchuriki with keepInventory on can't see cloak on respawn
+ - centered chakra bar
+ - made ninja water walking not push player up if underwater
+ - fixed hack to get jinchuriki by putting all nature release items in chests
+ - fixed closing server while jinchuriki in biju cloak revokes the jinchuriki
+ - made might guy mission objective have a display name
+ - instead of killing the jinchuriki, add chat text saying "you're too weak" if you don't
+   have enough ninjaxp to handle biju cloak (going up a level tries to give you 5000+ chakra)
+ - fix water walking fall dmg
+
 0.2.10-beta ===============================================================================
 
 Jutsus:
@@ -8,25 +274,106 @@ Jutsus:
  - using chidori with a weapon in hand no longer lunges at target
  - improved rasengan impact particles rendering
  - biju cloak 2 requires 800 jutsuXp to master
- - full Kurama mode: change Kurama texture to KCM texture
  - Mind transfer/shadow imitation: improved mouse sensitivity when controlling mobs
- - kagebunshin: fixed ninjaxp not reseting after death of original (when player is a bunshin)
- - Adamantine sealing chains: no longer seals the biju in the player
+ - Mind transfer only works on entities with AI and players
+ - Mind transfer chakra usage based on target ninja level or health if not ninja
+ - shadow clone jutsu: fixed ninjaxp not reseting after death of original (when player is a bunshin)
+ - shadow clone jutsu: updated health and chakra transfers from clone to user
+ - Adamantine sealing chains: moved to Yang release
+ - Adamantine sealing chains: no longer seals the biju in the player in survival mode
  - Adamantine sealing chains: added chakra drain on target entity (drain amount based on player's chakra)
+ - changed Earth sandwich jutsu animation and mechanics
+ - updated earth wall jutsu block placement
+ - changed Sand bullet barrage mechanics
+ - lava release melting jutsu created obsidian blocks will disappear after 1 minute
+ - explosion release landmine fist and chakra enhanced strength now only works on direct physical attacks
+ - chikabutensei moon falls after 1 minute, improved mechanics when griefing turned off
+ - multi-size jutsu giant's health is based on the size
+ - ice release all killing ice spikes charging and chakra usage change
+ - improved rasenshuriken model and particles
+ - wood permanent burial now has a 15 second cooldown
+ - cellular acvtivation now uses 4x more chakra on hit than before
+ - substitution jutsu now has 10 second cooldown between activations
+ - lava release jutsus damage increased
+ - wood prison now only forms the sides and top, max size 40
+ - changed lightning paralysis effect: entity is slowed but can still move
+ - updated byakugan jutsu usage requirements from vanilla experience to ninjaXp
+ - added sonic boom effect on chakra enhanced strength and gate 7
  - added Transformation jutsu and scroll
+ - added 4-symbols sealing jutsu and scroll
+ - added lightning release: black panther and scroll
+ - added Earth release: Golem jutsu
+ - added amenotejikara, rinnegan gives either limbo or amenotejikara randomly
+ - added 9 dragons sealing jutsu in Yang release, enabled when rinnegan achieved
  
 Items:
  - Bone drill can't be dropped into the world
  - Amegakure headband+mask can breathe under water and immune to poison & wither
  - re-positioned the dojutsus lower on the face
+ - white zetsu flesh when eaten damages eater 20~240 instantly if not wearing mangekyo sharingan
+ - eating white zetsu flesh gives mokuton only if user has suiton and doton
+ - jutsu scrolls are now one-time use
+ - summoning contract and senjutsu on /give: use datatag {Type:toad|snake|slug} to specify which type
+ - evolving into mangekyo now requires 1000 ninjaxp and no vanilla xp requirement
+ - when awakening mangekyo, achievement goes to and is bounded to original sharingan owner
+ - using someone else's mangekyo jutsus now drains 3x durability
+ - foreign eternal mangekyo jutsus will drain durability at 3x
+ - prevent drag dropping nature release items out of inventory
+ - medical ninja is checked only once, either you get it (25%) when first becoming a ninja or never will
+ - increased ninja armor durability
  - added Konoha facial protector (tobirama/yamato style) and recipe
  - added 1st Ninja war armor and recipe
  - added samurai armor and recipe
  - added Sanshouo puppet's summoning scroll. after summon, use scroll on puppet to seal it back
  - added Karasu puppet's summoning scroll. after summon, use scroll on puppet to seal it back
+ - added Hiruko puppet's summoning scroll. after summon, use scroll on puppet to seal it back
+ - added gunbai: gives wind from folding fan
+ - added senbons and recipe
+ - added Yaguras Staff: 4th Mizukage's staff (WIP)
+ - added Staff of Sage of Six Paths (WIP)
+ - added 3rd Hokage's Staff (WIP)
+ - added Hidan's Scythe (WIP) - Now throwable
+ - added Fuma Shuriken (WIP)
+ - added Sound Gaunlet (WIP)
+ - added Poison Bombs and recipe
+ - added Poison Senbons and recipe
+ - added Cleaver sword and recipe: can imbue lightning chakra
+ - added Curry of Life
+ - added Curry and Rice
+ - added Rice
+ - added Onigiri
+ - added Sake
+ - added Ichiraku Ramen
+ - added Tea
+ - added flying thunder god kunai (WIP)
+ - added madara's 1-bladed scythe (WIP)
+ - added Sound Gaunlet (WIP)
+ - added metal claw and recipe
+ - added Jiraiya's stone sword Ishiken (WIP)
+ - added Chakra Blades (WIP)
+ - added some new anbu and obito masks
+ - added partial sand cloak texture, updated the tail texture
+ - added KCM2 texture
+ - added Kage hats and robe
+ - added rain/sound village and anbu clothes
+ - added Obito 4th ninja war mask and clothes
+ - added Adamantin sealing chains scroll
  
 Entities:
- - changed Sanshouo puppet's health to 200
+ - full Kurama mode: change Kurama texture to KCM texture
+ - changed Sanshouo puppet's health to 200, reduces projectile damage by 80%
+ - changed kisame & zabuza's AI: no longer actively attacks players
+ - potion effects don't affect shield based entities (like hiruko, sanshouo, wood golem, etc)
+ - setup tailed beast face down pose
+ - puppets now tries to stay in front of user when not attacking, max range 40
+ - added Hiruko puppet (health=100; reduces projectile damage by 60%; blocking with tail reduces damage by 80%)
+ - updated white zetsu spawn parameters
+ - fixed giant 2 head dog not dying bug
+ - biju is removed from world when a player becomes its junchuriki
+ - biju can't be sealed unless health less than 1000
+ - added face down pose for bijus
+ - white zetsu changes skin to random player instead of the closest player
+ - white zetsu has a 40% chance to drop a kunai
  
 Structures:
  - rebuilt the 4 pillar wood house to match anime
@@ -35,8 +382,24 @@ Commands:
  - locateEntity: added tab completions
  - locateEntity: added jinchuriki assign
  
+World:
+ - force total world time sync across all dimensions (magma fix)
+ - jinchurikies keep their bijus after death if keepInventory is on
+ - added gamerule "forceDojutsuDropOnDeath" (only for byakugan/sharingan/mangekyo)
+
+Blocks:
+ - removed meteor block
+ - amaterasu block: Amaterasu effect amplification based on caster ninjaxp
+
 General:
  - reach effect: targeting fuzziness increases with reach, i.e. fuzziness = targetBoundingBox +- reach * 0.1
+ - kill ninja if chakra exceeds 4x max chakra
+ - added 1 second cooldown on ninjaxp/jutsuxp logging
+ - chakra: force sync to client on next tick on player respawn/changeDimension
+ - ninjaxp: force sync to client on next tick on player respawn/changeDimension
+ - hitting entities with a kunai or shuriken no longers gains extra ninjaxp
+ - updated the balancing such as susanoo hp, gourd/bone armor durability
+ - revised biju management system to seal entities other than players as vessels
 
 0.2.9-beta ================================================================================
 

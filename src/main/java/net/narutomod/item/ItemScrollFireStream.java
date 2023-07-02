@@ -44,7 +44,7 @@ public class ItemScrollFireStream extends ElementsNarutomodMod.ModElement {
 	}
 	public static class ItemCustom extends Item {
 		public ItemCustom() {
-			setMaxDamage(0);
+			setMaxDamage(1);
 			maxStackSize = 1;
 			setUnlocalizedName("scroll_fire_stream");
 			setRegistryName("scroll_fire_stream");

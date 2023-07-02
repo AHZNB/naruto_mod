@@ -38,6 +38,8 @@ import io.netty.buffer.ByteBuf;
 public class ItemOnBody extends ElementsNarutomodMod.ModElement {
 	private static Vec3d RIGHT_LEG_OFFSET = new Vec3d(0.125d, -0.6875d, 0d);
 	private static Vec3d LEFT_LEG_OFFSET = new Vec3d(-0.125d, -0.6875d, 0d);
+	private static Vec3d RIGHT_ARM_OFFSET = new Vec3d(0.3125d, -0.125d, 0d);
+	private static Vec3d LEFT_ARM_OFFSET = new Vec3d(-0.3125d, -0.125d, 0d);
 	
 	public ItemOnBody(ElementsNarutomodMod instance) {
 		super(instance, 711);
@@ -56,14 +58,16 @@ public class ItemOnBody extends ElementsNarutomodMod.ModElement {
 	public interface Interface {
 		default Vec3d getOffset() {
 			switch (this.showOnBody()) {
+				case RIGHT_ARM:
+					return RIGHT_ARM_OFFSET;
 				case RIGHT_LEG:
 					return RIGHT_LEG_OFFSET;
+				case LEFT_ARM:
+					return LEFT_ARM_OFFSET;
 				case LEFT_LEG:
 					return LEFT_LEG_OFFSET;
 				case HEAD:
 				case TORSO:
-				case RIGHT_ARM:
-				case LEFT_ARM:
 				default:
 					return Vec3d.ZERO;
 			}
@@ -118,14 +122,14 @@ public class ItemOnBody extends ElementsNarutomodMod.ModElement {
 
 		private boolean needsUpdate() {
 			boolean update = false;
-			for (int i = 0; i < this.player.inventory.mainInventory.size(); ++i) {
-				ItemStack stack1 = this.player.inventory.mainInventory.get(i);
+			for (int i = 0; i < this.player.inventory.getSizeInventory(); ++i) {
+				ItemStack stack1 = this.player.inventory.getStackInSlot(i);
 				ItemStack stack2 = this.slotMap.get(Integer.valueOf(i));
-				if ((stack2 == null || !ItemStack.areItemsEqual(stack1, stack2))
-				 && (stack1.getItem() instanceof Interface || (stack2 != null && stack2.getItem() instanceof Interface))) {
+				boolean flag = stack2 != null && ItemStack.areItemStacksEqual(stack1, stack2);
+				if (!flag && (stack1.getItem() instanceof Interface || (stack2 != null && stack2.getItem() instanceof Interface))) {
 					this.slotMap.put(Integer.valueOf(i), stack1);
 					update = true;
-				} else if (stack2 != null && ItemStack.areItemsEqual(stack1, stack2) && !(stack2.getItem() instanceof Interface)) {
+				} else if (flag && !(stack2.getItem() instanceof Interface)) {
 					this.slotMap.remove(Integer.valueOf(i));
 				}
 			}

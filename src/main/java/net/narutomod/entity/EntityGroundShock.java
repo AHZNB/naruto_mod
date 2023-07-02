@@ -68,14 +68,14 @@ public class EntityGroundShock extends ElementsNarutomodMod.ModElement {
 				if (this.ticksExisted <= this.radius) {
 					BlockPos blockpos = new BlockPos(this);
 					int i = this.ticksExisted + 1;
+					BlockPos.PooledMutableBlockPos pos1 = BlockPos.PooledMutableBlockPos.retain();
 					for (BlockPos pos : BlockPos.getAllInBoxMutable(blockpos.add(-i, -5, -i), blockpos.add(i, 3, i))) {
 						IBlockState state = this.world.getBlockState(pos);
-						BlockPos pos1 = pos.up();
 						double d0 = pos.getX() - blockpos.getX();
 						double d1 = pos.getZ() - blockpos.getZ();
 						double d2 = MathHelper.sqrt(d0 * d0 + d1 * d1);
-						if ((int)d2 == i && state.isTopSolid() && this.world.isAirBlock(pos1)) {
-							for (Entity entity1 : this.world.getEntitiesWithinAABBExcludingEntity(this, new AxisAlignedBB(pos1))) {
+						if ((int)d2 == i && state.isFullBlock() && this.world.isAirBlock(pos1.setPos(pos.getX(), pos.getY()+1, pos.getZ()))) {
+							for (Entity entity1 : this.world.getEntitiesWithinAABBExcludingEntity(this, new AxisAlignedBB(pos1).grow(0.1d))) {
 								if (!(entity1 instanceof EntityFallingBlock) && !this.entitylist.contains(entity1)) {
 									this.entitylist.add(entity1);
 									entity1.motionY += 0.9d;
@@ -91,6 +91,7 @@ public class EntityGroundShock extends ElementsNarutomodMod.ModElement {
 							this.world.spawnEntity(entity);
 						}
 					}
+					pos1.release();
 				} else {
 					this.setDead();
 				}

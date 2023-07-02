@@ -2,13 +2,18 @@ package net.narutomod.procedure;
 
 import net.minecraft.util.math.Vec3d;
 //import net.minecraft.entity.item.EntityFallingBlock;
-import net.minecraft.entity.Entity;
-import javax.annotation.Nullable;
+import net.minecraft.entity.Entity;
 
 import net.narutomod.entity.EntityEarthBlocks;
 
+import com.google.common.collect.Lists;
+import javax.annotation.Nullable;
+import java.util.List;
+import java.util.Iterator;
+
 public class ProcedurePullAndHold {
 	private Entity grabbedEntity = null;
+	private final List<EntityEarthBlocks.Base> grabbedEarthBlocks = Lists.newArrayList();
 
 	public void execute(boolean is_pressed, Entity puller, @Nullable Entity target) {
 		if (this.grabbedEntity == null && target == null)
@@ -42,6 +47,21 @@ public class ProcedurePullAndHold {
 
 	public Entity getGrabbedEntity() {
 		return this.grabbedEntity;
+	}
+
+	public void addEarthBlock(EntityEarthBlocks.Base entity) {
+		this.grabbedEarthBlocks.add(entity);
+	}
+
+	public List<EntityEarthBlocks.Base> getGrabbedEarthBlocks() {
+		Iterator<EntityEarthBlocks.Base> iter = this.grabbedEarthBlocks.iterator();
+		while (iter.hasNext()) {
+			EntityEarthBlocks.Base entity = iter.next();
+			if (!entity.isEntityAlive()) {
+				iter.remove();
+			}
+		}
+		return this.grabbedEarthBlocks;
 	}
 
 	public void reset() {

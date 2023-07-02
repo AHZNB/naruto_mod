@@ -22,6 +22,7 @@ import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.client.Minecraft;
 
 import net.narutomod.procedure.ProcedureSpecialJutsu1OnKeyPressed;
+import net.narutomod.procedure.ProcedureSync;
 import net.narutomod.NarutomodMod;
 import net.narutomod.ElementsNarutomodMod;
 
@@ -39,64 +40,48 @@ public class KeyBindingSpecialJutsu1 extends ElementsNarutomodMod.ModElement {
 
 	@Override
 	public void preInit(FMLPreInitializationEvent event) {
-		elements.addNetworkMessage(KeyBindingPressedMessageHandler.class, KeyBindingPressedMessage.class, Side.SERVER);
+		elements.addNetworkMessage(KeyBindingPressedMessage.Handler.class, KeyBindingPressedMessage.class, Side.SERVER);
 	}
 
 	@SideOnly(Side.CLIENT)
 	@Override
 	public void init(FMLInitializationEvent event) {
-		keys = new KeyBinding("key.mcreator.specialjutsu1", Keyboard.KEY_R, "key.mcreator.category");
-		ClientRegistry.registerKeyBinding(keys);
+		this.keys = new KeyBinding("key.mcreator.specialjutsu1", Keyboard.KEY_R, "key.mcreator.category");
+		ClientRegistry.registerKeyBinding(this.keys);
 		MinecraftForge.EVENT_BUS.register(this);
 	}
 
-	/*@SubscribeEvent
-	@SideOnly(Side.CLIENT)
-	public void onKeyInput(InputEvent.KeyInputEvent event) {
-		if (Minecraft.getMinecraft().currentScreen == null && this.keys.getKeyCode() > 0) {
-			this.processKeyBind();
-			if (!Keyboard.areRepeatEventsEnabled()) {
-				Keyboard.enableRepeatEvents(true);
-			}
-		}
-	}*/
-
 	@SubscribeEvent
 	@SideOnly(Side.CLIENT)
-	public void OnClientPostTick(TickEvent.ClientTickEvent event) {
+	public void onClientPostTick(TickEvent.ClientTickEvent event) {
 		if (event.phase == TickEvent.Phase.END) {
-			this.processKeyBind();
+			Minecraft mc = Minecraft.getMinecraft();
+			if (mc.currentScreen == null) {
+				this.processKeyBind();
+			}
+			if (mc.player != null) {
+				boolean flag = mc.currentScreen != null;
+				if (flag != mc.player.getEntityData().getBoolean("hasAnyGuiOpen")) {
+					mc.player.getEntityData().setBoolean("hasAnyGuiOpen", flag);
+					ProcedureSync.EntityNBTTag.sendToServer(mc.player, "hasAnyGuiOpen", flag);
+				}
+			}
 		}
 	}
-
-	/*@SubscribeEvent
-	@SideOnly(Side.CLIENT)
-	public void onMouseEvent(InputEvent.MouseInputEvent event) {
-		if (Minecraft.getMinecraft().currentScreen == null && this.keys.getKeyCode() <= 0) {
-			this.processKeyBind();
-		}
-	}*/
 
 	@SideOnly(Side.CLIENT)
 	private void processKeyBind() {
 		boolean isKeyDown = this.keys.isKeyDown();
 		if (isKeyDown || this.wasKeyDown) {
 			NarutomodMod.PACKET_HANDLER.sendToServer(new KeyBindingPressedMessage(isKeyDown));
-			pressAction(Minecraft.getMinecraft().player, isKeyDown);
+			EntityPlayer player = Minecraft.getMinecraft().player;
+			if (player != null) {
+				pressAction(player, isKeyDown);
+			}
 		}
 		this.wasKeyDown = isKeyDown;
 	}
 
-	public static class KeyBindingPressedMessageHandler implements IMessageHandler<KeyBindingPressedMessage, IMessage> {
-		@Override
-		public IMessage onMessage(KeyBindingPressedMessage message, MessageContext context) {
-			EntityPlayerMP entity = context.getServerHandler().player;
-			entity.getServerWorld().addScheduledTask(() -> {
-				pressAction(entity, message.is_pressed);
-			});
-			return null;
-		}
-	}
 
 	public static class KeyBindingPressedMessage implements IMessage {
 		boolean is_pressed;
@@ -105,6 +90,17 @@ public class KeyBindingSpecialJutsu1 extends ElementsNarutomodMod.ModElement {
 
 		public KeyBindingPressedMessage(boolean is_pressed) {
 			this.is_pressed = is_pressed;
+		}
+
+		public static class Handler implements IMessageHandler<KeyBindingPressedMessage, IMessage> {
+			@Override
+			public IMessage onMessage(KeyBindingPressedMessage message, MessageContext context) {
+				EntityPlayerMP entity = context.getServerHandler().player;
+				entity.getServerWorld().addScheduledTask(() -> {
+					pressAction(entity, message.is_pressed);
+				});
+				return null;
+			}
 		}
 
 		public void toBytes(ByteBuf buf) {

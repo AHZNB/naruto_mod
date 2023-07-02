@@ -30,19 +30,15 @@ import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.common.MinecraftForge;
 
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.World;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.SoundCategory;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.item.ItemStack;
 import net.minecraft.init.MobEffects;
-import net.minecraft.init.Blocks;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.EntityLivingBase;
@@ -89,6 +85,7 @@ public class ProcedureOnPlayerPostTick extends ElementsNarutomodMod.ModElement {
 		ItemStack stack = ItemStack.EMPTY;
 		double rand = 0;
 		double rngbase = 0;
+		boolean achievedMedical = false;
 		if (((((entity instanceof EntityPlayer) ? ((EntityPlayer) entity).experienceLevel : 0) >= 10)
 				&& ((entity.getEntityData().getDouble((NarutomodModVariables.BATTLEXP))) > 0))) {
 			if (((!(world.isRemote)) && (!(entity.getEntityData().getBoolean((NarutomodModVariables.FirstGotNinjutsu)))))) {
@@ -139,6 +136,7 @@ public class ProcedureOnPlayerPostTick extends ElementsNarutomodMod.ModElement {
 							_setstack.setCount(1);
 							ItemHandlerHelper.giveItemToPlayer(((EntityPlayer) entity), _setstack);
 						}
+						stack = new ItemStack(ItemBakuton.block, (int) (1));
 					} else if ((((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
 							? ((EntityPlayerMP) entity).getAdvancements()
 									.getProgress(((WorldServer) (entity).world).getAdvancementManager()
@@ -159,6 +157,7 @@ public class ProcedureOnPlayerPostTick extends ElementsNarutomodMod.ModElement {
 							_setstack.setCount(1);
 							ItemHandlerHelper.giveItemToPlayer(((EntityPlayer) entity), _setstack);
 						}
+						stack = new ItemStack(ItemRanton.block, (int) (1));
 					} else if ((((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
 							? ((EntityPlayerMP) entity).getAdvancements()
 									.getProgress(((WorldServer) (entity).world).getAdvancementManager()
@@ -179,6 +178,7 @@ public class ProcedureOnPlayerPostTick extends ElementsNarutomodMod.ModElement {
 							_setstack.setCount(1);
 							ItemHandlerHelper.giveItemToPlayer(((EntityPlayer) entity), _setstack);
 						}
+						stack = new ItemStack(ItemFutton.block, (int) (1));
 					} else if ((((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
 							? ((EntityPlayerMP) entity).getAdvancements()
 									.getProgress(((WorldServer) (entity).world).getAdvancementManager()
@@ -199,6 +199,7 @@ public class ProcedureOnPlayerPostTick extends ElementsNarutomodMod.ModElement {
 							_setstack.setCount(1);
 							ItemHandlerHelper.giveItemToPlayer(((EntityPlayer) entity), _setstack);
 						}
+						stack = new ItemStack(ItemJiton.block, (int) (1));
 					} else if ((((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
 							? ((EntityPlayerMP) entity).getAdvancements()
 									.getProgress(((WorldServer) (entity).world).getAdvancementManager()
@@ -219,6 +220,7 @@ public class ProcedureOnPlayerPostTick extends ElementsNarutomodMod.ModElement {
 							_setstack.setCount(1);
 							ItemHandlerHelper.giveItemToPlayer(((EntityPlayer) entity), _setstack);
 						}
+						stack = new ItemStack(ItemYooton.block, (int) (1));
 					} else if ((((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
 							? ((EntityPlayerMP) entity).getAdvancements()
 									.getProgress(((WorldServer) (entity).world).getAdvancementManager()
@@ -239,6 +241,7 @@ public class ProcedureOnPlayerPostTick extends ElementsNarutomodMod.ModElement {
 							_setstack.setCount(1);
 							ItemHandlerHelper.giveItemToPlayer(((EntityPlayer) entity), _setstack);
 						}
+						stack = new ItemStack(ItemHyoton.block, (int) (1));
 					} else if ((((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
 							? ((EntityPlayerMP) entity).getAdvancements()
 									.getProgress(((WorldServer) (entity).world).getAdvancementManager()
@@ -259,6 +262,7 @@ public class ProcedureOnPlayerPostTick extends ElementsNarutomodMod.ModElement {
 							_setstack.setCount(1);
 							ItemHandlerHelper.giveItemToPlayer(((EntityPlayer) entity), _setstack);
 						}
+						stack = new ItemStack(ItemShakuton.block, (int) (1));
 					} else if ((((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
 							? ((EntityPlayerMP) entity).getAdvancements()
 									.getProgress(((WorldServer) (entity).world).getAdvancementManager()
@@ -286,8 +290,9 @@ public class ProcedureOnPlayerPostTick extends ElementsNarutomodMod.ModElement {
 							_setstack.setCount(1);
 							ItemHandlerHelper.giveItemToPlayer(((EntityPlayer) entity), _setstack);
 						}
+						stack = new ItemStack(ItemJinton.block, (int) (1));
 					} else {
-						rand = (double) Math.random();
+						rand = (double) ((EntityLivingBase) entity).getRNG().nextDouble();
 						if (((rand) <= 0.2)) {
 							stack = new ItemStack(ItemKaton.block, (int) (1));
 						} else if (((rand) <= 0.4)) {
@@ -299,6 +304,56 @@ public class ProcedureOnPlayerPostTick extends ElementsNarutomodMod.ModElement {
 						} else {
 							stack = new ItemStack(ItemDoton.block, (int) (1));
 						}
+					}
+					((ItemJutsu.Base) stack.getItem()).setIsAffinity(stack, true);
+					if (entity instanceof EntityPlayer) {
+						ItemStack _setstack = (stack);
+						_setstack.setCount(1);
+						ItemHandlerHelper.giveItemToPlayer(((EntityPlayer) entity), _setstack);
+					}
+					if ((!ItemSharingan.hasAny((EntityPlayer) entity)
+							&& (((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
+									? ((EntityPlayerMP) entity).getAdvancements()
+											.getProgress(((WorldServer) (entity).world).getAdvancementManager()
+													.getAdvancement(new ResourceLocation("narutomod:sharinganopened")))
+											.isDone()
+									: false))) {
+						GuiScrollGenjutsuGui.giveGenjutsu((EntityPlayer) entity);
+						stack = new ItemStack(ItemSharingan.helmet, (int) (1));
+						((ItemDojutsu.Base) stack.getItem()).setOwner(stack, (EntityLivingBase) entity);
+						entity.getEntityData().setLong(NarutomodModVariables.MostRecentWornDojutsuTime, world.getTotalWorldTime());
+						if (entity instanceof EntityPlayer) {
+							ItemStack _setstack = (stack);
+							_setstack.setCount(1);
+							ItemHandlerHelper.giveItemToPlayer(((EntityPlayer) entity), _setstack);
+						}
+					} else if (((!((entity instanceof EntityPlayer)
+							? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemByakugan.helmet, (int) (1)))
+							: false))
+							&& (((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
+									? ((EntityPlayerMP) entity).getAdvancements()
+											.getProgress(((WorldServer) (entity).world).getAdvancementManager()
+													.getAdvancement(new ResourceLocation("narutomod:byakuganopened")))
+											.isDone()
+									: false))) {
+						stack = new ItemStack(ItemByakugan.helmet, (int) (1));
+						((ItemDojutsu.Base) stack.getItem()).setOwner(stack, (EntityLivingBase) entity);
+						entity.getEntityData().setLong(NarutomodModVariables.MostRecentWornDojutsuTime, world.getTotalWorldTime());
+						if (entity instanceof EntityPlayer) {
+							ItemStack _setstack = (stack);
+							_setstack.setCount(1);
+							ItemHandlerHelper.giveItemToPlayer(((EntityPlayer) entity), _setstack);
+						}
+					} else if (((!((entity instanceof EntityPlayer)
+							? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemShikotsumyaku.block, (int) (1)))
+							: false))
+							&& (((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
+									? ((EntityPlayerMP) entity).getAdvancements()
+											.getProgress(((WorldServer) (entity).world).getAdvancementManager()
+													.getAdvancement(new ResourceLocation("narutomod:shikotsumyaku_acquired")))
+											.isDone()
+									: false))) {
+						stack = new ItemStack(ItemShikotsumyaku.block, (int) (1));
 						((ItemJutsu.Base) stack.getItem()).setIsAffinity(stack, true);
 						if (entity instanceof EntityPlayer) {
 							ItemStack _setstack = (stack);
@@ -307,32 +362,38 @@ public class ProcedureOnPlayerPostTick extends ElementsNarutomodMod.ModElement {
 						}
 					}
 				}
-				if (((!((entity instanceof EntityPlayer)
+				if ((!((entity instanceof EntityPlayer)
 						? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemIryoJutsu.block, (int) (1)))
-						: false))
-						&& ((((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
-								? ((EntityPlayerMP) entity).getAdvancements()
-										.getProgress(((WorldServer) (entity).world).getAdvancementManager()
-												.getAdvancement(new ResourceLocation("narutomod:achievementmedicalgenin")))
-										.isDone()
-								: false) || (Math.random() <= 0.25)))) {
-					if (entity instanceof EntityPlayer) {
-						ItemStack _setstack = new ItemStack(ItemIryoJutsu.block, (int) (1));
-						_setstack.setCount(1);
-						ItemHandlerHelper.giveItemToPlayer(((EntityPlayer) entity), _setstack);
-					}
-					if (entity instanceof EntityPlayerMP) {
-						Advancement _adv = ((MinecraftServer) ((EntityPlayerMP) entity).mcServer).getAdvancementManager()
-								.getAdvancement(new ResourceLocation("narutomod:achievementmedicalgenin"));
-						AdvancementProgress _ap = ((EntityPlayerMP) entity).getAdvancements().getProgress(_adv);
-						if (!_ap.isDone()) {
-							Iterator _iterator = _ap.getRemaningCriteria().iterator();
-							while (_iterator.hasNext()) {
-								String _criterion = (String) _iterator.next();
-								((EntityPlayerMP) entity).getAdvancements().grantCriterion(_adv, _criterion);
+						: false))) {
+					achievedMedical = (boolean) (((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
+							? ((EntityPlayerMP) entity).getAdvancements()
+									.getProgress(((WorldServer) (entity).world).getAdvancementManager()
+											.getAdvancement(new ResourceLocation("narutomod:achievementmedicalgenin")))
+									.isDone()
+							: false);
+					if (((achievedMedical) || ((!(entity.getEntityData().getBoolean("MedicalNinjaChecked")))
+							&& (((EntityLivingBase) entity).getRNG().nextDouble() <= 0.25)))) {
+						if (entity instanceof EntityPlayer) {
+							ItemStack _setstack = new ItemStack(ItemIryoJutsu.block, (int) (1));
+							_setstack.setCount(1);
+							ItemHandlerHelper.giveItemToPlayer(((EntityPlayer) entity), _setstack);
+						}
+						if ((!(achievedMedical))) {
+							if (entity instanceof EntityPlayerMP) {
+								Advancement _adv = ((MinecraftServer) ((EntityPlayerMP) entity).mcServer).getAdvancementManager()
+										.getAdvancement(new ResourceLocation("narutomod:achievementmedicalgenin"));
+								AdvancementProgress _ap = ((EntityPlayerMP) entity).getAdvancements().getProgress(_adv);
+								if (!_ap.isDone()) {
+									Iterator _iterator = _ap.getRemaningCriteria().iterator();
+									while (_iterator.hasNext()) {
+										String _criterion = (String) _iterator.next();
+										((EntityPlayerMP) entity).getAdvancements().grantCriterion(_adv, _criterion);
+									}
+								}
 							}
 						}
 					}
+					entity.getEntityData().setBoolean("MedicalNinjaChecked", (true));
 				}
 			}
 			{
@@ -382,681 +443,99 @@ public class ProcedureOnPlayerPostTick extends ElementsNarutomodMod.ModElement {
 									.addPotionEffect(new PotionEffect(MobEffects.BLINDNESS, (int) 1200, (int) 0, (false), (false)));
 					}
 				} else if ((((entity.getEntityData().getDouble((NarutomodModVariables.BATTLEXP))) >= 300)
-						&& (((((((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
-								? ((EntityPlayerMP) entity).getAdvancements().getProgress(((WorldServer) (entity).world).getAdvancementManager()
-										.getAdvancement(new ResourceLocation("narutomod:sharinganopened"))).isDone()
-								: false)
-								|| (((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
-										? ((EntityPlayerMP) entity).getAdvancements().getProgress(((WorldServer) (entity).world)
-												.getAdvancementManager().getAdvancement(new ResourceLocation("narutomod:byakuganopened"))).isDone()
+						&& (((((!(((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
+								? ((EntityPlayerMP) entity).getAdvancements()
+										.getProgress(((WorldServer) (entity).world).getAdvancementManager()
+												.getAdvancement(new ResourceLocation("narutomod:sharinganopened")))
+										.isDone()
+								: false))
+								&& (!(((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
+										? ((EntityPlayerMP) entity).getAdvancements()
+												.getProgress(((WorldServer) (entity).world).getAdvancementManager()
+														.getAdvancement(new ResourceLocation("narutomod:byakuganopened")))
+												.isDone()
+										: false)))
+								&& ((!(((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
+										? ((EntityPlayerMP) entity).getAdvancements()
+												.getProgress(((WorldServer) (entity).world).getAdvancementManager()
+														.getAdvancement(new ResourceLocation("narutomod:shakuton_acquired")))
+												.isDone()
 										: false))
-								|| ((((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
-										? ((EntityPlayerMP) entity).getAdvancements().getProgress(((WorldServer) (entity).world)
-												.getAdvancementManager().getAdvancement(new ResourceLocation("narutomod:shakuton_acquired"))).isDone()
-										: false)
-										|| (((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
-												? ((EntityPlayerMP) entity).getAdvancements().getProgress(((WorldServer) (entity).world)
-														.getAdvancementManager().getAdvancement(new ResourceLocation("narutomod:yooton_acquired")))
+										&& (!(((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
+												? ((EntityPlayerMP) entity).getAdvancements()
+														.getProgress(((WorldServer) (entity).world).getAdvancementManager()
+																.getAdvancement(new ResourceLocation("narutomod:yooton_acquired")))
+														.isDone()
+												: false))))
+								&& (((!(((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
+										? ((EntityPlayerMP) entity).getAdvancements()
+												.getProgress(((WorldServer) (entity).world).getAdvancementManager()
+														.getAdvancement(new ResourceLocation("narutomod:bakuton_acquired")))
+												.isDone()
+										: false))
+										&& (!(((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
+												? ((EntityPlayerMP) entity).getAdvancements()
+														.getProgress(((WorldServer) (entity).world).getAdvancementManager()
+																.getAdvancement(new ResourceLocation("narutomod:ranton_acquired")))
 														.isDone()
 												: false)))
-								|| (((((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
-										? ((EntityPlayerMP) entity).getAdvancements().getProgress(((WorldServer) (entity).world)
-												.getAdvancementManager().getAdvancement(new ResourceLocation("narutomod:bakuton_acquired"))).isDone()
-										: false)
-										|| (((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
-												? ((EntityPlayerMP) entity).getAdvancements().getProgress(((WorldServer) (entity).world)
-														.getAdvancementManager().getAdvancement(new ResourceLocation("narutomod:ranton_acquired")))
+										&& (((!(((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
+												? ((EntityPlayerMP) entity).getAdvancements()
+														.getProgress(((WorldServer) (entity).world).getAdvancementManager()
+																.getAdvancement(new ResourceLocation("narutomod:hyoton_acquired")))
 														.isDone()
 												: false))
-										|| (((((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
-												? ((EntityPlayerMP) entity).getAdvancements().getProgress(((WorldServer) (entity).world)
-														.getAdvancementManager().getAdvancement(new ResourceLocation("narutomod:hyoton_acquired")))
-														.isDone()
-												: false)
-												|| (((entity instanceof EntityPlayerMP)
-														&& ((entity).world instanceof WorldServer))
+												&& (!(((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
+														? ((EntityPlayerMP) entity).getAdvancements()
+																.getProgress(((WorldServer) (entity).world).getAdvancementManager()
+																		.getAdvancement(new ResourceLocation("narutomod:jiton_acquired")))
+																.isDone()
+														: false)))
+												&& ((!(((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
+														? ((EntityPlayerMP) entity).getAdvancements()
+																.getProgress(((WorldServer) (entity).world).getAdvancementManager()
+																		.getAdvancement(new ResourceLocation("narutomod:futton_acquired")))
+																.isDone()
+														: false))
+														&& ((!(((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
 																? ((EntityPlayerMP) entity).getAdvancements()
-																		.getProgress(((WorldServer) (entity).world).getAdvancementManager()
-																				.getAdvancement(new ResourceLocation("narutomod:jiton_acquired")))
+																		.getProgress(
+																				((WorldServer) (entity).world).getAdvancementManager().getAdvancement(
+																						new ResourceLocation("narutomod:shikotsumyaku_acquired")))
 																		.isDone()
 																: false))
-												|| ((((entity instanceof EntityPlayerMP)
-														&& ((entity).world instanceof WorldServer))
-																? ((EntityPlayerMP) entity).getAdvancements()
-																		.getProgress(((WorldServer) (entity).world).getAdvancementManager()
-																				.getAdvancement(new ResourceLocation("narutomod:futton_acquired")))
-																		.isDone()
-																: false)
-														|| ((((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
-																? ((EntityPlayerMP) entity).getAdvancements().getProgress(
-																		((WorldServer) (entity).world).getAdvancementManager().getAdvancement(
-																				new ResourceLocation("narutomod:shikotsumyaku_acquired")))
-																		.isDone()
-																: false)
-																|| (((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
+																&& (!(((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
 																		? ((EntityPlayerMP) entity).getAdvancements()
 																				.getProgress(((WorldServer) (entity).world).getAdvancementManager()
 																						.getAdvancement(new ResourceLocation(
 																								"narutomod:kekkei_tota_awakened")))
 																				.isDone()
-																		: false))))))
-								|| (((entity instanceof EntityPlayer) ? ((EntityPlayer) entity).experienceLevel : 0) >= 10)))) {
-					if ((((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
-							? ((EntityPlayerMP) entity).getAdvancements()
-									.getProgress(((WorldServer) (entity).world).getAdvancementManager()
-											.getAdvancement(new ResourceLocation("narutomod:byakuganopened")))
-									.isDone()
-							: false)) {
-						stack = new ItemStack(ItemByakugan.helmet, (int) (1));
-					} else if ((((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
-							? ((EntityPlayerMP) entity).getAdvancements()
-									.getProgress(((WorldServer) (entity).world).getAdvancementManager()
-											.getAdvancement(new ResourceLocation("narutomod:sharinganopened")))
-									.isDone()
-							: false)) {
-						GuiScrollGenjutsuGui.giveGenjutsu((EntityPlayer) entity);
-						stack = new ItemStack(ItemSharingan.helmet, (int) (1));
-					} else if ((((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
-							? ((EntityPlayerMP) entity).getAdvancements()
-									.getProgress(((WorldServer) (entity).world).getAdvancementManager()
-											.getAdvancement(new ResourceLocation("narutomod:kekkei_tota_awakened")))
-									.isDone()
-							: false)) {
-						stack = new ItemStack(ItemJinton.block, (int) (1));
-					} else if ((((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
-							? ((EntityPlayerMP) entity).getAdvancements()
-									.getProgress(((WorldServer) (entity).world).getAdvancementManager()
-											.getAdvancement(new ResourceLocation("narutomod:shikotsumyaku_acquired")))
-									.isDone()
-							: false)) {
-						stack = new ItemStack(ItemShikotsumyaku.block, (int) (1));
-					} else if ((((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
-							? ((EntityPlayerMP) entity).getAdvancements()
-									.getProgress(((WorldServer) (entity).world).getAdvancementManager()
-											.getAdvancement(new ResourceLocation("narutomod:futton_acquired")))
-									.isDone()
-							: false)) {
-						stack = new ItemStack(ItemFutton.block, (int) (1));
-					} else if ((((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
-							? ((EntityPlayerMP) entity).getAdvancements()
-									.getProgress(((WorldServer) (entity).world).getAdvancementManager()
-											.getAdvancement(new ResourceLocation("narutomod:ranton_acquired")))
-									.isDone()
-							: false)) {
-						stack = new ItemStack(ItemRanton.block, (int) (1));
-					} else if ((((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
-							? ((EntityPlayerMP) entity).getAdvancements()
-									.getProgress(((WorldServer) (entity).world).getAdvancementManager()
-											.getAdvancement(new ResourceLocation("narutomod:yooton_acquired")))
-									.isDone()
-							: false)) {
-						stack = new ItemStack(ItemYooton.block, (int) (1));
-					} else if ((((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
-							? ((EntityPlayerMP) entity).getAdvancements()
-									.getProgress(((WorldServer) (entity).world).getAdvancementManager()
-											.getAdvancement(new ResourceLocation("narutomod:shakuton_acquired")))
-									.isDone()
-							: false)) {
-						stack = new ItemStack(ItemShakuton.block, (int) (1));
-					} else if ((((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
-							? ((EntityPlayerMP) entity).getAdvancements()
-									.getProgress(((WorldServer) (entity).world).getAdvancementManager()
-											.getAdvancement(new ResourceLocation("narutomod:hyoton_acquired")))
-									.isDone()
-							: false)) {
-						stack = new ItemStack(ItemHyoton.block, (int) (1));
-					} else if ((((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
-							? ((EntityPlayerMP) entity).getAdvancements()
-									.getProgress(((WorldServer) (entity).world).getAdvancementManager()
-											.getAdvancement(new ResourceLocation("narutomod:jiton_acquired")))
-									.isDone()
-							: false)) {
-						stack = new ItemStack(ItemJiton.block, (int) (1));
-					} else if ((((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
-							? ((EntityPlayerMP) entity).getAdvancements()
-									.getProgress(((WorldServer) (entity).world).getAdvancementManager()
-											.getAdvancement(new ResourceLocation("narutomod:bakuton_acquired")))
-									.isDone()
-							: false)) {
-						stack = new ItemStack(ItemBakuton.block, (int) (1));
-					} else if ((Math.random() <= 0.001)) {
-						rngbase = (double) (((EntityBijuManager.availableBijus() > 0 ? 5 : 0) + (10 * 10)) + 5);
-						if ((Math.random() <= (10 / (rngbase)))) {
-							stack = new ItemStack(ItemByakugan.helmet, (int) (1));
-							if ((!(((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
-									? ((EntityPlayerMP) entity).getAdvancements()
-											.getProgress(((WorldServer) (entity).world).getAdvancementManager()
-													.getAdvancement(new ResourceLocation("narutomod:byakuganopened")))
-											.isDone()
-									: false))) {
-								if (entity instanceof EntityPlayerMP) {
-									Advancement _adv = ((MinecraftServer) ((EntityPlayerMP) entity).mcServer).getAdvancementManager()
-											.getAdvancement(new ResourceLocation("narutomod:byakuganopened"));
-									AdvancementProgress _ap = ((EntityPlayerMP) entity).getAdvancements().getProgress(_adv);
-									if (!_ap.isDone()) {
-										Iterator _iterator = _ap.getRemaningCriteria().iterator();
-										while (_iterator.hasNext()) {
-											String _criterion = (String) _iterator.next();
-											((EntityPlayerMP) entity).getAdvancements().grantCriterion(_adv, _criterion);
-										}
-									}
-								}
-								world.playSound((EntityPlayer) null, x, y, z,
-										(net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY
-												.getObject(new ResourceLocation("ui.toast.challenge_complete")),
-										SoundCategory.NEUTRAL, (float) 1, (float) 1);
-							}
-						} else if ((Math.random() <= (10 / ((rngbase) - 10)))) {
-							GuiScrollGenjutsuGui.giveGenjutsu((EntityPlayer) entity);
-							stack = new ItemStack(ItemSharingan.helmet, (int) (1));
-							if ((!(((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
-									? ((EntityPlayerMP) entity).getAdvancements()
-											.getProgress(((WorldServer) (entity).world).getAdvancementManager()
-													.getAdvancement(new ResourceLocation("narutomod:sharinganopened")))
-											.isDone()
-									: false))) {
-								if (entity instanceof EntityPlayerMP) {
-									Advancement _adv = ((MinecraftServer) ((EntityPlayerMP) entity).mcServer).getAdvancementManager()
-											.getAdvancement(new ResourceLocation("narutomod:sharinganopened"));
-									AdvancementProgress _ap = ((EntityPlayerMP) entity).getAdvancements().getProgress(_adv);
-									if (!_ap.isDone()) {
-										Iterator _iterator = _ap.getRemaningCriteria().iterator();
-										while (_iterator.hasNext()) {
-											String _criterion = (String) _iterator.next();
-											((EntityPlayerMP) entity).getAdvancements().grantCriterion(_adv, _criterion);
-										}
-									}
-								}
-								world.playSound((EntityPlayer) null, x, y, z,
-										(net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY
-												.getObject(new ResourceLocation("ui.toast.challenge_complete")),
-										SoundCategory.NEUTRAL, (float) 1, (float) 1);
-							}
-						} else if ((Math.random() <= (10 / ((rngbase) - 20)))) {
-							stack = new ItemStack(ItemShikotsumyaku.block, (int) (1));
-							if ((!(((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
-									? ((EntityPlayerMP) entity).getAdvancements()
-											.getProgress(((WorldServer) (entity).world).getAdvancementManager()
-													.getAdvancement(new ResourceLocation("narutomod:shikotsumyaku_acquired")))
-											.isDone()
-									: false))) {
-								if (entity instanceof EntityPlayerMP) {
-									Advancement _adv = ((MinecraftServer) ((EntityPlayerMP) entity).mcServer).getAdvancementManager()
-											.getAdvancement(new ResourceLocation("narutomod:shikotsumyaku_acquired"));
-									AdvancementProgress _ap = ((EntityPlayerMP) entity).getAdvancements().getProgress(_adv);
-									if (!_ap.isDone()) {
-										Iterator _iterator = _ap.getRemaningCriteria().iterator();
-										while (_iterator.hasNext()) {
-											String _criterion = (String) _iterator.next();
-											((EntityPlayerMP) entity).getAdvancements().grantCriterion(_adv, _criterion);
-										}
-									}
-								}
-								world.playSound((EntityPlayer) null, x, y, z,
-										(net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY
-												.getObject(new ResourceLocation("ui.toast.challenge_complete")),
-										SoundCategory.NEUTRAL, (float) 1, (float) 1);
-							}
-						} else if (((((entity instanceof EntityPlayer)
-								? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemDoton.block, (int) (1)))
-								: false)
-								|| ((entity instanceof EntityPlayer)
-										? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemKaton.block, (int) (1)))
-										: false))
-								&& (Math.random() <= ((10 / ((rngbase) - 30)) / 0.4)))) {
-							if ((!(((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
-									? ((EntityPlayerMP) entity).getAdvancements()
-											.getProgress(((WorldServer) (entity).world).getAdvancementManager()
-													.getAdvancement(new ResourceLocation("narutomod:yooton_acquired")))
-											.isDone()
-									: false))) {
-								if (entity instanceof EntityPlayerMP) {
-									Advancement _adv = ((MinecraftServer) ((EntityPlayerMP) entity).mcServer).getAdvancementManager()
-											.getAdvancement(new ResourceLocation("narutomod:yooton_acquired"));
-									AdvancementProgress _ap = ((EntityPlayerMP) entity).getAdvancements().getProgress(_adv);
-									if (!_ap.isDone()) {
-										Iterator _iterator = _ap.getRemaningCriteria().iterator();
-										while (_iterator.hasNext()) {
-											String _criterion = (String) _iterator.next();
-											((EntityPlayerMP) entity).getAdvancements().grantCriterion(_adv, _criterion);
-										}
-									}
-								}
-								world.playSound((EntityPlayer) null, x, y, z,
-										(net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY
-												.getObject(new ResourceLocation("ui.toast.challenge_complete")),
-										SoundCategory.NEUTRAL, (float) 1, (float) 1);
-							}
-							if ((!((entity instanceof EntityPlayer)
+																		: false)))))))
+								&& (((entity instanceof EntityPlayer) ? ((EntityPlayer) entity).experienceLevel : 0) >= 10)))) {
+					if (((((EntityLivingBase) entity).getRNG().nextDouble() <= 0.001) && (((((entity instanceof EntityPlayer)
+							? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemDoton.block, (int) (1)))
+							: false)
+							|| ((entity instanceof EntityPlayer)
+									? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemFuton.block, (int) (1)))
+									: false))
+							|| (((entity instanceof EntityPlayer)
 									? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemKaton.block, (int) (1)))
-									: false))) {
-								stack = new ItemStack(ItemKaton.block, (int) (1));
-								((ItemJutsu.Base) stack.getItem()).setIsAffinity(stack, true);
-								if (entity instanceof EntityPlayer) {
-									ItemStack _setstack = (stack);
-									_setstack.setCount(1);
-									ItemHandlerHelper.giveItemToPlayer(((EntityPlayer) entity), _setstack);
-								}
-							}
-							if ((!((entity instanceof EntityPlayer)
-									? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemDoton.block, (int) (1)))
-									: false))) {
-								stack = new ItemStack(ItemDoton.block, (int) (1));
-								((ItemJutsu.Base) stack.getItem()).setIsAffinity(stack, true);
-								if (entity instanceof EntityPlayer) {
-									ItemStack _setstack = (stack);
-									_setstack.setCount(1);
-									ItemHandlerHelper.giveItemToPlayer(((EntityPlayer) entity), _setstack);
-								}
-							}
-							stack = new ItemStack(ItemYooton.block, (int) (1));
-						} else if (((((entity instanceof EntityPlayer)
-								? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemFuton.block, (int) (1)))
-								: false)
-								|| ((entity instanceof EntityPlayer)
-										? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemKaton.block, (int) (1)))
-										: false))
-								&& (Math.random() <= ((10 / ((rngbase) - 40)) / 0.4)))) {
-							if ((!(((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
-									? ((EntityPlayerMP) entity).getAdvancements()
-											.getProgress(((WorldServer) (entity).world).getAdvancementManager()
-													.getAdvancement(new ResourceLocation("narutomod:shakuton_acquired")))
-											.isDone()
-									: false))) {
-								if (entity instanceof EntityPlayerMP) {
-									Advancement _adv = ((MinecraftServer) ((EntityPlayerMP) entity).mcServer).getAdvancementManager()
-											.getAdvancement(new ResourceLocation("narutomod:shakuton_acquired"));
-									AdvancementProgress _ap = ((EntityPlayerMP) entity).getAdvancements().getProgress(_adv);
-									if (!_ap.isDone()) {
-										Iterator _iterator = _ap.getRemaningCriteria().iterator();
-										while (_iterator.hasNext()) {
-											String _criterion = (String) _iterator.next();
-											((EntityPlayerMP) entity).getAdvancements().grantCriterion(_adv, _criterion);
-										}
-									}
-								}
-								world.playSound((EntityPlayer) null, x, y, z,
-										(net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY
-												.getObject(new ResourceLocation("ui.toast.challenge_complete")),
-										SoundCategory.NEUTRAL, (float) 1, (float) 1);
-							}
-							if ((!((entity instanceof EntityPlayer)
-									? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemFuton.block, (int) (1)))
-									: false))) {
-								stack = new ItemStack(ItemFuton.block, (int) (1));
-								((ItemJutsu.Base) stack.getItem()).setIsAffinity(stack, true);
-								if (entity instanceof EntityPlayer) {
-									ItemStack _setstack = (stack);
-									_setstack.setCount(1);
-									ItemHandlerHelper.giveItemToPlayer(((EntityPlayer) entity), _setstack);
-								}
-							}
-							if ((!((entity instanceof EntityPlayer)
-									? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemKaton.block, (int) (1)))
-									: false))) {
-								stack = new ItemStack(ItemKaton.block, (int) (1));
-								((ItemJutsu.Base) stack.getItem()).setIsAffinity(stack, true);
-								if (entity instanceof EntityPlayer) {
-									ItemStack _setstack = (stack);
-									_setstack.setCount(1);
-									ItemHandlerHelper.giveItemToPlayer(((EntityPlayer) entity), _setstack);
-								}
-							}
-							stack = new ItemStack(ItemShakuton.block, (int) (1));
-						} else if (((((entity instanceof EntityPlayer)
-								? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemFuton.block, (int) (1)))
-								: false)
-								|| ((entity instanceof EntityPlayer)
-										? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemSuiton.block, (int) (1)))
-										: false))
-								&& (Math.random() <= ((10 / ((rngbase) - 50)) / 0.4)))) {
-							if ((!(((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
-									? ((EntityPlayerMP) entity).getAdvancements()
-											.getProgress(((WorldServer) (entity).world).getAdvancementManager()
-													.getAdvancement(new ResourceLocation("narutomod:hyoton_acquired")))
-											.isDone()
-									: false))) {
-								if (entity instanceof EntityPlayerMP) {
-									Advancement _adv = ((MinecraftServer) ((EntityPlayerMP) entity).mcServer).getAdvancementManager()
-											.getAdvancement(new ResourceLocation("narutomod:hyoton_acquired"));
-									AdvancementProgress _ap = ((EntityPlayerMP) entity).getAdvancements().getProgress(_adv);
-									if (!_ap.isDone()) {
-										Iterator _iterator = _ap.getRemaningCriteria().iterator();
-										while (_iterator.hasNext()) {
-											String _criterion = (String) _iterator.next();
-											((EntityPlayerMP) entity).getAdvancements().grantCriterion(_adv, _criterion);
-										}
-									}
-								}
-								world.playSound((EntityPlayer) null, x, y, z,
-										(net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY
-												.getObject(new ResourceLocation("ui.toast.challenge_complete")),
-										SoundCategory.NEUTRAL, (float) 1, (float) 1);
-							}
-							if ((!((entity instanceof EntityPlayer)
-									? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemFuton.block, (int) (1)))
-									: false))) {
-								stack = new ItemStack(ItemFuton.block, (int) (1));
-								((ItemJutsu.Base) stack.getItem()).setIsAffinity(stack, true);
-								if (entity instanceof EntityPlayer) {
-									ItemStack _setstack = (stack);
-									_setstack.setCount(1);
-									ItemHandlerHelper.giveItemToPlayer(((EntityPlayer) entity), _setstack);
-								}
-							}
-							if ((!((entity instanceof EntityPlayer)
-									? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemSuiton.block, (int) (1)))
-									: false))) {
-								stack = new ItemStack(ItemSuiton.block, (int) (1));
-								((ItemJutsu.Base) stack.getItem()).setIsAffinity(stack, true);
-								if (entity instanceof EntityPlayer) {
-									ItemStack _setstack = (stack);
-									_setstack.setCount(1);
-									ItemHandlerHelper.giveItemToPlayer(((EntityPlayer) entity), _setstack);
-								}
-							}
-							stack = new ItemStack(ItemHyoton.block, (int) (1));
-						} else if (((((entity instanceof EntityPlayer)
-								? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemFuton.block, (int) (1)))
-								: false)
-								|| ((entity instanceof EntityPlayer)
-										? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemDoton.block, (int) (1)))
-										: false))
-								&& (Math.random() <= ((10 / ((rngbase) - 60)) / 0.4)))) {
-							if ((!(((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
-									? ((EntityPlayerMP) entity).getAdvancements()
-											.getProgress(((WorldServer) (entity).world).getAdvancementManager()
-													.getAdvancement(new ResourceLocation("narutomod:jiton_acquired")))
-											.isDone()
-									: false))) {
-								if (entity instanceof EntityPlayerMP) {
-									Advancement _adv = ((MinecraftServer) ((EntityPlayerMP) entity).mcServer).getAdvancementManager()
-											.getAdvancement(new ResourceLocation("narutomod:jiton_acquired"));
-									AdvancementProgress _ap = ((EntityPlayerMP) entity).getAdvancements().getProgress(_adv);
-									if (!_ap.isDone()) {
-										Iterator _iterator = _ap.getRemaningCriteria().iterator();
-										while (_iterator.hasNext()) {
-											String _criterion = (String) _iterator.next();
-											((EntityPlayerMP) entity).getAdvancements().grantCriterion(_adv, _criterion);
-										}
-									}
-								}
-								world.playSound((EntityPlayer) null, x, y, z,
-										(net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY
-												.getObject(new ResourceLocation("ui.toast.challenge_complete")),
-										SoundCategory.NEUTRAL, (float) 1, (float) 1);
-							}
-							if ((!((entity instanceof EntityPlayer)
-									? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemFuton.block, (int) (1)))
-									: false))) {
-								stack = new ItemStack(ItemFuton.block, (int) (1));
-								((ItemJutsu.Base) stack.getItem()).setIsAffinity(stack, true);
-								if (entity instanceof EntityPlayer) {
-									ItemStack _setstack = (stack);
-									_setstack.setCount(1);
-									ItemHandlerHelper.giveItemToPlayer(((EntityPlayer) entity), _setstack);
-								}
-							}
-							if ((!((entity instanceof EntityPlayer)
-									? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemDoton.block, (int) (1)))
-									: false))) {
-								stack = new ItemStack(ItemDoton.block, (int) (1));
-								((ItemJutsu.Base) stack.getItem()).setIsAffinity(stack, true);
-								if (entity instanceof EntityPlayer) {
-									ItemStack _setstack = (stack);
-									_setstack.setCount(1);
-									ItemHandlerHelper.giveItemToPlayer(((EntityPlayer) entity), _setstack);
-								}
-							}
-							stack = new ItemStack(ItemJiton.block, (int) (1));
-						} else if (((((entity instanceof EntityPlayer)
-								? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemRaiton.block, (int) (1)))
-								: false)
-								|| ((entity instanceof EntityPlayer)
-										? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemDoton.block, (int) (1)))
-										: false))
-								&& (Math.random() <= ((10 / ((rngbase) - 70)) / 0.4)))) {
-							if ((!(((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
-									? ((EntityPlayerMP) entity).getAdvancements()
-											.getProgress(((WorldServer) (entity).world).getAdvancementManager()
-													.getAdvancement(new ResourceLocation("narutomod:bakuton_acquired")))
-											.isDone()
-									: false))) {
-								if (entity instanceof EntityPlayerMP) {
-									Advancement _adv = ((MinecraftServer) ((EntityPlayerMP) entity).mcServer).getAdvancementManager()
-											.getAdvancement(new ResourceLocation("narutomod:bakuton_acquired"));
-									AdvancementProgress _ap = ((EntityPlayerMP) entity).getAdvancements().getProgress(_adv);
-									if (!_ap.isDone()) {
-										Iterator _iterator = _ap.getRemaningCriteria().iterator();
-										while (_iterator.hasNext()) {
-											String _criterion = (String) _iterator.next();
-											((EntityPlayerMP) entity).getAdvancements().grantCriterion(_adv, _criterion);
-										}
-									}
-								}
-								world.playSound((EntityPlayer) null, x, y, z,
-										(net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY
-												.getObject(new ResourceLocation("ui.toast.challenge_complete")),
-										SoundCategory.NEUTRAL, (float) 1, (float) 1);
-							}
-							if ((!((entity instanceof EntityPlayer)
-									? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemDoton.block, (int) (1)))
-									: false))) {
-								stack = new ItemStack(ItemDoton.block, (int) (1));
-								((ItemJutsu.Base) stack.getItem()).setIsAffinity(stack, true);
-								if (entity instanceof EntityPlayer) {
-									ItemStack _setstack = (stack);
-									_setstack.setCount(1);
-									ItemHandlerHelper.giveItemToPlayer(((EntityPlayer) entity), _setstack);
-								}
-							}
-							if ((!((entity instanceof EntityPlayer)
+									: false)
+									|| ((entity instanceof EntityPlayer)
+											? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemSuiton.block, (int) (1)))
+											: false)))
+							|| ((entity instanceof EntityPlayer)
 									? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemRaiton.block, (int) (1)))
-									: false))) {
-								stack = new ItemStack(ItemRaiton.block, (int) (1));
-								((ItemJutsu.Base) stack.getItem()).setIsAffinity(stack, true);
-								if (entity instanceof EntityPlayer) {
-									ItemStack _setstack = (stack);
-									_setstack.setCount(1);
-									ItemHandlerHelper.giveItemToPlayer(((EntityPlayer) entity), _setstack);
-								}
-							}
-							stack = new ItemStack(ItemBakuton.block, (int) (1));
-						} else if (((((entity instanceof EntityPlayer)
-								? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemRaiton.block, (int) (1)))
-								: false)
-								|| ((entity instanceof EntityPlayer)
-										? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemSuiton.block, (int) (1)))
-										: false))
-								&& (Math.random() <= ((10 / ((rngbase) - 80)) / 0.4)))) {
-							if ((!(((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
-									? ((EntityPlayerMP) entity).getAdvancements()
-											.getProgress(((WorldServer) (entity).world).getAdvancementManager()
-													.getAdvancement(new ResourceLocation("narutomod:ranton_acquired")))
-											.isDone()
-									: false))) {
-								if (entity instanceof EntityPlayerMP) {
-									Advancement _adv = ((MinecraftServer) ((EntityPlayerMP) entity).mcServer).getAdvancementManager()
-											.getAdvancement(new ResourceLocation("narutomod:ranton_acquired"));
-									AdvancementProgress _ap = ((EntityPlayerMP) entity).getAdvancements().getProgress(_adv);
-									if (!_ap.isDone()) {
-										Iterator _iterator = _ap.getRemaningCriteria().iterator();
-										while (_iterator.hasNext()) {
-											String _criterion = (String) _iterator.next();
-											((EntityPlayerMP) entity).getAdvancements().grantCriterion(_adv, _criterion);
-										}
-									}
-								}
-								world.playSound((EntityPlayer) null, x, y, z,
-										(net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY
-												.getObject(new ResourceLocation("ui.toast.challenge_complete")),
-										SoundCategory.NEUTRAL, (float) 1, (float) 1);
-							}
-							if ((!((entity instanceof EntityPlayer)
-									? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemRaiton.block, (int) (1)))
-									: false))) {
-								stack = new ItemStack(ItemRaiton.block, (int) (1));
-								((ItemJutsu.Base) stack.getItem()).setIsAffinity(stack, true);
-								if (entity instanceof EntityPlayer) {
-									ItemStack _setstack = (stack);
-									_setstack.setCount(1);
-									ItemHandlerHelper.giveItemToPlayer(((EntityPlayer) entity), _setstack);
-								}
-							}
-							if ((!((entity instanceof EntityPlayer)
-									? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemSuiton.block, (int) (1)))
-									: false))) {
-								stack = new ItemStack(ItemSuiton.block, (int) (1));
-								((ItemJutsu.Base) stack.getItem()).setIsAffinity(stack, true);
-								if (entity instanceof EntityPlayer) {
-									ItemStack _setstack = (stack);
-									_setstack.setCount(1);
-									ItemHandlerHelper.giveItemToPlayer(((EntityPlayer) entity), _setstack);
-								}
-							}
-							stack = new ItemStack(ItemRanton.block, (int) (1));
-						} else if (((((entity instanceof EntityPlayer)
-								? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemSuiton.block, (int) (1)))
-								: false)
-								|| ((entity instanceof EntityPlayer)
-										? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemKaton.block, (int) (1)))
-										: false))
-								&& (Math.random() <= ((10 / ((rngbase) - 90)) / 0.4)))) {
-							if ((!(((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
-									? ((EntityPlayerMP) entity).getAdvancements()
-											.getProgress(((WorldServer) (entity).world).getAdvancementManager()
-													.getAdvancement(new ResourceLocation("narutomod:futton_acquired")))
-											.isDone()
-									: false))) {
-								if (entity instanceof EntityPlayerMP) {
-									Advancement _adv = ((MinecraftServer) ((EntityPlayerMP) entity).mcServer).getAdvancementManager()
-											.getAdvancement(new ResourceLocation("narutomod:futton_acquired"));
-									AdvancementProgress _ap = ((EntityPlayerMP) entity).getAdvancements().getProgress(_adv);
-									if (!_ap.isDone()) {
-										Iterator _iterator = _ap.getRemaningCriteria().iterator();
-										while (_iterator.hasNext()) {
-											String _criterion = (String) _iterator.next();
-											((EntityPlayerMP) entity).getAdvancements().grantCriterion(_adv, _criterion);
-										}
-									}
-								}
-								world.playSound((EntityPlayer) null, x, y, z,
-										(net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY
-												.getObject(new ResourceLocation("ui.toast.challenge_complete")),
-										SoundCategory.NEUTRAL, (float) 1, (float) 1);
-							}
-							if ((!((entity instanceof EntityPlayer)
-									? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemSuiton.block, (int) (1)))
-									: false))) {
-								stack = new ItemStack(ItemSuiton.block, (int) (1));
-								((ItemJutsu.Base) stack.getItem()).setIsAffinity(stack, true);
-								if (entity instanceof EntityPlayer) {
-									ItemStack _setstack = (stack);
-									_setstack.setCount(1);
-									ItemHandlerHelper.giveItemToPlayer(((EntityPlayer) entity), _setstack);
-								}
-							}
-							if ((!((entity instanceof EntityPlayer)
-									? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemKaton.block, (int) (1)))
-									: false))) {
-								stack = new ItemStack(ItemKaton.block, (int) (1));
-								((ItemJutsu.Base) stack.getItem()).setIsAffinity(stack, true);
-								if (entity instanceof EntityPlayer) {
-									ItemStack _setstack = (stack);
-									_setstack.setCount(1);
-									ItemHandlerHelper.giveItemToPlayer(((EntityPlayer) entity), _setstack);
-								}
-							}
-							stack = new ItemStack(ItemFutton.block, (int) (1));
-						} else if (((((entity instanceof EntityPlayer)
-								? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemKaton.block, (int) (1)))
-								: false)
-								|| (((entity instanceof EntityPlayer)
-										? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemDoton.block, (int) (1)))
-										: false)
-										|| ((entity instanceof EntityPlayer)
-												? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemFuton.block, (int) (1)))
-												: false)))
-								&& (Math.random() <= ((5 / ((rngbase) - 100)) / 0.6)))) {
-							if (entity instanceof EntityPlayerMP) {
-								Advancement _adv = ((MinecraftServer) ((EntityPlayerMP) entity).mcServer).getAdvancementManager()
-										.getAdvancement(new ResourceLocation("narutomod:kekkei_tota_awakened"));
-								AdvancementProgress _ap = ((EntityPlayerMP) entity).getAdvancements().getProgress(_adv);
-								if (!_ap.isDone()) {
-									Iterator _iterator = _ap.getRemaningCriteria().iterator();
-									while (_iterator.hasNext()) {
-										String _criterion = (String) _iterator.next();
-										((EntityPlayerMP) entity).getAdvancements().grantCriterion(_adv, _criterion);
-									}
-								}
-							}
-							world.playSound((EntityPlayer) null, x, y, z,
-									(net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY
-											.getObject(new ResourceLocation("ui.toast.challenge_complete")),
-									SoundCategory.NEUTRAL, (float) 1, (float) 1);
-							if ((!((entity instanceof EntityPlayer)
-									? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemKaton.block, (int) (1)))
-									: false))) {
-								stack = new ItemStack(ItemKaton.block, (int) (1));
-								((ItemJutsu.Base) stack.getItem()).setIsAffinity(stack, true);
-								if (entity instanceof EntityPlayer) {
-									ItemStack _setstack = (stack);
-									_setstack.setCount(1);
-									ItemHandlerHelper.giveItemToPlayer(((EntityPlayer) entity), _setstack);
-								}
-							}
-							if ((!((entity instanceof EntityPlayer)
-									? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemDoton.block, (int) (1)))
-									: false))) {
-								stack = new ItemStack(ItemDoton.block, (int) (1));
-								((ItemJutsu.Base) stack.getItem()).setIsAffinity(stack, true);
-								if (entity instanceof EntityPlayer) {
-									ItemStack _setstack = (stack);
-									_setstack.setCount(1);
-									ItemHandlerHelper.giveItemToPlayer(((EntityPlayer) entity), _setstack);
-								}
-							}
-							if ((!((entity instanceof EntityPlayer)
-									? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemFuton.block, (int) (1)))
-									: false))) {
-								stack = new ItemStack(ItemFuton.block, (int) (1));
-								((ItemJutsu.Base) stack.getItem()).setIsAffinity(stack, true);
-								if (entity instanceof EntityPlayer) {
-									ItemStack _setstack = (stack);
-									_setstack.setCount(1);
-									ItemHandlerHelper.giveItemToPlayer(((EntityPlayer) entity), _setstack);
-								}
-							}
-							stack = new ItemStack(ItemJinton.block, (int) (1));
-						} else {
-							stack = new ItemStack(Blocks.AIR, (int) (1));
-							if (((rngbase) > 105)) {
-								if (EntityBijuManager.setPlayerAsJinchurikiByTails((EntityPlayer) entity,
-										EntityBijuManager.getRandomAvailableBiju())) {
-									{
-										MinecraftServer mcserv = FMLCommonHandler.instance().getMinecraftServerInstance();
-										if (mcserv != null)
-											mcserv.getPlayerList()
-													.sendMessage(new TextComponentString(net.minecraft.util.text.translation.I18n
-															.translateToLocalFormatted("chattext.biju.playerisjinchuriki", entity.getName(),
-																	EntityBijuManager.getNameOfJinchurikisBiju((EntityPlayer) entity))));
-									}
-								}
-							}
+									: false)))) {
+						{
+							Map<String, Object> $_dependencies = new HashMap<>();
+							$_dependencies.put("entity", entity);
+							$_dependencies.put("x", x);
+							$_dependencies.put("y", y);
+							$_dependencies.put("z", z);
+							$_dependencies.put("world", world);
+							ProcedureKGDistribution.executeProcedure($_dependencies);
 						}
-					} else {
-						stack = new ItemStack(Blocks.AIR, (int) (1));
-					}
-					if (stack.getItem() instanceof ItemDojutsu.Base) {
-						((ItemDojutsu.Base) stack.getItem()).setOwner(stack, (EntityLivingBase) entity);
-						entity.getEntityData().setLong(NarutomodModVariables.MostRecentWornDojutsuTime, world.getTotalWorldTime());
-					} else if (stack.getItem() instanceof ItemJutsu.Base) {
-						((ItemJutsu.Base) stack.getItem()).setIsAffinity(stack, true);
-					}
-					if (entity instanceof EntityPlayer) {
-						ItemStack _setstack = (stack);
-						_setstack.setCount(1);
-						ItemHandlerHelper.giveItemToPlayer(((EntityPlayer) entity), _setstack);
 					}
 				}
 			}

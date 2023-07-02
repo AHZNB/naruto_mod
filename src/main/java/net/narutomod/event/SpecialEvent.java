@@ -2,15 +2,11 @@ package net.narutomod.event;
 
 import net.minecraftforge.fml.common.FMLCommonHandler;
 
-//import com.google.common.collect.Lists;
-//import java.util.Arrays;
-import java.util.Map;
 import com.google.common.collect.Maps;
 import com.google.common.collect.ImmutableMap;
-//import java.util.List;
 import java.lang.reflect.Constructor;
-//import java.util.Collection;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.UUID;
 import java.util.Random;
 
@@ -33,7 +29,7 @@ public abstract class SpecialEvent {
 		.put(EnumEventType.SPHERICAL_EXPLOSION.getIndex(), EventSphericalExplosion.class)
 		.put(EnumEventType.DELAYED_SPAWN.getIndex(), EventDelayedSpawn.class)
 		.put(EnumEventType.VILLAGE_SIEGE.getIndex(), EventVillageSiege.class)
-		.put(EnumEventType.METEOR_SHOWER.getIndex(), EventMeteorShower.class)
+		//.put(EnumEventType.METEOR_SHOWER.getIndex(), EventMeteorShower.class)
 		.put(EnumEventType.SET_BLOCKS.getIndex(), EventSetBlocks.class)
 		.put(EnumEventType.VANILLA_EXPLOSION.getIndex(), EventVanillaExplosion.class)
 		.put(EnumEventType.DELAYED_CALLBACK.getIndex(), EventDelayedCallback.class)
@@ -73,19 +69,6 @@ public abstract class SpecialEvent {
 		}
 	}
 	
-	public static void setMeteorShowerEvent(World worldIn, int centerX, int centerY, int centerZ, long startTime, int radius, 
-			int strikeInterval, int duration) {
-		if (!worldIn.isRemote) {
-			new EventMeteorShower(worldIn, centerX, centerY, centerZ, startTime, radius, strikeInterval, duration);
-		}
-	}
-
-	public static void setMeteorShowerEvent(World worldIn, Entity centerAround, long startTime, int radius, int strikeInterval, int duration) {
-		if (!worldIn.isRemote) {
-			new EventMeteorShower(worldIn, centerAround, startTime, radius, strikeInterval, duration);
-		}
-	}
-
 	protected EnumEventType type = EnumEventType.NO_EVENT;
 	protected int id;
 	protected World world = null;
@@ -207,17 +190,22 @@ public abstract class SpecialEvent {
 	public void readFromNBT(NBTTagCompound compound) {
 		this.type = EnumEventType.getTypeFromIndex(compound.getInteger("Type"));
 		this.id = compound.getInteger("ID");
-		this.world = FMLCommonHandler.instance().getMinecraftServerInstance().getWorld(compound.getInteger("World"));
-		if (compound.hasUniqueId("EntityUUID")) {
-			this.entityUuid = compound.getUniqueId("EntityUUID");
+		//this.world = FMLCommonHandler.instance().getMinecraftServerInstance().getWorld(compound.getInteger("World"));
+		this.world = net.minecraftforge.common.DimensionManager.getWorld(compound.getInteger("World"));
+		if (this.world != null) {
+			if (compound.hasUniqueId("EntityUUID")) {
+				this.entityUuid = compound.getUniqueId("EntityUUID");
+			}
+			this.startTime = compound.getLong("Start");
+			this.tick = compound.getInteger("Tick");
+			this.x0 = compound.getInteger("x0");
+			this.y0 = compound.getInteger("y0");
+			this.z0 = compound.getInteger("z0");
+			this.sound = compound.getBoolean("Sound");
+			this.particles = compound.getBoolean("Particles");
+		} else {
+			this.clear();
 		}
-		this.startTime = compound.getLong("Start");
-		this.tick = compound.getInteger("Tick");
-		this.x0 = compound.getInteger("x0");
-		this.y0 = compound.getInteger("y0");
-		this.z0 = compound.getInteger("z0");
-		this.sound = compound.getBoolean("Sound");
-		this.particles = compound.getBoolean("Particles");
 	}
 
 	public static void writeEventsToNBT(NBTTagCompound compound) {
@@ -229,8 +217,9 @@ public abstract class SpecialEvent {
 				nbttaglist.appendTag(nbttagcompound);
 			}
 		}
-		if (!nbttaglist.hasNoTags())
+		if (!nbttaglist.hasNoTags()) {
 			compound.setTag("SpecialEvents", nbttaglist);
+		}
 	}
 
 	public static void readEventsFromNBT(NBTTagCompound compound) {
@@ -252,7 +241,7 @@ public abstract class SpecialEvent {
 //	System.out.println("===== end list: " + evt.toString());
 	}
 
-	public static void executeSpecialEvent() {
+	public static void executeEvents() {
 		Iterator<SpecialEvent> iter = eventsMap.values().iterator();
 		while (iter.hasNext()) {
 			SpecialEvent event = iter.next();

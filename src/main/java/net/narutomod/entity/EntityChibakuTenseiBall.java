@@ -83,6 +83,9 @@ public class EntityChibakuTenseiBall extends ElementsNarutomodMod.ModElement {
 		private List<BlockPos> blockList;
 		private boolean maxSizeReached;
 		private int dropTime;
+		private double stationaryX;
+		private double stationaryY;
+		private double stationaryZ;
 
 		public EntityCustom(World world) {
 			super(world);
@@ -99,8 +102,8 @@ public class EntityChibakuTenseiBall extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void shoot(double x, double y, double z, float speed, float inaccuracy) {
 			this.setDead();
-			List<BlockPos> list = ProcedureUtils.getNonAirBlocks(this.world, this.getEntityBoundingBox().grow(1));
-			if (!list.isEmpty()) {
+			List<? extends BlockPos> list = ProcedureUtils.getNonAirBlocks(this.world, this.getEntityBoundingBox().grow(1));
+			if (!list.isEmpty() && this.shootingEntity != null) {
 				this.world.spawnEntity(new Satellite(this.shootingEntity, list));
 			}
 		}
@@ -156,8 +159,8 @@ public class EntityChibakuTenseiBall extends ElementsNarutomodMod.ModElement {
 					 	this.affectedEntities.add(entity);
 					 }
 				}
-				if (!this.maxSizeReached && !this.blockList.isEmpty() && this.rand.nextInt(10) == 0) {
-					for (EntityEarthBlocks.Base entity = null; entity == null; ) {
+				if (!this.maxSizeReached && this.rand.nextInt(10) == 0) {
+					for (EntityEarthBlocks.Base entity = null; entity == null && !this.blockList.isEmpty(); ) {
 						BlockPos pos = this.blockList.get(0);
 						this.blockList.remove(0);
 						if (!world.isAirBlock(pos)) {
@@ -182,14 +185,7 @@ public class EntityChibakuTenseiBall extends ElementsNarutomodMod.ModElement {
 				while (iter1.hasNext()) {
 					Entity ent = iter1.next();
 					if (ItemJutsu.canTarget(ent)) {
-						Vec3d vec = this.getCenter();
-						double d = ent.getDistance(vec.x, vec.y, vec.z);
-						vec = vec.subtract(ent.posX, ent.posY + ent.height/2, ent.posZ).normalize().scale(0.1d);
-						//if (d < this.width / 2 && !(ent instanceof EntityLivingBase)) {
-						//	vec = vec.scale(d * 0.016666667d);
-						//}
-						//ProcedureUtils.setVelocity(ent, vec.x, vec.y, vec.z);
-						//ent.isAirBorne = true;
+						Vec3d vec = this.getCenter().subtract(ent.posX, ent.posY + ent.height/2, ent.posZ).normalize().scale(0.1d);
 						ent.addVelocity(vec.x, vec.y, vec.z);
 						ent.velocityChanged = true;
 					} else {
@@ -219,8 +215,17 @@ public class EntityChibakuTenseiBall extends ElementsNarutomodMod.ModElement {
 				if (this.ticksAlive < this.launchTime) {
 					this.motionY += 0.03d;
 					this.setEntityScale(Math.max(this.maxScale * 0.2f * this.ticksAlive / this.launchTime, 1f));
-				} else {
-					this.motionY = 0;
+				} else if (!this.maxSizeReached || this.dropTime > 0) {
+					this.motionX = 0d;
+					this.motionY = 0d;
+					this.motionZ = 0d;
+					if (this.ticksAlive == this.launchTime) {
+						this.stationaryX = this.posX;
+						this.stationaryY = this.posY;
+						this.stationaryZ = this.posZ;
+					} else {
+						this.setPosition(this.stationaryX, this.stationaryY, this.stationaryZ);
+					}
 					if (!this.world.isRemote) {
 						if (this.blockList == null) {
 							this.createEntitiesAndBlocksList();
@@ -230,19 +235,23 @@ public class EntityChibakuTenseiBall extends ElementsNarutomodMod.ModElement {
 							this.collideWithNearbyEntities();
 						}
 					}
-				}
-				if (this.maxSizeReached && --this.dropTime <= 0) {
+				} else {
 					this.shoot(0, 0, 0, 0, 0);
+				}
+				if (this.dropTime > 0) {
+					--this.dropTime;
 				}
 				this.motionY *= 0.98d;
 			//}
 		}
 
 		protected void collideWithNearbyEntities() {
-			for (Entity entity : this.world.getEntitiesWithinAABBExcludingEntity(this, this.getEntityBoundingBox().grow(1d))) {
-				Vec3d vec = this.getCenter();
-				if (!(entity instanceof EntityLivingBase) || entity.getDistance(vec.x, vec.y, vec.z) <= this.width / 2) {
-					this.applyEntityCollision(entity);
+			for (Entity entity : this.world.getEntitiesWithinAABBExcludingEntity(this, this.getEntityBoundingBox().grow(6d))) {
+				if (entity.getEntityBoundingBox().intersects(this.getEntityBoundingBox())) {
+					Vec3d vec = this.getCenter();
+					if (!(entity instanceof EntityLivingBase) || entity.getDistance(vec.x, vec.y, vec.z) <= this.width / 2) {
+						this.applyEntityCollision(entity);
+					}
 				}
 			}
 		}
@@ -253,8 +262,8 @@ public class EntityChibakuTenseiBall extends ElementsNarutomodMod.ModElement {
 				if (entity instanceof EntityEarthBlocks.Base) {
 					Vec3d vec = this.getCenter();
 					if (this.airBlocks == null) {
-						this.airBlocks = ProcedureUtils.getAllAirBlocks(this.world, 
-						  this.getEntityBoundingBox().grow(this.maxRadius() - this.width / 2));
+						this.airBlocks = ProcedureUtils.getAllAirBlocks(this.world,
+						 this.getEntityBoundingBox().grow(this.maxRadius() - this.width / 2).offset(0d, 1d, 0d));
 						this.airBlocks.sort(new ProcedureUtils.BlockposSorter(new BlockPos(vec)));
 					}
 					if (!this.airBlocks.isEmpty()) {
@@ -301,25 +310,24 @@ public class EntityChibakuTenseiBall extends ElementsNarutomodMod.ModElement {
 
 	public static class Satellite extends EntityEarthBlocks.Base {
 		private EntityLivingBase summoner;
-		private int fallThroughTicks;
 		private boolean explosionSet;
 
 		public Satellite(World world) {
 			super(world);
 		}
 
-		public Satellite(EntityLivingBase summonerIn, List<BlockPos> list) {
+		public Satellite(EntityLivingBase summonerIn, List<? extends BlockPos> list) {
 			super(summonerIn.world, list);
 			this.summoner = summonerIn;
 			this.setNoGravity(true);
 			this.motionY = -0.1d;
-			this.setFallTime(Integer.MAX_VALUE);
+			this.setFallTime(1200);
 		}
 
 		@Override
-		protected void onImpact() {
+		protected void onImpact(float impact) {
 			if (!this.world.isRemote) {
-				if (!this.explosionSet) {
+				if (!this.explosionSet && this.getTicksAlive() - this.fallTicks <= 1200) {
 					if (this.summoner != null) {
 						this.summoner.getEntityData().setDouble(NarutomodModVariables.InvulnerableTime, 300d);
 					}
@@ -330,12 +338,15 @@ public class EntityChibakuTenseiBall extends ElementsNarutomodMod.ModElement {
 						}
 					};
 					this.explosionSet = true;
+					this.explodeOnImpact(true);
 				}
-				//if (++this.fallThroughTicks < 20) {
-				//	return;
-				//}
 			}
-			super.onImpact();
+			super.onImpact(impact);
+		}
+
+		@Override
+		public boolean griefingAllowed() {
+			return this.getTicksAlive() == 1 ? true : super.griefingAllowed();
 		}
 	}
 

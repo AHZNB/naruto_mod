@@ -114,7 +114,7 @@ public class EntityIceSpear extends ElementsNarutomodMod.ModElement {
 			if (!this.world.isRemote 
 			 && result.entityHit instanceof EntityLivingBase && !result.entityHit.equals(this.shootingEntity)) {
 				((EntityLivingBase)result.entityHit).addPotionEffect(new PotionEffect(MobEffects.SLOWNESS, 200, 1));
-				result.entityHit.hurtResistantTime = 0;
+				result.entityHit.hurtResistantTime = 10;
 				result.entityHit.attackEntityFrom(ItemJutsu.causeJutsuDamage(this, this.shootingEntity).setProjectile(), 10f);
 				this.setDead();
 			}

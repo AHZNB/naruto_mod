@@ -132,8 +132,9 @@ public class EntityRasengan extends ElementsNarutomodMod.ModElement {
 					if (this.shootingEntity instanceof EntityPlayer) {
 						stack = ProcedureUtils.getMatchingItemStack((EntityPlayer)this.shootingEntity, stack.getItem());
 					}
-					if (stack != null && stack.hasTagCompound() && stack.getTagCompound().hasKey("RasenganSize")) {
+					if (stack != null && stack.hasTagCompound()) {
 						stack.getTagCompound().removeTag("RasenganSize");
+						stack.getTagCompound().removeTag(Jutsu.ID_KEY);
 					}
 				}
 			}
@@ -214,10 +215,27 @@ public class EntityRasengan extends ElementsNarutomodMod.ModElement {
 			return true;
 		}
 
+		private boolean bunshinHasSameSummoner(Entity entityIn) {
+			if (this.shootingEntity instanceof EntityKageBunshin.EC) {
+				EntityLivingBase summoner = ((EntityKageBunshin.EC)this.shootingEntity).getSummoner();
+				if (summoner == null) {
+					return false;
+				} else if (summoner.equals(entityIn)) {
+					return true;
+				} else if (entityIn instanceof EntityKageBunshin.EC) {
+					if (summoner.equals(((EntityKageBunshin.EC)entityIn).getSummoner())) {
+						return true;
+					}
+				}
+			}
+			return false;
+		}
+
 		@Override
 		public void applyEntityCollision(Entity entityIn) {
-			if (this.shootingEntity != null && !entityIn.equals(this.shootingEntity) && this.ticksAlive > this.growTime) {
-				if (entityIn.attackEntityFrom(ItemJutsu.causeJutsuDamage(this, this.shootingEntity), 15f + this.fullScale * this.fullScale * 10)) {
+			if (this.ticksAlive > this.growTime && this.shootingEntity != null
+			 && !entityIn.equals(this.shootingEntity) && !this.bunshinHasSameSummoner(entityIn)) {
+				if (entityIn.attackEntityFrom(ItemJutsu.causeJutsuDamage(this, this.shootingEntity), 10f + this.fullScale * this.fullScale * 20f)) {
 					this.playSound(SoundEvents.ENTITY_GENERIC_EXPLODE, 1.0F, this.rand.nextFloat() * 0.5F + 0.5F);
 					Vec3d vec = ProcedureUtils.pushEntity(this.shootingEntity, entityIn, 20d, 2f);
 					Vec3d vec1 = this.shootingEntity.getLookVec().add(this.shootingEntity.getPositionEyes(1.0f));
@@ -238,16 +256,22 @@ public class EntityRasengan extends ElementsNarutomodMod.ModElement {
 		}
 
 		public static class Jutsu implements ItemJutsu.IJutsuCallback {
+			private static final String ID_KEY = "RasenganEntityId";
+			
 			@Override
 			public boolean createJutsu(ItemStack stack, EntityLivingBase entity, float power) {
-				if (!this.isActivated(stack) || !(entity instanceof EntityPlayer)) {
-					if ((stack.getItem() == ItemNinjutsu.block && power >= 0.5f) || (stack.getItem() == ItemSenjutsu.block && power >= 3.0f)) {
-						entity.world.playSound(null, entity.posX, entity.posY, entity.posZ, (SoundEvent) SoundEvent.REGISTRY
-						  .getObject(new ResourceLocation("narutomod:rasengan_start")), SoundCategory.NEUTRAL, 1.0F, 1.0F);
-						stack.getTagCompound().setFloat("RasenganSize", power);
-						entity.world.spawnEntity(new EC(entity, power, stack));
-						return true;
-					}
+				Entity entity1 = stack.hasTagCompound() ? entity.world.getEntityByID(stack.getTagCompound().getInteger(ID_KEY)) : null;
+				if (entity1 instanceof EC && entity instanceof EntityPlayer) {
+					entity1.setDead();
+				} else if ((stack.getItem() == ItemNinjutsu.block && power >= 0.5f)
+				 || (stack.getItem() == ItemSenjutsu.block && power >= 3.0f)) {
+					entity.world.playSound(null, entity.posX, entity.posY, entity.posZ, SoundEvent.REGISTRY
+					  .getObject(new ResourceLocation("narutomod:rasengan_start")), SoundCategory.NEUTRAL, 1.0F, 1.0F);
+					EC entity2 = new EC(entity, power, stack);
+					entity.world.spawnEntity(entity2);
+					stack.getTagCompound().setInteger(ID_KEY, entity2.getEntityId());
+					stack.getTagCompound().setFloat("RasenganSize", power);
+					return true;
 				}
 				return false;
 			}
@@ -315,6 +339,7 @@ public class EntityRasengan extends ElementsNarutomodMod.ModElement {
 		public void doRender(EC entity, double x, double y, double z, float f, float partialTicks) {
 			this.bindEntityTexture(entity);
 			EntityLivingBase owner = entity.getOwner();
+			float scale = entity.getEntityScale();
             GlStateManager.pushMatrix();
             if (owner != null) {
 				Entity viewer = Minecraft.getMinecraft().getRenderViewEntity();
@@ -336,7 +361,7 @@ public class EntityRasengan extends ElementsNarutomodMod.ModElement {
 		            model.postRenderArm(0.0625F * 0.9375F, EnumHandSide.RIGHT);
 		            GlStateManager.translate(-0.125F, entity.height - 0.025F, 0.0F);
 	            } else {
-					this.renderParticles(entity.world, ballVec.addVector(0.0d, entity.height/2, 0.0d));
+					this.renderParticles(entity.world, ballVec.addVector(0.0d, entity.height/2, 0.0d), scale);
 					x = owner.lastTickPosX + (owner.posX - owner.lastTickPosX) * partialTicks - this.renderManager.viewerPosX;
 					y = owner.lastTickPosY + (owner.posY - owner.lastTickPosY) * partialTicks - this.renderManager.viewerPosY;
 					z = owner.lastTickPosZ + (owner.posZ - owner.lastTickPosZ) * partialTicks - this.renderManager.viewerPosZ;
@@ -350,7 +375,6 @@ public class EntityRasengan extends ElementsNarutomodMod.ModElement {
 		            GlStateManager.translate(-0.05F, entity.height + 0.125F, 0.0F);
 	            }
 			}
-			float scale = entity.getEntityScale();
 			GlStateManager.translate(0f, 0.5F - 0.175F * scale, 0f);
 			GlStateManager.scale(scale, scale, scale);
 			GlStateManager.rotate(entity.ticksExisted * 30.0F, 1.0F, 1.0F, 0.0F);
@@ -381,11 +405,11 @@ public class EntityRasengan extends ElementsNarutomodMod.ModElement {
 			model.bipedRightArm.rotateAngleX = -((float)Math.PI / 2F) + f7;
 		}
 
-		private void renderParticles(World worldIn, Vec3d vec) {
-			for (int i = 0; i < 30; i++) {
+		private void renderParticles(World worldIn, Vec3d vec, float size) {
+			for (int i = 0; i < 10; i++) {
 				Particles.spawnParticle(worldIn, Particles.Types.SMOKE, vec.x, vec.y, vec.z,
 				 1, 0d, 0.02d, 0d, 0.2d * worldIn.rand.nextGaussian(), 0.2d * worldIn.rand.nextGaussian(), 
-				 0.2d * worldIn.rand.nextGaussian(), 0x10FFFFFF, 5, 0);
+				 0.2d * worldIn.rand.nextGaussian(), 0x10FFFFFF, (int)(size * 5), 0);
 			}
 		}
 

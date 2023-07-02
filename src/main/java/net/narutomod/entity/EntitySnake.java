@@ -3,9 +3,7 @@ package net.narutomod.entity;
 
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.relauncher.Side;
-//import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-//import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
@@ -81,17 +79,8 @@ public class EntitySnake extends ElementsNarutomodMod.ModElement {
 	@Override
 	public void preInit(FMLPreInitializationEvent event) {
 		this.elements.addNetworkMessage(ServerMessage.Handler.class, ServerMessage.class, Side.CLIENT);
-		this.elements.addNetworkMessage(ReplyMessage.Handler.class, ReplyMessage.class, Side.SERVER);
-		//new RegisterSnakeRenderer().register();
+		//this.elements.addNetworkMessage(ReplyMessage.Handler.class, ReplyMessage.class, Side.SERVER);
 	}
-
-	/*class RegisterSnakeRenderer extends EntityRendererRegister {
-		@SideOnly(Side.CLIENT)
-		@Override
-		protected void register() {
-			RenderingRegistry.registerEntityRenderingHandler(EntityCustom.class, renderManager -> new RenderSnake(renderManager));
-		}
-	}*/
 
 	public static abstract class EntityCustom extends EntitySummonAnimal.Base implements IEntityMultiPart {
 		private static final DataParameter<Integer> PHASE = EntityDataManager.<Integer>createKey(EntityCustom.class, DataSerializers.VARINT);
@@ -121,16 +110,6 @@ public class EntitySnake extends ElementsNarutomodMod.ModElement {
 				}
 				return vec;
 			}
-			/*@Override
-			public void startExecuting() {
-				this.entity.world.setBlockState(new BlockPos(this.x, this.y, this.z).up(), Blocks.TALLGRASS.getDefaultState(), 3);
-				super.startExecuting();
-			}
-			@Override
-			public void resetTask() {
-				super.resetTask();
-				this.entity.world.setBlockToAir(new BlockPos(this.x, this.y, this.z).up());
-			}*/
 		};
 		
 		public EntityCustom(World worldIn) {
@@ -164,7 +143,7 @@ public class EntitySnake extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
-		protected void entityInit() {
+		public void entityInit() {
 			super.entityInit();
 			this.getDataManager().register(PHASE, Integer.valueOf(Phase.DEFENSIVE.getID()));
 		}
@@ -193,7 +172,7 @@ public class EntitySnake extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		protected PathNavigate createNavigator(World worldIn) {
-			PathNavigateGround navi = new NavigateGround(this, worldIn);
+			PathNavigateGround navi = new Navigate(this, worldIn);
 			navi.setCanSwim(true);
 			return navi;
 		}
@@ -238,7 +217,7 @@ public class EntitySnake extends ElementsNarutomodMod.ModElement {
 			this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(5D * f);
 			this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.25D + f * 0.05);
 			this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(8D * f * f);
-			this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(2.6667D * f);
+			this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(5.3333D * f);
 			this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(13D + 3D * f);
 			super.postScaleFixup();
 			//this.setSize(this.ogWidth * f * 1.2f, this.ogHeight * f);
@@ -331,6 +310,11 @@ public class EntitySnake extends ElementsNarutomodMod.ModElement {
 			 ? Phase.AGGRESIVE : this.defensive && !this.isInWater() ? Phase.DEFENSIVE : Phase.ROAMING);
 			
 			super.updateAITasks();
+		}
+
+		@Override
+		public boolean couldBreakBlocks() {
+			return this.world.getGameRules().getBoolean("mobGriefing") && this.getScale() >= 4f;
 		}
 
 		@Override
@@ -497,8 +481,8 @@ public class EntitySnake extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
-		protected void onDeathUpdate() {
-			super.onDeathUpdate();
+		public void setDead() {
+			super.setDead();
 			if (!this.world.isRemote) {
 				for (int i = 0; i < this.parts.length; i++) {
 					Particles.spawnParticle(this.world, Particles.Types.SMOKE,
@@ -508,7 +492,7 @@ public class EntitySnake extends ElementsNarutomodMod.ModElement {
 				}
 			}
 		}
-
+		
 		@Override
 		public void readEntityFromNBT(NBTTagCompound compound) {
 			super.readEntityFromNBT(compound);
@@ -570,10 +554,10 @@ public class EntitySnake extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-	static class NavigateGround extends PathNavigateGround {
+	static class Navigate extends EntitySummonAnimal.NavigateGround {
 		private BlockPos targetPosition;
 
-		public NavigateGround(EntityCustom entityLivingIn, World worldIn) {
+		public Navigate(EntityCustom entityLivingIn, World worldIn) {
 			super(entityLivingIn, worldIn);
 		}
 
@@ -601,6 +585,12 @@ public class EntitySnake extends ElementsNarutomodMod.ModElement {
 	        }
 	    }
 	
+	    @Override
+	    public void clearPath() {
+	    	super.clearPath();
+	    	this.targetPosition = null;
+	    }
+		
 		@Override
 	    public void onUpdateNavigation() {
 	        if (!this.noPath()) {
@@ -609,11 +599,13 @@ public class EntitySnake extends ElementsNarutomodMod.ModElement {
 	            if (this.targetPosition != null) {
 	                double d0 = (double)(this.entity.width * this.entity.width);
 	                double d1 = (double)this.targetPosition.getY() - this.entity.posY;
-	                if (this.entity.getDistanceSqToCenter(new BlockPos(this.targetPosition.getX(),
-	                		MathHelper.floor(this.entity.posY), this.targetPosition.getZ())) >= d0
-	                 || (d1 <= (double)this.entity.height * 8 && d1 >= -(double)this.entity.height * 12)) {
-	                	this.entity.getMoveHelper().setMoveTo((double)this.targetPosition.getX(),
-	                	 (double)this.targetPosition.getY(), (double)this.targetPosition.getZ(), this.speed);
+	                double d2 = this.entity.getDistanceSqToCenter(new BlockPos(this.targetPosition.getX(),
+	                 MathHelper.floor(this.entity.posY), this.targetPosition.getZ()));
+	                //double d3 = this.targetPosition.distanceSq(this.entity.getPosition());
+	                //if (d3 >= 1.0d && (d2 >= d0 || (d1 <= 8d * this.entity.height && d1 >= -12d * this.entity.height))) {
+	                if (d2 >= d0 || (d1 <= 8d * this.entity.height && d1 >= -12d * this.entity.height)) {
+	                	this.entity.getMoveHelper().setMoveTo((double)this.targetPosition.getX() + 0.5d,
+	                	 (double)this.targetPosition.getY(), (double)this.targetPosition.getZ() + 0.5d, this.speed);
 	                } else {
 	                    this.targetPosition = null;
 	                }
@@ -704,12 +696,15 @@ public class EntitySnake extends ElementsNarutomodMod.ModElement {
 			if (this.isUpdating()) {
 	            this.action = EntityMoveHelper.Action.WAIT;
 	            Vec3d vec0 = new Vec3d(this.posX, this.posY, this.posZ).subtract(this.entity.getPositionVector());
-	            if (vec0.lengthSquared() < 0.25d * this.entity.width * this.entity.width) {
+	            double d = vec0.lengthSquared();
+	            if (d < 0.25d * this.entity.width * this.entity.width) {
 	                this.entity.setMoveForward(0.0F);
 	                return;
 	            }
 	            float f = (float)(this.speed * ProcedureUtils.getModifiedSpeed(this.entity));
-	            vec0 = vec0.rotateYaw(MathHelper.sin(0.3f * this.strafe++) * 0.5236F);
+	            if (d > 2.25d * this.entity.width * this.entity.width) {
+	            	vec0 = vec0.rotateYaw(MathHelper.sin(0.3f * this.strafe++) * 0.5236F);
+	            }
 	            float f9 = (float)(MathHelper.atan2(vec0.z, vec0.x) * 180D / Math.PI) - 90.0F;
 	            this.entity.rotationYaw = this.limitAngle(this.entity.rotationYaw, f9, 30.0F);
 	            if (this.entity.isInWater()) {
@@ -720,7 +715,8 @@ public class EntitySnake extends ElementsNarutomodMod.ModElement {
 	            } else {
 	            	this.entity.setAIMoveSpeed(f);
 	            }
-	            if (vec0.y > 0.01d && this.entity.collidedHorizontally) {
+	            if (this.entity.collidedHorizontally) {
+	             //&& vec0.y > 0.01d) {
 	                this.entity.motionY = 0.2d + 0.2d * this.entity.height;
 	            }
 			} else {
@@ -1072,9 +1068,11 @@ System.out.println("    pivotNew"+i+":"+pivotNew);
 
 		@Override
 		public void onUpdate() {
-			ProcedureUtils.Vec2f[] rotations = RIDINGROTATIONS[this.entity.getRidingEntity().getPassengers().indexOf(this.entity)];
-			for (int i = 0; i < this.entity.partRot.size(); i++) {
-				this.entity.partRot.set(i, rotations[i]);
+			if (this.entity.isRiding()) {
+				ProcedureUtils.Vec2f[] rotations = RIDINGROTATIONS[this.entity.getRidingEntity().getPassengers().indexOf(this.entity)];
+				for (int i = 0; i < this.entity.partRot.size(); i++) {
+					this.entity.partRot.set(i, rotations[i]);
+				}
 			}
 			super.onUpdate();
 		}
@@ -1112,7 +1110,6 @@ System.out.println("    pivotNew"+i+":"+pivotNew);
 							((EntityCustom)entity).partRot.set(i, new ProcedureUtils.Vec2f(message.x[i], message.y[i]));
 						}
 						//NarutomodMod.PACKET_HANDLER.sendToServer(new ReplyMessage(entity.getEntityId()));
-//System.out.println("++++++ sent partrot to client...");
 					}
 				});
 				return null;
@@ -1136,7 +1133,7 @@ System.out.println("    pivotNew"+i+":"+pivotNew);
 		}
 	}
 
-	public static class ReplyMessage implements IMessage {
+	/*public static class ReplyMessage implements IMessage {
 		int id;
 		
 		public ReplyMessage() { }
@@ -1166,7 +1163,7 @@ System.out.println("    pivotNew"+i+":"+pivotNew);
 				return null;
 			}
 		}
-	}
+	}*/
 
 	public static Vec3d getOffsetPoint(float x, float y, float z, float rotateX, float rotateY, float offset) {
 		return new Vec3d((double)-x - Math.sin((double)rotateY) * Math.cos((double)rotateX) * offset,
@@ -1177,8 +1174,6 @@ System.out.println("    pivotNew"+i+":"+pivotNew);
 
 	@SideOnly(Side.CLIENT)
 	public static class RenderSnake<T extends EntityCustom> extends RenderLiving<T> {
-		//private static final ResourceLocation TEXTURE = new ResourceLocation("narutomod:textures/snake_white.png");
-
 		public RenderSnake(RenderManager renderManagerIn) {
 			super(renderManagerIn, new ModelSnake(), 0.3f);
 		}
@@ -1419,5 +1414,6 @@ System.out.println("    pivotNew"+i+":"+pivotNew);
 			modelRenderer.rotateAngleY = y;
 			modelRenderer.rotateAngleZ = z;
 		}
-	}
+
+	}
 }

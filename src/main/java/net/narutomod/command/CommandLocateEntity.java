@@ -42,7 +42,7 @@ public class CommandLocateEntity extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public boolean checkPermission(MinecraftServer server, ICommandSender var1) {
-			return true;
+			return var1.canUseCommand(4, this.getName());
 		}
 
 		@Override
@@ -103,6 +103,7 @@ public class CommandLocateEntity extends ElementsNarutomodMod.ModElement {
 
 	public enum Level1 {
 		BIJU("biju"),
+		GEDO("gedo"),
 		JINCHURIKI("jinchuriki"),
 		UNKNOWN;
 

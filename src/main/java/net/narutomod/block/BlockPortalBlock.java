@@ -17,6 +17,7 @@ import net.minecraft.tileentity.TileEntityEndPortal;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.Item;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.Entity;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.block.state.IBlockState;
@@ -27,11 +28,14 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.BlockEndPortal;
 import net.minecraft.block.Block;
+import net.minecraft.init.Items;
 
+import net.narutomod.procedure.ProcedureUtils;
+import net.narutomod.event.EventDelayedCallback;
 import net.narutomod.ElementsNarutomodMod;
 
 import java.util.Random;
-import net.minecraft.init.Items;
+import javax.annotation.Nullable;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class BlockPortalBlock extends ElementsNarutomodMod.ModElement {
@@ -42,16 +46,19 @@ public class BlockPortalBlock extends ElementsNarutomodMod.ModElement {
 		super(instance, 276);
 	}
 
+	@Override
 	public void initElements() {
 		this.elements.blocks.add(() -> new BlockCustom());
 		this.elements.items.add(() -> new ItemBlock(block).setRegistryName(block.getRegistryName()));
 	}
 
+	@Override
 	public void init(FMLInitializationEvent event) {
 		GameRegistry.registerTileEntity(TileEntityCustom.class, "narutomod:tileentityportalblock");
 	}
 
 	@SideOnly(Side.CLIENT)
+	@Override
 	public void registerModels(ModelRegistryEvent event) {
 		ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(block), 0,
 				new ModelResourceLocation("narutomod:portalblock", "inventory"));
@@ -146,7 +153,9 @@ public class BlockPortalBlock extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
+
 	public static class TileEntityCustom extends TileEntityEndPortal {
+		private static final EventCallback CB = new EventCallback();
 		private EnumFacing facing;
 		private BlockPos pairPos;
 		private int ticksExisted;
@@ -180,10 +189,27 @@ public class BlockPortalBlock extends ElementsNarutomodMod.ModElement {
 					this.cooldown = 20;
 					if (!this.world.isRemote) {
 						entity.rotationYaw = te.facing.getHorizontalAngle();
+						if (entity instanceof EntityPlayerMP) {
+							ProcedureUtils.setInvulnerableDimensionChange((EntityPlayerMP)entity);
+							new EventDelayedCallback(this.world, 0, 0, 0, entity, this.world.getTotalWorldTime() + 3, CB);
+						}
 						entity.setPositionAndUpdate(this.pairPos.getX() + 0.5D + te.facing.getFrontOffsetX(),
 								this.pairPos.getY() - ((this.world.getBlockState(this.pairPos.down()).getBlock() == block) ? 1.0D : 0.0D),
 								this.pairPos.getZ() + 0.5D + te.facing.getFrontOffsetZ());
 					}
+				}
+			}
+		}
+
+		public static class EventCallback extends EventDelayedCallback.Callback {
+			public EventCallback() {
+				super(276);
+			}
+	
+			@Override
+			public void execute(World world, int x, int y, int z, @Nullable Entity entity) {
+				if (entity instanceof EntityPlayerMP && ((EntityPlayerMP)entity).isInvulnerableDimensionChange()) {
+					((EntityPlayerMP)entity).clearInvulnerableDimensionChange();
 				}
 			}
 		}

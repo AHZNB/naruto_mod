@@ -45,7 +45,7 @@ public class ItemByakugan extends ElementsNarutomodMod.ModElement {
 	private final UUID RINNESHARINGAN_MODIFIER = UUID.fromString("c69907b2-2687-47ab-aca0-49898cd38463");
 	private static final double BYAKUGAN_CHAKRA_USAGE = 10d; //per half sec
 	private static final double ROKUJUYONSHO_CHAKRA_USAGE = 100d;
-	private static final double KAITEN_CHAKRA_USAGE = 4d; // per tick
+	private static final double KAITEN_CHAKRA_USAGE = 5d; // per tick
 	private static final double KUSHO_CHAKRA_USAGE = 0.5d; // x pressDuration
 	
 	public ItemByakugan(ElementsNarutomodMod instance) {
@@ -78,7 +78,7 @@ public class ItemByakugan extends ElementsNarutomodMod.ModElement {
 
 	@Override
 	public void initElements() {
-		ItemArmor.ArmorMaterial enuma = EnumHelper.addArmorMaterial("BYAKUGAN", "narutomod:byakugan_", 25, new int[]{2, 5, 6, 50}, 9, null, 0.0F);
+		ItemArmor.ArmorMaterial enuma = EnumHelper.addArmorMaterial("BYAKUGAN", "narutomod:byakugan_", 25, new int[]{2, 5, 6, 15}, 0, null, 0.0F);
 		
 		this.elements.items.add(() -> new ItemDojutsu.Base(enuma) {
 			@Override
@@ -158,13 +158,13 @@ public class ItemByakugan extends ElementsNarutomodMod.ModElement {
 				if (isRinnesharinganActivated(stack)) {
 					tooltip.add(TextFormatting.RED + I18n.translateToLocal("advancements.rinnesharinganactivated.title") + TextFormatting.WHITE);
 				}
-				tooltip.add(I18n.translateToLocal("key.mcreator.specialjutsu1") + ": " + I18n.translateToLocal("tooltip.byakugan.jutsu1") + " (L15)");
+				tooltip.add(TextFormatting.ITALIC + I18n.translateToLocal("key.mcreator.specialjutsu1") + ": " + TextFormatting.GRAY + I18n.translateToLocal("tooltip.byakugan.jutsu1") + " (NXP:500)");
 				if (isRinnesharinganActivated(stack)) {
-					tooltip.add(I18n.translateToLocal("key.mcreator.specialjutsu2") + ": " + I18n.translateToLocal("tooltip.byakurinnesharingan.jutsu2"));
+					tooltip.add(TextFormatting.ITALIC + I18n.translateToLocal("key.mcreator.specialjutsu2") + ": " + TextFormatting.GRAY + I18n.translateToLocal("tooltip.byakurinnesharingan.jutsu2"));
 				} else {
-					tooltip.add(I18n.translateToLocal("key.mcreator.specialjutsu2") + ": " + I18n.translateToLocal("tooltip.byakugan.jutsu2") + " (L20)");
+					tooltip.add(TextFormatting.ITALIC + I18n.translateToLocal("key.mcreator.specialjutsu2") + ": " + TextFormatting.GRAY + I18n.translateToLocal("tooltip.byakugan.jutsu2") + " (NXP:1000)");
 				}
-				tooltip.add(I18n.translateToLocal("key.mcreator.specialjutsu3") + ": " + I18n.translateToLocal("entity.hakkeshokeiten.name") + " (L30)");
+				tooltip.add(TextFormatting.ITALIC + I18n.translateToLocal("key.mcreator.specialjutsu3") + ": " + TextFormatting.GRAY + I18n.translateToLocal("entity.hakkeshokeiten.name") + " (NXP:1500)");
 				if (stack.hasTagCompound()) {
 					double d = stack.getTagCompound().getDouble(TENSEIGANEVOLVEDTIME);
 					if (d > 0.0d) {

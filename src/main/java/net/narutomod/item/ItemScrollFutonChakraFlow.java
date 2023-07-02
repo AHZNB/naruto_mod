@@ -44,7 +44,7 @@ public class ItemScrollFutonChakraFlow extends ElementsNarutomodMod.ModElement {
 	}
 	public static class ItemCustom extends Item {
 		public ItemCustom() {
-			setMaxDamage(0);
+			setMaxDamage(1);
 			maxStackSize = 1;
 			setUnlocalizedName("scroll_futon_chakra_flow");
 			setRegistryName("scroll_futon_chakra_flow");

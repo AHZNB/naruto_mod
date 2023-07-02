@@ -9,15 +9,20 @@ import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.translation.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.Item;
 import net.minecraft.inventory.EntityEquipmentSlot;
-import net.minecraft.client.entity.AbstractClientPlayer;
+import net.minecraft.entity.ai.attributes.AttributeModifier;
+import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
+import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.model.ModelBox;
@@ -25,9 +30,11 @@ import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.translation.I18n;
 
+import net.narutomod.entity.EntityKingOfHell;
+import net.narutomod.entity.EntityTenTails;
+import net.narutomod.gui.GuiNinjaScroll;
+import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.procedure.ProcedureRinneganHelmetTickEvent;
 import net.narutomod.procedure.ProcedureTenseiganBodyTickEvent;
 import net.narutomod.creativetab.TabModTab;
@@ -35,8 +42,10 @@ import net.narutomod.ElementsNarutomodMod;
 
 import java.util.Map;
 import java.util.HashMap;
-import javax.annotation.Nullable;
 import java.util.List;
+import java.util.UUID;
+import javax.annotation.Nullable;
+import com.google.common.collect.Multimap;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class ItemTenseigan extends ElementsNarutomodMod.ModElement {
@@ -53,8 +62,8 @@ public class ItemTenseigan extends ElementsNarutomodMod.ModElement {
 
 	@Override
 	public void initElements() {
-		ItemArmor.ArmorMaterial enuma = EnumHelper.addArmorMaterial("TENSEIGAN", "narutomod:sasuke_", 5, new int[]{2, 75, 100, 50}, 0,
-				(net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("")), 0f);
+		ItemArmor.ArmorMaterial enuma = EnumHelper.addArmorMaterial("TENSEIGAN", "narutomod:sasuke_", 5, new int[]{2, 75, 100, 15}, 0,
+		 net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:dojutsu")), 2.0f);
 
 		elements.items.add(() -> new ItemDojutsu.Base(enuma) {
 			@SideOnly(Side.CLIENT)
@@ -65,6 +74,8 @@ public class ItemTenseigan extends ElementsNarutomodMod.ModElement {
 				armorModel.foreheadHide = !ItemRinnegan.isRinnesharinganActivated(stack);
 				Item item = living.getHeldItemMainhand().getItem();
 				armorModel.headwearHide = item != ItemTenseiganChakraMode.block || ((ItemTenseiganChakraMode.RangedItem)item).isOnCooldown(living);
+				armorModel.headHide = !armorModel.headwearHide;
+				armorModel.hornRight.showModel = armorModel.hornLeft.showModel = false;
 				return armorModel;
 			}
 
@@ -86,6 +97,31 @@ public class ItemTenseigan extends ElementsNarutomodMod.ModElement {
 			}
 
 			@Override
+			public void onUpdate(ItemStack itemstack, World world, Entity entity, int par4, boolean par5) {
+				super.onUpdate(itemstack, world, entity, par4, par5);
+				if (!world.isRemote && entity.ticksExisted % 20 == 0) {
+					UUID uuid = ProcedureUtils.getUniqueId(itemstack, "KoH_id");
+					if (uuid != null) {
+						Entity koh = ((WorldServer)world).getEntityFromUuid(uuid);
+						if (!(koh instanceof EntityKingOfHell.EntityCustom) || !koh.isEntityAlive()) {
+							ProcedureUtils.removeUniqueIdTag(itemstack, "KoH_id");
+						}
+					}
+					if (entity instanceof EntityPlayer) {
+						EntityPlayer player = (EntityPlayer)entity;
+						ItemStack helmetStack = player.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
+						GuiNinjaScroll.enableJutsu(player, (ItemJutsu.Base)ItemYoton.block,
+						 ItemYoton.SEALING9D, helmetStack.getItem() == helmet);
+						GuiNinjaScroll.enableJutsu(player, (ItemJutsu.Base)ItemYoton.block,
+						 ItemYoton.SEALING10, helmetStack.getItem() == helmet && EntityTenTails.getBijuManager().isAddedToWorld(world));
+						if (helmetStack.getItem() != helmet && helmetStack.getItem() != ItemRinnegan.helmet) {
+							player.inventory.clearMatchingItems(ItemAsuraCanon.block, -1, -1, null);
+						}
+					}
+				}
+			}
+
+			@Override
 			public int getMaxDamage() {
 				return 0;
 			}
@@ -96,15 +132,28 @@ public class ItemTenseigan extends ElementsNarutomodMod.ModElement {
 			}
 
 			@Override
+			public Multimap<String, AttributeModifier> getAttributeModifiers(EntityEquipmentSlot slot, ItemStack stack) {
+				Multimap<String, AttributeModifier> multimap = super.getAttributeModifiers(slot, stack);
+				if (slot == EntityEquipmentSlot.HEAD && ItemRinnegan.isRinnesharinganActivated(stack)) {
+					multimap.put(SharedMonsterAttributes.MAX_HEALTH.getName(),
+					 new AttributeModifier(ItemRinnegan.RINNESHARINGAN_MODIFIER, "rinnesharingan.maxhealth", 380d, 0));
+				}
+				return multimap;
+			}
+
+			@Override
 			public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
 				super.addInformation(stack, worldIn, tooltip, flagIn);
 				if (ItemRinnegan.isRinnesharinganActivated(stack)) {
 					tooltip.add(TextFormatting.RED + I18n.translateToLocal("advancements.rinnesharinganactivated.title") + TextFormatting.WHITE);
 				}
-				tooltip.add(I18n.translateToLocal("key.mcreator.specialjutsu1") + ": " + I18n.translateToLocal("chattext.shinratensei"));
-				tooltip.add(I18n.translateToLocal("key.mcreator.specialjutsu2") + ": " + I18n.translateToLocal("tooltip.rinnegan.jutsu2") + " ("
-						+ I18n.translateToLocal("tooltip.general.powerupkey") + ")");
-				tooltip.add(I18n.translateToLocal("key.mcreator.specialjutsu3") + ": " + I18n.translateToLocal("tooltip.rinnegan.jutsu3"));
+				tooltip.add(TextFormatting.ITALIC + I18n.translateToLocal("key.mcreator.specialjutsu1") + ": "
+				 + TextFormatting.GRAY + I18n.translateToLocal("chattext.shinratensei"));
+				tooltip.add(TextFormatting.ITALIC + I18n.translateToLocal("key.mcreator.specialjutsu2") + ": "
+				 + TextFormatting.GRAY + I18n.translateToLocal("tooltip.rinnegan.jutsu2")
+				 + " (" + I18n.translateToLocal("tooltip.general.powerupkey") + ")");
+				tooltip.add(TextFormatting.ITALIC + I18n.translateToLocal("key.mcreator.specialjutsu3") + ": "
+				 + TextFormatting.GRAY + I18n.translateToLocal("tooltip.rinnegan.jutsu3"));
 			}
 
 			@Override
@@ -113,14 +162,20 @@ public class ItemTenseigan extends ElementsNarutomodMod.ModElement {
 			}
 		}.setUnlocalizedName("tenseiganhelmet").setRegistryName("tenseiganhelmet").setCreativeTab(TabModTab.tab));
 		elements.items.add(() -> new ItemArmor(enuma, 0, EntityEquipmentSlot.CHEST) {
+			@SideOnly(Side.CLIENT)
+			private ModelBiped armorModel;
+
 			@Override
 			@SideOnly(Side.CLIENT)
 			public ModelBiped getArmorModel(EntityLivingBase living, ItemStack stack, EntityEquipmentSlot slot, ModelBiped defaultModel) {
-				ModelBiped armorModel = new ModelSizPathRobe();
-				armorModel.isSneak = living.isSneaking();
-				armorModel.isRiding = living.isRiding();
-				armorModel.isChild = living.isChild();
-				return armorModel;
+				if (this.armorModel == null) {
+					this.armorModel = new ModelSizPathRobe();
+				}
+
+				this.armorModel.isSneak = living.isSneaking();
+				this.armorModel.isRiding = living.isRiding();
+				this.armorModel.isChild = living.isChild();
+				return this.armorModel;
 			}
 
 			@Override
@@ -149,14 +204,20 @@ public class ItemTenseigan extends ElementsNarutomodMod.ModElement {
 			}
 		}.setUnlocalizedName("tenseiganbody").setRegistryName("tenseiganbody").setCreativeTab(null));
 		elements.items.add(() -> new ItemArmor(enuma, 0, EntityEquipmentSlot.LEGS) {
+			@SideOnly(Side.CLIENT)
+			private ModelBiped armorModel;
+
 			@Override
 			@SideOnly(Side.CLIENT)
 			public ModelBiped getArmorModel(EntityLivingBase living, ItemStack stack, EntityEquipmentSlot slot, ModelBiped defaultModel) {
-				ModelBiped armorModel = new ModelSizPathRobe();
-				armorModel.isSneak = living.isSneaking();
-				armorModel.isRiding = living.isRiding();
-				armorModel.isChild = living.isChild();
-				return armorModel;
+				if (this.armorModel == null) {
+					this.armorModel = new ModelSizPathRobe();
+				}
+
+				this.armorModel.isSneak = living.isSneaking();
+				this.armorModel.isRiding = living.isRiding();
+				this.armorModel.isChild = living.isChild();
+				return this.armorModel;
 			}
 
 			@Override
@@ -186,6 +247,10 @@ public class ItemTenseigan extends ElementsNarutomodMod.ModElement {
 		}.setUnlocalizedName("tenseiganlegs").setRegistryName("tenseiganlegs").setCreativeTab(null));
 	}
 
+	public static boolean isWearing(EntityLivingBase player) {
+		return player.getItemStackFromSlot(EntityEquipmentSlot.HEAD).getItem() == helmet;
+	}
+
 	public static boolean canUseChakraMode(ItemStack stack, EntityPlayer player) {
 		return stack.hasTagCompound() && stack.getTagCompound().getDouble("ByakuganCount") >= 5.0d;
 	}
@@ -208,8 +273,8 @@ public class ItemTenseigan extends ElementsNarutomodMod.ModElement {
 	// Paste this class into your mod and generate all required imports
 	@SideOnly(Side.CLIENT)
 	public class ModelSizPathRobe extends ModelBiped {
-		//private final ModelRenderer bipedHead;
 		//private final ModelRenderer bipedBody;
+		private final ModelRenderer robe;
 		private final ModelRenderer bone5;
 		private final ModelRenderer bone6;
 		private final ModelRenderer skirtRight;
@@ -226,87 +291,108 @@ public class ItemTenseigan extends ElementsNarutomodMod.ModElement {
 		//private final ModelRenderer bipedLeftArm;
 		//private final ModelRenderer bipedRightLeg;
 		//private final ModelRenderer bipedLeftLeg;
+	
 		public ModelSizPathRobe() {
 			textureWidth = 64;
 			textureHeight = 64;
-			bipedHead = new ModelRenderer(this);
-			bipedHead.setRotationPoint(0.0F, 0.0F, 0.0F);
-			bipedHead.cubeList.add(new ModelBox(bipedHead, 0, 0, -4.0F, -8.0F, -4.0F, 8, 8, 8, 0.0F, false));
-			bipedHead.cubeList.add(new ModelBox(bipedHead, 32, 0, -4.0F, -8.0F, -4.0F, 8, 8, 8, 0.5F, false));
+	
 			bipedBody = new ModelRenderer(this);
 			bipedBody.setRotationPoint(0.0F, 0.0F, 0.0F);
-			bipedBody.cubeList.add(new ModelBox(bipedBody, 16, 16, -4.0F, 0.0F, -2.0F, 8, 12, 4, 0.2F, false));
+			bipedBody.cubeList.add(new ModelBox(bipedBody, 16, 16, -4.0F, 0.0F, -2.0F, 8, 12, 4, 0.05F, false));
+	
+			robe = new ModelRenderer(this);
+			robe.setRotationPoint(0.0F, 24.0F, 0.0F);
+			bipedBody.addChild(robe);
+			robe.cubeList.add(new ModelBox(robe, 16, 32, -4.0F, -24.0F, -2.0F, 8, 12, 4, 0.25F, false));
+	
 			bone5 = new ModelRenderer(this);
-			bone5.setRotationPoint(0.0F, 0.0F, -1.8F);
-			bipedBody.addChild(bone5);
+			bone5.setRotationPoint(0.0F, -24.0F, -1.8F);
+			robe.addChild(bone5);
 			setRotationAngle(bone5, -0.3927F, 0.0F, 0.0F);
 			bone5.cubeList.add(new ModelBox(bone5, 24, 48, -4.0F, -4.0F, 0.0F, 8, 4, 4, 1.0F, false));
+	
 			bone6 = new ModelRenderer(this);
 			bone6.setRotationPoint(0.0F, 1.0F, 3.0F);
 			bone5.addChild(bone6);
 			setRotationAngle(bone6, -0.5236F, 0.0F, 0.0F);
-			bone6.cubeList.add(new ModelBox(bone6, 44, 0, -4.0F, -5.0F, -1.0F, 8, 4, 2, 1.0F, false));
+			bone6.cubeList.add(new ModelBox(bone6, 18, 1, -4.0F, -6.0F, -1.0F, 8, 5, 2, 1.0F, false));
+	
 			skirtRight = new ModelRenderer(this);
-			skirtRight.setRotationPoint(0.0F, 24.0F, 0.0F);
-			bipedBody.addChild(skirtRight);
+			skirtRight.setRotationPoint(0.0F, -0.25F, 0.0F);
+			robe.addChild(skirtRight);
+			
+	
 			bone2 = new ModelRenderer(this);
 			bone2.setRotationPoint(0.0F, -12.0F, -2.0F);
 			skirtRight.addChild(bone2);
 			setRotationAngle(bone2, -0.1745F, 0.0F, 0.1745F);
 			bone2.cubeList.add(new ModelBox(bone2, 0, 48, -4.0F, 0.0F, 0.0F, 4, 8, 0, 0.0F, false));
+	
 			bone = new ModelRenderer(this);
 			bone.setRotationPoint(-4.0F, -12.25F, 0.0F);
 			skirtRight.addChild(bone);
 			setRotationAngle(bone, -0.1745F, 0.0F, 0.1745F);
 			bone.cubeList.add(new ModelBox(bone, 8, 48, 0.0F, 0.0F, -2.0F, 0, 8, 4, 0.0F, false));
+	
 			bone3 = new ModelRenderer(this);
 			bone3.setRotationPoint(-4.0F, -12.25F, 0.0F);
 			skirtRight.addChild(bone3);
 			setRotationAngle(bone3, 0.1745F, 0.0F, 0.1745F);
 			bone3.cubeList.add(new ModelBox(bone3, 16, 48, 0.0F, 0.0F, -2.0F, 0, 8, 4, 0.0F, false));
+	
 			bone4 = new ModelRenderer(this);
 			bone4.setRotationPoint(0.0F, -12.0F, 2.0F);
 			skirtRight.addChild(bone4);
 			setRotationAngle(bone4, 0.1745F, 0.0F, 0.1745F);
 			bone4.cubeList.add(new ModelBox(bone4, 0, 56, -4.0F, 0.0F, 0.0F, 4, 8, 0, 0.0F, false));
+	
 			skirtLeft = new ModelRenderer(this);
-			skirtLeft.setRotationPoint(0.0F, 24.0F, 0.0F);
-			bipedBody.addChild(skirtLeft);
+			skirtLeft.setRotationPoint(0.0F, -0.25F, 0.0F);
+			robe.addChild(skirtLeft);
+			
+	
 			bone7 = new ModelRenderer(this);
 			bone7.setRotationPoint(0.0F, -12.0F, -2.0F);
 			skirtLeft.addChild(bone7);
 			setRotationAngle(bone7, -0.1745F, 0.0F, -0.1745F);
 			bone7.cubeList.add(new ModelBox(bone7, 0, 48, 0.0F, 0.0F, 0.0F, 4, 8, 0, 0.0F, true));
+	
 			bone8 = new ModelRenderer(this);
 			bone8.setRotationPoint(4.0F, -12.25F, 0.0F);
 			skirtLeft.addChild(bone8);
 			setRotationAngle(bone8, -0.1745F, 0.0F, -0.1745F);
 			bone8.cubeList.add(new ModelBox(bone8, 8, 48, 0.0F, 0.0F, -2.0F, 0, 8, 4, 0.0F, true));
+	
 			bone9 = new ModelRenderer(this);
 			bone9.setRotationPoint(4.0F, -12.25F, 0.0F);
 			skirtLeft.addChild(bone9);
 			setRotationAngle(bone9, 0.1745F, 0.0F, -0.1745F);
 			bone9.cubeList.add(new ModelBox(bone9, 16, 48, 0.0F, 0.0F, -2.0F, 0, 8, 4, 0.0F, true));
+	
 			bone10 = new ModelRenderer(this);
 			bone10.setRotationPoint(0.0F, -12.0F, 2.0F);
 			skirtLeft.addChild(bone10);
 			setRotationAngle(bone10, 0.1745F, 0.0F, -0.1745F);
 			bone10.cubeList.add(new ModelBox(bone10, 0, 56, 0.0F, 0.0F, 0.0F, 4, 8, 0, 0.0F, true));
+	
 			bipedRightArm = new ModelRenderer(this);
 			bipedRightArm.setRotationPoint(-5.0F, 2.0F, 0.0F);
 			setRotationAngle(bipedRightArm, -0.1745F, 0.0F, 0.0F);
-			bipedRightArm.cubeList.add(new ModelBox(bipedRightArm, 40, 16, -3.0F, -2.0F, -2.0F, 4, 12, 4, 0.1F, false));
+			bipedRightArm.cubeList.add(new ModelBox(bipedRightArm, 40, 16, -3.0F, -2.0F, -2.0F, 4, 12, 4, 0.05F, false));
 			bipedRightArm.cubeList.add(new ModelBox(bipedRightArm, 40, 32, -3.0F, -2.0F, -2.0F, 4, 12, 4, 0.3F, false));
+	
 			bipedLeftArm = new ModelRenderer(this);
 			bipedLeftArm.setRotationPoint(5.0F, 2.0F, 0.0F);
 			setRotationAngle(bipedLeftArm, -0.1745F, 0.0F, 0.0F);
-			bipedLeftArm.cubeList.add(new ModelBox(bipedLeftArm, 40, 16, -1.0F, -2.0F, -2.0F, 4, 12, 4, 0.1F, true));
+			bipedLeftArm.cubeList.add(new ModelBox(bipedLeftArm, 48, 0, -1.0F, -2.0F, -2.0F, 4, 12, 4, 0.05F, true));
 			bipedLeftArm.cubeList.add(new ModelBox(bipedLeftArm, 40, 32, -1.0F, -2.0F, -2.0F, 4, 12, 4, 0.3F, true));
+	
 			bipedRightLeg = new ModelRenderer(this);
 			bipedRightLeg.setRotationPoint(-1.9F, 12.0F, 0.0F);
 			setRotationAngle(bipedRightLeg, 0.0F, 0.0F, 0.0349F);
 			bipedRightLeg.cubeList.add(new ModelBox(bipedRightLeg, 0, 16, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.1F, false));
 			bipedRightLeg.cubeList.add(new ModelBox(bipedRightLeg, 0, 32, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.3F, false));
+	
 			bipedLeftLeg = new ModelRenderer(this);
 			bipedLeftLeg.setRotationPoint(1.9F, 12.0F, 0.0F);
 			setRotationAngle(bipedLeftLeg, 0.0F, 0.0F, -0.0349F);
@@ -337,5 +423,6 @@ public class ItemTenseigan extends ElementsNarutomodMod.ModElement {
 			modelRenderer.rotateAngleY = y;
 			modelRenderer.rotateAngleZ = z;
 		}
-	}
+
+	}
 }

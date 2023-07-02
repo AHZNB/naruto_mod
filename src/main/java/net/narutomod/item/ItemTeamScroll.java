@@ -78,7 +78,7 @@ public class ItemTeamScroll extends ElementsNarutomodMod.ModElement {
 		@Override
 		public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer entity, EnumHand hand) {
 			ItemStack stack = entity.getHeldItem(hand);
-			if (entity.isCreative() || (PlayerTracker.isNinja(entity) && entity.experienceLevel >= 15)) {
+			if (entity.isCreative() || PlayerTracker.isNinja(entity)) {
 				int x = (int) entity.posX;
 				int y = (int) entity.posY;
 				int z = (int) entity.posZ;

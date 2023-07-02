@@ -3,21 +3,26 @@
   "type": "minecraft:crafting_shaped",
   "pattern": [
     "012",
-    " 4 "
+    "345"
   ],
   "key": {
     "0": {
-      "item": "minecraft:wool",
-      "data": 15
+      "item": "minecraft:iron_ingot"
     },
     "1": {
       "item": "minecraft:iron_helmet"
     },
     "2": {
+      "item": "minecraft:iron_ingot"
+    },
+    "3": {
+      "item": "minecraft:iron_ingot"
+    },
+    "4": {
       "item": "minecraft:wool",
       "data": 15
     },
-    "4": {
+    "5": {
       "item": "minecraft:iron_ingot"
     }
   },

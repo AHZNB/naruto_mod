@@ -2,16 +2,17 @@ package net.narutomod.procedure;
 
 import net.narutomod.item.ItemByakugan;
 import net.narutomod.entity.EntityHakkeshoKeiten;
+import net.narutomod.PlayerTracker;
 import net.narutomod.Particles;
 import net.narutomod.NarutomodModVariables;
 import net.narutomod.ElementsNarutomodMod;
 import net.narutomod.Chakra;
 
 import net.minecraft.world.World;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.item.ItemStack;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.EntityLivingBase;
@@ -57,8 +58,7 @@ public class ProcedureHakkeshoKaiten extends ElementsNarutomodMod.ModElement {
 				}
 			} else {
 				world.playSound((EntityPlayer) null, (entity.posX), (entity.posY), (entity.posZ),
-						(net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY
-								.getObject(new ResourceLocation("narutomod:dojutsu_activate")),
+						(net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:dojutsu")),
 						SoundCategory.NEUTRAL, (float) 1, (float) 1);
 				for (int index0 = 0; index0 < (int) (1000); index0++) {
 					Particles.spawnParticle(world, Particles.Types.SMOKE, entity.posX, entity.posY + 1.4d, entity.posZ, 1, 1d, 0d, 1d,
@@ -72,46 +72,35 @@ public class ProcedureHakkeshoKaiten extends ElementsNarutomodMod.ModElement {
 		} else {
 			f1 = ProcedureUtils.isOriginalOwner((EntityPlayer) entity, helmetstack);
 			if ((!(((entity instanceof EntityPlayer) ? ((EntityPlayer) entity).capabilities.isCreativeMode : false)
-					|| ((f1) && (((entity instanceof EntityPlayer) ? ((EntityPlayer) entity).experienceLevel : 0) >= 30))))) {
+					|| ((f1) && (PlayerTracker.getBattleXp((EntityPlayer) entity) >= 1500))))) {
 				return;
 			}
-			if ((is_pressed)) {
-				if (!(entity.getRidingEntity() instanceof EntityHakkeshoKeiten.EntityCustom)) {
-					cooldown = (double) ((helmetstack).hasTagCompound() ? (helmetstack).getTagCompound().getDouble("HakkeshoKaitenCD") : -1);
-					if ((((entity instanceof EntityPlayer) ? ((EntityPlayer) entity).capabilities.isCreativeMode : false)
-							|| (((NarutomodModVariables.world_tick) > (cooldown)) || ((NarutomodModVariables.world_tick) < ((cooldown) - 6000))))) {
-						if ((Chakra.pathway((EntityPlayer) entity).getAmount() >= ItemByakugan.getKaitenChakraUsage((EntityLivingBase) entity))) {
-							world.playSound((EntityPlayer) null, (entity.posX), (entity.posY), (entity.posZ),
-									(net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY
-											.getObject(new ResourceLocation("narutomod:HakkeshoKaiten")),
-									SoundCategory.NEUTRAL, (float) 1, (float) 1);
-							entity.world.spawnEntity(new EntityHakkeshoKeiten.EntityCustom((EntityPlayer) entity));
-						}
-					} else {
-						if (entity instanceof EntityPlayer && !entity.world.isRemote) {
-							((EntityPlayer) entity).sendStatusMessage(new TextComponentString(((net.minecraft.util.text.translation.I18n
-									.translateToLocal("chattext.cooldown")) + "" + (" ") + ""
-									+ ((new java.text.DecimalFormat(".2").format((((cooldown) - (NarutomodModVariables.world_tick)) / 20)))))),
-									(true));
+			if ((!(world.isRemote))) {
+				if ((is_pressed)) {
+					if (!(entity.getRidingEntity() instanceof EntityHakkeshoKeiten.EntityCustom)) {
+						cooldown = (double) ((helmetstack).hasTagCompound() ? (helmetstack).getTagCompound().getDouble("HakkeshoKaitenCD") : -1);
+						if ((((entity instanceof EntityPlayer) ? ((EntityPlayer) entity).capabilities.isCreativeMode : false)
+								|| (((NarutomodModVariables.world_tick) > (cooldown))
+										|| ((NarutomodModVariables.world_tick) < ((cooldown) - 6000))))) {
+							if ((Chakra.pathway((EntityPlayer) entity).getAmount() >= ItemByakugan.getKaitenChakraUsage((EntityLivingBase) entity))) {
+								world.playSound((EntityPlayer) null, (entity.posX), (entity.posY), (entity.posZ),
+										(net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY
+												.getObject(new ResourceLocation("narutomod:HakkeshoKaiten")),
+										SoundCategory.NEUTRAL, (float) 1, (float) 1);
+								entity.world.spawnEntity(new EntityHakkeshoKeiten.EntityCustom((EntityPlayer) entity));
+							}
+						} else {
+							if ((entity instanceof EntityPlayer)) {
+								((EntityPlayer) entity).sendStatusMessage(new TextComponentTranslation("chattext.cooldown.formatted",
+										(int) ((cooldown - NarutomodModVariables.world_tick) / 20)), true);
+							}
 						}
 					}
-				}
-			} else {
-				Entity entitySpawned = entity.getRidingEntity();
-				if (entitySpawned instanceof EntityHakkeshoKeiten.EntityCustom) {
-					ticksExisted = (double) (double) entitySpawned.ticksExisted;
-					entity.world.removeEntity(entitySpawned);
-					cooldown = (double) (ProcedureUtils.getCooldownModifier((EntityPlayer) entity) * ((ticksExisted) * 5));
-					{
-						ItemStack _stack = (helmetstack);
-						if (!_stack.hasTagCompound())
-							_stack.setTagCompound(new NBTTagCompound());
-						_stack.getTagCompound().setDouble("HakkeshoKaitenCD", ((NarutomodModVariables.world_tick) + (cooldown)));
+				} else {
+					Entity entitySpawned = entity.getRidingEntity();
+					if (entitySpawned instanceof EntityHakkeshoKeiten.EntityCustom) {
+						entitySpawned.setDead();
 					}
-					if (entity instanceof EntityPlayer)
-						((EntityPlayer) entity).getFoodStats()
-								.setFoodLevel((int) (((entity instanceof EntityPlayer) ? ((EntityPlayer) entity).getFoodStats().getFoodLevel() : 0)
-										- (((ticksExisted) / 60) + 1)));
 				}
 			}
 		}

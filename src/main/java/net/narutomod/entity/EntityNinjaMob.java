@@ -16,6 +16,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraft.world.World;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.EnumSkyBlock;
+import net.minecraft.block.material.Material;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.Vec3d;
@@ -40,6 +41,7 @@ import net.minecraft.entity.ai.EntityAITarget;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.init.SoundEvents;
@@ -55,6 +57,9 @@ import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.Minecraft;
+import net.minecraft.pathfinding.Path;
+import net.minecraft.pathfinding.PathNavigate;
+import net.minecraft.pathfinding.PathNavigateGround;
 
 import net.narutomod.item.ItemOnBody;
 import net.narutomod.potion.PotionFeatherFalling;
@@ -66,14 +71,11 @@ import net.narutomod.NarutomodMod;
 import io.netty.buffer.ByteBuf;
 import java.util.List;
 import java.util.Arrays;
-import java.util.UUID;
-import net.minecraft.network.PacketBuffer;
 import com.google.common.collect.Lists;
 import java.io.IOException;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
-	public static final UUID NINJA_HEALTH = UUID.fromString("84d6711b-c26d-4dfa-b0c5-1ff54395f4de");
 	public static final List<Class <? extends Base>> TeamKonoha = Arrays.asList(EntityTenten.EntityCustom.class, EntitySakuraHaruno.EntityCustom.class, EntityIrukaSensei.EntityCustom.class, EntityMightGuy.EntityCustom.class);
 	public static final List<Class <? extends Base>> TeamZabuza = Arrays.asList(EntityZabuzaMomochi.EntityCustom.class, EntityHaku.EntityCustom.class);
 	public static final List<Class <? extends Base>> TeamItachi = Arrays.asList(EntityItachi.EntityCustom.class, EntityKisameHoshigaki.EntityCustom.class);
@@ -95,15 +97,23 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 			this.setSize(0.6f, 1.8f);
 			this.experienceValue = level;
 			this.isImmuneToFire = false;
-			this.stepHeight = 8f;
+			this.stepHeight = 16f;
+			this.moveHelper = new MoveHelper(this);
 			this.setNoAI(false);
 			this.setCanPickUpLoot(false);
 			this.setCustomNameTag(this.getName());
 			this.setAlwaysRenderNameTag(true);
 			this.chakraPathway = new PathwayNinjaMob(this, chakraAmountIn);
-			this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH)
-			 .applyModifier(new AttributeModifier(NINJA_HEALTH, "ninja.maxhealth", 0.005d * level * level, 0));
+			this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(50d + 0.005d * level * level);
+			// .applyModifier(new AttributeModifier(NINJA_HEALTH, "ninja.maxhealth", 0.005d * level * level, 0));
 			this.setHealth(this.getMaxHealth());
+		}
+
+		@Override
+		protected PathNavigate createNavigator(World worldIn) {
+			PathNavigateGround navi = new NavigateGround(this, worldIn);
+			navi.setCanSwim(true);
+			return navi;
 		}
 
 		@Override
@@ -118,8 +128,8 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 			super.applyEntityAttributes();
 			this.getAttributeMap().registerAttribute(SharedMonsterAttributes.ATTACK_DAMAGE);
 			this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(10D);
-			this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(50D);
-			this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(48D);
+			//this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(50D);
+			this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(64D);
 		}
 
 		@Override
@@ -175,6 +185,13 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 		public void onUpdate() {
 			this.fixOnClientSpawn();
 			super.onUpdate();
+			BlockPos pos = new BlockPos(this);
+			if (this.navigator instanceof PathNavigateGround
+			 && this.world.getBlockState(pos).getMaterial() == Material.WATER
+			 && this.world.getBlockState(pos.up()).getMaterial() != Material.WATER) {
+				this.motionY = 0.01d;
+				this.onGround = true;
+			}
 			if (!this.world.isRemote && this.isEntityAlive()) {
 				if (this.ticksExisted % 200 == 1) {
 					this.addPotionEffect(new PotionEffect(PotionFeatherFalling.potion, 201, 1, false, false));
@@ -360,9 +377,9 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 			}
 
 			@Override
-			public void setMax(double d) {
+			public Chakra.Pathway<Base> setMax(double d) {
 				Base.this.getDataManager().set(Base.CHAKRA_MAX, Float.valueOf((float)d));
-				super.setMax(d);
+				return super.setMax(d);
 			}
 
 			private void fixOnClientSpawn() {
@@ -435,7 +452,7 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 	        double d0 = this.target.posX - this.leaper.posX;
 	        double d1 = this.target.posZ - this.leaper.posZ;
 	        double d4 = MathHelper.sqrt(d0 * d0 + d1 * d1);
-	        double d2 = this.target.posY - this.leaper.posY + d4 * 0.2d;
+	        double d2 = this.target.posY + (double)this.target.height / 3d - this.leaper.posY + d4 * 0.2d;
 	        double d3 = MathHelper.sqrt(d0 * d0 + d1 * d1 + d2 * d2);
 	        if (d3 >= 1.0E-4D) {
 	            this.leaper.motionX = d0 / d3 * (double)this.leapStrength;
@@ -446,7 +463,7 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 	}	
 
 	public static class AIAttackRangedTactical<T extends EntityCreature & IRangedAttackMob> extends EntityAIBase {
-	    private final T entity;
+	    protected final T entity;
 	    private final double moveSpeedAmp;
 	    private int attackCooldown;
 	    private final float attackRadius;
@@ -544,8 +561,8 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 	    }
 	}
 
-	public static class AIAttackRangedJutsu<T extends Base & IRangedAttackMob> extends EntityAIBase {
-	    private final T entity;
+	public static class AIAttackRangedJutsu<T extends EntityLiving & IRangedAttackMob> extends EntityAIBase {
+	    protected final T entity;
 	    private int attackCooldown;
 	    private final float attackRadius;
 	    private int attackTime;
@@ -670,6 +687,96 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
+	public static class NavigateGround extends PathNavigateGround {
+		private BlockPos targetPosition;
+	
+		public NavigateGround(EntityLiving entityLivingIn, World worldIn) {
+			super(entityLivingIn, worldIn);
+		}
+	
+		@Override
+	    public Path getPathToPos(BlockPos pos) {
+	        this.targetPosition = pos;
+	        return super.getPathToPos(pos);
+	    }
+		
+		@Override
+	    public Path getPathToEntityLiving(Entity entityIn) {
+	        this.targetPosition = new BlockPos(entityIn);
+	        return super.getPathToEntityLiving(entityIn);
+	    }
+		
+		@Override
+	    public boolean tryMoveToEntityLiving(Entity entityIn, double speedIn) {
+		   	Path path = this.getPathToEntityLiving(entityIn);
+		    if (path != null) {
+		        return this.setPath(path, speedIn);
+		    } else {
+		        this.targetPosition = new BlockPos(entityIn);
+		        this.speed = speedIn;
+		        return true;
+		    }
+		}
+
+		@Override
+		public void clearPath() {
+		   	super.clearPath();
+		   	this.targetPosition = null;
+		}
+		
+		@Override
+		public void onUpdateNavigation() {
+		    if (!this.noPath()) {
+		        super.onUpdateNavigation();
+		    } else {
+		        if (this.targetPosition != null) {
+		            double d0 = (double)(this.entity.width * this.entity.width);
+		            double d1 = (double)this.targetPosition.getY() - this.entity.posY;
+		            double d2 = this.entity.getDistanceSqToCenter(new BlockPos(this.targetPosition.getX(),
+		             MathHelper.floor(this.entity.posY), this.targetPosition.getZ()));
+		            if (d2 >= d0 && d1 <= this.entity.stepHeight && d1 >= -12d * this.entity.height) {
+		              	this.entity.getMoveHelper().setMoveTo((double)this.targetPosition.getX() + 0.5d,
+		               	 (double)this.targetPosition.getY(), (double)this.targetPosition.getZ() + 0.5d, this.speed);
+		            } else {
+		                this.targetPosition = null;
+		            }
+		        }
+		    }
+		}
+	}
+
+	public static class MoveHelper extends EntityMoveHelper {
+		public MoveHelper(EntityCreature entityIn) {
+			super(entityIn);
+		}
+
+		@Override
+		public void onUpdateMoveHelper() {
+			if (this.isUpdating()) {
+	            this.action = EntityMoveHelper.Action.WAIT;
+	            double d0 = this.posX - this.entity.posX;
+	            double d1 = this.posZ - this.entity.posZ;
+	            double d2 = this.posY - this.entity.posY;
+	            double d3 = d0 * d0 + d2 * d2 + d1 * d1;
+	            if (d3 < 2.5E-7D) {
+	                this.entity.setMoveForward(0.0F);
+	                return;
+	            }
+	            float f9 = (float)(MathHelper.atan2(d1, d0) * (180D / Math.PI)) - 90.0F;
+	            this.entity.rotationYaw = this.limitAngle(this.entity.rotationYaw, f9, 90.0F);
+	            this.entity.setAIMoveSpeed((float)(this.speed * this.entity.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).getAttributeValue()));
+	            if (d2 > 0.01d && this.entity.collidedHorizontally) {
+	            	this.entity.motionY = 0.42d;
+	            } else if (d2 > (double)this.entity.stepHeight && d0 * d0 + d1 * d1 < (double)Math.max(1.0F, this.entity.width)) {
+	                this.entity.getJumpHelper().setJumping();
+	                this.action = EntityMoveHelper.Action.JUMPING;
+	            }
+			} else {
+				super.onUpdateMoveHelper();
+			}
+		}
+	}
+
 	public static class SwimHelper extends EntityMoveHelper {
 		public SwimHelper(EntityLiving entityIn) {
 			super(entityIn);
@@ -702,7 +809,7 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 	public static abstract class RenderBase<T extends Base> extends RenderBiped<T> {
 		public RenderBase(RenderManager renderManager, ModelBiped model) {
 			super(renderManager, model, 0.5f);
-			this.addLayer(new EntityClone.ClientRLM().new BipedArmorLayer(this));
+			this.addLayer(EntityClone.ClientRLM.getInstance().new BipedArmorLayer(this));
 			this.addLayer(new LayerInventoryItem(this));
 		}
 

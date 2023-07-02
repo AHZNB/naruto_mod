@@ -3,6 +3,7 @@ package net.narutomod.procedure;
 import net.narutomod.item.ItemTenseigan;
 import net.narutomod.item.ItemSharingan;
 import net.narutomod.item.ItemRinnegan;
+import net.narutomod.item.ItemKekkeiMora;
 import net.narutomod.item.ItemByakugan;
 import net.narutomod.PlayerTracker;
 import net.narutomod.NarutomodModVariables;
@@ -75,6 +76,11 @@ public class ProcedureChakraFruitFoodEaten extends ElementsNarutomodMod.ModEleme
 					(net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY
 							.getObject(new ResourceLocation("ui.toast.challenge_complete")),
 					SoundCategory.NEUTRAL, (float) 1, (float) 1);
+			if (entity instanceof EntityPlayer) {
+				ItemStack _setstack = new ItemStack(ItemKekkeiMora.block, (int) (1));
+				_setstack.setCount(1);
+				ItemHandlerHelper.giveItemToPlayer(((EntityPlayer) entity), _setstack);
+			}
 		} else if (((entity instanceof EntityPlayer)
 				? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemTenseigan.helmet, (int) (1)))
 				: false)) {
@@ -93,7 +99,7 @@ public class ProcedureChakraFruitFoodEaten extends ElementsNarutomodMod.ModEleme
 			}
 			if (entity instanceof EntityPlayerMP) {
 				Advancement _adv = ((MinecraftServer) ((EntityPlayerMP) entity).mcServer).getAdvancementManager()
-						.getAdvancement(new ResourceLocation("narutomod:rinnesharinganactivated"));
+						.getAdvancement(new ResourceLocation("narutomod:tensei_byakugan_activated"));
 				AdvancementProgress _ap = ((EntityPlayerMP) entity).getAdvancements().getProgress(_adv);
 				if (!_ap.isDone()) {
 					Iterator _iterator = _ap.getRemaningCriteria().iterator();
@@ -107,6 +113,11 @@ public class ProcedureChakraFruitFoodEaten extends ElementsNarutomodMod.ModEleme
 					(net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY
 							.getObject(new ResourceLocation("ui.toast.challenge_complete")),
 					SoundCategory.NEUTRAL, (float) 1, (float) 1);
+			if (entity instanceof EntityPlayer) {
+				ItemStack _setstack = new ItemStack(ItemKekkeiMora.block, (int) (1));
+				_setstack.setCount(1);
+				ItemHandlerHelper.giveItemToPlayer(((EntityPlayer) entity), _setstack);
+			}
 		} else {
 			if (((entity instanceof EntityPlayer)
 					? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemByakugan.helmet, (int) (1)))
@@ -154,12 +165,19 @@ public class ProcedureChakraFruitFoodEaten extends ElementsNarutomodMod.ModEleme
 					SoundCategory.NEUTRAL, (float) 1, (float) 1);
 		}
 		if ((!(world.isRemote))) {
-			PlayerTracker.addBattleXp((EntityPlayerMP) entity, 90000d);
 			d = (double) 100000;
 			while (((d) > 0)) {
-				d1 = EntityXPOrb.getXPSplit((int) d);
+				d1 = (double) EntityXPOrb.getXPSplit((int) d);
 				d = (double) ((d) - (d1));
-				world.spawnEntity(new EntityXPOrb(world, entity.posX, entity.posY, entity.posZ, (int) d1));
+				world.spawnEntity(new EntityXPOrb(world, entity.posX, entity.posY, entity.posZ, (int) d1) {
+					@Override
+					public void onCollideWithPlayer(EntityPlayer entityIn) {
+						if (!this.world.isRemote && this.delayBeforeCanPickup == 0 && entityIn.xpCooldown == 0) {
+							PlayerTracker.addBattleXp(entityIn, this.xpValue);
+						}
+						super.onCollideWithPlayer(entityIn);
+					}
+				});
 			}
 		}
 	}

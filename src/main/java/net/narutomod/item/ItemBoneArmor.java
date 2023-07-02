@@ -14,10 +14,14 @@ import net.minecraftforge.common.MinecraftForge;
 
 import net.minecraft.world.World;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.DamageSource;
+import net.minecraft.util.EntityDamageSource;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.Item;
 import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
@@ -26,12 +30,14 @@ import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.model.ModelBox;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.DamageSource;
 import net.minecraft.init.MobEffects;
 import net.minecraft.potion.PotionEffect;
 
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.ElementsNarutomodMod;
+
+import com.google.common.collect.Multimap;
+import java.util.UUID;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class ItemBoneArmor extends ElementsNarutomodMod.ModElement {
@@ -49,17 +55,33 @@ public class ItemBoneArmor extends ElementsNarutomodMod.ModElement {
 
 	@Override
 	public void initElements() {
-		ItemArmor.ArmorMaterial enuma = EnumHelper.addArmorMaterial("BONE_ARMOR", "narutomod:sasuke_", 100, new int[]{2, 5, 20, 2}, 0,
-				(net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:bonecrack")), 5f);
+		UUID damageUuid = UUID.fromString("5b347d9c-9d09-4e9a-96bd-992364981042");
+		ItemArmor.ArmorMaterial enuma = EnumHelper.addArmorMaterial("BONE_ARMOR", "narutomod:sasuke_", 20,
+		 new int[]{2, 5, 20, 2}, 0, net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:bonecrack")), 5f);
 		elements.items.add(() -> new ItemArmor(enuma, 0, EntityEquipmentSlot.CHEST) {
+			@SideOnly(Side.CLIENT)
+			private ModelBiped armorModel;
+
 			@Override
 			@SideOnly(Side.CLIENT)
 			public ModelBiped getArmorModel(EntityLivingBase living, ItemStack stack, EntityEquipmentSlot slot, ModelBiped defaultModel) {
-				ModelBiped armorModel = new ModelBoneArmor();
-				armorModel.isSneak = living.isSneaking();
-				armorModel.isRiding = living.isRiding();
-				armorModel.isChild = living.isChild();
-				return armorModel;
+				if (this.armorModel == null) {
+					this.armorModel = new ModelBoneArmor();
+				}
+				this.armorModel.isSneak = living.isSneaking();
+				this.armorModel.isRiding = living.isRiding();
+				this.armorModel.isChild = living.isChild();
+				return this.armorModel;
+			}
+
+			@Override
+			public Multimap<String, AttributeModifier> getAttributeModifiers(EntityEquipmentSlot slot, ItemStack stack) {
+				Multimap<String, AttributeModifier> multimap = super.getAttributeModifiers(slot, stack);
+				if (slot == EntityEquipmentSlot.CHEST && isWillowActive(stack)) {
+					multimap.put(SharedMonsterAttributes.ATTACK_DAMAGE.getName(),
+					 new AttributeModifier(damageUuid, "shikotsumyaku.damage", 15.0d, 0));
+				}
+				return multimap;
 			}
 
 			@Override
@@ -70,15 +92,9 @@ public class ItemBoneArmor extends ElementsNarutomodMod.ModElement {
 				 || (entity instanceof EntityPlayer && 
 				     !ProcedureUtils.hasItemInInventory((EntityPlayer)entity, ItemShikotsumyaku.block))) {
 					itemstack.shrink(1);
-				} else if (!world.isRemote) {
+				} else if (!world.isRemote && entity.ticksExisted % 20 == 3) {
 					EntityLivingBase living = (EntityLivingBase)entity;
-					living.addPotionEffect(new PotionEffect(MobEffects.RESISTANCE, 3, isLarchActive(itemstack) ? 3 : 2, false, false));
-					int strength = living.isPotionActive(MobEffects.STRENGTH) ? living.getActivePotionEffect(MobEffects.STRENGTH).getAmplifier() : -1;
-					strength += isWillowActive(itemstack) ? 5 : 0;
-					//strength += isClementisFlowerActive(itemstack) ? 8 : 0;
-					if (strength >= 0) {
-						living.addPotionEffect(new PotionEffect(MobEffects.STRENGTH, 1, strength, false, false));
-					}
+					living.addPotionEffect(new PotionEffect(MobEffects.RESISTANCE, 22, isLarchActive(itemstack) ? 3 : 2, false, false));
  				}
 			}
 
@@ -134,7 +150,8 @@ public class ItemBoneArmor extends ElementsNarutomodMod.ModElement {
 			DamageSource source = event.getSource();
 			EntityLivingBase target = event.getEntityLiving();
 			if (!target.world.isRemote && isLarchActive(target.getItemStackFromSlot(EntityEquipmentSlot.CHEST))
-			 && source.getImmediateSource() instanceof EntityLivingBase && !source.isExplosion()) {
+			 && source.getImmediateSource() instanceof EntityLivingBase
+			 && !source.isExplosion() && !((EntityDamageSource)source).getIsThornsDamage()) {
 				source.getImmediateSource().attackEntityFrom(DamageSource.causeThornsDamage(target), event.getAmount() * 0.7f);
 			}
 		}

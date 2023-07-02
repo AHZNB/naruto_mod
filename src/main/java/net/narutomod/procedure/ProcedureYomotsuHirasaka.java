@@ -43,7 +43,7 @@ public class ProcedureYomotsuHirasaka extends ElementsNarutomodMod.ModElement {
 			for (pos2 = result.getBlockPos(); pos2.getY() <= 0 || !world.isAirBlock(pos2) || !world.isAirBlock(pos2.down()); pos2 = pos2.up());
 		}
 		world.playSound(null, entity.posX, entity.posY, entity.posZ,
-				(net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("block.portal.travel")),
+				net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("block.portal.travel")),
 				SoundCategory.BLOCKS, 0.3F, 1.0F);
 		IBlockState state1 = BlockPortalBlock.block.getDefaultState().withProperty(BlockPortalBlock.BlockCustom.FACING, enumfacing1);
 		world.setBlockState(pos1, state1, 3);

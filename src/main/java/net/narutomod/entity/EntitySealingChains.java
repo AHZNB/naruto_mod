@@ -49,12 +49,6 @@ public class EntitySealingChains extends ElementsNarutomodMod.ModElement {
 				.id(new ResourceLocation("narutomod", "sealing_chains"), ENTITYID).name("sealing_chains").tracker(64, 3, true).build());
 	}
 
-	@SideOnly(Side.CLIENT)
-	@Override
-	public void preInit(FMLPreInitializationEvent event) {
-		RenderingRegistry.registerEntityRenderingHandler(EC.class, renderManager -> new CustomRender(renderManager));
-	}
-
 	public static class EC extends EntityBeamBase.Base {
 		private static final DataParameter<Integer> TARGET_ID = EntityDataManager.<Integer>createKey(EC.class, DataSerializers.VARINT);
 		private static final DataParameter<Float> TARGET_OFFX = EntityDataManager.<Float>createKey(EC.class, DataSerializers.FLOAT);
@@ -161,17 +155,16 @@ public class EntitySealingChains extends ElementsNarutomodMod.ModElement {
 						Chakra.pathway(target).consume(this.baseChakraDrainOnTarget * d);
 					}
 					double d = this.getDistance(target);
-					if (d > this.initialDistance) {
+					if (d > this.initialDistance && !target.isPassenger(this.shootingEntity)) {
 						Vec3d vec = this.shootingEntity.getPositionVector().subtract(target.getPositionVector())
 						 .normalize().scale(0.2d * d / this.initialDistance);
 						target.addVelocity(vec.x, vec.y, vec.z);
 						target.velocityChanged = true;
 					}
-					//if (target instanceof EntityBijuManager.ITailBeast && this.shootingEntity instanceof EntityPlayer
-					// && (((EntityPlayer)this.shootingEntity).isCreative() || target.getHealth() < target.getMaxHealth() * 0.1f)
-					// && ProcedureUtils.getModifiedSpeed(target) < 0.05d) {
-					//	((EntityBijuManager.ITailBeast)target).fuuinIntoPlayer((EntityPlayer)this.shootingEntity, 400);
-					//}
+					if (target instanceof EntityBijuManager.ITailBeast && this.shootingEntity instanceof EntityPlayer
+					 && ((EntityPlayer)this.shootingEntity).isCreative() && ProcedureUtils.getModifiedSpeed(target) < 0.05d) {
+						((EntityBijuManager.ITailBeast)target).fuuinIntoVessel(this.shootingEntity, 400);
+					}
 			 	} else if (--this.retractTime < 0) {
 			 		this.setDead();
 			 	}
@@ -208,123 +201,147 @@ public class EntitySealingChains extends ElementsNarutomodMod.ModElement {
 	}
 
 	@SideOnly(Side.CLIENT)
-	public class CustomRender extends EntityBeamBase.Renderer<EC> {
-		private final ResourceLocation texture = new ResourceLocation("narutomod:textures/chainlink_gold.png");
-
-		public CustomRender(RenderManager renderManagerIn) {
-			super(renderManagerIn);
-		}
-
-		@Override
-		public EntityBeamBase.Model getMainModel(EC entity) {
-			return new ModelChainLink(entity.getBeamLength());
-		}
-
-		@Override
-		public void doRender(EC bullet, double x, double y, double z, float yaw, float pt) {
-			EntityLivingBase shooter = bullet.getShooter();
-			if (shooter != null) {
-				bullet.setPosition(shooter.lastTickPosX + (shooter.posX - shooter.lastTickPosX) * (double)pt,
-				 shooter.lastTickPosY + (shooter.posY - shooter.lastTickPosY) * (double)pt + shooter.height/2,
-				 shooter.lastTickPosZ + (shooter.posZ - shooter.lastTickPosZ) * (double)pt);
-				x = bullet.posX - this.getRenderManager().viewerPosX;
-				y = bullet.posY - this.getRenderManager().viewerPosY;
-				z = bullet.posZ - this.getRenderManager().viewerPosZ;
-			}
-			if (bullet.getTarget() != null) {
-				ProcedureUtils.Vec2f vec2f = ProcedureUtils.getYawPitchFromVec(bullet.getTargetAttachVec().subtract(bullet.getPositionVector()));
-				this.bindEntityTexture(bullet);
-				GlStateManager.pushMatrix();
-				GlStateManager.translate(x, y, z);
-				GlStateManager.rotate(-vec2f.x, 0.0F, 1.0F, 0.0F);
-				GlStateManager.rotate(90.0F + vec2f.y, 1.0F, 0.0F, 0.0F);
-				GlStateManager.enableAlpha();
-				GlStateManager.enableBlend();
-				GlStateManager.disableCull();
-				GlStateManager.disableLighting();
-				OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240.0F, 240.0F);
-				GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-				this.getMainModel(bullet).render(bullet, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
-				GlStateManager.enableLighting();
-				GlStateManager.enableCull();
-				GlStateManager.disableBlend();
-				GlStateManager.disableAlpha();
-				GlStateManager.popMatrix();
-			}
-		}
-
-		@Override
-		protected ResourceLocation getEntityTexture(EC entity) {
-			return texture;
-		}
+	@Override
+	public void preInit(FMLPreInitializationEvent event) {
+		new Renderer().register();
 	}
 
-	// Made with Blockbench 3.8.4
-	// Exported for Minecraft version 1.7 - 1.12
-	// Paste this class into your mod and generate all required imports
-	@SideOnly(Side.CLIENT)
-	public class ModelChainLink extends EntityBeamBase.Model {
-		private final ModelRenderer chain;
-		private final ModelRenderer link[];
-		private final ModelRenderer tip;
-		
-		public ModelChainLink(float len) {
-			textureWidth = 16;
-			textureHeight = 16;
-			chain = new ModelRenderer(this);
-			link = new ModelRenderer[MathHelper.ceil(len * 6.4f) - 1];
-			int i = 0;
-			for (; i < link.length; i++) {
-				link[i] = new ModelRenderer(this);
-				setRotationAngle(link[i], 0.0F, (float)((double)i * Math.PI * 0.4722222D), 0.0F);
-				link[i].setRotationPoint(0.0F, (float)i * 2.5F, 0.0F);
-				link[i].cubeList.add(new ModelBox(link[i], 0, 0, -0.5F, 0.0F, -1.0F, 1, 3, 2, 0.0F, false));
-				link[i].cubeList.add(new ModelBox(link[i], 8, 2, -0.5F, 0.0F, -1.0F, 1, 3, 2, 0.2F, false));
-				chain.addChild(link[i]);
-			}
-			tip = new ModelRenderer(this);
-			tip.setRotationPoint(0.0F, (float)i * 2.5F, 0.0F);
-			setRotationAngle(tip, 0.0F, -0.7854F, 0.0F);
-			chain.addChild(tip);
-	
-			ModelRenderer bone = new ModelRenderer(this);
-			bone.setRotationPoint(0.0F, 2.0F, 0.0F);
-			tip.addChild(bone);
-			setRotationAngle(bone, 0.0F, 0.0F, 0.7854F);
-			bone.cubeList.add(new ModelBox(bone, 1, 10, -1.0F, -1.0F, 0.0F, 2, 2, 0, 0.0F, false));
-			bone.cubeList.add(new ModelBox(bone, 12, 2, -1.0F, -1.0F, 0.0F, 2, 2, 0, 0.2F, false));
-	
-			bone = new ModelRenderer(this);
-			bone.setRotationPoint(0.0F, 2.0F, 0.0F);
-			tip.addChild(bone);
-			setRotationAngle(bone, -0.7854F, 0.0F, 0.0F);
-			bone.cubeList.add(new ModelBox(bone, 2, 8, 0.0F, -1.0F, -1.0F, 0, 2, 2, 0.0F, false));
-			bone.cubeList.add(new ModelBox(bone, 12, 2, 0.0F, -1.0F, -1.0F, 0, 2, 2, 0.2F, false));
-	
-			ModelRenderer bone2 = new ModelRenderer(this);
-			bone2.setRotationPoint(0.0F, 3.0F, 0.0F);
-			tip.addChild(bone2);
-			setRotationAngle(bone2, 0.0F, 0.0F, 0.7854F);
-			bone2.cubeList.add(new ModelBox(bone2, 1, 10, -1.0F, -1.0F, 0.0F, 2, 2, 0, 0.0F, false));
-			bone2.cubeList.add(new ModelBox(bone2, 12, 2, -1.0F, -1.0F, 0.0F, 2, 2, 0, 0.2F, false));
-	
-			bone2 = new ModelRenderer(this);
-			bone2.setRotationPoint(0.0F, 3.0F, 0.0F);
-			tip.addChild(bone2);
-			setRotationAngle(bone2, -0.7854F, 0.0F, 0.0F);
-			bone2.cubeList.add(new ModelBox(bone2, 2, 8, 0.0F, -1.0F, -1.0F, 0, 2, 2, 0.0F, false));
-			bone2.cubeList.add(new ModelBox(bone2, 12, 2, 0.0F, -1.0F, -1.0F, 0, 2, 2, 0.2F, false));
-		}
-
+	public static class Renderer extends EntityRendererRegister {
+		@SideOnly(Side.CLIENT)
 		@Override
-		public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
-			chain.render(f5);
+		public void register() {
+			RenderingRegistry.registerEntityRenderingHandler(EC.class, renderManager -> new CustomRender(renderManager));
 		}
 
-		public void setRotationAngle(ModelRenderer modelRenderer, float x, float y, float z) {
-			modelRenderer.rotateAngleX = x;
-			modelRenderer.rotateAngleY = y;
-			modelRenderer.rotateAngleZ = z;
+		@SideOnly(Side.CLIENT)
+		public class CustomRender extends EntityBeamBase.Renderer<EC> {
+			private final ResourceLocation texture = new ResourceLocation("narutomod:textures/chainlink_gold.png");
+			private final ModelChainLink model = new ModelChainLink();
+
+			public CustomRender(RenderManager renderManagerIn) {
+				super(renderManagerIn);
+			}
+
+			@Override
+			public EntityBeamBase.Model getMainModel(EC entity) {
+				this.model.addLinks(MathHelper.ceil(entity.getBeamLength() * 6.4f) - 1);
+				return this.model;
+			}
+
+			@Override
+			public void doRender(EC bullet, double x, double y, double z, float yaw, float pt) {
+				EntityLivingBase shooter = bullet.getShooter();
+				if (shooter != null) {
+					bullet.setPosition(shooter.lastTickPosX + (shooter.posX - shooter.lastTickPosX) * (double)pt,
+							shooter.lastTickPosY + (shooter.posY - shooter.lastTickPosY) * (double)pt + shooter.height/2,
+							shooter.lastTickPosZ + (shooter.posZ - shooter.lastTickPosZ) * (double)pt);
+					x = bullet.posX - this.getRenderManager().viewerPosX;
+					y = bullet.posY - this.getRenderManager().viewerPosY;
+					z = bullet.posZ - this.getRenderManager().viewerPosZ;
+				}
+				if (bullet.getTarget() != null) {
+					ProcedureUtils.Vec2f vec2f = ProcedureUtils.getYawPitchFromVec(bullet.getTargetAttachVec().subtract(bullet.getPositionVector()));
+					this.bindEntityTexture(bullet);
+					GlStateManager.pushMatrix();
+					GlStateManager.translate(x, y, z);
+					GlStateManager.rotate(-vec2f.x, 0.0F, 1.0F, 0.0F);
+					GlStateManager.rotate(90.0F + vec2f.y, 1.0F, 0.0F, 0.0F);
+					GlStateManager.enableAlpha();
+					GlStateManager.enableBlend();
+					GlStateManager.disableCull();
+					GlStateManager.disableLighting();
+					OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240.0F, 240.0F);
+					GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+					this.getMainModel(bullet).render(bullet, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
+					GlStateManager.enableLighting();
+					GlStateManager.enableCull();
+					GlStateManager.disableBlend();
+					GlStateManager.disableAlpha();
+					GlStateManager.popMatrix();
+				}
+			}
+
+			@Override
+			protected ResourceLocation getEntityTexture(EC entity) {
+				return texture;
+			}
+		}
+
+		// Made with Blockbench 3.8.4
+		// Exported for Minecraft version 1.7 - 1.12
+		// Paste this class into your mod and generate all required imports
+		@SideOnly(Side.CLIENT)
+		public class ModelChainLink extends EntityBeamBase.Model {
+			private final ModelRenderer chain;
+			private final ModelRenderer[] link = new ModelRenderer[640];
+			private final ModelRenderer tip;
+
+			public void addLinks(int howmany) {
+				howmany = MathHelper.clamp(howmany, 1, link.length);
+				for (int i = 0; i < link.length; i++) {
+					link[i].showModel = i < howmany;
+				}
+				tip.setRotationPoint(0.0F, (float)howmany * 2.5F, 0.0F);
+			}
+
+			public ModelChainLink() {
+				textureWidth = 16;
+				textureHeight = 16;
+				chain = new ModelRenderer(this);
+
+				for (int i = 0; i < link.length; i++) {
+					link[i] = new ModelRenderer(this);
+					setRotationAngle(link[i], 0.0F, (float)((double)i * Math.PI * 0.4722222D), 0.0F);
+					link[i].setRotationPoint(0.0F, (float)i * 2.5F, 0.0F);
+					link[i].cubeList.add(new ModelBox(link[i], 0, 0, -0.5F, 0.0F, -1.0F, 1, 3, 2, 0.0F, false));
+					link[i].cubeList.add(new ModelBox(link[i], 8, 2, -0.5F, 0.0F, -1.0F, 1, 3, 2, 0.2F, false));
+					chain.addChild(link[i]);
+				}
+
+				tip = new ModelRenderer(this);
+				setRotationAngle(tip, 0.0F, -0.7854F, 0.0F);
+				chain.addChild(tip);
+				this.addLinks(1);
+
+				ModelRenderer bone = new ModelRenderer(this);
+				bone.setRotationPoint(0.0F, 2.0F, 0.0F);
+				tip.addChild(bone);
+				setRotationAngle(bone, 0.0F, 0.0F, 0.7854F);
+				bone.cubeList.add(new ModelBox(bone, 1, 10, -1.0F, -1.0F, 0.0F, 2, 2, 0, 0.0F, false));
+				bone.cubeList.add(new ModelBox(bone, 12, 2, -1.0F, -1.0F, 0.0F, 2, 2, 0, 0.2F, false));
+
+				bone = new ModelRenderer(this);
+				bone.setRotationPoint(0.0F, 2.0F, 0.0F);
+				tip.addChild(bone);
+				setRotationAngle(bone, -0.7854F, 0.0F, 0.0F);
+				bone.cubeList.add(new ModelBox(bone, 2, 8, 0.0F, -1.0F, -1.0F, 0, 2, 2, 0.0F, false));
+				bone.cubeList.add(new ModelBox(bone, 12, 2, 0.0F, -1.0F, -1.0F, 0, 2, 2, 0.2F, false));
+
+				ModelRenderer bone2 = new ModelRenderer(this);
+				bone2.setRotationPoint(0.0F, 3.0F, 0.0F);
+				tip.addChild(bone2);
+				setRotationAngle(bone2, 0.0F, 0.0F, 0.7854F);
+				bone2.cubeList.add(new ModelBox(bone2, 1, 10, -1.0F, -1.0F, 0.0F, 2, 2, 0, 0.0F, false));
+				bone2.cubeList.add(new ModelBox(bone2, 12, 2, -1.0F, -1.0F, 0.0F, 2, 2, 0, 0.2F, false));
+
+				bone2 = new ModelRenderer(this);
+				bone2.setRotationPoint(0.0F, 3.0F, 0.0F);
+				tip.addChild(bone2);
+				setRotationAngle(bone2, -0.7854F, 0.0F, 0.0F);
+				bone2.cubeList.add(new ModelBox(bone2, 2, 8, 0.0F, -1.0F, -1.0F, 0, 2, 2, 0.0F, false));
+				bone2.cubeList.add(new ModelBox(bone2, 12, 2, 0.0F, -1.0F, -1.0F, 0, 2, 2, 0.2F, false));
+			}
+
+			@Override
+			public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
+				chain.render(f5);
+			}
+
+			public void setRotationAngle(ModelRenderer modelRenderer, float x, float y, float z) {
+				modelRenderer.rotateAngleX = x;
+				modelRenderer.rotateAngleY = y;
+				modelRenderer.rotateAngleZ = z;
+			}
 		}
 	}
 }

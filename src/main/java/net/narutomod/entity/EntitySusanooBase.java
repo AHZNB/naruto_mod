@@ -1,10 +1,15 @@
 package net.narutomod.entity;
 
 import net.minecraft.world.World;
+import net.minecraft.util.CombatRules;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.DamageSource;
+import net.minecraft.entity.ai.attributes.IAttribute;
+import net.minecraft.entity.ai.attributes.IAttributeInstance;
+import net.minecraft.entity.ai.EntityAIBase;
+import net.minecraft.entity.IRangedAttackMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.monster.EntityMob;
@@ -19,28 +24,32 @@ import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.item.ItemStack;
-import net.minecraft.entity.ai.attributes.IAttribute;
-import net.minecraft.entity.ai.attributes.IAttributeInstance;
+import net.minecraft.init.SoundEvents;
 
+import net.narutomod.item.ItemTotsukaSword;
+import net.narutomod.item.ItemChokuto;
+import net.narutomod.item.ItemShuriken;
 import net.narutomod.item.ItemSharingan;
 import net.narutomod.item.ItemJutsu;
 import net.narutomod.procedure.ProcedureUtils;
+import net.narutomod.procedure.ProcedureSusanoo;
 import net.narutomod.PlayerTracker;
 import net.narutomod.Particles;
-import net.narutomod.ElementsNarutomodMod;
 import net.narutomod.Chakra;
+import net.narutomod.ElementsNarutomodMod;
 
 import javax.annotation.Nullable;
 
 @ElementsNarutomodMod.ModElement.Tag
-public abstract class EntitySusanooBase extends EntityMob {
+public abstract class EntitySusanooBase extends EntityMob implements IRangedAttackMob {
 	private static final DataParameter<Integer> OWNER_ID = EntityDataManager.<Integer>createKey(EntitySusanooBase.class, DataSerializers.VARINT);
 	private static final DataParameter<Integer> FLAME_COLOR = EntityDataManager.<Integer>createKey(EntitySusanooBase.class, DataSerializers.VARINT);
-	public static final double BXP_REQUIRED_L1 = 2000.0d;
-	public static final double BXP_REQUIRED_L2 = 6000.0d;
-	public static final double BXP_REQUIRED_L3 = 12000.0d;
-	public static final double BXP_REQUIRED_L4 = 24000.0d;
-	protected double chakraUsage = 50d; // per second
+	public static final double BXP_REQUIRED_L0 = 2000.0d;
+	public static final double BXP_REQUIRED_L1 = 5000.0d;
+	public static final double BXP_REQUIRED_L2 = 10000.0d;
+	public static final double BXP_REQUIRED_L3 = 20000.0d;
+	public static final double BXP_REQUIRED_L4 = 36000.0d;
+	protected double chakraUsage = 30d; // per second
 	protected double chakraUsageModifier = 2d;
 	protected double playerXp;
 	//private EntityLivingBase ownerPlayer = null;
@@ -144,7 +153,13 @@ public abstract class EntitySusanooBase extends EntityMob {
 			return false;
 		if (source == ProcedureUtils.AMATERASU)
 			return false;
-		return super.attackEntityFrom(source, amount);
+		float f = this.getHealth();
+		boolean flag = super.attackEntityFrom(source, amount);
+		EntityLivingBase summoner = this.getOwnerPlayer();
+		if (flag && summoner != null && !this.isEntityAlive()) {
+			summoner.attackEntityFrom(source, CombatRules.getDamageAfterAbsorb(amount, (float)this.getTotalArmorValue(), 0f) - f);
+		}
+		return flag;
 	}
 
 	@Override
@@ -158,10 +173,15 @@ public abstract class EntitySusanooBase extends EntityMob {
 				((EntityPlayer)passenger).resetCooldown();
 			}
 			f *= f2;
-			//boolean flag = entityIn.attackEntityFrom(DamageSource.causeMobDamage(this), f);
-			boolean flag = entityIn.attackEntityFrom(ItemJutsu.causeJutsuDamage(this, this.getOwnerPlayer()), f);
+			ItemStack stack = this.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND);
+			DamageSource ds = ItemJutsu.causeJutsuDamage(this, this.getOwnerPlayer());
+			if (stack.getItem() == ItemTotsukaSword.block && entityIn instanceof EntityLivingBase
+			 && Chakra.pathway((EntityLivingBase)entityIn).getAmount() < 5d) {
+				ds = ds.setDamageIsAbsolute().setDamageBypassesArmor();
+				f *= 2.0f + this.rand.nextFloat();
+			}
+			boolean flag = entityIn.attackEntityFrom(ds, f);
 			if (flag && entityIn instanceof EntityLivingBase) {
-				ItemStack stack = this.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND);
 				if (!stack.isEmpty()) {
 					stack.getItem().hitEntity(stack, (EntityLivingBase)entityIn, this);
 				}
@@ -208,7 +228,7 @@ public abstract class EntitySusanooBase extends EntityMob {
 
 	@Override
 	public void travel(float ti, float tj, float tk) {
-		if (this.isBeingRidden()) {
+		if (this.isBeingRidden() && this.isAIDisabled()) {
 			Entity entity = this.getControllingPassenger();
 			this.rotationYaw = entity.rotationYaw;
 			this.prevRotationYaw = this.rotationYaw;
@@ -307,10 +327,14 @@ public abstract class EntitySusanooBase extends EntityMob {
 			this.setDead();
 		}
 		if (flag && !((EntityPlayer)ownerPlayer).isCreative()) {
-			ownerPlayer.setSneaking(false);
-		}
-		if (!this.world.isRemote && flag) {
-			this.consumeChakra();
+			if (this.isBeingRidden()) {
+				ownerPlayer.setSneaking(false);
+			} else if (!this.world.isRemote) {
+				ProcedureSusanoo.execute((EntityPlayer)ownerPlayer);
+			}
+			if (!this.world.isRemote) {
+				this.consumeChakra();
+			}
 		}
 
 		super.onLivingUpdate();
@@ -329,6 +353,20 @@ public abstract class EntitySusanooBase extends EntityMob {
 		}
 	}
 
+	@Override
+	protected void onDeathUpdate() {
+		this.playSound(SoundEvents.ITEM_SHIELD_BREAK, 1.0f, this.rand.nextFloat() * 0.4f + 0.7f);
+		this.setDead();
+	}
+
+	@Override
+    public void setSwingingArms(boolean swingingArms) {
+    }
+
+    @Override
+    public void attackEntityWithRangedAttack(EntityLivingBase target, float distanceFactor) {
+    }
+
     public void attackEntityRanged(double x, double y, double z) {
     }
 
@@ -337,4 +375,82 @@ public abstract class EntitySusanooBase extends EntityMob {
 
     public void killBullet() {
     }
+
+    protected void showHeldWeapons() {
+		EntityLivingBase owner = this.getOwnerPlayer();
+		if (!this.world.isRemote && owner != null) {
+			boolean flag = owner.getHeldItemMainhand().getItem() == ItemChokuto.block;
+			if (this.shouldShowSword() != flag) {
+				this.setShowSword(flag);
+			}
+			if (owner.getHeldItemMainhand().getItem() == ItemShuriken.block) {
+				this.createBullet((float)this.getEntityData().getDouble("entityModelScale") * 0.5f);
+			} else {
+				this.killBullet();
+			}
+		}
+    }
+
+	public static class AIAttackRangedAndMoveTowardsTarget extends EntityAIBase {
+	    private final EntitySusanooBase entityHost;
+	    private final IRangedAttackMob rangedAttackEntityHost;
+	    private EntityLivingBase attackTarget;
+	    private int rangedAttackTime;
+	    private final double entityMoveSpeed;
+	    private final int maxRangedAttackTime;
+	    private final float minAttackRadius;
+		
+	    public AIAttackRangedAndMoveTowardsTarget(IRangedAttackMob attacker, double movespeed, int maxAttackTime, float minAttackDistanceIn) {
+	        if (!(attacker instanceof EntitySusanooBase)) {
+	            throw new IllegalArgumentException("AIAttackRangedAndMoveTowardsTarget requires Mob implements EntitySusanooBase");
+	        } else {
+	            this.rangedAttackEntityHost = attacker;
+	            this.entityHost = (EntitySusanooBase)attacker;
+	            this.entityMoveSpeed = movespeed;
+	            this.maxRangedAttackTime = maxAttackTime;
+	    		this.rangedAttackTime = maxAttackTime;
+	            this.minAttackRadius = minAttackDistanceIn;
+	            this.setMutexBits(3);
+	        }
+	    }
+
+	    @Override
+	    public boolean shouldExecute() {
+	        EntityLivingBase entitylivingbase = this.entityHost.getAttackTarget();
+	        if (entitylivingbase == null) {
+	        	return false;
+	        } else if (entitylivingbase.getDistance(this.entityHost) < ProcedureUtils.getReachDistance(this.entityHost) + this.minAttackRadius) {
+	        	return false;
+	        } else {
+	        	this.attackTarget = entitylivingbase;
+	            return true;
+	        }
+	    }
+		
+	    @Override
+	    public boolean shouldContinueExecuting() {
+	        return this.shouldExecute() || !this.entityHost.getNavigator().noPath();
+	    }
+		
+		@Override
+		public void resetTask() {
+		    this.attackTarget = null;
+		    //this.rangedAttackTime = this.maxRangedAttackTime;
+		}
+		
+		@Override
+		public void updateTask() {
+		    double d0 = this.entityHost.getDistance(this.attackTarget.posX, this.attackTarget.getEntityBoundingBox().minY, this.attackTarget.posZ);
+		    if (d0 >= ProcedureUtils.getReachDistance(this.entityHost) + this.minAttackRadius) {
+		        this.entityHost.getNavigator().tryMoveToEntityLiving(this.attackTarget, this.entityMoveSpeed);
+		    } else {
+		        this.entityHost.getNavigator().clearPath();
+		    }
+		    this.entityHost.getLookHelper().setLookPositionWithEntity(this.attackTarget, 30.0F, 30.0F);
+		    if (--this.rangedAttackTime <= 0) {
+		        this.rangedAttackEntityHost.attackEntityWithRangedAttack(this.attackTarget, 1.0F);
+		        this.rangedAttackTime = this.maxRangedAttackTime;
+		    }
+		}
+	}
 }

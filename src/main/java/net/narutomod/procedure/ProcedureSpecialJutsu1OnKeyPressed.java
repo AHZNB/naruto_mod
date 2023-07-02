@@ -69,7 +69,7 @@ public class ProcedureSpecialJutsu1OnKeyPressed extends ElementsNarutomodMod.Mod
 				$_dependencies.put("x", x);
 				$_dependencies.put("y", y);
 				$_dependencies.put("z", z);
-				ProcedureShinratenseiOnKeyPressed.executeProcedure($_dependencies);
+				ProcedureShinraTenseiOnKeyPressed.executeProcedure($_dependencies);
 			}
 		} else if ((((helmet).getItem() == new ItemStack(ItemMangekyoSharingan.helmet, (int) (1)).getItem())
 				|| ((helmet).getItem() == new ItemStack(ItemMangekyoSharinganEternal.helmet, (int) (1)).getItem()))) {

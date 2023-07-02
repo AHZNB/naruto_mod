@@ -16,6 +16,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.particle.ParticleBlockDust;
 import net.minecraft.client.particle.ParticleSimpleAnimated;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.IParticleFactory;
@@ -26,12 +27,15 @@ import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.potion.PotionEffect;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.Block;
 
 import net.narutomod.potion.PotionCorrosion;
 import net.narutomod.procedure.ProcedureUtils;
@@ -42,8 +46,10 @@ import java.util.List;
 import io.netty.buffer.ByteBuf;
 import com.google.common.collect.Maps;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
 import org.lwjgl.util.glu.Sphere;
 import org.lwjgl.util.glu.GLU;
+import javax.annotation.Nullable;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class Particles extends ElementsNarutomodMod.ModElement {
@@ -55,13 +61,13 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 
 	@Override
 	public void preInit(FMLPreInitializationEvent event) {
-		this.elements.addNetworkMessage(Message.Handler.class, Message.class, Side.CLIENT);
+		this.elements.addNetworkMessage(ParticleRenderer.Message.Handler.class, ParticleRenderer.Message.class, Side.CLIENT);
 		this.elements.addNetworkMessage(BurningAsh.Message.Handler.class, BurningAsh.Message.class, Side.SERVER);
 		this.elements.addNetworkMessage(AcidSpit.Message.Handler.class, AcidSpit.Message.class, Side.SERVER);
 	}
 
-	@Override
 	@SideOnly(Side.CLIENT)
+	@Override
 	public void init(FMLInitializationEvent event) {
 		Minecraft.getMinecraft().effectRenderer.registerParticle(Types.SMOKE.getID(), new Smoke.Factory());
 		Minecraft.getMinecraft().effectRenderer.registerParticle(Types.SUSPENDED.getID(), new Suspend.Factory());
@@ -75,6 +81,9 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 		Minecraft.getMinecraft().effectRenderer.registerParticle(Types.SEAL_FORMULA.getID(), new SealFormula.Factory());
 		Minecraft.getMinecraft().effectRenderer.registerParticle(Types.ACID_SPIT.getID(), new AcidSpit.Factory());
 		Minecraft.getMinecraft().effectRenderer.registerParticle(Types.WHIRLPOOL.getID(), new Whirlpool.Factory());
+		Minecraft.getMinecraft().effectRenderer.registerParticle(Types.SONIC_BOOM.getID(), new SonicBoom.Factory());
+		Minecraft.getMinecraft().effectRenderer.registerParticle(Types.BLOCK_DUST.getID(), new BlockDust.Factory());
+		Minecraft.getMinecraft().effectRenderer.registerParticle(Types.SAND.getID(), new Sand.Factory());
 	}
 
 	public static void spawnParticle(World world, Types type, double x, double y, double z, int count, 
@@ -85,122 +94,220 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 	public static void spawnParticle(World world, Types type, double x, double y, double z, int count, 
 	 double xOff, double yOff, double zOff, double xSpeed, double ySpeed, double zSpeed, double renderDistance, int... args) {
 		if (world.isRemote) {
-			new ParticleRenderer().spawnParticles(world, type, x, y, z, count, xOff, yOff, zOff, xSpeed, ySpeed, zSpeed, args);
+			new Renderer().spawnParticles(type, x, y, z, count, xOff, yOff, zOff, xSpeed, ySpeed, zSpeed, args);
 		} else {
-			NarutomodMod.PACKET_HANDLER.sendToAllAround(new Message(type, x, y, z, count, xOff, yOff, zOff, xSpeed, ySpeed, zSpeed, args),
-			  new NetworkRegistry.TargetPoint(world.provider.getDimension(), x, y, z, renderDistance));
+			NarutomodMod.PACKET_HANDLER.sendToAllAround(new ParticleRenderer.Message(
+			 new ParticleRenderer.MessageContents(type, x, y, z, count, xOff, yOff, zOff, xSpeed, ySpeed, zSpeed, args)),
+			 new NetworkRegistry.TargetPoint(world.provider.getDimension(), x, y, z, renderDistance));
 		}
+		//Renderer pr = new Renderer(world, renderDistance);
+		//pr.spawnParticles(type, x, y, z, count, xOff, yOff, zOff, xSpeed, ySpeed, zSpeed, args);
+		//pr.send();
 	}
 
-	static class Renderer {
-		protected void spawnParticles(World world, Particles.Types type, double x, double y, double z, int count, 
+	public static abstract class ParticleRenderer {
+		private final List<MessageContents> msgQueue = Lists.newArrayList();
+		protected final World world;
+		protected final double renderDistance;
+
+		public ParticleRenderer() {
+			this(null, 64d);
+		}
+
+		public ParticleRenderer(World worldIn, double renderDistanceIn) {
+			this.world = worldIn;
+			this.renderDistance = renderDistanceIn;
+		}
+
+		public void spawnParticles(Particles.Types type, double x, double y, double z, int count, 
 		 double xOff, double yOff, double zOff, double xSpeed, double ySpeed, double zSpeed, int... args) {
+			this.msgQueue.add(new MessageContents(type, x, y, z, count, xOff, yOff, zOff, xSpeed, ySpeed, zSpeed, args));
+		}
+
+		public void send() {
+			if (this.world instanceof WorldServer && !this.msgQueue.isEmpty()) {
+				double x = 0d;
+				double y = 0d;
+				double z = 0d;
+				for (MessageContents msgc : this.msgQueue) {
+					x += msgc.x;
+					y += msgc.y;
+					z += msgc.z;
+				}
+				x /= this.msgQueue.size();
+				y /= this.msgQueue.size();
+				z /= this.msgQueue.size();
+				NarutomodMod.PACKET_HANDLER.sendToAllAround(new Message(this.msgQueue),
+				  new NetworkRegistry.TargetPoint(this.world.provider.getDimension(), x, y, z, this.renderDistance));
+			}
+		}
+
+		public static class MessageContents {
+			Types type;
+			int count;
+			double x, y, z;
+			double ox, oy, oz;
+			double speedx, speedy, speedz;
+			int args;
+			int[] parms;
+
+			public MessageContents(Types typeIn, double xIn, double yIn, double zIn, int countIn,
+			 double xOff, double yOff, double zOff, double xSpeed, double ySpeed, double zSpeed, int... argsIn) {
+				this.type = typeIn;
+				this.count = countIn;
+				this.x = xIn;
+				this.y = yIn;
+				this.z = zIn;
+				this.ox = xOff;
+				this.oy = yOff;
+				this.oz = zOff;
+				this.speedx = xSpeed;
+				this.speedy = ySpeed;
+				this.speedz = zSpeed;
+				this.args = argsIn.length;
+				this.parms = argsIn;
+			}
+
+			public MessageContents(ByteBuf buf) {
+				this.fromBytes(buf);
+			}
+
+			public void toBytes(ByteBuf buf) {
+				buf.writeInt(this.type.getID());
+				buf.writeInt(this.count);
+				buf.writeDouble(this.x);
+				buf.writeDouble(this.y);
+				buf.writeDouble(this.z);
+				buf.writeDouble(this.ox);
+				buf.writeDouble(this.oy);
+				buf.writeDouble(this.oz);
+				buf.writeDouble(this.speedx);
+				buf.writeDouble(this.speedy);
+				buf.writeDouble(this.speedz);
+				buf.writeInt(this.args);
+				for (int j = 0; j < this.type.getArgsCount() && j < this.args; j++)
+					buf.writeInt(this.parms[j]);
+			}
+	
+			public void fromBytes(ByteBuf buf) {
+				this.type = Types.getTypeFromId(buf.readInt());
+				this.count = buf.readInt();
+				this.x = buf.readDouble();
+				this.y = buf.readDouble();
+				this.z = buf.readDouble();
+				this.ox = buf.readDouble();
+				this.oy = buf.readDouble();
+				this.oz = buf.readDouble();
+				this.speedx = buf.readDouble();
+				this.speedy = buf.readDouble();
+				this.speedz = buf.readDouble();
+				this.args = buf.readInt();
+				int i = Math.min(this.type.getArgsCount(), this.args);
+				this.parms = new int[i];
+				for (int j = 0; j < i; j++)
+					this.parms[j] = buf.readInt();
+			}
+
+			@Override
+			public String toString() {
+				String s = "";
+				for (int i = 0; i < parms.length; i++) {
+					s += parms[i] + ", ";
+				}
+				return ""+this.type+", "+count+", ("+x+", "+y+", "+z+"), ("+ox+", "+oy+", "+oz+"), ("+speedx+", "+speedy+", "+speedz+"), "+s;
+			}
+		}
+		
+		public static class Message implements IMessage {
+			List<MessageContents> list;
+
+			public Message() {}
+
+			public Message(MessageContents msgcontents) {
+				this.list = Lists.newArrayList(msgcontents);
+			}
+
+			public Message(List<MessageContents> listIn) {
+				this.list = listIn;
+			}
+
+			@Override
+			public void toBytes(ByteBuf buf) {
+				buf.writeInt(this.list.size());
+				for (MessageContents msg : this.list) {
+					msg.toBytes(buf);
+				}
+			}
+
+			@Override
+			public void fromBytes(ByteBuf buf) {
+				int j = buf.readInt();
+				this.list = Lists.newArrayList();
+				for (int i = 0; i < j; i++) {
+					this.list.add(new MessageContents(buf));
+				}
+			}
+
+			public static class Handler implements IMessageHandler<Message, IMessage> {
+				@SideOnly(Side.CLIENT)
+				@Override
+				public IMessage onMessage(Message message, MessageContext context) {
+					Minecraft.getMinecraft().addScheduledTask(() -> {
+						Renderer render = new Renderer();
+						for (MessageContents msgc : message.list) {
+							render.spawnParticles(msgc.type, msgc.x, msgc.y, msgc.z,
+							 msgc.count, msgc.ox, msgc.oy, msgc.oz, msgc.speedx, msgc.speedy, msgc.speedz, msgc.parms);
+						}
+					});
+					return null;
+				}
+			}
 		}
 	}
 	
-	private static class ParticleRenderer extends Renderer {
+	public static class Renderer extends ParticleRenderer {
+		public Renderer() {
+			super();
+		}
+
+		public Renderer(World worldIn) {
+			this(worldIn, 64d);
+		}
+
+		public Renderer(World worldIn, double renderDistanceIn) {
+			super(worldIn, renderDistanceIn);
+		}
+
 		@SideOnly(Side.CLIENT)
 		@Override
-		protected void spawnParticles(World world, Particles.Types type, double x, double y, double z, int count, 
+		public void spawnParticles(Particles.Types type, double x, double y, double z, int count, 
 		 double xOff, double yOff, double zOff, double xSpeed, double ySpeed, double zSpeed, int... args) {
-			for (int i = 0; i < count; i++) {
-				double d1 = rand.nextGaussian() * xOff;
-				double d2 = rand.nextGaussian() * yOff;
-				double d3 = rand.nextGaussian() * zOff;
-				if (count > 5) {
-					xSpeed *= rand.nextDouble() * 0.3d + 0.85d;
-					ySpeed *= rand.nextDouble() * 0.3d + 0.85d;
-					zSpeed *= rand.nextDouble() * 0.3d + 0.85d;
+			if (this.world instanceof WorldServer) {
+				super.spawnParticles(type, x, y, z, count, xOff, yOff, zOff, xSpeed, ySpeed, zSpeed, args);
+			} else {
+				Minecraft mc = Minecraft.getMinecraft();
+				if (mc.getRenderViewEntity() != null && mc.effectRenderer != null) {
+					for (int i = 0; i < count; i++) {
+						double d1 = rand.nextGaussian() * xOff;
+						double d2 = rand.nextGaussian() * yOff;
+						double d3 = rand.nextGaussian() * zOff;
+						if (count > 5) {
+							xSpeed *= rand.nextDouble() * 0.3d + 0.85d;
+							ySpeed *= rand.nextDouble() * 0.3d + 0.85d;
+							zSpeed *= rand.nextDouble() * 0.3d + 0.85d;
+						}
+						mc.effectRenderer.spawnEffectParticle(type.getID(), x + d1, y + d2, z + d3, xSpeed, ySpeed, zSpeed, args);
+					}
 				}
-				Minecraft.getMinecraft().renderGlobal.spawnParticle(type.getID(), true, x + d1, y + d2, z + d3, xSpeed, ySpeed, zSpeed, args);
-				//world.spawnAlwaysVisibleParticle(type.getID(), x + d1, y + d2, z + d3, xSpeed, ySpeed, zSpeed, args);
 			}
-		}
-	}
-	
-	public static class Message implements IMessage {
-		Types type;
-		int count;
-		double x, y, z;
-		double ox, oy, oz;
-		double speedx, speedy, speedz;
-		int args;
-		int[] parms;
-		
-		public Message() {
-		}
-
-		public Message(Types t, double cx, double cy, double cz, int num, double offx, double offy, double offz, 
-		 double sx, double sy, double sz, int... p) {
-			this.type = t;
-			this.count = num;
-			this.x = cx;
-			this.y = cy;
-			this.z = cz;
-			this.ox = offx;
-			this.oy = offy;
-			this.oz = offz;
-			this.speedx = sx;
-			this.speedy = sy;
-			this.speedz = sz;
-			this.args = p.length;
-			this.parms = p;
-		}
-
-		public static class Handler implements IMessageHandler<Message, IMessage> {
-			@SideOnly(Side.CLIENT)
-			@Override
-			public IMessage onMessage(Message message, MessageContext context) {
-				Minecraft.getMinecraft().addScheduledTask(() -> {
-					new ParticleRenderer().spawnParticles(Minecraft.getMinecraft().world, message.type, message.x, message.y, message.z,
-					 message.count, message.ox, message.oy, message.oz, message.speedx, message.speedy, message.speedz, message.parms);
-				});
-				return null;
-			}
-		}
-
-		public void toBytes(ByteBuf buf) {
-			buf.writeInt(this.type.getID());
-			buf.writeInt(this.count);
-			buf.writeDouble(this.x);
-			buf.writeDouble(this.y);
-			buf.writeDouble(this.z);
-			buf.writeDouble(this.ox);
-			buf.writeDouble(this.oy);
-			buf.writeDouble(this.oz);
-			buf.writeDouble(this.speedx);
-			buf.writeDouble(this.speedy);
-			buf.writeDouble(this.speedz);
-			buf.writeInt(this.args);
-			for (int j = 0; j < this.type.getArgsCount() && j < this.args; j++)
-				buf.writeInt(this.parms[j]);
-		}
-
-		public void fromBytes(ByteBuf buf) {
-			this.type = Types.getTypeFromId(buf.readInt());
-			this.count = buf.readInt();
-			this.x = buf.readDouble();
-			this.y = buf.readDouble();
-			this.z = buf.readDouble();
-			this.ox = buf.readDouble();
-			this.oy = buf.readDouble();
-			this.oz = buf.readDouble();
-			this.speedx = buf.readDouble();
-			this.speedy = buf.readDouble();
-			this.speedz = buf.readDouble();
-			this.args = buf.readInt();
-			int i = Math.min(this.type.getArgsCount(), this.args);
-			this.parms = new int[i];
-			for (int j = 0; j < i; j++)
-				this.parms[j] = buf.readInt();
 		}
 	}
 
 	@SideOnly(Side.CLIENT)
 	public static class Smoke extends Particle {
 		private static final ResourceLocation TEXTURE = new ResourceLocation("narutomod:textures/particles.png");
-		private final TextureManager textureManager;
-		private float smokeParticleScale;
+		protected final TextureManager textureManager;
+		protected float smokeParticleScale;
 		private int particleBrightness;
 		protected double floatMotionY;
 		private int viewerId;
@@ -443,10 +550,10 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 			this.textureManager = Minecraft.getMinecraft().getTextureManager();
 		}
 
-		public void move(double x, double y, double z) {
-			this.setBoundingBox(this.getBoundingBox().offset(x, y, z));
-			this.resetPositionToBB();
-		}
+		//public void move(double x, double y, double z) {
+		//	this.setBoundingBox(this.getBoundingBox().offset(x, y, z));
+		//	this.resetPositionToBB();
+		//}
 
 	    public void renderParticle(BufferBuilder buffer, Entity entityIn, float partialTicks, float rotationX, float rotationZ,
 	     float rotationYZ, float rotationXY, float rotationXZ) {
@@ -502,7 +609,7 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 		public static class Factory implements IParticleFactory {
 			public Particle createParticle(int particleID, World worldIn, double xCoordIn, double yCoordIn, double zCoordIn, double xSpeedIn,
 					double ySpeedIn, double zSpeedIn, int... parameters) {
-				float arg1 = (parameters.length > 1) ? (parameters[1] / 10.0F) : 1.0F;
+				float arg1 = (parameters.length > 1) ? (float)parameters[1] / 10.0F : 1.0F;
 				int arg0 = (parameters.length > 0) ? parameters[0] : -1;
 				return new Flame(worldIn, xCoordIn, yCoordIn, zCoordIn, xSpeedIn, ySpeedIn, zSpeedIn, arg0, arg1);
 			}
@@ -512,7 +619,7 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 	@SideOnly(Side.CLIENT)
 	public static class MobAppearance extends Particle {
 		private static final Map<Integer, Class <? extends Entity>> particleEntities = ImmutableMap.of(
-			net.narutomod.entity.EntityItachi.ENTITYID, net.narutomod.entity.EntityItachi.EntityCustom.class
+			net.narutomod.entity.EntityItachi.ENTITYID_RANGED, net.narutomod.entity.EntityItachi.Entity4MobAppearance.class
 		);
 	    private Entity entity;
 	    private int entityTypeId;
@@ -747,7 +854,7 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 
 		protected BurningAsh(World worldIn, double xCoordIn, double yCoordIn, double zCoordIn, double xSpeedIn, double ySpeedIn, double zSpeedIn,
 		  int excludeEntityId) {
-			super(worldIn, xCoordIn, yCoordIn, zCoordIn, xSpeedIn, ySpeedIn, zSpeedIn, 0xFF606060, 5f + Particles.rand.nextFloat() * 5f, 100, 0, -1, 0f);
+			super(worldIn, xCoordIn, yCoordIn, zCoordIn, xSpeedIn, ySpeedIn, zSpeedIn, 0xFF606060, 8f + Particles.rand.nextFloat() * 5f, 100, 0, -1, 0f);
 			this.excludeEntity = worldIn.getEntityByID(excludeEntityId);
 		}
 
@@ -905,7 +1012,7 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 		private static final ResourceLocation TEXTURE = new ResourceLocation("narutomod:textures/white_square.png");
 		private int sphereIdOutside;
 		private int sphereIdInside;
-		private final Sphere sphere;
+		private Sphere sphere;
 		private final TextureManager textureManager;
 
 		protected ExpandingSphere(TextureManager textureManagerIn, World worldIn, double x, double y, double z,
@@ -920,21 +1027,6 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 			this.particleScale = size;
 			this.particleMaxAge = life;
 			this.textureManager = textureManagerIn;
-			this.sphere = new Sphere();
-			this.sphere.setDrawStyle(GLU.GLU_FILL);
-			this.sphere.setNormals(GLU.GLU_SMOOTH);
-			this.sphere.setOrientation(GLU.GLU_OUTSIDE);
-			this.sphereIdOutside = GLAllocation.generateDisplayLists(1);
-			GlStateManager.glNewList(this.sphereIdOutside, org.lwjgl.opengl.GL11.GL_COMPILE);
-			textureManagerIn.bindTexture(TEXTURE);
-			this.sphere.draw(1.0F, 32, 32);
-			GlStateManager.glEndList();	
-			this.sphere.setOrientation(GLU.GLU_INSIDE);
-			this.sphereIdInside = GLAllocation.generateDisplayLists(1);
-			GlStateManager.glNewList(this.sphereIdInside, org.lwjgl.opengl.GL11.GL_COMPILE);
-			textureManagerIn.bindTexture(TEXTURE);
-			this.sphere.draw(1.0F, 32, 32);
-			GlStateManager.glEndList();
 		}
 
 		@Override
@@ -948,6 +1040,24 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 			this.move(this.motionX, this.motionY, this.motionZ);
 		}
 
+		private void compileDisplayList() {
+			this.sphere = new Sphere();
+			this.sphere.setDrawStyle(GLU.GLU_FILL);
+			this.sphere.setNormals(GLU.GLU_SMOOTH);
+			this.sphere.setOrientation(GLU.GLU_OUTSIDE);
+			this.sphereIdOutside = GLAllocation.generateDisplayLists(1);
+			GlStateManager.glNewList(this.sphereIdOutside, org.lwjgl.opengl.GL11.GL_COMPILE);
+			this.textureManager.bindTexture(TEXTURE);
+			this.sphere.draw(1.0F, 32, 32);
+			GlStateManager.glEndList();	
+			this.sphere.setOrientation(GLU.GLU_INSIDE);
+			this.sphereIdInside = GLAllocation.generateDisplayLists(1);
+			GlStateManager.glNewList(this.sphereIdInside, org.lwjgl.opengl.GL11.GL_COMPILE);
+			this.textureManager.bindTexture(TEXTURE);
+			this.sphere.draw(1.0F, 32, 32);
+			GlStateManager.glEndList();
+		}
+
 		@Override
 		public void renderParticle(BufferBuilder buffer, Entity entityIn, float partialTicks, 
 		 float rotationX, float rotationZ, float rotationYZ, float rotationXY, float rotationXZ) {
@@ -958,7 +1068,9 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 			if (this.particleAge > 0.8f * this.particleMaxAge) {
 				f1 = 1.0f - (this.particleAge - 0.8f * this.particleMaxAge) / (0.2f * this.particleMaxAge);
 			}
-			//this.textureManager.bindTexture(TEXTURE);
+			if (this.sphere == null) {
+				this.compileDisplayList();
+			}
 			GlStateManager.enableAlpha();
 			GlStateManager.alphaFunc(0x204, 0.0f);
 			GlStateManager.enableBlend();
@@ -1209,6 +1321,132 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
+	public static class SonicBoom extends TextureAsParticle {
+		private static final ResourceLocation TEXTURE = new ResourceLocation("narutomod:textures/sonicboom.png");
+
+		protected SonicBoom(TextureManager textureManagerIn, World worldIn, double x, double y, double z, 
+		 double speedX, double speedY, double speedZ, int color, float scale, int maxAge, int brightness) {
+			super(textureManagerIn, worldIn, x, y, z, speedX, speedY, speedZ, color, scale, maxAge, brightness);
+			this.rotateX = ProcedureUtils.getPitchFromVec(this.motionX, this.motionY, this.motionZ);
+			this.rotateY = ProcedureUtils.getYawFromVec(this.motionX, this.motionZ);
+			this.rotateZ = this.rand.nextFloat() * 360.0F;
+		}
+
+		@Override
+		protected ResourceLocation getTexture() {
+			return TEXTURE;
+		}
+
+		@SideOnly(Side.CLIENT)
+		public static class Factory implements IParticleFactory {
+			public Particle createParticle(int particleID, World worldIn, double x, double y, double z, double xSpeedIn,
+					double ySpeedIn, double zSpeedIn, int... parameters) {
+				int arg3 = parameters.length > 3 ? parameters[3] : 0;
+				int arg2 = parameters.length > 2 ? parameters[2] : 0;
+				float arg1 = parameters.length > 1 ? (float)parameters[1] / 10f : 1.0f;
+				int arg0 = parameters.length > 0 ? parameters[0] : -1;
+				return new SonicBoom(Minecraft.getMinecraft().getTextureManager(), worldIn, x, y, z, 
+				 xSpeedIn, ySpeedIn, zSpeedIn, arg0, arg1, arg2, arg3);
+			}
+		}
+	}
+
+	@SideOnly(Side.CLIENT)
+	public static class BlockDust extends ParticleBlockDust {
+	    protected BlockDust(World worldIn, double xCoordIn, double yCoordIn, double zCoordIn,
+	     double xSpeedIn, double ySpeedIn, double zSpeedIn, IBlockState state, float size) {
+	        super(worldIn, xCoordIn, yCoordIn, zCoordIn, xSpeedIn, ySpeedIn, zSpeedIn, state);
+	        this.particleScale *= size;
+	    }
+	
+	    @SideOnly(Side.CLIENT)
+	    public static class Factory implements IParticleFactory {
+	        @Nullable
+	        public Particle createParticle(int particleID, World worldIn, double xCoordIn, double yCoordIn, double zCoordIn,
+	         double xSpeedIn, double ySpeedIn, double zSpeedIn, int... params) {
+	            IBlockState iblockstate = Block.getStateById(params[0]);
+	            float arg1 = params.length > 1 ? (float)params[1] / 10f : 1f;
+	            return iblockstate.getRenderType() == EnumBlockRenderType.INVISIBLE ? null
+	             : (new BlockDust(worldIn, xCoordIn, yCoordIn, zCoordIn, xSpeedIn, ySpeedIn, zSpeedIn, iblockstate, arg1)).init();
+	        }
+	    }
+	}
+
+	@SideOnly(Side.CLIENT)
+	public static class Sand extends Smoke {
+		protected Sand(World worldIn, double xCoordIn, double yCoordIn, double zCoordIn, 
+		 double motionX, double motionY, double motionZ, int color, float scale, int maxAge, double floatSpeed) {
+			super(worldIn, xCoordIn, yCoordIn, zCoordIn, motionX, motionY, motionZ, color, scale, maxAge, 0, -1, floatSpeed);
+			this.particleTextureIndexY = 0;
+			this.particleScale = scale;
+			this.motionX = motionX;
+			this.motionY = motionY;
+			this.motionZ = motionZ;
+		}
+
+		@Override
+		public void renderParticle(BufferBuilder buffer, Entity entityIn, float partialTicks, float rotationX, float rotationZ, float rotationYZ,
+				float rotationXY, float rotationXZ) {
+	     	this.textureManager.bindTexture(Smoke.TEXTURE);
+	        float f0 = (float)this.particleTextureIndexX / 8.0F;
+	        float f1 = f0 + 0.124875F;
+	        float f2 = (float)this.particleTextureIndexY / 8.0F;
+	        float f3 = f2 + 0.124875F;
+	        float f4 = 0.1F * this.particleScale;
+	        float f5 = (float)(this.prevPosX + (this.posX - this.prevPosX) * (double)partialTicks - interpPosX);
+	        float f6 = (float)(this.prevPosY + (this.posY - this.prevPosY) * (double)partialTicks - interpPosY);
+	        float f7 = (float)(this.prevPosZ + (this.posZ - this.prevPosZ) * (double)partialTicks - interpPosZ);
+	        float f8 = this.particleAlpha;
+	        int i = this.getBrightnessForRender(partialTicks);
+	        int j = i >> 16 & 65535;
+	        int k = i & 65535;
+	        Vec3d[] avec3d = new Vec3d[] {new Vec3d((double)(-rotationX * f4 - rotationXY * f4), (double)(-rotationZ * f4), (double)(-rotationYZ * f4 - rotationXZ * f4)), new Vec3d((double)(-rotationX * f4 + rotationXY * f4), (double)(rotationZ * f4), (double)(-rotationYZ * f4 + rotationXZ * f4)), new Vec3d((double)(rotationX * f4 + rotationXY * f4), (double)(rotationZ * f4), (double)(rotationYZ * f4 + rotationXZ * f4)), new Vec3d((double)(rotationX * f4 - rotationXY * f4), (double)(-rotationZ * f4), (double)(rotationYZ * f4 - rotationXZ * f4))};
+	        buffer.pos((double)f5 + avec3d[0].x, (double)f6 + avec3d[0].y, (double)f7 + avec3d[0].z).tex((double)f1, (double)f3).color(this.particleRed, this.particleGreen, this.particleBlue, f8).lightmap(j, k).endVertex();
+	        buffer.pos((double)f5 + avec3d[1].x, (double)f6 + avec3d[1].y, (double)f7 + avec3d[1].z).tex((double)f1, (double)f2).color(this.particleRed, this.particleGreen, this.particleBlue, f8).lightmap(j, k).endVertex();
+	        buffer.pos((double)f5 + avec3d[2].x, (double)f6 + avec3d[2].y, (double)f7 + avec3d[2].z).tex((double)f0, (double)f2).color(this.particleRed, this.particleGreen, this.particleBlue, f8).lightmap(j, k).endVertex();
+	        buffer.pos((double)f5 + avec3d[3].x, (double)f6 + avec3d[3].y, (double)f7 + avec3d[3].z).tex((double)f0, (double)f3).color(this.particleRed, this.particleGreen, this.particleBlue, f8).lightmap(j, k).endVertex();
+		}
+
+		@Override
+		public void onUpdate() {
+			this.prevPosX = this.posX;
+			this.prevPosY = this.posY;
+			this.prevPosZ = this.posZ;
+			if (this.particleMaxAge == 0 || this.particleAge++ >= this.particleMaxAge) {
+				this.setExpired();
+				return;
+			}
+			double d = MathHelper.sqrt(this.motionX * this.motionX + this.motionY * this.motionY + this.motionZ * this.motionZ);
+			this.particleTextureIndexX = (this.particleTextureIndexX + (d > 0.01d ? 1 : 0)) % 8;
+			this.motionY += this.floatMotionY;
+			this.move(this.motionX, this.motionY, this.motionZ);
+			this.motionX *= 0.96D;
+			this.motionY *= 0.96D;
+			this.motionZ *= 0.96D;
+			if (this.onGround) {
+				this.motionX *= 0.7D;
+				this.motionZ *= 0.7D;
+			}
+		}
+
+		@Override
+		public boolean shouldDisableDepth() {
+			return false;
+		}
+
+		@SideOnly(Side.CLIENT)
+		public static class Factory implements IParticleFactory {
+			public Particle createParticle(int particleID, World worldIn, double xCoordIn, double yCoordIn, double zCoordIn, double xSpeedIn,
+					double ySpeedIn, double zSpeedIn, int... parameters) {
+				double arg3 = (parameters.length > 3) ? (double)parameters[3] / 1000.0D : -0.004D;
+				int arg2 = (parameters.length > 2) ? parameters[2] : 0;
+				float arg1 = (parameters.length > 1) ? ((float)parameters[1] / 10.0F) : 1.0F;
+				int arg0 = (parameters.length > 0) ? parameters[0] : -1;
+				return new Sand(worldIn, xCoordIn, yCoordIn, zCoordIn, xSpeedIn, ySpeedIn, zSpeedIn, arg0, arg1, arg2, arg3);
+			}
+		}
+	}
+
 	public enum Types {
 		SMOKE("smoke_colored", 54678400, 6), 
 		SUSPENDED("suspended_colored", 54678401, 3), 
@@ -1221,7 +1459,10 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 		PORTAL_SPIRAL("portal_spiral", 54678408, 3),
 		SEAL_FORMULA("seal_formula", 54678409, 3),
 		ACID_SPIT("acid_spit", 54678410, 2),
-		WHIRLPOOL("whirlpool", 54678411, 4);
+		WHIRLPOOL("whirlpool", 54678411, 4),
+		BLOCK_DUST("block_dust", 54678412, 2),
+		SONIC_BOOM("sonic_boom", 54678413, 4),
+		SAND("sand_colored", 54678414, 4);
 		
 		private final String particleName;
 		private final int particleID;

@@ -1,0 +1,10 @@
+{
+  "mappings": {
+    "default": {
+      "map": {
+        "1": "tenseigan_item"
+      },
+      "name": "default"
+    }
+  }
+}

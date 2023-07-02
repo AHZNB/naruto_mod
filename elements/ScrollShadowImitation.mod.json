@@ -14,7 +14,7 @@
     "enchantability": 0,
     "useDuration": 0,
     "toolType": 0.0,
-    "damageCount": 0,
+    "damageCount": 1,
     "recipeRemainder": {
       "value": ""
     },

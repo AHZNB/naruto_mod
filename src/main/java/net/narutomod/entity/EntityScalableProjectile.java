@@ -250,6 +250,10 @@ public class EntityScalableProjectile extends ElementsNarutomodMod.ModElement {
 			return this.rand;
 		}
 
+		public int getTicksAlive() {
+			return this.ticksAlive;
+		}
+
 		protected abstract void onImpact(RayTraceResult param1RayTraceResult);
 
 		public void updateInFlightRotations() {

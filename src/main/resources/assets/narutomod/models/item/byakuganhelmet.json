@@ -1,6 +1,6 @@
 {
-  "parent": "item/generated",
+  "parent": "narutomod:custom/byakugan",
   "textures": {
-    "layer0": "narutomod:items/byakugan"
+    "1": "narutomod:blocks/byakugan"
   }
 }

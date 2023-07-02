@@ -5,10 +5,12 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.input.Keyboard;
 
 import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.items.ItemHandlerHelper;
 
 import net.minecraft.world.World;
 import net.minecraft.util.math.BlockPos;
@@ -17,13 +19,17 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.inventory.InventoryBasic;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Container;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiButton;
 
+import net.narutomod.item.ItemJutsu;
 import net.narutomod.procedure.ProcedureUtils;
+import net.narutomod.PlayerTracker;
 import net.narutomod.NarutomodMod;
 import net.narutomod.ElementsNarutomodMod;
 
@@ -32,7 +38,6 @@ import java.util.Map;
 import java.util.HashMap;
 import java.io.IOException;
 import com.google.common.collect.Maps;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class GuiNinjaScroll extends ElementsNarutomodMod.ModElement {
@@ -72,21 +77,27 @@ public class GuiNinjaScroll extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public boolean canInteractWith(EntityPlayer player) {
-			return internal.isUsableByPlayer(player);
+			return this.internal.isUsableByPlayer(player);
 		}
 
 		@Override
 		public void onContainerClosed(EntityPlayer playerIn) {
 			super.onContainerClosed(playerIn);
-			if ((internal instanceof InventoryBasic) && (playerIn instanceof EntityPlayerMP)) {
-				this.clearContainer(playerIn, playerIn.world, internal);
+			if ((this.internal instanceof InventoryBasic) && (playerIn instanceof EntityPlayerMP)) {
+				this.clearContainer(playerIn, playerIn.world, this.internal);
 			}
 		}
 
 		protected void handleButtonAction(EntityPlayer player, int buttonID) {
-			if (player instanceof EntityPlayerMP 
-			 && !ProcedureUtils.advancementAchieved((EntityPlayerMP)player, "narutomod:learned_1st_jutsu")) {
-				ProcedureUtils.grantAdvancement((EntityPlayerMP)player, "narutomod:learned_1st_jutsu", true);
+			if (player instanceof EntityPlayerMP) {
+				if (player.getHeldItemMainhand().getMaxDamage() == 1) {
+					player.getHeldItemMainhand().shrink(1);
+				} else if (player.getHeldItemOffhand().getMaxDamage() == 1) {
+					player.getHeldItemOffhand().shrink(1);
+				}
+				if (!ProcedureUtils.advancementAchieved((EntityPlayerMP)player, "narutomod:learned_1st_jutsu")) {
+					ProcedureUtils.grantAdvancement((EntityPlayerMP)player, "narutomod:learned_1st_jutsu", true);
+				}
 			}
 		}
 	}
@@ -170,7 +181,19 @@ public class GuiNinjaScroll extends ElementsNarutomodMod.ModElement {
 		public boolean doesGuiPauseGame() {
 			return false;
 		}
+	}
 
+	public static ItemStack enableJutsu(EntityPlayer player, ItemJutsu.Base item, ItemJutsu.JutsuEnum jutsu, boolean enable) {
+		ItemStack stack = ProcedureUtils.getMatchingItemStack(player, item);
+		if (stack == null && PlayerTracker.isNinja(player) && enable) {
+			stack = new ItemStack(item, 1);
+			((ItemJutsu.Base)stack.getItem()).setOwner(stack, player);
+			ItemHandlerHelper.giveItemToPlayer(player, stack);
+		}
+		if (stack != null) {
+			((ItemJutsu.Base)stack.getItem()).enableJutsu(stack, jutsu, enable);
+		}
+		return stack;
 	}
 
 	public static class GUIButtonPressedMessage implements IMessage {

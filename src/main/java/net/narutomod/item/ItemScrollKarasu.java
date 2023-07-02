@@ -159,12 +159,16 @@ public class ItemScrollKarasu extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void onUpdate() {
 			super.onUpdate();
-			if (this.ticksExisted > this.openScrollTime && !this.world.isRemote) {
-				EntityPuppetKarasu.EntityCustom entity = new EntityPuppetKarasu.EntityCustom(this.summoner);
-				entity.setLocationAndAngles(this.posX, this.posY, this.posZ, this.summoner.rotationYaw, 0f);
-				entity.setHealth(this.puppetHealth);
-				this.world.spawnEntity(entity);
-				ProcedureUtils.poofWithSmoke(entity);
+			if (!this.world.isRemote && this.summoner == null) {
+				this.setDead();
+			} else if (this.ticksExisted > this.openScrollTime) {
+				if (this.summoner != null) {
+					EntityPuppetKarasu.EntityCustom entity = new EntityPuppetKarasu.EntityCustom(this.summoner);
+					entity.setLocationAndAngles(this.posX, this.posY, this.posZ, this.summoner.rotationYaw, 0f);
+					entity.setHealth(this.puppetHealth);
+					this.world.spawnEntity(entity);
+					ProcedureUtils.poofWithSmoke(entity);
+				}
 				this.setDead();
 			}
 		}

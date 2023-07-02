@@ -64,7 +64,7 @@ import javax.annotation.Nullable;
 public class ItemMokuton extends ElementsNarutomodMod.ModElement {
 	@ObjectHolder("narutomod:mokuton")
 	public static final Item block = null;
-	public static final ItemJutsu.JutsuEnum WOODBURIAL = new ItemJutsu.JutsuEnum(0, "tooltip.mokuton.leftclick", 'S', 100d, new EntityWoodBurial.EC.Jutsu());
+	public static final ItemJutsu.JutsuEnum WOODBURIAL = new ItemJutsu.JutsuEnum(0, "wood_burial", 'S', 100d, new EntityWoodBurial.EC.Jutsu());
 	public static final ItemJutsu.JutsuEnum WOODPRISON = new ItemJutsu.JutsuEnum(1, "wood_prison", 'S', 50d, new EntityWoodPrison.EC.Jutsu());
 	public static final ItemJutsu.JutsuEnum WOODHOUSE = new ItemJutsu.JutsuEnum(2, "tooltip.mokuton.rightclick2", 'S', 100d, new JutsuHouse());
 	public static final ItemJutsu.JutsuEnum GOLEM = new ItemJutsu.JutsuEnum(3, "wood_golem", 'S', 800, 1000d, new EntityWoodGolem.EC.Jutsu());
@@ -104,6 +104,13 @@ public class ItemMokuton extends ElementsNarutomodMod.ModElement {
 			return 1f;
 		}
 
+		@Override
+		protected float getMaxPower(ItemStack stack, EntityLivingBase entity) {
+			float ret = super.getMaxPower(stack, entity);
+			ItemJutsu.JutsuEnum jutsu = this.getCurrentJutsu(stack);
+			return jutsu == WOODPRISON ? Math.min(ret, 40f) : ret;
+		}
+
 		private static boolean canSpawnStructureHere(World world, BlockPos pos) {
 			if (world.getBlockState(pos).getMaterial() == Material.GROUND || world.getBlockState(pos).getMaterial() == Material.SAND
 			 || world.getBlockState(pos).getMaterial() == Material.GRASS || world.getBlockState(pos).getMaterial() == Material.ROCK)
@@ -114,10 +121,10 @@ public class ItemMokuton extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void onUpdate(ItemStack itemstack, World world, Entity entity, int par4, boolean par5) {
 			super.onUpdate(itemstack, world, entity, par4, par5);
-			if (entity instanceof EntityLivingBase && !world.isRemote) {
-				((EntityLivingBase) entity).addPotionEffect(new PotionEffect(MobEffects.SATURATION, 1, 0, false, false));
-				if (((EntityLivingBase) entity).getHealth() < ((EntityLivingBase) entity).getMaxHealth())
-					((EntityLivingBase) entity).heal(0.2F);
+			if (entity instanceof EntityLivingBase && !world.isRemote && entity.ticksExisted % 20 == 6) {
+				((EntityLivingBase) entity).addPotionEffect(new PotionEffect(MobEffects.SATURATION, 22, 0, false, false));
+				//if (((EntityLivingBase) entity).getHealth() < ((EntityLivingBase) entity).getMaxHealth())
+				//	((EntityLivingBase) entity).heal(0.2F);
 			}
 		}
 	}
@@ -347,7 +354,7 @@ public class ItemMokuton extends ElementsNarutomodMod.ModElement {
 
 	@SideOnly(Side.CLIENT)
 	public class RenderSegment extends Render<WoodSegment> {
-		private final ResourceLocation TEXTURE = new ResourceLocation("narutomod:textures/woodblock.png");
+		private final ResourceLocation texture = new ResourceLocation("narutomod:textures/woodblock.png");
 		protected final ModelWoodSegment model;
 
 		public RenderSegment(RenderManager renderManagerIn) {
@@ -360,9 +367,9 @@ public class ItemMokuton extends ElementsNarutomodMod.ModElement {
 		public void doRender(WoodSegment entity, double x, double y, double z, float entityYaw, float pt) {
 			if (entity.getParent() != null) {
 				entity.setPositionAndRotationFromParent(pt);
-				x = entity.posX - this.getRenderManager().viewerPosX;
-				y = entity.posY - this.getRenderManager().viewerPosY;
-				z = entity.posZ - this.getRenderManager().viewerPosZ;
+				x = entity.posX - this.renderManager.viewerPosX;
+				y = entity.posY - this.renderManager.viewerPosY;
+				z = entity.posZ - this.renderManager.viewerPosZ;
 				this.bindEntityTexture(entity);
 				GlStateManager.pushMatrix();
 				GlStateManager.translate(x, y, z);
@@ -377,7 +384,7 @@ public class ItemMokuton extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		protected ResourceLocation getEntityTexture(WoodSegment entity) {
-			return TEXTURE;
+			return this.texture;
 		}
 	}
 
@@ -386,46 +393,47 @@ public class ItemMokuton extends ElementsNarutomodMod.ModElement {
 	// Paste this class into your mod and generate all required imports
 	@SideOnly(Side.CLIENT)
 	public class ModelWoodSegment extends ModelBase {
-		private final ModelRenderer bb_main;
-		private final ModelRenderer bone5;
-		private final ModelRenderer bone;
-		private final ModelRenderer bone2;
-		private final ModelRenderer bone3;
-		private final ModelRenderer bone4;
+		private final ModelRenderer[] segment = new ModelRenderer[1];
+		
 		public ModelWoodSegment() {
 			textureWidth = 16;
 			textureHeight = 16;
-			bb_main = new ModelRenderer(this);
-			bb_main.setRotationPoint(0.0F, 0.0F, 0.0F);
-			bb_main.cubeList.add(new ModelBox(bb_main, 0, 0, -2.0F, -3.0F, -2.0F, 4, 4, 4, 0.0F, false));
-			bone5 = new ModelRenderer(this);
-			bone5.setRotationPoint(0.0F, 1.0F, 0.0F);
-			bb_main.addChild(bone5);
-			bone = new ModelRenderer(this);
-			bone.setRotationPoint(0.0F, -4.0F, -2.0F);
-			bone5.addChild(bone);
-			setRotationAngle(bone, 0.5236F, 3.1416F, 0.0F);
-			bone.cubeList.add(new ModelBox(bone, 0, 0, -2.0F, -4.0F, 0.0F, 4, 4, 0, 0.0F, false));
-			bone2 = new ModelRenderer(this);
-			bone2.setRotationPoint(0.0F, -4.0F, 2.0F);
-			bone5.addChild(bone2);
-			setRotationAngle(bone2, 0.5236F, 0.0F, 0.0F);
-			bone2.cubeList.add(new ModelBox(bone2, 0, 0, -2.0F, -4.0F, 0.0F, 4, 4, 0, 0.0F, false));
-			bone3 = new ModelRenderer(this);
-			bone3.setRotationPoint(-2.0F, -4.0F, 0.0F);
-			bone5.addChild(bone3);
-			setRotationAngle(bone3, 0.0F, -1.5708F, 0.5236F);
-			bone3.cubeList.add(new ModelBox(bone3, 0, 0, -2.0F, -4.0F, 0.0F, 4, 4, 0, 0.0F, false));
-			bone4 = new ModelRenderer(this);
-			bone4.setRotationPoint(2.0F, -4.0F, 0.0F);
-			bone5.addChild(bone4);
-			setRotationAngle(bone4, 0.0F, 1.5708F, -0.5236F);
-			bone4.cubeList.add(new ModelBox(bone4, 0, 0, -2.0F, -4.0F, 0.0F, 4, 4, 0, 0.0F, true));
+			for (int i = 0; i < segment.length; i++) {
+				segment[i] = new ModelRenderer(this);
+				segment[i].setRotationPoint(0.0F, i == 0 ? 0.0F : -3.0F, 0.0F);
+				segment[i].cubeList.add(new ModelBox(segment[i], 0, 0, -2.0F, -3.0F, -2.0F, 4, 4, 4, 0.0F, false));
+				ModelRenderer bone5 = new ModelRenderer(this);
+				bone5.setRotationPoint(0.0F, 1.0F, 0.0F);
+				segment[i].addChild(bone5);
+				ModelRenderer bone = new ModelRenderer(this);
+				bone.setRotationPoint(0.0F, -4.0F, -2.0F);
+				bone5.addChild(bone);
+				setRotationAngle(bone, 0.5236F, 3.1416F, 0.0F);
+				bone.cubeList.add(new ModelBox(bone, 0, 0, -2.0F, -4.0F, 0.0F, 4, 4, 0, 0.0F, false));
+				ModelRenderer bone2 = new ModelRenderer(this);
+				bone2.setRotationPoint(0.0F, -4.0F, 2.0F);
+				bone5.addChild(bone2);
+				setRotationAngle(bone2, 0.5236F, 0.0F, 0.0F);
+				bone2.cubeList.add(new ModelBox(bone2, 0, 0, -2.0F, -4.0F, 0.0F, 4, 4, 0, 0.0F, false));
+				ModelRenderer bone3 = new ModelRenderer(this);
+				bone3.setRotationPoint(-2.0F, -4.0F, 0.0F);
+				bone5.addChild(bone3);
+				setRotationAngle(bone3, 0.0F, -1.5708F, 0.5236F);
+				bone3.cubeList.add(new ModelBox(bone3, 0, 0, -2.0F, -4.0F, 0.0F, 4, 4, 0, 0.0F, false));
+				ModelRenderer bone4 = new ModelRenderer(this);
+				bone4.setRotationPoint(2.0F, -4.0F, 0.0F);
+				bone5.addChild(bone4);
+				setRotationAngle(bone4, 0.0F, 1.5708F, -0.5236F);
+				bone4.cubeList.add(new ModelBox(bone4, 0, 0, -2.0F, -4.0F, 0.0F, 4, 4, 0, 0.0F, true));
+				if (i > 0) {
+					segment[i-1].addChild(segment[i]);
+				}
+			}
 		}
 
 		@Override
 		public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
-			bb_main.render(f5);
+			segment[0].render(f5);
 		}
 
 		public void setRotationAngle(ModelRenderer modelRenderer, float x, float y, float z) {

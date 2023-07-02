@@ -140,7 +140,7 @@ public class EntitySlug extends ElementsNarutomodMod.ModElement {
 			this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(5D * f);
 			this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(10D * f * f);
 			this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.25D + f * 0.05);
-			this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(3D * f);
+			this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(5D * f);
 			this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(13D + 3D * f);
 			super.postScaleFixup();
 			//this.setSize(this.ogWidth * f, this.ogHeight * f);
@@ -245,7 +245,7 @@ public class EntitySlug extends ElementsNarutomodMod.ModElement {
 			this.fallDistance = 0.0f;
 			if (!this.world.isRemote) {
 				EntityLivingBase summoner = this.getSummoner();
-				if (summoner != null && !summoner.isRiding() && this.ageTicks == 1 && this.getScale() >= 4.0f) {
+				if (summoner != null && !summoner.isRiding() && this.getAge() == 1 && this.getScale() >= 4.0f) {
 					summoner.startRiding(this);
 				}
 				this.checkClimbing();

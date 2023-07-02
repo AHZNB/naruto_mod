@@ -2,12 +2,13 @@ package net.narutomod.procedure;
 
 import net.narutomod.item.ItemByakugan;
 import net.narutomod.entity.EntityEightTrigrams;
+import net.narutomod.PlayerTracker;
 import net.narutomod.NarutomodModVariables;
 import net.narutomod.ElementsNarutomodMod;
 import net.narutomod.Chakra;
 
 import net.minecraft.world.World;
-import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.potion.PotionEffect;
@@ -37,14 +38,13 @@ public class ProcedureEightTrigrams64Palms extends ElementsNarutomodMod.ModEleme
 		}
 		Entity entity = (Entity) dependencies.get("entity");
 		World world = (World) dependencies.get("world");
-		String string = "";
 		double cooldown = 0;
 		boolean f1 = false;
 		ItemStack helmetstack = ItemStack.EMPTY;
 		helmetstack = ((entity instanceof EntityPlayer) ? ((EntityPlayer) entity).inventory.armorInventory.get(3) : ItemStack.EMPTY);
 		f1 = ProcedureUtils.isOriginalOwner((EntityPlayer) entity, helmetstack);
 		if (((!(world.isRemote)) && (((entity instanceof EntityPlayer) ? ((EntityPlayer) entity).capabilities.isCreativeMode : false)
-				|| ((((entity instanceof EntityPlayer) ? ((EntityPlayer) entity).experienceLevel : 0) >= 20) && (f1))))) {
+				|| ((PlayerTracker.getBattleXp((EntityPlayer) entity) >= 1000) && (f1))))) {
 			cooldown = (double) ((helmetstack).hasTagCompound() ? (helmetstack).getTagCompound().getDouble("HakkeRokujuuyonshouCD") : -1);
 			if ((((entity instanceof EntityPlayer) ? ((EntityPlayer) entity).capabilities.isCreativeMode : false)
 					|| (((NarutomodModVariables.world_tick) > (cooldown)) || ((NarutomodModVariables.world_tick) < ((cooldown) - 1200))))) {
@@ -68,12 +68,9 @@ public class ProcedureEightTrigrams64Palms extends ElementsNarutomodMod.ModEleme
 					Chakra.pathway((EntityPlayer) entity).warningDisplay();
 				}
 			} else {
-				string = net.minecraft.util.text.translation.I18n.translateToLocal("chattext.cooldown");
-				if (entity instanceof EntityPlayer && !entity.world.isRemote) {
+				if (((!(world.isRemote)) && (entity instanceof EntityPlayer))) {
 					((EntityPlayer) entity).sendStatusMessage(
-							new TextComponentString((((string)) + "" + (" ") + ""
-									+ ((new java.text.DecimalFormat(".2").format((((cooldown) - (NarutomodModVariables.world_tick)) / 20)))))),
-							(true));
+							new TextComponentTranslation("chattext.cooldown.formatted", (cooldown - NarutomodModVariables.world_tick) / 20), true);
 				}
 			}
 		}

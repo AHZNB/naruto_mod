@@ -1,0 +1,26 @@
+{
+  "display": {
+    "icon": {
+      "item": "narutomod:kekkei_mora"
+    },
+    "title": {
+      "translate": "advancements.tensei_byakugan_activated.title"
+    },
+    "description": {
+      "translate": "advancements.tensei_byakugan_activated.descr"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "tensei_byakugan_activated": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "rewards": {
+    "experience": 1
+  },
+  "parent": "narutomod:tenseigan_achieved"
+}

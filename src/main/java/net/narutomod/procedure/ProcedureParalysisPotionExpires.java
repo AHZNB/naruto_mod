@@ -2,9 +2,12 @@ package net.narutomod.procedure;
 
 import net.narutomod.ElementsNarutomodMod;
 
+import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.Entity;
 
+import java.util.UUID;
 import java.util.Map;
 
 @ElementsNarutomodMod.ModElement.Tag
@@ -23,5 +26,7 @@ public class ProcedureParalysisPotionExpires extends ElementsNarutomodMod.ModEle
 			((EntityLiving) entity).setNoAI(false);
 			entity.getEntityData().setBoolean("temporaryDisableAI", (false));
 		}
+		((EntityLivingBase) entity).getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED)
+				.removeModifier(UUID.fromString("c69af92a-b96d-49b7-a396-9b3b0d77edd5"));
 	}
 }

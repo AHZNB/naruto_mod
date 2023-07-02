@@ -20,9 +20,11 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.entity.IEntityMultiPart;
 import net.minecraft.entity.MultiPartEntityPart;
 import net.minecraft.entity.player.EntityPlayer;
@@ -36,6 +38,7 @@ import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelBox;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
+import javax.annotation.Nullable;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntitySealing extends ElementsNarutomodMod.ModElement {
@@ -52,20 +55,16 @@ public class EntitySealing extends ElementsNarutomodMod.ModElement {
 				.name("sealing").tracker(96, 3, true).build());
 	}
 
-	@SideOnly(Side.CLIENT)
-	@Override
-	public void preInit(FMLPreInitializationEvent event) {
-		RenderingRegistry.registerEntityRenderingHandler(EC.class, renderManager -> new RenderSeal(renderManager));
-	}
-
 	public static class EC extends Entity implements IEntityMultiPart {
 		private final EntitySittingCircle[] parts = new EntitySittingCircle[4];
+		private final AxisAlignedBB tableBB = new AxisAlignedBB(-1.3d, 0.0d, -1.3d, 1.3d, 0.9d, 1.3d);
 		private EntityTailedBeast.Base bijuEntity;
-		private EntityLivingBase jinchurikiEntity;
+		//private EntityPlayer jinchurikiEntity;
+		private int ticks2Death = 600;
 
 		public EC(World world) {
 			super(world);
-			this.setSize(12f, 0.01f);
+			this.setSize(13.0f, 0.01f);
 			this.isImmuneToFire = true;
 			for (int i = 0; i < this.parts.length; i++) {
 				this.parts[i] = new EntitySittingCircle(this, "circle"+i);
@@ -101,12 +100,33 @@ public class EntitySealing extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public boolean processInitialInteract(EntityPlayer player, EnumHand hand) {
-			return player.startRiding(this);
+			if (!this.world.isRemote && !EntityBijuManager.isJinchuriki(player)) {
+				AxisAlignedBB bb = this.tableBB.offset(this.posX, this.posY, this.posZ);
+				Vec3d vec = player.getPositionEyes(1f);
+				if (bb.calculateIntercept(vec, vec.add(player.getLookVec().scale(4d))) != null) {
+					//this.jinchurikiEntity = player;
+					return player.startRiding(this);
+				}
+			}
+			return false;
 		}
 
 		@Override
 		public double getMountedYOffset() {
 			return 0.7d;
+		}
+
+		@Override @Nullable
+		public Entity getControllingPassenger() {
+			return this.getPassengers().isEmpty() ? null : this.getPassengers().get(0);
+		}
+
+		@Override
+		public void setDead() {
+			super.setDead();
+			for (int i = 0; i < this.parts.length; i++) {
+				this.parts[i].removePassengers();
+			}
 		}
 
 		@Override
@@ -119,17 +139,36 @@ public class EntitySealing extends ElementsNarutomodMod.ModElement {
 			this.parts[1].setLocationAndAngles(this.posX, this.posY + 0.005d, this.posZ + 5d, 0f, 0f);
 			this.parts[2].setLocationAndAngles(this.posX + 5d, this.posY + 0.005d, this.posZ, 0f, 0f);
 			this.parts[3].setLocationAndAngles(this.posX, this.posY + 0.005d, this.posZ - 5d, 0f, 0f);
-			if (this.ticksExisted > 200 && !this.world.isRemote) {
+			if (this.bijuEntity == null) {
+				for (EntityLivingBase entity : this.world.getEntitiesWithinAABB(EntityLivingBase.class, this.getEntityBoundingBox())) {
+					if (entity instanceof EntityTailedBeast.Base && !((EntityTailedBeast.Base)entity).getBijuManager().isSealed()) {
+						this.bijuEntity = (EntityTailedBeast.Base)entity;
+					}
+				}
+			}
+			if (!this.world.isRemote && this.bijuEntity != null) {
+				if (this.bijuEntity.getBijuManager().isSealed()) {
+					this.ticks2Death = 0;
+				} else if (this.isBeingRidden() && this.getSealersCount() > 0) {
+					if (!this.bijuEntity.isFuuinInProgress()) {
+						this.bijuEntity.fuuinIntoVessel(this.getControllingPassenger(), 36000);
+					} else {
+						this.bijuEntity.incFuuinProgress(this.getSealersCount() - 1);
+						this.sendSealingProgress(this.bijuEntity.getFuuinProgress());
+						this.ticks2Death = 600;
+					}
+				} else if (this.bijuEntity.isFuuinInProgress()) {
+					this.bijuEntity.cancelFuuin();
+					this.ticks2Death = 0;
+				}
+			}
+			if (!this.world.isRemote && --this.ticks2Death <= 0) {
 				this.setDead();
 			}
 		}
 
-		@Override
-		public void setDead() {
-			super.setDead();
-			for (int i = 0; i < this.parts.length; i++) {
-				this.parts[i].removePassengers();
-			}
+		public boolean isSealingInProgress() {
+			return this.bijuEntity != null && this.bijuEntity.isFuuinInProgress();
 		}
 
 		public int getSealersCount() {
@@ -138,6 +177,19 @@ public class EntitySealing extends ElementsNarutomodMod.ModElement {
 				j += this.parts[i].isBeingRidden() ? 1 : 0;
 			}
 			return j;
+		}
+
+		public void sendSealingProgress(float progress) {
+			Entity entity = this.getControllingPassenger();
+			if (entity instanceof EntityPlayer) {
+				((EntityPlayer)entity).sendStatusMessage(new TextComponentString(String.format("%.1f", progress*100)+"%"), true);
+			}
+			for (int i = 0; i < this.parts.length; i++) {
+				entity = this.parts[i].getControllingPassenger();
+				if (entity instanceof EntityPlayer) {
+					((EntityPlayer)entity).sendStatusMessage(new TextComponentString(String.format("%.1f", progress*100)+"%"), true);
+				}
+			}
 		}
 
 		@Override
@@ -209,9 +261,11 @@ public class EntitySealing extends ElementsNarutomodMod.ModElement {
 				Entity passenger = this.getControllingPassenger();
 				this.world.updateEntity(passenger);
 				if (!(passenger instanceof EntityLivingBase) || passenger.isSneaking()
-				 || (this.ticksExisted % 20 == 0 && !Chakra.pathway((EntityLivingBase)passenger).consume(10d))) {
+				 || (!this.world.isRemote && this.ticksExisted % 20 == 0 && this.ec.isSealingInProgress()
+				  && !Chakra.pathway((EntityLivingBase)passenger).consume(10d))) {
 					passenger.dismountRidingEntity();
-				} else if (!this.world.isRemote) {
+				}
+				if (!this.world.isRemote) {
 					ProcedureSync.MultiPartsSetPassengers.sendToTracking(this.ec, this.getEntityId());
 				}
 			}
@@ -230,60 +284,74 @@ public class EntitySealing extends ElementsNarutomodMod.ModElement {
 	}
 
 	@SideOnly(Side.CLIENT)
-	public class RenderSeal extends Render<EC> {
-		private final ResourceLocation texture = new ResourceLocation("narutomod:textures/sealing_circle.png");
-		protected ModelBase mainModel;
-		
-		public RenderSeal(RenderManager renderManagerIn) {
-			super(renderManagerIn);
-			this.mainModel = new ModelSeal();
-		}
-
-		@Override
-		public void doRender(EC entity, double x, double y, double z, float entityYaw, float partialTicks) {
-			this.bindEntityTexture(entity);
-			GlStateManager.pushMatrix();
-			GlStateManager.disableCull();
-			GlStateManager.translate(x, y + 0.01D, z);
-			GlStateManager.rotate(180.0F, 1.0F, 0.0F, 0.0F);
-			GlStateManager.enableAlpha();
-			GlStateManager.enableBlend();
-			GlStateManager.disableLighting();
-			float f = partialTicks + entity.ticksExisted;
-			GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-			GlStateManager.color(1.0F, 1.0F, 1.0F, Math.min(f / 60f, 1.0f));
-			this.mainModel.render(entity, 0.0F, 0.0F, f, 0.0F, 0.0F, 0.85F);
-			GlStateManager.enableLighting();
-			GlStateManager.disableBlend();
-			GlStateManager.disableAlpha();
-			GlStateManager.enableCull();
-			GlStateManager.popMatrix();
-			super.doRender(entity, x, y, z, entityYaw, partialTicks);
-		}
-
-		@Override
-		protected ResourceLocation getEntityTexture(EC entity) {
-			return texture;
-		}
+	@Override
+	public void preInit(FMLPreInitializationEvent event) {
+		new Renderer().register();
 	}
 
-	@SideOnly(Side.CLIENT)
-	public class ModelSeal extends ModelBase {
-		private final ModelRenderer bb_main;
-		
-		public ModelSeal() {
-			this.textureWidth = 64;
-			this.textureHeight = 16;
-			this.bb_main = new ModelRenderer(this);
-			this.bb_main.setRotationPoint(0.0F, 0.0F, 0.0F);
-			this.bb_main.cubeList.add(new ModelBox(this.bb_main, 0, 0, -8.0F, 0.0F, -8.0F, 16, 0, 16, 0.0F, false));
-			this.bb_main.cubeList.add(new ModelBox(this.bb_main, 0, 0, -1.5F, -1.0F, -1.5F, 3, 1, 3, 0.0F, false));
-			this.bb_main.cubeList.add(new ModelBox(this.bb_main, 0, 4, -1.5F, -1.2F, -1.5F, 3, 1, 3, -0.1F, false));
+	public static class Renderer extends EntityRendererRegister {
+		@SideOnly(Side.CLIENT)
+		@Override
+		public void register() {
+			RenderingRegistry.registerEntityRenderingHandler(EC.class, renderManager -> new RenderSeal(renderManager));
 		}
 
-		@Override
-		public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
-			this.bb_main.render(f5);
+		@SideOnly(Side.CLIENT)
+		public class RenderSeal extends Render<EC> {
+			private final ResourceLocation texture = new ResourceLocation("narutomod:textures/sealing_circle.png");
+			protected ModelBase mainModel;
+
+			public RenderSeal(RenderManager renderManagerIn) {
+				super(renderManagerIn);
+				this.mainModel = new ModelSeal();
+			}
+
+			@Override
+			public void doRender(EC entity, double x, double y, double z, float entityYaw, float partialTicks) {
+				this.bindEntityTexture(entity);
+				GlStateManager.pushMatrix();
+				GlStateManager.disableCull();
+				GlStateManager.translate(x, y + 0.01D, z);
+				GlStateManager.rotate(180.0F, 1.0F, 0.0F, 0.0F);
+				GlStateManager.enableAlpha();
+				GlStateManager.enableBlend();
+				GlStateManager.disableLighting();
+				float f = partialTicks + entity.ticksExisted;
+				GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+				GlStateManager.color(1.0F, 1.0F, 1.0F, Math.min(f / 60f, 1.0f));
+				this.mainModel.render(entity, 0.0F, 0.0F, f, 0.0F, 0.0F, 0.85F);
+				GlStateManager.enableLighting();
+				GlStateManager.disableBlend();
+				GlStateManager.disableAlpha();
+				GlStateManager.enableCull();
+				GlStateManager.popMatrix();
+				super.doRender(entity, x, y, z, entityYaw, partialTicks);
+			}
+
+			@Override
+			protected ResourceLocation getEntityTexture(EC entity) {
+				return texture;
+			}
+		}
+
+		@SideOnly(Side.CLIENT)
+		public class ModelSeal extends ModelBase {
+			private final ModelRenderer bb_main;
+
+			public ModelSeal() {
+				this.textureWidth = 64;
+				this.textureHeight = 16;
+				this.bb_main = new ModelRenderer(this);
+				this.bb_main.setRotationPoint(0.0F, 0.0F, 0.0F);
+				this.bb_main.cubeList.add(new ModelBox(this.bb_main, 0, 0, -8.0F, 0.0F, -8.0F, 16, 0, 16, 0.0F, false));
+				this.bb_main.cubeList.add(new ModelBox(this.bb_main, 0, 0, -1.5F, -1.0F, -1.5F, 3, 1, 3, 0.0F, false));
+				this.bb_main.cubeList.add(new ModelBox(this.bb_main, 0, 4, -1.5F, -1.2F, -1.5F, 3, 1, 3, -0.1F, false));
+			}
+
+			@Override
+			public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
+				this.bb_main.render(f5);
+			}
 		}
 	}
 }

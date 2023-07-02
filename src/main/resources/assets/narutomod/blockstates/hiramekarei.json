@@ -1,0 +1,60 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "narutomod:weapons/hiramekarei.obj",
+    "custom": {
+      "flip-v": true
+    },
+    "textures": {
+      "#hiramekarei": "narutomod:blocks/weapons/hiramekarei"
+    }
+  },
+  "variants": {
+    "inventory": [
+      {
+        "transform": {
+          "firstperson_lefthand": {
+            "translation": [-0.2,0.3,-0.3],
+            "rotation": [ {"y": -90},{"x": 0},{"z": 0} ],
+            "scale": 0.4
+          },
+          "firstperson_righthand": {
+            "translation": [0.2,0.3,-0.3],
+            "rotation": [ {"y": 90},{"x": 0},{"z": 0} ],
+            "scale": 0.4
+          },
+          "thirdperson_lefthand": {
+            "translation": [-0.325,0.7,-0.325],
+            "rotation": [ {"y": -90},{"x": 0},{"z": 0} ],
+            "scale": 0.65
+          },
+          "thirdperson_righthand": {
+            "translation": [0.325,0.7,-0.325],
+            "rotation": [ {"y": 90},{"x": 0},{"z": 0} ],
+            "scale": 0.65
+          },
+          "gui": {
+            "translation": [0.1,-0.2,0],
+            "rotation": [ {"y": 0},{"x": 0},{"z": -45} ],
+            "scale": 0.4
+          },
+          "ground": {
+            "translation": [-0.35,0,0],
+            "rotation": [ {"y": 90},{"x": 180},{"z": 90} ],
+            "scale": 0.65
+          },
+          "head": {
+            "translation": [0.25,-1.25,-0.1],
+            "rotation": [ {"y": 180},{"x": 0}, {"z": -135} ],
+            "scale": 1
+          },
+          "fixed": {
+            "rotation": [0, 0, 0],
+            "translation": [0.5, 0.6, 0.5],
+            "scale": [1, 1, 1]
+          }
+        }
+      }
+    ]
+  }
+}

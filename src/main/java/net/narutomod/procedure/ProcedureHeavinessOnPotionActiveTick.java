@@ -26,11 +26,9 @@ public class ProcedureHeavinessOnPotionActiveTick extends ElementsNarutomodMod.M
 		}
 		Entity entity = (Entity) dependencies.get("entity");
 		int amplifier = (int) dependencies.get("amplifier");
-		boolean f1 = false;
 		if (entity instanceof EntityLivingBase)
 			((EntityLivingBase) entity).addPotionEffect(new PotionEffect(MobEffects.SLOWNESS, (int) 2, (int) (amplifier), (false), (false)));
-		f1 = entity instanceof EntityLivingBase && ((EntityLivingBase) entity).isPotionActive(MobEffects.JUMP_BOOST);
-		if ((f1)) {
+		if (entity instanceof EntityLivingBase && ((EntityLivingBase) entity).isPotionActive(MobEffects.JUMP_BOOST)) {
 			((EntityLivingBase) entity).removePotionEffect(MobEffects.JUMP_BOOST);
 		}
 		if (entity instanceof EntityLivingBase)

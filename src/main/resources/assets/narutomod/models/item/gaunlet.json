@@ -1,0 +1,6 @@
+{
+  "parent": "narutomod:custom/gauntletmetal",
+  "textures": {
+    "0": "narutomod:blocks/gauntlet_metal"
+  }
+}

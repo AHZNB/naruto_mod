@@ -89,7 +89,7 @@ public class EntitySandBind extends ElementsNarutomodMod.ModElement {
 			this.targetEntity = targetIn;
 			Vec3d vec = this.getGourdMouthPos();
 			this.setPosition(vec.x, vec.y, vec.z);
-			this.sandTarget = new ItemJiton.SwarmTarget(this.world, 1000, vec, 
+			this.sandTarget = new ItemJiton.SwarmTarget(this.world, 100, vec, 
 			 this.getTargetVector(), new Vec3d(0.1d, 0.4d, 0.1d), 0.95f, 0.03f, false, 2f, sandType.getColor());
 		}
 
@@ -110,12 +110,18 @@ public class EntitySandBind extends ElementsNarutomodMod.ModElement {
 		}
 
 		private boolean isTargetCaptured() {
-			boolean flag = false;
-			if (!this.targetEntity.getEntityData().getBoolean("kamui_intangible")
-			 && this.getEntityBoundingBox().intersects(this.targetEntity.getEntityBoundingBox())) {
-				double d = this.getEntityBoundingBox().intersect(this.targetEntity.getEntityBoundingBox()).getAverageEdgeLength();
-				flag = d > this.targetEntity.getEntityBoundingBox().getAverageEdgeLength() * 0.5d 
-				 && d > this.getEntityBoundingBox().getAverageEdgeLength() * 0.2d;
+			if (!ItemJutsu.canTarget(this.targetEntity)) {
+				this.capturedVec = null;
+				return false;
+			}
+			boolean flag = this.capturedVec != null;
+			if (!flag && this.getEntityBoundingBox().intersects(this.targetEntity.getEntityBoundingBox())) {
+				//double d = this.getEntityBoundingBox().intersect(this.targetEntity.getEntityBoundingBox()).getAverageEdgeLength();
+				//flag = d > this.targetEntity.getEntityBoundingBox().getAverageEdgeLength() * 0.5d 
+				// && d > this.getEntityBoundingBox().getAverageEdgeLength() * 0.2d;
+				AxisAlignedBB bb = this.getEntityBoundingBox().intersect(this.targetEntity.getEntityBoundingBox());
+				flag = bb.equals(this.targetEntity.getEntityBoundingBox())
+				 && this.getEntityBoundingBox().getAverageEdgeLength() < this.targetEntity.getEntityBoundingBox().getAverageEdgeLength() * 1.5d;
 			}
 			if (flag && this.capturedVec == null) {
 				this.capturedVec = this.targetEntity.getPositionVector();
@@ -127,6 +133,10 @@ public class EntitySandBind extends ElementsNarutomodMod.ModElement {
 
 		public void sandFuneral() {
 			this.funeralTime = 20;
+		}
+
+		private boolean canFuneral() {
+			return this.funeralTime < 0 && this.targetEntity != null && this.targetEntity.isEntityAlive() && this.isTargetCaptured();
 		}
 
 		@Override
@@ -148,19 +158,19 @@ public class EntitySandBind extends ElementsNarutomodMod.ModElement {
 			// && ((MultiPartEntityPart)this.targetEntity).parent instanceof Entity) {
 			//	((Entity)((MultiPartEntityPart)this.targetEntity).parent).hurtResistantTime = 0;
 			//} else {
-				this.targetEntity.hurtResistantTime = 0;
+				this.targetEntity.hurtResistantTime = 10;
 			//}
 			this.targetEntity.attackEntityFrom(ItemJutsu.causeJutsuDamage(this, this.user)
 			 .setDamageBypassesArmor(), amount);
 		}
 
 		private void holdTarget() {
-			EntityLivingBase entity = this.targetEntity;
+			//EntityLivingBase entity = this.targetEntity;
 			//if (entity instanceof MultiPartEntityPart && ((MultiPartEntityPart)entity).parent instanceof EntityLivingBase) {
 			//	entity = (EntityLivingBase)((MultiPartEntityPart)entity).parent;
 			//}
-			entity.addPotionEffect(new PotionEffect(PotionParalysis.potion, 2, 0, false, false));
-			entity.setPositionAndUpdate(this.capturedVec.x, this.capturedVec.y, this.capturedVec.z);
+			this.targetEntity.addPotionEffect(new PotionEffect(PotionParalysis.potion, 2, 0, false, false));
+			this.targetEntity.setPositionAndUpdate(this.capturedVec.x, this.capturedVec.y, this.capturedVec.z);
 		}
 
 		@Override
@@ -217,13 +227,18 @@ public class EntitySandBind extends ElementsNarutomodMod.ModElement {
 		public static class Jutsu implements ItemJutsu.IJutsuCallback {
 			@Override
 			public boolean createJutsu(ItemStack stack, EntityLivingBase entity, float power) {
-				RayTraceResult result = ProcedureUtils.objectEntityLookingAt(entity, 30d, true);
+				RayTraceResult result = ProcedureUtils.objectEntityLookingAt(entity, 30d, 2d, true);
 				if (result != null) {
 					if (result.entityHit instanceof EC) {
 						result.entityHit.ticksExisted = EC.MAXTIME;
 						return false;
 					}
 					if (result.entityHit instanceof EntityLivingBase) {
+						for (EC ec : entity.world.getEntitiesWithinAABB(EC.class, entity.getEntityBoundingBox().grow(30d))) {
+							if (result.entityHit.equals(ec.targetEntity)) {
+								return false;
+							}
+						}
 						EC entity1 = new EC(entity, (EntityLivingBase)result.entityHit, ItemJiton.getSandType(stack));
 						entity.world.spawnEntity(entity1);
 						return true;
@@ -236,8 +251,9 @@ public class EntitySandBind extends ElementsNarutomodMod.ModElement {
 
 	public static boolean sandFuneral(EntityLivingBase attacker) {
 		RayTraceResult res = ProcedureUtils.objectEntityLookingAt(attacker, 50, true);
-		if (res != null && res.entityHit instanceof EC && Chakra.pathway(attacker).consume(50d)) {
-			attacker.world.playSound(null, attacker.posX, attacker.posY, attacker.posZ, (net.minecraft.util.SoundEvent) 
+		if (res != null && res.entityHit instanceof EC && ((EC)res.entityHit).canFuneral()
+		 && Chakra.pathway(attacker).consume(50d)) {
+			attacker.world.playSound(null, attacker.posX, attacker.posY, attacker.posZ,
 			 net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:sabakusoso")),
 			 net.minecraft.util.SoundCategory.PLAYERS, 1f, 1f);
 			((EC)res.entityHit).sandFuneral();

@@ -11,27 +11,33 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import net.minecraftforge.event.entity.living.LivingSetAttackTargetEvent;
-import net.minecraftforge.event.entity.living.LivingAttackEvent;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.common.MinecraftForge;
 
+import net.minecraft.init.Blocks;
 import net.minecraft.init.MobEffects;
 import net.minecraft.world.World;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.EnumActionResult;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Item;
+import net.minecraft.entity.item.EntityFallingBlock;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.util.EnumParticleTypes;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.init.Blocks;
-import net.minecraft.entity.item.EntityFallingBlock;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.PotionEffect;
 
@@ -45,7 +51,10 @@ import net.narutomod.entity.EntitySealingChains;
 import net.narutomod.entity.EntityPuppet;
 import net.narutomod.entity.EntityKikaichu;
 import net.narutomod.entity.EntityTransformationJutsu;
+import net.narutomod.entity.EntityHiraishin;
 import net.narutomod.procedure.ProcedureUtils;
+import net.narutomod.procedure.ProcedureOnLivingUpdate;
+import net.narutomod.potion.PotionParalysis;
 import net.narutomod.Chakra;
 
 import javax.annotation.Nullable;
@@ -60,11 +69,12 @@ public class ItemNinjutsu extends ElementsNarutomodMod.ModElement {
 	public static final ItemJutsu.JutsuEnum KAGEBUNSHIN = new ItemJutsu.JutsuEnum(1, "kage_bunshin", 'B', new EntityKageBunshin.EC.Jutsu());
 	public static final ItemJutsu.JutsuEnum RASENGAN = new ItemJutsu.JutsuEnum(2, "rasengan", 'A', 150d, new EntityRasengan.EC.Jutsu());
 	public static final ItemJutsu.JutsuEnum LIMBOCLONE = new ItemJutsu.JutsuEnum(3, "limbo_clone", 'S', EntityLimboClone.CHAKRA_USAGE, new EntityLimboClone.EC.Jutsu());
-	public static final ItemJutsu.JutsuEnum SEALINGCHAIN = new ItemJutsu.JutsuEnum(4, "sealing_chains", 'A', 50d, new EntitySealingChains.EC.Jutsu());
+	public static final ItemJutsu.JutsuEnum AMENOTEJIKARA = new ItemJutsu.JutsuEnum(4, "item.ninjutsu.amenotejikara", 'S', 50d, new Amenotejikara());
 	public static final ItemJutsu.JutsuEnum PUPPET = new ItemJutsu.JutsuEnum(5, "tooltip.ninjutsu.puppetjutsu", 'C', 0.25d, new PuppetJutsu());
 	public static final ItemJutsu.JutsuEnum BUGSWARM = new ItemJutsu.JutsuEnum(6, "bugball", 'C', 100d, new EntityKikaichu.EC.Jutsu());
-	public static final ItemJutsu.JutsuEnum INVISABILITY = new ItemJutsu.JutsuEnum(7, "tooltip.ninjutsu.hidingincamouflage", 'A', 20d, new HidingWithCamouflage());
+	public static final ItemJutsu.JutsuEnum INVISABILITY = new ItemJutsu.JutsuEnum(7, "tooltip.ninjutsu.hidingincamouflage", 'A', 100d, new HidingWithCamouflage());
 	public static final ItemJutsu.JutsuEnum TRANSFORM = new ItemJutsu.JutsuEnum(8, "transformation_jutsu", 'D', 50d, new EntityTransformationJutsu.EC.Jutsu());
+	public static final ItemJutsu.JutsuEnum HIRAISHIN = new ItemJutsu.JutsuEnum(9, "hiraishin", 'S', 10d, new EntityHiraishin.EC.Jutsu());
 
 	public ItemNinjutsu(ElementsNarutomodMod instance) {
 		super(instance, 377);
@@ -72,7 +82,7 @@ public class ItemNinjutsu extends ElementsNarutomodMod.ModElement {
 	
 	@Override
 	public void initElements() {
-		elements.items.add(() -> new RangedItem(REPLACEMENT, KAGEBUNSHIN, RASENGAN, LIMBOCLONE, SEALINGCHAIN, PUPPET, BUGSWARM, INVISABILITY, TRANSFORM));
+		elements.items.add(() -> new RangedItem(REPLACEMENT, KAGEBUNSHIN, RASENGAN, LIMBOCLONE, AMENOTEJIKARA, PUPPET, BUGSWARM, INVISABILITY, TRANSFORM, HIRAISHIN));
 		elements.entities.add(() -> EntityEntryBuilder.create().entity(EntityReplacementClone.class)
 			.id(new ResourceLocation("narutomod", "replacementclone"), ENTITYID).name("replacementclone")
 			.tracker(64, 1, true).build());
@@ -98,17 +108,16 @@ public class ItemNinjutsu extends ElementsNarutomodMod.ModElement {
 			this.setUnlocalizedName("ninjutsu");
 			this.setRegistryName("ninjutsu");
 			this.setCreativeTab(TabModTab.tab);
-			//this.defaultCooldownMap[REPLACEMENT.index] = 0;
-			//this.defaultCooldownMap[KAGEBUNSHIN.index] = 0;
-			//this.defaultCooldownMap[RASENGAN.index] = 0;
-			//this.defaultCooldownMap[LIMBOCLONE.index] = 0;
 		}
 
 		@Override
 		protected float getMaxPower(ItemStack stack, EntityLivingBase entity) {
+			ItemJutsu.JutsuEnum jutsu = this.getCurrentJutsu(stack);
 			float f = super.getMaxPower(stack, entity);
-			if (this.getCurrentJutsu(stack) == RASENGAN) {
+			if (jutsu == RASENGAN) {
 				return Math.min(f, 3.0f);
+			} else if (jutsu == BUGSWARM) {
+				return Math.min(f, 10.0f);
 			}
 			return f;
 		}
@@ -125,11 +134,21 @@ public class ItemNinjutsu extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
+		public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer entity, EnumHand hand) {
+			ActionResult<ItemStack> ares = super.onItemRightClick(world, entity, hand);
+			ItemStack stack = entity.getHeldItem(hand);
+			if (!world.isRemote && ares.getType() == EnumActionResult.SUCCESS && this.getCurrentJutsu(stack) == AMENOTEJIKARA) {
+				Amenotejikara.setTarget(stack, ProcedureUtils.objectEntityLookingAt(entity, 40d).entityHit);
+			}
+			return ares;
+		}
+
+		@Override
 		public void onUpdate(ItemStack itemstack, World world, Entity entity, int par4, boolean par5) {
 			super.onUpdate(itemstack, world, entity, par4, par5);
 			if (!world.isRemote && entity.ticksExisted % 20 == 0
 			 && entity instanceof EntityLivingBase && INVISABILITY.jutsu.isActivated(itemstack)) {
-				if (Chakra.pathway((EntityLivingBase)entity).consume(INVISABILITY.chakraUsage)) {
+				if (Chakra.pathway((EntityLivingBase)entity).consume(INVISABILITY.chakraUsage * 0.2d)) {
 					((EntityLivingBase)entity).addPotionEffect(new PotionEffect(MobEffects.INVISIBILITY, 21, 0, false, false));
 				} else {
 					HidingWithCamouflage.deactivate(itemstack);
@@ -144,16 +163,22 @@ public class ItemNinjutsu extends ElementsNarutomodMod.ModElement {
 			this.setNoAI(true);
 		}
 
-		public EntityReplacementClone(EntityLivingBase player, @Nullable Entity attacker) {
+		public EntityReplacementClone(EntityLivingBase player, Entity attacker) {
 			super(player);
-			if (attacker != null) {
-				Vec3d vec3d = player.getPositionVector().subtract(attacker.getPositionVector()).normalize().scale(5.0d);
-				player.rotationYaw = ProcedureUtils.getYawFromVec(vec3d.x, vec3d.z);
-				player.setPositionAndUpdate(attacker.posX - vec3d.x, attacker.posY, attacker.posZ - vec3d.z);
-			} else {
-				Vec3d vec3d = player.getLookVec().scale(5);
-				player.rotationYaw = (player.rotationYaw + 180f) % 360f;
-				player.setPositionAndUpdate(player.posX + vec3d.x, player.posY, player.posZ + vec3d.z);
+			Vec3d vec3d = player.getPositionVector().subtract(attacker.getPositionVector()).normalize();
+			int i = 5;
+			for (Vec3d vec1 = vec3d.scale(i); i > 1; vec1 = vec3d.scale(--i)) {
+				int j = 0;
+				BlockPos pos = new BlockPos(attacker.posX - vec1.x, attacker.posY - vec1.y, attacker.posZ - vec1.z);
+				while (j < 6 && (!player.world.getBlockState(pos.down()).isTopSolid() || !player.world.isAirBlock(pos.up()))) {
+					pos = pos.offset(EnumFacing.VALUES[j++]);
+				}
+				if (j < 6) {
+					vec3d = new Vec3d(0.5d + pos.getX(), pos.getY(), 0.5d + pos.getZ());
+					player.rotationYaw = ProcedureUtils.getYawFromVec(attacker.getPositionVector().subtract(vec3d));
+					player.setPositionAndUpdate(vec3d.x, vec3d.y, vec3d.z);
+					break;
+				}
 			}
 		}
 		
@@ -195,17 +220,21 @@ public class ItemNinjutsu extends ElementsNarutomodMod.ModElement {
 
 		public static class Jutsu implements ItemJutsu.IJutsuCallback {
 			private static final String JUTSULASTUSEKEY = "ReplacementJutsuLastUse";
-			private static final int COOLDOWN = 100;
+			private static final int COOLDOWN = 200;
 
 			@Override
 			public boolean createJutsu(ItemStack stack, EntityLivingBase entity, float power) {
 				if (!stack.hasTagCompound()) {
 					stack.setTagCompound(new NBTTagCompound());
 				}
-				if (!stack.getTagCompound().hasKey(JUTSULASTUSEKEY)) {
+				boolean flag = stack.getTagCompound().hasKey(JUTSULASTUSEKEY);
+				if (!flag) {
 					stack.getTagCompound().setLong(JUTSULASTUSEKEY, entity.world.getTotalWorldTime());
 				} else {
 					stack.getTagCompound().removeTag(JUTSULASTUSEKEY);
+				}
+				if (entity instanceof EntityPlayer && !entity.world.isRemote) {
+					((EntityPlayer)entity).sendStatusMessage(new TextComponentString(flag ? "Off" : "On"), true);
 				}
 				return false;
 			}
@@ -217,9 +246,11 @@ public class ItemNinjutsu extends ElementsNarutomodMod.ModElement {
 
 			public static class Hook {
 				@SubscribeEvent
-				public void onAttacked(LivingAttackEvent event) {
+				public void onAttacked(LivingHurtEvent event) {
 					EntityLivingBase entity = event.getEntityLiving();
-					if (entity instanceof EntityPlayer && !entity.world.isRemote && event.getSource() != DamageSource.OUT_OF_WORLD) {
+					if (entity instanceof EntityPlayer && !entity.world.isRemote && !entity.isPotionActive(PotionParalysis.potion)
+					 && event.getSource() != DamageSource.OUT_OF_WORLD && event.getSource().getTrueSource() instanceof EntityLivingBase
+					 && !event.getSource().getTrueSource().equals(entity)) {
 						ItemStack stack = ProcedureUtils.getMatchingItemStack((EntityPlayer)entity, block);
 						if (stack != null && REPLACEMENT.jutsu.isActivated(stack)) {
 							long l = entity.world.getTotalWorldTime();
@@ -250,7 +281,7 @@ public class ItemNinjutsu extends ElementsNarutomodMod.ModElement {
 		private static final String JUTSUACTIVEKEY = "HidingWithCamouflageActive";
 		@Override
 		public boolean createJutsu(ItemStack stack, EntityLivingBase entity, float power) {
-			boolean flag = this.isActivated(stack);
+			boolean flag = entity instanceof EntityPlayer ? this.isActivated(stack) : false;
 			stack.getTagCompound().setBoolean(JUTSUACTIVEKEY, !flag);
 			return !flag;
 		}
@@ -276,6 +307,60 @@ public class ItemNinjutsu extends ElementsNarutomodMod.ModElement {
 					}
 				}
 			}
+		}
+	}
+
+	public static class Amenotejikara implements ItemJutsu.IJutsuCallback {
+		@Override
+		public boolean createJutsu(ItemStack stack, EntityLivingBase entity, float power) {
+			RayTraceResult rtr = ProcedureUtils.objectEntityLookingAt(entity, 40d);
+			if (rtr.typeOfHit == RayTraceResult.Type.BLOCK) {
+				BlockPos pos = entity.world.isAirBlock(rtr.getBlockPos().up()) && entity.world.isAirBlock(rtr.getBlockPos().up(2))
+				 ? rtr.getBlockPos().up() : rtr.getBlockPos().offset(rtr.sideHit);
+				Entity target = this.getTarget(stack, entity.world);
+				if (target == null) {
+					target = entity;
+				}
+				ProcedureOnLivingUpdate.setUntargetable(target, 20);
+				target.setPositionAndUpdate(0.5d + pos.getX(), pos.getY(), 0.5d + pos.getZ());
+				setTarget(stack, null);
+				return true;
+			} else if (rtr.entityHit != null) {
+				Entity target = this.getTarget(stack, entity.world);
+				if (target == null || target.equals(rtr.entityHit)) {
+					target = entity;
+				}
+				double x = target.posX;
+				double y = target.posY;
+				double z = target.posZ;
+				ProcedureOnLivingUpdate.setUntargetable(target, 20);
+				ProcedureOnLivingUpdate.setUntargetable(rtr.entityHit, 20);
+				target.setPositionAndUpdate(rtr.entityHit.posX, rtr.entityHit.posY, rtr.entityHit.posZ);
+				rtr.entityHit.setPositionAndUpdate(x, y, z);
+				setTarget(stack, null);
+				return true;
+			}
+			setTarget(stack, null);
+			return false;
+		}
+
+		public static void setTarget(ItemStack stack, @Nullable Entity entity) {
+			if (!stack.hasTagCompound()) {
+				stack.setTagCompound(new NBTTagCompound());
+			}
+			if (entity == null) {
+				stack.getTagCompound().removeTag("amenotejikaraTarget");
+			} else {
+				stack.getTagCompound().setInteger("amenotejikaraTarget", entity.getEntityId());
+			}
+		}
+
+		@Nullable
+		private Entity getTarget(ItemStack stack, World world) {
+			if (stack.hasTagCompound() && stack.getTagCompound().hasKey("amenotejikaraTarget")) {
+				return world.getEntityByID(stack.getTagCompound().getInteger("amenotejikaraTarget"));
+			}
+			return null;
 		}
 	}
 

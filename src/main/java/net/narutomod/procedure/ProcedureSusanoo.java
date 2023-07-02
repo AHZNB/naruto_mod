@@ -50,7 +50,7 @@ public class ProcedureSusanoo extends ElementsNarutomodMod.ModElement {
 		return entity.getEntityData().getInteger(SUMMONED_SUSANOO);
 	}
 
-	private static void execute(EntityPlayer player) {
+	public static void execute(EntityPlayer player) {
 		World world = player.world;
 		boolean flag = (player.isCreative() || ProcedureUtils.hasItemInInventory(player, ItemRinnegan.helmet));
 		ItemStack helmet = player.inventory.armorInventory.get(3);
@@ -58,7 +58,7 @@ public class ProcedureSusanoo extends ElementsNarutomodMod.ModElement {
 			if (helmet.hasTagCompound() && !helmet.getTagCompound().getBoolean("sharingan_blinded")) {
 				//if (flag || NarutomodModVariables.world_tick < player.getEntityData().getDouble("susanoo_cd") - 2400.0D
 				//		|| NarutomodModVariables.world_tick > player.getEntityData().getDouble("susanoo_cd")) {
-					if (PlayerTracker.getBattleXp(player) >= EntitySusanooBase.BXP_REQUIRED_L1
+					if (PlayerTracker.getBattleXp(player) >= EntitySusanooBase.BXP_REQUIRED_L0
 					 && Chakra.pathway(player).consume(BASE_CHAKRA_USAGE)) {
 						player.getEntityData().setBoolean("susanoo_activated", true);
 						player.getEntityData().setDouble("susanoo_cd", NarutomodModVariables.world_tick + 2400.0D);
@@ -89,12 +89,12 @@ public class ProcedureSusanoo extends ElementsNarutomodMod.ModElement {
 			double cooldown = player.getEntityData().getDouble("susanoo_ticks") * 0.25d;
 			cooldown *= ProcedureUtils.getCooldownModifier(player);
 			//player.getEntityData().setDouble("susanoo_cd", NarutomodModVariables.world_tick + cooldown);
-			player.getEntityData().setBoolean("susanoo_activated", false);
-			player.getEntityData().setDouble("susanoo_ticks", 0.0D);
+			player.getEntityData().removeTag("susanoo_activated");
+			player.getEntityData().removeTag("susanoo_ticks");
 			Entity entitySpawned = world.getEntityByID(getSummonedSusanooId(player));
-			player.getEntityData().setInteger(SUMMONED_SUSANOO, 0);
+			player.getEntityData().removeTag(SUMMONED_SUSANOO);
 			if (entitySpawned != null) {
-				world.removeEntity(entitySpawned);
+				entitySpawned.setDead();
 			}
 			if (!flag && helmet.getItem() != ItemMangekyoSharinganEternal.helmet) {
 				player.addPotionEffect(new PotionEffect(MobEffects.WEAKNESS, (int)cooldown, 3));
@@ -125,12 +125,22 @@ public class ProcedureSusanoo extends ElementsNarutomodMod.ModElement {
 		Entity susanoo = player.getRidingEntity();
 		double playerXp = PlayerTracker.getBattleXp(player);
 		if (susanoo instanceof EntitySusanooBase) {
-			if (susanoo instanceof EntitySusanooSkeleton.EntityCustom && playerXp >= EntitySusanooBase.BXP_REQUIRED_L2) {
-				if (Chakra.pathway(player).consume(BASE_CHAKRA_USAGE)) {
-					susanoo.setDead();
-					EntitySusanooBase entityCustom = new EntitySusanooClothed.EntityCustom(player, false);
-					player.world.spawnEntity(entityCustom);
-					player.getEntityData().setInteger(SUMMONED_SUSANOO, entityCustom.getEntityId());
+			if (susanoo instanceof EntitySusanooSkeleton.EntityCustom) {
+				boolean fullBody = ((EntitySusanooSkeleton.EntityCustom)susanoo).isFullBody();
+				if (!fullBody && playerXp >= EntitySusanooBase.BXP_REQUIRED_L1) {
+					if (Chakra.pathway(player).consume(BASE_CHAKRA_USAGE)) {
+						susanoo.setDead();
+						EntitySusanooBase entityCustom = new EntitySusanooSkeleton.EntityCustom(player, true);
+						player.world.spawnEntity(entityCustom);
+						player.getEntityData().setInteger(SUMMONED_SUSANOO, entityCustom.getEntityId());
+					}
+				} else if (fullBody && playerXp >= EntitySusanooBase.BXP_REQUIRED_L2) {
+					if (Chakra.pathway(player).consume(BASE_CHAKRA_USAGE)) {
+						susanoo.setDead();
+						EntitySusanooBase entityCustom = new EntitySusanooClothed.EntityCustom(player, false);
+						player.world.spawnEntity(entityCustom);
+						player.getEntityData().setInteger(SUMMONED_SUSANOO, entityCustom.getEntityId());
+					}
 				}
 			} else if (susanoo instanceof EntitySusanooClothed.EntityCustom) {
 				boolean hasLegs = ((EntitySusanooClothed.EntityCustom)susanoo).hasLegs();

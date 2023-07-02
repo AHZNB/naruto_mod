@@ -34,7 +34,6 @@ import java.util.Random;
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityParticle extends ElementsNarutomodMod.ModElement {
 	public static final int ENTITYID = 199;
-	public static final int ENTITYID_RANGED = 200;
 
 	public EntityParticle(ElementsNarutomodMod instance) {
 		super(instance, 516);
@@ -46,12 +45,6 @@ public class EntityParticle extends ElementsNarutomodMod.ModElement {
 				.name("particle").tracker(64, 3, true).build());
 	}
 
-	@SideOnly(Side.CLIENT)
-	@Override
-	public void preInit(FMLPreInitializationEvent event) {
-		RenderingRegistry.registerEntityRenderingHandler(Base.class, renderManager -> new CustomRender(renderManager));
-	}
-
 	public static class Base extends Entity {
 		private static final DataParameter<Integer> AGE = EntityDataManager.<Integer>createKey(Base.class, DataSerializers.VARINT);
 		private static final DataParameter<Integer> MAXAGE = EntityDataManager.<Integer>createKey(Base.class, DataSerializers.VARINT);
@@ -60,9 +53,9 @@ public class EntityParticle extends ElementsNarutomodMod.ModElement {
 		private static final DataParameter<Float> BLUE = EntityDataManager.<Float>createKey(Base.class, DataSerializers.FLOAT);
 		private static final DataParameter<Float> ALPHA = EntityDataManager.<Float>createKey(Base.class, DataSerializers.FLOAT);
 		private static final DataParameter<Float> SCALE = EntityDataManager.<Float>createKey(Base.class, DataSerializers.FLOAT);
-		private int idleTime;
-		private int texU;
-		private int texV;
+		protected int texU;
+		//private int idleTime;
+		//private int deathTicks;
 
 		public Base(World worldIn) {
 			super(worldIn);
@@ -119,13 +112,26 @@ public class EntityParticle extends ElementsNarutomodMod.ModElement {
 			return ((Float) this.dataManager.get(SCALE)).floatValue();
 		}
 
+		public float getScale(float partialTicks) {
+			return this.getScale();
+		}
+
 		protected void setScale(float f) {
 			this.dataManager.set(SCALE, Float.valueOf(f));
+		}
+
+		public int getColorInt() {
+			Vector4f vec = this.getColor();
+			return ((int)(vec.w * 255) << 24) | ((int)(vec.x * 255) << 16) | ((int)(vec.y * 255) << 8) | (int)(vec.z * 255);
 		}
 
 		public Vector4f getColor() {
 			return new Vector4f(((Float)this.dataManager.get(RED)).floatValue(), ((Float)this.dataManager.get(GREEN)).floatValue(),
 			                    ((Float)this.dataManager.get(BLUE)).floatValue(), ((Float)this.dataManager.get(ALPHA)).floatValue());
+		}
+
+		public Vector4f getColor(float partialTicks) {
+			return this.getColor();
 		}
 
 		protected void setColor(float r, float g, float b, float a) {
@@ -142,6 +148,10 @@ public class EntityParticle extends ElementsNarutomodMod.ModElement {
 				float scale = this.getScale();
 				this.setSize(0.2f * scale, 0.2f * scale);
 			}
+		}
+
+		public boolean shouldDisableDepth() {
+			return false;
 		}
 
 		@Override
@@ -172,8 +182,10 @@ public class EntityParticle extends ElementsNarutomodMod.ModElement {
 	            this.setEntityBoundingBox(this.getEntityBoundingBox().offset(x, y, z));
 	        }
 	        this.resetPositionToBB();
-	        this.onGround = d0 != y && d0 < 0.0D;
 	        this.collidedHorizontally = origX != x || origZ != z;
+	        this.collidedVertically = d0 != y;
+	        this.collided = this.collidedHorizontally || this.collidedVertically;
+	        this.onGround = this.collidedVertically && d0 < 0.0D;
 	        if (origX != x) {
 	            this.motionX = 0.0D;
 	        }
@@ -182,14 +194,12 @@ public class EntityParticle extends ElementsNarutomodMod.ModElement {
 	        }
 	    }
 
+	    public void onDeath() {
+	    	this.setDead();
+	    }
+
 		@Override
 		public void onUpdate() {
-			//if (this.world.isRemote) {
-			//	float scale = this.getScale();
-			//	if (scale != 1.0f) {
-			//		this.setSize(0.2f * scale, 0.2f * scale);
-			//	}
-			//}
 			this.prevPosX = this.posX;
 			this.prevPosY = this.posY;
 			this.prevPosZ = this.posZ;
@@ -197,18 +207,19 @@ public class EntityParticle extends ElementsNarutomodMod.ModElement {
 			this.motionX *= 0.8D;
 			this.motionY *= 0.8D;
 			this.motionZ *= 0.8D;
-			double d = this.getVelocity();
-			this.idleTime = d < 0.001d ? this.idleTime + 1 : 0;
 			int age = this.getAge() + 1;
 			this.setAge(age);
-			this.setParticleTextureOffset(this.texU + (d > 0.01d ? 1 : 0) % 8);
-			if (!this.world.isRemote && (age > this.getMaxAge() || this.idleTime > 1000)) {
-				this.setDead();
+			if (age > this.getMaxAge()) {
+				this.onDeath();
 			}
 		}
 
 		public void setParticleTextureOffset(int offset) {
 			this.texU = offset;
+		}
+
+		protected int getTexV() {
+			return 0;
 		}
 
 		public double getVelocity() {
@@ -240,60 +251,73 @@ public class EntityParticle extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-	@SideOnly(Side.CLIENT)
-	public class CustomRender extends Render<Base> {
-		private final ResourceLocation TEXTURE = new ResourceLocation("narutomod:textures/particles.png");
+	@Override
+	public void preInit(FMLPreInitializationEvent event) {
+		new Renderer().register();
+	}
 
-		public CustomRender(RenderManager renderManager) {
-			super(renderManager);
+	public static class Renderer extends EntityRendererRegister {
+		@SideOnly(Side.CLIENT)
+		@Override
+		public void register() {
+			RenderingRegistry.registerEntityRenderingHandler(Base.class, renderManager -> new CustomRender(renderManager));
 		}
 
-		@Override
-		public void doRender(Base entity, double x, double y, double z, float entityYaw, float partialTicks) {
-			this.bindEntityTexture(entity);
-			GlStateManager.pushMatrix();
-			GlStateManager.translate(x, y, z);
-			//GlStateManager.enableRescaleNormal();
-			float scale = entity.getScale();
-			GlStateManager.scale(scale, scale, scale);
-			Tessellator tessellator = Tessellator.getInstance();
-			BufferBuilder bufferbuilder = tessellator.getBuffer();
-			GlStateManager.rotate(180.0F - this.renderManager.playerViewY, 0.0F, 1.0F, 0.0F);
-			GlStateManager.rotate((this.renderManager.options.thirdPersonView == 2 ? -1f : 1f) * -this.renderManager.playerViewX,
-			 1.0F, 0.0F, 0.0F);
-			double d = (double)entity.texU / 8d;
-			double d1 = d + 0.125d;
-			double d2 = entity.texV;
-			double d3 = d2 + 0.125d;
-			Vector4f vec = entity.getColor();
-			if (vec.w < 1.0F) {
-				GlStateManager.enableAlpha();
-				GlStateManager.enableBlend();
-				GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+		@SideOnly(Side.CLIENT)
+		public class CustomRender extends Render<Base> {
+			private final ResourceLocation texture = new ResourceLocation("narutomod:textures/particles.png");
+	
+			public CustomRender(RenderManager renderManager) {
+				super(renderManager);
 			}
-			GlStateManager.disableLighting();
-			GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-			int i = entity.getBrightnessForRender();
-			int j = i >> 16 & 0xFFFF;
-			int k = i & 0xFFFF;
-			bufferbuilder.begin(7, DefaultVertexFormats.PARTICLE_POSITION_TEX_COLOR_LMAP);
-			bufferbuilder.pos(-0.1D, 0.0D, 0.0D).tex(d, d3).color(vec.x, vec.y, vec.z, vec.w).lightmap(j, k).endVertex();
-			bufferbuilder.pos(0.1D, 0.0D, 0.0D).tex(d1, d3).color(vec.x, vec.y, vec.z, vec.w).lightmap(j, k).endVertex();
-			bufferbuilder.pos(0.1D, 0.2D, 0.0D).tex(d1, d2).color(vec.x, vec.y, vec.z, vec.w).lightmap(j, k).endVertex();
-			bufferbuilder.pos(-0.1D, 0.2D, 0.0D).tex(d, d2).color(vec.x, vec.y, vec.z, vec.w).lightmap(j, k).endVertex();
-			tessellator.draw();
-			GlStateManager.enableLighting();
-			if (vec.w < 1.0F) {
-				GlStateManager.disableBlend();
-				GlStateManager.disableAlpha();
+	
+			@Override
+			public void doRender(Base entity, double x, double y, double z, float entityYaw, float partialTicks) {
+				this.bindEntityTexture(entity);
+				GlStateManager.pushMatrix();
+				GlStateManager.translate(x, y, z);
+				float scale = entity.getScale(partialTicks);
+				GlStateManager.scale(scale, scale, scale);
+				Tessellator tessellator = Tessellator.getInstance();
+				BufferBuilder bufferbuilder = tessellator.getBuffer();
+				GlStateManager.rotate(180.0F - this.renderManager.playerViewY, 0.0F, 1.0F, 0.0F);
+				GlStateManager.rotate((this.renderManager.options.thirdPersonView == 2 ? -1f : 1f) * -this.renderManager.playerViewX,
+				 1.0F, 0.0F, 0.0F);
+				double d = (double)entity.texU / 8.0D;
+				double d1 = d + 0.125d;
+				double d2 = (double)entity.getTexV() / 8.0D;
+				double d3 = d2 + 0.125d;
+				Vector4f vec = entity.getColor(partialTicks);
+				if (vec.w < 1.0F) {
+					GlStateManager.enableAlpha();
+					GlStateManager.enableBlend();
+					GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+				}
+				GlStateManager.depthMask(!entity.shouldDisableDepth());
+				GlStateManager.disableLighting();
+				GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+				int i = entity.getBrightnessForRender();
+				int j = i >> 16 & 0xFFFF;
+				int k = i & 0xFFFF;
+				bufferbuilder.begin(7, DefaultVertexFormats.PARTICLE_POSITION_TEX_COLOR_LMAP);
+				bufferbuilder.pos(-0.1D, 0.0D, 0.0D).tex(d, d3).color(vec.x, vec.y, vec.z, vec.w).lightmap(j, k).endVertex();
+				bufferbuilder.pos(0.1D, 0.0D, 0.0D).tex(d1, d3).color(vec.x, vec.y, vec.z, vec.w).lightmap(j, k).endVertex();
+				bufferbuilder.pos(0.1D, 0.2D, 0.0D).tex(d1, d2).color(vec.x, vec.y, vec.z, vec.w).lightmap(j, k).endVertex();
+				bufferbuilder.pos(-0.1D, 0.2D, 0.0D).tex(d, d2).color(vec.x, vec.y, vec.z, vec.w).lightmap(j, k).endVertex();
+				tessellator.draw();
+				GlStateManager.enableLighting();
+				GlStateManager.depthMask(true);
+				if (vec.w < 1.0F) {
+					GlStateManager.disableBlend();
+					GlStateManager.disableAlpha();
+				}
+				GlStateManager.popMatrix();
 			}
-			//GlStateManager.disableRescaleNormal();
-			GlStateManager.popMatrix();
-		}
-
-		@Override
-		protected ResourceLocation getEntityTexture(Base entity) {
-			return TEXTURE;
+	
+			@Override
+			protected ResourceLocation getEntityTexture(Base entity) {
+				return this.texture;
+			}
 		}
 	}
 }

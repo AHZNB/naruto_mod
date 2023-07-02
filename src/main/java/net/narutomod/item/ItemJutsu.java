@@ -1,14 +1,22 @@
 
 package net.narutomod.item;
 
+import net.minecraft.entity.item.EntityItem;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 
 import net.minecraft.world.World;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.ActionResult;
+import net.minecraft.util.EntityDamageSourceIndirect;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Item;
 import net.minecraft.item.EnumAction;
@@ -16,27 +24,22 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.EntityDamageSourceIndirect;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraft.util.ResourceLocation;
 
 import net.narutomod.ElementsNarutomodMod;
 import net.narutomod.procedure.ProcedureUtils;
+import net.narutomod.procedure.ProcedureOnLivingUpdate;
+import net.narutomod.procedure.ProcedureUpdateworldtick;
 import net.narutomod.Chakra;
 import net.narutomod.Particles;
 import net.narutomod.PlayerTracker;
 
 import com.google.common.collect.ImmutableList;
-import java.util.List;
 import com.google.common.collect.Lists;
-import javax.annotation.Nullable;
+import java.util.List;
 import java.util.UUID;
+import javax.annotation.Nullable;
 
 public class ItemJutsu extends ElementsNarutomodMod.ModElement {
 	public static final String NINJUTSU_TYPE = "ninjutsu_damage";
@@ -54,7 +57,7 @@ public class ItemJutsu extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static DamageSource causeSenjutsuDamage(Entity source, @Nullable EntityLivingBase indirectEntityIn) {
-		return new EntityDamageSourceIndirect(SENJUTSU_TYPE, source, indirectEntityIn);
+		return new EntityDamageSourceIndirect(SENJUTSU_TYPE, source, indirectEntityIn).setDamageIsAbsolute();
 	}
 
 	public static boolean isDamageSourceNinjutsu(DamageSource source) {
@@ -63,12 +66,15 @@ public class ItemJutsu extends ElementsNarutomodMod.ModElement {
 
 	public static boolean canTarget(@Nullable Entity targetIn) {
 		return targetIn != null && targetIn.isEntityAlive() 
-		 && !targetIn.getEntityData().getBoolean("kamui_intangible");
+		 //&& !targetIn.getEntityData().getBoolean("kamui_intangible")
+		 && !ProcedureOnLivingUpdate.isUntargetable(targetIn)
+		 && (!(targetIn instanceof EntityPlayer) || !((EntityPlayer)targetIn).isSpectator());
 	}
 
-	public static void setCurrentJutsuCooldown(ItemStack stack, EntityPlayer player, long cd) {
-		if (stack.getItem() instanceof Base)
-			((ItemJutsu.Base)stack.getItem()).setCurrentJutsuCooldown(stack, (long)ProcedureUtils.modifiedCooldown((double)cd, player));
+	public static void setCurrentJutsuCooldown(ItemStack stack, EntityLivingBase player, long cd) {
+		if (stack.getItem() instanceof Base) {
+			((Base)stack.getItem()).setCurrentJutsuCooldown(stack, (long)((double)cd * ((Base)stack.getItem()).getModifier(stack, player)));
+		}
 	}
 
 	public static void logBattleXP(EntityPlayer player) {
@@ -77,7 +83,7 @@ public class ItemJutsu extends ElementsNarutomodMod.ModElement {
 			stack = player.getHeldItemOffhand();
 		}
 		if (stack.getItem() instanceof Base) {
-			Base baseitem = ((Base)stack.getItem());
+			Base baseitem = (Base)stack.getItem();
 			if (baseitem.getCurrentJutsuXp(stack) < baseitem.getCurrentJutsuRequiredXp(stack)) {
 				baseitem.addCurrentJutsuXp(stack, 1);
 			}
@@ -168,18 +174,23 @@ public class ItemJutsu extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public void onUsingTick(ItemStack stack, EntityLivingBase player, int timeLeft) {
-			if (player instanceof EntityPlayer && !player.world.isRemote) {
-				((EntityPlayer)player).sendStatusMessage(
-					new TextComponentString(String.format("%.1f", this.getPower(stack, player, timeLeft))), true);
+			if (!(player instanceof EntityPlayer) || PlayerTracker.isNinja((EntityPlayer)player)) {
+				if (player instanceof EntityPlayer && !player.world.isRemote) {
+					((EntityPlayer)player).sendStatusMessage(
+						new TextComponentString(String.format("%.1f", this.getPower(stack, player, timeLeft))), true);
+				}
 			}
-			if (player.world.isRemote) {
+			this.onUsingEffects(player);
+		}
+
+		protected void onUsingEffects(EntityLivingBase player) {
+			if (!player.world.isRemote) {
 				Particles.spawnParticle(player.world, Particles.Types.SMOKE, player.posX, player.posY, player.posZ, 
 				 40, 0.2d, 0d, 0.2d, 0d, 0.5d, 0d, 0x106AD1FF, 40, 5, 0xF0, player.getEntityId());
 			}
-			if (timeLeft % 10 == 0) {
+			if (player.ticksExisted % 10 == 0) {
 				player.world.playSound(null, player.posX, player.posY, player.posZ,
-				 (net.minecraft.util.SoundEvent)net.minecraft.util.SoundEvent.REGISTRY
-				 .getObject(new ResourceLocation("narutomod:charging_chakra")),
+				 net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:charging_chakra")),
 				 net.minecraft.util.SoundCategory.PLAYERS, 0.05F, itemRand.nextFloat() + 0.5F);
 			}
 		}
@@ -252,13 +263,26 @@ public class ItemJutsu extends ElementsNarutomodMod.ModElement {
 			stack.getTagCompound().setIntArray(XPMAP_KEY, xpmap);
 		}
 
+		public void addJutsuXp(ItemStack stack, JutsuEnum jutsuIn, int xp) {
+			if (this.jutsuList.contains(jutsuIn)) {
+				this.addJutsuXp(stack, jutsuIn.index,
+				 Math.min(this.getRequiredXp(stack, jutsuIn.index) * 3 - this.getJutsuXp(stack, jutsuIn.index), xp));
+			}
+		}
+
 		public void addCurrentJutsuXp(ItemStack stack, int xp) {
-			this.addJutsuXp(stack, this.getCurrentJutsuIndex(stack), xp);
+			this.addJutsuXp(stack, this.getCurrentJutsuIndex(stack),
+			 Math.min(this.getCurrentJutsuRequiredXp(stack) * 3 - this.getCurrentJutsuXp(stack), xp));
 		}
 
 		private int getRequiredXp(ItemStack stack, int index) {
 			int requiredXp = this.jutsuList.get(index).requiredXP;
-			return this.isAffinity(stack) ? requiredXp : requiredXp * 2;
+			return this.isAffinity(stack) ? requiredXp : (int)((float)requiredXp * 2.5f);
+		}
+
+		public float getXpRatio(ItemStack stack, JutsuEnum jutsuIn) {
+			return this.jutsuList.contains(jutsuIn) ?
+			 (float)this.getJutsuXp(stack, jutsuIn.index) / (float)this.getRequiredXp(stack, jutsuIn.index) : 0;
 		}
 
 		public int getCurrentJutsuRequiredXp(ItemStack stack) {
@@ -296,11 +320,10 @@ public class ItemJutsu extends ElementsNarutomodMod.ModElement {
 
 		private void setJutsuCooldown(ItemStack stack, int index, long cd) {
 			this.validateMapTags(stack, index);
-			stack.getTagCompound().setLong(CDMAP_KEY+index, 
-			  FMLCommonHandler.instance().getMinecraftServerInstance().getWorld(0).getTotalWorldTime() + cd);
+			stack.getTagCompound().setLong(CDMAP_KEY+index, ProcedureUpdateworldtick.getTotalWorldTime() + cd);
 		}
 
-		protected void setJutsuCooldown(ItemStack stack, JutsuEnum jutsuIn, long cd) {
+		public void setJutsuCooldown(ItemStack stack, JutsuEnum jutsuIn, long cd) {
 			if (this.jutsuList.contains(jutsuIn) && this.isJutsuEnabled(stack, jutsuIn.index)) {
 				this.setJutsuCooldown(stack, jutsuIn.index, cd);
 			}
@@ -325,6 +348,15 @@ public class ItemJutsu extends ElementsNarutomodMod.ModElement {
 
 		public boolean isJutsuEnabled(ItemStack stack, JutsuEnum jutsuIn) {
 			return this.jutsuList.contains(jutsuIn) && this.isJutsuEnabled(stack, jutsuIn.index);
+		}
+
+		public boolean isAnyJutsuEnabled(ItemStack stack) {
+			for (JutsuEnum je : this.jutsuList) {
+				if (this.isJutsuEnabled(stack, je.index)) {
+					return true;
+				}
+			}
+			return false;
 		}
 
 		public List<JutsuEnum> getActivatedJutsus(ItemStack stack) {
@@ -373,7 +405,7 @@ public class ItemJutsu extends ElementsNarutomodMod.ModElement {
 			if (i < this.jutsuList.size()) {
 				stack.getTagCompound().setInteger(JUTSU_INDEX_KEY, next);
 				if (entity instanceof EntityPlayer && !entity.world.isRemote)
-					((EntityPlayer)entity).sendStatusMessage(new TextComponentString(this.jutsuList.get(next).getName()), true);
+					((EntityPlayer) entity).sendStatusMessage(new TextComponentString(this.jutsuList.get(next).getName()), true);
 			}
 		}
 
@@ -433,7 +465,7 @@ public class ItemJutsu extends ElementsNarutomodMod.ModElement {
 			}
 			return stack.getTagCompound().getUniqueId(OWNER_ID_KEY).equals(entity.getUniqueID());
 		}
-	
+
 		@Override
 		public void onUpdate(ItemStack itemstack, World world, Entity entity, int par4, boolean par5) {
 			super.onUpdate(itemstack, world, entity, par4, par5);
@@ -467,10 +499,6 @@ public class ItemJutsu extends ElementsNarutomodMod.ModElement {
 				}
 				long cd = this.getJutsuCooldown(stack, jutsuIn.index);
 				if (cd > entity.world.getTotalWorldTime()) {
-					if (!entity.world.isRemote) {
-						entity.sendStatusMessage(new TextComponentTranslation("chattext.cooldown.formatted", 
-						 (cd - entity.world.getTotalWorldTime()) / 20), true);
-					}
 					return EnumActionResult.PASS;
 				} else if (cd < 0) {
 					return EnumActionResult.FAIL;
@@ -482,28 +510,14 @@ public class ItemJutsu extends ElementsNarutomodMod.ModElement {
 		@Override
 		public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer entity, EnumHand hand) {
 			ItemStack stack = entity.getHeldItem(hand);
-			if (!entity.isCreative()) {
-				if (!this.canUseCurrentJutsu(stack, entity)) {
-					return new ActionResult<ItemStack>(EnumActionResult.FAIL, stack);
-				}
-				//if (entity.experienceLevel < this.getCurrentJutsu(stack).requiredXP 
-				if (this.getCurrentJutsuXp(stack) < this.getCurrentJutsuRequiredXp(stack)
-				 || !PlayerTracker.isNinja(entity)) {
-					return new ActionResult<ItemStack>(EnumActionResult.FAIL, stack);
-				}
-				long cd = this.getCurrentJutsuCooldown(stack);
-				if (cd > world.getTotalWorldTime()) {
-					if (!world.isRemote) {
-						entity.sendStatusMessage(new TextComponentTranslation("chattext.cooldown.formatted", 
-						 (cd - world.getTotalWorldTime()) / 20), true);
-					}
-					return new ActionResult<ItemStack>(EnumActionResult.PASS, stack);
-				} else if (cd < 0) {
-					return new ActionResult<ItemStack>(EnumActionResult.FAIL, stack);
-				}
+			EnumActionResult res = this.canActivateJutsu(stack, this.getCurrentJutsu(stack), entity);
+			if (res == EnumActionResult.PASS && !world.isRemote) {
+				entity.sendStatusMessage(new TextComponentTranslation("chattext.cooldown.formatted", 
+				 (this.getCurrentJutsuCooldown(stack) - world.getTotalWorldTime()) / 20), true);
+			} else if (res == EnumActionResult.SUCCESS) {
+				entity.setActiveHand(hand);
 			}
-			entity.setActiveHand(hand);
-			return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, stack);
+			return new ActionResult<ItemStack>(res, stack);
 		}
 
 		@Override
@@ -541,8 +555,35 @@ public class ItemJutsu extends ElementsNarutomodMod.ModElement {
 	
 	public interface IJutsuCallback {
 		boolean createJutsu(ItemStack stack, EntityLivingBase entity, float power);
-		default boolean isActivated(ItemStack stack) { return false; }
-		default float getPower(ItemStack stack) { return 0.0f; }
+		
+		default boolean isActivated(ItemStack stack) {
+			return false;
+		}
+		
+		default boolean isActivated(EntityLivingBase entity) {
+			return false;
+		}
+		
+		default void deactivate(EntityLivingBase entity) {
+		}
+		
+		default float getPower(ItemStack stack) {
+			return 0.0f;
+		}
+		
+		default JutsuData getData(EntityLivingBase entity) {
+			return null;
+		}
+
+		public static class JutsuData {
+			public final Entity entity;
+			public final ItemStack stack;
+
+			public JutsuData(Entity entityIn, ItemStack stackIn) {
+				this.entity = entityIn;
+				this.stack = stackIn;
+			}
+		}
 	}
 
 	public static class JutsuEnum {
@@ -647,7 +688,8 @@ public class ItemJutsu extends ElementsNarutomodMod.ModElement {
 			TENSEIGAN,
 			SENJUTSU,
 			SIXPATHSENJUTSU,
-			KEKKEIMORA;
+			KEKKEIMORA,
+			OTHER;
 		}
 	}
 }

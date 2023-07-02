@@ -1,6 +1,6 @@
 {
-  "parent": "item/generated",
+  "parent": "narutomod:custom/mangekyo_amaterasu",
   "textures": {
-    "layer0": "narutomod:items/mangekyosharingan_sasuke"
+    "1": "narutomod:blocks/mangekyosharingan_sasuke"
   }
 }

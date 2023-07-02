@@ -1,0 +1,6 @@
+{
+  "parent": "narutomod:custom/scythe3blade_thrown",
+  "textures": {
+    "0": "narutomod:blocks/scythe_3blade_red"
+  }
+}

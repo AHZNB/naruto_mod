@@ -10,22 +10,22 @@
     "recipeShapeless": false,
     "recipeSlots": [
       {
-        "value": ""
+        "value": "Items.IRON_INGOT"
       },
       {
         "value": ""
       },
       {
-        "value": ""
+        "value": "Items.IRON_INGOT"
       },
       {
-        "value": ""
+        "value": "Items.IRON_INGOT"
       },
       {
         "value": "Items.IRON_CHESTPLATE"
       },
       {
-        "value": ""
+        "value": "Items.IRON_INGOT"
       },
       {
         "value": "Items.IRON_INGOT"

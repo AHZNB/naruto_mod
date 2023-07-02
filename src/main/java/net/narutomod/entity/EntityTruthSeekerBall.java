@@ -64,12 +64,6 @@ public class EntityTruthSeekerBall extends ElementsNarutomodMod.ModElement {
 		 .id(new ResourceLocation("narutomod", "truthseekerball"), ENTITYID).name("truthseekerball").tracker(96, 3, true).build());
 	}
 
-	@SideOnly(Side.CLIENT)
-	@Override
-	public void preInit(FMLPreInitializationEvent event) {
-		RenderingRegistry.registerEntityRenderingHandler(EntityCustom.class, renderManager -> new RenderCustom(renderManager));
-	}
-
 	public static class EntityCustom extends EntityScalableProjectile.Base {
 		private static final Vec3d[] VEC = {
 			new Vec3d(0.0d, 2.0387d, -0.4395d), new Vec3d(-0.4102d, 1.7629d, -0.4395d), 
@@ -98,6 +92,7 @@ public class EntityTruthSeekerBall extends ElementsNarutomodMod.ModElement {
 			this.isImmuneToFire = true;
 			this.setOGSize(0.25F, 0.25F);
 			this.setEntityScale(this.inititalScale);
+			this.setNoGravity(true);
 		}
 
 		public EntityCustom(EntityLivingBase shooter, int posIndex, ItemStack helditem) {
@@ -147,13 +142,17 @@ public class EntityTruthSeekerBall extends ElementsNarutomodMod.ModElement {
 		@Override
 		public boolean attackEntityFrom(DamageSource source, float amount) {
 			if (!this.world.isRemote && !this.getIsInvulnerable()) {
-				if (source.getDamageType().equals(ItemJutsu.NINJUTSU_TYPE)) {
+				if (ItemJutsu.isDamageSourceNinjutsu(source)) {
 					Entity entity = source.getImmediateSource();
 					if (entity != null && !(entity instanceof EntityLivingBase)) {
 						entity.setDead();
 					}
 				} else if (source.getTrueSource() == null || !source.getTrueSource().equals(this.shootingEntity)) {
+					if (this.hurtResistantTime > 10) {
+						return false;
+					}
 					this.hp -= amount;
+					this.hurtResistantTime = 20;
 					if (this.hp <= 0.0f) {
 						this.onDeath();
 					}
@@ -238,7 +237,7 @@ public class EntityTruthSeekerBall extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void shoot(double x, double y, double z, float speed, float inaccuracy) {
 			super.shoot(x, y, z, speed, inaccuracy);
-			this.targetTime = this.maxScale <= this.shieldSize ? (int)MathHelper.sqrt(1400.0d / speed) : 200;
+			this.targetTime = this.maxScale <= this.shieldSize ? (int)MathHelper.sqrt(1600.0d / speed) : 200;
 		}
 
 		private void setVelocity(Vec3d vec) {
@@ -293,6 +292,9 @@ public class EntityTruthSeekerBall extends ElementsNarutomodMod.ModElement {
 			  && !this.shootingEntity.getHeldItemOffhand().equals(this.heldItem)))))) {
 				this.setDead();
 			}
+			if (this.hurtResistantTime > 0) {
+				--this.hurtResistantTime;
+			}
 		}
 
 		public void toggleShield() {
@@ -343,7 +345,7 @@ public class EntityTruthSeekerBall extends ElementsNarutomodMod.ModElement {
 				return;
 			if (!this.world.isRemote) {
 				float radius = this.getEntityScale() * 4f + 15f;
-				Particles.spawnParticle(this. world, Particles.Types.EXPANDING_SPHERE, this.posX, this.posY, this.posZ, 1,
+				Particles.spawnParticle(this.world, Particles.Types.EXPANDING_SPHERE, this.posX, this.posY, this.posZ, 1,
 				 0d, 0d, 0d, 0d, 0d, 0d, 192d, (int)(radius * 10f), (int)(radius * 4), 0);
 				//EntitySpecialEffect.spawn(this.world, EntitySpecialEffect.Type.EXPANDING_SPHERES_FADE_TO_BLACK,
 				// radius, (int)(radius * 2), this.posX, this.posY, this.posZ);
@@ -392,9 +394,9 @@ public class EntityTruthSeekerBall extends ElementsNarutomodMod.ModElement {
 	            double d1 = entityIn.posZ - this.posZ;
                 entityIn.addVelocity(d0 * 0.15D, 0.0D, d1 * 0.15D);
                 if (this.target != null) {
-					entityIn.hurtResistantTime = 0;
+					entityIn.hurtResistantTime = 10;
 	                if (entityIn instanceof EntityLivingBase) {
-						entityIn.attackEntityFrom(ItemJutsu.SENJUTSU_DAMAGE, 10.0f);
+						entityIn.attackEntityFrom(ItemJutsu.causeSenjutsuDamage(this, this.shootingEntity), 10.0f);
 	                } else if (!(entityIn instanceof EntityCustom)
 	                 || (this.shootingEntity != null && !this.shootingEntity.equals(((EntityCustom)entityIn).shootingEntity))) {
 	                	entityIn.onKillCommand();
@@ -404,58 +406,71 @@ public class EntityTruthSeekerBall extends ElementsNarutomodMod.ModElement {
 	    }
 	}
 
-	@SideOnly(Side.CLIENT)
-	public class RenderCustom extends Render<EntityCustom> {
-		private final ResourceLocation TEXTURE = new ResourceLocation("narutomod:textures/truthhseekerball.png");
-		protected ModelBase mainModel;
-
-		public RenderCustom(RenderManager renderManagerIn) {
-			super(renderManagerIn);
-			this.mainModel = new ModelTruthSeekerBall();
-		}
-
-		@Override
-		public void doRender(EntityCustom entity, double x, double y, double z, float entityYaw, float partialTicks) {
-			this.bindEntityTexture(entity);			
-			GlStateManager.pushMatrix();
-			GlStateManager.disableCull();
-			float scale = entity.getEntityScale();
-			GlStateManager.translate(x, y + (0.125F * scale), z);
-			GlStateManager.scale(scale, scale, scale);
-			if (!entity.isShieldOn()) {
-				GlStateManager.rotate(((float)entity.ticksExisted + partialTicks) * 60.0F, 1.0F, 1.0F, 0.0F);
-			}
-			GlStateManager.disableLighting();
-			//OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240.0F, 240.0F);
-			this.mainModel.render(entity, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
-			GlStateManager.enableLighting();
-			GlStateManager.enableCull();
-			GlStateManager.popMatrix();
-			
-			//super.doRender(entity, x, y, z, entityYaw, partialTicks);
-		}
-
-		@Override
-		protected ResourceLocation getEntityTexture(EntityCustom entity) {
-			return TEXTURE;
-		}
+	@Override
+	public void preInit(FMLPreInitializationEvent event) {
+		new Renderer().register();
 	}
 
-	@SideOnly(Side.CLIENT)
-	public class ModelTruthSeekerBall extends ModelBase {
-		private final ModelRenderer bb_main;
-
-		public ModelTruthSeekerBall() {
-			this.textureWidth = 16;
-			this.textureHeight = 16;
-			this.bb_main = new ModelRenderer(this);
-			this.bb_main.setRotationPoint(0.0F, 2.0F, 0.0F);
-			this.bb_main.cubeList.add(new ModelBox(this.bb_main, 0, 0, -2.0F, -4.0F, -2.0F, 4, 4, 4, 0.0F, false));
+	public static class Renderer extends EntityRendererRegister {
+		@SideOnly(Side.CLIENT)
+		@Override
+		public void register() {
+			RenderingRegistry.registerEntityRenderingHandler(EntityCustom.class, renderManager -> new RenderCustom(renderManager));
 		}
 
-		@Override
-		public void render(Entity entityIn, float f0, float f1, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
-			this.bb_main.render(scale);
+		@SideOnly(Side.CLIENT)
+		public class RenderCustom extends Render<EntityCustom> {
+			private final ResourceLocation texture = new ResourceLocation("narutomod:textures/truthhseekerball.png");
+			protected ModelBase mainModel;
+	
+			public RenderCustom(RenderManager renderManagerIn) {
+				super(renderManagerIn);
+				this.mainModel = new ModelTruthSeekerBall();
+			}
+	
+			@Override
+			public void doRender(EntityCustom entity, double x, double y, double z, float entityYaw, float partialTicks) {
+				this.bindEntityTexture(entity);			
+				GlStateManager.pushMatrix();
+				GlStateManager.disableCull();
+				float scale = entity.getEntityScale();
+				GlStateManager.translate(x, y + (0.125F * scale), z);
+				GlStateManager.scale(scale, scale, scale);
+				if (!entity.isShieldOn()) {
+					GlStateManager.rotate(((float)entity.ticksExisted + partialTicks) * 90.0F, 1.0F, 1.0F, 0.0F);
+				}
+				GlStateManager.disableLighting();
+				//OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240.0F, 240.0F);
+				this.mainModel.render(entity, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
+				GlStateManager.enableLighting();
+				GlStateManager.enableCull();
+				GlStateManager.popMatrix();
+				
+				//super.doRender(entity, x, y, z, entityYaw, partialTicks);
+			}
+	
+			@Override
+			protected ResourceLocation getEntityTexture(EntityCustom entity) {
+				return this.texture;
+			}
+		}
+	
+		@SideOnly(Side.CLIENT)
+		public class ModelTruthSeekerBall extends ModelBase {
+			private final ModelRenderer bb_main;
+	
+			public ModelTruthSeekerBall() {
+				this.textureWidth = 16;
+				this.textureHeight = 16;
+				this.bb_main = new ModelRenderer(this);
+				this.bb_main.setRotationPoint(0.0F, 2.0F, 0.0F);
+				this.bb_main.cubeList.add(new ModelBox(this.bb_main, 0, 0, -2.0F, -4.0F, -2.0F, 4, 4, 4, 0.0F, false));
+			}
+	
+			@Override
+			public void render(Entity entityIn, float f0, float f1, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
+				this.bb_main.render(scale);
+			}
 		}
 	}
 }

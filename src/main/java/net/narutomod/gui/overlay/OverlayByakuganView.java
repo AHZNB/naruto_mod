@@ -11,6 +11,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
+import net.minecraftforge.client.event.MouseEvent;
 
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.MathHelper;
@@ -122,7 +123,7 @@ public class OverlayByakuganView extends ElementsNarutomodMod.ModElement {
 					this.setFOV(player);
 					for (EntityLivingBase entitylb : mc.world.getEntitiesWithinAABB(EntityLivingBase.class, 
 					 player.getEntityBoundingBox().grow(mc.gameSettings.renderDistanceChunks * 8))) {
-						if (!entitylb.isGlowing() && !entitylb.equals(player)) {
+						if (!entitylb.isGlowing() && !entitylb.equals(player)) {
 							entitylb.setGlowing(true);
 							this.glowList.add(entitylb);
 						}
@@ -171,6 +172,18 @@ public class OverlayByakuganView extends ElementsNarutomodMod.ModElement {
 				}
 				mc.gameSettings.renderDistanceChunks = this.prevRenderDistance;
 				this.first_on = true;
+			}
+		}
+
+		@SubscribeEvent
+		@SideOnly(Side.CLIENT)
+		public void onMouseEvent(MouseEvent event) {
+			if ((event.getButton() == 0 || event.getButton() == 1) && event.isButtonstate()) {
+				Minecraft mc = Minecraft.getMinecraft();
+
+				if (mc.objectMouseOver != null && mc.objectMouseOver.entityHit instanceof EntityPlayer && mc.objectMouseOver.entityHit.equals(mc.player)) {
+					event.setCanceled(true);
+				}
 			}
 		}
 	}

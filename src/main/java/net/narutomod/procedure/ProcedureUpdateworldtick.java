@@ -16,16 +16,33 @@ import java.util.Map;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class ProcedureUpdateworldtick extends ElementsNarutomodMod.ModElement {
+	private static long TOTAL_WORLD_TIME;
+	
 	public ProcedureUpdateworldtick(ElementsNarutomodMod instance) {
 		super(instance, 36);
 	}
 
 	public static void executeProcedure(Map<String, Object> dependencies) {
+		if (dependencies.get("world") == null) {
+			System.err.println("Failed to load dependency world for procedure Updateworldtick!");
+			return;
+		}
+		World world = (World) dependencies.get("world");
 		NarutomodModVariables.world_tick = (double) ((NarutomodModVariables.world_tick) + 0.5);
-		SpecialEvent.executeSpecialEvent();
-		if (((((TickEvent.WorldTickEvent) dependencies.get("event")).world.getTotalWorldTime() % 40) == 0)) {
+		SpecialEvent.executeEvents();
+		long l = world.getTotalWorldTime();
+		if (world.provider.getDimension() == 0) {
+			TOTAL_WORLD_TIME = l;
+		} else if (l != TOTAL_WORLD_TIME) {
+			world.getWorldInfo().setWorldTotalTime(TOTAL_WORLD_TIME);
+		}
+		if (l % 40 == 0) {
 			EntityTracker.clearRemovedData();
 		}
+	}
+
+	public static long getTotalWorldTime() {
+		return TOTAL_WORLD_TIME;
 	}
 
 	@SubscribeEvent

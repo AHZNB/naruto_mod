@@ -21,11 +21,13 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.Block;
+import net.minecraft.entity.EntityLiving;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class BlockKamuiBlock extends ElementsNarutomodMod.ModElement {
 	@GameRegistry.ObjectHolder("narutomod:kamuiblock")
 	public static final Block block = null;
+
 	public BlockKamuiBlock(ElementsNarutomodMod instance) {
 		super(instance, 120);
 	}
@@ -54,6 +56,11 @@ public class BlockKamuiBlock extends ElementsNarutomodMod.ModElement {
 			setBlockUnbreakable();
 		}
 
+		@Override
+		public boolean canCreatureSpawn(IBlockState state, IBlockAccess world, BlockPos pos, EntityLiving.SpawnPlacementType type) {
+			return false;
+		}
+		
 		@Override
 		public void getDrops(NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
 			drops.add(new ItemStack(Blocks.AIR, (int) (1)));

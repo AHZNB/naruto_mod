@@ -2,25 +2,25 @@
   "group": "narutomod",
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "  2",
-    "34 ",
-    "67 "
+    " 1 ",
+    " 4 ",
+    "678"
   ],
   "key": {
-    "2": {
+    "1": {
       "item": "minecraft:iron_block"
-    },
-    "3": {
-      "item": "minecraft:wool",
-      "data": 0
     },
     "4": {
       "item": "minecraft:iron_block"
     },
     "6": {
-      "item": "minecraft:iron_block"
+      "item": "minecraft:wool",
+      "data": 0
     },
     "7": {
+      "item": "minecraft:stick"
+    },
+    "8": {
       "item": "minecraft:string"
     }
   },

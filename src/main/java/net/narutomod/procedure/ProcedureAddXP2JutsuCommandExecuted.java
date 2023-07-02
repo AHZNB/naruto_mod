@@ -5,7 +5,11 @@ import net.narutomod.item.ItemEightGates;
 import net.narutomod.entity.EntityBijuManager;
 import net.narutomod.ElementsNarutomodMod;
 
+import net.minecraftforge.fml.common.FMLCommonHandler;
+
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.item.ItemStack;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
@@ -33,8 +37,7 @@ public class ProcedureAddXP2JutsuCommandExecuted extends ElementsNarutomodMod.Mo
 		double xp2add = 0;
 		ItemStack itemmainhand = ItemStack.EMPTY;
 		ItemStack itemoffhand = ItemStack.EMPTY;
-		itemmainhand = ((entity instanceof EntityLivingBase) ? ((EntityLivingBase) entity).getHeldItemMainhand() : ItemStack.EMPTY);
-		itemoffhand = ((entity instanceof EntityLivingBase) ? ((EntityLivingBase) entity).getHeldItemOffhand() : ItemStack.EMPTY);
+		String playerName = "";
 		xp2add = (double) new Object() {
 			int convert(String s) {
 				try {
@@ -52,16 +55,38 @@ public class ProcedureAddXP2JutsuCommandExecuted extends ElementsNarutomodMod.Mo
 				return "";
 			}
 		}.getText()));
-		if ((EntityBijuManager.cloakLevel((EntityPlayer) entity) > 0)) {
-			EntityBijuManager.addCloakXp((EntityPlayer) entity, (int) xp2add);
-		} else if (((itemmainhand).getItem() == new ItemStack(ItemEightGates.block, (int) (1)).getItem())) {
-			ItemEightGates.addBattleXP((EntityPlayer) entity, (int) xp2add);
-		} else if (itemmainhand.getItem() instanceof ItemJutsu.Base) {
-			ItemJutsu.addBattleXP((EntityPlayer) entity, (int) xp2add);
-		} else if (((itemoffhand).getItem() == new ItemStack(ItemEightGates.block, (int) (1)).getItem())) {
-			ItemEightGates.addBattleXP((EntityPlayer) entity, (int) xp2add);
-		} else if (itemoffhand.getItem() instanceof ItemJutsu.Base) {
-			ItemJutsu.addBattleXP((EntityPlayer) entity, (int) xp2add);
+		playerName = (String) (new Object() {
+			public String getText() {
+				String param = (String) cmdparams.get("1");
+				if (param != null) {
+					return param;
+				}
+				return "";
+			}
+		}.getText());
+		EntityPlayerMP player = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerByUsername(playerName);
+		if (player != null) {
+			entity = player;
+		}
+		if (((((playerName)).equals("")) || player != null)) {
+			itemmainhand = ((entity instanceof EntityLivingBase) ? ((EntityLivingBase) entity).getHeldItemMainhand() : ItemStack.EMPTY);
+			itemoffhand = ((entity instanceof EntityLivingBase) ? ((EntityLivingBase) entity).getHeldItemOffhand() : ItemStack.EMPTY);
+			if ((EntityBijuManager.cloakLevel((EntityPlayer) entity) > 0)) {
+				EntityBijuManager.addCloakXp((EntityPlayer) entity, (int) xp2add);
+			} else if (((itemmainhand).getItem() == new ItemStack(ItemEightGates.block, (int) (1)).getItem())) {
+				ItemEightGates.addBattleXP((EntityPlayer) entity, (int) xp2add);
+			} else if (itemmainhand.getItem() instanceof ItemJutsu.Base) {
+				ItemJutsu.addBattleXP((EntityPlayer) entity, (int) xp2add);
+			} else if (((itemoffhand).getItem() == new ItemStack(ItemEightGates.block, (int) (1)).getItem())) {
+				ItemEightGates.addBattleXP((EntityPlayer) entity, (int) xp2add);
+			} else if (itemoffhand.getItem() instanceof ItemJutsu.Base) {
+				ItemJutsu.addBattleXP((EntityPlayer) entity, (int) xp2add);
+			}
+		} else {
+			if (entity instanceof EntityPlayer && !entity.world.isRemote) {
+				((EntityPlayer) entity).sendStatusMessage(new TextComponentString((("No player found with user name  ") + "" + ((playerName)))),
+						(false));
+			}
 		}
 	}
 }

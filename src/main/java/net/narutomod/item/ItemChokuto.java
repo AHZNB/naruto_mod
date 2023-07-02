@@ -25,7 +25,7 @@ import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumHand;
 
-import net.narutomod.entity.EntitySusanooBase;
+//import net.narutomod.entity.EntitySusanooBase;
 import net.narutomod.creativetab.TabModTab;
 import net.narutomod.ElementsNarutomodMod;
 
@@ -49,7 +49,7 @@ public class ItemChokuto extends ElementsNarutomodMod.ModElement {
 
 	public static class ItemCustom extends ItemSword implements ItemOnBody.Interface {
 		public ItemCustom() {
-			super(EnumHelper.addToolMaterial("CHOKUTO", 1, 2000, 4f, 8f, 2));
+			super(EnumHelper.addToolMaterial("CHOKUTO", 1, 2000, 4f, 5f, 2));
 		}
 
 		@Override
@@ -64,7 +64,7 @@ public class ItemChokuto extends ElementsNarutomodMod.ModElement {
 			return multimap;
 		}
 
-		@Override
+		/*@Override
 		public void onUpdate(ItemStack itemstack, World world, Entity entity, int par4, boolean par5) {
 			super.onUpdate(itemstack, world, entity, par4, par5);
 			if (!world.isRemote && entity instanceof EntityLivingBase 
@@ -79,7 +79,7 @@ public class ItemChokuto extends ElementsNarutomodMod.ModElement {
 					susanoo.setShowSword(false);
 				}
 			}
-		}
+		}*/
 
 		@Override
 		public boolean isShield(ItemStack stack, EntityLivingBase entity) {

@@ -117,7 +117,7 @@ public class EntityFingerBone extends ElementsNarutomodMod.ModElement {
 				this.playSound((SoundEvent)SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:bullet_impact")),
 				 1f, 0.4f + this.rand.nextFloat() * 0.6f);
 				if (result.entityHit != null) {
-					result.entityHit.hurtResistantTime = 0;
+					result.entityHit.hurtResistantTime = 10;
 					result.entityHit.attackEntityFrom(DamageSource.causeThrownDamage(this, this.shootingEntity), this.damage);
 				}
 				this.setDead();
@@ -142,7 +142,7 @@ public class EntityFingerBone extends ElementsNarutomodMod.ModElement {
 				bullet.motionX = vec.x * 0.1d;
 				bullet.motionY = vec.y * 0.1d;
 				bullet.motionZ = vec.z * 0.1d;
-				bullet.shoot(vec.x, vec.y, vec.z, 0.95f, 0.05f);
+				bullet.shoot(vec.x, vec.y, vec.z, 1.2f, 0.05f);
 				entity.world.spawnEntity(bullet);
 			}
 		}

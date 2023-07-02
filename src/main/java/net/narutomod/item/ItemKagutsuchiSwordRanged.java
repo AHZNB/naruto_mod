@@ -12,6 +12,7 @@ import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraft.world.World;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.EnumParticleTypes;
@@ -39,11 +40,12 @@ import net.minecraft.client.renderer.BufferBuilder;
 
 import net.narutomod.procedure.ProcedureKagutsuchiSwordToolInUseTick;
 import net.narutomod.procedure.ProcedureAoeCommand;
-import net.narutomod.procedure.ProcedureAmaterasuPlaceBlock;
 import net.narutomod.procedure.ProcedureSusanoo;
 import net.narutomod.potion.PotionAmaterasuFlame;
 import net.narutomod.entity.EntitySusanooWinged;
+import net.narutomod.block.BlockAmaterasuBlock;
 import net.narutomod.creativetab.TabModTab;
+import net.narutomod.PlayerTracker;
 import net.narutomod.ElementsNarutomodMod;
 
 import java.util.HashMap;
@@ -227,12 +229,8 @@ public class ItemKagutsuchiSwordRanged extends ElementsNarutomodMod.ModElement {
 				for (int j = -this.rand.nextInt(3); j <= this.rand.nextInt(3); j++) {
 					for (int i = -this.rand.nextInt(3); i <= this.rand.nextInt(3); i++) {
 						for (int k = -this.rand.nextInt(3); k <= this.rand.nextInt(3); k++) {
-							HashMap<String, Object> $_dependencies = new HashMap<>();
-							$_dependencies.put("world", this.world);
-							$_dependencies.put("x", (int) this.posX + i);
-							$_dependencies.put("y", (int) this.posY + j);
-							$_dependencies.put("z", (int) this.posZ + k);
-							ProcedureAmaterasuPlaceBlock.executeProcedure($_dependencies);
+							BlockAmaterasuBlock.placeBlock(this.world, new BlockPos((int)this.posX + i, (int)this.posY + j, (int)this.posZ + k),
+							 this.shootingEntity instanceof EntityPlayer ? (int)(PlayerTracker.getNinjaLevel((EntityPlayer)this.shootingEntity) / 30) : 2);
 						}
 					}
 				}
@@ -282,17 +280,13 @@ public class ItemKagutsuchiSwordRanged extends ElementsNarutomodMod.ModElement {
 				for (int j = -this.rand.nextInt(4); j <= this.rand.nextInt(4); j++) {
 					for (int i = -this.rand.nextInt(4); i <= this.rand.nextInt(4); i++) {
 						for (int k = -this.rand.nextInt(4); k <= this.rand.nextInt(4); k++) {
-							HashMap<String, Object> $_dependencies = new HashMap<>();
-							$_dependencies.put("world", this.world);
-							$_dependencies.put("x", (int) this.posX + i);
-							$_dependencies.put("y", (int) this.posY + j);
-							$_dependencies.put("z", (int) this.posZ + k);
-							ProcedureAmaterasuPlaceBlock.executeProcedure($_dependencies);
+							BlockAmaterasuBlock.placeBlock(this.world, new BlockPos((int)this.posX + i,
+							 (int)this.posY + j, (int)this.posZ + k), 15);
 						}
 					}
 				}
-				EntityPlayer player = (this.shootingEntity instanceof EntitySusanooWinged.EntityCustom
-						&& this.shootingEntity.getControllingPassenger() instanceof EntityPlayer)
+				EntityPlayer player = this.shootingEntity instanceof EntitySusanooWinged.EntityCustom
+						&& this.shootingEntity.getControllingPassenger() instanceof EntityPlayer
 								? (EntityPlayer) this.shootingEntity.getControllingPassenger()
 								: null;
 				ProcedureAoeCommand.set(this.world, this.posX, this.posY, this.posZ, 0.0D, 4.0D)

@@ -7,9 +7,12 @@ import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.ForgeEventFactory;
-import net.minecraftforge.common.property.Properties;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 
@@ -27,6 +30,7 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.SoundEvent;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.item.ItemStack;
@@ -34,6 +38,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.EnumAction;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.init.MobEffects;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.entity.projectile.EntitySmallFireball;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
@@ -55,10 +60,7 @@ import net.minecraft.util.text.translation.I18n;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.entity.EntityLiving;
 
-import net.narutomod.procedure.ProcedureUtils;
-import net.narutomod.procedure.ProcedureAoeCommand;
-import net.narutomod.procedure.ProcedureAirPunch;
-import net.narutomod.procedure.ProcedureOnLeftClickEmpty;
+import net.narutomod.procedure.*;
 import net.narutomod.entity.EntityScalableProjectile;
 import net.narutomod.entity.EntityBeamBase;
 import net.narutomod.creativetab.TabModTab;
@@ -71,7 +73,7 @@ import com.google.common.collect.Multimap;
 import java.util.UUID;
 import java.util.Random;
 import java.util.List;
-
+
 @ElementsNarutomodMod.ModElement.Tag
 public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 	@ObjectHolder("narutomod:eightgates")
@@ -114,6 +116,7 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 
 	@Override
 	public void init(FMLInitializationEvent event) {
+		MinecraftForge.EVENT_BUS.register(new RangedItem.AttackHook());
 		ProcedureOnLeftClickEmpty.addQualifiedItem(block, EnumHand.MAIN_HAND);
 		ProcedureOnLeftClickEmpty.addQualifiedItem(block, EnumHand.OFF_HAND);
 	}
@@ -151,20 +154,29 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 
 		public void activate(EntityLivingBase entity) {
 			if (this.gate >= 1 && this.gate <= 8 && !entity.world.isRemote) {
-				if (this.particles > 0) {
+				if (this.particles > 0) {
 					Particles.spawnParticle(entity.world, Particles.Types.SMOKE, entity.posX, entity.posY + 0.8d, entity.posZ, 
-					 this.particles, 0.2d, 0.4d, 0.2d, 0d, 0.1d, 0d, this.particleColor, 40, 5, 0xF0, entity.getEntityId());
+					 this.particles, 0.2d, 0.4d, 0.2d, 0d, 0.1d, 0d, this.particleColor, 40, 5, 0xF0, entity.getEntityId());
 				}
 				entity.fallDistance = 0;
-				entity.addPotionEffect(new PotionEffect(MobEffects.SATURATION, 2, 0, false, false));
-				entity.addPotionEffect(new PotionEffect(MobEffects.JUMP_BOOST, 2, 8, false, false));
-				entity.addPotionEffect(new PotionEffect(MobEffects.HASTE, 2, 3, false, false));
-				entity.addPotionEffect(new PotionEffect(MobEffects.STRENGTH, 2, this.strength, false, false));
-				entity.addPotionEffect(new PotionEffect(MobEffects.RESISTANCE, 2, this.resistance, false, false));
-				entity.addPotionEffect(new PotionEffect(MobEffects.SPEED, 2, this.speed, false, false));
-				if (entity.ticksExisted % 10 == 0 && entity.getHealth() > 0
-				 && (!(entity instanceof EntityPlayer) || !((EntityPlayer) entity).isCreative())) {
-					entity.setHealth(entity.getHealth() - this.damage);
+				entity.removePotionEffect(MobEffects.SATURATION);
+				if (entity.ticksExisted % 10 == 0) {
+					entity.addPotionEffect(new PotionEffect(MobEffects.HUNGER, 42, 3, false, false));
+					entity.addPotionEffect(new PotionEffect(MobEffects.JUMP_BOOST, 12, 8, false, false));
+					entity.addPotionEffect(new PotionEffect(MobEffects.HASTE, 12, 3, false, false));
+					entity.addPotionEffect(new PotionEffect(MobEffects.STRENGTH, 12, this.strength, false, false));
+					entity.addPotionEffect(new PotionEffect(MobEffects.RESISTANCE, 12, this.resistance, false, false));
+					entity.addPotionEffect(new PotionEffect(MobEffects.SPEED, 12, this.speed, false, false));
+					if (entity.getHealth() > 0.0f && (!(entity instanceof EntityPlayer) || !((EntityPlayer) entity).isCreative())) {
+						if (this.damage >= 0.0f) {
+							if (entity.ticksExisted % 80 == 0) {
+								entity.hurtResistantTime = 10;
+								entity.attackEntityFrom(ProcedureUtils.SPECIAL_DAMAGE, this.damage * 8);
+							}
+						} else {
+							entity.setHealth(entity.getHealth() - this.damage);
+						}
+					}
 				}
 				if (this.canFly && entity instanceof EntityPlayer && !((EntityPlayer) entity).capabilities.allowFlying) {
 					((EntityPlayer) entity).capabilities.allowFlying = true;
@@ -174,23 +186,25 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 		}
 
 		public void deActivate(EntityLivingBase entity) {
+			if (!entity.world.isRemote && entity instanceof EntityPlayer) {
+				PlayerRender.setColorMultiplier((EntityPlayer)entity, 0);
+			}
 			if (!entity.world.isRemote && this.gate > 1 && (!(entity instanceof EntityPlayer) || !((EntityPlayer) entity).isCreative())) {
-				if (this.gate == 8) {
-					//PlayerRender.setColorMultiplier((EntityPlayer)entity, 0xB0000000);
+				if (this.gate == 8) {
 					ProcedureUtils.setDeathAnimations(entity, 2, 200);
 				}
 				entity.addPotionEffect(new PotionEffect(MobEffects.WEAKNESS, this.gate * 600, (this.gate - 2) * 2));
 				entity.addPotionEffect(new PotionEffect(MobEffects.SLOWNESS, this.gate * 600, this.gate - 2));
 				if (this.canFly && entity instanceof EntityPlayer) {
-					((EntityPlayer) entity).capabilities.allowFlying = false;
-					((EntityPlayer) entity).sendPlayerAbilities();
+					EntityPlayer player = (EntityPlayer) entity;
+					player.capabilities.allowFlying = false;
+					player.capabilities.isFlying = false;
+					player.sendPlayerAbilities();
 				}
-				if (entity.getHealth() > entity.getMaxHealth()) {
-					entity.setHealth(entity.getMaxHealth());
+				float f = entity.getMaxHealth();
+				if (f > 0.0f && entity.getHealth() > f) {
+					entity.setHealth(f);
 				}
-			}
-			if (!entity.world.isRemote && entity instanceof EntityPlayer) {
-				PlayerRender.setColorMultiplier((EntityPlayer)entity, 0);
 			}
 		}
 	}
@@ -215,6 +229,27 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
+	private static void closeGates(EntityLivingBase entity) {
+		ItemStack stack = entity.getHeldItemMainhand();
+		if (stack.getItem() != block) {
+			stack = entity.getHeldItemOffhand();
+		}
+		if (stack.getItem() == block) {
+			((RangedItem)stack.getItem()).closeGates(stack, entity);
+		}
+	}
+
+	public static int getGatesOpened(EntityLivingBase entity) {
+		ItemStack stack = entity.getHeldItemMainhand();
+		if (stack.getItem() != block) {
+			stack = entity.getHeldItemOffhand();
+		}
+		if (stack.getItem() == block) {
+			return (int)((RangedItem)stack.getItem()).getGateOpened(stack);
+		}
+		return 0;
+	}
+
 	public static class RangedItem extends Item {
 		private final UUID GATE_MODIFIER = UUID.fromString("f6944d0f-5c81-45db-9261-6a9ad9fe4840");
 		private static final String GATE_KEY = "gateOpened";
@@ -224,12 +259,12 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 		private final Properties GATE[] = {new Properties(0, "", 0, 0, 0, 0, 0, 0, 0, 0f, false),
 			new Properties(1, I18n.translateToLocal("chattext.eightgates.gate1"), 220, 0, 0, 3, 2, 0, 10, -1f, false),
 			new Properties(2, I18n.translateToLocal("chattext.eightgates.gate2"), 240, 0, 0, 4, 16, 0, 40, -5f, false),
-			new Properties(3, I18n.translateToLocal("chattext.eightgates.gate3"), 280, 20, 0x10FFFFFF, 6, 32, 1, 60, -3f, false),
-			new Properties(4, I18n.translateToLocal("chattext.eightgates.gate4"), 360, 25, 0x18FFFFFF, 9, 64, 2, 60, 1.2f, false),
-			new Properties(5, I18n.translateToLocal("chattext.eightgates.gate5"), 520, 30, 0x20FFFFFF, 21, 68, 2, 60, 1.4f, false),
-			new Properties(6, I18n.translateToLocal("chattext.eightgates.gate6"), 840, 30, 0x3000FF00, 44, 72, 3, 60, 1.6f, false),
-			new Properties(7, I18n.translateToLocal("chattext.eightgates.gate7"), 1480, 30, 0x300000FF, 84, 76, 4, 60, 1.8f, true),
-			new Properties(8, I18n.translateToLocal("chattext.eightgates.gate8"), 2760, 30, 0x30FF0000, 349, 80, 5, 60, 2f, true)};
+			new Properties(3, I18n.translateToLocal("chattext.eightgates.gate3"), 280, 20, 0x10FFFFFF, 5, 32, 1, 60, -3f, false),
+			new Properties(4, I18n.translateToLocal("chattext.eightgates.gate4"), 360, 25, 0x18FFFFFF, 7, 64, 2, 60, 0.4f, false),
+			new Properties(5, I18n.translateToLocal("chattext.eightgates.gate5"), 520, 30, 0x20FFFFFF, 15, 68, 2, 60, 0.6f, false),
+			new Properties(6, I18n.translateToLocal("chattext.eightgates.gate6"), 840, 30, 0x3000FF00, 31, 72, 3, 60, 0.8f, false),
+			new Properties(7, I18n.translateToLocal("chattext.eightgates.gate7"), 1480, 30, 0x300000FF, 84, 76, 3, 60, 1.0f, false),
+			new Properties(8, I18n.translateToLocal("chattext.eightgates.gate8"), 2760, 30, 0x30FF0000, 349, 80, 4, 60, 1.2f, true)};
 						
 		public RangedItem() {
 			this.setMaxDamage(0);
@@ -253,18 +288,18 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 						Entity bullet = new EntityNGDragon(entity);
 						//((EntityNGDragon) bullet).shoot(entity.getLookVec().x, entity.getLookVec().y, entity.getLookVec().z, 1.2F, 0.0F);
 						world.playSound(null, entity.posX, entity.posY, entity.posZ,
-						  net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:yagai")),
+						  SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:yagai")),
 						  SoundCategory.NEUTRAL, 2.0F, 1.0F);
 						world.spawnEntity(bullet);
-						if (!entity.isCreative()) {
-							ProcedureUtils.setDeathAnimations(entity, 2, 200);
+						if (!entity.isCreative()) {
+							//ProcedureUtils.setDeathAnimations(entity, 2, 200);
 							entity.getCooldownTracker().setCooldown(itemstack.getItem(), 200);
 						}
-						entity.sendStatusMessage(new TextComponentString(I18n.translateToLocal("entity.entityngdragon.name")), true);
+						entity.sendStatusMessage(new TextComponentString(I18n.translateToLocal("entity.entityngdragon.name")), true);
 						break;
 					case 7 :
 						this.attackHirudora(entity);
-						entity.sendStatusMessage(new TextComponentString(I18n.translateToLocal("entity.entityhirudora.name")), true);
+						entity.sendStatusMessage(new TextComponentString(I18n.translateToLocal("entity.entityhirudora.name")), true);
 						if (!entity.isCreative()) {
 							entity.getCooldownTracker().setCooldown(itemstack.getItem(), 400);
 						}
@@ -277,9 +312,23 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 			EntityHirudora bullet = new EntityHirudora(attacker);
 			//bullet.shoot(x, y, z, 1.2F, 0.0F);
 			attacker.world.playSound(null, attacker.posX, attacker.posY, attacker.posZ,
-			 net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:hirudora")),
+			 SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:hirudora")),
 			 SoundCategory.NEUTRAL, 2.0F, 1.0F);
 			attacker.world.spawnEntity(bullet);
+		}
+
+		private int getSekizoPunchNum(ItemStack stack, int tick) {
+			if (!stack.hasTagCompound()) 
+				stack.setTagCompound(new NBTTagCompound());
+			int punch = stack.getTagCompound().getInteger(SEKIZO_KEY);
+			//int lastTick = stack.getTagCompound().getInteger(SEKIZO_KEY+"_lastTick");
+			//int i = tick - lastTick;
+			//punch = (i <= 20 && i > 0 && punch < 4) ? punch + 1 : 0;
+			//stack.getTagCompound().setInteger(SEKIZO_KEY, punch);
+			//stack.getTagCompound().setInteger(SEKIZO_KEY+"_lastTick", tick);
+			int i = punch >= 0 && punch < 4 ? punch + 1 : -1;
+			stack.getTagCompound().setInteger(SEKIZO_KEY, i);
+			return punch;
 		}
 
 		public int attackSekizo(ItemStack itemstack, EntityLivingBase attacker) {
@@ -289,7 +338,7 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 				EntitySekizo bullet = new EntitySekizo(attacker);
 				bullet.shoot(30, (float) ProcedureUtils.getModifiedAttackDamage(attacker) * 1.0F * (float) Math.pow(2d, punchnum));
 				world.playSound(null, attacker.posX, attacker.posY, attacker.posZ,
-				 net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:sekizo")),
+				 SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:sekizo")),
 				 SoundCategory.NEUTRAL, 2.0F, 1.0F);
 				world.spawnEntity(bullet);
 				//this.setSekizoPunchNum(itemstack, attacker.ticksExisted);
@@ -343,29 +392,70 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 		@Override
 		public boolean onLeftClickEntity(ItemStack itemstack, EntityPlayer attacker, Entity target) {
 			if (!attacker.world.isRemote) {
-				World world = attacker.world;
-				float gateOpened = this.getGateOpened(itemstack);
-				switch ((int) gateOpened) {
-					case 8 :
-						int i = this.attackSekizo(itemstack, attacker);
-						if (i >= 0) {
-							attacker.sendStatusMessage(new TextComponentString(I18n.translateToLocalFormatted("entity.entitysekizo.name", i+1)), true);
-						} else {
-							return true;
-						}
-						break;
+				int gateOpened = (int)this.getGateOpened(itemstack);
+				switch (gateOpened) {
 					case 6 :
 						this.attackAsakujaku(attacker);
-						attacker.sendStatusMessage(new TextComponentString(I18n.translateToLocal("entity.entityasakujaku.name")), true);
+						attacker.sendStatusMessage(new TextComponentString(
+							I18n.translateToLocal("entity.entityasakujaku.name")), true);
 						break;
-					default :
-						if (gateOpened >= 2f && !target.equals(attacker)) {
-							ProcedureUtils.pushEntity(attacker, target, 10, gateOpened * 0.2f + 2f);
-							//ProcedureUtils.setVelocity(target, target.motionX, 1.5d, target.motionZ);
+					case 8 :
+						int k = this.attackSekizo(itemstack, attacker);
+						if (k >= 0) {
+							attacker.sendStatusMessage(new TextComponentString(
+							 I18n.translateToLocalFormatted("entity.entitysekizo.name", k+1)), true);
+							break;
+						}
+					case 7:
+						if (attacker.equals(target)) {
+							target = ProcedureUtils.objectEntityLookingAt(attacker, 15d + 5d * (gateOpened - 7), 2d).entityHit;
+							if (target instanceof EntityLivingBase) {
+								Vec3d vec = target.getPositionVector().subtract(attacker.getPositionVector()).normalize();
+								attacker.rotationYaw = ProcedureUtils.getYawFromVec(vec);
+								attacker.rotationPitch = ProcedureUtils.getPitchFromVec(vec);
+								attacker.setPositionAndUpdate(target.posX - vec.x, target.posY - vec.y + 0.5d, target.posZ - vec.z);
+								attacker.attackTargetEntityWithCurrentItem(target);
+							} else {
+								return true;
+							}
 						}
 				}
 			}
 			return super.onLeftClickEntity(itemstack, attacker, target);
+		}
+
+		public static class AttackHook {
+			@SubscribeEvent
+			public void onLivingAttack(LivingAttackEvent event) {
+				if (event.getSource().getTrueSource() instanceof EntityLivingBase
+				 && event.getSource().getTrueSource() == event.getSource().getImmediateSource()) {
+					EntityLivingBase attacker = (EntityLivingBase)event.getSource().getTrueSource();
+					int gateOpened = getGatesOpened(attacker);
+					EntityLivingBase target = event.getEntityLiving();
+					if (gateOpened >= 5) {
+						if (gateOpened >= 7) {
+							target.world.playSound(null, target.posX, target.posY, target.posZ,
+							 SoundEvents.ENTITY_GENERIC_EXPLODE, SoundCategory.NEUTRAL, 1.0F, target.getRNG().nextFloat() * 0.5F + 0.5F);
+						}
+						Vec3d vec = attacker.getPositionVector().subtract(target.getPositionVector()).normalize();
+						for (int i = 1, j = 25; i <= j; i++) {
+							Vec3d vec1 = vec.scale(0.06d * i);
+							Particles.spawnParticle(attacker.world, Particles.Types.SONIC_BOOM, target.posX, target.posY+1.4d, target.posZ,
+							 1, 0d, 0d, 0d, vec1.x, vec1.y, vec1.z, 0x00ffffff | ((int)((1f-(float)i/j)*0x40)<<24),
+							 i * 2, (int)(5f * (1f + ((float)i/j) * 0.5f)));
+						}
+					}
+					if (gateOpened >= 2) {
+						ProcedureUtils.pushEntity(attacker, target, 10, 0.2f * gateOpened + 2f);
+					}
+				}
+			}
+
+			@SubscribeEvent
+			public void onDeath(LivingDeathEvent event) {
+				ItemEightGates.closeGates(event.getEntityLiving());
+				//ProcedureUtils.clearDeathAnimations(entity);
+			}
 		}
 
 		//private float getMaxOpenableGate(EntityLivingBase entity) {
@@ -396,7 +486,7 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 				return 7f;
 			}
 			return this.getMaxOpenableGate(stack);
-		}*/
+		}*/
 
 		public float getGateOpened(ItemStack stack) {
 			return stack.hasTagCompound() ? stack.getTagCompound().getFloat(GATE_KEY) : 0f;
@@ -424,20 +514,6 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 			return stack.hasTagCompound() ? stack.getTagCompound().getInteger(XP_KEY) : 0;
 		}
 
-		private int getSekizoPunchNum(ItemStack stack, int tick) {
-			if (!stack.hasTagCompound()) 
-				stack.setTagCompound(new NBTTagCompound());
-			int punch = stack.getTagCompound().getInteger(SEKIZO_KEY);
-			//int lastTick = stack.getTagCompound().getInteger(SEKIZO_KEY+"_lastTick");
-			//int i = tick - lastTick;
-			//punch = (i <= 20 && i > 0 && punch < 4) ? punch + 1 : 0;
-			//stack.getTagCompound().setInteger(SEKIZO_KEY, punch);
-			//stack.getTagCompound().setInteger(SEKIZO_KEY+"_lastTick", tick);
-			int i = punch >= 0 && punch < 4 ? punch + 1 : -1;
-			stack.getTagCompound().setInteger(SEKIZO_KEY, i);
-			return punch;
-		}
-
 		@Override
 		public void onUsingTick(ItemStack stack, EntityLivingBase player, int count) {
 			if (player.isSneaking()) {
@@ -446,22 +522,22 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 				if (gateOpened >= 4f) {
 					for (int i = 0; i < (int) gateOpened * 10; i++) {
 						Particles.spawnParticle(player.world, Particles.Types.SMOKE, player.posX, player.posY, player.posZ,
-						 1, 1d, 0d, 1d, (itemRand.nextDouble()-0.5d) * 2.0d, 0.5d,
+						 1, 1d, 0d, 1d, (itemRand.nextDouble()-0.5d) * 2.0d, 0.5d,
 						 (itemRand.nextDouble()-0.5d) * 2.0d, 0x10FFFFFF, 30, 0);
 					}
-					if (gateOpened < 4f + increments) {
-						player.world.playSound(null, player.posX, player.posY, player.posZ, 
-						 net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:opengate")),
+					if (gateOpened < 4f + increments) {
+						player.world.playSound(null, player.posX, player.posY, player.posZ,
+						 SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:opengate")),
 						 SoundCategory.NEUTRAL, 1, 1);
 					}
 					if (gateOpened >= 8f - increments && gateOpened < 8f) {
 						player.world.playSound(null, player.posX, player.posY, player.posZ, 
-						 net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:eightgatesrelease")),
+						 SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:eightgatesrelease")),
 						 SoundCategory.NEUTRAL, 2f, 1f);
 					}
 					if (gateOpened >= 4f + increments && player.ticksExisted % 10 == 0) {
 						player.world.playSound(null, player.posX, player.posY, player.posZ, 
-						 net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:explosion")),
+						 SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:explosion")),
 						 SoundCategory.NEUTRAL, 0.1f, 0.9f - this.itemRand.nextFloat() * 0.3f);
 					}
 				}
@@ -471,14 +547,16 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 					}
 					((EntityPlayer) player).sendStatusMessage(new TextComponentString(this.GATE[(int) gateOpened].name), true);
 				}
-				player.getEntityData().setDouble(NarutomodModVariables.InvulnerableTime, 4d);
+				if (gateOpened < 8.0f) {
+					player.getEntityData().setDouble(NarutomodModVariables.InvulnerableTime, 4d);
+				}
 				this.setGateOpened(stack, player, gateOpened + increments);
 			}
 		}
 
 		public EntityLivingBase getOwner(ItemStack stack) {
 			UUID id = ProcedureUtils.getOwnerId(stack);
-			return id == null ? null : ProcedureUtils.searchPlayerMatchingId(id);
+			return id == null ? null : ProcedureUtils.searchLivingMatchingId(id);
 		}
 
 		protected void setOwner(ItemStack stack, EntityLivingBase owner) {
@@ -486,11 +564,11 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 			stack.setStackDisplayName(stack.getDisplayName() + " (" + owner.getName() + ")");
 		}
 
-		private boolean checkOwner(ItemStack stack, EntityLivingBase entity) {
+		private boolean isOwner(ItemStack stack, EntityLivingBase entity) {
 			if (ProcedureUtils.getOwnerId(stack) == null) {
 				this.setOwner(stack, entity);
 			}
-			return ProcedureUtils.isOriginalOwner(entity, stack);
+			return ProcedureUtils.isOriginalOwner(entity, stack) || (entity instanceof EntityPlayer && ((EntityPlayer)entity).isCreative());
 		}
 
 		@Override
@@ -498,8 +576,8 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 			super.onUpdate(itemstack, world, entity, par4, par5);
 			if (/* !world.isRemote && */ entity instanceof EntityLivingBase) {
 				EntityLivingBase player = (EntityLivingBase) entity;
-				if (!this.checkOwner(itemstack, player)) {
-					itemstack.shrink(1);
+				if (!this.isOwner(itemstack, player)) {
+					//itemstack.shrink(1);
 					return;
 				}
 				float gateOpened = this.getGateOpened(itemstack);
@@ -508,12 +586,20 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 					if (gateOpened >= 1f && gateOpened >= this.getMaxOpenableGate(itemstack) && entity.ticksExisted % 40 == 8) {
 						this.addBattleXP(itemstack, 1);
 					}
-				} else if (gateOpened > 0f) {
-					this.GATE[(int) gateOpened].deActivate(player);
-					this.setGateOpened(itemstack, player, 0);
-					if (player instanceof EntityPlayer && !((EntityPlayer) player).isCreative()) {
-						((EntityPlayer) player).getCooldownTracker().setCooldown(itemstack.getItem(), (int) gateOpened * 200);
-					}
+				} else {
+					this.closeGates(itemstack, player);
+				}
+			}
+		}
+
+		private void closeGates(ItemStack itemstack, EntityLivingBase player) {
+			float gateOpened = this.getGateOpened(itemstack);
+			if (gateOpened > 0f) {
+				this.setGateOpened(itemstack, player, 0);
+				this.GATE[(int) gateOpened].deActivate(player);
+				itemstack.getTagCompound().removeTag(SEKIZO_KEY);
+				if (player instanceof EntityPlayer && !((EntityPlayer) player).isCreative()) {
+					((EntityPlayer) player).getCooldownTracker().setCooldown(itemstack.getItem(), (int) gateOpened * 200);
 				}
 			}
 		}
@@ -563,8 +649,12 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer entity, EnumHand hand) {
-			entity.setActiveHand(hand);
-			return new ActionResult(EnumActionResult.SUCCESS, entity.getHeldItem(hand));
+			ItemStack stack = entity.getHeldItem(hand);
+			if (this.isOwner(stack, entity)) {
+				entity.setActiveHand(hand);
+				return new ActionResult(EnumActionResult.SUCCESS, stack);
+			}
+			return new ActionResult(EnumActionResult.FAIL, stack);
 		}
 
 		@Override
@@ -608,7 +698,7 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 			if (this.ticksAlive == 10 && !this.world.isRemote) {
 				this.airPunch.execute((EntityLivingBase)this.shootingEntity, this.range, 5d);
 			}
-			if (this.ticksAlive > 60) {
+			if (this.ticksAlive > 60) {
 				this.setDead();
 			}
 		}
@@ -617,7 +707,7 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 			@Override
 			protected void attackEntityFrom(EntityLivingBase player, Entity target) {
 				super.attackEntityFrom(player, target);
-				target.attackEntityFrom(DamageSource.causeMobDamage(player), EntitySekizo.this.damage);
+				target.attackEntityFrom(DamageSource.causeMobDamage(player).setDamageBypassesArmor(), EntitySekizo.this.damage);
 			}
 
 			@Override
@@ -665,13 +755,19 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 				if (this.ticksAlive <= NGD_SUSPEND_TIME) {
 					this.setWaitPosition();
 					this.setEntityScale(1.0F + (this.fullScale - 1f) * this.ticksAlive / (float) NGD_SUSPEND_TIME);
-				} else if (!this.isLaunched()) {
-					Vec3d vec = this.shootingEntity instanceof EntityLiving && ((EntityLiving)this.shootingEntity).getAttackTarget() != null
-					 ? ((EntityLiving)this.shootingEntity).getAttackTarget().getPositionVector().subtract(this.getPositionVector())
-					 : this.shootingEntity.getLookVec();
-					this.shoot(vec.x, vec.y, vec.z, 1.2f, 0f);
 				} else {
-					this.setEntityScale(this.getEntityScale() * 1.05f);
+					if (!this.isLaunched()) {
+						Vec3d vec = this.shootingEntity instanceof EntityLiving && ((EntityLiving)this.shootingEntity).getAttackTarget() != null
+						 ? ((EntityLiving)this.shootingEntity).getAttackTarget().getPositionVector().subtract(this.getPositionVector())
+						 : this.shootingEntity.getLookVec();
+						this.shoot(vec.x, vec.y, vec.z, 1.2f, 0f);
+					} else {
+						this.setEntityScale(this.getEntityScale() * 1.05f);
+					}
+					if (this.ticksInAir % 10 == 0) {
+						this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:roar")),
+						 2f, this.rand.nextFloat() * 0.4f + 0.7f);
+					}
 				}
 			}
 			if (!this.world.isRemote && (this.ticksInAir > 30 || this.shootingEntity == null || !this.shootingEntity.isEntityAlive()))
@@ -709,7 +805,6 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 
 	public static class EntityNGDragon extends EntityScalableProjectile.Base {
 		private float fullScale = 6f;
-		//private float realMotionFactor;
 		public float prevLimbSwingAmount;
 		public float limbSwingAmount;
 		public float limbSwing;
@@ -750,20 +845,19 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void onUpdate() {
 			super.onUpdate();
-			if (this.shootingEntity != null) {
+			if (this.shootingEntity != null) {
 				this.shootingEntity.getEntityData().setDouble(NarutomodModVariables.InvulnerableTime, 40.0D);
 				if (this.ticksAlive <= NGD_SUSPEND_TIME) {
 					this.setWaitPosition();
 					this.setEntityScale(this.fullScale * MathHelper.clamp(this.ticksAlive / (float) NGD_SUSPEND_TIME, 1f / this.fullScale, 1.0F));
-				} else {
+				} else {
 					if (!this.isLaunched()) {
 						Vec3d vec = this.shootingEntity instanceof EntityLiving && ((EntityLiving)this.shootingEntity).getAttackTarget() != null
 						 ? ((EntityLiving)this.shootingEntity).getAttackTarget().getPositionVector().subtract(this.getPositionVector())
 						 : this.shootingEntity.getLookVec();
 						this.shoot(vec.x, vec.y, vec.z, 1.2f, 0f);
+						this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:dragon_roar")), 2f, 1f);
 					}
-					//if (this.motionFactor == 0.0F)
-					//	this.motionFactor = this.realMotionFactor;
 					this.shootingEntity.setPositionAndUpdate(this.posX, this.posY, this.posZ);
 				}
 			}
@@ -776,7 +870,7 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 		public void renderParticles() {
 			if (this.isLaunched()) {
 				Particles.spawnParticle(this.world, Particles.Types.SMOKE, this.posX, this.posY + (this.height / 2.0F), this.posZ,
-				 200, this.width / 2.0F, this.height / 2.0F, this.width / 2.0F, 0.0D, 0.0D, 0.0D, 0x80800000, 40, 0);
+				 200, this.width / 2.0F, this.height / 2.0F, this.width / 2.0F, 0.0D, 0.0D, 0.0D, 0x80800000, 40, 0);
 			} else {
 				Particles.spawnParticle(this.world, Particles.Types.FLAME, this.posX, this.posY + (this.height / 2.0F), this.posZ,
 				 100, 0.0D, 0.0D, 0.0D, (this.rand.nextFloat() - 0.5F) * 0.8D, (this.rand.nextFloat() - 0.6F) * 1.0F,
@@ -791,7 +885,7 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 			if (!this.world.isRemote) {
 				if (this.shootingEntity != null) {
 					float f = (float)ProcedureUtils.getModifiedAttackDamage(this.shootingEntity);
-					DamageSource ds = DamageSource.causeIndirectDamage(this, this.shootingEntity).setDamageBypassesArmor();
+					DamageSource ds = DamageSource.causeIndirectDamage(this, this.shootingEntity).setDamageBypassesArmor().setDamageIsAbsolute();
 					if (result.entityHit instanceof EntityLivingBase) {
 						result.entityHit.attackEntityFrom(ds, f * 64f);
 						ProcedureUtils.pushEntity(new Vec3d(this.posX, this.posY, this.posZ), result.entityHit, 30.0D, 2.0F);
@@ -801,7 +895,7 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 				}
 				this.world.newExplosion(this, this.posX, this.posY, this.posZ, 10.0F, false,
 				 ForgeEventFactory.getMobGriefingEvent(this.world, this.shootingEntity));
-				if (EntityScalableProjectile.forwardsRaycastBlocks(this) != null) {
+				if (EntityScalableProjectile.forwardsRaycastBlocks(this) != null) {
 					this.setDead();
 				}
 			}
@@ -811,16 +905,20 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
+		public void setDead() {
+			super.setDead();
+			if (!this.world.isRemote && this.shootingEntity != null) {
+				closeGates(this.shootingEntity);
+			}
+		}
+
+		@Override
 		protected void checkOnGround() {
 		}
 
 		@Override
 		public float getExplosionResistance(Explosion explosionIn, World worldIn, BlockPos pos, IBlockState blockStateIn) {
 			return Math.max(blockStateIn.getBlock().getExplosionResistance(worldIn, pos, this, explosionIn) - 1999f, 0.1f);
-		}
-
-		private int getTicksAlive() {
-			return this.ticksAlive;
 		}
 	}
 
@@ -943,6 +1041,7 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 		private final ModelRenderer teethUpper;
 		private final ModelRenderer bone;
 		private final ModelRenderer bone2;
+		private final ModelRenderer bone3;
 		private final ModelRenderer jaw;
 		private final ModelRenderer teethLower;
 		private final ModelRenderer hornRight;
@@ -977,8 +1076,8 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 			head.setRotationPoint(0.0F, 0.0F, 0.0F);
 			head.cubeList.add(new ModelBox(head, 176, 44, -6.0F, 6.0F, -26.0F, 12, 5, 16, 1.0F, false));
 			head.cubeList.add(new ModelBox(head, 112, 30, -8.0F, -1.0F, -11.0F, 16, 16, 16, 1.0F, false));
-			head.cubeList.add(new ModelBox(head, 112, 0, -5.0F, 5.0F, -27.0F, 2, 2, 4, 1.0F, false));
-			head.cubeList.add(new ModelBox(head, 112, 0, 3.0F, 5.0F, -27.0F, 2, 2, 4, 1.0F, true));
+			head.cubeList.add(new ModelBox(head, 112, 0, 2.0F, 4.0F, -28.0F, 4, 4, 6, 0.0F, true));
+			head.cubeList.add(new ModelBox(head, 112, 0, -6.0F, 4.0F, -28.0F, 4, 4, 6, 0.0F, false));
 	
 			teethUpper = new ModelRenderer(this);
 			teethUpper.setRotationPoint(0.0F, 24.0F, 0.0F);
@@ -997,6 +1096,12 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 			setRotationAngle(bone2, 0.0F, 0.7854F, 0.0F);
 			bone2.cubeList.add(new ModelBox(bone2, 0, 200, -10.0F, -8.0F, 0.0F, 10, 16, 0, 0.0F, true));
 	
+			bone3 = new ModelRenderer(this);
+			bone3.setRotationPoint(0.0F, -2.0F, -11.0F);
+			head.addChild(bone3);
+			setRotationAngle(bone3, -0.8727F, 0.0F, 0.0F);
+			bone3.cubeList.add(new ModelBox(bone3, 0, 50, -8.0F, -10.0F, 0.0F, 16, 10, 0, 0.0F, false));
+
 			jaw = new ModelRenderer(this);
 			jaw.setRotationPoint(0.0F, 11.0F, -9.0F);
 			head.addChild(jaw);
@@ -1218,12 +1323,14 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 			GlStateManager.enableAlpha();
 			GlStateManager.enableBlend();
 			GlStateManager.disableLighting();
-			GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-			GlStateManager.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE);
+			GlStateManager.color(1.0F, 1.0F, 1.0F, 0.7F);
+			//GlStateManager.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE);
+			GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 			OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240.0F, 240.0F);
 			this.head.render(f5);
 			this.spine.render(f5);
 			this.eyes.render(f5);
+			GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 			GlStateManager.enableLighting();
 			GlStateManager.disableBlend();
 			GlStateManager.disableAlpha();

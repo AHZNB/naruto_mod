@@ -90,7 +90,7 @@ public class EntityShadowImitation extends ElementsNarutomodMod.ModElement {
 			//}
 			//PlayerInput.Hook.haltTargetInput(targetIn, true);
 			this.setPosition(userIn.posX, userIn.posY, userIn.posZ);
-			this.chakraBurn = chakraUsagePerSec + ProcedureUtils.getPunchDamage(targetIn);
+			this.chakraBurn = chakraUsagePerSec + ProcedureUtils.getPunchDamage(targetIn) * 5;
 		}
 
 		@Override

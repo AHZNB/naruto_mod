@@ -1,0 +1,6 @@
+{
+  "parent": "narutomod:custom/fumashuriken",
+  "textures": {
+    "1": "narutomod:blocks/fumashuriken"
+  }
+}

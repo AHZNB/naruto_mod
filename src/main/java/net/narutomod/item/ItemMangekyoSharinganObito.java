@@ -33,7 +33,7 @@ public class ItemMangekyoSharinganObito extends ElementsNarutomodMod.ModElement 
 	@ObjectHolder("narutomod:mangekyosharinganobitohelmet")
 	public static final Item helmet = null;
 	private static final double INTANGIBLE_CHAKRA_USAGE = 1d; // per tick
-	private static final double TELEPORT_CHAKRA_USAGE = 8d; // per tick
+	private static final double TELEPORT_CHAKRA_USAGE = 20d; // per tick
 	
 	public ItemMangekyoSharinganObito(ElementsNarutomodMod instance) {
 		super(instance, 118);
@@ -43,19 +43,19 @@ public class ItemMangekyoSharinganObito extends ElementsNarutomodMod.ModElement 
 		ItemStack stack = entity.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
 		return stack.getItem() == helmet || stack.getItem() == ItemMangekyoSharinganEternal.helmet 
 		 ? ((ItemDojutsu.Base)helmet).isOwner(stack, entity) ? INTANGIBLE_CHAKRA_USAGE 
-		 : INTANGIBLE_CHAKRA_USAGE * 2 : (Double.MAX_VALUE * 0.001d);
+		 : INTANGIBLE_CHAKRA_USAGE * 3 : (Double.MAX_VALUE * 0.001d);
 	}
 
 	public static double getTeleportChakraUsage(EntityLivingBase entity) {
 		ItemStack stack = entity.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
 		return stack.getItem() == helmet || stack.getItem() == ItemMangekyoSharinganEternal.helmet
 		 ? ((ItemDojutsu.Base)helmet).isOwner(stack, entity) ? TELEPORT_CHAKRA_USAGE 
-		 : TELEPORT_CHAKRA_USAGE * 2 : (Double.MAX_VALUE * 0.001d);
+		 : TELEPORT_CHAKRA_USAGE * 3 : (Double.MAX_VALUE * 0.001d);
 	}
 
 	public void initElements() {
 		ItemArmor.ArmorMaterial enuma = EnumHelper.addArmorMaterial("MANGEKYOSHARINGANOBITO", "narutomod:mangekyosharingan_obito_", 1024,
-				new int[]{2, 5, 6, 100}, 0, null, 5.0F);
+				new int[]{2, 5, 6, 10}, 0, null, 1.0F);
 		this.elements.items.add(() -> new ItemSharingan.Base(enuma) {
 			@Override
 			public void onArmorTick(World world, EntityPlayer entity, ItemStack itemstack) {
@@ -65,12 +65,6 @@ public class ItemMangekyoSharinganObito extends ElementsNarutomodMod.ModElement 
 					if (entity.capabilities.allowFlying != flag) {
 						entity.capabilities.allowFlying = flag;
 						entity.sendPlayerAbilities();
-					}
-					if ((entity.getEntityData().getBoolean("kamui_teleport") || entity.getEntityData().getBoolean("susanoo_activated"))
-					 && entity.ticksExisted % (this.isOwner(itemstack, entity) ? 2 : 1) == 0) {
-					 	((ItemSharingan.Base)itemstack.getItem()).canDamage = true;
-						itemstack.damageItem(1, entity);
-						((ItemSharingan.Base)itemstack.getItem()).canDamage = false;
 					}
 					if (entity.getEntityData().getBoolean("kamui_teleport")) {
 						Chakra.pathway(entity).consume(getTeleportChakraUsage(entity));
@@ -90,8 +84,8 @@ public class ItemMangekyoSharinganObito extends ElementsNarutomodMod.ModElement 
 			@Override
 			public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
 				super.addInformation(stack, worldIn, tooltip, flagIn);
-				tooltip.add(I18n.translateToLocal("key.mcreator.specialjutsu1") + ": " + I18n.translateToLocal("tooltip.mangekyo.kamui.jutsu1"));
-				tooltip.add(I18n.translateToLocal("key.mcreator.specialjutsu2") + ": " + I18n.translateToLocal("entity.susanooclothed.name"));
+				tooltip.add(TextFormatting.ITALIC + I18n.translateToLocal("key.mcreator.specialjutsu1") + ": " + TextFormatting.GRAY + I18n.translateToLocal("tooltip.mangekyo.kamui.jutsu1"));
+				tooltip.add(TextFormatting.ITALIC + I18n.translateToLocal("key.mcreator.specialjutsu2") + ": " + TextFormatting.GRAY + I18n.translateToLocal("entity.susanooclothed.name"));
 			}
 
 			@Override

@@ -3,7 +3,6 @@ package net.narutomod;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -12,17 +11,19 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.common.MinecraftForge;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.client.Minecraft;
+import net.minecraft.world.WorldServer;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.DamageSource;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.Entity;
+import net.minecraft.client.Minecraft;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.init.MobEffects;
-import net.minecraft.world.WorldServer;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.util.math.MathHelper;
 
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.entity.EntityNinjaMob;
@@ -79,13 +80,14 @@ public class Chakra extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-	public static Pathway pathway(EntityPlayer player) {
+	public static PathwayPlayer pathway(EntityPlayer player) {
 		if (player.world.isRemote) {
-			if (clientPlayerPathway == null || clientPlayerPathway.user != player)
+			if (clientPlayerPathway == null || clientPlayerPathway.user != player) {
 				clientPlayerPathway = new PathwayPlayer(player);
+			}
 			return clientPlayerPathway;
 		}
-		Pathway p = playerMap.get(player);
+		PathwayPlayer p = playerMap.get(player);
 		return p != null ? p : new PathwayPlayer(player);
 	}
 
@@ -93,22 +95,18 @@ public class Chakra extends ElementsNarutomodMod.ModElement {
 		protected final T user;
 		private double amount;
 		private double max;
-		private int motionlessTime;
-		private double prevX;
-		private double prevZ;
 		
 		protected Pathway(T userIn) {
 			this.user = userIn;
-			this.prevX = userIn.posX;
-			this.prevZ = userIn.posZ;
 		}
 
 		public double getMax() {
 			return this.max;
 		}
 
-		public void setMax(double maxIn) {
+		public Pathway<T> setMax(double maxIn) {
 			this.max = maxIn;
+			return this;
 		}
 
 		protected void set(double amountIn) {
@@ -119,7 +117,6 @@ public class Chakra extends ElementsNarutomodMod.ModElement {
 			double d = this.getAmount();
 			double max = this.getMax();
 			double d1 = d - amountIn;
-			//this.set(d > this.getMax() ? (ignoreMax || amountIn > 0d ? d : this.getMax()) : d > 0 ? d : 0d);
 			d1 = d1 > max ? (ignoreMax ? d1 : amountIn > 0d ? d1 : d > max ? d : max) : d1 > 0 ? d1 : d;
 			this.set(d1);
 			return d != d1;
@@ -150,31 +147,21 @@ public class Chakra extends ElementsNarutomodMod.ModElement {
 		}
 
 		protected void onUpdate() {
-			/*if (this.amount < 0d || this.amount > this.getMax() * 3) {
-				this.player.setHealth(0);
-				return;
-			}*/
 			double d = this.getAmount();
 			double d1 = this.getMax();
+			if (d > d1 * 4d && this.user.isEntityAlive()) {
+				this.user.attackEntityFrom(DamageSource.CRAMMING, Float.MAX_VALUE);
+				return;
+			}
 			if (d > d1 && this.user.ticksExisted % 20 == 0) {
 				this.consume(10.0d);
 			}
-			if (d < 10.0d && d1 > 0.0d && this.getMax() > 150.0d
+			if (d < 10.0d && d1 > 150.0d
 			 && (!(this.user instanceof EntityPlayer) || !((EntityPlayer)this.user).isCreative())) {
 				this.user.addPotionEffect(new PotionEffect(MobEffects.WEAKNESS, 100, 3));
 				this.user.addPotionEffect(new PotionEffect(MobEffects.SLOWNESS, 100, 3));
 				this.user.addPotionEffect(new PotionEffect(MobEffects.NAUSEA, 200, 3));
 			}
-			++this.motionlessTime;
-			if (this.user.posX != this.prevX || this.user.posZ != this.prevZ
-			 || !this.user.onGround || this.user.isSwingInProgress) {
-			 	this.motionlessTime = 0;
-			}
-			if (this.motionlessTime > 100 && this.user.ticksExisted % 80 == 0) {
-				this.consume(-0.006f);
-			}
-			this.prevX = this.user.posX;
-			this.prevZ = this.user.posZ;
 		}
 
 		public void warningDisplay() {
@@ -187,14 +174,20 @@ public class Chakra extends ElementsNarutomodMod.ModElement {
 	}
 	
 	public static class PathwayPlayer extends Pathway<EntityPlayer> {
+		private boolean forceSync;
+		private int motionlessTime;
+		private double prevX;
+		private double prevZ;
+
 		protected PathwayPlayer(EntityPlayer playerIn) {
 			super(playerIn);
-			//this.amount = playerIn.getEntityData().getDouble(DATAKEY);
 			this.setMax(PlayerTracker.getBattleXp(playerIn) * 0.5d);
 			this.set(playerIn.getEntityData().getDouble(DATAKEY));
 			if (this.getAmount() < 0d) {
 				this.set(this.getMax());
 			}
+			this.prevX = playerIn.posX;
+			this.prevZ = playerIn.posZ;
 			if (!playerIn.world.isRemote) {
 				playerMap.put(playerIn, this);
 				this.sendToClient();
@@ -208,7 +201,7 @@ public class Chakra extends ElementsNarutomodMod.ModElement {
 
 		private void sendToClient() {
 			if (this.user instanceof EntityPlayerMP) {
-				PathwayPlayer.Message.sendToSelf((EntityPlayerMP)this.user, this.getAmount(), this.getMax());
+				ServerMessage.sendToSelf((EntityPlayerMP)this.user, this.getAmount(), this.getMax());
 			}
 		}
 
@@ -218,6 +211,7 @@ public class Chakra extends ElementsNarutomodMod.ModElement {
 				super.set(amountIn);
 				this.user.getEntityData().setDouble(DATAKEY, amountIn);
 				this.sendToClient();
+				this.motionlessTime = 0;
 			}
 		}
 
@@ -236,11 +230,22 @@ public class Chakra extends ElementsNarutomodMod.ModElement {
 			if (this.user.world instanceof WorldServer && ((WorldServer)this.user.world).areAllPlayersAsleep()) {
 				this.consume(-0.6f);
 			}
+			++this.motionlessTime;
+			if (this.user.posX != this.prevX || this.user.posZ != this.prevZ
+			 || !this.user.onGround || this.user.isSwingInProgress) {
+			 	this.motionlessTime = 0;
+			}
+			if (this.motionlessTime > 80) {
+				this.consume(-ModConfig.CHAKRA_REGEN_RATE - 0.001f * this.user.getFoodStats().getSaturationLevel());
+			}
 			double d = PlayerTracker.getBattleXp(this.user) * 0.5d;
-			if (d != this.getMax()) {
+			if (d != this.getMax() || this.forceSync) {
+				this.forceSync = false;
 				this.setMax(d);
 				this.sendToClient();
 			}
+			this.prevX = this.user.posX;
+			this.prevZ = this.user.posZ;
 		}
 
 		public static class PlayerHook {
@@ -253,7 +258,7 @@ public class Chakra extends ElementsNarutomodMod.ModElement {
 					} else {
 						Pathway p = playerMap.get((EntityPlayer)entity);
 						if (p != null) {
-							p.set(10d);
+							p.set(Math.min(10d, p.getMax()));
 							playerMap.remove((EntityPlayer)entity);
 						}
 					}
@@ -282,7 +287,7 @@ public class Chakra extends ElementsNarutomodMod.ModElement {
 					  event.player.experience, event.player.experienceTotal, event.player.experienceLevel));
 					PathwayPlayer p = playerMap.get(event.player);
 					if (p != null) {
-						p.sendToClient();
+						p.forceSync = true;
 					}
 				}
 			}
@@ -298,41 +303,47 @@ public class Chakra extends ElementsNarutomodMod.ModElement {
 			public void onRespawn(net.minecraftforge.event.entity.player.PlayerEvent.Clone event) {
 				//if (!event.isWasDeath()) {
 					EntityPlayer oldPlayer = event.getOriginal();
+					EntityPlayer newPlayer = event.getEntityPlayer();
 					PathwayPlayer p = playerMap.get(oldPlayer);
 					if (p != null) {
-						pathway(event.getEntityPlayer()).set(p.getAmount());
-						playerMap.remove(oldPlayer);
+						if (oldPlayer == newPlayer) {
+							p.forceSync = true;
+						} else {
+							PathwayPlayer pnew = pathway(newPlayer);
+							pnew.set(p.getAmount());
+							pnew.forceSync = true;
+							playerMap.remove(oldPlayer);
+						}
 					}
 				//}
 			}
-		}	
+		}
 
-		public static class Message implements IMessage {
+		public static class ServerMessage implements IMessage {
 			//int id;
 			double amount;
 			double max;
 	
-			public Message() { }
+			public ServerMessage() { }
 	
-			public Message(double amountIn, double maxIn) {
+			public ServerMessage(double amountIn, double maxIn) {
 				//this.id = pathway.player.getEntityId();
 				this.amount = amountIn;
 				this.max = maxIn;
 			}
 
 			public static void sendToSelf(EntityPlayerMP player, double d1, double d2) {
-				NarutomodMod.PACKET_HANDLER.sendTo(new Chakra.PathwayPlayer.Message(d1, d2), player);
+				NarutomodMod.PACKET_HANDLER.sendTo(new ServerMessage(d1, d2), player);
 			}
 	
-			public static class Handler implements IMessageHandler<Message, IMessage> {
+			public static class Handler implements IMessageHandler<ServerMessage, IMessage> {
 				@SideOnly(Side.CLIENT)
 				@Override
-				public IMessage onMessage(Message message, MessageContext context) {
+				public IMessage onMessage(ServerMessage message, MessageContext context) {
 					Minecraft.getMinecraft().addScheduledTask(() -> {
 						EntityPlayer player = Minecraft.getMinecraft().player;
 						if (player != null) {
-							pathway(player).setMax(message.max);
-							pathway(player).set(message.amount);
+							pathway(player).setMax(message.max).set(message.amount);
 						}
 					});
 					return null;
@@ -351,11 +362,46 @@ public class Chakra extends ElementsNarutomodMod.ModElement {
 				this.max = buf.readDouble();
 			}
 		}
+
+		public static class ConsumeMessage implements IMessage {
+			public double amount;
+	
+			public ConsumeMessage() {
+			}
+	
+			public ConsumeMessage(double amountIn) {
+				this.amount = amountIn;
+			}
+	
+			public static void sendToServer(double amountIn) {
+				NarutomodMod.PACKET_HANDLER.sendToServer(new ConsumeMessage(amountIn));
+			}
+	
+			public static class Handler implements IMessageHandler<ConsumeMessage, IMessage> {
+				@Override
+				public IMessage onMessage(ConsumeMessage message, MessageContext context) {
+					EntityPlayerMP entity = context.getServerHandler().player;
+					entity.getServerWorld().addScheduledTask(() -> {
+						pathway(entity).consume(message.amount);
+					});
+					return null;
+				}
+			}
+	
+			public void toBytes(ByteBuf buf) {
+				buf.writeDouble(this.amount);
+			}
+	
+			public void fromBytes(ByteBuf buf) {
+				this.amount = buf.readDouble();
+			}
+		}
 	}
 
 	@Override
 	public void preInit(FMLPreInitializationEvent event) {
-		elements.addNetworkMessage(Chakra.PathwayPlayer.Message.Handler.class, Chakra.PathwayPlayer.Message.class, Side.CLIENT);
+		elements.addNetworkMessage(PathwayPlayer.ServerMessage.Handler.class, PathwayPlayer.ServerMessage.class, Side.CLIENT);
+		elements.addNetworkMessage(PathwayPlayer.ConsumeMessage.Handler.class, PathwayPlayer.ConsumeMessage.class, Side.SERVER);
 	}
 
 	@Override

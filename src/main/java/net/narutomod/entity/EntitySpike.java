@@ -9,6 +9,11 @@ import net.minecraftforge.fml.client.registry.RenderingRegistry;
 
 import net.minecraft.world.World;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.client.model.ModelRenderer;
@@ -17,11 +22,6 @@ import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.network.datasync.DataParameter;
@@ -71,12 +71,14 @@ public class EntitySpike extends ElementsNarutomodMod.ModElement {
 		public Base(World worldIn) {
 			super(worldIn);
 			this.setOGSize(0.5f, 1.82f);
+			this.maxInGroundTime = 400;
 			//this.setNoGravity(true);
 		}
 
 		public Base(EntityLivingBase userIn) {
 			super(userIn);
 			this.setOGSize(0.5f, 1.82f);
+			this.maxInGroundTime = 400;
 			//this.setNoGravity(false);
 		}
 

@@ -140,15 +140,14 @@ public class ProcedureSharinganHelmetTickEvent extends ElementsNarutomodMod.ModE
 				}
 			}
 			if ((((itemstack).getItem() == new ItemStack(ItemSharingan.helmet, (int) (1)).getItem())
-					&& ((((entity instanceof EntityPlayer) ? ((EntityPlayer) entity).experienceLevel : 0) > 30)
-							&& ((entity.getEntityData().getDouble((NarutomodModVariables.BATTLEXP))) > 600)))) {
+					&& ((entity.getEntityData().getDouble((NarutomodModVariables.BATTLEXP))) >= 1000))) {
 				if ((PlayerTracker.Deaths.hasRecentNearby((EntityPlayer) entity, 40D, 6000D) && (!(world.isRemote)))) {
 					if ((Math.random() < 0.5)) {
 						mangekyo = new ItemStack(ItemMangekyoSharingan.helmet, (int) (1));
 					} else {
 						mangekyo = new ItemStack(ItemMangekyoSharinganObito.helmet, (int) (1));
 					}
-					((ItemDojutsu.Base) mangekyo.getItem()).setOwner(mangekyo, (EntityLivingBase) entity);
+					((ItemSharingan.Base) mangekyo.getItem()).copyOwner(mangekyo, itemstack);
 					if (entity instanceof EntityPlayer) {
 						ItemStack _setstack = (mangekyo);
 						_setstack.setCount(1);
@@ -156,6 +155,7 @@ public class ProcedureSharinganHelmetTickEvent extends ElementsNarutomodMod.ModE
 					}
 					if (entity instanceof EntityPlayer)
 						((EntityPlayer) entity).inventory.clearMatchingItems((itemstack).getItem(), -1, (int) 1, null);
+					entity = ((ItemSharingan.Base) mangekyo.getItem()).getOwner(mangekyo, world);
 					if ((!(((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
 							? ((EntityPlayerMP) entity).getAdvancements()
 									.getProgress(((WorldServer) (entity).world).getAdvancementManager()
@@ -174,8 +174,12 @@ public class ProcedureSharinganHelmetTickEvent extends ElementsNarutomodMod.ModE
 								}
 							}
 						}
-						world.playSound((EntityPlayer) null, x, y, z, (net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY
-								.getObject(new ResourceLocation("ui.toast.challenge_complete")), SoundCategory.NEUTRAL, (float) 1, (float) 1);
+						if ((entity instanceof EntityPlayerMP)) {
+							world.playSound((EntityPlayer) null, (entity.posX), (entity.posY), (entity.posZ),
+									(net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY
+											.getObject(new ResourceLocation("ui.toast.challenge_complete")),
+									SoundCategory.NEUTRAL, (float) 1, (float) 1);
+						}
 					}
 				}
 			}

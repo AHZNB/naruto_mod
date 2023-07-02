@@ -1,0 +1,6 @@
+{
+  "parent": "narutomod:custom/gunbai",
+  "textures": {
+    "0": "narutomod:blocks/gunbai"
+  }
+}

@@ -160,11 +160,15 @@ public class ItemScrollSanshouo extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void onUpdate() {
 			super.onUpdate();
-			if (this.ticksExisted > this.openScrollTime && !this.world.isRemote) {
-				EntityLivingBase entity = new EntityPuppetSanshouo.EntityCustom(this.summoner, this.posX, this.posY, this.posZ);
-				this.world.spawnEntity(entity);
-				entity.setHealth(this.puppetHealth);
-				ProcedureUtils.poofWithSmoke(entity);
+			if (!this.world.isRemote && this.summoner == null) {
+				this.setDead();
+			} else if (this.ticksExisted > this.openScrollTime) {
+				if (this.summoner != null) {
+					EntityLivingBase entity = new EntityPuppetSanshouo.EntityCustom(this.summoner, this.posX, this.posY, this.posZ);
+					this.world.spawnEntity(entity);
+					entity.setHealth(this.puppetHealth);
+					ProcedureUtils.poofWithSmoke(entity);
+				}
 				this.setDead();
 			}
 		}

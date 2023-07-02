@@ -31,14 +31,8 @@ public class GuiScrollKageBunshinGui extends ElementsNarutomodMod.ModElement {
 			// security measure to prevent arbitrary chunk generation
 			if (player.world.isRemote || !player.world.isBlockLoaded(new BlockPos(this.x, this.y, this.z)))
 				return;
-			ItemStack stack = ProcedureUtils.getMatchingItemStack(player, ItemNinjutsu.block);
-			if (stack == null && PlayerTracker.isNinja(player)) {
-				stack = new ItemStack(ItemNinjutsu.block, 1);
-				((ItemNinjutsu.RangedItem)stack.getItem()).setOwner(stack, player);
-				ItemHandlerHelper.giveItemToPlayer(player, stack);
-			}
+			ItemStack stack = GuiNinjaScroll.enableJutsu(player, (ItemNinjutsu.RangedItem)ItemNinjutsu.block, ItemNinjutsu.KAGEBUNSHIN, true);
 			if (stack != null) {
-				((ItemNinjutsu.RangedItem)stack.getItem()).enableJutsu(stack, ItemNinjutsu.KAGEBUNSHIN, true);
 				super.handleButtonAction(player, buttonID);
 			}
 		}
@@ -54,12 +48,8 @@ public class GuiScrollKageBunshinGui extends ElementsNarutomodMod.ModElement {
 			super.drawGuiContainerBackgroundLayer(par1, par2, par3);
 			this.mc.renderEngine.bindTexture(new ResourceLocation("narutomod:textures/blocks/ninjutsu.png"));
 			this.drawModalRectWithCustomSizedTexture(this.guiLeft + 89, this.guiTop + 49, 0, 0, 48, 48, 48, 48);
-			this.mc.renderEngine.bindTexture(new ResourceLocation("narutomod:textures/wei_.png"));
-			this.drawModalRectWithCustomSizedTexture(this.guiLeft + 0, this.guiTop + 108, 0, 0, 48, 48, 48, 48);
-			this.mc.renderEngine.bindTexture(new ResourceLocation("narutomod:textures/si_.png"));
-			this.drawModalRectWithCustomSizedTexture(this.guiLeft + 52, this.guiTop + 108, 0, 0, 48, 48, 48, 48);
-			this.mc.renderEngine.bindTexture(new ResourceLocation("narutomod:textures/yin_.png"));
-			this.drawModalRectWithCustomSizedTexture(this.guiLeft + 104, this.guiTop + 108, 0, 0, 48, 48, 48, 48);
+			this.mc.renderEngine.bindTexture(new ResourceLocation("narutomod:textures/handseal_clone.png"));
+			this.drawModalRectWithCustomSizedTexture(this.guiLeft + 96, this.guiTop + 114, 0, 0, 44, 44, 44, 44);
 		}
 
 		@Override

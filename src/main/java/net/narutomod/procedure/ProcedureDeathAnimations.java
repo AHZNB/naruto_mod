@@ -1,13 +1,11 @@
 package net.narutomod.procedure;
 
-import net.narutomod.PlayerRender;
 import net.narutomod.NarutomodModVariables;
 import net.narutomod.ElementsNarutomodMod;
 
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.World;
 import net.minecraft.util.EnumParticleTypes;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.Entity;
 
 import java.util.Map;
@@ -45,7 +43,6 @@ public class ProcedureDeathAnimations extends ElementsNarutomodMod.ModElement {
 			if (world instanceof WorldServer)
 				((WorldServer) world).spawnParticle(EnumParticleTypes.SMOKE_NORMAL, (entity.posX), ((entity.posY) + (h)), (entity.posZ), (int) 20,
 						((w) * 0.5), ((h) * 0.5), ((w) * 0.5), 0, new int[0]);
-			PlayerRender.setColorMultiplier((EntityPlayer) entity, 0x30000000);
 		}
 	}
 }

@@ -1,5 +1,6 @@
 package net.narutomod.procedure;
 
+import net.narutomod.entity.EntityGedoStatue;
 import net.narutomod.entity.EntityBijuManager;
 import net.narutomod.command.CommandLocateEntity;
 import net.narutomod.ElementsNarutomodMod;
@@ -7,8 +8,7 @@ import net.narutomod.ElementsNarutomodMod;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 
 import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.Entity;
 
@@ -39,7 +39,6 @@ public class ProcedureLocateEntityCommandExecuted extends ElementsNarutomodMod.M
 		double y = 0;
 		double z = 0;
 		double tailnum = 0;
-		Vec3d vec3d = null;
 		if ((((new Object() {
 			public String getText() {
 				String param = (String) cmdparams.get("0");
@@ -66,10 +65,34 @@ public class ProcedureLocateEntityCommandExecuted extends ElementsNarutomodMod.M
 					return "";
 				}
 			}.getText()));
-			Entity biju = EntityBijuManager.getEntityByTails((int) tailnum);
-			if (biju != null) {
-				vec3d = biju.getPositionVector();
-				string = (String) biju.getName();
+			BlockPos pos = EntityBijuManager.getPositionByTails((int) tailnum);
+			if (pos != null) {
+				string = (String) (("The ") + "" + ((int) tailnum) + "" + (" tails last known position at: ") + "" + (pos.getX()) + "" + (", ") + ""
+						+ (pos.getY()) + "" + (", ") + "" + (pos.getZ()));
+			} else {
+				string = (String) "Entity not found";
+			}
+			if (entity instanceof EntityPlayer && !entity.world.isRemote) {
+				((EntityPlayer) entity).sendStatusMessage(new TextComponentString((string)), (false));
+			}
+		} else if ((((new Object() {
+			public String getText() {
+				String param = (String) cmdparams.get("0");
+				if (param != null) {
+					return param;
+				}
+				return "";
+			}
+		}.getText())).equals(CommandLocateEntity.Level1.GEDO.toString()))) {
+			Entity gedoEntity = EntityGedoStatue.getThisEntity();
+			if (gedoEntity != null) {
+				string = (String) (("The gedo mazo's last known position at: dimension[") + "" + ((gedoEntity.dimension)) + "" + ("] pos:[") + ""
+						+ ((gedoEntity.posX)) + "" + (", ") + "" + ((gedoEntity.posY)) + "" + (", ") + "" + ((gedoEntity.posZ)) + "" + ("]"));
+			} else {
+				string = (String) "Entity not found";
+			}
+			if (entity instanceof EntityPlayer && !entity.world.isRemote) {
+				((EntityPlayer) entity).sendStatusMessage(new TextComponentString((string)), (false));
 			}
 		} else if ((((new Object() {
 			public String getText() {
@@ -154,7 +177,6 @@ public class ProcedureLocateEntityCommandExecuted extends ElementsNarutomodMod.M
 						return "";
 					}
 				}.getText());
-				EntityPlayerMP player = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerByUsername(string);
 				tailnum = (double) new Object() {
 					int convert(String s) {
 						try {
@@ -172,8 +194,14 @@ public class ProcedureLocateEntityCommandExecuted extends ElementsNarutomodMod.M
 						return "";
 					}
 				}.getText()));
-				if (player != null) {
-					EntityBijuManager.setPlayerAsJinchurikiByTails(player, (int) tailnum);
+				Entity vessel = null;
+				if ((((string)).equals("gedo"))) {
+					vessel = FMLCommonHandler.instance().getMinecraftServerInstance().getEntityFromUuid(EntityGedoStatue.ENTITY_UUID);
+				} else {
+					vessel = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerByUsername(string);
+				}
+				if (vessel != null) {
+					EntityBijuManager.setVesselByTails(vessel, (int) tailnum);
 				}
 			} else {
 				if (entity instanceof EntityPlayer && !entity.world.isRemote) {
@@ -183,22 +211,11 @@ public class ProcedureLocateEntityCommandExecuted extends ElementsNarutomodMod.M
 							(false));
 				}
 			}
-			return;
 		} else {
 			if (entity instanceof EntityPlayer && !entity.world.isRemote) {
 				((EntityPlayer) entity).sendStatusMessage(new TextComponentString(
 						"Usage: /locateEntity <biju [num] | jinchuriki {list | revoke {all | [num]} | assign [playername] [num]}>"), (false));
 			}
-			return;
-		}
-		if (vec3d != null) {
-			string = (String) (((string)) + "" + (" entity last known position at: ") + "" + (Math.floor(vec3d.x)) + "" + (", ") + ""
-					+ (Math.floor(vec3d.y)) + "" + (", ") + "" + (Math.floor(vec3d.z)));
-		} else {
-			string = (String) "Entity not found";
-		}
-		if (entity instanceof EntityPlayer && !entity.world.isRemote) {
-			((EntityPlayer) entity).sendStatusMessage(new TextComponentString((string)), (false));
 		}
 	}
 }

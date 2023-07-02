@@ -6,17 +6,24 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.event.ModelRegistryEvent;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.common.MinecraftForge;
 
 import net.minecraft.world.World;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.EnumActionResult;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.DamageSource;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Item;
 import net.minecraft.entity.player.EntityPlayer;
@@ -30,22 +37,16 @@ import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.init.SoundEvents;
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.DamageSource;
+import net.minecraft.init.SoundEvents;
 
 import net.narutomod.entity.EntityScalableProjectile;
 import net.narutomod.entity.EntityMeltingJutsu;
 import net.narutomod.entity.EntityLavaChakraMode;
 import net.narutomod.procedure.ProcedureUtils;
-import net.narutomod.Particles;
 import net.narutomod.creativetab.TabModTab;
+import net.narutomod.Particles;
+import net.narutomod.PlayerTracker;
 import net.narutomod.NarutomodModVariables;
 import net.narutomod.ElementsNarutomodMod;
 
@@ -56,8 +57,8 @@ public class ItemYooton extends ElementsNarutomodMod.ModElement {
 	@GameRegistry.ObjectHolder("narutomod:yooton")
 	public static final Item block = null;
 	public static final int ENTITYID = 270;
-	public static final ItemJutsu.JutsuEnum ROCKS = new ItemJutsu.JutsuEnum(0, "magmaball", 'S', 200, 30d, new EntityMagmaBall.Jutsu());
-	public static final ItemJutsu.JutsuEnum STREAM = new ItemJutsu.JutsuEnum(1, "melting_jutsu", 'S', 200, 30d, new EntityMeltingJutsu.EC.Jutsu());
+	public static final ItemJutsu.JutsuEnum ROCKS = new ItemJutsu.JutsuEnum(0, "magmaball", 'S', 200, 40d, new EntityMagmaBall.Jutsu());
+	public static final ItemJutsu.JutsuEnum STREAM = new ItemJutsu.JutsuEnum(1, "melting_jutsu", 'S', 200, 50d, new EntityMeltingJutsu.EC.Jutsu());
 	public static final ItemJutsu.JutsuEnum CHAKRAMODE = new ItemJutsu.JutsuEnum(2, "lava_chakra_mode", 'S', 250, 10d, new EntityLavaChakraMode.EC.Jutsu());
 
 	public ItemYooton(ElementsNarutomodMod instance) {
@@ -102,7 +103,25 @@ public class ItemYooton extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		protected float getPower(ItemStack stack, EntityLivingBase entity, int timeLeft) {
-			return this.getPower(stack, entity, timeLeft, 1f, this.getCurrentJutsu(stack) == ROCKS ? 15f : 30f);
+			ItemJutsu.JutsuEnum jutsu = this.getCurrentJutsu(stack);
+			if (jutsu == ROCKS) {
+				return this.getPower(stack, entity, timeLeft, 1.0f, 50f);
+			} else if (jutsu == STREAM) {
+				return this.getPower(stack, entity, timeLeft, 1.0f, 200f);
+			}
+			return 1f;
+		}
+
+		@Override
+		protected float getMaxPower(ItemStack stack, EntityLivingBase entity) {
+			float mp = super.getMaxPower(stack, entity);
+			ItemJutsu.JutsuEnum jutsu = this.getCurrentJutsu(stack);
+			if (jutsu == ROCKS) {
+				return Math.min(mp, 20f);
+			} else if (jutsu == STREAM) {
+				return Math.min(mp, 10f);
+			}
+			return mp;
 		}
 
 		@Override
@@ -154,15 +173,19 @@ public class ItemYooton extends ElementsNarutomodMod.ModElement {
 		public EntityMagmaBall(EntityLivingBase shooter, float scale) {
 			super(shooter);
 			this.setOGSize(1.0F, 1.0F);
+			scale *= 1.2F;
 			this.setEntityScale(scale);
 			this.explosionSize = Math.max((int)scale - 1, 0);
-			this.damage = scale * 0.1f * (shooter instanceof EntityPlayer ? ((EntityPlayer)shooter).experienceLevel : 5);
+			this.damage = scale * 20f;
 			Vec3d vec3d = shooter.getLookVec();
 			this.setPosition(shooter.posX + vec3d.x, shooter.posY + 1.2D + vec3d.y, shooter.posZ + vec3d.z);
 		}
 
 		@Override
 		protected void onImpact(RayTraceResult result) {
+			if (result.typeOfHit == RayTraceResult.Type.BLOCK && this.getEntityScale() >= 2.0f && this.ticksInAir <= 15) {
+				return;
+			}
 			if (!this.world.isRemote) {
 				if (this.shootingEntity != null) {
 					this.shootingEntity.getEntityData().setDouble(NarutomodModVariables.InvulnerableTime, 40d);
@@ -211,7 +234,7 @@ public class ItemYooton extends ElementsNarutomodMod.ModElement {
 
 			public void createJutsu(EntityLivingBase entity, double x, double y, double z, float power) {
 				EntityMagmaBall entityarrow = new EntityMagmaBall(entity, power);
-				entityarrow.shoot(x, y, z, 0.95f, 0);
+				entityarrow.shoot(x, y, z, 1.05f, 0);
 				entity.world.spawnEntity(entityarrow);
 			}
 		}
@@ -219,17 +242,17 @@ public class ItemYooton extends ElementsNarutomodMod.ModElement {
 
 	@SideOnly(Side.CLIENT)
 	public class RenderCustom extends Render<EntityMagmaBall> {
-		private final ResourceLocation TEXTURE = new ResourceLocation("narutomod:textures/magmaball.png");
+		private final ResourceLocation texture = new ResourceLocation("narutomod:textures/magmaball.png");
 
 		public RenderCustom(RenderManager renderManager) {
 			super(renderManager);
-			shadowSize = 0.1f;
+			this.shadowSize = 0.1f;
 		}
 
 		@Override
 		public void doRender(EntityMagmaBall entity, double x, double y, double z, float entityYaw, float partialTicks) {
-			GlStateManager.pushMatrix();
 			this.bindEntityTexture(entity);
+			GlStateManager.pushMatrix();
 			float scale = entity.getEntityScale();
 			GlStateManager.translate(x, y + 0.5d * scale, z);
 			GlStateManager.enableRescaleNormal();
@@ -254,7 +277,7 @@ public class ItemYooton extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		protected ResourceLocation getEntityTexture(EntityMagmaBall entity) {
-			return TEXTURE;
+			return this.texture;
 		}
 	}
 }

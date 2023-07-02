@@ -4,6 +4,7 @@ import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.math.Vec3d;
@@ -16,6 +17,9 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.EntitySelectors;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.SoundEvent;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.nbt.NBTTagList;
@@ -25,13 +29,13 @@ import net.minecraft.item.Item;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.IAttribute;
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.ai.attributes.RangedAttribute;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
@@ -39,13 +43,11 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.block.SoundType;
+import net.minecraft.block.Block;
 import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.advancements.Advancement;
-import net.minecraft.init.Items;
-import net.minecraft.util.SoundEvent;
-import net.minecraft.world.WorldServer;
-import net.minecraft.block.Block;
-import net.minecraft.util.EnumParticleTypes;
+
+import net.minecraft.init.Items;
 
 import net.narutomod.item.ItemSharingan;
 import net.narutomod.item.ItemMangekyoSharinganObito;
@@ -53,6 +55,7 @@ import net.narutomod.item.ItemMangekyoSharinganEternal;
 import net.narutomod.item.ItemMangekyoSharingan;
 import net.narutomod.item.ItemJutsu;
 import net.narutomod.PlayerTracker;
+import net.narutomod.PlayerRender;
 import net.narutomod.Particles;
 import net.narutomod.NarutomodModVariables;
 import net.narutomod.ElementsNarutomodMod;
@@ -64,12 +67,13 @@ import java.util.List;
 import java.util.Iterator;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Collection;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import com.google.common.collect.Lists;
 import com.google.common.base.Predicates;
 import com.google.common.base.Predicate;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.Collection;
+import net.minecraft.util.math.Vec3i;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
@@ -78,6 +82,7 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 	public static final IAttribute MAXHEALTH = (new RangedAttribute(null, "modded.maxHealth", 20.0D, Float.MIN_VALUE, 1048576.0D)).setDescription("Max Modded Health").setShouldWatch(true);
 	private static final Random RNG = new Random();
 	public static final DamageSource AMATERASU = new DamageSource(ItemJutsu.NINJUTSU_TYPE).setFireDamage();
+	public static final DamageSource SPECIAL_DAMAGE = new DamageSource("wither").setDamageBypassesArmor().setDamageIsAbsolute();
 	
 	public ProcedureUtils(ElementsNarutomodMod instance) {
 		super(instance, 177);
@@ -91,6 +96,14 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 		return RNG.nextBoolean();
 	}
 
+	public static int rngInt(int bound) {
+		return RNG.nextInt(bound);
+	}
+
+	public static Random rng() {
+		return RNG;
+	}
+
 	public static double name2Id(String string) {
 		long id = 0L;
 		for (int i = 0; i < string.length() - 2 && i < 8; ++i) {
@@ -99,7 +112,8 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 		return id;
 	}
 
-	public static EntityLivingBase searchPlayerMatchingId(UUID id) {
+	@Nullable
+	public static EntityLivingBase searchLivingMatchingId(UUID id) {
 		/*MinecraftServer mcserv = FMLCommonHandler.instance().getMinecraftServerInstance();
 		if (mcserv != null) {
 			for (int i = 0; i < mcserv.getPlayerList().getPlayers().size(); ++i) {
@@ -108,7 +122,8 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 					continue;
 				return player;
 			}
-		}*/
+		}
+*/
 		MinecraftServer mcserv = FMLCommonHandler.instance().getMinecraftServerInstance();
 		if (mcserv != null) {
 			Entity entity = mcserv.getEntityFromUuid(id);
@@ -117,6 +132,12 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 			}
 		}
 		return null;
+	}
+
+	@Nullable
+	public static EntityPlayerMP getPlayerMatchingUuid(UUID id) {
+		MinecraftServer mcserv = FMLCommonHandler.instance().getMinecraftServerInstance();
+		return mcserv != null ? mcserv.getPlayerList().getPlayerByUUID(id) : null;
 	}
 
 	@Nullable
@@ -142,15 +163,17 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 		return null;
 	}
 
-	public static void setOriginalOwner(EntityLivingBase entity, ItemStack stack) {
+	public static void setOriginalOwner(ItemStack stack, UUID uuid) {
 		if (!stack.hasTagCompound())
 			stack.setTagCompound(new NBTTagCompound());
-		//stack.getTagCompound().setDouble("player_id", name2Id(entity.getDisplayName().getFormattedText()));
-		stack.getTagCompound().setUniqueId("player_id", entity.getUniqueID());
+		stack.getTagCompound().setUniqueId("player_id", uuid);
+	}
+
+	public static void setOriginalOwner(EntityLivingBase entity, ItemStack stack) {
+		setOriginalOwner(stack, entity.getUniqueID());
 	}
 
 	public static UUID getOwnerId(ItemStack stack) {
-		//return stack.hasTagCompound() ? stack.getTagCompound().getDouble("player_id") : 0d;
 		return stack.hasTagCompound() && stack.getTagCompound().hasUniqueId("player_id") 
 		 ? stack.getTagCompound().getUniqueId("player_id") : null;
 	}
@@ -173,6 +196,35 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 				ItemStack itemstack = (ItemStack) iterator.next();
 				//if (!itemstack.isEmpty() && itemstack.isItemEqualIgnoreDurability(itemStackIn))
 				if (!itemstack.isEmpty() && itemstack.getItem() == itemStackIn.getItem()) {
+					return itemstack;
+				}
+			}
+		}
+		return null;
+	}
+
+	public static boolean hasItemInMainInventory(EntityPlayer player, Item itemIn) {
+		return getItemInMainInventory(player, itemIn) != null;
+	}
+
+	@Nullable
+	public static ItemStack getItemInMainInventory(EntityPlayer player, Item itemIn) {
+		for (ItemStack stack : player.inventory.mainInventory) {
+			if (!stack.isEmpty() && stack.getItem() == itemIn) {
+				return stack;
+			}
+		}
+		return null;
+	}
+
+	public static ItemStack getMatchingItemStack(EntityPlayer player, ItemStack itemStackIn) {
+		List<NonNullList<ItemStack>> allInv = Arrays.<NonNullList<ItemStack>>asList(player.inventory.mainInventory,
+		 player.inventory.armorInventory, player.inventory.offHandInventory);
+		for (List<ItemStack> list : allInv) {
+			Iterator iterator = list.iterator();
+			while (iterator.hasNext()) {
+				ItemStack itemstack = (ItemStack) iterator.next();
+				if (!itemstack.isEmpty() && ItemStack.areItemStacksEqual(itemstack, itemStackIn)) {
 					return itemstack;
 				}
 			}
@@ -248,6 +300,16 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 		return -1;
 	}
 
+	public static int getAvailableSlotsInMainInventory(EntityPlayer player) {
+		int i = 0;
+		for (ItemStack stack1 : player.inventory.mainInventory) {
+			if (stack1.isEmpty()) {
+				++i;
+			}
+		}
+		return i;
+	}
+
 	public static boolean attackEntityAsMob(EntityLivingBase attacker, Entity entityIn) {
 		int i = 0;
 		float f = (float) getModifiedAttackDamage(attacker);
@@ -280,7 +342,7 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 					}
 				}
 			}
-			if (entityIn instanceof EntityLivingBase) {
+			if (entityIn instanceof EntityLivingBase) {
 				ItemStack itemstack1 = attacker.getHeldItemMainhand();
 				if (!itemstack1.isEmpty()) {
 					itemstack1.getItem().hitEntity(itemstack1, (EntityLivingBase)entityIn, attacker);
@@ -306,6 +368,10 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 		target.motionX = motionX;
 		target.motionY = motionY;
 		target.motionZ = motionZ;
+	}
+
+	public static void addVelocity(Entity target, Vec3d vec) {
+		setVelocity(target, target.motionX + vec.x, target.motionY + vec.y, target.motionZ + vec.z);
 	}
 
 	public static void multiplyVelocity(Entity target, double mul) {
@@ -385,18 +451,19 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 
 	public static void swapItemToSlot(EntityPlayer entity, EntityEquipmentSlot slot, ItemStack itemstack) {
 		ItemStack itemstack1 = entity.getItemStackFromSlot(slot);
-		ItemStack itemstack2 = getItemStackIgnoreDurability(entity.inventory, itemstack);
+		//ItemStack itemstack2 = getItemStackIgnoreDurability(entity.inventory, itemstack);
+		ItemStack itemstack2 = getMatchingItemStack(entity, itemstack);
 		if (itemstack2 != null && !itemstack2.isEmpty()) {
 			itemstack = itemstack2.copy();
 			itemstack2.shrink(1);
 		}
 		if (!itemstack1.isEmpty()) {
-			if (itemstack1.getItem() == itemstack.getItem())
-				return;
-			if (itemstack1.getMaxStackSize() > 1)
+			if (itemstack1.getItem() == itemstack.getItem()) return;
+			if (itemstack1.getMaxStackSize() > 1) {
 				ItemHandlerHelper.giveItemToPlayer(entity, itemstack1);
-			else
+			} else {
 				entity.addItemStackToInventory(itemstack1);
+			}
 			entity.getAttributeMap().removeAttributeModifiers(itemstack.getAttributeModifiers(slot));
 		}
 		entity.setItemStackToSlot(slot, itemstack);
@@ -430,8 +497,20 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 		return objectEntityLookingAt(entity, range, bbGrow, false, false, (Predicate)null);
 	}
 
+	public static RayTraceResult objectEntityLookingAt(Entity entity, double range, double bbGrow, boolean trackall) {
+		return objectEntityLookingAt(entity, range, bbGrow, trackall, false, (Predicate)null);
+	}
+
 	public static RayTraceResult objectEntityLookingAt(Entity entity, double range, @Nullable Entity excludeEntity) {
 		return objectEntityLookingAt(entity, range, false, false, excludeEntity);
+	}
+
+	public static RayTraceResult objectEntityLookingAt(Entity entity, double range, double bbgrow, @Nullable Entity excludeEntity) {
+		return objectEntityLookingAt(entity, range, bbgrow, false, false, excludeEntity);
+	}
+
+	public static RayTraceResult objectEntityLookingAt(Entity entity, double range, double bbgrow, Class <? extends Entity> excludeClazz) {
+		return objectEntityLookingAt(entity, range, bbgrow, false, false, excludeClazz);
 	}
 
 	public static RayTraceResult objectEntityLookingAt(Entity entity, double range, boolean trackall) {
@@ -443,9 +522,21 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static RayTraceResult objectEntityLookingAt(Entity entity, double range, boolean trackall, boolean stopOnLiquid, @Nullable Entity excludeEntity) {
-		return objectEntityLookingAt(entity, range, trackall, stopOnLiquid, new Predicate<Entity>() {
+		return objectEntityLookingAt(entity, range, 0.0d, trackall, stopOnLiquid, excludeEntity);
+	}
+
+	public static RayTraceResult objectEntityLookingAt(Entity entity, double range, double bbgrow, boolean trackall, boolean stopOnLiquid, @Nullable Entity excludeEntity) {
+		return objectEntityLookingAt(entity, range, bbgrow, trackall, stopOnLiquid, new Predicate<Entity>() {
 			public boolean apply(@Nullable Entity p_apply_1_) {
 				return p_apply_1_ != null && !p_apply_1_.equals(excludeEntity);
+			}
+		});
+	}
+
+	public static RayTraceResult objectEntityLookingAt(Entity entity, double range, double bbgrow, boolean trackall, boolean stopOnLiquid, Class <? extends Entity> excludeClazz) {
+		return objectEntityLookingAt(entity, range, bbgrow, trackall, stopOnLiquid, new Predicate<Entity>() {
+			public boolean apply(@Nullable Entity p_apply_1_) {
+				return p_apply_1_ != null && !excludeClazz.isAssignableFrom(p_apply_1_.getClass());
 			}
 		});
 	}
@@ -457,13 +548,11 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 	public static RayTraceResult objectEntityLookingAt(Entity entity, double range, double bbGrow, boolean trackall, boolean stopOnLiquid, @Nullable Predicate<Entity> filter) {
 		double d0 = range;
 		double d1 = d0;
-		Entity targetedEntity = null;
 		Vec3d vec3d = entity.getPositionEyes(1f);
 		Vec3d vec3d1 = entity.getLookVec().scale(d0);
 		Vec3d vec3d2 = vec3d.add(vec3d1);
-		Vec3d vec3d3 = null;
 		RayTraceResult objectMouseOver = entity.world.rayTraceBlocks(vec3d, vec3d2, stopOnLiquid, false, true);
-		if (objectMouseOver != null) {
+		if (objectMouseOver != null) {
 			d1 = objectMouseOver.hitVec.distanceTo(vec3d);
 		}
 		List<Entity> list = entity.world.getEntitiesInAABBexcluding(entity,
@@ -476,29 +565,32 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 					}
 				}));
 		double d2 = d1;
+		RayTraceResult entityTrace = null;
 		for (int j = 0; j < list.size(); ++j) {
 			Entity entity1 = list.get(j);
 			if (entity1.getLowestRidingEntity() == entity.getLowestRidingEntity())
 				continue;
-			AxisAlignedBB axisalignedbb = entity1.getEntityBoundingBox().grow(bbGrow);
+			AxisAlignedBB axisalignedbb = entity1.getEntityBoundingBox().grow(bbGrow * vec3d.distanceTo(entity1.getPositionVector()) / 32d);
 			RayTraceResult raytraceresult = axisalignedbb.calculateIntercept(vec3d, vec3d2);
 			if (axisalignedbb.contains(vec3d)) {
 				if (d2 >= 0.0) {
-					targetedEntity = entity1;
-					vec3d3 = raytraceresult == null ? vec3d : raytraceresult.hitVec;
+					entityTrace = raytraceresult != null ? raytraceresult : new RayTraceResult(vec3d, EnumFacing.UP, null);
+					entityTrace.typeOfHit = RayTraceResult.Type.ENTITY;
+					entityTrace.entityHit = entity1;
 					d2 = 0.0;
 				}
 			} else if (raytraceresult != null) {
 				double d3 = vec3d.distanceTo(raytraceresult.hitVec);
 				if (d3 < d2 || d2 == 0.0) {
-					targetedEntity = entity1;
-					vec3d3 = raytraceresult.hitVec;
+					entityTrace = raytraceresult;
+					entityTrace.typeOfHit = RayTraceResult.Type.ENTITY;
+					entityTrace.entityHit = entity1;
 					d2 = d3;
 				}
 			}
 		}
-		if (targetedEntity != null && (d2 < d1 || objectMouseOver == null)) {
-			objectMouseOver = new RayTraceResult(targetedEntity, vec3d3);
+		if (entityTrace != null && (d2 < d1 || objectMouseOver == null)) {
+			objectMouseOver = entityTrace;
 		}
 		return objectMouseOver;
 	}
@@ -508,7 +600,7 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 	}
 
 	@Nullable
-	public static EntityItem breakBlockAndDropWithChance(World world, BlockPos pos, float hardnessLimit, float breakChance, float dropChance, boolean sound) {
+	public static EntityItem breakBlockAndDropWithChance(World world, BlockPos pos, float hardnessLimit, float breakChance, float dropChance, boolean sound) {
 		EntityItem entityToSpawn = null;
 		IBlockState blockstate = world.getBlockState(pos);
 		float blockHardness = blockstate.getBlockHardness(world, pos);
@@ -522,7 +614,7 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 				if (!world.isRemote && Math.random() <= (double) dropChance) {
 					Item item = blockstate.getBlock().getItemDropped(blockstate, RNG, 0);
 					if (item != Items.AIR) {
-						entityToSpawn = new EntityItem(world, (double) pos.getX(), (double) pos.getY(), (double) pos.getZ(), new ItemStack(item, 1));
+						entityToSpawn = new EntityItem(world, (double) pos.getX(), (double) pos.getY(), (double) pos.getZ(), new ItemStack(item, 1));
 						entityToSpawn.setDefaultPickupDelay();
 						world.spawnEntity(entityToSpawn);
 					}
@@ -643,6 +735,7 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
                 for (int j4 = j3; j4 < k3; ++j4) {
 					if (world.isAirBlock(pos.setPos(l3, i4, j4))) {
 						list.add(pos.toImmutable());
+						//list.add(new BlockPos.MutableBlockPos(pos));
 					}
                 }
             }
@@ -671,6 +764,12 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 		return null;
 	}
 
+	public static boolean isSpaceOpenToStandOn(EntityLivingBase entity, BlockPos pos) {
+		AxisAlignedBB bb = entity.getEntityBoundingBox();
+		Vec3d vec = new Vec3d(0.5d+pos.getX(), pos.getY(), 0.5d+pos.getZ()).subtract(entity.posX, bb.minY, entity.posZ);
+		return entity.world.getCollisionBoxes(null, bb.contract(0d, -0.1d, 0d).grow(0.5d, 0d, 0.5d).offset(vec)).isEmpty();
+	}
+
 	public static String animateString(String string, int type, boolean returnToBlack) {
 		int stringLength = string.length();
 		if (stringLength < 1) {
@@ -680,10 +779,13 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 		if (type == 0) {
 			long l = Minecraft.getSystemTime();
 			for (int i = 0; i < stringLength; ++i)
-				outputString = ((long) i + l / 10L) % 188L == 0L ? outputString + TextFormatting.WHITE + string.substring(i, i + 1)
-						: ((long) i + l / 10L) % 188L == 1L	? outputString + TextFormatting.YELLOW + string.substring(i, i + 1)
-						: ((long) i + l / 10L) % 188L == 187L ? outputString + TextFormatting.YELLOW + string.substring(i, i + 1)
-						: outputString + TextFormatting.GOLD + string.substring(i, i + 1);
+				outputString = ((long) i + l / 10L) % 188L == 0L 
+				 ? outputString + TextFormatting.WHITE + string.substring(i, i + 1)
+				 : ((long) i + l / 10L) % 188L == 1L
+				 	? outputString + TextFormatting.YELLOW + string.substring(i, i + 1)
+				 	: ((long) i + l / 10L) % 188L == 187L
+				 		? outputString + TextFormatting.YELLOW + string.substring(i, i + 1)
+				 		: outputString + TextFormatting.GOLD + string.substring(i, i + 1);
 		} else if (type == 1)
 			outputString = TextFormatting.fromColorIndex((int) (Minecraft.getSystemTime() / 80L % 15L) + (returnToBlack ? 0 : 1)) + string;
 		if (returnToBlack)
@@ -759,6 +861,10 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 		}
 		return 0d;
 	}
+
+	public static double getMainhandItemDamage(EntityLivingBase entity) {
+		return getModifiedAttackDamage(entity) - getPunchDamage(entity);
+	}
 	
 	public static double getArmorValue(EntityLivingBase entity) {
 		IAttributeInstance attribute = entity.getEntityAttribute(SharedMonsterAttributes.ARMOR);
@@ -776,12 +882,24 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static void setDeathAnimations(EntityLivingBase entity, int type, int duration) {
-		if (entity instanceof EntityPlayer && ((EntityPlayer) entity).isCreative())
+		if ((entity instanceof EntityPlayer && ((EntityPlayer) entity).isCreative()) || !entity.isEntityAlive()) {
 			return;
-		if ((int) entity.getEntityData().getDouble("deathAnimationType") == 0) {
+		}
+		if (entity.getEntityData().getDouble(NarutomodModVariables.DeathAnimationTime) <= 0.0D) {
 			entity.getEntityData().setDouble("deathAnimationType", (double) type);
 			entity.getEntityData().setDouble(NarutomodModVariables.DeathAnimationTime, (double) duration);
+			if (type == 2 && entity instanceof EntityPlayer) {
+				PlayerRender.setColorMultiplier((EntityPlayer)entity, 0x30000000);
+			}
 		}
+	}
+
+	public static void clearDeathAnimations(EntityLivingBase entity) {
+		if ((int)entity.getEntityData().getDouble("deathAnimationType") == 2 && entity instanceof EntityPlayer) {
+			PlayerRender.setColorMultiplier((EntityPlayer)entity, 0);
+		}
+		entity.getEntityData().removeTag("deathAnimationType");
+		entity.getEntityData().removeTag(NarutomodModVariables.DeathAnimationTime);
 	}
 
 	public static Field getFieldByIndex(Class clazz, Class matchClazz, int fieldIndex) {
@@ -807,7 +925,7 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-	public static Object invokeMethodByParameters(Object parent, Class returnType, Object... params) {
+	public static <T extends Object> T invokeMethodByParameters(Object parent, Class<? extends T> returnType, Object... params) {
 	 //throws IndexOutOfBoundsException, NoSuchMethodException {
 		try {
 			for (Method method : parent.getClass().getDeclaredMethods()) {
@@ -817,14 +935,14 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 					match = false;
 				} else {
 					for (int i = 0; i < clazz1.length; i++) {
-						if (!clazz1[i].equals(params[i].getClass())) {
+						if (!clazz1[i].isAssignableFrom(params[i].getClass())) {
 							match = false;
 						}
 					}
 				}
 				if (match) {
 	            	method.setAccessible(true);
-					return method.invoke(parent, params);
+					return (T)method.invoke(parent, params);
 				}
 			}
 		} catch (Exception e) {
@@ -924,6 +1042,27 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
+	public static void sendChat(EntityPlayer player, String string) {
+		player.sendMessage(new TextComponentString(string));
+	}
+
+	public static void sendMessageToAllNear(String string, double x, double y, double z, double radius, int dimension) {
+		MinecraftServer mcserv = FMLCommonHandler.instance().getMinecraftServerInstance();
+		if (mcserv != null) {
+	        for (int i = 0; i < mcserv.getPlayerList().getCurrentPlayerCount(); ++i) {
+	            EntityPlayerMP entityplayermp = mcserv.getPlayerList().getPlayers().get(i);
+	            if (entityplayermp.dimension == dimension) {
+	                double d0 = x - entityplayermp.posX;
+	                double d1 = y - entityplayermp.posY;
+	                double d2 = z - entityplayermp.posZ;
+	                if (d0 * d0 + d1 * d1 + d2 * d2 < radius * radius) {
+	                    entityplayermp.sendMessage(new TextComponentString(string));
+	                }
+	            }
+	        }
+		}
+	}
+
     public static class BlockposSorter implements Comparator<BlockPos> {
         private final BlockPos pos;
 	
@@ -985,12 +1124,31 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 
     	@Override
     	public int compare(Vec3d vec1, Vec3d vec2) {
-    		double d0 = this.vec.distanceTo(vec1);
-    		double d1 = this.vec.distanceTo(vec2);
+    		double d0 = this.vec.squareDistanceTo(vec1);
+    		double d1 = this.vec.squareDistanceTo(vec2);
             if (d0 < d1) {
                 return this.reverse ? 1 : -1;
             } else {
                 return d0 > d1 ? this.reverse ? -1 : 1 : 0;
+            }
+    	}
+    }
+
+    public static class RayTraceResultSorter implements Comparator<RayTraceResult> {
+    	private final Vec3d vec;
+
+    	public RayTraceResultSorter(Vec3d vecIn) {
+    		this.vec = vecIn;
+    	}
+
+    	@Override
+    	public int compare(RayTraceResult res1, RayTraceResult res2) {
+    		double d0 = this.vec.squareDistanceTo(res1.hitVec);
+    		double d1 = this.vec.squareDistanceTo(res2.hitVec);
+            if (d0 < d1) {
+                return -1;
+            } else {
+                return d0 > d1 ? 1 : 0;
             }
     	}
     }
@@ -1067,6 +1225,120 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 	    	return (aabb.maxX - aabb.minX) * (aabb.maxY - aabb.minY) * (aabb.maxZ - aabb.minZ);
 	    }
     }
+
+	public static class CollisionHelper {
+		private Entity entity;
+		public double dx;
+		public double dy;
+		public double dz;
+		//private int hitsOnSide[] = { 0, 0, 0, 0, 0, 0 };
+		private List<AxisAlignedBB>[] hitsList = new List[6];
+
+		public CollisionHelper(Entity entityIn) {
+			this.entity = entityIn;
+			for (int i = 0; i < this.hitsList.length; i++) {
+				this.hitsList[i] = Lists.newArrayList();
+			}
+		}
+
+		public void collideWithAABBs(List<AxisAlignedBB> list, double x, double y, double z) {
+			this.dx = x;
+			this.dy = y;
+			this.dz = z;
+			for (int i = 0; i < this.hitsList.length; i++) {
+				this.hitsList[i].clear();
+			}
+	       	if (x != 0.0D) for (AxisAlignedBB aabb : list) {
+	       		double d = aabb.calculateXOffset(this.entity.getEntityBoundingBox(), x);
+		    	if (Math.abs(d) < Math.abs(this.dx)) this.dx = d;
+		    	if (d != x) {
+		    		int i = (x > 0d ? EnumFacing.WEST : EnumFacing.EAST).getIndex();
+		    		//this.hitsOnSide[i]++;
+		    		this.hitsList[i].add(aabb);
+		    	}
+	       	}
+		    if (y != 0.0D) for (AxisAlignedBB aabb : list) {
+	       		double d = aabb.calculateYOffset(this.entity.getEntityBoundingBox(), y);
+		    	if (Math.abs(d) < Math.abs(this.dy)) this.dy = d;
+		    	if (d != y) {
+		    		int i = (y > 0d ? EnumFacing.UP : EnumFacing.DOWN).getIndex();
+		    		//this.hitsOnSide[i]++;
+		    		this.hitsList[i].add(aabb);
+		    	}
+		    }
+		    if (z != 0.0D) for (AxisAlignedBB aabb : list) {
+	       		double d = aabb.calculateZOffset(this.entity.getEntityBoundingBox(), z);
+		    	if (Math.abs(d) < Math.abs(this.dz)) this.dz = d;
+		    	if (d != z) {
+		    		int i = (z > 0d ? EnumFacing.NORTH : EnumFacing.SOUTH).getIndex();
+		    		//this.hitsOnSide[i]++;
+		    		this.hitsList[i].add(aabb);
+		    	}
+		    }
+		}
+
+		public double minX(double x) {
+			return Math.signum(x) != Math.signum(this.dx) ? 0d : Math.abs(x) < Math.abs(this.dx) ? x : this.dx;
+		}
+
+		public double minY(double y) {
+			return Math.signum(y) != Math.signum(this.dy) ? 0d : Math.abs(y) < Math.abs(this.dy) ? y : this.dy;
+		}
+
+		public double minZ(double z) {
+			return Math.signum(z) != Math.signum(this.dz) ? 0d : Math.abs(z) < Math.abs(this.dz) ? z : this.dz;
+		}
+
+		@Nullable
+		public BlockPos nearestHitOnSide(EnumFacing face) {
+			double d = 1000d;
+			BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
+			for (AxisAlignedBB aabb : this.hitsList[face.getIndex()]) {
+				Vec3d vec = BB.getCenter(aabb);
+				Vec3i veci = face.getDirectionVec();
+				Vec3d vec1 = new Vec3d(vec.x * Math.abs(veci.getX()), vec.y * Math.abs(veci.getY()), vec.z * Math.abs(veci.getZ()));
+				Vec3d vec2 = BB.getCenter(this.entity.getEntityBoundingBox());
+				Vec3d vec3 = new Vec3d(vec2.x * Math.abs(veci.getX()), vec2.y * Math.abs(veci.getY()), vec2.z * Math.abs(veci.getZ()));
+				double d1 = vec1.squareDistanceTo(vec3);
+				if (d1 < d) {
+					pos.setPos(vec.x, vec.y, vec.z);
+					d = d1;
+				}
+			}
+			return d == 40000d ? null : pos.toImmutable();
+		}
+
+		public List<BlockPos> hitsOnSide(EnumFacing face) {
+			List<BlockPos> newlist = Lists.<BlockPos>newArrayList();
+			for (AxisAlignedBB aabb : this.hitsList[face.getIndex()]) {
+				newlist.add(new BlockPos(BB.getCenter(aabb)));
+			}
+			return newlist;
+		}
+
+		public boolean hitOnSide(EnumFacing face) {
+			return !this.hitsList[face.getIndex()].isEmpty();
+		}
+
+		public boolean hitOnAxis(EnumFacing.Axis axis) {
+			for (int i = 0; i < this.hitsList.length; i++) {
+				if (!this.hitsList[i].isEmpty() && EnumFacing.getFront(i).getAxis() == axis) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		public List<BlockPos> getHitBoxes() {
+			List<BlockPos> newlist = Lists.<BlockPos>newArrayList();
+			for (List<AxisAlignedBB> list : this.hitsList) {
+				for (AxisAlignedBB aabb : list) {
+					newlist.add(new BlockPos(BB.getCenter(aabb)));
+				}
+			}
+			return newlist;
+		}
+	}
 
     public static class Vec2f {
 	    public static final Vec2f ZERO = new Vec2f(0.0F, 0.0F);

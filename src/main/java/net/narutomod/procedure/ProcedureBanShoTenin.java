@@ -1,5 +1,6 @@
 package net.narutomod.procedure;
 
+import net.minecraft.util.text.TextComponentTranslation;
 import org.lwjgl.input.Mouse;
 
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -23,8 +24,10 @@ import net.narutomod.Chakra;
 import net.narutomod.entity.EntityEarthBlocks;
 import net.narutomod.entity.EntityChibakuTenseiBall;
 
+import java.util.List;
 import java.util.Map;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Lists;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class ProcedureBanShoTenin extends ElementsNarutomodMod.ModElement {
@@ -72,20 +75,20 @@ public class ProcedureBanShoTenin extends ElementsNarutomodMod.ModElement {
 					 && t.entityHit.height < 24) {
 						grabbedEntity = t.entityHit;
 						entity.world.playSound(null, entity.posX, entity.posY, entity.posZ,
-						  (net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY
-						  .getObject(new ResourceLocation("narutomod:BanshoTenin")), 
+						  net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:BanshoTenin")), 
 						  SoundCategory.PLAYERS, 5.0F, 1.0F);
 					} else if (entity.isSneaking() && t.typeOfHit == RayTraceResult.Type.BLOCK) {
-						entity.world.playSound(null, t.getBlockPos(), (net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY
+						entity.world.playSound(null, t.getBlockPos(), net.minecraft.util.SoundEvent.REGISTRY
 						  .getObject(new ResourceLocation("narutomod:rocks")), SoundCategory.NEUTRAL, 50.0F, 0.5F);
 						//ProcedureGravityPower.Obj gravobj = new ProcedureGravityPower.Obj(entity.world, 5);
 						//gravobj.dislodge(t);
-						Entity entity1 = ProcedureGravityPower.dislodgeBlocks(entity.world, t.getBlockPos(), 5);
+						EntityEarthBlocks.Base entity1 = ProcedureGravityPower.dislodgeBlocks(entity.world, t.getBlockPos(), 5);
 						if (entity1 != null) {
 							entity1.motionX = 0.2D * t.sideHit.getDirectionVec().getX();
 							entity1.motionY = 0.2D * t.sideHit.getDirectionVec().getY();
 							entity1.motionZ = 0.2D * t.sideHit.getDirectionVec().getZ();
 						}
+						procedure.addEarthBlock(entity1);
 						cp.consume(CHAKRA_USAGE);
 					}
 				}
@@ -98,14 +101,20 @@ public class ProcedureBanShoTenin extends ElementsNarutomodMod.ModElement {
 			procedure.execute(is_pressed, entity, grabbedEntity);
 		} else {
 			if (entity instanceof EntityPlayer && !entity.world.isRemote) {
-				String string = net.minecraft.util.text.translation.I18n.translateToLocal("chattext.cooldown");
 				((EntityPlayer) entity).sendStatusMessage(
-					new TextComponentString(string + " " + (new java.text.DecimalFormat(".1").format(
+					new TextComponentTranslation("chattext.cooldown.formatted", (new java.text.DecimalFormat(".1").format(
 					((float)entity.getEntityData().getInteger(BSTN_CD) - (int)entity.world.getTotalWorldTime()) / 20))), 
 					true);
 			}
 		}
 		entity.getEntityData().setInteger(BSTN_CD, cooldown);
+	}
+
+	public static List<EntityEarthBlocks.Base> getGrabbedEarthBlocks(Entity entity) {
+		if (map.containsKey(entity)) {
+			return map.get(entity).getGrabbedEarthBlocks();
+		}
+		return Lists.newArrayList();
 	}
 
 	public class PlayerHook {

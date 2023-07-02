@@ -21,7 +21,10 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.item.ItemStack;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockBush;
+import net.minecraft.block.BlockLiquid;
 
+import net.narutomod.block.BlockAmaterasuBlock;
 import net.narutomod.block.BlockWaterStill;
 import net.narutomod.item.ItemSuiton;
 import net.narutomod.item.ItemJutsu;
@@ -91,10 +94,19 @@ public class EntityWaterPrison extends ElementsNarutomodMod.ModElement {
 			int minY = (int) Math.floor(targetIn.getEntityBoundingBox().minY - 0.5d);
 			int maxY = (int) Math.ceil(targetIn.getEntityBoundingBox().maxY + 0.5d);
 			this.realBB = new AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ);
-			for (BlockPos pos : ProcedureUtils.getAllAirBlocks(this.world, this.realBB)) {
-				this.world.setBlockState(pos, BlockWaterStill.block.getDefaultState(), 3);
-				++this.totalWaterBlocks;
+			for (BlockPos pos : BlockPos.getAllInBoxMutable(minX, minY, minZ, maxX, maxY, maxZ)) {
+				IBlockState blockstate = this.world.getBlockState(pos);
+				if (blockstate.getMaterial() == Material.AIR
+				 || (blockstate.getMaterial() == Material.FIRE && blockstate.getBlock() != BlockAmaterasuBlock.block)
+				 || blockstate.getBlock() instanceof BlockBush) {
+					this.world.setBlockState(pos, BlockWaterStill.block.getDefaultState(), 3);
+					++this.totalWaterBlocks;
+				}
 			}
+			//for (BlockPos pos : ProcedureUtils.getAllAirBlocks(this.world, this.realBB)) {
+			//	this.world.setBlockState(pos, BlockWaterStill.block.getDefaultState(), 3);
+			//	++this.totalWaterBlocks;
+			//}
 			trappedMap.put(userIn, targetIn);
 		}
 
@@ -115,7 +127,7 @@ public class EntityWaterPrison extends ElementsNarutomodMod.ModElement {
 				}
 				Map<BlockPos, IBlockState> map = Maps.newHashMap();
 				for (BlockPos pos : ProcedureUtils.getAllAirBlocks(this.world, this.realBB.contract(0d, this.realBB.maxY-this.realBB.minY-1, 0d))) {
-					map.put(pos, Blocks.FLOWING_WATER.getDefaultState());
+					map.put(pos, Blocks.FLOWING_WATER.getDefaultState().withProperty(BlockLiquid.LEVEL, Integer.valueOf(1)));
 				}
 				new net.narutomod.event.EventSetBlocks(this.world, map, 0, 10, false, false);
 				trappedMap.remove(this.user);
@@ -135,7 +147,7 @@ public class EntityWaterPrison extends ElementsNarutomodMod.ModElement {
 		
 		@Override
 		public void onUpdate() {
-			if (this.user != null && this.target != null && this.user.isEntityAlive() && this.target.isEntityAlive()
+			if (this.user != null && this.user.isEntityAlive() && ItemJutsu.canTarget(this.target)
 			 && this.user.getDistance(this.target) <= 4d && ProcedureUtils.isEntityInFOV(this.user, this.target)
 			 && this.enoughWaterRemaining() && this.ticksExisted <= this.duration) {
 				this.target.setPositionAndUpdate(this.posX, this.posY, this.posZ);
@@ -193,7 +205,7 @@ public class EntityWaterPrison extends ElementsNarutomodMod.ModElement {
 			}
 
 			public Entity createJutsu(EntityLivingBase entity, EntityLivingBase target, int duration) {
-				if (entity.getDistance(target) <= 4.0d) {
+				if (entity.getDistance(target) <= 4.0d && target.width <= 2.0f && target.height <= 3.0f) {
 					entity.world.playSound(null, entity.posX, entity.posY, entity.posZ,
 					  net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:suironojutsu")),
 					  SoundCategory.NEUTRAL, 1, 1f);

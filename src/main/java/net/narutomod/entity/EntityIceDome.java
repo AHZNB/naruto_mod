@@ -1,6 +1,7 @@
 
 package net.narutomod.entity;
 
+import net.minecraft.client.model.ModelBiped;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
@@ -8,14 +9,22 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.common.MinecraftForge;
 
 import net.minecraft.world.World;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.SoundEvent;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.model.ModelBox;
@@ -23,15 +32,9 @@ import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.entity.Render;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.EnumHand;
+import net.minecraft.init.MobEffects;
+import net.minecraft.potion.PotionEffect;
 
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.procedure.ProcedureSync;
@@ -58,13 +61,7 @@ public class EntityIceDome extends ElementsNarutomodMod.ModElement {
 	@Override
 	public void initElements() {
 		elements.entities.add(() -> EntityEntryBuilder.create().entity(EC.class)
-		 .id(new ResourceLocation("narutomod", "ice_dome"), ENTITYID).name("ice_dome").tracker(64, 3, true).build());
-	}
-
-	@SideOnly(Side.CLIENT)
-	@Override
-	public void preInit(FMLPreInitializationEvent event) {
-		RenderingRegistry.registerEntityRenderingHandler(EC.class, renderManager -> new CustomRender(renderManager));
+		 .id(new ResourceLocation("narutomod", "ice_dome"), ENTITYID).name("ice_dome").tracker(64, 3, true).build());
 	}
 
 	@Override
@@ -102,13 +99,16 @@ public class EntityIceDome extends ElementsNarutomodMod.ModElement {
 		public void setDead() {
 			super.setDead();
 			if (!this.world.isRemote) {
-				this.playSound((net.minecraft.util.SoundEvent)
-				 net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:ice_shoot_small")), 
+				this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:ice_shoot_small")),
 				 0.8f, this.rand.nextFloat() * 0.4f + 0.8f);
 				for (int i = 0; i < this.rand.nextInt(50) + 100; i++) {
 					EntityIceSpear.EC.spawnShatteredShard(this.world, this.posX + this.width * (this.rand.nextFloat()-0.5f), 
 					 this.posY + this.height * this.rand.nextFloat(), this.posZ + this.width * (this.rand.nextFloat()-0.5f),
 					 (this.rand.nextDouble()-0.5d) * 0.05d, 0d, (this.rand.nextDouble()-0.5d) * 0.05d);
+				}
+				EntityLivingBase summoner = this.getSummoner();
+				if (summoner != null && summoner.isPotionActive(MobEffects.INVISIBILITY)) {
+					summoner.removePotionEffect(MobEffects.INVISIBILITY);
 				}
 			}
 		}
@@ -133,10 +133,12 @@ public class EntityIceDome extends ElementsNarutomodMod.ModElement {
 				ProcedureSync.ResetBoundingBox.sendToServer(this);
 			}
 			if (!this.world.isRemote && this.ticksExisted == this.talkTime) {
-				this.playSound((net.minecraft.util.SoundEvent)
-				 net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:ice_formation")), 1f, 1f);
+				this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:ice_formation")), 1f, 1f);
 			}
 			EntityLivingBase summoner = this.getSummoner();
+			if (!this.world.isRemote && summoner != null && this.ticksExisted % 20 == 1) {
+				summoner.addPotionEffect(new PotionEffect(MobEffects.INVISIBILITY, 23, 0, false, false));
+			}
 			if (this.ticksExisted < 5) {
 				for (Entity entity : this.world.getEntitiesWithinAABBExcludingEntity(this, this.getEntityBoundingBox())) {
 					if (entity instanceof EntityLivingBase && !entity.equals(summoner)
@@ -158,20 +160,18 @@ public class EntityIceDome extends ElementsNarutomodMod.ModElement {
 				}
 				--this.shootSpearsTime;
 			}
-			if (this.ticksExisted % 40 == 0) {
+			if (!this.entitiesInside.isEmpty()) {
 				Iterator<EntityLivingBase> iter = this.entitiesInside.iterator();
 				while (iter.hasNext()) {
 					EntityLivingBase entity = iter.next();
-					if (!entity.isEntityAlive()) {
+					if (!ItemJutsu.canTarget(entity)) {
 						iter.remove();
 					}
 				}
 			}
-			if (!this.world.isRemote && this.ticksExisted % 20 == 0 && summoner != null) {
-				if ((!(summoner instanceof EntityPlayer) || !((EntityPlayer)summoner).isCreative())
-				 && !Chakra.pathway(summoner).consume(ItemHyoton.ICEDOME.chakraUsage)) {
-					this.setDead();
-				}
+			if (!this.world.isRemote && this.ticksExisted % 20 == 0 && summoner != null
+			 && !Chakra.pathway(summoner).consume(ItemHyoton.ICEDOME.chakraUsage * 0.05d)) {
+				this.setDead();
 			}
 			this.clearActivePotions();
 		}
@@ -217,7 +217,7 @@ public class EntityIceDome extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public void applyEntityCollision(Entity entity) {
-			if (!this.isRidingSameEntity(entity) && !entity.isBeingRidden() && !entity.noClip) {
+			if (!this.isRidingSameEntity(entity) && !entity.isBeingRidden() && !entity.noClip && ItemJutsu.canTarget(entity)) {
 				//ProcedureSync.MotionPacket.sendToServer(entity);
 				this.doCollisions(entity);
 			}
@@ -329,8 +329,8 @@ public class EntityIceDome extends ElementsNarutomodMod.ModElement {
 			}
 
 			public EC createJutsu(EntityLivingBase entity, double x, double y, double z) {
-				entity.world.playSound(null, entity.posX, entity.posY, entity.posZ, (net.minecraft.util.SoundEvent)
-				 net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:makyohyosho")),
+				entity.world.playSound(null, entity.posX, entity.posY, entity.posZ,
+				 SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:makyohyosho")),
 				 net.minecraft.util.SoundCategory.NEUTRAL, 1f, 0.9f);
 				EC entity1 = new EC(entity, x, y, z);
 				entity.world.spawnEntity(entity1);
@@ -339,25 +339,19 @@ public class EntityIceDome extends ElementsNarutomodMod.ModElement {
 		}
 
 		public static class LivingHook {
-			@SideOnly(Side.CLIENT)
-			@SubscribeEvent
-			public void onRenderLiving(RenderLivingEvent.Pre event) {
-				if (event.getEntity().getRidingEntity() instanceof EC) {
-					event.setCanceled(true);
-				}
-			}
-
 			@SubscribeEvent
 			public void onAttackedInsideDome(LivingAttackEvent event) {
 				EntityLivingBase target = event.getEntityLiving();
-				if (!target.world.isRemote) {
+				if (!target.world.isRemote && !(target instanceof EC)) {
 					EC dome = (EC)target.world.findNearestEntityWithinAABB(EC.class, target.getEntityBoundingBox().grow(ENTITY_SCALE), target);
 					if (dome != null) {
 						Entity attacker = event.getSource().getTrueSource();
 						EntityLivingBase summoner = dome.getSummoner();
-						if (target.equals(summoner) 
-						 || (dome.entitiesInside.contains(target) == !dome.entitiesInside.contains(attacker)
-					      && !summoner.equals(attacker))) {
+						//if (target.equals(summoner) 
+						// || (dome.entitiesInside.contains(target) == !dome.entitiesInside.contains(attacker)
+					    //  && !summoner.equals(attacker))) {
+						if (dome.entitiesInside.contains(target) == !dome.entitiesInside.contains(attacker)
+						 && !summoner.equals(attacker) && !target.equals(summoner)) {
 							event.setCanceled(true);
 							dome.attackEntityFrom(event.getSource(), event.getAmount());
 					    }
@@ -367,183 +361,197 @@ public class EntityIceDome extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-	@SideOnly(Side.CLIENT)
-	public class CustomRender extends Render<EC> {
-		private final ResourceLocation TEXTURE = new ResourceLocation("narutomod:textures/dome_ice.png");
-		private final ModelDome model = new ModelDome();
-		private final int growTime = 30;
-
-		public CustomRender(RenderManager renderManagerIn) {
-			super(renderManagerIn);
-			this.shadowSize = 0.0f;
-		}
-
-		@Override
-		public boolean shouldRender(EC entity, net.minecraft.client.renderer.culling.ICamera camera, double camX, double camY, double camZ) {
-			return true;
-		}
-
-		@Override
-		public void doRender(EC entity, double x, double y, double z, float entityYaw, float pt) {
-			GlStateManager.pushMatrix();
-			this.bindEntityTexture(entity);
-			GlStateManager.translate(x, y, z);
-			//GlStateManager.rotate(-entity.prevRotationYaw - (entity.rotationYaw - entity.prevRotationYaw) * pt, 0.0F, 1.0F, 0.0F);
-			GlStateManager.rotate(-180.0F, 1.0F, 0.0F, 0.0F);
-			GlStateManager.enableAlpha();
-			GlStateManager.enableBlend();
-			GlStateManager.disableCull();
-			GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-			GlStateManager.disableLighting();
-			GlStateManager.color(1.0f, 1.0f, 1.0f, MathHelper.clamp((float)entity.ticksExisted / (this.growTime + entity.talkTime), 0f, 1.0f));
-			this.model.render(entity, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
-			GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
-			GlStateManager.enableLighting();
-			GlStateManager.enableCull();
-			GlStateManager.disableBlend();
-			GlStateManager.disableAlpha();
-			GlStateManager.popMatrix();
-		}
-
-		@Override
-		protected ResourceLocation getEntityTexture(EC entity) {
-			return TEXTURE;
-		}
+	@Override
+	public void preInit(FMLPreInitializationEvent event) {
+		new Renderer().register();
 	}
 
-	// Made with Blockbench 3.8.3
-	// Exported for Minecraft version 1.7 - 1.12
-	// Paste this class into your mod and generate all required imports
-	@SideOnly(Side.CLIENT)
-	public class ModelDome extends ModelBase {
-		private final ModelRenderer dome;
-		private final ModelRenderer wall;
-		private final ModelRenderer bone2;
-		private final ModelRenderer bone6;
-		private final ModelRenderer bone3;
-		private final ModelRenderer bone7;
-		private final ModelRenderer bone4;
-		private final ModelRenderer bone8;
-		private final ModelRenderer cube_r1;
-		private final ModelRenderer cube_r2;
-		private final ModelRenderer roof;
-		private final ModelRenderer bone10;
-		private final ModelRenderer bone12;
-		private final ModelRenderer bone13;
-		private final ModelRenderer bone18;
-		private final ModelRenderer bone16;
-		private final ModelRenderer bone14;
-		private final ModelRenderer bone17;
-		private final ModelRenderer cube_r3;
-		private final ModelRenderer cube_r4;
-		public ModelDome() {
-			textureWidth = 16;
-			textureHeight = 16;
-			dome = new ModelRenderer(this);
-			dome.setRotationPoint(0.0F, 0.0F, 0.0F);
-			wall = new ModelRenderer(this);
-			wall.setRotationPoint(0.0F, 0.0F, 0.0F);
-			dome.addChild(wall);
-			bone2 = new ModelRenderer(this);
-			bone2.setRotationPoint(0.0F, -8.0F, -1.5F);
-			wall.addChild(bone2);
-			bone2.cubeList.add(new ModelBox(bone2, 0, 0, -4.0F, 0.0F, -8.0F, 8, 8, 0, 0.0F, false));
-			bone6 = new ModelRenderer(this);
-			bone6.setRotationPoint(0.0F, 0.0F, 17.7F);
-			wall.addChild(bone6);
-			bone6.cubeList.add(new ModelBox(bone6, 0, 0, -4.0F, -8.0F, -8.0F, 8, 8, 0, 0.0F, false));
-			bone3 = new ModelRenderer(this);
-			bone3.setRotationPoint(4.0F, -16.0F, -9.5F);
-			wall.addChild(bone3);
-			setRotationAngle(bone3, 0.0F, -0.7854F, 0.0F);
-			bone3.cubeList.add(new ModelBox(bone3, 0, 0, 0.0F, 8.0F, 0.0F, 8, 8, 0, 0.0F, false));
-			bone7 = new ModelRenderer(this);
-			bone7.setRotationPoint(-9.6F, -8.0F, 4.1F);
-			wall.addChild(bone7);
-			setRotationAngle(bone7, 0.0F, -0.7854F, 0.0F);
-			bone7.cubeList.add(new ModelBox(bone7, 0, 0, 0.0F, 0.0F, 0.0F, 8, 8, 0, 0.0F, false));
-			bone4 = new ModelRenderer(this);
-			bone4.setRotationPoint(9.75F, -16.0F, -3.75F);
-			wall.addChild(bone4);
-			setRotationAngle(bone4, 0.0F, -1.5708F, 0.0F);
-			bone4.cubeList.add(new ModelBox(bone4, 0, 0, -0.1F, 8.0F, 0.1F, 8, 8, 0, 0.0F, false));
-			bone8 = new ModelRenderer(this);
-			bone8.setRotationPoint(-9.55F, -16.0F, -3.75F);
-			wall.addChild(bone8);
-			setRotationAngle(bone8, 0.0F, -1.5708F, 0.0F);
-			bone8.cubeList.add(new ModelBox(bone8, 0, 0, -0.15F, 8.0F, 0.05F, 8, 8, 0, 0.0F, false));
-			cube_r1 = new ModelRenderer(this);
-			cube_r1.setRotationPoint(9.6F, -8.0F, 4.2F);
-			wall.addChild(cube_r1);
-			setRotationAngle(cube_r1, 0.0F, 0.7854F, 0.0F);
-			cube_r1.cubeList.add(new ModelBox(cube_r1, 0, 0, -7.95F, 0.0F, -0.025F, 8, 8, 0, 0.0F, false));
-			cube_r2 = new ModelRenderer(this);
-			cube_r2.setRotationPoint(-6.7F, -16.0F, -6.9F);
-			wall.addChild(cube_r2);
-			setRotationAngle(cube_r2, 0.0F, 0.7854F, 0.0F);
-			cube_r2.cubeList.add(new ModelBox(cube_r2, 0, 0, -4.2023F, 8.0F, 0.0457F, 8, 8, 0, 0.0F, false));
-			roof = new ModelRenderer(this);
-			roof.setRotationPoint(0.0F, -16.0F, -9.5F);
-			dome.addChild(roof);
-			bone10 = new ModelRenderer(this);
-			bone10.setRotationPoint(0.05F, 2.7F, 9.65F);
-			roof.addChild(bone10);
-			setRotationAngle(bone10, -1.5708F, 0.0F, 0.0F);
-			bone10.cubeList.add(new ModelBox(bone10, 0, 8, -4.0F, -4.0F, 0.0F, 8, 8, 0, 0.0F, false));
-			bone12 = new ModelRenderer(this);
-			bone12.setRotationPoint(0.0F, 0.0F, 0.0F);
-			roof.addChild(bone12);
-			setRotationAngle(bone12, -0.7854F, 0.0F, 0.0F);
-			bone12.cubeList.add(new ModelBox(bone12, 0, 8, -4.0F, -2.3431F, 5.6569F, 8, 8, 0, 0.0F, false));
-			bone13 = new ModelRenderer(this);
-			bone13.setRotationPoint(7.0F, 0.0F, 3.0F);
-			roof.addChild(bone13);
-			setRotationAngle(bone13, -0.7854F, -0.7854F, 0.0F);
-			bone13.cubeList.add(new ModelBox(bone13, 0, 8, -4.2426F, -2.3431F, 5.6569F, 8, 8, 0, 0.0F, false));
-			bone18 = new ModelRenderer(this);
-			bone18.setRotationPoint(0.0F, 0.0F, 19.2F);
-			roof.addChild(bone18);
-			setRotationAngle(bone18, 0.7854F, 0.0F, 0.0F);
-			bone18.cubeList.add(new ModelBox(bone18, 0, 8, -4.0F, -2.3431F, -5.6569F, 8, 8, 0, 0.0F, false));
-			bone16 = new ModelRenderer(this);
-			bone16.setRotationPoint(7.0F, 0.0F, 16.3F);
-			roof.addChild(bone16);
-			setRotationAngle(bone16, 0.7854F, 0.7854F, 0.0F);
-			bone16.cubeList.add(new ModelBox(bone16, 0, 8, -4.2426F, -2.3431F, -5.6569F, 8, 8, 0, 0.0F, false));
-			bone14 = new ModelRenderer(this);
-			bone14.setRotationPoint(9.75F, 0.0F, 9.75F);
-			roof.addChild(bone14);
-			setRotationAngle(bone14, -0.7854F, -1.5708F, 0.0F);
-			bone14.cubeList.add(new ModelBox(bone14, 0, 8, -4.1F, -2.3431F, 5.7569F, 8, 8, 0, 0.0F, false));
-			bone17 = new ModelRenderer(this);
-			bone17.setRotationPoint(-9.65F, 0.0F, 9.75F);
-			roof.addChild(bone17);
-			setRotationAngle(bone17, -0.7854F, 1.5708F, 0.0F);
-			bone17.cubeList.add(new ModelBox(bone17, 0, 8, -3.9F, -2.3431F, 5.7569F, 8, 8, 0, 0.0F, true));
-			cube_r3 = new ModelRenderer(this);
-			cube_r3.setRotationPoint(-6.8F, 8.0F, 2.7F);
-			roof.addChild(cube_r3);
-			setRotationAngle(cube_r3, -0.7854F, 0.7854F, 0.0F);
-			cube_r3.cubeList.add(new ModelBox(cube_r3, 0, 8, -4.0609F, -8.0F, 0.0457F, 8, 8, 0, 0.0F, false));
-			cube_r4 = new ModelRenderer(this);
-			cube_r4.setRotationPoint(-6.8F, 8.0F, 16.3F);
-			roof.addChild(cube_r4);
-			setRotationAngle(cube_r4, 0.7854F, -0.7854F, 0.0F);
-			cube_r4.cubeList.add(new ModelBox(cube_r4, 0, 8, -3.8609F, -7.9F, -0.0457F, 8, 8, 0, 0.0F, false));
-		}
-
+	public static class Renderer extends EntityRendererRegister {
+		@SideOnly(Side.CLIENT)
 		@Override
-		public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
-			GlStateManager.pushMatrix();
-			GlStateManager.scale(ENTITY_SCALE, ENTITY_SCALE, ENTITY_SCALE);
-			dome.render(f5);
-			GlStateManager.popMatrix();
+		public void register() {
+			RenderingRegistry.registerEntityRenderingHandler(EC.class, renderManager -> new CustomRender(renderManager));
 		}
 
-		public void setRotationAngle(ModelRenderer modelRenderer, float x, float y, float z) {
-			modelRenderer.rotateAngleX = x;
-			modelRenderer.rotateAngleY = y;
-			modelRenderer.rotateAngleZ = z;
+		@SideOnly(Side.CLIENT)
+		public class CustomRender extends Render<EC> {
+			private final ResourceLocation texture = new ResourceLocation("narutomod:textures/dome_ice.png");
+			private final ModelDome model = new ModelDome();
+			private final int growTime = 30;
+
+			public CustomRender(RenderManager renderManagerIn) {
+				super(renderManagerIn);
+				this.shadowSize = 0.0f;
+			}
+
+			@Override
+			public boolean shouldRender(EC entity, net.minecraft.client.renderer.culling.ICamera camera, double camX, double camY, double camZ) {
+				return true;
+			}
+
+			@Override
+			public void doRender(EC entity, double x, double y, double z, float entityYaw, float pt) {
+				GlStateManager.pushMatrix();
+				this.bindEntityTexture(entity);
+				GlStateManager.translate(x, y, z);
+				//GlStateManager.rotate(-entity.prevRotationYaw - (entity.rotationYaw - entity.prevRotationYaw) * pt, 0.0F, 1.0F, 0.0F);
+				GlStateManager.rotate(-180.0F, 1.0F, 0.0F, 0.0F);
+				GlStateManager.enableAlpha();
+				GlStateManager.enableBlend();
+				GlStateManager.disableCull();
+				GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+				GlStateManager.disableLighting();
+				GlStateManager.color(1.0f, 1.0f, 1.0f, MathHelper.clamp((float) entity.ticksExisted / (this.growTime + entity.talkTime), 0f, 1.0f));
+				this.model.render(entity, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
+				GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
+				GlStateManager.enableLighting();
+				GlStateManager.enableCull();
+				GlStateManager.disableBlend();
+				GlStateManager.disableAlpha();
+				GlStateManager.popMatrix();
+			}
+
+			@Override
+			protected ResourceLocation getEntityTexture(EC entity) {
+				return this.texture;
+			}
+		}
+
+		// Made with Blockbench 3.8.3
+		// Exported for Minecraft version 1.7 - 1.12
+		// Paste this class into your mod and generate all required imports
+		@SideOnly(Side.CLIENT)
+		public class ModelDome extends ModelBase {
+			private final ModelRenderer dome;
+			private final ModelRenderer wall;
+			private final ModelRenderer bone2;
+			private final ModelRenderer bone6;
+			private final ModelRenderer bone3;
+			private final ModelRenderer bone7;
+			private final ModelRenderer bone4;
+			private final ModelRenderer bone8;
+			private final ModelRenderer cube_r1;
+			private final ModelRenderer cube_r2;
+			private final ModelRenderer roof;
+			private final ModelRenderer bone10;
+			private final ModelRenderer bone12;
+			private final ModelRenderer bone13;
+			private final ModelRenderer bone18;
+			private final ModelRenderer bone16;
+			private final ModelRenderer bone14;
+			private final ModelRenderer bone17;
+			private final ModelRenderer cube_r3;
+			private final ModelRenderer cube_r4;
+
+			public ModelDome() {
+				textureWidth = 16;
+				textureHeight = 16;
+				dome = new ModelRenderer(this);
+				dome.setRotationPoint(0.0F, 0.0F, 0.0F);
+				wall = new ModelRenderer(this);
+				wall.setRotationPoint(0.0F, 0.0F, 0.0F);
+				dome.addChild(wall);
+				bone2 = new ModelRenderer(this);
+				bone2.setRotationPoint(0.0F, -8.0F, -1.5F);
+				wall.addChild(bone2);
+				bone2.cubeList.add(new ModelBox(bone2, 0, 0, -4.0F, 0.0F, -8.0F, 8, 8, 0, 0.0F, false));
+				bone6 = new ModelRenderer(this);
+				bone6.setRotationPoint(0.0F, 0.0F, 17.7F);
+				wall.addChild(bone6);
+				bone6.cubeList.add(new ModelBox(bone6, 0, 0, -4.0F, -8.0F, -8.0F, 8, 8, 0, 0.0F, false));
+				bone3 = new ModelRenderer(this);
+				bone3.setRotationPoint(4.0F, -16.0F, -9.5F);
+				wall.addChild(bone3);
+				setRotationAngle(bone3, 0.0F, -0.7854F, 0.0F);
+				bone3.cubeList.add(new ModelBox(bone3, 0, 0, 0.0F, 8.0F, 0.0F, 8, 8, 0, 0.0F, false));
+				bone7 = new ModelRenderer(this);
+				bone7.setRotationPoint(-9.6F, -8.0F, 4.1F);
+				wall.addChild(bone7);
+				setRotationAngle(bone7, 0.0F, -0.7854F, 0.0F);
+				bone7.cubeList.add(new ModelBox(bone7, 0, 0, 0.0F, 0.0F, 0.0F, 8, 8, 0, 0.0F, false));
+				bone4 = new ModelRenderer(this);
+				bone4.setRotationPoint(9.75F, -16.0F, -3.75F);
+				wall.addChild(bone4);
+				setRotationAngle(bone4, 0.0F, -1.5708F, 0.0F);
+				bone4.cubeList.add(new ModelBox(bone4, 0, 0, -0.1F, 8.0F, 0.1F, 8, 8, 0, 0.0F, false));
+				bone8 = new ModelRenderer(this);
+				bone8.setRotationPoint(-9.55F, -16.0F, -3.75F);
+				wall.addChild(bone8);
+				setRotationAngle(bone8, 0.0F, -1.5708F, 0.0F);
+				bone8.cubeList.add(new ModelBox(bone8, 0, 0, -0.15F, 8.0F, 0.05F, 8, 8, 0, 0.0F, false));
+				cube_r1 = new ModelRenderer(this);
+				cube_r1.setRotationPoint(9.6F, -8.0F, 4.2F);
+				wall.addChild(cube_r1);
+				setRotationAngle(cube_r1, 0.0F, 0.7854F, 0.0F);
+				cube_r1.cubeList.add(new ModelBox(cube_r1, 0, 0, -7.95F, 0.0F, -0.025F, 8, 8, 0, 0.0F, false));
+				cube_r2 = new ModelRenderer(this);
+				cube_r2.setRotationPoint(-6.7F, -16.0F, -6.9F);
+				wall.addChild(cube_r2);
+				setRotationAngle(cube_r2, 0.0F, 0.7854F, 0.0F);
+				cube_r2.cubeList.add(new ModelBox(cube_r2, 0, 0, -4.2023F, 8.0F, 0.0457F, 8, 8, 0, 0.0F, false));
+				roof = new ModelRenderer(this);
+				roof.setRotationPoint(0.0F, -16.0F, -9.5F);
+				dome.addChild(roof);
+				bone10 = new ModelRenderer(this);
+				bone10.setRotationPoint(0.05F, 2.7F, 9.65F);
+				roof.addChild(bone10);
+				setRotationAngle(bone10, -1.5708F, 0.0F, 0.0F);
+				bone10.cubeList.add(new ModelBox(bone10, 0, 8, -4.0F, -4.0F, 0.0F, 8, 8, 0, 0.0F, false));
+				bone12 = new ModelRenderer(this);
+				bone12.setRotationPoint(0.0F, 0.0F, 0.0F);
+				roof.addChild(bone12);
+				setRotationAngle(bone12, -0.7854F, 0.0F, 0.0F);
+				bone12.cubeList.add(new ModelBox(bone12, 0, 8, -4.0F, -2.3431F, 5.6569F, 8, 8, 0, 0.0F, false));
+				bone13 = new ModelRenderer(this);
+				bone13.setRotationPoint(7.0F, 0.0F, 3.0F);
+				roof.addChild(bone13);
+				setRotationAngle(bone13, -0.7854F, -0.7854F, 0.0F);
+				bone13.cubeList.add(new ModelBox(bone13, 0, 8, -4.2426F, -2.3431F, 5.6569F, 8, 8, 0, 0.0F, false));
+				bone18 = new ModelRenderer(this);
+				bone18.setRotationPoint(0.0F, 0.0F, 19.2F);
+				roof.addChild(bone18);
+				setRotationAngle(bone18, 0.7854F, 0.0F, 0.0F);
+				bone18.cubeList.add(new ModelBox(bone18, 0, 8, -4.0F, -2.3431F, -5.6569F, 8, 8, 0, 0.0F, false));
+				bone16 = new ModelRenderer(this);
+				bone16.setRotationPoint(7.0F, 0.0F, 16.3F);
+				roof.addChild(bone16);
+				setRotationAngle(bone16, 0.7854F, 0.7854F, 0.0F);
+				bone16.cubeList.add(new ModelBox(bone16, 0, 8, -4.2426F, -2.3431F, -5.6569F, 8, 8, 0, 0.0F, false));
+				bone14 = new ModelRenderer(this);
+				bone14.setRotationPoint(9.75F, 0.0F, 9.75F);
+				roof.addChild(bone14);
+				setRotationAngle(bone14, -0.7854F, -1.5708F, 0.0F);
+				bone14.cubeList.add(new ModelBox(bone14, 0, 8, -4.1F, -2.3431F, 5.7569F, 8, 8, 0, 0.0F, false));
+				bone17 = new ModelRenderer(this);
+				bone17.setRotationPoint(-9.65F, 0.0F, 9.75F);
+				roof.addChild(bone17);
+				setRotationAngle(bone17, -0.7854F, 1.5708F, 0.0F);
+				bone17.cubeList.add(new ModelBox(bone17, 0, 8, -3.9F, -2.3431F, 5.7569F, 8, 8, 0, 0.0F, true));
+				cube_r3 = new ModelRenderer(this);
+				cube_r3.setRotationPoint(-6.8F, 8.0F, 2.7F);
+				roof.addChild(cube_r3);
+				setRotationAngle(cube_r3, -0.7854F, 0.7854F, 0.0F);
+				cube_r3.cubeList.add(new ModelBox(cube_r3, 0, 8, -4.0609F, -8.0F, 0.0457F, 8, 8, 0, 0.0F, false));
+				cube_r4 = new ModelRenderer(this);
+				cube_r4.setRotationPoint(-6.8F, 8.0F, 16.3F);
+				roof.addChild(cube_r4);
+				setRotationAngle(cube_r4, 0.7854F, -0.7854F, 0.0F);
+				cube_r4.cubeList.add(new ModelBox(cube_r4, 0, 8, -3.8609F, -7.9F, -0.0457F, 8, 8, 0, 0.0F, false));
+			}
+
+			@Override
+			public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
+				GlStateManager.pushMatrix();
+				GlStateManager.scale(ENTITY_SCALE, ENTITY_SCALE, ENTITY_SCALE);
+				dome.render(f5);
+				GlStateManager.popMatrix();
+			}
+
+			public void setRotationAngle(ModelRenderer modelRenderer, float x, float y, float z) {
+				modelRenderer.rotateAngleX = x;
+				modelRenderer.rotateAngleY = y;
+				modelRenderer.rotateAngleZ = z;
+			}
 		}
 	}
 }

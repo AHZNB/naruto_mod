@@ -16,23 +16,24 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.EnumHandSide;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.Entity;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderLivingBase;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.model.ModelRenderer;
+import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.item.ItemStack;
-import net.minecraft.entity.EntityLiving;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.EnumHandSide;
 import net.minecraft.inventory.EntityEquipmentSlot;
-import net.minecraft.client.Minecraft;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.init.MobEffects;
 
@@ -41,17 +42,19 @@ import net.narutomod.NarutomodModVariables;
 import net.narutomod.PlayerTracker;
 import net.narutomod.Particles;
 import net.narutomod.Chakra;
-import net.narutomod.procedure.ProcedureLightSourceSetBlock;
+//import net.narutomod.procedure.ProcedureLightSourceSetBlock;
 import net.narutomod.procedure.ProcedureSync;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.procedure.ProcedureRenderView;
 import net.narutomod.item.ItemJutsu;
 import net.narutomod.item.ItemRaiton;
+import net.narutomod.item.ItemFuton;
 import net.narutomod.item.ItemNinjutsu;
+import net.narutomod.block.BlockLightSource;
 
-//import io.netty.buffer.ByteBuf;
 import javax.annotation.Nullable;
 import java.util.List;
+import com.google.common.collect.ImmutableMap;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityChidori extends ElementsNarutomodMod.ModElement {
@@ -72,14 +75,6 @@ public class EntityChidori extends ElementsNarutomodMod.ModElement {
 			.id(new ResourceLocation("narutomod", "chidori_spear"), ENTITYID_RANGED).name("chidori_spear").tracker(64, 3, true).build());
 	}
 
-	@SideOnly(Side.CLIENT)
-	@Override
-	public void preInit(FMLPreInitializationEvent event) {
-		RenderingRegistry.registerEntityRenderingHandler(EC.class, renderManager -> {
-			return new RenderChidori(renderManager);
-		});
-	}
-
 	public static class EC extends Entity implements ProcedureSync.CPacketVec3d.IHandler {
 		private static final DataParameter<Integer> OWNER_ID = EntityDataManager.<Integer>createKey(EC.class, DataSerializers.VARINT);
 		private final int growTime = 40;
@@ -88,18 +83,20 @@ public class EntityChidori extends ElementsNarutomodMod.ModElement {
 		private float summonerYaw;
 		protected int duration;
 		private double chakraBurn;
+		private int attackTime;
 		private int ticksSinceLastSwing;
+		private int savedTicksSinceLastSwing;
+		private Entity target;
 
 		public EC(World a) {
 			super(a);
-			this.setSize(0.01f, 0.01f);
+			this.setSize(0.1f, 0.1f);
 		}
 
 		protected EC(EntityLivingBase summonerIn, double chakraBurnPerSec, int durationIn) {
 			this(summonerIn.world);
 			this.setOwner(summonerIn);
 			this.chakraBurn = chakraBurnPerSec;
-			//this.duration = summonerIn instanceof EntityPlayer ? PlayerTracker.getNinjaLevel((EntityPlayer)summonerIn) * 10d *  : 300;
 			this.duration = durationIn;
 			this.setPositionToSummoner();
 			this.setAlwaysRenderNameTag(false);
@@ -134,7 +131,7 @@ public class EntityChidori extends ElementsNarutomodMod.ModElement {
 		public boolean canUse() {
 			if (this.getOwner() != null) {
 				ItemStack item = this.getOwner().getHeldItemMainhand();
-				return item.isEmpty() || item.getItem() instanceof ItemRaiton.RangedItem || this.isHoldingWeapon(EnumHand.MAIN_HAND);
+				return item.isEmpty() || item.getItem() instanceof ItemJutsu.Base || this.isHoldingWeapon(EnumHand.MAIN_HAND);
 			}
 			return false;
 		}
@@ -142,18 +139,21 @@ public class EntityChidori extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void setDead() {
 			super.setDead();
-			if (!this.world.isRemote && this.summoner instanceof EntityPlayer) {
-				//PlayerRender.forceBowPose((EntityPlayer)this.summoner, EnumHandSide.RIGHT, false);
+			if (!this.world.isRemote && this.summoner != null) {
 				ProcedureSync.EntityNBTTag.removeAndSync(this.summoner, NarutomodModVariables.forceBowPose);
+				ItemJutsu.IJutsuCallback.JutsuData jd = ItemRaiton.CHIDORI.jutsu.getData(this.summoner);
+				if (jd != null) {
+					ItemJutsu.Base item = (ItemJutsu.Base)jd.stack.getItem();
+					item.setJutsuCooldown(jd.stack, ItemRaiton.CHIDORI, (long)((float)this.ticksExisted * item.getModifier(jd.stack, this.summoner)));
+					jd.stack.getTagCompound().removeTag(Jutsu.ID_KEY);
+				}
 			}
 		}
 
 		@Override
 		public void onUpdate() {
 			boolean flag = this.isHoldingWeapon(EnumHand.MAIN_HAND);
-			if (!this.world.isRemote && this.summoner instanceof EntityPlayer
-			 //&& this.isHoldingWeapon(EnumHand.MAIN_HAND) != (PlayerRender.poseForcedArm((EntityPlayer)this.summoner) == null)) {
-				//PlayerRender.forceBowPose((EntityPlayer)this.summoner, EnumHandSide.RIGHT, !this.isHoldingWeapon(EnumHand.MAIN_HAND));
+			if (!this.world.isRemote && this.summoner != null
 			 && flag != !this.summoner.getEntityData().getBoolean(NarutomodModVariables.forceBowPose)) {
 				ProcedureSync.EntityNBTTag.setAndSync(this.summoner, NarutomodModVariables.forceBowPose, !flag);
 			}
@@ -166,38 +166,46 @@ public class EntityChidori extends ElementsNarutomodMod.ModElement {
 			}
 			float f = this.getGrowth();
 			if (this.rand.nextFloat() <= f * 0.3f) {
-				this.playSound((SoundEvent)SoundEvent.REGISTRY.getObject(new ResourceLocation(("narutomod:electricity"))),
+				this.playSound((SoundEvent)SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:electricity")),
 				  f * 0.5f, this.rand.nextFloat() * 2.0f + 1.0f);
 			}
 			if (this.ticksExisted > this.growTime / 2) {
-				ProcedureLightSourceSetBlock.execute(this.world, MathHelper.floor(this.posX), MathHelper.floor(this.posY), MathHelper.floor(this.posZ));
+				BlockPos pos = this.getPosition();
+				if (this.world.isAirBlock(pos)) {
+					//ProcedureLightSourceSetBlock.execute(this.world, pos.getX(), pos.getY(), pos.getZ());
+					new net.narutomod.event.EventSetBlocks(this.world, ImmutableMap.of(pos, BlockLightSource.block.getDefaultState()), 0, 2, false, false);
+				}
 			}
 			if (this.summoner != null && this.ticksExisted > this.growTime) {
-				RayTraceResult rtr = this.summoner instanceof EntityPlayer 
-				  ? ProcedureUtils.objectEntityLookingAt(this.summoner, 20d)
-				  : this.summoner instanceof EntityLiving && ((EntityLiving)this.summoner).getAttackTarget() != null 
-				  ? new RayTraceResult(((EntityLiving)this.summoner).getAttackTarget()) : null;
-				if (!flag && rtr != null && rtr.entityHit instanceof EntityLivingBase && this.ticksExisted % 6 == 0) {
-					this.launchAtTarget((EntityLivingBase)rtr.entityHit);
-				}
-				if (this.summoner.swingProgressInt == 1) {
-					if (rtr.entityHit instanceof EntityLivingBase) {
-						double d = rtr.entityHit.getDistance(this.summoner);
-						if (d <= 5) {
-							float damage = flag 
-							 ? (float)ProcedureUtils.getModifiedAttackDamage(this.summoner) * this.damageMultiplier() * 1.3f
-							 : (25f * this.damageMultiplier());
-							EntityLightningArc.onStruck(rtr.entityHit,
-							 ItemJutsu.causeJutsuDamage(this, this.summoner), damage * this.getCooledAttackStrength());
-						}
-					}
+				boolean flag2 = this.summoner instanceof EntityLiving && ((EntityLiving)this.summoner).getAttackTarget() != null;
+				if (flag2 || (this.summoner instanceof EntityPlayer && this.summoner.swingProgressInt == 1)) {
+					this.target = (flag2 ? new RayTraceResult(((EntityLiving)this.summoner).getAttackTarget())
+					 : ProcedureUtils.objectEntityLookingAt(this.summoner, 20d, 1d, this)).entityHit;
+					this.savedTicksSinceLastSwing = this.ticksSinceLastSwing;
 					this.ticksSinceLastSwing = 0;
+					this.attackTime = 0;
+				}
+				if (this.target instanceof EntityLivingBase && this.attackTime < 12) {
+					this.summoner.rotationYaw = ProcedureUtils.getYawFromVec(this.target.getPositionVector()
+					 .subtract(this.summoner.getPositionVector()));
+					if (!flag && this.attackTime % 6 == 0) {
+						this.launchAtTarget((EntityLivingBase)this.target);
+					}
+					if (this.target.getDistanceSq(this.summoner) < 25d) {
+						float damage = flag 
+						 ? (float)ProcedureUtils.getMainhandItemDamage(this.summoner) * this.damageMultiplier() * 1.2f
+						 : (25f * this.damageMultiplier());
+						EntityLightningArc.onStruck(this.target,
+						 ItemJutsu.causeJutsuDamage(this, this.summoner), damage * this.getCooledAttackStrength());
+						this.target = null;
+					}
 				}
 			}
-			if (!this.world.isRemote && (this.summoner == null || this.ticksExisted > this.duration || !this.canUse())) {
+			if (!this.world.isRemote && (this.summoner == null || !this.summoner.isEntityAlive() || this.ticksExisted > this.duration || !this.canUse())) {
 				this.setDead();
 			}
 			++this.ticksSinceLastSwing;
+			++this.attackTime;
 		}
 
 		private void launchAtTarget(EntityLivingBase target) {
@@ -207,25 +215,29 @@ public class EntityChidori extends ElementsNarutomodMod.ModElement {
 			double d0 = target.posX - this.summoner.posX;
 			double d1 = target.posY - this.summoner.posY;
 			double d2 = target.posZ - this.summoner.posZ;
-			ProcedureUtils.setVelocity(this.summoner, d0 * 0.4, d1 * 0.4, d2 * 0.4);
+			double d3 = MathHelper.sqrt(d0 * d0 + d2 * d2);
+			ProcedureUtils.setVelocity(this.summoner, d0 * 0.4, d1 * 0.4 + d3 * 0.02d, d2 * 0.4);
 		}
 
 		protected void setPositionToSummoner() {
-			EntityLivingBase entity = this.summoner;
-			this.setPosition(entity.posX, entity.posY + 1.4d, entity.posZ);
+			if (this.handPos != null) {
+				this.setPosition(this.handPos.x, this.handPos.y - this.height * 0.5, this.handPos.z);
+			} else {
+				this.setPosition(this.summoner.posX, this.summoner.posY + 1.4d, this.summoner.posZ);
+			}
 		}
 
 		public float getCooledAttackStrength() {
 			if (this.summoner != null) {
 				float f = (float)(1.0D / ProcedureUtils.getAttackSpeed(this.summoner) * 20.0D);
-				return MathHelper.clamp((float)this.ticksSinceLastSwing / f, 0.0F, 1.0F);
+				return MathHelper.clamp((float)this.savedTicksSinceLastSwing / f, 0.0F, 1.0F);
 			}
 			return 0.0f;
 		}
 
 		protected float damageMultiplier() {
 			if (this.summoner instanceof EntityPlayer) {
-				return (float)PlayerTracker.getNinjaLevel((EntityPlayer)this.summoner) / 25f;
+				return MathHelper.clamp((float)PlayerTracker.getNinjaLevel((EntityPlayer)this.summoner) / 40f, 1f, 6f);
 			}
 			return 1f;
 		}
@@ -247,23 +259,61 @@ public class EntityChidori extends ElementsNarutomodMod.ModElement {
 			private static final String ID_KEY = "ChidoriEntityIdKey";
 			@Override
 			public boolean createJutsu(ItemStack stack, EntityLivingBase entity, float power) {
-				Entity entity1 = entity.world.getEntityByID(entity.getEntityData().getInteger(ID_KEY));
-				if (entity1 instanceof EC) {
+				Entity entity1 = entity.world.getEntityByID(stack.getTagCompound().getInteger(ID_KEY));
+				if (!(entity instanceof EntityKageBunshin.EC) && entity1 instanceof EC) {
 					entity1.setDead();
 					entity.world.spawnEntity(new Spear(entity, CHAKRA_BURN));
 					return true;
-				} else {
+				} else if (!entity.isRiding()) {
+					if (ItemFuton.CHAKRAFLOW.jutsu.isActivated(entity)) {
+						ItemFuton.CHAKRAFLOW.jutsu.deactivate(entity);
+					}
 					entity.world.playSound(null, entity.posX, entity.posY, entity.posZ,
-					 SoundEvent.REGISTRY.getObject(new ResourceLocation(("narutomod:chidori"))), 
+					 SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:chidori")), 
 					 SoundCategory.PLAYERS, 1.0F, 1.0F);
-					double ninjalevel = entity instanceof EntityPlayer ? PlayerTracker.getNinjaLevel((EntityPlayer)entity)
-					 : entity instanceof EntityNinjaMob.Base ? ((EntityNinjaMob.Base)entity).getNinjaLevel() : 0d;
-					float f = ((ItemJutsu.Base)stack.getItem()).getCurrentJutsuXpModifier(stack, entity);
+					EntityLivingBase entity2 = entity instanceof EntityKageBunshin.EC
+					 ? ((EntityKageBunshin.EC)entity).getSummoner() : entity;
+					double ninjalevel = entity2 instanceof EntityPlayer ? PlayerTracker.getNinjaLevel((EntityPlayer)entity2)
+					 : entity2 instanceof EntityNinjaMob.Base ? ((EntityNinjaMob.Base)entity2).getNinjaLevel() : 0d;
+					float f = ((ItemJutsu.Base)stack.getItem()).getCurrentJutsuXpModifier(stack, entity2);
 					entity1 = new EC(entity, CHAKRA_BURN, (int)(ninjalevel * 5d / f));
 					entity.world.spawnEntity(entity1);
-					entity.getEntityData().setInteger(ID_KEY, entity1.getEntityId());
+					stack.getTagCompound().setInteger(ID_KEY, entity1.getEntityId());
 					return true;
 				}
+				return false;
+			}
+
+			@Override
+			public boolean isActivated(ItemStack stack) {
+				return stack.getTagCompound().hasKey(ID_KEY);
+			}
+
+			@Override
+			public boolean isActivated(EntityLivingBase entity) {
+				return this.getData(entity) != null;
+			}
+
+			@Override
+			public void deactivate(EntityLivingBase entity) {
+				ItemJutsu.IJutsuCallback.JutsuData jd = this.getData(entity);
+				if (jd != null) {
+					jd.entity.setDead();
+					jd.stack.getTagCompound().removeTag(ID_KEY);
+				}
+			}
+
+			@Override
+			@Nullable
+			public ItemJutsu.IJutsuCallback.JutsuData getData(EntityLivingBase entity) {
+				if (entity instanceof EntityPlayer) {
+					ItemStack stack = ProcedureUtils.getMatchingItemStack((EntityPlayer)entity, ItemRaiton.block);
+					if (stack != null && stack.hasTagCompound() && stack.getTagCompound().hasKey(ID_KEY)) {
+						Entity entity1 = entity.world.getEntityByID(stack.getTagCompound().getInteger(ID_KEY));
+						return entity1 instanceof EC ? new JutsuData(entity1, stack) : null;
+					}
+				}
+				return null;
 			}
 		}
 	}
@@ -285,7 +335,6 @@ public class EntityChidori extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void onUpdate() {
 			if (!this.world.isRemote && this.ticksExisted == 1 && this.summoner instanceof EntityPlayer) {
-				//PlayerRender.forceBowPose((EntityPlayer)this.summoner, EnumHandSide.RIGHT, true);
 				ProcedureSync.EntityNBTTag.setAndSync(this.summoner, NarutomodModVariables.forceBowPose, true);
 			}
 			if (this.summoner != null) {
@@ -332,86 +381,100 @@ public class EntityChidori extends ElementsNarutomodMod.ModElement {
 	}
 
 	@SideOnly(Side.CLIENT)
-	public class RenderChidori extends Render<EC> {
-		public RenderChidori(RenderManager renderManagerIn) {
-			super(renderManagerIn);
-		}
+	@Override
+	public void preInit(FMLPreInitializationEvent event) {
+		new Renderer().register();
+	}
 
+	public static class Renderer extends EntityRendererRegister {
+		@SideOnly(Side.CLIENT)
 		@Override
-		public boolean shouldRender(EC livingEntity, net.minecraft.client.renderer.culling.ICamera camera, double camX, double camY, double camZ) {
-			return true;
+		public void register() {
+			RenderingRegistry.registerEntityRenderingHandler(EC.class, renderManager -> new RenderChidori(renderManager));
 		}
 
-		private Vec3d transform3rdPerson(Vec3d startvec, Vec3d angles, EntityLivingBase entity, EnumHandSide side, float pt) {
-			return ProcedureUtils.rotateRoll(startvec, (float)angles.z).rotatePitch((float)-angles.x).rotateYaw((float)-angles.y)
-			   .addVector(0.0586F * (side==EnumHandSide.RIGHT?-6:6), 1.3F-(entity.isSneaking()?0.3f:0f), -0.05F)
-			   .rotateYaw(-this.interpolateRotation(entity.prevRenderYawOffset, entity.renderYawOffset, pt) * (float)(Math.PI / 180d))
-			   .addVector(entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * pt, entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * pt, entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * pt);
-		}
+		@SideOnly(Side.CLIENT)
+		public class RenderChidori extends Render<EC> {
+			public RenderChidori(RenderManager renderManagerIn) {
+				super(renderManagerIn);
+			}
 
-		@Override
-		public void doRender(EC entity, double x, double y, double z, float f, float partialTicks) {
-			EntityLivingBase user = entity.getOwner();
-			if (user != null) {
-				Entity viewer = Minecraft.getMinecraft().getRenderViewEntity();
-				RenderLivingBase renderer = (RenderLivingBase)this.renderManager.getEntityRenderObject(user);
-				ModelRenderer rightarmModel = ((ModelBiped)renderer.getMainModel()).bipedRightArm;
-				Vec3d rightarmAngles = new Vec3d(rightarmModel.rotateAngleX, rightarmModel.rotateAngleY, rightarmModel.rotateAngleZ);
-				ModelRenderer leftarmModel = ((ModelBiped)renderer.getMainModel()).bipedLeftArm;
-				Vec3d leftarmAngles = new Vec3d(leftarmModel.rotateAngleX, leftarmModel.rotateAngleY, leftarmModel.rotateAngleZ);
-				EnumHandSide mainhandside = user.getPrimaryHand();
-				Vec3d mainarmAngles = mainhandside == EnumHandSide.RIGHT ? rightarmAngles : leftarmAngles;
-				Vec3d offarmAngles = mainhandside == EnumHandSide.RIGHT ? leftarmAngles : rightarmAngles;
-				boolean flag1 = entity.isHoldingWeapon(EnumHand.MAIN_HAND);
-				boolean flag2 = entity.isHoldingWeapon(EnumHand.OFF_HAND);
-				if (!flag1) {
-					mainarmAngles = this.forceRightArmBowPose(mainarmAngles, user, partialTicks);
-					Vec3d vec0 = this.transform3rdPerson(new Vec3d(0d, -0.7d, 0d), mainarmAngles, user, mainhandside, partialTicks);
-					Particles.spawnParticle(entity.world, Particles.Types.SMOKE, vec0.x, vec0.y, vec0.z, 1, 0d, 0d, 0d, 0d, 0d, 0d,
-					 0x20FFFFFF, 5 + user.getRNG().nextInt(55), 5, 0xF0, -1, 0);
-					if (!(entity instanceof Spear)) {
-						EntityLightningArc.spawnAsParticle(entity.world, vec0.x, vec0.y, vec0.z, entity.getGrowth(), 0d, 0d, 0d, 0xc00000ff, 1);
-					}
-					if (viewer.equals(user)) {
-						ProcedureSync.CPacketVec3d.sendToServer(entity, vec0);
-					}
-				} else {
-					if (flag1 && entity.world.rand.nextFloat() <= 0.01f) {
-						Vec3d vec0 = this.transform3rdPerson(new Vec3d(0d, -0.6875d, 0.2d), mainarmAngles, user, mainhandside, partialTicks);
-						Vec3d vec1 = this.transform3rdPerson(new Vec3d(0d, -0.6875d, 1.6d), mainarmAngles, user, mainhandside, partialTicks)
-						 .subtract(vec0).scale(0.2);
-						vec0 = vec0.add(vec1);
-						EntityLightningArc.spawnAsParticle(entity.world, vec0.x, vec0.y, vec0.z, 0.01d, vec1.x, vec1.y, vec1.z);
+			@Override
+			public boolean shouldRender(EC livingEntity, net.minecraft.client.renderer.culling.ICamera camera, double camX, double camY, double camZ) {
+				return true;
+			}
+
+			private Vec3d transform3rdPerson(Vec3d startvec, Vec3d angles, EntityLivingBase entity, EnumHandSide side, float pt) {
+				return ProcedureUtils.rotateRoll(startvec, (float)angles.z).rotatePitch((float)-angles.x).rotateYaw((float)-angles.y)
+						.addVector(0.0586F * (side==EnumHandSide.RIGHT?-6:6), 1.3F-(entity.isSneaking()?0.3f:0f), -0.05F)
+						.rotateYaw(-this.interpolateRotation(entity.prevRenderYawOffset, entity.renderYawOffset, pt) * (float)(Math.PI / 180d))
+						.addVector(entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * pt, entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * pt, entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * pt);
+			}
+
+			@Override
+			public void doRender(EC entity, double x, double y, double z, float f, float partialTicks) {
+				EntityLivingBase user = entity.getOwner();
+				if (user != null) {
+					Entity viewer = Minecraft.getMinecraft().getRenderViewEntity();
+					RenderLivingBase renderer = (RenderLivingBase)this.renderManager.getEntityRenderObject(user);
+					ModelRenderer rightarmModel = ((ModelBiped)renderer.getMainModel()).bipedRightArm;
+					Vec3d rightarmAngles = new Vec3d(rightarmModel.rotateAngleX, rightarmModel.rotateAngleY, rightarmModel.rotateAngleZ);
+					ModelRenderer leftarmModel = ((ModelBiped)renderer.getMainModel()).bipedLeftArm;
+					Vec3d leftarmAngles = new Vec3d(leftarmModel.rotateAngleX, leftarmModel.rotateAngleY, leftarmModel.rotateAngleZ);
+					EnumHandSide mainhandside = user.getPrimaryHand();
+					Vec3d mainarmAngles = mainhandside == EnumHandSide.RIGHT ? rightarmAngles : leftarmAngles;
+					Vec3d offarmAngles = mainhandside == EnumHandSide.RIGHT ? leftarmAngles : rightarmAngles;
+					boolean flag1 = entity.isHoldingWeapon(EnumHand.MAIN_HAND);
+					boolean flag2 = entity.isHoldingWeapon(EnumHand.OFF_HAND);
+					if (!flag1) {
+						mainarmAngles = this.forceRightArmBowPose(mainarmAngles, user, partialTicks);
+						Vec3d vec0 = this.transform3rdPerson(new Vec3d(0d, -0.7d, 0d), mainarmAngles, user, mainhandside, partialTicks);
+						Particles.spawnParticle(entity.world, Particles.Types.SMOKE, vec0.x, vec0.y, vec0.z, 1, 0d, 0d, 0d, 0d, 0d, 0d,
+								0x20FFFFFF, 5 + user.getRNG().nextInt(55), 5, 0xF0, -1, 0);
+						if (!(entity instanceof Spear)) {
+							EntityLightningArc.spawnAsParticle(entity.world, vec0.x, vec0.y, vec0.z, entity.getGrowth(), 0d, 0d, 0d, 0xc00000ff, 1);
+						}
 						if (viewer.equals(user)) {
 							ProcedureSync.CPacketVec3d.sendToServer(entity, vec0);
 						}
-					}
-					if (flag2 && entity.world.rand.nextFloat() <= 0.01f) {
-						Vec3d vec0 = this.transform3rdPerson(new Vec3d(0d, -0.6875d, 0.2d), offarmAngles, user, mainhandside.opposite(), partialTicks);
-						Vec3d vec1 = this.transform3rdPerson(new Vec3d(0d, -0.6875d, 1.6d), offarmAngles, user, mainhandside.opposite(), partialTicks)
-						 .subtract(vec0).scale(0.2);
-						vec0 = vec0.add(vec1);
-						EntityLightningArc.spawnAsParticle(entity.world, vec0.x, vec0.y, vec0.z, 0.01d, vec1.x, vec1.y, vec1.z);
+					} else {
+						if (flag1 && entity.world.rand.nextFloat() <= 0.01f) {
+							Vec3d vec0 = this.transform3rdPerson(new Vec3d(0d, -0.6875d, 0.2d), mainarmAngles, user, mainhandside, partialTicks);
+							Vec3d vec1 = this.transform3rdPerson(new Vec3d(0d, -0.6875d, 1.6d), mainarmAngles, user, mainhandside, partialTicks)
+									.subtract(vec0).scale(0.2);
+							vec0 = vec0.add(vec1);
+							EntityLightningArc.spawnAsParticle(entity.world, vec0.x, vec0.y, vec0.z, 0.01d, vec1.x, vec1.y, vec1.z);
+							if (viewer.equals(user)) {
+								ProcedureSync.CPacketVec3d.sendToServer(entity, vec0);
+							}
+						}
+						if (flag2 && entity.world.rand.nextFloat() <= 0.01f) {
+							Vec3d vec0 = this.transform3rdPerson(new Vec3d(0d, -0.6875d, 0.2d), offarmAngles, user, mainhandside.opposite(), partialTicks);
+							Vec3d vec1 = this.transform3rdPerson(new Vec3d(0d, -0.6875d, 1.6d), offarmAngles, user, mainhandside.opposite(), partialTicks)
+									.subtract(vec0).scale(0.2);
+							vec0 = vec0.add(vec1);
+							EntityLightningArc.spawnAsParticle(entity.world, vec0.x, vec0.y, vec0.z, 0.01d, vec1.x, vec1.y, vec1.z);
+						}
 					}
 				}
 			}
-		}
 
-		private Vec3d forceRightArmBowPose(Vec3d ogvec, EntityLivingBase owner, float partialTicks) {
-            float f = this.interpolateRotation(owner.prevRenderYawOffset, owner.renderYawOffset, partialTicks);
-            float f1 = this.interpolateRotation(owner.prevRotationYawHead, owner.rotationYawHead, partialTicks);
-            float f2 = (f1 - f) * 0.017453292F;
-            float f7 = (owner.prevRotationPitch + (owner.rotationPitch - owner.prevRotationPitch) * partialTicks) * 0.017453292F;
-            return new Vec3d(-((float)Math.PI / 2F) + f7, -0.1F + f2, ogvec.z);
-		}
+			private Vec3d forceRightArmBowPose(Vec3d ogvec, EntityLivingBase owner, float partialTicks) {
+				float f = this.interpolateRotation(owner.prevRenderYawOffset, owner.renderYawOffset, partialTicks);
+				float f1 = this.interpolateRotation(owner.prevRotationYawHead, owner.rotationYawHead, partialTicks);
+				float f2 = (f1 - f) * 0.017453292F;
+				float f7 = (owner.prevRotationPitch + (owner.rotationPitch - owner.prevRotationPitch) * partialTicks) * 0.017453292F;
+				return new Vec3d(-((float)Math.PI / 2F) + f7, -0.1F + f2, ogvec.z);
+			}
 
-		private float interpolateRotation(float prevYawOffset, float yawOffset, float partialTicks) {
-			return prevYawOffset + ProcedureUtils.Vec2f.wrapDegrees(yawOffset - prevYawOffset) * partialTicks;
-		}
+			private float interpolateRotation(float prevYawOffset, float yawOffset, float partialTicks) {
+				return prevYawOffset + ProcedureUtils.Vec2f.wrapDegrees(yawOffset - prevYawOffset) * partialTicks;
+			}
 
-		@Override
-		protected ResourceLocation getEntityTexture(EC entity) {
-			return null;
+			@Override
+			protected ResourceLocation getEntityTexture(EC entity) {
+				return null;
+			}
 		}
 	}
 }

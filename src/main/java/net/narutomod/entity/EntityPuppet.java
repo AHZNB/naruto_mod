@@ -7,6 +7,12 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraft.world.World;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.SoundEvent;
+import net.minecraft.util.EnumActionResult;
+import net.minecraft.util.EnumHand;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Item;
 import net.minecraft.entity.SharedMonsterAttributes;
@@ -19,9 +25,7 @@ import net.minecraft.entity.ai.EntityMoveHelper;
 import net.minecraft.entity.ai.EntityAISwimming;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.ai.EntityAITarget;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.SoundEvent;
+import net.minecraft.pathfinding.PathNavigateFlying;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.network.datasync.DataParameter;
@@ -34,14 +38,13 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.util.EnumHand;
+import net.minecraft.nbt.NBTTagCompound;
 
 import net.narutomod.item.ItemNinjutsu;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.ElementsNarutomodMod;
 
 import javax.annotation.Nullable;
-import net.minecraft.nbt.NBTTagCompound;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityPuppet extends ElementsNarutomodMod.ModElement {
@@ -61,13 +64,19 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 			this.experienceValue = 0;
 			this.enablePersistence();
 			this.setNoAI(true);
-			//this.navigator = new PathNavigateFlying(this, worldIn);
-			//this.moveHelper = new FlyHelper(this);
+			this.navigator = new PathNavigateFlying(this, worldIn);
+			this.moveHelper = new FlyHelper(this);
 		}
 
 		public Base(EntityLivingBase ownerIn) {
 			this(ownerIn.world);
-			this.setOwner(ownerIn);
+			if (ownerIn instanceof EntityPlayer) {
+				ItemStack stack = ProcedureUtils.getMatchingItemStack((EntityPlayer)ownerIn, ItemNinjutsu.block);
+				if (stack != null && ((ItemNinjutsu.RangedItem)stack.getItem())
+				 .canActivateJutsu(stack, ItemNinjutsu.PUPPET, (EntityPlayer)ownerIn) == EnumActionResult.SUCCESS) {
+					this.setOwner(ownerIn);
+				}
+			}
 		}
 
 		@Override
@@ -100,7 +109,8 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 		protected void initEntityAI() {
 			super.initEntityAI();
 			this.tasks.addTask(0, new EntityAISwimming(this));
-			this.targetTasks.addTask(1, new AICopyOwnerTarget(this));
+			this.tasks.addTask(3, new AIStayInFrontOfOwner(this, 0d, 0d, 4d));
+			this.targetTasks.addTask(0, new AICopyOwnerTarget(this));
 		}
 
 		@Override
@@ -117,6 +127,7 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 		protected void applyEntityAttributes() {
 			super.applyEntityAttributes();
 			this.getAttributeMap().registerAttribute(SharedMonsterAttributes.FLYING_SPEED);
+			this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(100D);
 			this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(48D);
 		}
 
@@ -135,6 +146,9 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 			if (source == DamageSource.FALL) {
 				return false;
 			}
+			if (source.isProjectile()) {
+				amount *= 0.2f;
+			}
 			return super.attackEntityFrom(source, amount);
 		}
 
@@ -143,7 +157,7 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 			ItemStack stack = player.getHeldItem(hand);
 			if (!this.world.isRemote && stack.getItem() == ItemNinjutsu.block 
 			 && ItemNinjutsu.getCurrentJutsu(stack) == ItemNinjutsu.PUPPET) {
-				this.setOwner(player);
+				this.setOwner(player.equals(this.getOwner()) ? null : player);
 				return true;
 			}
 			return false;
@@ -154,8 +168,28 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 	    	this.setAge(this.getAge() + 1);
 	    	this.fallDistance = 0f;
 	    	this.clearActivePotions();
+	    	
 	    	super.onUpdate();
+
+	    	EntityLivingBase owner = this.getOwner();
+	    	this.setNoGravity(owner != null);
+			if (owner != null && this.getVelocity() > 0.1d && this.ticksExisted % 2 == 0) {
+				this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation(("narutomod:wood_click"))), 
+				 0.6f, this.rand.nextFloat() * 0.6f + 0.6f);
+			}
+	    	if (!this.world.isRemote && owner != null && this.getDistanceSq(owner) > 1600d) {
+	    		this.setOwner(null);
+	    	}
 	    }
+
+		@Override
+		public Vec3d getLookVec() {
+			return this.getVectorForRotation(this.rotationPitch, this.rotationYawHead);
+		}
+
+		public double getVelocity() {
+			return MathHelper.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
+		}
 
 		@Override
 		public void readEntityFromNBT(NBTTagCompound compound) {
@@ -185,19 +219,74 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 					if (d3 < 1.6E-7D) {
 						ProcedureUtils.multiplyVelocity(this.entity, 0.0d);
 					} else {
-						float f = this. entity.onGround 
+						float f = this.entity.onGround 
 						 ? (float)(this.speed * this.entity.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).getAttributeValue())
 						 : (float)(this.speed * this.entity.getEntityAttribute(SharedMonsterAttributes.FLYING_SPEED).getAttributeValue());
-						this.entity.motionX = d0 / d3 * f;
-						this.entity.motionY = d1 / d3 * f;
-						this.entity.motionZ = d2 / d3 * f;
+						f *= 0.1f;
+						this.entity.motionX += d0 / d3 * f;
+						this.entity.motionY += d1 / d3 * f;
+						this.entity.motionZ += d2 / d3 * f;
 						float f1 = -((float)MathHelper.atan2(this.entity.motionX, this.entity.motionZ)) * (180F / (float)Math.PI);
-						this.entity.rotationYaw = this.limitAngle(this.entity.rotationYaw, f1, 10.0F);
-						this.entity.renderYawOffset = this.entity.rotationYaw;
+						//this.entity.rotationYaw = this.limitAngle(this.entity.rotationYaw, f1, 10.0F);
+						this.entity.renderYawOffset = this.entity.rotationYaw = f1;
 					}
 				}
 			}
 		}
+
+	    public class AIStayInFrontOfOwner extends EntityAIBase {
+	    	private final Base entity;
+	    	private EntityLivingBase owner;
+	    	private final Vec3d offsetVec;
+	    	
+	        public AIStayInFrontOfOwner(Base entityIn, double offX, double offY, double offZ) {
+	        	this.entity = entityIn;
+	        	this.offsetVec = new Vec3d(offX, offY, offZ);
+	            this.setMutexBits(3);
+	        }
+
+	        @Override
+	        public boolean shouldExecute() {
+	        	EntityLivingBase entitylb = this.entity.getOwner();
+		        if (entitylb == null) {
+		            return false;
+		        } else if (entitylb instanceof EntityPlayer && ((EntityPlayer)entitylb).isSpectator()) {
+		            return false;
+		        } else if (this.entity.getDistanceSq(entitylb) > 1600d) {
+		            return false;
+		        } else {
+		            this.owner = entitylb;
+		            return true;
+		        }
+	        }
+
+			@Override
+		    public boolean shouldContinueExecuting() {
+		        return this.owner != null && this.entity.getDistanceSq(this.owner) <= 1600d;
+		    }
+
+			@Override
+		    public void resetTask() {
+		        this.owner = null;
+		    }
+
+	        @Override
+	        public void updateTask() {
+	        	if (this.owner != null) {
+	        		Vec3d vec = this.offsetVec.rotateYaw(-this.owner.rotationYaw * (float)Math.PI / 180F).add(this.owner.getPositionVector());
+	        		BlockPos pos = new BlockPos(vec);
+	        		for (int i = 0; i < 4 && !this.isOpenPath(this.entity.world, pos.up(i)); i++) {
+	        			vec = vec.addVector(0d, 1.01d, 0d);
+	        		}
+       				this.entity.getMoveHelper().setMoveTo(vec.x, vec.y, vec.z, this.entity.getDistance(vec.x, vec.y, vec.z));
+	        	}
+	        }
+
+	        private boolean isOpenPath(World world, BlockPos pos) {
+        		return world.getBlockState(pos).getCollisionBoundingBox(world, pos) == null
+        		 && world.getBlockState(pos.up()).getCollisionBoundingBox(world, pos.up()) == null;
+	        }
+	    }
 
 	    public class AIChargeAttack extends EntityAIBase {
 	    	private Base attacker;
@@ -228,10 +317,6 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 	            Vec3d vec3d = entitylivingbase.getPositionEyes(1.0F);
 	            this.attacker.moveHelper.setMoveTo(vec3d.x, vec3d.y, vec3d.z, 2.0D);
 	        }
-	
-	        //@Override
-	        //public void resetTask() {
-	        //}
 	
 	        @Override
 	        public void updateTask() {
@@ -279,7 +364,7 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 
 	@SideOnly(Side.CLIENT)
 	public static class LayerChakraStrings implements LayerRenderer<Base> {
-		private final ResourceLocation FUUIN_TEXTURE = new ResourceLocation("narutomod:textures/fuuin_beam.png");
+		private static final ResourceLocation FUUIN_TEXTURE = new ResourceLocation("narutomod:textures/fuuin_beam_blue.png");
 		private final RenderLiving renderer;
 
 		public LayerChakraStrings(RenderLiving rendererIn) {
@@ -297,9 +382,8 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 				double dz = owner.lastTickPosZ + (owner.posZ - owner.lastTickPosZ) * pt - (entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * pt);
 				double dxz = MathHelper.sqrt(dx * dx + dz * dz);
 				double max_l = MathHelper.sqrt(dx * dx + dy * dy + dz * dz);
-				float rot_y = (float) -Math.atan2(dx, dz) * 180.0F / (float) Math.PI;
+				float rot_y = (float) -Math.atan2(dx, dz) * 180.0F / (float) Math.PI - ProcedureUtils.interpolateRotation(entity.prevRenderYawOffset, entity.renderYawOffset, pt);
 				float rot_x = (float) -Math.atan2(dy, dxz) * 180.0F / (float) Math.PI;
-				rot_y = MathHelper.wrapDegrees(rot_y - entity.renderYawOffset);
 				this.renderer.bindTexture(FUUIN_TEXTURE);
 				GlStateManager.pushMatrix();
 				GlStateManager.translate(0.0F, -offset + 0.5F, 0.0F);

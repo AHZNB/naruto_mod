@@ -1,6 +1,6 @@
 {
-  "parent": "item/generated",
+  "parent": "narutomod:custom/mangekyo_kamui",
   "textures": {
-    "layer0": "narutomod:items/mangekyosharingan_obito"
+    "1": "narutomod:blocks/mangekyosharingan_obito"
   }
 }

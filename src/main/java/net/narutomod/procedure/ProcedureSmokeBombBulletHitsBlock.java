@@ -1,12 +1,14 @@
 package net.narutomod.procedure;
 
 import net.minecraft.world.World;
+import net.minecraft.entity.Entity;
 
 import net.narutomod.Particles;
 import net.narutomod.event.EventDelayedCallback;
 import net.narutomod.ElementsNarutomodMod;
 
 import java.util.Map;
+import javax.annotation.Nullable;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class ProcedureSmokeBombBulletHitsBlock extends ElementsNarutomodMod.ModElement {
@@ -50,12 +52,14 @@ public class ProcedureSmokeBombBulletHitsBlock extends ElementsNarutomodMod.ModE
 		}
 
 		@Override
-		public void execute(World world, int x, int y, int z) {
+		public void execute(World world, int x, int y, int z, @Nullable Entity excludeEntity) {
+			Particles.Renderer particles = new Particles.Renderer(world);
 			for (int i = 0; i < 200; i++) {
-				Particles.spawnParticle(world, Particles.Types.SMOKE, x, y, z, 1, 2.0d, 1.0d, 2.0d,
+				particles.spawnParticles(Particles.Types.SMOKE, x, y, z, 1, 2.0d, 1.0d, 2.0d,
 				 (world.rand.nextDouble()-0.5d) * 0.4d, world.rand.nextDouble() * 0.2d,
 				 (world.rand.nextDouble()-0.5d) * 0.4d, 0xff101010, 40 + world.rand.nextInt(21), 0, 0, -1, 1);
 			}
+			particles.send();
 		}
 	}
 }

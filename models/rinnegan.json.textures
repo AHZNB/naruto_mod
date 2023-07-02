@@ -1,0 +1,10 @@
+{
+  "mappings": {
+    "default": {
+      "map": {
+        "1": "rinnegan"
+      },
+      "name": "default"
+    }
+  }
+}

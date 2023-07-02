@@ -1,0 +1,29 @@
+{
+  "_fv": 18,
+  "_type": "tool",
+  "definition": {
+    "renderType": 1,
+    "texture": "yag",
+    "customModelName": "jagura_staff:default",
+    "name": "Yagura Staff",
+    "specialInfo": [
+      "Weapon of the 4th Mizukage Yagura"
+    ],
+    "creativeTab": {
+      "value": "CUSTOM:ModTab"
+    },
+    "toolType": "Sword",
+    "harvestLevel": 0,
+    "efficiency": 10.0,
+    "attackSpeed": 6.0,
+    "enchantability": 0,
+    "damageVsEntity": 16.0,
+    "usageCount": 100000,
+    "blocksAffected": [],
+    "hasGlow": false,
+    "repairItems": [],
+    "immuneToFire": false,
+    "stayInGridWhenCrafting": false,
+    "damageOnCrafting": false
+  }
+}

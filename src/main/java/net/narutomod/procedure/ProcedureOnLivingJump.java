@@ -8,7 +8,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.init.MobEffects;
-import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 
 import net.narutomod.ElementsNarutomodMod;
 
@@ -18,16 +18,17 @@ public class ProcedureOnLivingJump extends ElementsNarutomodMod.ModElement {
 		super(instance, 322);
 	}
 
-	public static void lunge(EntityLivingBase entity) {
+	public static void lunge(EntityPlayer entity) {
 		double speed = ProcedureUtils.getModifiedSpeed(entity);
 		if (entity.isPotionActive(MobEffects.JUMP_BOOST) && speed >= 0.14d && entity.isSneaking()) {
 			double motionY = 0.42d + (double) (entity.getActivePotionEffect(MobEffects.JUMP_BOOST).getAmplifier() + 1) * 0.1d;
 			if (speed > 0.4d && motionY > 0.8d) {
-				RayTraceResult t = ProcedureUtils.objectEntityLookingAt(entity, 50d);
+				RayTraceResult t = ProcedureUtils.objectEntityLookingAt(entity, 50d, 1.0d);
 				if (t != null && (t.entityHit != null || !entity.world.isAirBlock(t.getBlockPos()))) {
 					entity.motionX = entity.motionY = entity.motionZ = 0d;
-					Vec3d vec3d = new Vec3d(entity.posX - t.hitVec.x, entity.posY - t.hitVec.y, entity.posZ - t.hitVec.z).normalize();
-					entity.setPosition(t.hitVec.x + vec3d.x, t.hitVec.y + vec3d.y + 0.1d, t.hitVec.z + vec3d.z);
+					Vec3d vec = t.entityHit != null ? t.entityHit.getPositionVector() : t.hitVec;
+					Vec3d vec3d = entity.getPositionVector().subtract(vec).normalize();
+					entity.setPosition(vec.x + vec3d.x, vec.y + vec3d.y + 0.1d, vec.z + vec3d.z);
 					if (entity.world.isRemote) {
 						ProcedureSync.ResetBoundingBox.sendToServer(entity);
 					}
@@ -46,9 +47,8 @@ public class ProcedureOnLivingJump extends ElementsNarutomodMod.ModElement {
 
 	@SubscribeEvent
 	public void lunge(LivingEvent.LivingJumpEvent event) {
-		if (event != null) {
-			// EntityLivingBase entity = event.getEntityLiving();
-			lunge(event.getEntityLiving());
+		if (event != null && event.getEntityLiving() instanceof EntityPlayer) {
+			lunge((EntityPlayer)event.getEntityLiving());
 		}
 	}
 

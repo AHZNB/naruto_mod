@@ -180,6 +180,9 @@ public class ItemNuibariSword extends ElementsNarutomodMod.ModElement {
 				return i;
 			}
 		}
+		if (entity.getHeldItemOffhand().getItem() == block) {
+			return 99;
+		}
 		return -1;
 	}
 

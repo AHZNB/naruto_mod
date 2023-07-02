@@ -26,7 +26,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.init.MobEffects;
 
-import net.narutomod.item.ItemBijuCloak;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.Chakra;
 import net.narutomod.ElementsNarutomodMod;
@@ -118,18 +117,24 @@ public class EntityJinchurikiClone extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public void attackEntityWithRangedAttack(EntityLivingBase target, float distanceFactor) {
-			EntityTailedBeast.EntityTailBeastBall.spawn(this, 2f, 200f);
+			EntityTailedBeast.EntityTailBeastBall.spawn(this, 2f, 150f);
 		}
 
 		@Override
 		public void setDead() {
-			super.setDead();
-			if (!this.world.isRemote && this.getSummoner() instanceof EntityPlayerMP) {
+			if (!this.world.isRemote && this.getSummoner() instanceof EntityPlayerMP && !this.isDead) {
 				EntityPlayerMP user = (EntityPlayerMP)this.getSummoner();
 				user.setGameType(GameType.getByID(this.getEntityData().getInteger("OriginalGameMode")));
 				user.addPotionEffect(new PotionEffect(MobEffects.INVISIBILITY, 2, 0, false, false));
-				user.setHealth(this.getHealth());
+				if (user.isEntityAlive()) {
+					float f = this.getHealth();
+					user.setHealth(f);
+					if (f <= 0.0f) {
+						EntityBijuManager.toggleBijuCloak(user);
+					}
+				}
 			}
+			super.setDead();
 		}
 
 		@Override
@@ -153,9 +158,13 @@ public class EntityJinchurikiClone extends ElementsNarutomodMod.ModElement {
 			super.onUpdate();
 			if (!this.world.isRemote && this.getSummoner() instanceof EntityPlayerMP) {
 				EntityPlayerMP user = (EntityPlayerMP)this.getSummoner();
-				if (user.getSpectatingEntity() != this) {
+				if (!user.isEntityAlive()) {
+					user.setSpectatingEntity(user);
+				} else if (user.getSpectatingEntity() != this) {
 					user.setSpectatingEntity(this);
 				}
+				Chakra.Pathway userChakra = Chakra.pathway(user);
+				userChakra.consume(userChakra.getAmount() - this.chakra.getAmount());
 			}
 			for (EntityEquipmentSlot slot : EntityEquipmentSlot.values()) {
 				ItemStack itemstack = this.getItemStackFromSlot(slot);

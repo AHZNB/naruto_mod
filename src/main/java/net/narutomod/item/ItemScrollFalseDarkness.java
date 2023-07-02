@@ -44,7 +44,7 @@ public class ItemScrollFalseDarkness extends ElementsNarutomodMod.ModElement {
 	}
 	public static class ItemCustom extends Item {
 		public ItemCustom() {
-			setMaxDamage(0);
+			setMaxDamage(1);
 			maxStackSize = 1;
 			setUnlocalizedName("scroll_false_darkness");
 			setRegistryName("scroll_false_darkness");

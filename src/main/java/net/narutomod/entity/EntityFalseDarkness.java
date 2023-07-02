@@ -112,7 +112,7 @@ public class EntityFalseDarkness extends ElementsNarutomodMod.ModElement {
 		public static class Jutsu implements ItemJutsu.IJutsuCallback {
 			@Override
 			public boolean createJutsu(ItemStack stack, EntityLivingBase entity, float power) {
-				RayTraceResult res = ProcedureUtils.objectEntityLookingAt(entity, 20d);
+				RayTraceResult res = ProcedureUtils.objectEntityLookingAt(entity, 20d, 3d);
 				if (res != null && res.entityHit instanceof EntityLivingBase) {
 					entity.world.spawnEntity(new EC(entity, (EntityLivingBase)res.entityHit, power));
 					return true;

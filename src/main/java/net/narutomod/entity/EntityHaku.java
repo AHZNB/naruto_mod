@@ -50,15 +50,8 @@ public class EntityHaku extends ElementsNarutomodMod.ModElement {
 	@Override
 	public void initElements() {
 		elements.entities.add(() -> EntityEntryBuilder.create().entity(EntityCustom.class)
-		 .id(new ResourceLocation("narutomod", "haku"), ENTITYID).name("haku").tracker(64, 3, true).egg(-16737895, -1).build());
-	}
-
-	@SideOnly(Side.CLIENT)
-	@Override
-	public void preInit(FMLPreInitializationEvent event) {
-		RenderingRegistry.registerEntityRenderingHandler(EntityCustom.class, renderManager -> {
-			return new RenderCustom(renderManager);
-		});
+				.id(new ResourceLocation("narutomod", "haku"), ENTITYID)
+				.name("haku").tracker(64, 3, true).egg(-16737895, -1).build());
 	}
 
 	public static class EntityCustom extends EntityNinjaMob.Base implements IRangedAttackMob, IMob {
@@ -76,7 +69,7 @@ public class EntityHaku extends ElementsNarutomodMod.ModElement {
 		private final ItemStack senbon = new ItemStack(ItemIceSenbon.block, 1);
 
 		public EntityCustom(World worldIn) {
-			super(worldIn, 60, 4000d);
+			super(worldIn, 80, 4000d);
 			this.setSize(0.525f, 1.75f);
 			this.isImmuneToFire = true;
 		}
@@ -155,8 +148,8 @@ public class EntityHaku extends ElementsNarutomodMod.ModElement {
 			if (this.getAttackTarget() != null) {
 				EntityLivingBase target = this.getAttackTarget();
 				if (((this.leader != null && this.leader.getHealth() < this.leader.getMaxHealth() * 0.25f)
-				 || (this.getHealth() < this.getMaxHealth() * 0.5f))
-				 && !this.domeActive() && this.ticksExisted > this.domeLastUsed + DOME_CD && this.getChakra() > ICE_DOME_CHAKRA * 5d) {
+						|| (this.getHealth() < this.getMaxHealth() * 0.5f))
+						&& !this.domeActive() && this.ticksExisted > this.domeLastUsed + DOME_CD && this.getChakra() > ICE_DOME_CHAKRA * 5d) {
 					this.domeEntity = new EntityIceDome.EC.Jutsu().createJutsu(this, target.posX, target.posY - 0.1d, target.posZ);
 					this.domeEntity.excludeEntity(this.leader);
 					this.domeSpearsLastUsed = this.ticksExisted - DOME_SPEARS_CD + 60;
@@ -165,7 +158,7 @@ public class EntityHaku extends ElementsNarutomodMod.ModElement {
 			}
 			if (this.domeActive()) {
 				if (this.domeEntity.ticksExisted > MAX_DOME_USAGE) {
-				 //|| !this.domeEntity.getEntitiesInside().contains(this.getAttackTarget())) {
+					//|| !this.domeEntity.getEntitiesInside().contains(this.getAttackTarget())) {
 					this.domeEntity.setDead();
 				} else if (this.ticksExisted > this.domeSpearsLastUsed + DOME_SPEARS_CD) {
 					this.domeEntity.shootSpears();
@@ -191,31 +184,31 @@ public class EntityHaku extends ElementsNarutomodMod.ModElement {
 		}
 
 		public static class AIFollowLeader extends EntityClone.AIFollowSummoner {
-		    private final EntityCustom entity;
-		
-		    public AIFollowLeader(EntityCustom entityIn, double speed, float stopRange) {
-		    	super(entityIn, speed, stopRange);
-		        this.entity = entityIn;
-		    }
-		
+			private final EntityCustom entity;
+
+			public AIFollowLeader(EntityCustom entityIn, double speed, float stopRange) {
+				super(entityIn, speed, stopRange);
+				this.entity = entityIn;
+			}
+
 			@Override
-		    public boolean shouldExecute() {
-		        if (this.entity.leader == null) {
-		            return false;
-		        } else if (this.entity.leader instanceof EntityPlayer && ((EntityPlayer)this.entity.leader).isSpectator()) {
-		            return false;
-		        } else if (this.entity.getDistanceSq(this.entity.leader) < (double)(this.stopDistance * this.stopDistance)) {
-		            return false;
-		        } else {
-		            this.followingEntity = this.entity.leader;
-		            return true;
-		        }
-		    }
+			public boolean shouldExecute() {
+				if (this.entity.leader == null) {
+					return false;
+				} else if (this.entity.leader instanceof EntityPlayer && ((EntityPlayer)this.entity.leader).isSpectator()) {
+					return false;
+				} else if (this.entity.getDistanceSq(this.entity.leader) < (double)(this.stopDistance * this.stopDistance)) {
+					return false;
+				} else {
+					this.followingEntity = this.entity.leader;
+					return true;
+				}
+			}
 
 			@Override
 			protected double getSpeed() {
-				if (this.followingEntity instanceof EntityLiving 
-				 && ((EntityLiving)this.followingEntity).getAttackTarget() != null) {
+				if (this.followingEntity instanceof EntityLiving
+						&& ((EntityLiving)this.followingEntity).getAttackTarget() != null) {
 					return super.getSpeed() * 2.0d;
 				}
 				return super.getSpeed();
@@ -223,68 +216,83 @@ public class EntityHaku extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-	@SideOnly(Side.CLIENT)
-	public class RenderCustom extends EntityNinjaMob.RenderBase<EntityCustom> {
-		private final ResourceLocation TEXTURE = new ResourceLocation("narutomod:textures/haku.png");
-
-		public RenderCustom(RenderManager renderManagerIn) {
-			super(renderManagerIn, new ModelBiped64slim());
-			//this.addLayer(new LayerHeldItem(this));
-		}
-
-		@Override
-		protected void preRenderCallback(EntityCustom entity, float partialTickTime) {
-			float f = 0.0625f * 14;
-			GlStateManager.scale(f, f, f);
-		}
-
-		@Override
-		protected ResourceLocation getEntityTexture(EntityCustom entity) {
-			return TEXTURE;
-		}
+	@Override
+	public void preInit(FMLPreInitializationEvent event) {
+		new Renderer().register();
 	}
 
-	// Made with Blockbench 3.7.4
-	// Exported for Minecraft version 1.12
-	// Paste this class into your mod and generate all required imports
-	@SideOnly(Side.CLIENT)
-	public class ModelBiped64slim extends ModelBiped {
-		public ModelBiped64slim() {
-			this.textureWidth = 64;
-			this.textureHeight = 64;
-			this.leftArmPose = ModelBiped.ArmPose.EMPTY;
-			this.rightArmPose = ModelBiped.ArmPose.EMPTY;
-			this.bipedHead = new ModelRenderer(this);
-			this.bipedHead.setRotationPoint(0.0F, 0.0F, 0.0F);
-			this.bipedHead.cubeList.add(new ModelBox(this.bipedHead, 0, 0, -4.0F, -8.0F, -4.0F, 8, 8, 8, 0.0F, false));
-			this.bipedHeadwear = new ModelRenderer(this);
-			this.bipedHeadwear.setRotationPoint(0.0F, 0.0F, 0.0F);
-			this.bipedHeadwear.cubeList.add(new ModelBox(this.bipedHeadwear, 32, 0, -4.0F, -8.0F, -4.0F, 8, 8, 8, 0.3F, false));
-			this.bipedBody = new ModelRenderer(this);
-			this.bipedBody.setRotationPoint(0.0F, 0.0F, 0.0F);
-			this.bipedBody.cubeList.add(new ModelBox(this.bipedBody, 16, 16, -4.0F, 0.0F, -2.0F, 8, 12, 4, 0.0F, false));
-			this.bipedBody.cubeList.add(new ModelBox(this.bipedBody, 16, 32, -4.0F, 0.0F, -2.0F, 8, 12, 4, 0.25F, false));
-			this.bipedRightArm = new ModelRenderer(this);
-			this.bipedRightArm.setRotationPoint(-5.0F, 2.0F, 0.0F);
-			this.bipedRightArm.cubeList.add(new ModelBox(this.bipedRightArm, 40, 16, -2.0F, -2.0F, -2.0F, 3, 12, 4, 0.0F, false));
-			this.bipedRightArm.cubeList.add(new ModelBox(this.bipedRightArm, 40, 32, -2.0F, -2.0F, -2.0F, 3, 12, 4, 0.25F, false));
-			this.bipedLeftArm = new ModelRenderer(this);
-			this.bipedLeftArm.setRotationPoint(5.0F, 2.0F, 0.0F);
-			this.bipedLeftArm.cubeList.add(new ModelBox(this.bipedLeftArm, 32, 48, -1.0F, -2.0F, -2.0F, 3, 12, 4, 0.0F, false));
-			this.bipedLeftArm.cubeList.add(new ModelBox(this.bipedLeftArm, 48, 48, -1.0F, -2.0F, -2.0F, 3, 12, 4, 0.25F, false));
-			this.bipedRightLeg = new ModelRenderer(this);
-			this.bipedRightLeg.setRotationPoint(-1.9F, 12.0F, 0.0F);
-			this.bipedRightLeg.cubeList.add(new ModelBox(this.bipedRightLeg, 0, 16, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.0F, false));
-			this.bipedRightLeg.cubeList.add(new ModelBox(this.bipedRightLeg, 0, 32, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.25F, false));
-			this.bipedLeftLeg = new ModelRenderer(this);
-			this.bipedLeftLeg.setRotationPoint(1.9F, 12.0F, 0.0F);
-			this.bipedLeftLeg.cubeList.add(new ModelBox(this.bipedLeftLeg, 16, 48, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.0F, false));
-			this.bipedLeftLeg.cubeList.add(new ModelBox(this.bipedLeftLeg, 0, 48, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.25F, false));
+	public static class Renderer extends EntityRendererRegister {
+		@SideOnly(Side.CLIENT)
+		@Override
+		public void register() {
+			RenderingRegistry.registerEntityRenderingHandler(EntityCustom.class, renderManager -> {
+				return new RenderCustom(renderManager);
+			});
 		}
 
-		@Override
-		public void setRotationAngles(float f, float f1, float f2, float f3, float f4, float f5, Entity e) {
-			super.setRotationAngles(f, f1, f2, f3, f4, f5, e);
+		@SideOnly(Side.CLIENT)
+		public class RenderCustom extends EntityNinjaMob.RenderBase<EntityCustom> {
+			private final ResourceLocation TEXTURE = new ResourceLocation("narutomod:textures/haku.png");
+
+			public RenderCustom(RenderManager renderManagerIn) {
+				super(renderManagerIn, new ModelBiped64slim());
+				//this.addLayer(new LayerHeldItem(this));
+			}
+
+			@Override
+			protected void preRenderCallback(EntityCustom entity, float partialTickTime) {
+				float f = 0.0625f * 14;
+				GlStateManager.scale(f, f, f);
+			}
+
+			@Override
+			protected ResourceLocation getEntityTexture(EntityCustom entity) {
+				return TEXTURE;
+			}
+		}
+
+		// Made with Blockbench 3.7.4
+		// Exported for Minecraft version 1.12
+		// Paste this class into your mod and generate all required imports
+		@SideOnly(Side.CLIENT)
+		public class ModelBiped64slim extends ModelBiped {
+			public ModelBiped64slim() {
+				this.textureWidth = 64;
+				this.textureHeight = 64;
+				this.leftArmPose = ModelBiped.ArmPose.EMPTY;
+				this.rightArmPose = ModelBiped.ArmPose.EMPTY;
+				this.bipedHead = new ModelRenderer(this);
+				this.bipedHead.setRotationPoint(0.0F, 0.0F, 0.0F);
+				this.bipedHead.cubeList.add(new ModelBox(this.bipedHead, 0, 0, -4.0F, -8.0F, -4.0F, 8, 8, 8, 0.0F, false));
+				this.bipedHeadwear = new ModelRenderer(this);
+				this.bipedHeadwear.setRotationPoint(0.0F, 0.0F, 0.0F);
+				this.bipedHeadwear.cubeList.add(new ModelBox(this.bipedHeadwear, 32, 0, -4.0F, -8.0F, -4.0F, 8, 8, 8, 0.3F, false));
+				this.bipedBody = new ModelRenderer(this);
+				this.bipedBody.setRotationPoint(0.0F, 0.0F, 0.0F);
+				this.bipedBody.cubeList.add(new ModelBox(this.bipedBody, 16, 16, -4.0F, 0.0F, -2.0F, 8, 12, 4, 0.0F, false));
+				this.bipedBody.cubeList.add(new ModelBox(this.bipedBody, 16, 32, -4.0F, 0.0F, -2.0F, 8, 12, 4, 0.25F, false));
+				this.bipedRightArm = new ModelRenderer(this);
+				this.bipedRightArm.setRotationPoint(-5.0F, 2.0F, 0.0F);
+				this.bipedRightArm.cubeList.add(new ModelBox(this.bipedRightArm, 40, 16, -2.0F, -2.0F, -2.0F, 3, 12, 4, 0.0F, false));
+				this.bipedRightArm.cubeList.add(new ModelBox(this.bipedRightArm, 40, 32, -2.0F, -2.0F, -2.0F, 3, 12, 4, 0.25F, false));
+				this.bipedLeftArm = new ModelRenderer(this);
+				this.bipedLeftArm.setRotationPoint(5.0F, 2.0F, 0.0F);
+				this.bipedLeftArm.cubeList.add(new ModelBox(this.bipedLeftArm, 32, 48, -1.0F, -2.0F, -2.0F, 3, 12, 4, 0.0F, false));
+				this.bipedLeftArm.cubeList.add(new ModelBox(this.bipedLeftArm, 48, 48, -1.0F, -2.0F, -2.0F, 3, 12, 4, 0.25F, false));
+				this.bipedRightLeg = new ModelRenderer(this);
+				this.bipedRightLeg.setRotationPoint(-1.9F, 12.0F, 0.0F);
+				this.bipedRightLeg.cubeList.add(new ModelBox(this.bipedRightLeg, 0, 16, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.0F, false));
+				this.bipedRightLeg.cubeList.add(new ModelBox(this.bipedRightLeg, 0, 32, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.25F, false));
+				this.bipedLeftLeg = new ModelRenderer(this);
+				this.bipedLeftLeg.setRotationPoint(1.9F, 12.0F, 0.0F);
+				this.bipedLeftLeg.cubeList.add(new ModelBox(this.bipedLeftLeg, 16, 48, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.0F, false));
+				this.bipedLeftLeg.cubeList.add(new ModelBox(this.bipedLeftLeg, 0, 48, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.25F, false));
+			}
+
+			@Override
+			public void setRotationAngles(float f, float f1, float f2, float f3, float f4, float f5, Entity e) {
+				super.setRotationAngles(f, f1, f2, f3, f4, f5, e);
+			}
 		}
 	}
 }

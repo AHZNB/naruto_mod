@@ -8,7 +8,6 @@ import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
 import net.minecraft.world.World;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.Vec3d;
-//import net.minecraft.util.EnumHandSide;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.entity.Entity;
@@ -61,7 +60,6 @@ public class EntityIntonRaiha extends ElementsNarutomodMod.ModElement {
 		public void setDead() {
 			super.setDead();
 			if (!this.world.isRemote && this.shooter instanceof EntityPlayer) {
-				//PlayerRender.forceBowPose((EntityPlayer)this.shooter, EnumHandSide.RIGHT, false);
 				ProcedureSync.EntityNBTTag.removeAndSync(this.shooter, NarutomodModVariables.forceBowPose);
 			}
 		}
@@ -71,18 +69,17 @@ public class EntityIntonRaiha extends ElementsNarutomodMod.ModElement {
 			if (this.shooter != null && this.shooter.isEntityAlive()) {
 				if (this.ticksExisted == 1) {
 					if (this.shooter instanceof EntityPlayer) {
-						//PlayerRender.forceBowPose((EntityPlayer)this.shooter, EnumHandSide.RIGHT, true);
 						ProcedureSync.EntityNBTTag.setAndSync(this.shooter, NarutomodModVariables.forceBowPose, true);
 					}
 					if (this.power >= 4.0f) {
-						this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation(("narutomod:intonraiha"))), 1.0f, 1.0f);
+						this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:intonraiha")), 1.0f, 1.0f);
 						this.waitTime = 50;
 					}
 				}
 				this.setPosition(this.shooter.posX, this.shooter.posY, this.shooter.posZ);
 				float duration = (float)this.waitTime + this.power * 10.0f;
 				if (this.ticksExisted > this.waitTime) {
-					this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation(("narutomod:electricity"))),
+					this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:electricity")),
 					  0.6f, this.rand.nextFloat() + 0.5f);
 					Vec3d vec = this.shooter.getLookVec();
 					Vec3d vec1 = vec.add(this.shooter.getPositionVector().addVector(0d, 1.3d, 0d))
@@ -90,7 +87,7 @@ public class EntityIntonRaiha extends ElementsNarutomodMod.ModElement {
 					Vec3d vec2 = vec.scale(this.power * 5f).rotateYaw((this.rand.nextFloat()-0.5f) * 1.0472f)
 					 .rotatePitch((this.rand.nextFloat()-0.5f) * 1.0472f).add(this.shooter.getPositionEyes(1.0f));
 					float f = 5.0f + this.power * 5.0f + 1.0f / ((float)this.ticksExisted - duration - 0.4f);
-					EntityLightningArc.Base entity = new EntityLightningArc.Base(this.world, vec1, vec2, 0x80FF00FF, (int)f, 0.4f);
+					EntityLightningArc.Base entity = new EntityLightningArc.Base(this.world, vec1, vec2, 0x80FF00FF, (int)f, 0.4f, 0.04f);
 					entity.setDamage(ItemJutsu.causeSenjutsuDamage(this, this.shooter), this.power, true, this.shooter);
 					this.world.spawnEntity(entity);
 				}

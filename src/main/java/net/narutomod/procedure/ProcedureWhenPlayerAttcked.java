@@ -8,15 +8,15 @@ import net.minecraftforge.common.MinecraftForge;
 
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.World;
+import net.minecraft.util.CombatRules;
 import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.init.MobEffects;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.math.Vec3d;
-//import net.minecraft.client.resources.I18n;
 
 import net.narutomod.potion.PotionAmaterasuFlame;
 import net.narutomod.item.ItemSharingan;
@@ -44,7 +44,7 @@ public class ProcedureWhenPlayerAttcked extends ElementsNarutomodMod.ModElement 
 		Entity entity = (Entity) dependencies.get("entity");
 		World world = (World) dependencies.get("world");
 		Object evtobj = dependencies.get("event");
-		if (entity == null) {
+		if (!(entity instanceof EntityLivingBase)) {
 			System.err.println("Failed to load dependency entity for procedure ProcedureWhenPlayerAttcked!");
 			return;
 		}
@@ -58,23 +58,10 @@ public class ProcedureWhenPlayerAttcked extends ElementsNarutomodMod.ModElement 
 		}
 		Entity attacker = null;
 		LivingAttackEvent evt = (LivingAttackEvent) evtobj;
-		if (evt.getSource() != null) {
+		if (evt.getSource() != null) {
 			attacker = evt.getSource().getTrueSource();
 		}
-		if (entity instanceof EntityLivingBase) {
-			/*if ((ProcedureUtils.isWearingMangekyo((EntityLivingBase) entity)
-			 || ((EntityLivingBase) entity).getItemStackFromSlot(EntityEquipmentSlot.HEAD).getItem() == ItemSharingan.helmet)
-			 && attacker instanceof EntityLivingBase && !attacker.world.isRemote) {
-			 	if (((EntityLivingBase)entity).getRNG().nextFloat() < 0.5f) {
-			 		evt.setCanceled(true);
-			 		Vec3d vec = entity.getPositionVector().subtract(attacker.getPositionVector()).normalize()
-			 		 .rotateYaw((world.rand.nextFloat()-0.5f)*(float)Math.PI);
-			 		entity.addVelocity(vec.x, 0.0d, vec.z);
-			 		entity.velocityChanged = true;
-			 	}
-				((EntityLivingBase) attacker).addPotionEffect(new PotionEffect(MobEffects.SLOWNESS, 300, 1, false, true));
-				((EntityLivingBase) attacker).addPotionEffect(new PotionEffect(MobEffects.MINING_FATIGUE, 300, 1, false, true));
-			}*/
+		if (!world.isRemote) {
 			if (entity.getEntityData().getDouble(NarutomodModVariables.InvulnerableTime) > 0.0D) {
 				evt.setCanceled(true);
 			}
@@ -85,31 +72,33 @@ public class ProcedureWhenPlayerAttcked extends ElementsNarutomodMod.ModElement 
 			 && ItemJutsu.isDamageSourceNinjutsu(evt.getSource())) {
 				evt.setCanceled(true);
 			}
-			if (entity.getRidingEntity() instanceof EntitySusanooBase 
-			 || entity.getRidingEntity() instanceof EntityShieldBase
-			 || entity.getRidingEntity() instanceof EntityTailedBeast.Base
-			 || entity.getRidingEntity() instanceof EntityKingOfHell.EntityCustom) {
+			Entity ridingEntity = entity.getRidingEntity();
+			if ((ridingEntity instanceof EntitySusanooBase 
+			  || ridingEntity instanceof EntityShieldBase
+			  || ridingEntity instanceof EntityTailedBeast.Base)
+			 && ridingEntity.isEntityAlive() && evt.getSource() != ProcedureUtils.SPECIAL_DAMAGE) {
 				evt.setCanceled(true);
-				entity.getRidingEntity().attackEntityFrom(evt.getSource(), evt.getAmount());
+				ridingEntity.attackEntityFrom(evt.getSource(), evt.getAmount());
+				/*float f = ((EntityLivingBase)ridingEntity).getHealth();
+				if (ridingEntity.attackEntityFrom(evt.getSource(), evt.getAmount()) && !ridingEntity.isEntityAlive()) {
+					entity.attackEntityFrom(evt.getSource(), CombatRules.getDamageAfterAbsorb(evt.getAmount(),
+					 (float)((EntityLivingBase)ridingEntity).getTotalArmorValue(), 0f) - f);
+				}*/
 			}
-			//if (entity instanceof EntityPlayer && !entity.equals(attacker))
-			//	PlayerTracker.logBattleExp((EntityPlayer) entity, 0.5D);
+			if (ridingEntity instanceof EntityKingOfHell.EntityCustom) {
+				evt.setCanceled(true);
+				ridingEntity.attackEntityFrom(evt.getSource(), evt.getAmount());
+			}
 		}
-		/*if (attacker instanceof EntitySusanooBase && attacker.isBeingRidden()) {
-			attacker = attacker.getControllingPassenger();
+		if (attacker instanceof EntityPlayer && !evt.getSource().getImmediateSource().equals(attacker)) {
+			((EntityLivingBase)attacker).setLastAttackedEntity(entity);
 		}
-		if (entity instanceof EntityLivingBase && attacker instanceof EntityPlayer && !entity.world.isRemote 
-		 && (((EntityPlayer)attacker).inventory.armorInventory.get(3).getItem() == ItemMangekyoSharingan.helmet
-		  || ((EntityPlayer)attacker).inventory.armorInventory.get(3).getItem() == ItemMangekyoSharinganEternal.helmet)) {
-		  	int i = attacker instanceof EntityPlayer ? ((EntityPlayer) attacker).experienceLevel / 30 : 0;
-			((EntityLivingBase)entity).addPotionEffect(new PotionEffect(PotionAmaterasuFlame.potion, 200, i, false, false));
-		}*/
 	}
 
 	@SubscribeEvent
-	public void onEntityAttacked(LivingAttackEvent event) {
-		if (event != null && event.getEntity() != null) {
-			Entity entity = event.getEntity();
+	public void onLivingAttacked(LivingAttackEvent event) {
+		if (event != null && event.getEntityLiving() != null) {
+			EntityLivingBase entity = event.getEntityLiving();
 			World world = entity.world;
 			HashMap<String, Object> dependencies = new HashMap<>();
 			dependencies.put("world", world);

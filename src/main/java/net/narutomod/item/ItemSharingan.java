@@ -3,38 +3,46 @@ package net.narutomod.item;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.common.registry.GameRegistry.ObjectHolder;
-import net.minecraftforge.common.util.EnumHelper;
-import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.event.entity.living.LivingAttackEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
+import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraftforge.common.util.EnumHelper;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.client.event.ModelRegistryEvent;
+import net.minecraftforge.client.event.MouseEvent;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.entity.living.LivingAttackEvent;
 
-import java.util.HashMap;
 import net.minecraft.world.World;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.Item;
 import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.model.ModelBiped;
+import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.potion.PotionEffect;
-import net.minecraft.init.MobEffects;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.translation.I18n;
-import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.block.material.Material;
 
 import net.narutomod.procedure.ProcedureSharinganHelmetTickEvent;
+import net.narutomod.procedure.ProcedureSync;
 import net.narutomod.procedure.ProcedureUtils;
+import net.narutomod.procedure.ProcedureOnLivingUpdate;
 import net.narutomod.creativetab.TabModTab;
 import net.narutomod.ElementsNarutomodMod;
 
+import java.util.HashMap;
 import java.util.List;
 import javax.annotation.Nullable;
 
@@ -48,7 +56,7 @@ public class ItemSharingan extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static class Base extends ItemDojutsu.Base {
-		protected boolean canDamage;
+		private boolean canDamage;
 
 		public Base(ItemArmor.ArmorMaterial material) {
 			super(material);
@@ -78,6 +86,14 @@ public class ItemSharingan extends ElementsNarutomodMod.ModElement {
 				$_dependencies.put("world", world);
 				ProcedureSharinganHelmetTickEvent.executeProcedure((HashMap) $_dependencies);
 			}
+			if (!world.isRemote && entity.ticksExisted % 6 == 1
+			 && (itemstack.getItem() != ItemMangekyoSharinganEternal.helmet || !this.isOwner(itemstack, entity))
+			 && (entity.getEntityData().getBoolean("amaterasu_active")
+			  || entity.getEntityData().getBoolean("susanoo_activated") || entity.getEntityData().getBoolean("kamui_teleport"))) {
+			 	((Base)itemstack.getItem()).canDamage = true;
+				itemstack.damageItem(this.isOwner(itemstack, entity) ? 3 : 9, entity);
+				((Base)itemstack.getItem()).canDamage = false;
+			}
 		}
 
 		@Override
@@ -85,6 +101,10 @@ public class ItemSharingan extends ElementsNarutomodMod.ModElement {
 			if (this.canDamage) {
 				super.setDamage(stack, damage);
 			}
+		}
+
+		public void forceDamage(ItemStack stack, int damage) {
+			super.setDamage(stack, damage);
 		}
 
 		@Override
@@ -100,6 +120,14 @@ public class ItemSharingan extends ElementsNarutomodMod.ModElement {
 		public void setOwner(ItemStack stack, EntityLivingBase entityIn) {
 			super.setOwner(stack, entityIn);
 			this.setColor(stack, 1 + entityIn.getRNG().nextInt(0x00FFFFFF) | 0x20000000);
+		}
+
+		@Override
+		public void copyOwner(ItemStack toStack, ItemStack fromStack) {
+			super.copyOwner(toStack, fromStack);
+			if (toStack.getItem() instanceof Base && fromStack.getItem() instanceof Base) {
+				this.setColor(toStack, ((Base)fromStack.getItem()).getColor(fromStack));
+			}
 		}
 
 		public void setColor(ItemStack stack, int color) {
@@ -151,104 +179,112 @@ public class ItemSharingan extends ElementsNarutomodMod.ModElement {
 		public void onAttacked(LivingAttackEvent event) {
 			EntityLivingBase entity = event.getEntityLiving();
 			Entity attacker = event.getSource().getTrueSource();
-			if (wearingAny(entity) && attacker instanceof EntityLivingBase && !attacker.world.isRemote) {
+			if (wearingAny(entity) && ItemJutsu.canTarget(entity) && !entity.isRiding()
+			 && attacker instanceof EntityLivingBase && !attacker.world.isRemote) {
 			 	if (entity.getRNG().nextFloat() < 0.5f) {
-			 		event.setCanceled(true);
-			 		Vec3d vec = entity.getPositionVector().subtract(attacker.getPositionVector()).normalize()
-			 		 .rotateYaw((entity.getRNG().nextFloat()-0.5f)*(float)Math.PI);
-			 		entity.addVelocity(vec.x, 0.0d, vec.z);
-			 		entity.velocityChanged = true;
+			    	List<BlockPos> list = ProcedureUtils.getAllAirBlocks(entity.world, entity.getEntityBoundingBox().grow(2.5d));
+			    	for (int i = 0; i < list.size(); i++) {
+			    		BlockPos pos = list.get(entity.getRNG().nextInt(list.size()));
+			    		Material material = entity.world.getBlockState(pos.down()).getMaterial();
+			    		if ((material.isSolid() || material == material.WATER)
+			    		 && attacker.getDistanceSqToCenter(pos) > 6.25d && ProcedureUtils.isSpaceOpenToStandOn(entity, pos)) {
+				 			event.setCanceled(true);
+				 			entity.setPositionAndUpdate(0.5d+pos.getX(), pos.getY(), 0.5d+pos.getZ());
+				 			break;
+			    		}
+			    	}
 			 	}
-				((EntityLivingBase)attacker).addPotionEffect(new PotionEffect(MobEffects.SLOWNESS, 300, 1, false, true));
-				((EntityLivingBase)attacker).addPotionEffect(new PotionEffect(MobEffects.MINING_FATIGUE, 300, 1, false, true));
+				if (entity instanceof EntityPlayer) {
+					this.lockOnTarget(entity, (EntityLivingBase)attacker, 300);
+				}
 			}
 		}
-	}
 
-	public static class SusanooStats {
-		private static final String TAGKEY = "SusanooStats";
-		private ItemStack sharinganStack;
-		private NBTTagCompound tag;
-
-		public static SusanooStats get(ItemStack stack) {
-			return new SusanooStats(stack);
-		}
-		
-		private SusanooStats(ItemStack stack) {
-			this.sharinganStack = stack;
-			//this.tag = entityIn.getEntityData().getCompoundTag(TAGKEY);
-			if (!stack.hasTagCompound()) {
-				stack.setTagCompound(new NBTTagCompound());
+		@SubscribeEvent
+		public void onPlayerTick(TickEvent.PlayerTickEvent event) {
+			EntityPlayer entity = event.player;
+			if (event.phase == TickEvent.Phase.END && this.hasTargetLockOnEntity(entity)) {
+				int remaining = this.targetLockTicksRemaining(entity);
+				EntityLivingBase target = this.getLockedTarget(entity);
+				if (!entity.world.isRemote && (remaining <= 0 || target == null || !target.isEntityAlive() || target.getDistanceSq(entity) > 1024d)) {
+					this.unlockOnTarget(entity);
+				} else if (target != null) {
+					if (entity.world.isRemote) {
+						ProcedureOnLivingUpdate.setGlowingFor(target, 3);
+					}
+					if (entity.getEntityData().getBoolean("shouldTargetLockOnEntity")) {
+						Vec3d vec2 = target.getPositionEyes(1f).subtract(entity.getPositionEyes(1f));
+						entity.rotationYaw = ProcedureUtils.getYawFromVec(vec2);
+						entity.rotationPitch = ProcedureUtils.getPitchFromVec(vec2);
+					}
+					this.lockOnTarget(entity, target, remaining - 1);
+				}
 			}
-			this.tag = stack.getTagCompound().getCompoundTag(TAGKEY);
 		}
 
-		private void setTag() {
-			//this.entity.getEntityData().setTag(TAGKEY, this.tag);
-			this.sharinganStack.getTagCompound().setTag(TAGKEY, this.tag);
-		}
-		
-		public SusanooStats setActivated(boolean b) {
-			this.tag.setBoolean("activated", b);
-			this.setTag();
-			return this;
-		}
-
-		public SusanooStats setTicks(int i) {
-			this.tag.setInteger("ticks", i);
-			this.setTag();
-			return this;
+		@SideOnly(Side.CLIENT)
+		@SubscribeEvent
+		public void onMouseEvent(MouseEvent event) {
+			EntityPlayer player = Minecraft.getMinecraft().player;
+			if (FMLClientHandler.instance().isGUIOpen(net.minecraft.client.gui.GuiChat.class) || player == null) {
+				return;
+			}
+			if (event.getButton() == 1 && this.hasTargetLockOnEntity(player)) {
+				//boolean flag = player.getEntityData().getBoolean("shouldTargetLockOnEntity");
+				boolean flag = !event.isButtonstate();
+				player.getEntityData().setBoolean("shouldTargetLockOnEntity", !flag);
+				ProcedureSync.EntityNBTTag.sendToServer(player, "shouldTargetLockOnEntity", !flag);
+			}
 		}
 
-		public SusanooStats incrementTicks() {
-			this.tag.setInteger("ticks", this.tag.getInteger("ticks") + 1);
-			this.setTag();
-			return this;
+		@SubscribeEvent
+		public void onEntitySpawn(EntityJoinWorldEvent event) {
+			if (event.getEntity() instanceof EntityPlayerMP) {
+				this.unlockOnTarget((EntityLivingBase)event.getEntity());
+			}
 		}
 
-		public SusanooStats setCD(int i) {
-			this.tag.setInteger("cooldown", i);
-			this.setTag();
-			return this;
+		private void lockOnTarget(EntityLivingBase entity, EntityLivingBase target, int ticks) {
+			if (!entity.world.isRemote) {
+				entity.getEntityData().setInteger("targetLockOnEntityId", target.getEntityId());
+				entity.getEntityData().setInteger("targetLockOnEntityTicksRemaining", ticks);
+				if (entity instanceof EntityPlayerMP) {
+					ProcedureSync.EntityNBTTag.sendToSelf((EntityPlayerMP)entity, "targetLockOnEntityId", target.getEntityId());
+				}
+			}
 		}
-
-		public SusanooStats setId(int i) {
-			this.tag.setInteger("id", i);
-			this.setTag();
-			return this;
+	
+		private void unlockOnTarget(EntityLivingBase entity) {
+			if (!entity.world.isRemote) {
+				entity.getEntityData().removeTag("targetLockOnEntityId");
+				entity.getEntityData().removeTag("targetLockOnEntityTicksRemaining");
+				entity.getEntityData().removeTag("shouldTargetLockOnEntity");
+				if (entity instanceof EntityPlayerMP) {
+					ProcedureSync.EntityNBTTag.sendToSelf((EntityPlayerMP)entity, "targetLockOnEntityId");
+					ProcedureSync.EntityNBTTag.sendToSelf((EntityPlayerMP)entity, "shouldTargetLockOnEntity");
+				}
+			}
 		}
-
-		public SusanooStats setColor(int i) {
-			this.tag.setInteger("color", i);
-			this.setTag();
-			return this;
+	
+		private boolean hasTargetLockOnEntity(EntityLivingBase entity) {
+			return entity.getEntityData().hasKey("targetLockOnEntityId");
 		}
-
-		public boolean isActivated() {
-			return this.tag.getBoolean("activated");
+	
+		@Nullable
+		private EntityLivingBase getLockedTarget(EntityLivingBase entity) {
+			Entity target = entity.world.getEntityByID(entity.getEntityData().getInteger("targetLockOnEntityId"));
+			return target instanceof EntityLivingBase ? (EntityLivingBase)target : null;
 		}
-
-		public int getTicks() {
-			return this.tag.getInteger("ticks");
-		}
-
-		public int getCD() {
-			return this.tag.getInteger("cooldown");
-		}
-
-		public int getId() {
-			return this.tag.getInteger("id");
-		}
-
-		public int getColor() {
-			return this.tag.getInteger("color");
+	
+		private int targetLockTicksRemaining(EntityLivingBase entity) {
+			return entity.getEntityData().getInteger("targetLockOnEntityTicksRemaining");
 		}
 	}
 
 	@Override
 	public void initElements() {
-		ItemArmor.ArmorMaterial enuma = EnumHelper.addArmorMaterial("SHARINGAN", "narutomod:sharingan_", 1024, new int[]{2, 5, 6, 50}, 0, null,
-				5.0F);
+		ItemArmor.ArmorMaterial enuma = EnumHelper.addArmorMaterial("SHARINGAN", "narutomod:sharingan_",
+		 1024, new int[]{2, 5, 6, 10}, 0, null, 0.0F);
 		this.elements.items.add(() -> new Base(enuma) {
 			public String getArmorTexture(ItemStack stack, Entity entity, EntityEquipmentSlot slot, String type) {
 				return "narutomod:textures/sharinganhelmet.png";

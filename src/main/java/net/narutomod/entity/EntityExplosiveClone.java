@@ -29,6 +29,7 @@ import net.minecraft.util.EnumParticleTypes;
 
 import net.narutomod.item.ItemJutsu;
 import net.narutomod.procedure.ProcedureUtils;
+import net.narutomod.procedure.ProcedureAoeCommand;
 import net.narutomod.ElementsNarutomodMod;
 
 @ElementsNarutomodMod.ModElement.Tag
@@ -55,7 +56,7 @@ public class EntityExplosiveClone extends ElementsNarutomodMod.ModElement {
 	@SideOnly(Side.CLIENT)
 	public class CustomRender extends EntityClone.ClientRLM.RenderClone<EC> {
 		public CustomRender(RenderManager renderManagerIn) {
-			new EntityClone.ClientRLM().super(renderManagerIn);
+			EntityClone.ClientRLM.getInstance().super(renderManagerIn);
 		}
 
 	    @Override
@@ -91,13 +92,17 @@ public class EntityExplosiveClone extends ElementsNarutomodMod.ModElement {
 
 		public EC(World world) {
 			super(world);
+			this.stepHeight = 16f;
+			this.moveHelper = new EntityNinjaMob.MoveHelper(this);
 		}
 
 		public EC(EntityLivingBase user) {
 			super(user);
 			this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(48d);
-			double d = ProcedureUtils.getModifiedSpeed(user) * 3.5d;
+			double d = ProcedureUtils.getModifiedSpeed(user) * 4.0d;
 			this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(d);
+			this.stepHeight = 16f;
+			this.moveHelper = new EntityNinjaMob.MoveHelper(this);
 		}
 
 		@Override
@@ -117,7 +122,7 @@ public class EntityExplosiveClone extends ElementsNarutomodMod.ModElement {
 		@Override
 		protected void initEntityAI() {
 			super.initEntityAI();
-			this.tasks.addTask(2, new EntityClone.AIFollowSummoner(this, 0.6d, 3.0F));
+			this.tasks.addTask(2, new EntityClone.AIFollowSummoner(this, 0.8d, 4.0F));
 		}
 
 		@Override
@@ -134,8 +139,11 @@ public class EntityExplosiveClone extends ElementsNarutomodMod.ModElement {
 		private void explode() {
 	    	if (!this.world.isRemote) {
 		    	this.dead = true;
-				this.world.createExplosion(this.getSummoner(), this.posX, this.posY, this.posZ, 8f,
-		    	 net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.world, this.getSummoner()));
+		    	EntityLivingBase summoner = this.getSummoner();
+				this.world.createExplosion(summoner, this.posX, this.posY, this.posZ, 8f,
+		    	 net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.world, summoner));
+		    	ProcedureAoeCommand.set(this, 0d, 8d)
+		    	 .damageEntitiesCentered(ItemJutsu.causeJutsuDamage(this, summoner), 50f);
 	    		this.setDead();
 	    	}
 		}
@@ -158,7 +166,7 @@ public class EntityExplosiveClone extends ElementsNarutomodMod.ModElement {
 						EntityLivingBase summoner = this.getSummoner();
 						if (summoner != null) {
 							this.world.playSound(null, summoner.posX, summoner.posY, summoner.posZ, 
-							 (SoundEvent)SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:katsu")), 
+							 SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:katsu")), 
 							 SoundCategory.NEUTRAL, 1f, 1f);
 						}
 					} else if (this.ticksExisted - this.ignitionTime > this.fuse) {
@@ -175,7 +183,7 @@ public class EntityExplosiveClone extends ElementsNarutomodMod.ModElement {
 		}
 
 		private void poof() {
-			this.playSound((SoundEvent)SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:poof")), 1.0F, 1.0F);
+			this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:poof")), 1.0F, 1.0F);
 			((WorldServer)this.world).spawnParticle(EnumParticleTypes.EXPLOSION_NORMAL, this.posX, this.posY+this.height/2, 
 			  this.posZ, 200, this.width * 0.5d, this.height * 0.3d, this.width * 0.5d, 0.02d);
 		}
@@ -184,7 +192,7 @@ public class EntityExplosiveClone extends ElementsNarutomodMod.ModElement {
 			@Override
 			public boolean createJutsu(ItemStack stack, EntityLivingBase entity, float power) {
 				if (!entity.isSneaking()) {
-					entity.world.playSound(null, entity.posX, entity.posY, entity.posZ, (SoundEvent)SoundEvent.REGISTRY
+					entity.world.playSound(null, entity.posX, entity.posY, entity.posZ, SoundEvent.REGISTRY
 					  .getObject(new ResourceLocation("narutomod:kagebunshin")), SoundCategory.NEUTRAL, 1.0F, 1.0F);
 					entity.world.spawnEntity(new EC(entity));
 					return true;

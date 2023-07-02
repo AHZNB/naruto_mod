@@ -1,0 +1,6 @@
+{
+  "parent": "narutomod:custom/senbonpoison",
+  "textures": {
+    "0": "narutomod:blocks/senbon_posion"
+  }
+}

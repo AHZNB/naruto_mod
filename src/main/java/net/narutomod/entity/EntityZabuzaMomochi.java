@@ -8,21 +8,25 @@ import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
-import net.minecraftforge.common.DungeonHooks;
+//import net.minecraftforge.common.DungeonHooks;
 
 import net.minecraft.init.Biomes;
-import net.minecraft.world.biome.Biome;
+import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
 import net.minecraft.world.BossInfoServer;
 import net.minecraft.world.BossInfo;
+import net.minecraft.world.DifficultyInstance;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.EnumHandSide;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Item;
 import net.minecraft.inventory.EntityEquipmentSlot;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.ai.EntityAIWander;
 import net.minecraft.entity.ai.EntityAISwimming;
 import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
@@ -31,29 +35,30 @@ import net.minecraft.entity.ai.EntityAIAttackMelee;
 import net.minecraft.entity.ai.EntityAIAttackRanged;
 import net.minecraft.entity.ai.EntityAITarget;
 import net.minecraft.entity.ai.EntityAIAvoidEntity;
+import net.minecraft.entity.ai.EntityAIWatchClosest2;
+import net.minecraft.entity.ai.EntityAIWatchClosest;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.EnumCreatureType;
+import net.minecraft.entity.IRangedAttackMob;
+import net.minecraft.entity.IEntityLivingData;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.monster.IMob;
+import net.minecraft.entity.monster.EntityMob;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.client.renderer.entity.RenderBiped;
 import net.minecraft.client.model.ModelBiped;
-import net.minecraft.entity.monster.IMob;
-import net.minecraft.entity.IRangedAttackMob;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.EnumHandSide;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.model.ModelBox;
 import net.minecraft.client.model.ModelRenderer;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.init.Blocks;
-import net.minecraft.entity.IEntityLivingData;
-import net.minecraft.world.DifficultyInstance;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.world.WorldServer;
+import net.minecraft.block.BlockLiquid;
 
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.item.ItemZabuzaSword;
 import net.narutomod.item.ItemSuiton;
+import net.narutomod.ModConfig;
 import net.narutomod.ElementsNarutomodMod;
 
 import javax.annotation.Nullable;
@@ -70,25 +75,22 @@ public class EntityZabuzaMomochi extends ElementsNarutomodMod.ModElement {
 
 	@Override
 	public void initElements() {
-		elements.entities.add(() -> EntityEntryBuilder.create().entity(EntityCustom.class)
-		  .id(new ResourceLocation("narutomod", "zabuza_momochi"), ENTITYID).name("zabuza_momochi")
-		  .tracker(64, 3, true).egg(-6710887, -16764058).build());
+		elements.entities.add(() -> EntityEntryBuilder.create().entity(EntityCustom.class)
+				.id(new ResourceLocation("narutomod", "zabuza_momochi"), ENTITYID).name("zabuza_momochi")
+				.tracker(64, 3, true).egg(-6710887, -16764058).build());
 	}
 
 	@Override
 	public void init(FMLInitializationEvent event) {
-		Biome[] spawnBiomes = { 
-			Biomes.PLAINS, Biomes.EXTREME_HILLS, Biomes.FOREST, Biomes.TAIGA, Biomes.SWAMPLAND, Biomes.RIVER,
-			Biomes.JUNGLE, Biomes.SAVANNA, Biomes.ICE_MOUNTAINS, Biomes.ICE_PLAINS, Biomes.BEACH, Biomes.COLD_BEACH
-		};
-		EntityRegistry.addSpawn(EntityCustom.class, 1, 1, 1, EnumCreatureType.MONSTER, spawnBiomes);
-		DungeonHooks.addDungeonMob(new ResourceLocation("narutomod:zabuza_momochi"), 180);
-	}
-
-	@SideOnly(Side.CLIENT)
-	@Override
-	public void preInit(FMLPreInitializationEvent event) {
-		RenderingRegistry.registerEntityRenderingHandler(EntityCustom.class, renderManager -> new RenderCustom(renderManager));
+		int i = MathHelper.clamp(ModConfig.SPAWN_WEIGHT_ZABUZA, 0, 20);
+		if (i > 0) {
+			EntityRegistry.addSpawn(EntityCustom.class, i, 1, 1, EnumCreatureType.MONSTER,
+					Biomes.PLAINS, Biomes.EXTREME_HILLS, Biomes.FOREST, Biomes.TAIGA, Biomes.SWAMPLAND, Biomes.RIVER,
+					Biomes.JUNGLE, Biomes.SAVANNA, Biomes.ICE_MOUNTAINS, Biomes.ICE_PLAINS, Biomes.BEACH, Biomes.COLD_BEACH,
+					Biomes.MUTATED_PLAINS, Biomes.MUTATED_EXTREME_HILLS, Biomes.MUTATED_FOREST, Biomes.MUTATED_TAIGA,
+					Biomes.MUTATED_SWAMPLAND, Biomes.MUTATED_JUNGLE, Biomes.MUTATED_SAVANNA, Biomes.MUTATED_ICE_FLATS);
+		}
+		//DungeonHooks.addDungeonMob(new ResourceLocation("narutomod:zabuza_momochi"), 50);
 	}
 
 	public static class EntityCustom extends EntityNinjaMob.Base implements IRangedAttackMob, IMob {
@@ -112,9 +114,10 @@ public class EntityZabuzaMomochi extends ElementsNarutomodMod.ModElement {
 		private EntityLivingBase avoidTarget;
 		private final EntityAINearestAttackableTarget aiTargetPlayer = new EntityAINearestAttackableTarget(this, EntityPlayer.class, true, false);
 		private final EntityAIHurtByTarget aiTargetHurt = new EntityAIHurtByTarget(this, true);
+		private final BossInfoServer bossInfo = new BossInfoServer(this.getDisplayName(), BossInfo.Color.RED, BossInfo.Overlay.PROGRESS);
 
 		public EntityCustom(World world) {
-			super(world, 80, 5000d);
+			super(world, 120, 7000d);
 			this.setSize(0.6f, 2.0f);
 			this.setAttackTargetsTasks();
 			//this.setItemToInventory(swordStack);
@@ -154,8 +157,8 @@ public class EntityZabuzaMomochi extends ElementsNarutomodMod.ModElement {
 			}, 10f, 1.25d, 1.25d) {
 				@Override
 				public boolean shouldExecute() {
-					if (EntityCustom.this.getHealth() > EntityCustom.this.getMaxHealth() * 0.6f 
-					 && EntityCustom.this.avoidTarget != null) {
+					if (EntityCustom.this.getHealth() > EntityCustom.this.getMaxHealth() * 0.6f
+							&& EntityCustom.this.avoidTarget != null) {
 						EntityCustom.this.avoidTarget = null;
 						EntityCustom.this.setAttackTargetsTasks();
 						return false;
@@ -171,7 +174,20 @@ public class EntityZabuzaMomochi extends ElementsNarutomodMod.ModElement {
 					return 5.3d + attackTarget.width;
 				}
 			});
-			this.tasks.addTask(4, new EntityAIWander(this, 0.5));
+			this.tasks.addTask(4, new EntityAIWatchClosest2(this, EntityPlayer.class, 15.0F, 1.0F));
+			this.tasks.addTask(5, new EntityAIWander(this, 0.5));
+			this.tasks.addTask(6, new EntityAIWatchClosest(this, EntityMob.class, 8.0F));
+		}
+
+		public void removeTargetsTasks() {
+			//this.targetTasks.removeTask(this.aiTargetPlayer);
+			this.targetTasks.removeTask(this.aiTargetHurt);
+			this.setAttackTarget(null);
+		}
+
+		public void setAttackTargetsTasks() {
+			//this.targetTasks.addTask(1, this.aiTargetPlayer);
+			this.targetTasks.addTask(1, this.aiTargetHurt);
 		}
 
 		@Override
@@ -201,10 +217,15 @@ public class EntityZabuzaMomochi extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public boolean attackEntityFrom(DamageSource source, float amount) {
-			if (!this.isAIDisabled() && !this.getHeldItemMainhand().isEmpty() && !this.isActiveItemStackBlocking()) {
-				this.setActiveHand(EnumHand.MAIN_HAND);
-				this.activeItemStackUseCount = this.getActiveItemStack().getMaxItemUseDuration() - 5;
-				this.lastBlockTime = this.ticksExisted;
+			if (!this.isAIDisabled()) {
+				if (this.getHeldItemMainhand().isEmpty() && source.getTrueSource() instanceof EntityLivingBase) {
+					this.swapWithInventory(EntityEquipmentSlot.MAINHAND, 0);
+				}
+				if (!this.getHeldItemMainhand().isEmpty() && !this.isActiveItemStackBlocking()) {
+					this.setActiveHand(EnumHand.MAIN_HAND);
+					this.activeItemStackUseCount = this.getActiveItemStack().getMaxItemUseDuration() - 5;
+					this.lastBlockTime = this.ticksExisted;
+				}
 			}
 			return super.attackEntityFrom(source, amount);
 		}
@@ -214,64 +235,48 @@ public class EntityZabuzaMomochi extends ElementsNarutomodMod.ModElement {
 			super.updateAITasks();
 
 			EntityLivingBase target = this.getAttackTarget();
-			//if (this.getHeldItemMainhand().isEmpty() != (target == null && this.avoidTarget == null)) {
-			//	this.swapWithInventory(EntityEquipmentSlot.MAINHAND);
-			//}
 			if (target != null && target.isEntityAlive()) {
 				double distanceToTarget = this.getDistance(target);
 				if (!this.isClone()
-				 && this.ticksExisted > this.mistLastUsed + MIST_CD && this.consumeChakra(MIST_CHAKRA)) {
+						&& this.ticksExisted > this.mistLastUsed + MIST_CD && this.consumeChakra(MIST_CHAKRA)) {
 					new ItemSuiton.EntityMist.Jutsu().createJutsu(this.getHeldItemOffhand(), this, 1f);
 					this.mistLastUsed = this.ticksExisted;
 				}
 				if (this.isClone() && !EntityWaterPrison.isEntityTrapped(target) && distanceToTarget >= 2d
-				 && this.ticksExisted > this.prisonLastUsed + WATERPRISON_CD && this.getChakra() >= WATERPRISON_CHAKRA) {
-			 		this.getLookHelper().setLookPositionWithEntity(target, 90f, 30f);
-				 	if (new EntityWaterPrison.EC.Jutsu().createJutsu(this, target, 300) != null) {
-				 		this.swapWithInventory(EntityEquipmentSlot.MAINHAND, 0);
+						&& this.ticksExisted > this.prisonLastUsed + WATERPRISON_CD && this.getChakra() >= WATERPRISON_CHAKRA) {
+					this.getLookHelper().setLookPositionWithEntity(target, 90f, 30f);
+					if (new EntityWaterPrison.EC.Jutsu().createJutsu(this, target, 300) != null) {
+						this.swapWithInventory(EntityEquipmentSlot.MAINHAND, 0);
 						this.consumeChakra(WATERPRISON_CHAKRA);
 						this.prisonLastUsed = this.ticksExisted;
 					}
 				}
 				if (!this.isClone() && this.clones < 1
-				 && this.ticksExisted > this.cloneLastUsed + WATERCLONE_CD && this.consumeChakra(WATERCLONE_CHAKRA)) {
+						&& this.ticksExisted > this.cloneLastUsed + WATERCLONE_CD && this.consumeChakra(WATERCLONE_CHAKRA)) {
 					this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:kagebunshin")), 1f, 1f);
 					this.world.spawnEntity(new EntityCustom(this));
 					this.cloneLastUsed = this.ticksExisted;
 				}
-			//} else {
-			//	this.setAttackTarget(null);
 			}
 			if (!this.isClone() && this.getHealth() <= this.getMaxHealth() * 0.4f && this.getRevengeTarget() != null
-			 && this.ticksExisted > this.lastCallForHelp + 40) {
-			    this.avoidTarget = this.getRevengeTarget();
-			    this.removeTargetsTasks();
-			    this.callHelp();
-			    this.lastCallForHelp = this.ticksExisted;
+					&& this.ticksExisted > this.lastCallForHelp + 40) {
+				this.avoidTarget = this.getRevengeTarget();
+				this.removeTargetsTasks();
+				this.callHelp();
+				this.lastCallForHelp = this.ticksExisted;
 			}
 		}
 
 		private void callHelp() {
-		    double d0 = ProcedureUtils.getFollowRange(this);
-            for (Class<? extends EntityNinjaMob.Base> oclass : EntityNinjaMob.TeamZabuza) {
-			    for (EntityNinjaMob.Base ninja : 
-			     this.world.getEntitiesWithinAABB(oclass, this.getEntityBoundingBox().grow(d0, 8.0D, d0))) {
-			        if (ninja != this && !ninja.isOnSameTeam(this.avoidTarget)) {
-			        	ninja.setAttackTarget(this.avoidTarget);
-			        }
-                }
-		    }
-		}
-
-		public void removeTargetsTasks() {
-			this.targetTasks.removeTask(this.aiTargetPlayer);
-			this.targetTasks.removeTask(this.aiTargetHurt);
-			this.setAttackTarget(null);
-		}
-
-		public void setAttackTargetsTasks() {
-			this.targetTasks.addTask(1, this.aiTargetPlayer);
-			this.targetTasks.addTask(2, this.aiTargetHurt);
+			//double d0 = ProcedureUtils.getFollowRange(this);
+			for (Class<? extends EntityNinjaMob.Base> oclass : EntityNinjaMob.TeamZabuza) {
+				for (EntityNinjaMob.Base ninja :
+						this.world.getEntitiesWithinAABB(oclass, this.getEntityBoundingBox().grow(64.0D, 8.0D, 64.0D))) {
+					if (ninja != this && !ninja.isOnSameTeam(this.avoidTarget)) {
+						ninja.setAttackTarget(this.avoidTarget);
+					}
+				}
+			}
 		}
 
 		@Override
@@ -279,8 +284,8 @@ public class EntityZabuzaMomochi extends ElementsNarutomodMod.ModElement {
 			if (!this.world.isRemote && this.isClone()) {
 				this.playSound(net.minecraft.init.SoundEvents.ENTITY_GENERIC_SPLASH, 1f, 1f);
 				new net.narutomod.event.EventSetBlocks(this.world,
-				 com.google.common.collect.ImmutableMap.of(new BlockPos(this).up(), 
-				 Blocks.FLOWING_WATER.getDefaultState()), 0, 10, false, false);
+				 com.google.common.collect.ImmutableMap.of(new BlockPos(this).up(),
+				 Blocks.FLOWING_WATER.getDefaultState().withProperty(BlockLiquid.LEVEL, Integer.valueOf(1))), 0, 10, false, false);
 				this.setDead();
 			} else {
 				super.onDeathUpdate();
@@ -310,9 +315,9 @@ public class EntityZabuzaMomochi extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public boolean getCanSpawnHere() {
-			return super.getCanSpawnHere() 
-			 && this.world.getEntitiesWithinAABB(EntityCustom.class, this.getEntityBoundingBox().grow(128.0D)).isEmpty()
-			 && this.rand.nextInt(5) == 0;
+			return super.getCanSpawnHere()
+					&& this.world.getEntitiesWithinAABB(EntityCustom.class, this.getEntityBoundingBox().grow(128.0D)).isEmpty()
+					&& this.rand.nextInt(5) == 0;
 		}
 
 		@Override
@@ -320,34 +325,29 @@ public class EntityZabuzaMomochi extends ElementsNarutomodMod.ModElement {
 			return this.isClone();
 		}
 
-		private final BossInfoServer bossInfo = new BossInfoServer(this.getDisplayName(), BossInfo.Color.BLUE, BossInfo.Overlay.PROGRESS);
-
 		@Override
 		public void addTrackingPlayer(EntityPlayerMP player) {
 			super.addTrackingPlayer(player);
-			if (!this.isClone() && (player.equals(this.getAttackingEntity()) || player.equals(this.getAttackTarget()))) {
-				this.bossInfo.addPlayer(player);
+
+			if (ModConfig.AGGRESSIVE_BOSSES) {
+				this.setAttackTarget(player);
 			}
 		}
 
 		@Override
 		public void removeTrackingPlayer(EntityPlayerMP player) {
 			super.removeTrackingPlayer(player);
-			if (!this.isClone()) {
+
+			if (this.bossInfo.getPlayers().contains(player)) {
 				this.bossInfo.removePlayer(player);
 			}
 		}
 
 		private void trackAttackedPlayers() {
 			Entity entity = this.getAttackingEntity();
-			if (entity instanceof EntityPlayerMP || (entity = this.getAttackTarget()) instanceof EntityPlayerMP) {
-				this.bossInfo.addPlayer((EntityPlayerMP)entity);
-			} else {
-				java.util.List<EntityPlayerMP> list = new java.util.ArrayList<EntityPlayerMP>();
-				for (EntityPlayerMP entityplayermp : this.bossInfo.getPlayers())
-					list.add(entityplayermp);
-				for (EntityPlayerMP entityplayermp : list)
-					this.bossInfo.removePlayer(entityplayermp);
+
+			if (entity instanceof EntityPlayerMP || (entity = (ModConfig.AGGRESSIVE_BOSSES ? this.getLastAttackedEntity() : this.getAttackTarget())) instanceof EntityPlayerMP) {
+				this.bossInfo.addPlayer((EntityPlayerMP) entity);
 			}
 		}
 
@@ -374,7 +374,7 @@ public class EntityZabuzaMomochi extends ElementsNarutomodMod.ModElement {
 		private void spawnHaku() {
 			if (!this.isClone()) {
 				this.haku = (EntityHaku.EntityCustom)this.world
-				 .findNearestEntityWithinAABB(EntityHaku.EntityCustom.class, this.getEntityBoundingBox().grow(128d, 32d, 128d), this);
+						.findNearestEntityWithinAABB(EntityHaku.EntityCustom.class, this.getEntityBoundingBox().grow(128d, 32d, 128d), this);
 				if (this.haku == null) {
 					this.haku = new EntityHaku.EntityCustom(this.world);
 					this.haku.setLeader(this);
@@ -408,15 +408,27 @@ public class EntityZabuzaMomochi extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-	@SideOnly(Side.CLIENT)
-	public class RenderCustom extends EntityNinjaMob.RenderBase<EntityCustom> {
-		private final ResourceLocation TEXTURE = new ResourceLocation("narutomod:textures/zabuzamomochi.png");
+	@Override
+	public void preInit(FMLPreInitializationEvent event) {
+		new Renderer().register();
+	}
 
-		public RenderCustom(RenderManager renderManager) {
-			//super(renderManager, new ModelBiped64(), 0.5f);
-			//this.addLayer(new EntityNinjaMob.LayerInventoryItem(this));
-			super(renderManager, new ModelBiped64());
+	public static class Renderer extends EntityRendererRegister {
+		@SideOnly(Side.CLIENT)
+		@Override
+		public void register() {
+			RenderingRegistry.registerEntityRenderingHandler(EntityCustom.class, renderManager -> new RenderCustom(renderManager));
 		}
+
+		@SideOnly(Side.CLIENT)
+		public class RenderCustom extends EntityNinjaMob.RenderBase<EntityCustom> {
+			private final ResourceLocation TEXTURE = new ResourceLocation("narutomod:textures/zabuzamomochi.png");
+
+			public RenderCustom(RenderManager renderManager) {
+				//super(renderManager, new ModelBiped64(), 0.5f);
+				//this.addLayer(new EntityNinjaMob.LayerInventoryItem(this));
+				super(renderManager, new ModelBiped64());
+			}
 
 		/*@Override
 		public void doRender(EntityCustom entity, double x, double y, double z, float entityYaw, float partialTicks) {
@@ -433,46 +445,47 @@ public class EntityZabuzaMomochi extends ElementsNarutomodMod.ModElement {
 			super.doRender(entity, x, y, z, entityYaw, partialTicks);
 		}*/
 
-		@Override
-		protected ResourceLocation getEntityTexture(EntityCustom entity) {
-			return TEXTURE;
+			@Override
+			protected ResourceLocation getEntityTexture(EntityCustom entity) {
+				return TEXTURE;
+			}
 		}
-	}
 
-	@SideOnly(Side.CLIENT)
-	public class ModelBiped64 extends ModelBiped {
-		public ModelBiped64() {
-			this.textureWidth = 64;
-			this.textureHeight = 64;
-			this.leftArmPose = ModelBiped.ArmPose.EMPTY;
-			this.rightArmPose = ModelBiped.ArmPose.EMPTY;
-			this.bipedHead = new ModelRenderer(this);
-			this.bipedHead.setRotationPoint(0.0F, 0.0F, 0.0F);
-			this.bipedHead.cubeList.add(new ModelBox(this.bipedHead, 0, 0, -4.0F, -8.0F, -4.0F, 8, 8, 8, 0.0F, false));
-			this.bipedHead.cubeList.add(new ModelBox(this.bipedHead, 24, 0, -2.0F, -10.0F, 3.0F, 4, 4, 4, 0.0F, false));
-			this.bipedHeadwear = new ModelRenderer(this);
-			this.bipedHeadwear.setRotationPoint(0.0F, 0.0F, 0.0F);
-			this.bipedHeadwear.cubeList.add(new ModelBox(this.bipedHeadwear, 32, 0, -4.0F, -8.0F, -4.0F, 8, 8, 8, 0.25F, false));
-			this.bipedBody = new ModelRenderer(this);
-			this.bipedBody.setRotationPoint(0.0F, 0.0F, 0.0F);
-			this.bipedBody.cubeList.add(new ModelBox(this.bipedBody, 16, 16, -4.0F, 0.0F, -2.0F, 8, 12, 4, 0.0F, false));
-			this.bipedBody.cubeList.add(new ModelBox(this.bipedBody, 16, 32, -4.0F, 0.0F, -2.0F, 8, 12, 4, 0.25F, false));
-			this.bipedRightArm = new ModelRenderer(this);
-			this.bipedRightArm.setRotationPoint(-5.0F, 2.0F, 0.0F);
-			this.bipedRightArm.cubeList.add(new ModelBox(this.bipedRightArm, 40, 16, -3.0F, -2.0F, -2.0F, 4, 12, 4, 0.0F, false));
-			this.bipedRightArm.cubeList.add(new ModelBox(this.bipedRightArm, 40, 32, -3.0F, -2.0F, -2.0F, 4, 12, 4, 0.25F, false));
-			this.bipedLeftArm = new ModelRenderer(this);
-			this.bipedLeftArm.setRotationPoint(5.0F, 2.0F, 0.0F);
-			this.bipedLeftArm.cubeList.add(new ModelBox(this.bipedLeftArm, 32, 48, -1.0F, -2.0F, -2.0F, 4, 12, 4, 0.0F, false));
-			this.bipedLeftArm.cubeList.add(new ModelBox(this.bipedLeftArm, 48, 48, -1.0F, -2.0F, -2.0F, 4, 12, 4, 0.25F, false));
-			this.bipedRightLeg = new ModelRenderer(this);
-			this.bipedRightLeg.setRotationPoint(-1.9F, 12.0F, 0.0F);
-			this.bipedRightLeg.cubeList.add(new ModelBox(this.bipedRightLeg, 0, 16, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.0F, false));
-			this.bipedRightLeg.cubeList.add(new ModelBox(this.bipedRightLeg, 0, 32, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.25F, false));
-			this.bipedLeftLeg = new ModelRenderer(this);
-			this.bipedLeftLeg.setRotationPoint(1.9F, 12.0F, 0.0F);
-			this.bipedLeftLeg.cubeList.add(new ModelBox(this.bipedLeftLeg, 16, 48, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.0F, false));
-			this.bipedLeftLeg.cubeList.add(new ModelBox(this.bipedLeftLeg, 0, 48, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.25F, false));
+		@SideOnly(Side.CLIENT)
+		public class ModelBiped64 extends ModelBiped {
+			public ModelBiped64() {
+				this.textureWidth = 64;
+				this.textureHeight = 64;
+				this.leftArmPose = ModelBiped.ArmPose.EMPTY;
+				this.rightArmPose = ModelBiped.ArmPose.EMPTY;
+				this.bipedHead = new ModelRenderer(this);
+				this.bipedHead.setRotationPoint(0.0F, 0.0F, 0.0F);
+				this.bipedHead.cubeList.add(new ModelBox(this.bipedHead, 0, 0, -4.0F, -8.0F, -4.0F, 8, 8, 8, 0.0F, false));
+				this.bipedHead.cubeList.add(new ModelBox(this.bipedHead, 24, 0, -2.0F, -10.0F, 3.0F, 4, 4, 4, 0.0F, false));
+				this.bipedHeadwear = new ModelRenderer(this);
+				this.bipedHeadwear.setRotationPoint(0.0F, 0.0F, 0.0F);
+				this.bipedHeadwear.cubeList.add(new ModelBox(this.bipedHeadwear, 32, 0, -4.0F, -8.0F, -4.0F, 8, 8, 8, 0.25F, false));
+				this.bipedBody = new ModelRenderer(this);
+				this.bipedBody.setRotationPoint(0.0F, 0.0F, 0.0F);
+				this.bipedBody.cubeList.add(new ModelBox(this.bipedBody, 16, 16, -4.0F, 0.0F, -2.0F, 8, 12, 4, 0.0F, false));
+				this.bipedBody.cubeList.add(new ModelBox(this.bipedBody, 16, 32, -4.0F, 0.0F, -2.0F, 8, 12, 4, 0.25F, false));
+				this.bipedRightArm = new ModelRenderer(this);
+				this.bipedRightArm.setRotationPoint(-5.0F, 2.0F, 0.0F);
+				this.bipedRightArm.cubeList.add(new ModelBox(this.bipedRightArm, 40, 16, -3.0F, -2.0F, -2.0F, 4, 12, 4, 0.0F, false));
+				this.bipedRightArm.cubeList.add(new ModelBox(this.bipedRightArm, 40, 32, -3.0F, -2.0F, -2.0F, 4, 12, 4, 0.25F, false));
+				this.bipedLeftArm = new ModelRenderer(this);
+				this.bipedLeftArm.setRotationPoint(5.0F, 2.0F, 0.0F);
+				this.bipedLeftArm.cubeList.add(new ModelBox(this.bipedLeftArm, 32, 48, -1.0F, -2.0F, -2.0F, 4, 12, 4, 0.0F, false));
+				this.bipedLeftArm.cubeList.add(new ModelBox(this.bipedLeftArm, 48, 48, -1.0F, -2.0F, -2.0F, 4, 12, 4, 0.25F, false));
+				this.bipedRightLeg = new ModelRenderer(this);
+				this.bipedRightLeg.setRotationPoint(-1.9F, 12.0F, 0.0F);
+				this.bipedRightLeg.cubeList.add(new ModelBox(this.bipedRightLeg, 0, 16, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.0F, false));
+				this.bipedRightLeg.cubeList.add(new ModelBox(this.bipedRightLeg, 0, 32, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.25F, false));
+				this.bipedLeftLeg = new ModelRenderer(this);
+				this.bipedLeftLeg.setRotationPoint(1.9F, 12.0F, 0.0F);
+				this.bipedLeftLeg.cubeList.add(new ModelBox(this.bipedLeftLeg, 16, 48, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.0F, false));
+				this.bipedLeftLeg.cubeList.add(new ModelBox(this.bipedLeftLeg, 0, 48, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.25F, false));
+			}
 		}
 	}
 }

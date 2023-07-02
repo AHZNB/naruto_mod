@@ -5,6 +5,7 @@ import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraft.world.World;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 
@@ -35,6 +36,8 @@ public class GuiScrollCellularActivationGui extends ElementsNarutomodMod.ModElem
 			if (stack != null && PlayerTracker.isNinja(player)) {
 				((ItemIryoJutsu.RangedItem)stack.getItem()).enableJutsu(stack, ItemIryoJutsu.MEDMODE, true);
 				super.handleButtonAction(player, buttonID);
+			} else {
+				player.sendStatusMessage(new TextComponentTranslation("chattext.medicalgui.notmedninja"), false);
 			}
 		}
 	}

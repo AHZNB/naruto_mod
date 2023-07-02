@@ -22,9 +22,10 @@ import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
+import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.common.MinecraftForge;
 
 import net.minecraft.world.World;
 import net.minecraft.world.storage.WorldSavedData;
@@ -51,6 +52,11 @@ public class SaveData extends ElementsNarutomodMod.ModElement {
 	public SaveData(ElementsNarutomodMod instance) {
 		super(instance, 334);
 	}
+
+//	@Override
+//	public void serverLoad(FMLServerStartingEvent event) {
+//System.out.println("<<<<<<<<<<<< serverLoad event >>> players:"+event.getServer().getCurrentPlayerCount()+", entities:"+event.getServer().getWorld(0).loadedEntityList.size());
+//	}
 
 	/*public static void loadAllSavedData() {
 		System.out.println("Loading all save data for mod "+NarutomodMod.MODID);
@@ -79,7 +85,7 @@ public class SaveData extends ElementsNarutomodMod.ModElement {
 		}
 
 		@SubscribeEvent(priority = EventPriority.HIGHEST)
-		public void onLogin(EntityJoinWorldEvent event) {
+		public void onEntityJoinWorld(EntityJoinWorldEvent event) {
 			if (!event.getWorld().isRemote && !this.loaded) {
 				System.out.println("Loading all save data for mod "+NarutomodMod.MODID);
 				for (ISaveData savedata : savedataList) {

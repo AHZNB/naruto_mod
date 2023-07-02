@@ -34,8 +34,10 @@ public class ProcedureFoldingFanRangedItemUsed extends ElementsNarutomodMod.ModE
 				_ist.setItemDamage(0);
 			}
 		}
-		(entity).extinguish();
-		new EntityFutonGreatBreakthrough.EC.Jutsu().createJutsu(itemstack, (EntityLivingBase) entity,
-				((EntityLivingBase) entity).getItemInUseMaxCount() * 0.5f);
+		if (((((itemstack)).getItemDamage()) <= (((itemstack)).getMaxDamage()))) {
+			(entity).extinguish();
+			new EntityFutonGreatBreakthrough.EC.Jutsu().createJutsu(itemstack, (EntityLivingBase) entity,
+					Math.min(60f, 0.5f * (float) ((EntityLivingBase) entity).getItemInUseMaxCount()));
+		}
 	}
 }

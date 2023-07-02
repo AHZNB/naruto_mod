@@ -1,0 +1,17 @@
+{
+  "group": "narutomod",
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "narutomod:smoke_bomb"
+    },
+    {
+      "item": "minecraft:lingering_potion",
+      "data": 32767
+    }
+  ],
+  "result": {
+    "item": "narutomod:poisonbomb",
+    "count": 1
+  }
+}

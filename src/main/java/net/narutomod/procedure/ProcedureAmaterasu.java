@@ -2,12 +2,15 @@ package net.narutomod.procedure;
 
 import net.narutomod.potion.PotionAmaterasuFlame;
 import net.narutomod.item.ItemMangekyoSharingan;
+import net.narutomod.block.BlockAmaterasuBlock;
+import net.narutomod.PlayerTracker;
 import net.narutomod.NarutomodModVariables;
 import net.narutomod.ElementsNarutomodMod;
 import net.narutomod.Chakra;
 
 import net.minecraft.world.World;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.potion.PotionEffect;
@@ -90,8 +93,8 @@ public class ProcedureAmaterasu extends ElementsNarutomodMod.ModElement {
 				entity.getEntityData().setDouble("amaterasu_cd", (cooldown));
 				Chakra.pathway((EntityPlayer) entity).consume(chakraUsage * 0.25d);
 				RayTraceResult t = ProcedureUtils.objectEntityLookingAt(entity, 30d);
+				i = (double) (PlayerTracker.getNinjaLevel((EntityPlayer) entity) / 15);
 				if (t.typeOfHit == RayTraceResult.Type.ENTITY) {
-					i = (double) (((entity instanceof EntityPlayer) ? ((EntityPlayer) entity).experienceLevel : 0) / 30);
 					entity = t.entityHit;
 					if (entity instanceof EntityLivingBase)
 						((EntityLivingBase) entity)
@@ -100,14 +103,7 @@ public class ProcedureAmaterasu extends ElementsNarutomodMod.ModElement {
 					x = (int) t.getBlockPos().getX() + t.sideHit.getDirectionVec().getX();
 					y = (int) t.getBlockPos().getY() + t.sideHit.getDirectionVec().getY();
 					z = (int) t.getBlockPos().getZ() + t.sideHit.getDirectionVec().getZ();
-					{
-						Map<String, Object> $_dependencies = new HashMap<>();
-						$_dependencies.put("world", world);
-						$_dependencies.put("x", x);
-						$_dependencies.put("y", y);
-						$_dependencies.put("z", z);
-						ProcedureAmaterasuPlaceBlock.executeProcedure($_dependencies);
-					}
+					BlockAmaterasuBlock.placeBlock(world, new BlockPos(x, y, z), (int) i);
 				}
 			}
 		} else {
@@ -138,7 +134,7 @@ public class ProcedureAmaterasu extends ElementsNarutomodMod.ModElement {
 				if (entity instanceof EntityLivingBase)
 					((EntityLivingBase) entity).addPotionEffect(new PotionEffect(MobEffects.WEAKNESS, (int) (i), (int) 2));
 				if (entity instanceof EntityLivingBase)
-					((EntityLivingBase) entity).addPotionEffect(new PotionEffect(MobEffects.NAUSEA, (int) (i), (int) 0));
+					((EntityLivingBase) entity).addPotionEffect(new PotionEffect(MobEffects.NAUSEA, (int) ((i) * 6), (int) 0));
 			}
 			entity.getEntityData().setBoolean("amaterasu_active", (false));
 		}

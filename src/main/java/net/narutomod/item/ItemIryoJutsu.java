@@ -35,6 +35,7 @@ import net.narutomod.entity.EntityEnhancedStrength;
 import net.narutomod.potion.PotionChakraEnhancedStrength;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.Particles;
+import net.narutomod.Chakra;
 import net.narutomod.creativetab.TabModTab;
 import net.narutomod.ElementsNarutomodMod;
 
@@ -45,7 +46,7 @@ public class ItemIryoJutsu extends ElementsNarutomodMod.ModElement {
 	public static final int ENTITYID = 210;
 	public static final ItemJutsu.JutsuEnum HEALING = new ItemJutsu.JutsuEnum(0, "healingjutsu", 'A', 0.25d, new HealingJutsu());
 	public static final ItemJutsu.JutsuEnum POISONMIST = new ItemJutsu.JutsuEnum(1, "poison_mist", 'B', 20d, new EntityPoisonMist.EC.Jutsu());
-	public static final ItemJutsu.JutsuEnum MEDMODE = new ItemJutsu.JutsuEnum(2, "cellular_activation", 'A', new EntityCellularActivation.EC.Jutsu());
+	public static final ItemJutsu.JutsuEnum MEDMODE = new ItemJutsu.JutsuEnum(2, "cellular_activation", 'A', 20d, new EntityCellularActivation.EC.Jutsu());
 	public static final ItemJutsu.JutsuEnum POWERMODE = new ItemJutsu.JutsuEnum(3, "enhanced_strength", 'A', 30d, new ChakraEnhancedStrength());
 
 	public ItemIryoJutsu(ElementsNarutomodMod instance) {
@@ -79,8 +80,30 @@ public class ItemIryoJutsu extends ElementsNarutomodMod.ModElement {
 			return 1.0f;
 		}
 
+		@Override
+		protected float getMaxPower(ItemStack stack, EntityLivingBase entity) {
+			ItemJutsu.JutsuEnum jutsu = this.getCurrentJutsu(stack);
+			float f = super.getMaxPower(stack, entity);
+			if (jutsu == POISONMIST) {
+				return Math.min(f, 35.0f);
+			}
+			return f;
+		}
+
+		@Override
+		public void onPlayerStoppedUsing(ItemStack stack, World world, EntityLivingBase entity, int timeLeft) {
+			if (!world.isRemote) {
+				float power = this.getPower(stack, entity, timeLeft);
+				if (this.executeJutsu(stack, entity, power)) {
+					if (this.getCurrentJutsu(stack) != HEALING || timeLeft < this.getMaxUseDuration() - 200) {
+						this.addCurrentJutsuXp(stack, 1);
+					}
+				}
+			}
+		}
+
 		private float xpModifier(EntityLivingBase player, ItemStack stack) {
-			return (float)net.narutomod.Chakra.getLevel(player) 
+			return (float)Chakra.getLevel(player) 
 			 * (player instanceof EntityPlayer && ((EntityPlayer)player).isCreative() 
 			  ? 1f : (float)this.getCurrentJutsuXp(stack) / (float)this.getCurrentJutsuRequiredXp(stack));
 		}
@@ -99,9 +122,10 @@ public class ItemIryoJutsu extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void onUpdate(ItemStack itemstack, World world, Entity entity, int par4, boolean par5) {
 			super.onUpdate(itemstack, world, entity, par4, par5);
-			if (!world.isRemote && entity instanceof EntityPlayer && POWERMODE.jutsu.isActivated(itemstack)) {
+			if (!world.isRemote && entity instanceof EntityPlayer && POWERMODE.jutsu.isActivated(itemstack)
+			 && entity.ticksExisted % 10 == 2) {
 				((EntityPlayer)entity).addPotionEffect(new PotionEffect(PotionChakraEnhancedStrength.potion,
-				 2, (int)this.xpModifier((EntityPlayer)entity, itemstack) / 2, true, false));
+				 12, (int)Chakra.getLevel((EntityPlayer)entity) / 2, true, false));
 			}
 		}
 	}
@@ -136,7 +160,7 @@ public class ItemIryoJutsu extends ElementsNarutomodMod.ModElement {
 			 target.posZ, 10, 0d, 0d, 0d, 0d, 0d, 0d, 0x0000fff6|((0x20+target.getRNG().nextInt(0x20))<<24),
 			 10 + target.getRNG().nextInt(25), 0, 0xF0, -1, 0);
 			target.addPotionEffect(new PotionEffect(MobEffects.SLOWNESS, 80, 6, false, false));
-			target.heal(power * 0.01f);
+			target.heal(power * 0.02f);
 		}
 
 		public static class PlayerHook {

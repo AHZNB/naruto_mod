@@ -1,0 +1,6 @@
+{
+  "parent": "narutomod:custom/senbonarm",
+  "textures": {
+    "0": "narutomod:blocks/senbon_arm"
+  }
+}

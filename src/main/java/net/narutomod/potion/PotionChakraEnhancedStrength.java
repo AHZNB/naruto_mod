@@ -38,6 +38,8 @@ import net.narutomod.procedure.ProcedureAirPunch;
 import net.narutomod.Chakra;
 import net.narutomod.Particles;
 import net.narutomod.ElementsNarutomodMod;
+import net.minecraft.util.EntityDamageSource;
+import net.minecraft.util.EntityDamageSourceIndirect;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class PotionChakraEnhancedStrength extends ElementsNarutomodMod.ModElement {
@@ -117,14 +119,23 @@ public class PotionChakraEnhancedStrength extends ElementsNarutomodMod.ModElemen
 				Vec3d vec = player.getLookVec();
 				Vec3d vec1 = player.getPositionVector().addVector(0d, 1.2d, 0d).add(vec);
 				Vec3d vec2 = vec.scale(this.getRange(0));
-				for (int i = 0; i < (int)(this.getRange(0) * 100); i++) {
-					Vec3d vec3 = vec2.scale((this.rand.nextDouble() * 0.17d) + 0.03d)
-					 .addVector((this.rand.nextDouble() - 0.5d) * this.getFarRadius(0) * 0.12d,
-					 (this.rand.nextDouble() - 0.5d) * this.getFarRadius(0) * 0.12d, 
-					 (this.rand.nextDouble() - 0.5d) * this.getFarRadius(0) * 0.12d);
+				double d = MathHelper.atan2(this.getFarRadius(0), this.getRange(0));
+				for (int i = 0; i < (int)(this.getRange(0) * 50); i++) {
+					//Vec3d vec3 = vec2.scale((this.rand.nextDouble() * 0.17d) + 0.03d)
+					 //.addVector((this.rand.nextDouble() - 0.5d) * this.getFarRadius(0) * 0.15d,
+					 //(this.rand.nextDouble() - 0.5d) * this.getFarRadius(0) * 0.15d, 
+					 //(this.rand.nextDouble() - 0.5d) * this.getFarRadius(0) * 0.15d);
+					Vec3d vec3 = vec2.scale((this.rand.nextDouble() * 0.05d) + 0.2d)
+					 .rotatePitch((float)(this.rand.nextGaussian() * d))
+					 .rotateYaw((float)(this.rand.nextGaussian() * d));
 					Particles.spawnParticle(player.world, Particles.Types.SMOKE, vec1.x, vec1.y, vec1.z,
-					 1, 0d, 0d, 0d, vec3.x, vec3.y, vec3.z, 0x40ffffff, (int)this.getRange(0) * 2 + this.rand.nextInt(21),
-					 (int)(8.0D / (this.rand.nextDouble() * 0.8D + 0.2D)));
+					 1, 0d, 0d, 0d, vec3.x, vec3.y, vec3.z, 0x20ffffff, (int)this.getRange(0) * 2 + this.rand.nextInt(21), 12);
+				}
+				for (int i = 1, j = (int)(this.getRange(0) * 2.5d); i <= j; i++) {
+					Vec3d vec3 = vec2.scale(-0.0012d * i);
+					Particles.spawnParticle(player.world, Particles.Types.SONIC_BOOM, vec1.x, vec1.y, vec1.z,
+					 1, 0d, 0d, 0d, vec3.x, vec3.y, vec3.z, 0x00ffffff | ((int)((1f-(float)i/j)*0x40)<<24), i,
+					 (int)(5f * (1f + ((float)i/j) * 0.5f)));
 				}
 			}
 
@@ -150,8 +161,9 @@ public class PotionChakraEnhancedStrength extends ElementsNarutomodMod.ModElemen
 
 		@SubscribeEvent
 		public void onLivingHurt(LivingHurtEvent event) {
-			if (event.getSource().getTrueSource() instanceof EntityLivingBase) {
-				EntityLivingBase attacker = (EntityLivingBase)event.getSource().getTrueSource();
+			if (event.getSource().getImmediateSource() instanceof EntityLivingBase && !event.getSource().isExplosion()
+			 && event.getSource() instanceof EntityDamageSource && !((EntityDamageSource)event.getSource()).getIsThornsDamage()) {
+				EntityLivingBase attacker = (EntityLivingBase)event.getSource().getImmediateSource();
 				if (attacker.isPotionActive(potion)) {
 					int amplifier = attacker.getActivePotionEffect(potion).getAmplifier();
 					if (Chakra.pathway(attacker).consume((double)amplifier)) {

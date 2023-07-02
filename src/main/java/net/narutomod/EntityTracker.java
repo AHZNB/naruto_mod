@@ -19,16 +19,16 @@ package net.narutomod;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.AxisAlignedBB;
 
 import java.util.Map;
-import com.google.common.collect.Maps;
-import net.minecraft.util.math.AxisAlignedBB;
 import java.util.UUID;
 import java.util.Iterator;
+import com.google.common.collect.Maps;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityTracker extends ElementsNarutomodMod.ModElement {
-	private static final Map<UUID, DataHolder> entityMap = Maps.newHashMap();
+	private static final Map<UUID, SessionDataHolder> entityMap = Maps.newHashMap();
 
 	/**
 	 * Do not remove this constructor
@@ -37,19 +37,19 @@ public class EntityTracker extends ElementsNarutomodMod.ModElement {
 		super(instance, 532);
 	}
 
-	public static DataHolder getOrCreate(Entity entity) {
-		DataHolder p = entityMap.get(entity.getUniqueID());
+	public static SessionDataHolder getOrCreate(Entity entity) {
+		SessionDataHolder p = entityMap.get(entity.getUniqueID());
 		if (p == null || !p.entity.isAddedToWorld()) {
 			if (p != null) {
 				p.remove();
 			}
-			p = new DataHolder(entity);
+			p = new SessionDataHolder(entity);
 		}
 		return p;
 	}
 
 	public static void clearRemovedData() {
-		Iterator<DataHolder> iter = entityMap.values().iterator();
+		Iterator<SessionDataHolder> iter = entityMap.values().iterator();
 		while (iter.hasNext()) {
 			if (!iter.next().entity.isAddedToWorld()) {
 				iter.remove();
@@ -61,18 +61,19 @@ public class EntityTracker extends ElementsNarutomodMod.ModElement {
 		return entityMap.size();
 	}
 
-	public static class DataHolder {
+	public static class SessionDataHolder {
 		public final Entity entity;
 		public BlockPos prevBlockPos;
 		public AxisAlignedBB lastBB;
+		public int lastLoggedXpTime;
 
-		public DataHolder(Entity entityIn) {
+		public SessionDataHolder(Entity entityIn) {
 			this.entity = entityIn;
 			entityMap.put(entityIn.getUniqueID(), this);
 		}
 
-		public static DataHolder get(Entity entity) {
-			return entityMap.get(entity.getUniqueID());
+		public static SessionDataHolder get(Entity entityIn) {
+			return entityMap.get(entityIn.getUniqueID());
 		}
 
 		public void remove() {

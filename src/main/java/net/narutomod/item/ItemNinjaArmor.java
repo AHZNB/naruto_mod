@@ -5,6 +5,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.common.util.EnumHelper;
 
+import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.inventory.EntityEquipmentSlot;
@@ -12,6 +13,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.model.ModelBox;
+import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.entity.AbstractClientPlayer;
 
@@ -21,7 +23,8 @@ import javax.annotation.Nullable;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class ItemNinjaArmor extends ElementsNarutomodMod.ModElement {
-	private static final ItemArmor.ArmorMaterial ENUMA = EnumHelper.addArmorMaterial("NINJA_ARMOR", "narutomod:sasuke_", 5, new int[]{2, 5, 6, 2}, 0, null, 1f);
+	private static final ItemArmor.ArmorMaterial ENUMA = EnumHelper.addArmorMaterial("NINJA_ARMOR", "narutomod:sasuke_",
+	 100, new int[]{2, 5, 6, 2}, 0, SoundEvents.ITEM_ARMOR_EQUIP_LEATHER, 1f);
 
 	public ItemNinjaArmor(ElementsNarutomodMod instance) {
 		super(instance, 746);
@@ -79,8 +82,9 @@ public class ItemNinjaArmor extends ElementsNarutomodMod.ModElement {
 	@SideOnly(Side.CLIENT)
 	public static class ModelNinjaArmor extends ModelBiped {
 		//private final ModelRenderer bipedHead;
+		public final ModelRenderer headwear;
 		//private final ModelRenderer bipedHeadwear;
-		private final ModelRenderer mask;
+		//private final ModelRenderer mask;
 		public final ModelRenderer collar;
 		//private final ModelRenderer bipedBody;
 		public final ModelRenderer shirt;
@@ -105,13 +109,14 @@ public class ItemNinjaArmor extends ElementsNarutomodMod.ModElement {
 		//private final ModelRenderer headbandLeftArm;
 		//private final ModelRenderer bipedRightLeg;
 		public final ModelRenderer rightLegLayer;
-		public final ModelRenderer StoneCloth;
+		public final ModelRenderer stoneCloth;
 		public final ModelRenderer rightLegPad;
 		//private final ModelRenderer headbandRightLeg;
 		//private final ModelRenderer bipedLeftLeg;
 		public final ModelRenderer leftLegLayer;
 		public final ModelRenderer leftLegPad;
 		//private final ModelRenderer headbandLeftLeg;
+		private ModelBiped wearerModel;
 	
 		public ModelNinjaArmor() {
 			this(Type.KUMO);
@@ -123,42 +128,45 @@ public class ItemNinjaArmor extends ElementsNarutomodMod.ModElement {
 	
 			bipedHead = new ModelRenderer(this);
 			bipedHead.setRotationPoint(0.0F, 0.0F, 0.0F);
-			bipedHead.cubeList.add(new ModelBox(bipedHead, 0, 0, -4.0F, -8.0F, -4.0F, 8, 8, 8, 0.25F, false));
-			bipedHead.cubeList.add(new ModelBox(bipedHead, 0, 48, -4.0F, -8.0F, -4.0F, 8, 8, 8, 0.15F, false));
+			bipedHead.cubeList.add(new ModelBox(bipedHead, 0, 0, -4.0F, -8.0F, -4.0F, 8, 8, 8, 0.4F, false));
 	
-			mask = new ModelRenderer(this);
+			headwear = new ModelRenderer(this);
 			if (type == Type.AME) {
-				mask.setRotationPoint(0.0F, -1.125F, -4.4F);
-				bipedHead.addChild(mask);
-				setRotationAngle(mask, 0.0873F, 0.0F, 0.0F);
-				mask.cubeList.add(new ModelBox(mask, 39, 9, -2.0F, -1.6F, -0.9F, 4, 3, 2, -0.2F, false));
+				headwear.setRotationPoint(0.0F, -1.125F, -4.4F);
+				bipedHead.addChild(headwear);
+				setRotationAngle(headwear, 0.0873F, 0.0F, 0.0F);
+				headwear.cubeList.add(new ModelBox(headwear, 39, 9, -2.0F, -1.6F, -0.9F, 4, 3, 2, -0.2F, false));
 				ModelRenderer bone2 = new ModelRenderer(this);
 				bone2.setRotationPoint(-2.1645F, -0.6361F, -0.2913F);
-				mask.addChild(bone2);
+				headwear.addChild(bone2);
 				setRotationAngle(bone2, -0.2618F, 0.0F, 0.1309F);
 				bone2.cubeList.add(new ModelBox(bone2, 50, 11, -0.5F, -0.1F, -0.5F, 1, 2, 1, -0.1F, false));
 				bone2.cubeList.add(new ModelBox(bone2, 54, 11, -0.5F, 1.7F, -0.5F, 1, 2, 1, 0.2F, false));
 			} else if (type == Type.SAMURAI) {
-				mask.setRotationPoint(0.0F, -0.775F, -3.175F);
-				bipedHead.addChild(mask);
-				setRotationAngle(mask, 0.6109F, 0.0F, 0.0F);				
+				bipedHead.cubeList.add(new ModelBox(headwear, 0, 48, -4.0F, -8.0F, -4.0F, 8, 8, 8, 0.26F, false));
+				headwear.setRotationPoint(0.0F, 0.0F, -2.925F);
+				bipedHead.addChild(headwear);
+				setRotationAngle(headwear, 0.6545F, 0.0F, 0.0F);				
 				ModelRenderer cube_r1 = new ModelRenderer(this);
-				cube_r1.setRotationPoint(0.7071F, 0.0F, 0.0F);
-				mask.addChild(cube_r1);
+				cube_r1.setRotationPoint(0.7071F, -0.775F, 0.0F);
+				headwear.addChild(cube_r1);
 				setRotationAngle(cube_r1, 0.0F, 0.0F, -0.7854F);
 				cube_r1.cubeList.add(new ModelBox(cube_r1, 28, 0, -2.0F, -1.975F, -0.975F, 3, 3, 2, 0.3F, false));
+			} else if (type == Type.SUNA || type == Type.IWA || type == Type.KUMO) {
+				bipedHead.addChild(headwear);
+				headwear.cubeList.add(new ModelBox(headwear, 0, 48, -4.0F, -8.0F, -4.0F, 8, 8, 8, 0.26F, false));
 			} else {
-				mask.showModel = false;
+				headwear.showModel = false;
 			}
 
 			bipedHeadwear = new ModelRenderer(this);
 			bipedHeadwear.setRotationPoint(0.0F, 0.0F, 0.0F);
 			
 			collar = new ModelRenderer(this);
-			if (type == Type.KONOHA || type == Type.SUNA || type == Type.WAR1) {
-				collar.setRotationPoint(0.0F, 24.0F, 0.0F);
+			if (type == Type.KONOHA || type == Type.SUNA || type == Type.WAR1 || type == Type.OBITOWAR) {
+				collar.setRotationPoint(0.0F, 0.0F, 0.0F);
 				bipedHeadwear.addChild(collar);
-				collar.cubeList.add(new ModelBox(collar, 34, 8, -4.0F, -25.1F, -3.1F, 8, 1, 7, 0.8F, false));
+				collar.cubeList.add(new ModelBox(collar, 32, 7, -4.0F, -1.5F, -4.0F, 8, 1, 8, 1.0F, false));
 			} else {
 				collar.showModel = false;
 			}
@@ -180,8 +188,8 @@ public class ItemNinjaArmor extends ElementsNarutomodMod.ModElement {
 			vest = new ModelRenderer(this);
 			vest.setRotationPoint(0.0F, 0.0F, 0.0F);
 			bipedBody.addChild(vest);
-			vest.cubeList.add(new ModelBox(vest, 40, 32, -4.0F, 0.0F, -2.0F, 8, 12, 4, 0.2F, false));
-			vest.cubeList.add(new ModelBox(vest, 16, 32, -4.0F, 0.0F, -2.0F, 8, 12, 4, 0.4F, false));
+			vest.cubeList.add(new ModelBox(vest, 40, 32, -4.0F, 0.0F, -2.0F, 8, 12, 4, 0.35F, false));
+			vest.cubeList.add(new ModelBox(vest, 16, 32, -4.0F, 0.0F, -2.0F, 8, 12, 4, 0.5F, false));
 			vest.cubeList.add(new ModelBox(vest, 52, 0, 0.1F, 8.3F, 1.75F, 4, 4, 2, -0.5F, false));
 	
 			vestGroup = new ModelRenderer(this);
@@ -189,22 +197,22 @@ public class ItemNinjaArmor extends ElementsNarutomodMod.ModElement {
 			switch (type) {
 				case KONOHA:
 					vest.addChild(vestGroup);
-					vestGroup.cubeList.add(new ModelBox(vestGroup, 26, 0, -4.3F, 2.5F, -3.1F, 4, 5, 3, -0.7F, false));
-					vestGroup.cubeList.add(new ModelBox(vestGroup, 26, 0, 0.3F, 2.5F, -3.1F, 4, 5, 3, -0.7F, true));
+					vestGroup.cubeList.add(new ModelBox(vestGroup, 26, 0, -4.3F, 2.5F, -3.35F, 4, 5, 3, -0.7F, false));
+					vestGroup.cubeList.add(new ModelBox(vestGroup, 26, 0, 0.3F, 2.5F, -3.35F, 4, 5, 3, -0.7F, true));
 					break;
 				case SUNA:
 					vest.addChild(vestGroup);
-					vestGroup.cubeList.add(new ModelBox(vestGroup, 26, 0, -4.3F, 5.1F, -3.1F, 4, 5, 3, -0.7F, false));
-					vestGroup.cubeList.add(new ModelBox(vestGroup, 26, 0, 0.3F, 5.1F, -3.1F, 4, 5, 3, -0.7F, true));
+					vestGroup.cubeList.add(new ModelBox(vestGroup, 26, 0, -4.3F, 5.1F, -3.35F, 4, 5, 3, -0.7F, false));
+					vestGroup.cubeList.add(new ModelBox(vestGroup, 26, 0, 0.3F, 5.1F, -3.35F, 4, 5, 3, -0.7F, true));
 					break;
 				case KIRI:
 					vest.addChild(vestGroup);
-					vestGroup.cubeList.add(new ModelBox(vestGroup, 48, 8, -4.0F, 10.3F, -2.275F, 8, 3, 0, 0.0F, false));
-					vestGroup.cubeList.add(new ModelBox(vestGroup, 48, 8, -4.0F, 10.3F, 2.275F, 8, 3, 0, 0.0F, false));
+					vestGroup.cubeList.add(new ModelBox(vestGroup, 48, 8, -4.0F, 10.3F, -2.375F, 8, 3, 0, 0.0F, false));
+					vestGroup.cubeList.add(new ModelBox(vestGroup, 48, 8, -4.0F, 10.3F, 2.375F, 8, 3, 0, 0.0F, false));
 					break;
 				case KUMO:
 					vest.addChild(vestGroup);
-					vestGroup.cubeList.add(new ModelBox(vestGroup, 40, 9, -4.0F, 11.0F, -2.0F, 8, 3, 4, 0.31F, true));
+					vestGroup.cubeList.add(new ModelBox(vestGroup, 40, 9, -4.0F, 12.0F, -2.0F, 8, 3, 4, 0.4F, true));
 					break;
 				case SAMURAI:
 					vest.addChild(vestGroup);
@@ -212,12 +220,31 @@ public class ItemNinjaArmor extends ElementsNarutomodMod.ModElement {
 					flapRight.setRotationPoint(-4.25F, 10.05F, 0.0F);
 					vestGroup.addChild(flapRight);
 					setRotationAngle(flapRight, 0.0F, 0.0F, -1.309F);
-					flapRight.cubeList.add(new ModelBox(flapRight, 25, 50, -7.3F, 0.425F, -2.0F, 7, 1, 4, 0.31F, true));
+					flapRight.cubeList.add(new ModelBox(flapRight, 25, 50, -7.3F, 0.425F, -2.0F, 7, 1, 4, 0.34F, true));
 					ModelRenderer flapLeft = new ModelRenderer(this);
 					flapLeft.setRotationPoint(4.25F, 10.05F, 0.0F);
 					vestGroup.addChild(flapLeft);
 					setRotationAngle(flapLeft, 0.0F, 0.0F, 1.309F);
-					flapLeft.cubeList.add(new ModelBox(flapLeft, 25, 50, 0.3F, 0.425F, -2.0F, 7, 1, 4, 0.31F, false));
+					flapLeft.cubeList.add(new ModelBox(flapLeft, 25, 50, 0.3F, 0.425F, -2.0F, 7, 1, 4, 0.34F, false));
+					break;
+				case OTO:
+					ModelRenderer neckwear = new ModelRenderer(this);
+					neckwear.setRotationPoint(0.0F, 0.0F, 0.0F);
+					vest.addChild(neckwear);
+					setRotationAngle(neckwear, 0.0873F, 0.0F, 0.0F);
+					neckwear.cubeList.add(new ModelBox(neckwear, 32, 6, -4.0F, -0.25F, -3.0F, 8, 2, 6, 0.6F, false));
+				case OBITOWAR:
+					vest.addChild(vestGroup);
+					ModelRenderer bone = new ModelRenderer(this);
+					bone.setRotationPoint(0.0F, 10.75F, -2.35F);
+					vestGroup.addChild(bone);
+					setRotationAngle(bone, -0.2793F, 0.0F, 0.0F);
+					bone.cubeList.add(new ModelBox(bone, 24, 52, -4.0F, 0.5F, 0.5F, 8, 8, 4, 0.5F, false));
+					ModelRenderer bone3 = new ModelRenderer(this);
+					bone3.setRotationPoint(0.0F, 10.75F, 2.35F);
+					vestGroup.addChild(bone3);
+					setRotationAngle(bone3, 0.2793F, 0.0F, 0.0F);
+					bone3.cubeList.add(new ModelBox(bone3, 0, 52, -4.0F, 0.5F, -4.5F, 8, 8, 4, 0.5F, false));
 					break;
 				default:
 					vestGroup.showModel = false;
@@ -247,7 +274,7 @@ public class ItemNinjaArmor extends ElementsNarutomodMod.ModElement {
 				rightShoulder.setRotationPoint(-4.5F, -25.25F, 0.0F);
 				rightArmVestLayer.addChild(rightShoulder);
 				setRotationAngle(rightShoulder, 0.0F, 0.0F, -0.3054F);
-				rightShoulder.cubeList.add(new ModelBox(rightShoulder, 36, 0, -4.3F, 0.3F, -2.0F, 4, 1, 4, 0.31F, true));
+				rightShoulder.cubeList.add(new ModelBox(rightShoulder, 36, 0, -4.3F, 0.3F, -2.0F, 4, 1, 4, 0.4F, true));
 				if (type == Type.WAR1 || type == Type.SAMURAI) {
 					ModelRenderer war1RightShoulder = new ModelRenderer(this);
 					war1RightShoulder.setRotationPoint(-2.0F, 0.0F, 0.0F);
@@ -289,7 +316,7 @@ public class ItemNinjaArmor extends ElementsNarutomodMod.ModElement {
 				leftShoulder.setRotationPoint(-1.5F, -7.25F, 0.0F);
 				leftArmVestLayer.addChild(leftShoulder);
 				setRotationAngle(leftShoulder, 0.0F, 0.0F, 0.3054F);
-				leftShoulder.cubeList.add(new ModelBox(leftShoulder, 36, 0, 0.3F, 0.3F, -2.0F, 4, 1, 4, 0.31F, false));
+				leftShoulder.cubeList.add(new ModelBox(leftShoulder, 36, 0, 0.3F, 0.3F, -2.0F, 4, 1, 4, 0.4F, false));
 				if (type == Type.WAR1 || type == Type.SAMURAI) {
 					ModelRenderer war1LeftShoulder = new ModelRenderer(this);
 					war1LeftShoulder.setRotationPoint(2.0F, 0.0F, 0.0F);
@@ -320,17 +347,17 @@ public class ItemNinjaArmor extends ElementsNarutomodMod.ModElement {
 			rightLegLayer = new ModelRenderer(this);
 			rightLegLayer.setRotationPoint(0.0F, 0.0F, 0.0F);
 			bipedRightLeg.addChild(rightLegLayer);
-			rightLegLayer.cubeList.add(new ModelBox(rightLegLayer, 0, 32, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.2F, false));
-			rightLegLayer.cubeList.add(new ModelBox(rightLegLayer, 0, 0, -2.6F, 1.0F, -1.0F, 1, 4, 2, 0.0F, false));
+			rightLegLayer.cubeList.add(new ModelBox(rightLegLayer, 0, 32, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.3F, false));
+			rightLegLayer.cubeList.add(new ModelBox(rightLegLayer, 0, 0, -2.85F, 1.0F, -1.0F, 1, 4, 2, 0.0F, false));
 	
-			StoneCloth = new ModelRenderer(this);
+			stoneCloth = new ModelRenderer(this);
 			if (type == Type.IWA) {
-				StoneCloth.setRotationPoint(0.0F, 6.0F, 0.0F);
-				bipedRightLeg.addChild(StoneCloth);
-				setRotationAngle(StoneCloth, 0.0F, 0.0F, 0.1745F);
-				StoneCloth.cubeList.add(new ModelBox(StoneCloth, 36, 0, -3.2F, -6.8F, -2.0F, 4, 7, 4, 0.25F, false));
+				stoneCloth.setRotationPoint(0.0F, 6.0F, 0.0F);
+				bipedRightLeg.addChild(stoneCloth);
+				setRotationAngle(stoneCloth, 0.0F, 0.0F, 0.1745F);
+				stoneCloth.cubeList.add(new ModelBox(stoneCloth, 36, 0, -3.2F, -6.8F, -2.0F, 4, 7, 4, 0.35F, false));
 			} else {
-				StoneCloth.showModel = false;
+				stoneCloth.showModel = false;
 			}
 	
 			rightLegPad = new ModelRenderer(this);
@@ -338,7 +365,7 @@ public class ItemNinjaArmor extends ElementsNarutomodMod.ModElement {
 				rightLegPad.setRotationPoint(-2.35F, -2.25F, 0.0F);
 				bipedRightLeg.addChild(rightLegPad);
 				setRotationAngle(rightLegPad, 0.0F, 0.0F, -1.309F);
-				rightLegPad.cubeList.add(new ModelBox(rightLegPad, 36, 0, -4.3F, 0.3F, -2.0F, 4, 1, 4, 0.31F, true));
+				rightLegPad.cubeList.add(new ModelBox(rightLegPad, 36, 0, -4.3F, 0.3F, -2.0F, 4, 1, 4, 0.34F, true));
 		
 				ModelRenderer rightLegPad1 = new ModelRenderer(this);
 				rightLegPad1.setRotationPoint(-2.0F, 0.0F, 0.0F);
@@ -369,7 +396,7 @@ public class ItemNinjaArmor extends ElementsNarutomodMod.ModElement {
 			if (type == Type.KIRI || type == Type.KUMO || type == Type.JUMPSUIT || type == Type.SAMURAI) {
 				leftLegLayer.setRotationPoint(-1.9F, 12.0F, 0.0F);
 				bipedLeftLeg.addChild(leftLegLayer);
-				leftLegLayer.cubeList.add(new ModelBox(leftLegLayer, 0, 32, -0.1F, -12.0F, -2.0F, 4, 12, 4, 0.2F, true));
+				leftLegLayer.cubeList.add(new ModelBox(leftLegLayer, 0, 32, -0.1F, -12.0F, -2.0F, 4, 12, 4, 0.3F, true));
 			} else {
 				leftLegLayer.showModel = false;
 			}
@@ -379,7 +406,7 @@ public class ItemNinjaArmor extends ElementsNarutomodMod.ModElement {
 				leftLegPad.setRotationPoint(2.35F, -2.25F, 0.0F);
 				bipedLeftLeg.addChild(leftLegPad);
 				setRotationAngle(leftLegPad, 0.0F, 0.0F, 1.309F);
-				leftLegPad.cubeList.add(new ModelBox(leftLegPad, 36, 0, 0.3F, 0.3F, -2.0F, 4, 1, 4, 0.31F, false));
+				leftLegPad.cubeList.add(new ModelBox(leftLegPad, 36, 0, 0.3F, 0.3F, -2.0F, 4, 1, 4, 0.34F, false));
 		
 				ModelRenderer leftLegPad1 = new ModelRenderer(this);
 				leftLegPad1.setRotationPoint(2.0F, 0.0F, 0.0F);
@@ -409,12 +436,24 @@ public class ItemNinjaArmor extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
+		public void setModelAttributes(ModelBase model) {
+			super.setModelAttributes(model);
+			if (model instanceof ModelBiped) {
+				this.wearerModel = (ModelBiped)model;
+			}
+		}
+
+		@Override
 		public void setRotationAngles(float f, float f1, float f2, float f3, float f4, float f5, Entity entity) {
 			if (entity instanceof AbstractClientPlayer && ((AbstractClientPlayer)entity).getSkinType().equals("slim")) {
 				this.bipedLeftArm.setRotationPoint(5.0F, 2.5F, 0.0F);
 				this.bipedRightArm.setRotationPoint(-5.0F, 2.5F, 0.0F);
 			}
 			super.setRotationAngles(f, f1, f2, f3, f4, f5, entity);
+			if (!(entity instanceof AbstractClientPlayer) && this.wearerModel != null) {
+				copyModelAngles(this.wearerModel.bipedLeftArm, this.bipedLeftArm);
+				copyModelAngles(this.wearerModel.bipedRightArm, this.bipedRightArm);
+			}
 		}
 	}
 
@@ -429,6 +468,9 @@ public class ItemNinjaArmor extends ElementsNarutomodMod.ModElement {
 		FISHNET,
 		AME,
 		WAR1,
-		SAMURAI
+		SAMURAI,
+		OTO,
+		OBITOWAR,
+		OTHER
 	}
 }

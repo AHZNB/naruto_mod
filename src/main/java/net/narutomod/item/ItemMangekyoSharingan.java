@@ -42,24 +42,18 @@ public class ItemMangekyoSharingan extends ElementsNarutomodMod.ModElement {
 		ItemStack stack = entity.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
 		return stack.getItem() == helmet || stack.getItem() == ItemMangekyoSharinganEternal.helmet
 		 ? ((ItemDojutsu.Base)helmet).isOwner(stack, entity) ? AMATERASU_CHAKRA_USAGE 
-		 : AMATERASU_CHAKRA_USAGE * 2 : (Double.MAX_VALUE * 0.001d);
+		 : AMATERASU_CHAKRA_USAGE * 3 : (Double.MAX_VALUE * 0.001d);
 	}
 
 	public void initElements() {
 		ItemArmor.ArmorMaterial enuma = EnumHelper.addArmorMaterial("MANGEKYOSHARINGAN", "narutomod:mangekyosharingan_sasuke_", 1024,
-				new int[]{2, 5, 6, 100}, 0, null, 5.0F);
+				new int[]{2, 5, 6, 10}, 0, null, 1.0F);
 		this.elements.items.add(() -> new ItemSharingan.Base(enuma) {
 			@Override
 			public void onArmorTick(World world, EntityPlayer entity, ItemStack itemstack) {
 				super.onArmorTick(world, entity, itemstack);
 				if (!world.isRemote) {
 					entity.addPotionEffect(new PotionEffect(MobEffects.SPEED, 2, 2, false, false));
-					if ((entity.getEntityData().getBoolean("amaterasu_active") || entity.getEntityData().getBoolean("susanoo_activated"))
-					 && entity.ticksExisted % (this.isOwner(itemstack, entity) ? 2 : 1) == 0) {
-					 	((ItemSharingan.Base)itemstack.getItem()).canDamage = true;
-						itemstack.damageItem(1, entity);
-						((ItemSharingan.Base)itemstack.getItem()).canDamage = false;
-					}
 				}
 			}
 
@@ -71,7 +65,8 @@ public class ItemMangekyoSharingan extends ElementsNarutomodMod.ModElement {
 			@Override
 			public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
 				super.addInformation(stack, worldIn, tooltip, flagIn);
-				tooltip.add(I18n.translateToLocal("key.mcreator.specialjutsu1") + ": " + I18n.translateToLocal("tooltip.mangekyo.amaterasu.jutsu1"));
+				tooltip.add(TextFormatting.ITALIC + I18n.translateToLocal("key.mcreator.specialjutsu1") + ": " + TextFormatting.GRAY + I18n.translateToLocal("tooltip.mangekyo.amaterasu.jutsu1"));
+				tooltip.add(TextFormatting.ITALIC + I18n.translateToLocal("key.mcreator.specialjutsu2") + ": " + TextFormatting.GRAY + I18n.translateToLocal("entity.susanooclothed.name"));
 			}
 
 			@Override

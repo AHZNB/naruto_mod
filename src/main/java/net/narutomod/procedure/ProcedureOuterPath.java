@@ -9,13 +9,15 @@ import net.narutomod.NarutomodModVariables;
 import net.narutomod.ElementsNarutomodMod;
 import net.narutomod.Chakra;
 
-import net.minecraft.world.WorldServer;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+
 import net.minecraft.world.World;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.EnumHand;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
@@ -74,31 +76,41 @@ public class ProcedureOuterPath extends ElementsNarutomodMod.ModElement {
 				if (entity instanceof EntityLivingBase) {
 					((EntityLivingBase) entity).swingArm(EnumHand.MAIN_HAND);
 				}
-				EntityGedoStatue.EntityCustom entityToSpawn = EntityGedoStatue.getThisEntity(world);
+				EntityLivingBase entityToSpawn = EntityGedoStatue.getThisEntity(world);
 				if (entityToSpawn != null) {
-					x = (int) entityToSpawn.posX;
-					y = (int) entityToSpawn.posY;
-					z = (int) entityToSpawn.posZ;
 					(entityToSpawn).world.removeEntity(entityToSpawn);
-				} else if (Chakra.pathway((EntityLivingBase) entity).consume(ItemRinnegan.getOuterPathChakraUsage((EntityLivingBase) entity))) {
-					entityToSpawn = new EntityGedoStatue.EntityCustom((EntityLivingBase) entity);
-					entityToSpawn.setPosition(x, y, z);
-					if (world.spawnEntity(entityToSpawn)) {
-						entity.getEntityData().setDouble((NarutomodModVariables.InvulnerableTime), 100);
-						world.playSound((EntityPlayer) null, x, y, z,
-								(net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY
-										.getObject(new ResourceLocation("narutomod:kuchiyosenojutsu")),
-								SoundCategory.NEUTRAL, (float) 2, (float) 0.9);
-					}
 				} else {
-					if ((entity instanceof EntityPlayer)) {
-						Chakra.pathway((EntityPlayer) entity).warningDisplay();
+					entityToSpawn = EntityTenTails.getBijuManager().getEntityInWorld(world);
+					if (entityToSpawn != null) {
+						(entityToSpawn).world.removeEntity(entityToSpawn);
+					} else if ((isJinchuriki)) {
+						return;
+					} else if (Chakra.pathway((EntityLivingBase) entity).consume(ItemRinnegan.getOuterPathChakraUsage((EntityLivingBase) entity))) {
+						entityToSpawn = EntityGedoStatue.gotAll9Bijus() && EntityTenTails.getBijuManager().getHasLived()
+								? new EntityTenTails.EntityCustom((EntityPlayer) entity)
+								: new EntityGedoStatue.EntityCustom((EntityLivingBase) entity);
+						entityToSpawn.rotationYawHead = entity.rotationYaw;
+						entityToSpawn.setLocationAndAngles(x, world.getTopSolidOrLiquidBlock(new BlockPos(x, y, z)).getY(), z, entity.rotationYaw,
+								0f);
+						if (world.spawnEntity(entityToSpawn)) {
+							entity.getEntityData().setDouble((NarutomodModVariables.InvulnerableTime), 100);
+							world.playSound((EntityPlayer) null, x, y, z,
+									(net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY
+											.getObject(new ResourceLocation("narutomod:kuchiyosenojutsu")),
+									SoundCategory.NEUTRAL, (float) 2, (float) 0.9);
+							{
+								MinecraftServer mcserv = FMLCommonHandler.instance().getMinecraftServerInstance();
+								if (mcserv != null)
+									mcserv.getPlayerList().sendMessage(new TextComponentString((((entity.getDisplayName().getUnformattedText())) + ""
+											+ (" has summoned the ") + "" + ((entityToSpawn.getDisplayName().getUnformattedText())))));
+							}
+						}
+					} else {
+						if ((entity instanceof EntityPlayer)) {
+							Chakra.pathway((EntityPlayer) entity).warningDisplay();
+						}
+						return;
 					}
-					return;
-				}
-				h = (double) entityToSpawn.height;
-				if (world instanceof WorldServer) {
-					((WorldServer) world).spawnParticle(EnumParticleTypes.EXPLOSION_HUGE, x, y + (h / 2), z, 300, 5, h, 5, 1, new int[0]);
 				}
 			} else {
 				if (entity instanceof EntityPlayer && !entity.world.isRemote) {

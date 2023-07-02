@@ -1,0 +1,6 @@
+{
+  "parent": "narutomod:custom/poisonbomb",
+  "textures": {
+    "0": "narutomod:blocks/poisonbomb"
+  }
+}

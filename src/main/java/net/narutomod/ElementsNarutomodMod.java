@@ -15,15 +15,21 @@ import net.narutomod.gui.GuiScrollWaterDragonGui;
 import net.narutomod.gui.GuiScrollTransformationGui;
 import net.narutomod.gui.GuiScrollSwampPitGui;
 import net.narutomod.gui.GuiScrollShadowImitationGui;
+import net.narutomod.gui.GuiScrollSealingChainsGui;
+import net.narutomod.gui.GuiScrollSealing4SymbolsGui;
 import net.narutomod.gui.GuiScrollRasenshurikenGui;
 import net.narutomod.gui.GuiScrollRasenganGui;
+import net.narutomod.gui.GuiScrollPuppetGui;
 import net.narutomod.gui.GuiScrollPoisonMistGui;
 import net.narutomod.gui.GuiScrollMultiSizeGui;
 import net.narutomod.gui.GuiScrollMindTransferGui;
+import net.narutomod.gui.GuiScrollLightningPantherGui;
 import net.narutomod.gui.GuiScrollLightningChakraModeGui;
 import net.narutomod.gui.GuiScrollLightningBeastGui;
+import net.narutomod.gui.GuiScrollKirinGui;
 import net.narutomod.gui.GuiScrollKikaichuSphereGui;
 import net.narutomod.gui.GuiScrollKageBunshinGui;
+import net.narutomod.gui.GuiScrollHiraishinGui;
 import net.narutomod.gui.GuiScrollHidingInRockGui;
 import net.narutomod.gui.GuiScrollHidingInMistGui;
 import net.narutomod.gui.GuiScrollHidingInCamouflageGui;
@@ -40,6 +46,7 @@ import net.narutomod.gui.GuiScrollEnhancedStrengthGui;
 import net.narutomod.gui.GuiScrollEarthWallGui;
 import net.narutomod.gui.GuiScrollEarthSpearsGui;
 import net.narutomod.gui.GuiScrollEarthSandwichGui;
+import net.narutomod.gui.GuiScrollEarthGolemGui;
 import net.narutomod.gui.GuiScrollChidoriGui;
 import net.narutomod.gui.GuiScrollCellularActivationGui;
 import net.narutomod.gui.GuiScrollBodyReplacementGui;
@@ -120,13 +127,10 @@ public class ElementsNarutomodMod implements IFuelHandler, IWorldGenerator {
 				new net.minecraft.util.SoundEvent(new ResourceLocation("narutomod", "80GodsPunch")));
 		sounds.put(new ResourceLocation("narutomod", "Kaguya_FinalTSB"),
 				new net.minecraft.util.SoundEvent(new ResourceLocation("narutomod", "Kaguya_FinalTSB")));
-		sounds.put(new ResourceLocation("narutomod", "dojutsu_activate"),
-				new net.minecraft.util.SoundEvent(new ResourceLocation("narutomod", "dojutsu_activate")));
 		sounds.put(new ResourceLocation("narutomod", "BanshoTenin"),
 				new net.minecraft.util.SoundEvent(new ResourceLocation("narutomod", "BanshoTenin")));
 		sounds.put(new ResourceLocation("narutomod", "sekizo"), new net.minecraft.util.SoundEvent(new ResourceLocation("narutomod", "sekizo")));
 		sounds.put(new ResourceLocation("narutomod", "yagai"), new net.minecraft.util.SoundEvent(new ResourceLocation("narutomod", "yagai")));
-		sounds.put(new ResourceLocation("narutomod", "hirudora"), new net.minecraft.util.SoundEvent(new ResourceLocation("narutomod", "hirudora")));
 		sounds.put(new ResourceLocation("narutomod", "howl_youth"),
 				new net.minecraft.util.SoundEvent(new ResourceLocation("narutomod", "howl_youth")));
 		sounds.put(new ResourceLocation("narutomod", "crow_call"), new net.minecraft.util.SoundEvent(new ResourceLocation("narutomod", "crow_call")));
@@ -256,6 +260,37 @@ public class ElementsNarutomodMod implements IFuelHandler, IWorldGenerator {
 		sounds.put(new ResourceLocation("narutomod", "snake_hiss"),
 				new net.minecraft.util.SoundEvent(new ResourceLocation("narutomod", "snake_hiss")));
 		sounds.put(new ResourceLocation("narutomod", "dingding"), new net.minecraft.util.SoundEvent(new ResourceLocation("narutomod", "dingding")));
+		sounds.put(new ResourceLocation("narutomod", "senbon"), new net.minecraft.util.SoundEvent(new ResourceLocation("narutomod", "senbon")));
+		sounds.put(new ResourceLocation("narutomod", "gunbaiwind"),
+				new net.minecraft.util.SoundEvent(new ResourceLocation("narutomod", "gunbaiwind")));
+		sounds.put(new ResourceLocation("narutomod", "chainsound"),
+				new net.minecraft.util.SoundEvent(new ResourceLocation("narutomod", "chainsound")));
+		sounds.put(new ResourceLocation("narutomod", "hiruko_tail"),
+				new net.minecraft.util.SoundEvent(new ResourceLocation("narutomod", "hiruko_tail")));
+		sounds.put(new ResourceLocation("narutomod", "senbon_impact"),
+				new net.minecraft.util.SoundEvent(new ResourceLocation("narutomod", "senbon_impact")));
+		sounds.put(new ResourceLocation("narutomod", "roar"), new net.minecraft.util.SoundEvent(new ResourceLocation("narutomod", "roar")));
+		sounds.put(new ResourceLocation("narutomod", "hirudora"), new net.minecraft.util.SoundEvent(new ResourceLocation("narutomod", "hirudora")));
+		sounds.put(new ResourceLocation("narutomod", "dojutsu"), new net.minecraft.util.SoundEvent(new ResourceLocation("narutomod", "dojutsu")));
+		sounds.put(new ResourceLocation("narutomod", "swoosh"), new net.minecraft.util.SoundEvent(new ResourceLocation("narutomod", "swoosh")));
+		sounds.put(new ResourceLocation("narutomod", "highpitch"), new net.minecraft.util.SoundEvent(new ResourceLocation("narutomod", "highpitch")));
+		sounds.put(new ResourceLocation("narutomod", "fourtails_idle1"),
+				new net.minecraft.util.SoundEvent(new ResourceLocation("narutomod", "fourtails_idle1")));
+		sounds.put(new ResourceLocation("narutomod", "fourtails_idle2"),
+				new net.minecraft.util.SoundEvent(new ResourceLocation("narutomod", "fourtails_idle2")));
+		sounds.put(new ResourceLocation("narutomod", "fourtails_defeat"),
+				new net.minecraft.util.SoundEvent(new ResourceLocation("narutomod", "fourtails_defeat")));
+		sounds.put(new ResourceLocation("narutomod", "shukaku_roar"),
+				new net.minecraft.util.SoundEvent(new ResourceLocation("narutomod", "shukaku_roar")));
+		sounds.put(new ResourceLocation("narutomod", "chomei_flying"),
+				new net.minecraft.util.SoundEvent(new ResourceLocation("narutomod", "chomei_flying")));
+		sounds.put(new ResourceLocation("narutomod", "isobu_roar"),
+				new net.minecraft.util.SoundEvent(new ResourceLocation("narutomod", "isobu_roar")));
+		sounds.put(new ResourceLocation("narutomod", "isobu_hurt"),
+				new net.minecraft.util.SoundEvent(new ResourceLocation("narutomod", "isobu_hurt")));
+		sounds.put(new ResourceLocation("narutomod", "guttural"), new net.minecraft.util.SoundEvent(new ResourceLocation("narutomod", "guttural")));
+		sounds.put(new ResourceLocation("narutomod", "fourtails_hurt"),
+				new net.minecraft.util.SoundEvent(new ResourceLocation("narutomod", "fourtails_hurt")));
 	}
 
 	public void preInit(FMLPreInitializationEvent event) {
@@ -402,6 +437,20 @@ public class ElementsNarutomodMod implements IFuelHandler, IWorldGenerator {
 				return new GuiScrollKikaichuSphereGui.GuiContainerMod(world, x, y, z, player);
 			if (id == GuiScrollTransformationGui.GUIID)
 				return new GuiScrollTransformationGui.GuiContainerMod(world, x, y, z, player);
+			if (id == GuiScrollSealing4SymbolsGui.GUIID)
+				return new GuiScrollSealing4SymbolsGui.GuiContainerMod(world, x, y, z, player);
+			if (id == GuiScrollLightningPantherGui.GUIID)
+				return new GuiScrollLightningPantherGui.GuiContainerMod(world, x, y, z, player);
+			if (id == GuiScrollPuppetGui.GUIID)
+				return new GuiScrollPuppetGui.GuiContainerMod(world, x, y, z, player);
+			if (id == GuiScrollKirinGui.GUIID)
+				return new GuiScrollKirinGui.GuiContainerMod(world, x, y, z, player);
+			if (id == GuiScrollEarthGolemGui.GUIID)
+				return new GuiScrollEarthGolemGui.GuiContainerMod(world, x, y, z, player);
+			if (id == GuiScrollSealingChainsGui.GUIID)
+				return new GuiScrollSealingChainsGui.GuiContainerMod(world, x, y, z, player);
+			if (id == GuiScrollHiraishinGui.GUIID)
+				return new GuiScrollHiraishinGui.GuiContainerMod(world, x, y, z, player);
 			return null;
 		}
 
@@ -485,6 +534,20 @@ public class ElementsNarutomodMod implements IFuelHandler, IWorldGenerator {
 				return new GuiScrollKikaichuSphereGui.GuiWindow(world, x, y, z, player);
 			if (id == GuiScrollTransformationGui.GUIID)
 				return new GuiScrollTransformationGui.GuiWindow(world, x, y, z, player);
+			if (id == GuiScrollSealing4SymbolsGui.GUIID)
+				return new GuiScrollSealing4SymbolsGui.GuiWindow(world, x, y, z, player);
+			if (id == GuiScrollLightningPantherGui.GUIID)
+				return new GuiScrollLightningPantherGui.GuiWindow(world, x, y, z, player);
+			if (id == GuiScrollPuppetGui.GUIID)
+				return new GuiScrollPuppetGui.GuiWindow(world, x, y, z, player);
+			if (id == GuiScrollKirinGui.GUIID)
+				return new GuiScrollKirinGui.GuiWindow(world, x, y, z, player);
+			if (id == GuiScrollEarthGolemGui.GUIID)
+				return new GuiScrollEarthGolemGui.GuiWindow(world, x, y, z, player);
+			if (id == GuiScrollSealingChainsGui.GUIID)
+				return new GuiScrollSealingChainsGui.GuiWindow(world, x, y, z, player);
+			if (id == GuiScrollHiraishinGui.GUIID)
+				return new GuiScrollHiraishinGui.GuiWindow(world, x, y, z, player);
 			return null;
 		}
 	}

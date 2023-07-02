@@ -1,7 +1,7 @@
 {
   "display": {
     "icon": {
-      "item": "narutomod:byakurinnesharinganhelmet"
+      "item": "narutomod:kekkei_mora"
     },
     "title": {
       "translate": "advancements.rinnesharinganactivated.title"
@@ -22,5 +22,5 @@
   "rewards": {
     "experience": 0
   },
-  "parent": "narutomod:byakuganopened"
+  "parent": "narutomod:rinneganawakened"
 }

@@ -45,32 +45,6 @@ public class EntityC2 extends ElementsNarutomodMod.ModElement {
 		 .id(new ResourceLocation("narutomod", "c_2"), ENTITYID).name("c_2").tracker(64, 3, true).build());
 	}
 
-	@SideOnly(Side.CLIENT)
-	@Override
-	public void preInit(FMLPreInitializationEvent event) {
-		RenderingRegistry.registerEntityRenderingHandler(EC.class, renderManager -> new RenderCustom(renderManager));
-	}
-
-	@SideOnly(Side.CLIENT)
-	public class RenderCustom extends RenderLiving<EC> {
-		private final ResourceLocation TEXTURE = new ResourceLocation("narutomod:textures/phantom1.png");
-
-		public RenderCustom(RenderManager renderManagerIn) {
-			super(renderManagerIn, new ModelPhantom(), 0.75F);
-		}
-
-		@Override
-		protected void preRenderCallback(EC entity, float partialTickTime) {
-			GlStateManager.scale(3.0F, 3.0F, 3.0F);
-			GlStateManager.translate(0.0D, 1.3125D, 0.1875D);
-		}
-
-		@Override
-		protected ResourceLocation getEntityTexture(EC entity) {
-			return TEXTURE;
-		}
-	}
-
 	public static class EC extends ItemBakuton.ExplosiveClay {
 		public EC(World world) {
 			super(world);
@@ -155,13 +129,14 @@ public class EntityC2 extends ElementsNarutomodMod.ModElement {
 
 	    @Override
 	    public boolean attackEntityAsMob(Entity entityIn) {
-	    	boolean flag = entityIn.attackEntityFrom(DamageSource.causeExplosionDamage(this.world
-	    	 .newExplosion(this.getOwner(), entityIn.posX, entityIn.posY, entityIn.posZ, 10f, false, 
-	    	 net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.world, this.getOwner()))), 10f);
+	    	EntityLivingBase owner = this.getOwner();
 	    	if (!this.world.isRemote) {
+		    	this.world.createExplosion(owner, entityIn.posX, entityIn.posY, entityIn.posZ,
+		    	 10f, net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.world, owner));
 	    		this.setDead();
 	    	}
-	    	return flag;
+    		entityIn.hurtResistantTime = 10;
+	    	return entityIn.attackEntityFrom(ItemJutsu.causeJutsuDamage(this, owner), 40f + this.rand.nextFloat() * 10f);
 	    }
 
 	    @Override
@@ -185,88 +160,121 @@ public class EntityC2 extends ElementsNarutomodMod.ModElement {
 	    }*/
 	}
 
-	// Made with Blockbench 3.8.4
-	// Exported for Minecraft version 1.7 - 1.12
-	// Paste this class into your mod and generate all required imports
-	@SideOnly(Side.CLIENT)
-	public class ModelPhantom extends ModelBase {
-		private final ModelRenderer body;
-		private final ModelRenderer leftWingBody;
-		private final ModelRenderer leftWing;
-		private final ModelRenderer rightWingBody;
-		private final ModelRenderer rightWing;
-		private final ModelRenderer head;
-		private final ModelRenderer tail;
-		private final ModelRenderer tailtip;
-		public ModelPhantom() {
-			textureWidth = 64;
-			textureHeight = 64;
-			body = new ModelRenderer(this);
-			body.setRotationPoint(0.0F, 0.0F, 0.0F);
-			body.cubeList.add(new ModelBox(body, 0, 8, -2.5F, -2.0F, -8.0F, 5, 3, 9, 0.0F, false));
-			leftWingBody = new ModelRenderer(this);
-			leftWingBody.setRotationPoint(2.5F, -2.0F, -8.0F);
-			body.addChild(leftWingBody);
-			setRotationAngle(leftWingBody, 0.0F, 0.0F, 0.0873F);
-			leftWingBody.cubeList.add(new ModelBox(leftWingBody, 23, 12, 0.0F, 0.0F, 0.0F, 6, 2, 9, 0.0F, false));
-			leftWing = new ModelRenderer(this);
-			leftWing.setRotationPoint(6.0F, 0.0F, 0.0F);
-			leftWingBody.addChild(leftWing);
-			setRotationAngle(leftWing, 0.0F, 0.0F, 0.1745F);
-			leftWing.cubeList.add(new ModelBox(leftWing, 16, 24, 0.0F, 0.0F, 0.0F, 13, 1, 9, 0.0F, false));
-			rightWingBody = new ModelRenderer(this);
-			rightWingBody.setRotationPoint(-2.5F, -2.0F, -8.0F);
-			body.addChild(rightWingBody);
-			setRotationAngle(rightWingBody, 0.0F, 0.0F, -0.0873F);
-			rightWingBody.cubeList.add(new ModelBox(rightWingBody, 23, 12, -6.0F, 0.0F, 0.0F, 6, 2, 9, 0.0F, true));
-			rightWing = new ModelRenderer(this);
-			rightWing.setRotationPoint(-6.0F, 0.0F, 0.0F);
-			rightWingBody.addChild(rightWing);
-			setRotationAngle(rightWing, 0.0F, 0.0F, -0.1745F);
-			rightWing.cubeList.add(new ModelBox(rightWing, 16, 24, -13.0F, 0.0F, 0.0F, 13, 1, 9, 0.0F, true));
-			head = new ModelRenderer(this);
-			head.setRotationPoint(0.5F, 1.0F, -7.0F);
-			body.addChild(head);
-			head.cubeList.add(new ModelBox(head, 0, 0, -4.0F, -2.0F, -5.0F, 7, 3, 5, 0.0F, false));
-			tail = new ModelRenderer(this);
-			tail.setRotationPoint(0.5F, -2.0F, 1.0F);
-			body.addChild(tail);
-			setRotationAngle(tail, -0.0873F, 0.0F, 0.0F);
-			tail.cubeList.add(new ModelBox(tail, 3, 20, -2.0F, 0.0F, 0.0F, 3, 2, 6, 0.0F, false));
-			tailtip = new ModelRenderer(this);
-			tailtip.setRotationPoint(0.0F, 0.5F, 6.0F);
-			tail.addChild(tailtip);
-			setRotationAngle(tailtip, -0.0873F, 0.0F, 0.0F);
-			tailtip.cubeList.add(new ModelBox(tailtip, 4, 29, -1.0F, 0.0F, 0.0F, 1, 1, 6, 0.0F, false));
-		}
+	@Override
+	public void preInit(FMLPreInitializationEvent event) {
+		new Renderer().register();
+	}
 
+	public static class Renderer extends EntityRendererRegister {
+		@SideOnly(Side.CLIENT)
 		@Override
-		public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
-			body.render(f5);
+		public void register() {
+			RenderingRegistry.registerEntityRenderingHandler(EC.class, renderManager -> new RenderCustom(renderManager));
 		}
 
-		public void setRotationAngle(ModelRenderer modelRenderer, float x, float y, float z) {
-			modelRenderer.rotateAngleX = x;
-			modelRenderer.rotateAngleY = y;
-			modelRenderer.rotateAngleZ = z;
-		}
-
-		@Override
-		public void setRotationAngles(float f0, float f1, float ageInTicks, float f3, float f4, float f5, Entity entityIn) {
-			float f = ((float)(entityIn.getEntityId() * 3) + ageInTicks) * 0.13F;
-			if (ProcedureUtils.getVelocity(entityIn) > 0.1d) {
-				this.leftWingBody.rotateAngleZ = MathHelper.cos(f) * 16.0F * ((float)Math.PI / 180F);
-				this.leftWing.rotateAngleZ = this.leftWingBody.rotateAngleZ;
-				this.rightWingBody.rotateAngleZ = -this.leftWingBody.rotateAngleZ;
-				this.rightWing.rotateAngleZ = -this.leftWing.rotateAngleZ;
-			} else {
-				this.leftWingBody.rotateAngleZ = -0.5236F;
-				this.leftWing.rotateAngleZ = 1.0472F;
-				this.rightWingBody.rotateAngleZ = 0.5236F;
-				this.rightWing.rotateAngleZ = -1.0472F;
+		@SideOnly(Side.CLIENT)
+		public class RenderCustom extends RenderLiving<EC> {
+			private final ResourceLocation texture = new ResourceLocation("narutomod:textures/phantom1.png");
+	
+			public RenderCustom(RenderManager renderManagerIn) {
+				super(renderManagerIn, new ModelPhantom(), 0.75F);
 			}
-			this.tail.rotateAngleX = -(5.0F + MathHelper.cos(f * 2.0F) * 5.0F) * ((float)Math.PI / 180F);
-			this.tailtip.rotateAngleX = -(5.0F + MathHelper.cos(f * 2.0F) * 5.0F) * ((float)Math.PI / 180F);
+	
+			@Override
+			protected void preRenderCallback(EC entity, float partialTickTime) {
+				GlStateManager.scale(3.0F, 3.0F, 3.0F);
+				GlStateManager.translate(0.0D, 1.3125D, 0.1875D);
+			}
+	
+			@Override
+			protected ResourceLocation getEntityTexture(EC entity) {
+				return this.texture;
+			}
+		}
+	
+		// Made with Blockbench 3.8.4
+		// Exported for Minecraft version 1.7 - 1.12
+		// Paste this class into your mod and generate all required imports
+		@SideOnly(Side.CLIENT)
+		public class ModelPhantom extends ModelBase {
+			private final ModelRenderer body;
+			private final ModelRenderer leftWingBody;
+			private final ModelRenderer leftWing;
+			private final ModelRenderer rightWingBody;
+			private final ModelRenderer rightWing;
+			private final ModelRenderer head;
+			private final ModelRenderer tail;
+			private final ModelRenderer tailtip;
+			public ModelPhantom() {
+				textureWidth = 64;
+				textureHeight = 64;
+				body = new ModelRenderer(this);
+				body.setRotationPoint(0.0F, 0.0F, 0.0F);
+				body.cubeList.add(new ModelBox(body, 0, 8, -2.5F, -2.0F, -8.0F, 5, 3, 9, 0.0F, false));
+				leftWingBody = new ModelRenderer(this);
+				leftWingBody.setRotationPoint(2.5F, -2.0F, -8.0F);
+				body.addChild(leftWingBody);
+				setRotationAngle(leftWingBody, 0.0F, 0.0F, 0.0873F);
+				leftWingBody.cubeList.add(new ModelBox(leftWingBody, 23, 12, 0.0F, 0.0F, 0.0F, 6, 2, 9, 0.0F, false));
+				leftWing = new ModelRenderer(this);
+				leftWing.setRotationPoint(6.0F, 0.0F, 0.0F);
+				leftWingBody.addChild(leftWing);
+				setRotationAngle(leftWing, 0.0F, 0.0F, 0.1745F);
+				leftWing.cubeList.add(new ModelBox(leftWing, 16, 24, 0.0F, 0.0F, 0.0F, 13, 1, 9, 0.0F, false));
+				rightWingBody = new ModelRenderer(this);
+				rightWingBody.setRotationPoint(-2.5F, -2.0F, -8.0F);
+				body.addChild(rightWingBody);
+				setRotationAngle(rightWingBody, 0.0F, 0.0F, -0.0873F);
+				rightWingBody.cubeList.add(new ModelBox(rightWingBody, 23, 12, -6.0F, 0.0F, 0.0F, 6, 2, 9, 0.0F, true));
+				rightWing = new ModelRenderer(this);
+				rightWing.setRotationPoint(-6.0F, 0.0F, 0.0F);
+				rightWingBody.addChild(rightWing);
+				setRotationAngle(rightWing, 0.0F, 0.0F, -0.1745F);
+				rightWing.cubeList.add(new ModelBox(rightWing, 16, 24, -13.0F, 0.0F, 0.0F, 13, 1, 9, 0.0F, true));
+				head = new ModelRenderer(this);
+				head.setRotationPoint(0.5F, 1.0F, -7.0F);
+				body.addChild(head);
+				head.cubeList.add(new ModelBox(head, 0, 0, -4.0F, -2.0F, -5.0F, 7, 3, 5, 0.0F, false));
+				tail = new ModelRenderer(this);
+				tail.setRotationPoint(0.5F, -2.0F, 1.0F);
+				body.addChild(tail);
+				setRotationAngle(tail, -0.0873F, 0.0F, 0.0F);
+				tail.cubeList.add(new ModelBox(tail, 3, 20, -2.0F, 0.0F, 0.0F, 3, 2, 6, 0.0F, false));
+				tailtip = new ModelRenderer(this);
+				tailtip.setRotationPoint(0.0F, 0.5F, 6.0F);
+				tail.addChild(tailtip);
+				setRotationAngle(tailtip, -0.0873F, 0.0F, 0.0F);
+				tailtip.cubeList.add(new ModelBox(tailtip, 4, 29, -1.0F, 0.0F, 0.0F, 1, 1, 6, 0.0F, false));
+			}
+	
+			@Override
+			public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
+				body.render(f5);
+			}
+	
+			public void setRotationAngle(ModelRenderer modelRenderer, float x, float y, float z) {
+				modelRenderer.rotateAngleX = x;
+				modelRenderer.rotateAngleY = y;
+				modelRenderer.rotateAngleZ = z;
+			}
+	
+			@Override
+			public void setRotationAngles(float f0, float f1, float ageInTicks, float f3, float f4, float f5, Entity entityIn) {
+				float f = ((float)(entityIn.getEntityId() * 3) + ageInTicks) * 0.13F;
+				if (ProcedureUtils.getVelocity(entityIn) > 0.1d) {
+					this.leftWingBody.rotateAngleZ = MathHelper.cos(f) * 16.0F * ((float)Math.PI / 180F);
+					this.leftWing.rotateAngleZ = this.leftWingBody.rotateAngleZ;
+					this.rightWingBody.rotateAngleZ = -this.leftWingBody.rotateAngleZ;
+					this.rightWing.rotateAngleZ = -this.leftWing.rotateAngleZ;
+				} else {
+					this.leftWingBody.rotateAngleZ = -0.5236F;
+					this.leftWing.rotateAngleZ = 1.0472F;
+					this.rightWingBody.rotateAngleZ = 0.5236F;
+					this.rightWing.rotateAngleZ = -1.0472F;
+				}
+				this.tail.rotateAngleX = -(5.0F + MathHelper.cos(f * 2.0F) * 5.0F) * ((float)Math.PI / 180F);
+				this.tailtip.rotateAngleX = -(5.0F + MathHelper.cos(f * 2.0F) * 5.0F) * ((float)Math.PI / 180F);
+			}
 		}
 	}
 }

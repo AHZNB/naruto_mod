@@ -139,7 +139,7 @@ public class OverlayChakraDisplay extends ElementsNarutomodMod.ModElement {
 					double d1 = d - Math.floor(d);
 					d1 = d != 0d && d1 == 0d ? 1d : d1;
 					int bartop = sHeight - (4 * ((int)Math.ceil(d) - 1) + 9);
-					int left = sWidth / 2 - 200;
+					int left = sWidth / 2 - 206;
 					int w = 80;
 					if (instance.showSageBar) {
 						mc.renderEngine.bindTexture(new ResourceLocation("narutomod:textures/flames_green.png"));
@@ -152,8 +152,10 @@ public class OverlayChakraDisplay extends ElementsNarutomodMod.ModElement {
 					for (int i = bartop; i <= sHeight - 9; i += 4) {
 						GuiIngame.drawRect(left, i, left + (int)((i == bartop ? d1 : 1d) * w), i + 3, (i == sHeight - 9) ? color : 0xFFFFFF00);
 					}
+					String chakraText = String.format("%d/%d", (int)p.getAmount(), (int)p.getMax());
+					int chakraTextLen = mc.fontRenderer.getStringWidth(chakraText);
 					mc.fontRenderer.drawStringWithShadow(
-					  String.format("%d/%d", (int)p.getAmount(), (int)p.getMax()), left + 12, bartop - 10, color);
+					  chakraText, left + (80 / 2) - chakraTextLen / 2, bartop - 10, color);
 				}
 				if (instance.warningTime > 0)
 					--instance.warningTime;

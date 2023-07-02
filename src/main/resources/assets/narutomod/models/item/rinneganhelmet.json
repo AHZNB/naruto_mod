@@ -1,6 +1,6 @@
 {
-  "parent": "item/generated",
+  "parent": "narutomod:custom/rinnegan",
   "textures": {
-    "layer0": "narutomod:items/rinnegan"
+    "1": "narutomod:blocks/rinnegan"
   }
 }

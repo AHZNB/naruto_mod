@@ -1,0 +1,6 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "narutomod:items/mask_obito1_item"
+  }
+}

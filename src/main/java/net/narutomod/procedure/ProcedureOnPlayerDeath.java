@@ -5,6 +5,7 @@ import net.narutomod.item.ItemYooton;
 import net.narutomod.item.ItemTenseigan;
 import net.narutomod.item.ItemSuiton;
 import net.narutomod.item.ItemShikotsumyaku;
+import net.narutomod.item.ItemSharingan;
 import net.narutomod.item.ItemShakuton;
 import net.narutomod.item.ItemSenjutsu;
 import net.narutomod.item.ItemRinnegan;
@@ -12,7 +13,9 @@ import net.narutomod.item.ItemRanton;
 import net.narutomod.item.ItemRaiton;
 import net.narutomod.item.ItemNinjutsu;
 import net.narutomod.item.ItemMokuton;
+import net.narutomod.item.ItemMangekyoSharinganObito;
 import net.narutomod.item.ItemMangekyoSharinganEternal;
+import net.narutomod.item.ItemMangekyoSharingan;
 import net.narutomod.item.ItemKaton;
 import net.narutomod.item.ItemJiton;
 import net.narutomod.item.ItemJinton;
@@ -28,6 +31,7 @@ import net.narutomod.item.ItemByakugan;
 import net.narutomod.item.ItemBakuton;
 import net.narutomod.item.ItemAsuraPathArmor;
 import net.narutomod.entity.EntityBijuManager;
+import net.narutomod.PlayerTracker;
 import net.narutomod.NarutomodModVariables;
 import net.narutomod.ElementsNarutomodMod;
 
@@ -122,13 +126,13 @@ public class ProcedureOnPlayerDeath extends ElementsNarutomodMod.ModElement {
 					_stack.getTagCompound().setBoolean((NarutomodModVariables.RINNESHARINGAN_ACTIVATED), (false));
 				}
 			}
-			if (EntityBijuManager.isJinchuriki((EntityPlayer) entity)) {
-				EntityBijuManager.unsetPlayerAsJinchuriki((EntityPlayer) entity);
-			}
 			if (entity instanceof EntityPlayer)
 				((EntityPlayer) entity).inventory.clearMatchingItems(new ItemStack(ItemAsuraPathArmor.body, (int) (1)).getItem(), -1, (int) (-1),
 						null);
 			if ((!(keepInventory))) {
+				if (EntityBijuManager.isJinchuriki((EntityPlayer) entity)) {
+					EntityBijuManager.unsetPlayerAsJinchuriki((EntityPlayer) entity);
+				}
 				if (entity instanceof EntityPlayer)
 					((EntityPlayer) entity).inventory.clearMatchingItems(new ItemStack(ItemMokuton.block, (int) (1)).getItem(), -1, (int) (-1), null);
 				if (entity instanceof EntityPlayer)
@@ -179,12 +183,38 @@ public class ProcedureOnPlayerDeath extends ElementsNarutomodMod.ModElement {
 				if (entity instanceof EntityPlayer)
 					((EntityPlayer) entity).inventory.clearMatchingItems(new ItemStack(ItemSenjutsu.block, (int) (1)).getItem(), -1, (int) (-1),
 							null);
+			} else {
+				if ((EntityBijuManager.cloakLevel((EntityPlayer) entity) > 0)) {
+					EntityBijuManager.toggleBijuCloak((EntityPlayer) entity);
+				}
+				if (entity.world.getGameRules().getBoolean(PlayerTracker.FORCE_DOJUTSU_DROP_RULE)) {
+					stack = ProcedureUtils.getMatchingItemStack((EntityPlayer) entity, ItemByakugan.helmet);
+					if (stack != null) {
+						((EntityPlayer) entity).dropItem(stack.copy(), true, true);
+						((stack)).shrink((int) 1);
+					}
+					stack = ProcedureUtils.getMatchingItemStack((EntityPlayer) entity, ItemSharingan.helmet);
+					if (stack != null) {
+						((EntityPlayer) entity).dropItem(stack.copy(), true, true);
+						((stack)).shrink((int) 1);
+					}
+					stack = ProcedureUtils.getMatchingItemStack((EntityPlayer) entity, ItemMangekyoSharingan.helmet);
+					if (stack != null) {
+						((EntityPlayer) entity).dropItem(stack.copy(), true, true);
+						((stack)).shrink((int) 1);
+					}
+					stack = ProcedureUtils.getMatchingItemStack((EntityPlayer) entity, ItemMangekyoSharinganObito.helmet);
+					if (stack != null) {
+						((EntityPlayer) entity).dropItem(stack.copy(), true, true);
+						((stack)).shrink((int) 1);
+					}
+				}
 			}
 			ProcedureSync.EntityNBTTag.removeAndSync(entity, NarutomodModVariables.forceBowPose);
 			entity.getEntityData().setBoolean((NarutomodModVariables.FirstGotNinjutsu), (false));
 			entity.getEntityData().setBoolean("susanoo_activated", (false));
+			entity.getEntityData().setInteger("ForceExtinguish", 5);
 			entity.setNoGravity(false);
-			(entity).extinguish();
 		}
 	}
 

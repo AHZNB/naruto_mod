@@ -10,12 +10,21 @@ import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 
+import net.minecraft.init.MobEffects;
 import net.minecraft.world.World;
-import net.minecraft.util.SoundCategory;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvent;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Item;
 import net.minecraft.entity.player.EntityPlayer;
@@ -25,22 +34,14 @@ import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.model.ModelBox;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.init.MobEffects;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.network.datasync.DataSerializers;
-import net.minecraft.util.EnumParticleTypes;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.util.text.TextFormatting;
 
 import net.narutomod.creativetab.TabModTab;
 import net.narutomod.ElementsNarutomodMod;
@@ -217,7 +218,7 @@ public class ItemJinton extends ElementsNarutomodMod.ModElement {
 			
 			@Override
 			protected void attackEntityFrom(EntityLivingBase player, Entity target) {
-				double d = this.getFarRadius(0) / target.getEntityBoundingBox().getAverageEdgeLength() * 0.25d;
+				double d = this.getFarRadius(0) / target.getEntityBoundingBox().getAverageEdgeLength();
 				float f = target instanceof EntityLivingBase ? ((EntityLivingBase)target).getMaxHealth() * (float)d : Float.MAX_VALUE;
 				attackEntityWithJutsu(EntityBeam.this, player, target, f);
 			}
@@ -233,7 +234,7 @@ public class ItemJinton extends ElementsNarutomodMod.ModElement {
 			public boolean createJutsu(ItemStack stack, EntityLivingBase entity, float power) {
 				if (entity instanceof EntityPlayer) {
 					power = Math.min(power / 2 + 0.5f, 10f);
-					entity.world.playSound(null, entity.posX, entity.posY, entity.posZ, (net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY
+					entity.world.playSound(null, entity.posX, entity.posY, entity.posZ, SoundEvent.REGISTRY
 					  .getObject(new ResourceLocation("narutomod:genkaihakurinojutsu")), SoundCategory.PLAYERS, 1, 1f);
 					Vec3d vec3d = entity.getLookVec();
 					EntityBeam entitybeam = new EntityBeam(entity, power);
@@ -248,6 +249,7 @@ public class ItemJinton extends ElementsNarutomodMod.ModElement {
 
 	private static void attackEntityWithJutsu(Entity projectile, EntityLivingBase attacker, Entity target, float amount) {
 		if (target instanceof EntityLivingBase) {
+			target.hurtResistantTime = 10;
 			target.attackEntityFrom(ItemJutsu.causeJutsuDamage(projectile, attacker)
 			  .setDamageBypassesArmor().setDamageIsAbsolute(), amount);
 		} else {
@@ -311,7 +313,6 @@ public class ItemJinton extends ElementsNarutomodMod.ModElement {
 		        pos.release();
 			}
 			for (Entity entity : this.world.getEntitiesWithinAABBExcludingEntity(this, bb)) {
-				entity.hurtResistantTime = 0;
 				double d = ProcedureUtils.BB.getVolume(bb.intersect(entity.getEntityBoundingBox()))
 				 / ProcedureUtils.BB.getVolume(entity.getEntityBoundingBox()) * 0.5D;
 				attackEntityWithJutsu(this, this.shootingEntity, entity, 
@@ -371,7 +372,7 @@ public class ItemJinton extends ElementsNarutomodMod.ModElement {
 			@Override
 			public boolean createJutsu(ItemStack stack, EntityLivingBase entity, float power) {
 				power = power * 2 + 2;
-				entity.world.playSound(null, entity.posX, entity.posY, entity.posZ, (net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY
+				entity.world.playSound(null, entity.posX, entity.posY, entity.posZ, SoundEvent.REGISTRY
 				  .getObject(new ResourceLocation("narutomod:genkaihakurinojutsu")), SoundCategory.PLAYERS, 1, 1f);
 				entity.world.spawnEntity(new EntityCube(entity, power));
 				return true;

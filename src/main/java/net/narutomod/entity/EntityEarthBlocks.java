@@ -3,6 +3,7 @@ package net.narutomod.entity;
 
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
@@ -78,12 +79,12 @@ public class EntityEarthBlocks extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static class Base extends Entity {
-		private List<BlockPos> ogList;
+		private List<? extends BlockPos> ogList;
 		private final Map<Vec3d, IBlockState> blocksMap = Maps.newHashMap();
 		private final Map<Entity, Vec3d> entityMap = Maps.newHashMap();
 		private int fallTime = 600;
 		private int ticksAlive;
-		private int fallTicks;
+		protected int fallTicks;
 		private int blocksTotal;
 		private boolean breakOnImpact;
 
@@ -92,7 +93,7 @@ public class EntityEarthBlocks extends ElementsNarutomodMod.ModElement {
 			this.isImmuneToFire = true;
 		}
 
-		public Base(World world, List<BlockPos> list) {
+		public Base(World world, List<? extends BlockPos> list) {
 			this(world);
 			if (list.isEmpty()) {
 				return;
@@ -120,7 +121,7 @@ public class EntityEarthBlocks extends ElementsNarutomodMod.ModElement {
 					this.entityMap.put(entity, entity.getPositionVector().subtract(this.getPositionVector()));
 				}
 			}
-			this.ogList = new ArrayList<BlockPos>(list);
+			this.ogList = new ArrayList(list);
 		}
 
 		private boolean isAirOrLiquid(IBlockState blockstate, BlockPos pos) {
@@ -155,7 +156,11 @@ public class EntityEarthBlocks extends ElementsNarutomodMod.ModElement {
 			this.fallTime = ticks;
 		}
 
-		@Override
+		public void explodeOnImpact(boolean explode) {
+			this.breakOnImpact = explode;
+		}
+
+		/*@Override
 		public void setDead() {
 			if (!this.world.isRemote && !this.blocksMap.isEmpty() && this.griefingAllowed()) {
 				for (Map.Entry<Vec3d, IBlockState> entry : this.blocksMap.entrySet()) {
@@ -166,15 +171,26 @@ public class EntityEarthBlocks extends ElementsNarutomodMod.ModElement {
 				}
 			}
 			super.setDead();
+		}*/
+
+		@Override
+		public boolean attackEntityFrom(DamageSource source, float amount) {
+			if (!this.world.isRemote && amount > 3f * this.mass()) {
+				this.breakOnImpact = true;
+				this.onImpact(amount);
+				return true;
+			}
+			return false;
 		}
 
 		@Override
 	    public void applyEntityCollision(Entity entityIn) {
-       		if (entityIn instanceof Base) {
-       			if (this.mass() > ((Base)entityIn).mass() / 2) {
-       				entityIn.setNoGravity(false);
-       			}
-       		} else if (!entityIn.noClip && !entityIn.isBeingRidden()) {
+       		//if (entityIn instanceof Base) {
+       		//	if (!this.world.isRemote && this.ticksAlive > 20 && this.mass() > ((Base)entityIn).mass() / 2) {
+       		//		entityIn.setNoGravity(false);
+       		//	}
+       		//} else
+       		if (!entityIn.noClip && !entityIn.isBeingRidden()) {
 	       		//EnumFacing hitface = BlocksMoveHelper.collideWithEntity(this, entityIn, this.getMotion());
 	       		EnumFacing hitface = BlocksMoveHelper.getCollidingSide(this.getCollisionBoundingBox(), entityIn.getEntityBoundingBox());
 		        if (hitface != null) {
@@ -187,10 +203,6 @@ public class EntityEarthBlocks extends ElementsNarutomodMod.ModElement {
 		           		entityIn.attackEntityFrom(DamageSource.FALLING_BLOCK, this.getCollisionDamage());
 		        	}
 		        }
-		        //double d = this.mass() / (ProcedureUtils.BB.getVolume(entityIn.getEntityBoundingBox()) + this.mass());
-		        //this.motionX *= d;
-		        //this.motionY *= d;
-		        //this.motionZ *= d;
        		}
 	    }
 
@@ -222,12 +234,16 @@ public class EntityEarthBlocks extends ElementsNarutomodMod.ModElement {
 	    	return this.blocksMap;
 	    }
 
-	    public List<BlockPos> getBlockposList() {
+	    public List<? extends BlockPos> getBlockposList() {
 	    	return this.ogList;
 	    }
 
 	    public boolean griefingAllowed() {
 	    	return net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.world, null);
+	    }
+
+	    public int getTicksAlive() {
+	    	return this.ticksAlive;
 	    }
 
 		@SideOnly(Side.CLIENT)
@@ -243,7 +259,7 @@ public class EntityEarthBlocks extends ElementsNarutomodMod.ModElement {
 	           	}
 	           	ProcedureSync.ResetBoundingBox.sendToPlayer(this, player);
 			} else if (packet.op == 1) {
-				this.onImpact();
+				this.onImpact(packet.amount);
 			}
 		}
 
@@ -292,7 +308,7 @@ public class EntityEarthBlocks extends ElementsNarutomodMod.ModElement {
         			this.applyEntityCollision(entity);
            		}
 				if (this.onGround && !this.hasNoGravity()) {
-					this.onImpact();
+					this.onImpact(this.collisionForce());
            		}
            		this.motionX *= 0.98d;
            		this.motionY *= 0.98d;
@@ -310,7 +326,7 @@ public class EntityEarthBlocks extends ElementsNarutomodMod.ModElement {
 			double dy = y;
 			double dz = z;
 			List<AxisAlignedBB> list = this.world.getCollisionBoxes(this, this.getCollisionBoundingBox().expand(x, y, z));
-			BlocksMoveHelper.CollisionHelper ch = new BlocksMoveHelper.CollisionHelper(this.getCollisionBoundingBox());
+			ProcedureUtils.CollisionHelper ch = new ProcedureUtils.CollisionHelper(this);
 			ch.collideWithAABBs(list, x, y, z);
 			x = ch.minX(x);
 			y = ch.minY(y);
@@ -322,9 +338,9 @@ public class EntityEarthBlocks extends ElementsNarutomodMod.ModElement {
 			this.collided = this.collidedHorizontally || this.collidedVertically;
 			if (!this.world.isRemote) {
 				boolean canMoveThrough = true;
-				this.breakOnImpact = this.collisionForce() > 2000.0f;
+				//this.breakOnImpact = this.collisionForce() > 1000.0f;
 				if (dx != x || dy != y || dz != z) {
-					List<BlockPos> list1 = BlocksMoveHelper.convert2BlockposList(list);
+					List<BlockPos> list1 = ch.getHitBoxes();
 					float f = BlocksMoveHelper.getBlocksTotalResistance(this.world, list1);
 					//float hitarea = (float)list.size() / this.collisionForce();
 					float hitarea = f / this.collisionForce() * 0.2f;
@@ -363,14 +379,15 @@ public class EntityEarthBlocks extends ElementsNarutomodMod.ModElement {
 			return false;
 		}
 
-	    protected void onImpact() {
+	    protected void onImpact(float impactDamage) {
 			if (this.world.isRemote) {
-				ProcedureSync.CPacketEarthBlocks.sendToServer(1, this);
+				ProcedureSync.CPacketEarthBlocks.sendToServer(1, this, impactDamage);
 			} else {
 	           	for (Map.Entry<Entity, Vec3d> entry : this.entityMap.entrySet()) {
 	           		entry.getKey().attackEntityFrom(DamageSource.FALLING_BLOCK, this.getCollisionDamage());
 	           	}
 	           	boolean flag = this.griefingAllowed();
+	           	impactDamage = MathHelper.sqrt(impactDamage) * 0.002236f;
 				BlockPos.PooledMutableBlockPos pos = BlockPos.PooledMutableBlockPos.retain();
 				for (Map.Entry<Vec3d, IBlockState> entry : this.blocksMap.entrySet()) {
 					Vec3d vec = this.getPositionVector().add(entry.getKey());
@@ -378,13 +395,12 @@ public class EntityEarthBlocks extends ElementsNarutomodMod.ModElement {
 		           	if (this.breakOnImpact) {
 		           		if (this.rand.nextFloat() <= 0.3f) {
 							this.world.setBlockState(pos, entry.getValue(), 3);
-			           		EntityFallingBlock entity = new EntityFallingBlock(this.world, vec.x, vec.y, vec.z, entry.getValue()) {
-								{	this.shouldDropItem = flag; }
-			           		};
+			           		EntityFallingBlock entity = new EntityFallingBlock(this.world, vec.x, vec.y, vec.z, entry.getValue());
 			           		this.world.spawnEntity(entity);
-			           		entity.motionX = entry.getKey().x * (0.1d + this.rand.nextDouble() * 0.2d);
-		           			entity.motionY = entry.getKey().y * (0.1d + this.rand.nextDouble() * 0.2d);
-			           		entity.motionZ = entry.getKey().z * (0.1d + this.rand.nextDouble() * 0.2d);
+			           		entity.motionX = entry.getKey().x * (this.rand.nextDouble() * 0.2d + impactDamage);
+		           			entity.motionY = entry.getKey().y * (this.rand.nextDouble() * 0.2d + impactDamage);
+			           		entity.motionZ = entry.getKey().z * (this.rand.nextDouble() * 0.2d + impactDamage);
+			           		ReflectionHelper.setPrivateValue(EntityFallingBlock.class, entity, !flag, 3);
 		           		}
 		           	} else {
 						((WorldServer)this.world).spawnParticle(EnumParticleTypes.BLOCK_DUST, vec.x, vec.y+0.5d, vec.z,
@@ -543,7 +559,7 @@ public class EntityEarthBlocks extends ElementsNarutomodMod.ModElement {
 				for (EntityFallingBlock entity : this.toMove) {
 					AxisAlignedBB aabb = entity.getEntityBoundingBox().expand(mX, mY, mZ);
 					List<AxisAlignedBB> list1 = entity.world.getCollisionBoxes(null, aabb);
-					CollisionHelper stat = new CollisionHelper(entity.getEntityBoundingBox());
+					ProcedureUtils.CollisionHelper stat = new ProcedureUtils.CollisionHelper(entity);
 					stat.collideWithAABBs(list1, mX, mY, mZ);
 					this.addToCollidedBlocks(this.convert2BlockposList(list1));
 					dX = stat.minX(dX);
@@ -555,7 +571,7 @@ public class EntityEarthBlocks extends ElementsNarutomodMod.ModElement {
 							return p_apply_1_ != null && !BlocksMoveHelper.this.toMove.contains(p_apply_1_);
 						}
 					});
-					CollisionHelper stat2 = new CollisionHelper(entity.getEntityBoundingBox());
+					ProcedureUtils.CollisionHelper stat2 = new ProcedureUtils.CollisionHelper(entity);
 					List<AxisAlignedBB> list3 = this.convert2BoundingboxList(list2);
 					stat2.collideWithAABBs(list3, mX, mY, mZ);
 					this.addToCollidedAABB(list3);
@@ -758,51 +774,6 @@ public class EntityEarthBlocks extends ElementsNarutomodMod.ModElement {
 			 //+"cH:"+this.collidedHorizontally+", cV:"+this.collidedVertically+", oG:"+this.onGround
 			 +", cMT:"+this.canMoveThrough+", motion:("+this.motionX+","+this.motionY+","+this.motionZ
 			 +"), bb:"+this.boundingBox;
-		}
-
-		public static class CollisionHelper {
-			private AxisAlignedBB source;
-			public double dx;
-			public double dy;
-			public double dz;
-			public int hitsOnSide[] = { 0, 0, 0, 0, 0, 0 };
-
-			public CollisionHelper(AxisAlignedBB sourceBB) {
-				this.source = sourceBB;
-			}
-
-			public void collideWithAABBs(List<AxisAlignedBB> list, double x, double y, double z) {
-				this.dx = x;
-				this.dy = y;
-				this.dz = z;
-	        	if (x != 0.0D) for (AxisAlignedBB aabb : list) {
-	        		double d = aabb.calculateXOffset(this.source, x);
-			    	if (Math.abs(d) < Math.abs(this.dx)) this.dx = d;
-			    	if (d != x) this.hitsOnSide[(x > 0d ? EnumFacing.WEST : EnumFacing.EAST).getIndex()]++;
-	        	}
-			    if (y != 0.0D) for (AxisAlignedBB aabb : list) {
-	        		double d = aabb.calculateYOffset(this.source, y);
-			    	if (Math.abs(d) < Math.abs(this.dy)) this.dy = d;
-			    	if (d != y) this.hitsOnSide[(y > 0d ? EnumFacing.UP : EnumFacing.DOWN).getIndex()]++;
-			    }
-			    if (z != 0.0D) for (AxisAlignedBB aabb : list) {
-	        		double d = aabb.calculateZOffset(this.source, z);
-			    	if (Math.abs(d) < Math.abs(this.dz)) this.dz = d;
-			    	if (d != z) this.hitsOnSide[(z > 0d ? EnumFacing.NORTH : EnumFacing.SOUTH).getIndex()]++;
-			    }
-			}
-
-			public double minX(double x) {
-				return Math.signum(x) != Math.signum(this.dx) ? 0d : Math.abs(x) < Math.abs(this.dx) ? x : this.dx;
-			}
-
-			public double minY(double y) {
-				return Math.signum(y) != Math.signum(this.dy) ? 0d : Math.abs(y) < Math.abs(this.dy) ? y : this.dy;
-			}
-
-			public double minZ(double z) {
-				return Math.signum(z) != Math.signum(this.dz) ? 0d : Math.abs(z) < Math.abs(this.dz) ? z : this.dz;
-			}
 		}
 	}
 

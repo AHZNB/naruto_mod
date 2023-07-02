@@ -9,10 +9,12 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 
-import net.minecraft.world.biome.Biome;
+import net.minecraft.init.Biomes;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.world.World;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.DataParameter;
@@ -30,15 +32,19 @@ import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.entity.EnumCreatureAttribute;
 import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.client.renderer.entity.RenderBiped;
+import net.minecraft.client.model.ModelBox;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.client.renderer.entity.Render;
 
 import net.narutomod.procedure.ProcedureWhiteZetsuEntityEntityDies;
+import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.item.ItemKunai;
+import net.narutomod.ModConfig;
 import net.narutomod.ElementsNarutomodMod;
 
 @ElementsNarutomodMod.ModElement.Tag
@@ -58,66 +64,88 @@ public class EntityWhiteZetsu extends ElementsNarutomodMod.ModElement {
 
 	@Override
 	public void init(FMLInitializationEvent event) {
-		Biome[] spawnBiomes = {Biome.REGISTRY.getObject(new ResourceLocation("extreme_hills")),
-				Biome.REGISTRY.getObject(new ResourceLocation("forest")), Biome.REGISTRY.getObject(new ResourceLocation("taiga")),
-				Biome.REGISTRY.getObject(new ResourceLocation("swampland")), Biome.REGISTRY.getObject(new ResourceLocation("beaches")),
-				Biome.REGISTRY.getObject(new ResourceLocation("desert_hills")), Biome.REGISTRY.getObject(new ResourceLocation("forest_hills")),
-				Biome.REGISTRY.getObject(new ResourceLocation("taiga_hills")), Biome.REGISTRY.getObject(new ResourceLocation("jungle")),
-				Biome.REGISTRY.getObject(new ResourceLocation("jungle_hills")), Biome.REGISTRY.getObject(new ResourceLocation("jungle_edge")),
-				Biome.REGISTRY.getObject(new ResourceLocation("birch_forest")), Biome.REGISTRY.getObject(new ResourceLocation("birch_forest_hills")),
-				Biome.REGISTRY.getObject(new ResourceLocation("roofed_forest")), Biome.REGISTRY.getObject(new ResourceLocation("redwood_taiga")),
-				Biome.REGISTRY.getObject(new ResourceLocation("redwood_taiga_hills")),
-				Biome.REGISTRY.getObject(new ResourceLocation("extreme_hills_with_trees")), Biome.REGISTRY.getObject(new ResourceLocation("savanna")),
-				Biome.REGISTRY.getObject(new ResourceLocation("mesa")), Biome.REGISTRY.getObject(new ResourceLocation("mesa_rock")),
-				Biome.REGISTRY.getObject(new ResourceLocation("mesa_clear_rock")),
-				Biome.REGISTRY.getObject(new ResourceLocation("mutated_extreme_hills")),
-				Biome.REGISTRY.getObject(new ResourceLocation("mutated_forest")), Biome.REGISTRY.getObject(new ResourceLocation("mutated_taiga")),
-				Biome.REGISTRY.getObject(new ResourceLocation("mutated_swampland")), Biome.REGISTRY.getObject(new ResourceLocation("mutated_jungle")),
-				Biome.REGISTRY.getObject(new ResourceLocation("mutated_jungle_edge")),
-				Biome.REGISTRY.getObject(new ResourceLocation("mutated_birch_forest")),
-				Biome.REGISTRY.getObject(new ResourceLocation("mutated_birch_forest_hills")),
-				Biome.REGISTRY.getObject(new ResourceLocation("mutated_roofed_forest")),
-				Biome.REGISTRY.getObject(new ResourceLocation("mutated_redwood_taiga")),
-				Biome.REGISTRY.getObject(new ResourceLocation("mutated_redwood_taiga_hills")),
-				Biome.REGISTRY.getObject(new ResourceLocation("mutated_extreme_hills_with_trees")),
-				Biome.REGISTRY.getObject(new ResourceLocation("mutated_savanna")),};
-		EntityRegistry.addSpawn(EntityCustom.class, 10, 1, 1, EnumCreatureType.MONSTER, spawnBiomes);
+		int i = MathHelper.clamp(ModConfig.SPAWN_WEIGHT_WHITEZETSU, 0, 20);
+		if (i > 0) {
+			EntityRegistry.addSpawn(EntityCustom.class, i, 1, 1, EnumCreatureType.MONSTER, 
+				Biomes.EXTREME_HILLS, Biomes.FOREST, Biomes.TAIGA, Biomes.SWAMPLAND, Biomes.BEACH, Biomes.JUNGLE,
+				Biomes.BIRCH_FOREST, Biomes.ROOFED_FOREST, Biomes.REDWOOD_TAIGA, Biomes.SAVANNA, Biomes.MESA,
+				Biomes.MUTATED_FOREST, Biomes.MUTATED_TAIGA, Biomes.MUTATED_SWAMPLAND, Biomes.MUTATED_JUNGLE,
+				Biomes.MUTATED_BIRCH_FOREST, Biomes.MUTATED_ROOFED_FOREST, Biomes.MUTATED_REDWOOD_TAIGA, Biomes.MUTATED_SAVANNA);
+		}
 	}
 
-	@SideOnly(Side.CLIENT)
 	@Override
 	public void preInit(FMLPreInitializationEvent event) {
-		RenderingRegistry.registerEntityRenderingHandler(EntityCustom.class, renderManager -> {
-			RenderBiped customRender = new RenderBiped(renderManager, new ModelBiped(0f, 0f, 64, 64), 0.5f) {
-				@Override
-				protected ResourceLocation getEntityTexture(Entity entity) {
-					int playerId = ((EntityCustom) entity).getPlayerId();
-					if (playerId >= 0 && ((EntityLiving) entity).getHealth() > 1f) {
-						Entity player = entity.world.getEntityByID(playerId);
-						if (player instanceof AbstractClientPlayer)
-							return ((AbstractClientPlayer) player).getLocationSkin();
-					}
-					return new ResourceLocation("narutomod:textures/zetsu_white.png");
-				}
-				@Override
-				protected void preRenderCallback(EntityLivingBase entitylivingbaseIn, float partialTickTime) {
-					//if (((EntityCustom) entitylivingbaseIn).getPlayerId() >= 0 && entitylivingbaseIn.getHealth() > 1f) {
-					//	Entity player = entitylivingbaseIn.world.getEntityByID(((EntityCustom) entitylivingbaseIn).getPlayerId());
-					//	if (player instanceof AbstractClientPlayer)
-							GlStateManager.scale(0.9375F, 0.9375F, 0.9375F);
-					//}
+		new Renderer().register();
+	}
+
+	public static class Renderer extends EntityRendererRegister {
+		@SideOnly(Side.CLIENT)
+		@Override
+		public void register() {
+			final ModelBiped model = new ModelBiped(0f, 0f, 64, 64) {
+				{
+					bipedBody.cubeList.add(new ModelBox(bipedBody, 16, 32, -4.0F, 0.0F, -2.0F, 8, 12, 4, 0.3F, false));
+					bipedRightArm.cubeList.add(new ModelBox(bipedRightArm, 40, 32, -3.0F, -2.0F, -2.0F, 4, 12, 4, 0.3F, false));
+					bipedLeftArm.cubeList.add(new ModelBox(bipedLeftArm, 40, 32, -1.0F, -2.0F, -2.0F, 4, 12, 4, 0.3F, true));
+					bipedRightLeg.cubeList.add(new ModelBox(bipedRightLeg, 0, 32, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.3F, false));
+					bipedLeftLeg.cubeList.add(new ModelBox(bipedLeftLeg, 0, 32, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.3F, true));
 				}
 			};
-			customRender.addLayer(new net.minecraft.client.renderer.entity.layers.LayerBipedArmor(customRender) {
-				protected void initArmor() {
-					this.modelLeggings = new ModelBiped(0.5f);
-					this.modelArmor = new ModelBiped(1);
-				}
+			RenderingRegistry.registerEntityRenderingHandler(EntityCustom.class, renderManager -> {
+				RenderBiped customRender = new RenderBiped<EntityCustom>(renderManager, model, 0.5f) {
+					private final ResourceLocation texture = new ResourceLocation("narutomod:textures/zetsu_white_256.png");
+					@Override
+					public void doRender(EntityCustom entityIn, double x, double y, double z, float entityYaw, float partialTicks) {
+						int playerId = entityIn.getPlayerId();
+						if (playerId >= 0 && entityIn.getHealth() > 1f) {
+							Entity entity = entityIn.world.getEntityByID(playerId);
+							if (entity instanceof EntityLiving) {
+								Render render = this.renderManager.getEntityRenderObject(entity);
+								if (render instanceof RenderBiped) {
+									this.mainModel = ((RenderBiped)render).getMainModel();
+								}
+							}
+						}
+						super.doRender(entityIn, x, y, z, entityYaw, partialTicks);
+						this.mainModel = model;
+					}
+					@Override
+					protected ResourceLocation getEntityTexture(EntityCustom entity) {
+						int playerId = entity.getPlayerId();
+						if (playerId >= 0 && entity.getHealth() > 1f) {
+							Entity player = entity.world.getEntityByID(playerId);
+							if (player instanceof AbstractClientPlayer) {
+								return ((AbstractClientPlayer) player).getLocationSkin();
+							} else if (player instanceof EntityLiving) {
+								Render render = this.renderManager.getEntityRenderObject(player);
+								if (render instanceof RenderBiped) {
+									return ProcedureUtils.invokeMethodByParameters(render, ResourceLocation.class, player);
+								}
+							}
+						}
+						return this.texture;
+					}
+					@Override
+					protected void preRenderCallback(EntityCustom entityIn, float partialTickTime) {
+						//if (((EntityCustom) entitylivingbaseIn).getPlayerId() >= 0 && entitylivingbaseIn.getHealth() > 1f) {
+						//	Entity player = entitylivingbaseIn.world.getEntityByID(((EntityCustom) entitylivingbaseIn).getPlayerId());
+						//	if (player instanceof AbstractClientPlayer)
+								GlStateManager.scale(0.9375F, 0.9375F, 0.9375F);
+						//}
+					}
+				};
+				customRender.addLayer(new net.minecraft.client.renderer.entity.layers.LayerBipedArmor(customRender) {
+					protected void initArmor() {
+						this.modelLeggings = new ModelBiped(0.5f);
+						this.modelArmor = new ModelBiped(1);
+					}
+				});
+				return customRender;
 			});
-			return customRender;
-		});
+		}
 	}
-	
+
 	public static class EntityCustom extends EntityMob {
 		private static final DataParameter<Integer> PLAYER_ID = EntityDataManager.<Integer>createKey(EntityCustom.class, DataSerializers.VARINT);
 		
@@ -147,17 +175,24 @@ public class EntityWhiteZetsu extends ElementsNarutomodMod.ModElement {
 		@Override
 		protected void initEntityAI() {
 			super.initEntityAI();
-			// modified 6-27-2020 ------------------------------------------------------------------
 			this.tasks.addTask(1, new EntityAIWatchClosest(this, EntityPlayer.class, (float) 50) {
 				@Override
 				public void updateTask() {
 					super.updateTask();
-					if (EntityCustom.this.getPlayerId() < 0 && this.closestEntity != null && !((EntityPlayer)this.closestEntity).isCreative()) {
-						EntityCustom.this.setPlayerId(this.closestEntity.getEntityId());
-						this.entity.setCustomNameTag(this.closestEntity.getName());
+					World world = this.entity.world;
+					if (EntityCustom.this.getPlayerId() < 0 && this.closestEntity instanceof EntityPlayer
+					 && !((EntityPlayer)this.closestEntity).isCreative() && world.playerEntities.size() > 1) {
+						for (int i = 0; i < 10; i++) {
+							EntityPlayer entity1 = world.playerEntities.get(rand.nextInt(world.playerEntities.size()));
+							if (!entity1.equals(this.closestEntity)) {
+								EntityCustom.this.setPlayerId(entity1.getEntityId());
+								this.entity.setCustomNameTag(entity1.getName());
+								return;
+							}
+						}
 					}
 				}
-			}); // ---------------------------------------------------------------------------------
+			});
 			this.targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, EntityPlayer.class, false, false));
 			this.tasks.addTask(3, new EntityAIAttackMelee(this, 1, true));
 			this.tasks.addTask(4, new EntityAIWander(this, 0.5));
@@ -176,17 +211,17 @@ public class EntityWhiteZetsu extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public net.minecraft.util.SoundEvent getAmbientSound() {
-			return (net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation(""));
+			return null;
 		}
 
 		@Override
 		public net.minecraft.util.SoundEvent getHurtSound(DamageSource ds) {
-			return (net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("entity.witch.hurt"));
+			return SoundEvents.ENTITY_WITCH_HURT;
 		}
 
 		@Override
 		public net.minecraft.util.SoundEvent getDeathSound() {
-			return (net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("entity.witch.death"));
+			return SoundEvents.ENTITY_WITCH_DEATH;
 		}
 
 		@Override
