@@ -15,7 +15,6 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.event.ModelRegistryEvent;
-import net.minecraftforge.items.ItemHandlerHelper;
 
 import net.minecraft.world.World;
 import net.minecraft.util.EntitySelectors;
@@ -46,7 +45,6 @@ import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.network.datasync.DataSerializers;
 
 import com.google.common.collect.Multimap;
-import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import javax.annotation.Nullable;
 import java.util.UUID;
@@ -57,8 +55,8 @@ public class ItemAdamantineNyoi extends ElementsNarutomodMod.ModElement {
 	public static final Item block = null;
 	public static final int ENTITYID = 425;
 	public static final ItemJutsu.JutsuEnum WEAPON = new ItemJutsu.JutsuEnum(0, "tooltip.adamantinenyoi.block", 'D', new RangedItem.Jutsu());
-	public static final ItemJutsu.JutsuEnum EXTEND = new ItemJutsu.JutsuEnum(1, "tooltip.adamantinenyoi.extend", 'D', 10d, new EntityExtend.Jutsu());
-	public static final ItemJutsu.JutsuEnum PRISON = new ItemJutsu.JutsuEnum(2, "adamantine_prison", 'D', 10d, new EntityAdamantinePrison.EC.Jutsu());
+	public static final ItemJutsu.JutsuEnum EXTEND = new ItemJutsu.JutsuEnum(1, "tooltip.adamantinenyoi.extend", 'D', 50d, new EntityExtend.Jutsu());
+	public static final ItemJutsu.JutsuEnum PRISON = new ItemJutsu.JutsuEnum(2, "adamantine_prison", 'D', 50d, new EntityAdamantinePrison.EC.Jutsu());
 
 	public ItemAdamantineNyoi(ElementsNarutomodMod instance) {
 		super(instance, 851);
@@ -78,7 +76,7 @@ public class ItemAdamantineNyoi extends ElementsNarutomodMod.ModElement {
 		ModelLoader.setCustomModelResourceLocation(block, 0, new ModelResourceLocation("narutomod:adamantine_nyoi", "inventory"));
 	}
 
-	public static void giveNewStackTo(EntityPlayer player) {
+	public static ItemStack createStackBoundTo(EntityPlayer player) {
 		ItemStack stack1 = new ItemStack(block);
 		RangedItem item = (RangedItem)stack1.getItem();
 		item.setOwner(stack1, player);
@@ -86,7 +84,8 @@ public class ItemAdamantineNyoi extends ElementsNarutomodMod.ModElement {
 		item.addJutsuXp(stack1, WEAPON, item.getRequiredXp(stack1, WEAPON));
 		item.addJutsuXp(stack1, EXTEND, item.getRequiredXp(stack1, EXTEND));
 		item.addJutsuXp(stack1, PRISON, item.getRequiredXp(stack1, PRISON));
-		ItemHandlerHelper.giveItemToPlayer(player, stack1);
+		stack1.getTagCompound().setLong("1stGottenTime", player.world.getTotalWorldTime());
+		return stack1;
 	}
 
 	public static class RangedItem extends ItemJutsu.Base implements ItemOnBody.Interface {
@@ -134,6 +133,14 @@ public class ItemAdamantineNyoi extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		protected void onUsingEffects(EntityLivingBase player) {
+		}
+
+		@Override
+		public void onUpdate(ItemStack itemstack, World world, Entity entity, int par4, boolean par5) {
+			super.onUpdate(itemstack, world, entity, par4, par5);
+			if (!world.isRemote && world.getTotalWorldTime() > itemstack.getTagCompound().getLong("1stGottenTime") + 6000) {
+				itemstack.shrink(1);
+			}
 		}
 
 		private void setStaffEntity(ItemStack stack, EntityExtend entity) {

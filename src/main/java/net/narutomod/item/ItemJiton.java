@@ -178,7 +178,8 @@ public class ItemJiton extends ElementsNarutomodMod.ModElement {
 						ItemHandlerHelper.giveItemToPlayer(player, stack);
 					}
 				}
-				if (player.getItemStackFromSlot(EntityEquipmentSlot.CHEST).getItem() == ItemGourd.body
+				if ((player.getItemStackFromSlot(EntityEquipmentSlot.CHEST).getItem() == ItemGourd.body
+				  || (EntityBijuManager.getTails(player) == 1 && EntityBijuManager.cloakLevel(player) > 0))
 				 && this.getCurrentJutsu(itemstack) == SANDBULLET) {
 					EntitySandBullet.updateSwarms(itemstack);
 				}

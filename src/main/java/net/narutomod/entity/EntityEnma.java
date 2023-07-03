@@ -14,10 +14,12 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.SoundEvent;
@@ -31,13 +33,20 @@ import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
-import net.minecraft.client.renderer.entity.RenderLiving;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.model.ModelBox;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
+import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.client.renderer.entity.RenderLiving;
+import net.minecraft.client.renderer.entity.Render;
+import net.minecraft.client.renderer.RenderItem;
+import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraft.client.Minecraft;
 import net.minecraft.block.material.Material;
 import net.minecraft.init.SoundEvents;
+import net.minecraft.network.play.server.SPacketCollectItem;
 
 import com.google.common.base.Predicate;
 import javax.annotation.Nullable;
@@ -54,8 +63,10 @@ public class EntityEnma extends ElementsNarutomodMod.ModElement {
 
 	@Override
 	public void initElements() {
-		elements.entities.add(() -> EntityEntryBuilder.create().entity(EC.class).id(new ResourceLocation("narutomod", "enma"), ENTITYID)
-				.name("enma").tracker(84, 3, true).egg(-13358295, -3761328).build());
+		elements.entities.add(() -> EntityEntryBuilder.create().entity(EC.class)
+		 .id(new ResourceLocation("narutomod", "enma"), ENTITYID).name("enma").tracker(84, 3, true).egg(-13358295, -3761328).build());
+		elements.entities.add(() -> EntityEntryBuilder.create().entity(EntityStaff.class)
+		 .id(new ResourceLocation("narutomod", "enma_staff"), ENTITYID_RANGED).name("enma_staff").tracker(64, 3, true).build());
 	}
 
 	public static class EC extends EntitySummonAnimal.Base {
@@ -210,9 +221,7 @@ public class EntityEnma extends ElementsNarutomodMod.ModElement {
 				Entity entity1 = stack.hasTagCompound() ? entity.world.getEntityByID(stack.getTagCompound().getInteger(ID_KEY)) : null;
 				if (res != null && res.entityHit instanceof EC && res.entityHit.equals(entity1)) {
 					entity1.setDead();
-					if (entity instanceof EntityPlayer && !ProcedureUtils.hasItemInInventory((EntityPlayer)entity, ItemAdamantineNyoi.block)) {
-						ItemAdamantineNyoi.giveNewStackTo((EntityPlayer)entity);
-					}
+					entity.world.spawnEntity(new EntityStaff(entity, entity1.posX, entity1.posY, entity1.posZ));
 				} else if (!(entity1 instanceof EC) && power >= 1.0f) {
 					Particles.Renderer particles = new Particles.Renderer(entity.world);
 					particles.spawnParticles(Particles.Types.SEAL_FORMULA,
@@ -239,6 +248,64 @@ public class EntityEnma extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
+	public static class EntityStaff extends EntityScalableProjectile.Base {
+		private final int wait = 20;
+
+		public EntityStaff(World worldIn) {
+			super(worldIn);
+			this.setOGSize(0.5f, 0.5f);
+		}
+
+		public EntityStaff(EntityLivingBase summonerIn, double x, double y, double z) {
+			super(summonerIn);
+			this.setOGSize(0.5f, 0.5f);
+			this.setLocationAndAngles(x, y, z, (this.rand.nextFloat()-0.5f) * 360f, 0f);
+			this.motionY = 0.5d;
+		}
+
+		@Override
+		public void onUpdate() {
+			super.onUpdate();
+			if (this.ticksAlive > this.wait && this.shootingEntity != null && !this.onGround) {
+				Vec3d vec = this.shootingEntity.getPositionVector().subtract(this.getPositionVector());
+				this.shoot(vec.x, vec.y, vec.z, 0.9f, 0f);
+			}
+		}
+
+		@Override
+		public void renderParticles() {
+		}
+
+		@Override
+		public void onCollideWithPlayer(EntityPlayer entityIn) {
+			if (!this.world.isRemote) {
+				boolean flag = false;
+				boolean flag1 = ProcedureUtils.hasItemInInventory(entityIn, ItemAdamantineNyoi.block);
+				boolean flag2 = entityIn.equals(this.shootingEntity) && this.ticksAlive > 15;
+				if (flag2 && !flag1) {
+				 	ItemStack stack = ItemAdamantineNyoi.createStackBoundTo(entityIn);
+					flag = entityIn.inventory.addItemStackToInventory(stack);
+				}
+				if (flag) {
+	            	((WorldServer)this.world).getEntityTracker().sendToTracking(this, new SPacketCollectItem(this.getEntityId(), entityIn.getEntityId(), 1));
+				}
+				if (flag || (flag2 && flag1)) {
+					this.setDead();
+				}
+			}
+		}
+
+		@Override
+		protected void onImpact(RayTraceResult result) {
+			if (result.entityHit != null && result.entityHit.equals(this.shootingEntity)) {
+				return;
+			}
+			if (!this.world.isRemote && result.entityHit != null) {
+				result.entityHit.attackEntityFrom(DamageSource.causeIndirectDamage(this, this.shootingEntity), 18f);
+			}
+		}
+	}
+
 	@Override
 	public void preInit(FMLPreInitializationEvent event) {
 		new Renderer().register();
@@ -256,6 +323,41 @@ public class EntityEnma extends ElementsNarutomodMod.ModElement {
 					}
 				};
 			});
+			RenderingRegistry.registerEntityRenderingHandler(EntityStaff.class, renderManager -> {
+				return new RenderStaff(renderManager);
+			});
+		}
+
+		@SideOnly(Side.CLIENT)
+		public class RenderStaff extends Render<EntityStaff> {
+			protected final ItemStack item;
+			private final RenderItem itemRenderer;
+	
+			public RenderStaff(RenderManager renderManagerIn) {
+				super(renderManagerIn);
+				this.item = new ItemStack(ItemAdamantineNyoi.block);
+				this.itemRenderer = Minecraft.getMinecraft().getRenderItem();
+			}
+
+		    @Override
+		    public void doRender(EntityStaff entity, double x, double y, double z, float entityYaw, float partialTicks) {
+		    	float scale = entity.getEntityScale();
+		        GlStateManager.pushMatrix();
+		        GlStateManager.translate((float)x, (float)y, (float)z);
+		        GlStateManager.rotate(-ProcedureUtils.interpolateRotation(entity.prevRotationYaw, entity.rotationYaw, partialTicks), 0.0F, 1.0F, 0.0F);
+		        float f = entity.onGround ? entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks : (partialTicks + entity.ticksExisted) * 30.0F;
+		        GlStateManager.rotate(f, 1.0F, 0.0F, 0.0F);
+		        GlStateManager.translate(0.0F, scale * 0.25F, 0.0F);
+		        GlStateManager.scale(scale, scale, scale);
+		        this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+		        this.itemRenderer.renderItem(this.item, ItemCameraTransforms.TransformType.GROUND);
+		        GlStateManager.popMatrix();
+		    }
+		
+			@Override
+		    protected ResourceLocation getEntityTexture(EntityStaff entity) {
+		        return TextureMap.LOCATION_BLOCKS_TEXTURE;
+		    }
 		}
 
 		// Made with Blockbench 4.7.4

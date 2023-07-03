@@ -28,11 +28,9 @@ import net.narutomod.ElementsNarutomodMod;
 import java.util.Map;
 import java.util.List;
 import java.util.Iterator;
-import com.google.common.collect.Maps;
 import java.io.IOException;
 import io.netty.buffer.ByteBuf;
-//import net.minecraftforge.event.entity.living.LivingEquipmentChangeEvent;
-//import net.minecraft.inventory.EntityEquipmentSlot;
+import com.google.common.collect.Maps;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class ItemOnBody extends ElementsNarutomodMod.ModElement {
@@ -179,6 +177,10 @@ public class ItemOnBody extends ElementsNarutomodMod.ModElement {
 						if (entity instanceof EntityOtherPlayerMP) {
 							EntityOtherPlayerMP othermp = (EntityOtherPlayerMP)entity;
 //System.out.println("+++ from:"+entity+" to:"+mc.player.getName()+", cur:"+message.cur+", "+message.map+", old:"+othermp.inventory.currentItem+", "+othermp.inventory.mainInventory);
+							if (othermp.inventory.currentItem == 0 && message.cur != 0) {
+								ItemStack stack = message.map.get(0);
+								othermp.inventory.setInventorySlotContents(0, stack != null ? stack : ItemStack.EMPTY);
+							}
 							othermp.inventory.currentItem = message.cur;
 							for (Map.Entry<Integer, ItemStack> entry : message.map.entrySet()) {
 								othermp.inventory.setInventorySlotContents(entry.getKey(), entry.getValue());

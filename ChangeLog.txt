@@ -27,10 +27,11 @@ Items:
  - Ramen is now craftable and gives 25 seconds saturation
  - simplified hiraishin/3-prong kunai model to reduce client lag on rendering marker/kunai
  - fixed kiba sword duplication bug
- - implemented adamantine staff, can block, added extend (WIP) and adamantine prison
+ - implemented adamantine staff, can block, added extend and adamantine prison. 5 minutes duration
  - lowered armor protection values for dojutsus
  - fixed 6-path armor only showing obito variant to other players
  - fixed dropping owner free kg items
+ - re-modeled hiramekarei sword
  
 Entities:
  - re-textured white zetsu, itachi
