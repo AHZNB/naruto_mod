@@ -17,6 +17,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.particle.ParticleBlockDust;
+import net.minecraft.client.particle.ParticleRain;
 import net.minecraft.client.particle.ParticleSimpleAnimated;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.IParticleFactory;
@@ -84,6 +85,7 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 		Minecraft.getMinecraft().effectRenderer.registerParticle(Types.SONIC_BOOM.getID(), new SonicBoom.Factory());
 		Minecraft.getMinecraft().effectRenderer.registerParticle(Types.BLOCK_DUST.getID(), new BlockDust.Factory());
 		Minecraft.getMinecraft().effectRenderer.registerParticle(Types.SAND.getID(), new Sand.Factory());
+		Minecraft.getMinecraft().effectRenderer.registerParticle(Types.WATER_SPLASH.getID(), new WaterSplash.Factory());
 	}
 
 	public static void spawnParticle(World world, Types type, double x, double y, double z, int count, 
@@ -1447,6 +1449,27 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
+	@SideOnly(Side.CLIENT)
+	public static class WaterSplash extends ParticleRain {
+	    protected WaterSplash(World worldIn, double xCoordIn, double yCoordIn, double zCoordIn, double xSpeedIn, double ySpeedIn, double zSpeedIn, float scale) {
+	        super(worldIn, xCoordIn, yCoordIn, zCoordIn);
+	        this.setParticleTextureIndex(19 + this.rand.nextInt(3));
+	        this.particleScale *= scale;
+            this.motionX = xSpeedIn;
+            this.motionY = ySpeedIn;
+            this.motionZ = zSpeedIn;
+	    }
+	
+	    @SideOnly(Side.CLIENT)
+	    public static class Factory implements IParticleFactory {
+	        public Particle createParticle(int particleID, World worldIn, double xCoordIn, double yCoordIn, double zCoordIn,
+	        		double xSpeedIn, double ySpeedIn, double zSpeedIn, int... parameters) {
+	        	float arg0 = (parameters.length > 0) ? ((float)parameters[0] / 10.0F) : 1.0F;
+	            return new WaterSplash(worldIn, xCoordIn, yCoordIn, zCoordIn, xSpeedIn, ySpeedIn, zSpeedIn, arg0);
+	        }
+	    }
+	}
+
 	public enum Types {
 		SMOKE("smoke_colored", 54678400, 6), 
 		SUSPENDED("suspended_colored", 54678401, 3), 
@@ -1462,7 +1485,8 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 		WHIRLPOOL("whirlpool", 54678411, 4),
 		BLOCK_DUST("block_dust", 54678412, 2),
 		SONIC_BOOM("sonic_boom", 54678413, 4),
-		SAND("sand_colored", 54678414, 4);
+		SAND("sand_colored", 54678414, 4),
+		WATER_SPLASH("water_splash", 54678415, 1);
 		
 		private final String particleName;
 		private final int particleID;

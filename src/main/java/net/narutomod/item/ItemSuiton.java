@@ -41,12 +41,13 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.block.BlockLiquid;
 
-import net.narutomod.creativetab.TabModTab;
-import net.narutomod.ElementsNarutomodMod;
 import net.narutomod.entity.*;
 import net.narutomod.procedure.ProcedureAirPunch;
 import net.narutomod.procedure.ProcedureRenderView;
 import net.narutomod.procedure.ProcedureSync;
+import net.narutomod.creativetab.TabModTab;
+import net.narutomod.Particles;
+import net.narutomod.ElementsNarutomodMod;
 
 import java.util.UUID;
 import java.util.Random;
@@ -263,9 +264,9 @@ public class ItemSuiton extends ElementsNarutomodMod.ModElement {
 					this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:waterblast")), 0.5f, this.power / 30f);
 				}
 				this.shoot();
-				if (this.ticksAlive % 5 == 1) {
+				//if (this.ticksAlive % 2 == 1) {
 					this.stream.execute2((EntityLivingBase)this.shootingEntity, (double)this.power, 0.5d);
-				}
+				//}
 			}
 			if (this.ticksAlive > this.maxLife) {
 				this.setDead();
@@ -277,7 +278,21 @@ public class ItemSuiton extends ElementsNarutomodMod.ModElement {
 				this.blockDropChance = 0.4F;
 				this.blockHardnessLimit = 5f;
 				this.particlesPre = EnumParticleTypes.WATER_DROP;
-				this.particlesDuring = EnumParticleTypes.WATER_SPLASH;
+				this.particlesDuring = EnumParticleTypes.WATER_WAKE;
+			}
+
+			@Override
+			protected void preExecuteParticles(EntityLivingBase player) {
+				double range = this.getRange(0);
+				Particles.Renderer particles = new Particles.Renderer(player.world);
+				for (int i = 1, j = (int)(range * 5d); i < j; i++) {
+					Vec3d vec = EntityStream.this.getPositionVector().addVector((this.rand.nextDouble()-0.5d) * 0.25d,
+					 this.rand.nextDouble() * 0.25d, (this.rand.nextDouble()-0.5d) * 0.25d);
+					Vec3d vec3d = player.getLookVec().scale(range * (this.rand.nextDouble() * 0.5d + 0.5d) * 0.4d);
+					particles.spawnParticles(Particles.Types.WATER_SPLASH, vec.x, vec.y, vec.z,
+					 1, 0, 0, 0, vec3d.x, vec3d.y, vec3d.z, 10 + this.rand.nextInt(15));
+				}
+				particles.send();
 			}
 
 			@Override

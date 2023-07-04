@@ -371,7 +371,7 @@ public class PlayerRender extends ElementsNarutomodMod.ModElement {
 			ItemOnBody.BodyPart bodypart = ((ItemOnBody.Interface)stack.getItem()).showOnBody();
 			GlStateManager.pushMatrix();
 			ModelBiped model = this.playerRenderer.getMainModel();
-			model.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale, entityIn);
+			//model.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale, entityIn);
 			if (model.isSneak) {
 				GlStateManager.translate(0.0F, 0.2F, 0.0F);
 			}
