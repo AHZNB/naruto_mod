@@ -4,34 +4,34 @@
   "definition": {
     "renderType": 1,
     "texture": "kusanagi128",
-    "customModelName": "gauntletmetal:default",
+    "customModelName": "gauntletmetalalt:default",
     "name": "Metal Gauntlet",
     "specialInfo": [],
     "creativeTab": {
-      "value": "CUSTOM:ModTab"
+      "value": "No creative tab entry"
     },
     "stackSize": 1,
     "ammoItem": {
       "value": ""
     },
     "shootConstantly": false,
-    "usageCount": 500,
+    "usageCount": 0,
     "actionSound": {
-      "value": "CUSTOM:bullet"
+      "value": ""
     },
     "hasGlow": false,
     "animation": "bow",
     "enableMeleeDamage": false,
     "damageVsEntity": 0.0,
     "bulletPower": 1.0,
-    "bulletDamage": 8.0,
-    "bulletKnockback": 0,
+    "bulletDamage": 5.0,
+    "bulletKnockback": 5,
     "bulletParticles": false,
     "bulletIgnitesFire": false,
     "bulletItemTexture": {
-      "value": ""
+      "value": "CUSTOM:Gaunlet"
     },
-    "bulletModel": "ModelGauntletMetal",
-    "customBulletModelTexture": "gauntlet_metal_entity.png"
+    "bulletModel": "Default",
+    "customBulletModelTexture": ""
   }
 }
