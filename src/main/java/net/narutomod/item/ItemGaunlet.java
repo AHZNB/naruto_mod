@@ -1,11 +1,13 @@
 
 package net.narutomod.item;
 
+import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.creativetab.TabModTab;
 import net.narutomod.ElementsNarutomodMod;
 
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -14,50 +16,54 @@ import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 
 import net.minecraft.world.World;
-import net.minecraft.util.SoundCategory;
+import net.minecraft.world.WorldServer;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.ActionResult;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvent;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Item;
 import net.minecraft.item.EnumAction;
+import net.minecraft.entity.ai.attributes.AttributeModifier;
+import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.client.renderer.entity.RenderLivingBase;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.model.ModelBox;
 import net.minecraft.client.model.ModelBase;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.EntityDataManager;
-import javax.annotation.Nullable;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.MathHelper;
-import net.minecraftforge.fml.relauncher.ReflectionHelper;
-import net.minecraft.init.SoundEvents;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.util.DamageSource;
-import net.minecraft.block.material.Material;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.world.WorldServer;
 import net.minecraft.network.play.server.SPacketCollectItem;
-import net.minecraft.util.SoundEvent;
-import com.google.common.collect.Multimap;
-import net.minecraft.entity.ai.attributes.AttributeModifier;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.material.Material;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.inventory.EntityEquipmentSlot;
-import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.nbt.NBTTagCompound;
+
+import java.util.List;
+import javax.annotation.Nullable;
+import com.google.common.collect.Multimap;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class ItemGaunlet extends ElementsNarutomodMod.ModElement {
@@ -109,7 +115,7 @@ public class ItemGaunlet extends ElementsNarutomodMod.ModElement {
 				EntityCustom entityarrow = new EntityCustom(world, entity, itemstack);
 				entityarrow.shoot(entity.getLookVec().x, entity.getLookVec().y, entity.getLookVec().z, f * 2.0f, 0);
 				//entityarrow.setSilent(true);
-				entityarrow.setDamage(12d);
+				entityarrow.setDamage(9d);
 				//entityarrow.setKnockbackStrength(0);
 				world.playSound(null, entity.posX, entity.posY, entity.posZ, SoundEvent.REGISTRY
 				 .getObject(new ResourceLocation("narutomod:bullet")), SoundCategory.NEUTRAL,
@@ -132,9 +138,16 @@ public class ItemGaunlet extends ElementsNarutomodMod.ModElement {
 			return multimap;
 		}
 
+		@SideOnly(Side.CLIENT)
+		@Override
+		public void addInformation(ItemStack itemstack, World world, List<String> list, ITooltipFlag flag) {
+			super.addInformation(itemstack, world, list, flag);
+			list.add(net.minecraft.util.text.translation.I18n.translateToLocal("tooltip.gauntlet.shoot"));
+		}
+
 		@Override
 		public boolean hitEntity(ItemStack stack, EntityLivingBase target, EntityLivingBase attacker) {
-			stack.damageItem(-1, attacker);
+			stack.damageItem(1, attacker);
 			return true;
 		}
 
@@ -172,6 +185,9 @@ public class ItemGaunlet extends ElementsNarutomodMod.ModElement {
 		private static final DataParameter<Integer> SHOOTERID = EntityDataManager.<Integer>createKey(EntityCustom.class, DataSerializers.VARINT);
 		private double damage;
 		private ItemStack stack;
+		private EntityLivingBase grabbedEntity;
+		private Vec3d grabbedOffset;
+		private double chainMaxLength = 25.0d;
 
 		public EntityCustom(World a) {
 			super(a);
@@ -206,18 +222,39 @@ public class ItemGaunlet extends ElementsNarutomodMod.ModElement {
 			return entity instanceof EntityLivingBase ? (EntityLivingBase)entity : null;
 		}
 
+		private boolean setGrabbedEntity(@Nullable EntityLivingBase target) {
+			if (target == null) {
+				this.grabbedEntity = null;
+				this.grabbedOffset = null;
+			} else {
+				Vec3d vec0 = this.getPositionVector();
+				Vec3d vec1 = vec0.addVector(this.motionX, this.motionY, this.motionZ);
+				RayTraceResult res = target.getEntityBoundingBox().grow(0.3D).calculateIntercept(vec0, vec1);
+				if (res != null) {
+					this.grabbedEntity = target;
+					this.grabbedOffset = res.hitVec.subtract(target.getPositionVector()); //.rotateYaw(target.renderYawOffset * 0.0174533f);
+					this.motionX = 0.0d;
+					this.motionY = 0.0d;
+					this.motionZ = 0.0d;
+					return true;
+				}
+			}
+			return false;
+		}
+
 		@Override
 		protected void onHit(RayTraceResult raytraceResultIn) {
 			Entity entity = raytraceResultIn.entityHit;
 			if (entity != null) {
-				if (!entity.equals(this.shootingEntity)) {
+				EntityLivingBase shooter = this.getShooter();
+				if (!entity.equals(shooter) && !entity.equals(this.grabbedEntity)) {
+					if (this.grabbedEntity == null && entity instanceof EntityLivingBase) {
+						this.setGrabbedEntity((EntityLivingBase)entity);
+					}
 					float f = MathHelper.sqrt(this.getVelocitySq()) * (float)this.getDamage();
-					if (entity.attackEntityFrom(DamageSource.causeThrownDamage(this, this.shootingEntity), f)) {
+					if (entity.attackEntityFrom(DamageSource.causeThrownDamage(this, shooter), f)) {
 						if (entity instanceof EntityLivingBase) {
 							this.playSound(SoundEvents.ENTITY_ARROW_HIT, 1.0F, 1.2F / (this.rand.nextFloat() * 0.2F + 0.9F));
-							this.motionX *= 0.85d;
-							this.motionY *= 0.85d;
-							this.motionZ *= 0.85d;
 						}
 					} else {
 						this.motionX *= -0.1d;
@@ -256,9 +293,10 @@ public class ItemGaunlet extends ElementsNarutomodMod.ModElement {
 			return this.motionX * this.motionX + this.motionY * this.motionY + this.motionZ * this.motionZ;
 		}
 
-		public void retrieve(double x, double y, double z, float speed) {
-			this.inGround = false;
-			this.shoot(x, y, z, speed, 0f);
+		public void retrieve() {
+			if (this.chainMaxLength > 2.0d) {
+				this.chainMaxLength -= 0.5d;
+			}
 		}
 
 		@Override
@@ -272,9 +310,26 @@ public class ItemGaunlet extends ElementsNarutomodMod.ModElement {
 				if ((int)ReflectionHelper.getPrivateValue(EntityArrow.class, this, 12) > 1198) { // this.ticksInGround
 					ReflectionHelper.setPrivateValue(EntityArrow.class, this, 1000, 12);
 				}
-			} else if (this.shootingEntity != null && this.getDistance(this.shootingEntity) > 50d) {
-				this.motionX *= -0.4d;
-				this.motionZ *= -0.4d;
+			}
+			if (!this.world.isRemote && this.grabbedEntity != null) {
+				Vec3d vec = this.grabbedEntity.getPositionVector().add(this.grabbedOffset);
+				this.setPosition(vec.x, vec.y, vec.z);
+			}
+			if (this.shootingEntity != null && this.getDistance(this.shootingEntity) > this.chainMaxLength) {
+				Vec3d vec = this.getPositionVector().subtract(this.shootingEntity.getPositionVector()).normalize().scale(0.15d);
+				if (this.inGround || this.grabbedEntity != null) {
+					this.shootingEntity.addVelocity(vec.x, vec.y, vec.z);
+					this.shootingEntity.velocityChanged = true;
+				}
+				if (this.grabbedEntity != null) {
+					vec = vec.scale(-1.5d);
+					this.grabbedEntity.addVelocity(vec.x, vec.y, vec.z);
+					this.grabbedEntity.velocityChanged = true;
+				} else {
+					this.motionX *= -0.4d;
+					this.motionY *= -0.4d;
+					this.motionZ *= -0.4d;
+				}
 			}
 			if (!this.world.isRemote && this.stack == null) {
 				this.setDead();
@@ -289,10 +344,12 @@ public class ItemGaunlet extends ElementsNarutomodMod.ModElement {
 		public void onCollideWithPlayer(EntityPlayer entityIn) {
 			if (!this.world.isRemote && this.arrowShake <= 0) {
 				boolean flag = false;
+				ItemStack stack = this.getArrowStack();
+				entityIn.getCooldownTracker().setCooldown(stack.getItem(), 30);
 				if (this.shootingEntity == null && this.inGround) {
-					flag = entityIn.inventory.addItemStackToInventory(this.getArrowStack());
+					flag = entityIn.inventory.addItemStackToInventory(stack);
 				} else if (entityIn.equals(this.shootingEntity) && this.ticksExisted > 15) {
-					flag = entityIn.replaceItemInInventory(ItemGauntletThrown.getSlotId(entityIn), this.getArrowStack());
+					flag = entityIn.replaceItemInInventory(ItemGauntletThrown.getSlotId(entityIn), stack);
 				}
 				if (flag) {
 	            	((WorldServer)this.world).getEntityTracker().sendToTracking(this, new SPacketCollectItem(this.getEntityId(), entityIn.getEntityId(), 1));
@@ -349,6 +406,18 @@ public class ItemGaunlet extends ElementsNarutomodMod.ModElement {
 		public void doRender(EntityCustom bullet, double d, double d1, double d2, float f, float f1) {
 			this.bindEntityTexture(bullet);
 			GlStateManager.pushMatrix();
+			if (bullet.grabbedEntity != null) {
+				Vec3d vec0 = this.getPosVec(bullet.grabbedEntity, f1);
+				//float f2 = ProcedureUtils.interpolateRotation(bullet.grabbedEntity.prevRenderYawOffset, bullet.grabbedEntity.renderYawOffset, f1);
+				//float f2 = bullet.grabbedEntity.renderYawOffset;
+				//Vec3d vec = vec0.add(bullet.grabbedOffset.rotateYaw(f2));
+				Vec3d vec = vec0.add(bullet.grabbedOffset);
+				f = -ProcedureUtils.getYawFromVec(vec0.x - vec.x, vec0.z - vec.z);
+				bullet.setLocationAndAngles(vec.x, vec.y, vec.z, f, 0f);
+				d = vec.x - this.renderManager.viewerPosX;
+				d1 = vec.y - this.renderManager.viewerPosY;
+				d2 = vec.z - this.renderManager.viewerPosZ;
+			}
 			GlStateManager.translate((float) d, (float) d1, (float) d2);
 			GlStateManager.rotate(f, 0, 1, 0);
 			GlStateManager.rotate(90f - bullet.prevRotationPitch - (bullet.rotationPitch - bullet.prevRotationPitch) * f1, 1, 0, 0);
@@ -360,12 +429,22 @@ public class ItemGaunlet extends ElementsNarutomodMod.ModElement {
 		private void renderLineToShooter(EntityCustom entity, float pt) {
 			EntityLivingBase shooter = entity.getShooter();
 			if (shooter != null) {
-				this.renderLine(this.getPosVec(entity, pt), this.getPosVec(shooter, pt).addVector(0d, 1d, 0d));
+				ModelBiped model = (ModelBiped)((RenderLivingBase)this.renderManager.getEntityRenderObject(shooter)).getMainModel();
+				Vec3d vec = this.transform3rdPerson(new Vec3d(0.0d, -0.5825d, 0.0d),
+				 new Vec3d(model.bipedRightArm.rotateAngleX, model.bipedRightArm.rotateAngleY, model.bipedRightArm.rotateAngleZ),
+				 shooter, pt).addVector(0.0d, 0.275d, 0.0d);
+				this.renderLine(this.getPosVec(entity, pt), vec);
 			}
 		}
 
+		private Vec3d transform3rdPerson(Vec3d startvec, Vec3d angles, EntityLivingBase entity, float pt) {
+			return ProcedureUtils.rotateRoll(startvec, (float)-angles.z).rotatePitch((float)-angles.x).rotateYaw((float)-angles.y)
+			   .addVector(0.0586F * -6F, 1.02F-(entity.isSneaking()?0.3f:0f), 0.0F)
+			   .rotateYaw(-ProcedureUtils.interpolateRotation(entity.prevRenderYawOffset, entity.renderYawOffset, pt) * (float)(Math.PI / 180d))
+			   .add(this.getPosVec(entity, pt));
+		}
+
 		private Vec3d getPosVec(Entity entity, float pt) {
-			//return new Vec3d(entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * pt, entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * pt, entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * pt);
 			Vec3d vec1 = new Vec3d(entity.lastTickPosX, entity.lastTickPosY, entity.lastTickPosZ);
 			return entity.getPositionVector().subtract(vec1).scale(pt).add(vec1);
 		}

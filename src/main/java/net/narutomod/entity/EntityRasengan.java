@@ -359,7 +359,7 @@ public class EntityRasengan extends ElementsNarutomodMod.ModElement {
 		            GlStateManager.rotate(180F, 0.0F, 1.0F, 0.0F);
 	            	rotateArmIn1stPerson(owner, partialTicks);
 		            model.postRenderArm(0.0625F * 0.9375F, EnumHandSide.RIGHT);
-		            GlStateManager.translate(-0.125F, entity.height - 0.025F, 0.0F);
+		            GlStateManager.translate(-0.125F, entity.height - 0.175F, 0.0F);
 	            } else {
 					this.renderParticles(entity.world, ballVec.addVector(0.0d, entity.height/2, 0.0d), scale);
 					x = owner.lastTickPosX + (owner.posX - owner.lastTickPosX) * partialTicks - this.renderManager.viewerPosX;

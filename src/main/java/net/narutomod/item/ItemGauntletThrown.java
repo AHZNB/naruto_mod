@@ -19,19 +19,20 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Item;
 import net.minecraft.item.EnumAction;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.entity.item.EntityItem;
 
 import javax.annotation.Nullable;
+import java.util.List;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class ItemGauntletThrown extends ElementsNarutomodMod.ModElement {
@@ -84,16 +85,11 @@ public class ItemGauntletThrown extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
-		public void onPlayerStoppedUsing(ItemStack itemstack, World world, EntityLivingBase entityLivingBase, int timeLeft) {
-			if (!world.isRemote && entityLivingBase instanceof EntityPlayerMP) {
-				EntityPlayerMP entity = (EntityPlayerMP) entityLivingBase;
-				ItemGaunlet.EntityCustom itemEntity = this.getEntity(world, itemstack);
+		public void onUsingTick(ItemStack stack, EntityLivingBase entity, int timeLeft) {
+			if (!entity.world.isRemote) {
+				ItemGaunlet.EntityCustom itemEntity = this.getEntity(entity.world, stack);
 				if (itemEntity != null && entity.equals(itemEntity.getShooter())) {
-			        double d0 = entity.posX - itemEntity.posX;
-			        double d1 = entity.getEntityBoundingBox().minY + (double)entity.height / 3d - itemEntity.posY;
-			        double d2 = entity.posZ - itemEntity.posZ;
-			        double d3 = (double)MathHelper.sqrt(d0 * d0 + d2 * d2);
-			        itemEntity.retrieve(d0, d1 + d3 * 0.3D, d2, (float)MathHelper.sqrt(d3) * 0.3F);
+			        itemEntity.retrieve();
 				}
 			}
 		}
@@ -107,6 +103,13 @@ public class ItemGauntletThrown extends ElementsNarutomodMod.ModElement {
 					itemstack.shrink(1);
 				}
 			}
+		}
+
+		@SideOnly(Side.CLIENT)
+		@Override
+		public void addInformation(ItemStack itemstack, World world, List<String> list, ITooltipFlag flag) {
+			super.addInformation(itemstack, world, list, flag);
+			list.add(net.minecraft.util.text.translation.I18n.translateToLocal("tooltip.gauntletthrown.retrieve"));
 		}
 
 		@Override

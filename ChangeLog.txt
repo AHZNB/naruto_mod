@@ -33,7 +33,7 @@ Items:
  - fixed 6-path armor only showing obito variant to other players
  - fixed dropping owner free kg items
  - re-modeled hiramekarei sword
- - implementing Metal gauntlet (WIP)
+ - implementing Metal gauntlet (WIP), shoots claw connected to a chain, right click to pull
  
 Entities:
  - re-textured white zetsu, itachi
