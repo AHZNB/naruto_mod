@@ -199,7 +199,8 @@ public class EntityRasenshuriken extends ElementsNarutomodMod.ModElement {
 		protected void onImpact(RayTraceResult result) {
 			if ((result.typeOfHit == RayTraceResult.Type.BLOCK
 			  && this.world.getBlockState(result.getBlockPos()).getBlock() == BlockLightSource.block)
-			 || (result.entityHit != null && result.entityHit.equals(this.shootingEntity))) {
+			 || (result.entityHit != null && result.entityHit.equals(this.shootingEntity))
+			 || (result.typeOfHit == RayTraceResult.Type.BLOCK && this.fullScale > 1.0f && this.ticksInAir < 15)) {
 				return;
 			}
 			if (!this.world.isRemote && this.shootingEntity != null) {

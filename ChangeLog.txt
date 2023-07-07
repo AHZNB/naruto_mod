@@ -21,6 +21,7 @@ Jutsus:
  - lava melting jutsu must be charged to at least 1.0 to use
  - storm release thunder cloud no longer stuns enemy
  - nerfed earth sandwich damage by 50%
+ - large projectiles will ignore blocks within 15 ticks
 
 Items:
  - fixed explosive tags breaking blocks when mobGriefing false
@@ -33,7 +34,8 @@ Items:
  - fixed 6-path armor only showing obito variant to other players
  - fixed dropping owner free kg items
  - re-modeled hiramekarei sword
- - implementing Metal gauntlet (WIP), shoots claw connected to a chain, right click to pull
+ - added Metal gauntlet and recipe, shoots claw connected to a chain, right click to pull
+ - added chakra blades recipe
  
 Entities:
  - re-textured white zetsu, itachi

@@ -301,7 +301,8 @@ public class ItemShakuton extends ElementsNarutomodMod.ModElement {
 		@Override
 		protected void onImpact(RayTraceResult result) {
 			if (!this.world.isRemote) {
-				if (result.entityHit != null && result.entityHit.equals(this.shootingEntity)) {
+				if ((result.entityHit != null && result.entityHit.equals(this.shootingEntity))
+				 || (result.typeOfHit == RayTraceResult.Type.BLOCK && this.ticksInAir <= 15)) {
 					return;
 				}
 				boolean flag = net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.world, this.shootingEntity);

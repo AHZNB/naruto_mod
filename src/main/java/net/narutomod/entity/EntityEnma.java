@@ -222,7 +222,7 @@ public class EntityEnma extends ElementsNarutomodMod.ModElement {
 				if (res != null && res.entityHit instanceof EC && res.entityHit.equals(entity1)) {
 					entity1.setDead();
 					entity.world.spawnEntity(new EntityStaff(entity, entity1.posX, entity1.posY, entity1.posZ));
-				} else if (!(entity1 instanceof EC) && power >= 1.0f) {
+				} else if (!(entity1 instanceof EC) && (!(entity instanceof EntityPlayer) || !ProcedureUtils.hasItemInInventory((EntityPlayer)entity, ItemAdamantineNyoi.block)) && power >= 1.0f) {
 					Particles.Renderer particles = new Particles.Renderer(entity.world);
 					particles.spawnParticles(Particles.Types.SEAL_FORMULA,
 					 entity.posX, entity.posY + 0.015d, entity.posZ, 1, 0d, 0d, 0d, 0d, 0d, 0d, 40, 0, 60);

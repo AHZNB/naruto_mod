@@ -193,6 +193,7 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 				if (this.gate == 8) {
 					ProcedureUtils.setDeathAnimations(entity, 2, 200);
 				}
+				entity.addPotionEffect(new PotionEffect(MobEffects.HUNGER, 400, 2, false, false));
 				entity.addPotionEffect(new PotionEffect(MobEffects.WEAKNESS, this.gate * 600, (this.gate - 2) * 2));
 				entity.addPotionEffect(new PotionEffect(MobEffects.SLOWNESS, this.gate * 600, this.gate - 2));
 				if (this.canFly && entity instanceof EntityPlayer) {
@@ -201,10 +202,10 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 					player.capabilities.isFlying = false;
 					player.sendPlayerAbilities();
 				}
-				float f = entity.getMaxHealth();
-				if (f > 0.0f && entity.getHealth() > f) {
-					entity.setHealth(f);
-				}
+				//float f = entity.getMaxHealth();
+				//if (f > 0.0f && entity.getHealth() > f) {
+				//	entity.setHealth(f);
+				//}
 			}
 		}
 	}
@@ -787,6 +788,9 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 		protected void onImpact(RayTraceResult result) {
 			if (result.entityHit != null && result.entityHit.equals(this.shootingEntity))
 				return;
+			if (result.typeOfHit == RayTraceResult.Type.BLOCK && this.ticksInAir <= 15) {
+				return;
+			}
 			if (!this.world.isRemote && this.shootingEntity != null) {
 				ProcedureAoeCommand.set(this, 0.0D, 0.5d * this.getEntityScale()).exclude(this.shootingEntity)
 				 .damageEntities(DamageSource.causeIndirectDamage(this, this.shootingEntity).setDamageBypassesArmor(),

@@ -129,6 +129,9 @@ public class ItemKaton extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		protected void onImpact(RayTraceResult result) {
+			if (result.typeOfHit == RayTraceResult.Type.BLOCK && this.getEntityScale() >= 2.0f && this.ticksInAir <= 15) {
+				return;
+			}
 			if (!this.world.isRemote) {
 				if (this.shootingEntity != null) {
 					this.shootingEntity.getEntityData().setDouble(NarutomodModVariables.InvulnerableTime, 40d);

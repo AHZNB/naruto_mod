@@ -329,7 +329,7 @@ public class EntityRasengan extends ElementsNarutomodMod.ModElement {
 		}
 
 		private Vec3d transform3rdPerson(Vec3d startvec, Vec3d angles, EntityLivingBase entity, float pt) {
-			return ProcedureUtils.rotateRoll(startvec, (float)angles.z).rotatePitch((float)-angles.x).rotateYaw((float)-angles.y)
+			return ProcedureUtils.rotateRoll(startvec, (float)-angles.z).rotatePitch((float)-angles.x).rotateYaw((float)-angles.y)
 			   .addVector(0.0586F * -6F, 1.02F-(entity.isSneaking()?0.3f:0f), 0.0F)
 			   .rotateYaw((-entity.prevRenderYawOffset - (entity.renderYawOffset - entity.prevRenderYawOffset) * pt) * (float)(Math.PI / 180d))
 			   .addVector(entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * pt, entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * pt, entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * pt);
@@ -359,7 +359,7 @@ public class EntityRasengan extends ElementsNarutomodMod.ModElement {
 		            GlStateManager.rotate(180F, 0.0F, 1.0F, 0.0F);
 	            	rotateArmIn1stPerson(owner, partialTicks);
 		            model.postRenderArm(0.0625F * 0.9375F, EnumHandSide.RIGHT);
-		            GlStateManager.translate(-0.125F, entity.height - 0.175F, 0.0F);
+		            GlStateManager.translate(-0.125F, entity.height - 0.025F, 0.0F);
 	            } else {
 					this.renderParticles(entity.world, ballVec.addVector(0.0d, entity.height/2, 0.0d), scale);
 					x = owner.lastTickPosX + (owner.posX - owner.lastTickPosX) * partialTicks - this.renderManager.viewerPosX;

@@ -1,8 +1,8 @@
 {
   "id_map": {
-    "ENTITY": 428,
     "DIMENSION": 13,
-    "GUI": 64
+    "GUI": 64,
+    "ENTITY": 428
   },
   "mod_elements": [
     {
@@ -7164,6 +7164,24 @@
         "0": 428
       },
       "registry_name": "gauntlet_thrown"
+    },
+    {
+      "name": "ChakraBladesRecipe",
+      "type": "recipe",
+      "sortid": 854,
+      "compiles": true,
+      "locked_code": false,
+      "ids": {},
+      "registry_name": "chakra_blades_recipe"
+    },
+    {
+      "name": "GauntletRecipe",
+      "type": "recipe",
+      "sortid": 855,
+      "compiles": true,
+      "locked_code": false,
+      "ids": {},
+      "registry_name": "gauntlet_recipe"
     }
   ],
   "variable_elements": [
