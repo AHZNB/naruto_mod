@@ -9,17 +9,17 @@ import net.minecraftforge.fml.client.registry.RenderingRegistry;
 
 import net.minecraft.world.World;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.potion.PotionEffect;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 
 import net.narutomod.potion.PotionParalysis;
@@ -30,7 +30,6 @@ import net.narutomod.procedure.ProcedureSync;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.Chakra;
 import net.narutomod.ElementsNarutomodMod;
-import net.minecraft.entity.MultiPartEntityPart;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntitySandBind extends ElementsNarutomodMod.ModElement {
@@ -116,12 +115,9 @@ public class EntitySandBind extends ElementsNarutomodMod.ModElement {
 			}
 			boolean flag = this.capturedVec != null;
 			if (!flag && this.getEntityBoundingBox().intersects(this.targetEntity.getEntityBoundingBox())) {
-				//double d = this.getEntityBoundingBox().intersect(this.targetEntity.getEntityBoundingBox()).getAverageEdgeLength();
-				//flag = d > this.targetEntity.getEntityBoundingBox().getAverageEdgeLength() * 0.5d 
-				// && d > this.getEntityBoundingBox().getAverageEdgeLength() * 0.2d;
 				AxisAlignedBB bb = this.getEntityBoundingBox().intersect(this.targetEntity.getEntityBoundingBox());
 				flag = bb.equals(this.targetEntity.getEntityBoundingBox())
-				 && this.getEntityBoundingBox().getAverageEdgeLength() < this.targetEntity.getEntityBoundingBox().getAverageEdgeLength() * 1.5d;
+				 && this.getEntityBoundingBox().getAverageEdgeLength() < this.targetEntity.getEntityBoundingBox().getAverageEdgeLength() * 2.0d;
 			}
 			if (flag && this.capturedVec == null) {
 				this.capturedVec = this.targetEntity.getPositionVector();
@@ -179,16 +175,16 @@ public class EntitySandBind extends ElementsNarutomodMod.ModElement {
 			 && this.sandTarget != null && !this.sandTarget.shouldRemove() && this.targetEntity != null) {
 				if (this.targetEntity.isEntityAlive() && this.funeralTime != 0 && this.ticksExisted < MAXTIME) {
 					if (this.isTargetCaptured()) {
-						if (this.funeralTime < 0 && this.sandTarget.allParticlesReachedTarget()) {
-							this.sandTarget.setTarget(this.capturedVec, 0.0f, 0.0f, false);
-						} else if (this.funeralTime > 0) {
+						if (this.funeralTime > 0) {
 							this.sandTarget.setTarget(this.getTargetVector(), 0.95f, 0.03f, false);
 							this.attackTargetEntity(this.funeralDamage);
 							--this.funeralTime;
+						} else {
+							this.sandTarget.setTarget(this.getTargetVector(), this.getEntityBoundingBox().getAverageEdgeLength() < this.targetEntity.getEntityBoundingBox().getAverageEdgeLength() * 2.0d ? 0.0f : 0.3f, 0.0f, false);
 						}
 						this.holdTarget();
 					} else {
-						this.sandTarget.setTarget(this.getTargetVector(), false);
+						this.sandTarget.setTarget(this.getTargetVector(), 2.0f, 0.03f, false);
 					}
 				} else {
 					this.sandTarget.setTarget(this.getGourdMouthPos(), 0.8f, 0.02f, true);

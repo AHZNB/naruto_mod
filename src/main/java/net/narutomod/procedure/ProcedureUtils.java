@@ -61,16 +61,11 @@ import net.narutomod.NarutomodModVariables;
 import net.narutomod.ElementsNarutomodMod;
 
 import javax.annotation.Nullable;
-import java.util.UUID;
-import java.util.Random;
-import java.util.List;
-import java.util.Iterator;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Collection;
+import java.util.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.base.Predicates;
 import com.google.common.base.Predicate;
 
@@ -121,8 +116,7 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 					continue;
 				return player;
 			}
-		}
-*/
+		}*/
 		MinecraftServer mcserv = FMLCommonHandler.instance().getMinecraftServerInstance();
 		if (mcserv != null) {
 			Entity entity = mcserv.getEntityFromUuid(id);
@@ -964,7 +958,8 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static void poofWithSmoke(Entity entity) {
-		entity.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:poof")), 1f, 1f);
+		entity.world.playSound(null, entity.posX, entity.posY, entity.posZ,
+		 SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:poof")), SoundCategory.NEUTRAL, 1f, 1f);
 		Particles.spawnParticle(entity.world, Particles.Types.SMOKE, entity.posX, entity.posY+entity.height/2, entity.posZ,
 		 300, entity.width * 0.5d, entity.height * 0.3d, entity.width * 0.5d, 0d, 0d, 0d, 0xD0FFFFFF, 30);
 	}
@@ -1233,7 +1228,7 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 		public double dy;
 		public double dz;
 		private final List<AxisAlignedBB>[] hitsList = new List[6];
-		private final List<Entity> entitiesList = Lists.newArrayList();
+		private final Map<Entity, EnumFacing> entitiesList = Maps.newHashMap();
 
 		public CollisionHelper(Entity entityIn) {
 			this.entity = entityIn;
@@ -1273,9 +1268,10 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 			for (Entity entity1 : this.entity.world.getEntitiesInAABBexcluding(this.entity,
 			 this.entity.getEntityBoundingBox().expand(x, y, z), predicate)) {
 				if (entity1.canBeCollidedWith() && ItemJutsu.canTarget(entity1)) {
-					if (entity1.getEntityBoundingBox().grow(this.entity.width / 2, this.entity.height / 2,
-					 this.entity.width / 2).calculateIntercept(vec3d, vec3d2) != null) {
-						this.entitiesList.add(entity1);
+					RayTraceResult res = entity1.getEntityBoundingBox().grow(this.entity.width / 2,
+					 this.entity.height / 2, this.entity.width / 2).calculateIntercept(vec3d, vec3d2);
+					if (res != null) {
+						this.entitiesList.put(entity1, res.sideHit.getOpposite());
 					}
 				}
 			}
@@ -1388,8 +1384,29 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 			return null;
 		}
 
-		public List<Entity> getEntitiesHit() {
+		public Set<Entity> getEntitiesHit() {
+			return this.entitiesList.keySet();
+		}
+
+		public Map<Entity, EnumFacing> getEntitiesHitMap() {
 			return this.entitiesList;
+		}
+
+		public static void reposHitEntity(AxisAlignedBB referenceBB, Entity hitEntity, EnumFacing side) {
+			if (side == EnumFacing.WEST) {
+				hitEntity.posX = referenceBB.minX - hitEntity.width * 0.5;
+			} else if (side == EnumFacing.EAST) {
+				hitEntity.posX = referenceBB.maxX + hitEntity.width * 0.5;
+			} else if (side == EnumFacing.NORTH) {
+				hitEntity.posZ = referenceBB.minZ - hitEntity.width * 0.5;
+			} else if (side == EnumFacing.SOUTH) {
+				hitEntity.posZ = referenceBB.maxZ + hitEntity.width * 0.5;
+			} else if (side == EnumFacing.UP) {
+				hitEntity.posY = referenceBB.maxY;
+			} else {
+				hitEntity.posY = referenceBB.minY - hitEntity.height;
+			}
+			hitEntity.setPosition(hitEntity.posX, hitEntity.posY, hitEntity.posZ);
 		}
 	}
 

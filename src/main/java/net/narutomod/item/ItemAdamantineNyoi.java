@@ -52,6 +52,7 @@ import com.google.common.collect.Multimap;
 import com.google.common.base.Predicate;
 import javax.annotation.Nullable;
 import java.util.UUID;
+import java.util.Map;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class ItemAdamantineNyoi extends ElementsNarutomodMod.ModElement {
@@ -318,9 +319,11 @@ public class ItemAdamantineNyoi extends ElementsNarutomodMod.ModElement {
 							});
 							Vec3d vec2 = this.segment[i].collisionhelper.getUpdatedMotion();
 							float f = MathHelper.sqrt((float)vec2.lengthVector() * scale);
-							for (Entity entity : this.segment[i].collisionhelper.getEntitiesHit()) {
-								entity.attackEntityFrom(DamageSource.causeIndirectDamage(this, shooter), f * this.damage * 2);
-								ProcedureUtils.addVelocity(entity, vec2);
+							for (Map.Entry<Entity, EnumFacing> entry : this.segment[i].collisionhelper.getEntitiesHitMap().entrySet()) {
+								entry.getKey().attackEntityFrom(DamageSource.causeIndirectDamage(this, shooter), f * this.damage * 1.75f);
+								ProcedureUtils.CollisionHelper.reposHitEntity(this.segment[i].getEntityBoundingBox().offset(vec2), entry.getKey(), entry.getValue());
+								entry.getKey().addVelocity(vec2.x, vec2.y, vec2.z);
+								entry.getKey().velocityChanged = true;
 							}
 							if (this.segment[i].collisionhelper.anyBlockHits()) {
 								if (net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.world, shooter)) {

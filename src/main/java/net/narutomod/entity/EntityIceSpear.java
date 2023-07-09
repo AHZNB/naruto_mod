@@ -128,7 +128,7 @@ public class EntityIceSpear extends ElementsNarutomodMod.ModElement {
 				for (int i = 0; i < (int)(power * 3f); i++) {
 					Vec3d vec2 = vec1.addVector(entity.getRNG().nextDouble()-0.5d, entity.getRNG().nextDouble()-0.5d, entity.getRNG().nextDouble()-0.5d);
 					Vec3d vec3 = vec2.add(vec);
-					this.createJutsu(entity.world, entity, vec2.x, vec2.y, vec2.z, vec3.x, vec3.y, vec3.z, 0.99f, 0.05f);
+					this.createJutsu(entity.world, entity, vec2.x, vec2.y, vec2.z, vec3.x, vec3.y, vec3.z, 1.2f, 0.05f);
 				}
 				return true;
 			}
@@ -137,7 +137,7 @@ public class EntityIceSpear extends ElementsNarutomodMod.ModElement {
 				Vec3d vec1 = attacker.getPositionEyes(1f).add(attacker.getLookVec().scale(1.5d));
 				for (int i = 0; i < (int)(power * 3f); i++) {
 					Vec3d vec2 = vec1.addVector(attacker.getRNG().nextDouble()-0.5d, attacker.getRNG().nextDouble()-0.5d, attacker.getRNG().nextDouble()-0.5d);
-					this.createJutsu(attacker.world, attacker, vec2.x, vec2.y, vec2.z, target.posX, target.posY + target.height/2, target.posZ, 0.99f, 0.05f);
+					this.createJutsu(attacker.world, attacker, vec2.x, vec2.y, vec2.z, target.posX, target.posY + target.height/2, target.posZ, 1.2f, 0.05f);
 				}
 			}
 
@@ -149,8 +149,7 @@ public class EntityIceSpear extends ElementsNarutomodMod.ModElement {
 
 			public void createJutsu(World world, @Nullable EntityLivingBase shooter,
 			 double fromX, double fromY, double fromZ, double toX, double toY, double toZ, float speed, float inaccuracy) {
-				world.playSound(null, fromX, fromY, fromZ, (SoundEvent)SoundEvent.REGISTRY
-				 .getObject(new ResourceLocation("narutomod:ice_shoot_small")),
+				world.playSound(null, fromX, fromY, fromZ, SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:ice_shoot_small")),
 				 SoundCategory.NEUTRAL, 0.8f, world.rand.nextFloat() * 0.4f + 0.8f);
 				EC entity1 = shooter != null ? new EC(shooter) : new EC(world);
 				entity1.setEntityScale(0.5f);

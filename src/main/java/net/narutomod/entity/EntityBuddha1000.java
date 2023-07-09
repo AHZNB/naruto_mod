@@ -300,7 +300,7 @@ public class EntityBuddha1000 extends ElementsNarutomodMod.ModElement {
 						 .addVector(this.posX, this.posY + 0.625d * this.height, this.posZ);
 						Vec3d vec = res.hitVec.subtract(vec1);
 						EntityArm entity = new EntityArm(this, vec1.x, vec1.y, vec1.z, 500f);
-						entity.shoot(vec.x, vec.y, vec.z, 1.2f, 0f);
+						entity.shoot(vec.x, vec.y, vec.z, 1.5f, 0f);
 						this.world.spawnEntity(entity);
 						entity.setGrow(false);
 					}

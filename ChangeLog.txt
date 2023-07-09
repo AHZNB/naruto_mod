@@ -22,6 +22,7 @@ Jutsus:
  - storm release thunder cloud no longer stuns enemy
  - nerfed earth sandwich damage by 50%
  - large projectiles will ignore blocks within 15 ticks
+ - faster ice spears and sand binding
 
 Items:
  - fixed explosive tags breaking blocks when mobGriefing false
