@@ -575,12 +575,12 @@ public class EntityToad extends ElementsNarutomodMod.ModElement {
 		private final ModelRenderer bone2;
 		private final ModelRenderer head_r1;
 		private final ModelRenderer jaw;
-		//private final ModelRenderer head_r2;
 		private final ModelRenderer pipe;
 		private final ModelRenderer body;
 		private final ModelRenderer chest;
 		private final ModelRenderer bone6;
 		private final ModelRenderer bone11;
+		private final ModelRenderer chest_r1;
 		private final ModelRenderer bone5;
 		private final ModelRenderer bunda;
 		private final ModelRenderer bunda_r1;
@@ -649,22 +649,12 @@ public class EntityToad extends ElementsNarutomodMod.ModElement {
 			setRotationAngle(head_r1, 0.0436F, 0.0F, 3.1397F);
 			head_r1.cubeList.add(new ModelBox(head_r1, 51, 35, -2.0F, -0.55F, -0.375F, 4, 1, 1, 0.3F, false));
 	
-			/*jaw = new ModelRenderer(this);
-			jaw.setRotationPoint(0.04F, -1.0003F, -1.4417F);
-			head.addChild(jaw);
-			setRotationAngle(jaw, 0.0436F, 0.0F, 0.0F);
-			head_r2 = new ModelRenderer(this);
-			head_r2.setRotationPoint(0.0F, 0.0F, 0.0F);
-			jaw.addChild(head_r2);
-			setRotationAngle(head_r2, 0.0436F, 0.0F, 0.0F);
-			head_r2.cubeList.add(new ModelBox(head_r2, 0, 33, -4.5F, 0.4203F, -4.6505F, 9, 2, 8, 0.0F, false));*/
-			
 			jaw = new ModelRenderer(this);
 			jaw.setRotationPoint(0.04F, -0.5003F, -1.1917F);
 			head.addChild(jaw);
 			setRotationAngle(jaw, 0.0873F, 0.0F, 0.0F);
 			jaw.cubeList.add(new ModelBox(jaw, 0, 33, -4.5F, -0.0901F, -4.8784F, 9, 2, 8, 0.0F, false));
-		
+	
 			pipe = new ModelRenderer(this);
 			pipe.setRotationPoint(4.1917F, -0.5133F, -4.8393F);
 			head.addChild(pipe);
@@ -693,13 +683,19 @@ public class EntityToad extends ElementsNarutomodMod.ModElement {
 			bone11 = new ModelRenderer(this);
 			bone11.setRotationPoint(-0.2F, -1.5397F, 3.8827F);
 			chest.addChild(bone11);
-			bone11.cubeList.add(new ModelBox(bone11, 29, 28, -5.5F, -4.9657F, -6.7845F, 11, 6, 5, 0.0F, false));
+			
+	
+			chest_r1 = new ModelRenderer(this);
+			chest_r1.setRotationPoint(0.0F, -5.9657F, -1.8845F);
+			bone11.addChild(chest_r1);
+			setRotationAngle(chest_r1, 0.2443F, 0.0F, 0.0F);
+			chest_r1.cubeList.add(new ModelBox(chest_r1, 29, 28, -5.5F, 0.1254F, -4.9F, 11, 6, 5, 0.0F, false));
 	
 			bone5 = new ModelRenderer(this);
-			bone5.setRotationPoint(0.0F, 0.0343F, -7.4345F);
+			bone5.setRotationPoint(0.0F, 0.0343F, -5.6845F);
 			bone11.addChild(bone5);
-			setRotationAngle(bone5, 0.7854F, 0.0F, 0.0F);
-			bone5.cubeList.add(new ModelBox(bone5, 33, 0, -5.5F, 1.0076F, -0.1743F, 11, 6, 3, 0.0F, false));
+			setRotationAngle(bone5, 0.5323F, 0.0F, 0.0F);
+			bone5.cubeList.add(new ModelBox(bone5, 33, 0, -5.5F, 0.0076F, -0.0243F, 11, 6, 3, 0.0F, false));
 	
 			bunda = new ModelRenderer(this);
 			bunda.setRotationPoint(-0.242F, -6.0646F, 10.9442F);
@@ -754,6 +750,7 @@ public class EntityToad extends ElementsNarutomodMod.ModElement {
 			setRotationAngle(blade, 0.7854F, 0.1745F, 0.0F);
 			blade.cubeList.add(new ModelBox(blade, 0, 62, -4.25F, -0.5F, -0.5F, 8, 1, 1, 0.0F, false));
 			blade.cubeList.add(new ModelBox(blade, 18, 61, 3.75F, 0.0F, -0.5F, 10, 0, 1, 0.02F, false));
+			blade.cubeList.add(new ModelBox(blade, 18, 62, 3.5F, 0.0F, -0.5F, 1, 0, 1, 0.02F, false));
 	
 			armLeft = new ModelRenderer(this);
 			armLeft.setRotationPoint(5.05F, -0.68F, 2.554F);
