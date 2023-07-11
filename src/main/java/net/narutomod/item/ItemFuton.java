@@ -13,6 +13,7 @@ import net.minecraft.world.World;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Item;
 import net.minecraft.entity.player.EntityPlayer;
@@ -37,6 +38,7 @@ import net.narutomod.potion.PotionReach;
 
 import java.util.Random;
 import javax.annotation.Nullable;
+import net.minecraft.util.text.TextFormatting;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class ItemFuton extends ElementsNarutomodMod.ModElement {
@@ -126,15 +128,17 @@ public class ItemFuton extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void onUpdate(ItemStack itemstack, World world, Entity entity, int par4, boolean par5) {
 			super.onUpdate(itemstack, world, entity, par4, par5);
-			if (entity instanceof EntityPlayer && entity.ticksExisted % 10 == 3) {
+			if (!world.isRemote && entity instanceof EntityPlayer && entity.ticksExisted % 10 == 3) {
 				ItemStack stack1 = ProcedureUtils.getMatchingItemStack((EntityPlayer)entity, ItemNinjutsu.block);
 				boolean rasenshurikenEnabled = this.isJutsuEnabled(itemstack, RASENSHURIKEN);
 				boolean rasenganEnabled = stack1 != null
-				 ? ((ItemNinjutsu.RangedItem)stack1.getItem()).canUseJutsu(stack1, ItemNinjutsu.RASENGAN, (EntityPlayer)entity) : false;
+				 ? ((ItemNinjutsu.RangedItem)stack1.getItem()).canUseJutsu(stack1, ItemNinjutsu.RASENGAN, (EntityPlayer)entity)
+				  && ((ItemNinjutsu.RangedItem)stack1.getItem()).getXpRatio(stack1, ItemNinjutsu.RASENGAN) >= 1.0f : false;
 				if (rasenshurikenEnabled && !rasenganEnabled) {
 					this.enableJutsu(itemstack, RASENSHURIKEN, false);
 				} else if (!rasenshurikenEnabled && rasenganEnabled) {
 					this.enableJutsu(itemstack, RASENSHURIKEN, true);
+					((EntityPlayer)entity).sendStatusMessage(new TextComponentTranslation("chattext.jutsu.enabled", RASENSHURIKEN.getName()), false);
 				}
 			}
 		}

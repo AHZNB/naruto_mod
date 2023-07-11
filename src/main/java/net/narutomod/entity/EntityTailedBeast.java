@@ -503,7 +503,7 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 			if (this.equals(source.getTrueSource())) {
 				return false;
 			}
-			if (!source.isUnblockable()) {
+			if (!source.isUnblockable() && source.getTrueSource() != null) {
 				Vec3d vec3d = source.getDamageLocation();
 				if (vec3d != null) {
 					Vec3d vec3d1 = this.getLook(1.0F);

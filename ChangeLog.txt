@@ -23,6 +23,7 @@ Jutsus:
  - nerfed earth sandwich damage by 50%
  - large projectiles will ignore blocks within 15 ticks
  - faster ice spears and sand binding
+ - kirin will be auto unlocked when player fully learns chidori
 
 Items:
  - fixed explosive tags breaking blocks when mobGriefing false
@@ -46,6 +47,7 @@ Entities:
  - added ambient sounds for shukaku, songoku, chomei, isobu
  - fixed player's outer skin layer not synced with arms when naruto running
  - added Enma summon (use summon jutsu on Enma to turn him into the staff)
+ - increased itachi/kisame/zabuza spawn chances based on spawn weight
 
 General:
  - resets tailed beasts spawn point if natural spawning is disabled in config

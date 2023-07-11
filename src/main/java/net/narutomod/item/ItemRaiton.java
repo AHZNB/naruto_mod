@@ -15,6 +15,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Item;
 import net.minecraft.entity.player.EntityPlayer;
@@ -103,6 +104,18 @@ public class ItemRaiton extends ElementsNarutomodMod.ModElement {
 				return Math.min(f, 5.0f);
 			}
 			return f;
+		}
+
+		@Override
+		public void onUpdate(ItemStack itemstack, World world, Entity entity, int par4, boolean par5) {
+			super.onUpdate(itemstack, world, entity, par4, par5);
+			if (!world.isRemote && entity instanceof EntityPlayer && entity.ticksExisted % 10 == 3) {
+				if (((RangedItem)itemstack.getItem()).canUseJutsu(itemstack, CHIDORI, (EntityPlayer)entity)
+				 && ((RangedItem)itemstack.getItem()).getXpRatio(itemstack, CHIDORI) >= 1.0f && !this.isJutsuEnabled(itemstack, KIRIN)) {
+					this.enableJutsu(itemstack, KIRIN, true);
+					((EntityPlayer)entity).sendStatusMessage(new TextComponentTranslation("chattext.jutsu.enabled", KIRIN.getName()), false);
+				}
+			}
 		}
 
 		@Override

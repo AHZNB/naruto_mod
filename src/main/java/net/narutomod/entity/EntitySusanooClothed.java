@@ -95,7 +95,7 @@ public class EntitySusanooClothed extends ElementsNarutomodMod.ModElement {
 				this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).applyModifier(new AttributeModifier("susanoo.speedboost", 0.2D, 0));
 			}
 			if (!(entity instanceof EntityPlayer)) {
-				this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).applyModifier(new AttributeModifier("susanoo.maxhealth", 200.0d, 0));
+				this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).applyModifier(new AttributeModifier("susanoo.maxhealth", 400.0d, 0));
 				this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).applyModifier(new AttributeModifier("susanoo.damage", 40.0d, 0));
 				this.setFlameColor(0x20ec1c24);
 				this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(ItemTotsukaSword.block));

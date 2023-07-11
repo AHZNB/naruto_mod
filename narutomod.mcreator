@@ -1,8 +1,8 @@
 {
   "id_map": {
-    "GUI": 64,
+    "DIMENSION": 13,
     "ENTITY": 428,
-    "DIMENSION": 13
+    "GUI": 64
   },
   "mod_elements": [
     {
@@ -8564,6 +8564,7 @@
       "potion.effect.paralysis": "Paralysis",
       "item.shakuton.name": "Scorch Release",
       "entity.firestream.name": "Firestream",
+      "chattext.jutsu.enabled": "%s is now enabled!",
       "item.folding_fan.name": "Giant Folding Fan",
       "splash_potion.effect.feather_falling": "Splash Feather Falling",
       "tooltip.yooton.musthave": "Must have Earth \u0026 Fire release",

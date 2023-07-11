@@ -113,13 +113,13 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 		private final double AMATERASU_CHAKRA = 50d;
 		private final double SUSANOO_CHAKRA = 300d;
 		private final double INVIS_CHAKRA = 20d;
-		private static final int GENJUTSU_COOLDOWN = 5 * 20; // 10 seconds
+		private static final int GENJUTSU_COOLDOWN = 100; // 5 seconds
 		private boolean isReal;
 		private int lookedAtTime;
 		private final int genjutsuDuration = 200;
 		private int lastGenjutsuTime;
 		private int lastInvisTime;
-		private int lastSusanooTime;
+		private int lastSusanooTime = -600;
 		private EntitySusanooClothed.EntityCustom susanooEntity;
 
 		private final BossInfoServer bossInfo = new BossInfoServer(this.getDisplayName(), BossInfo.Color.RED, BossInfo.Overlay.PROGRESS);
@@ -332,8 +332,8 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 		@Override
 		public boolean getCanSpawnHere() {
 			return super.getCanSpawnHere()
-					&& this.world.getEntitiesWithinAABB(EntityCustom.class, this.getEntityBoundingBox().grow(128.0D)).isEmpty()
-					&& this.rand.nextInt(5) == 0;
+			 && this.world.getEntitiesWithinAABB(EntityCustom.class, this.getEntityBoundingBox().grow(128.0D)).isEmpty();
+			 //&& this.rand.nextInt(5) == 0;
 		}
 
 		@Override

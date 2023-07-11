@@ -416,6 +416,7 @@ tooltip.adamantinenyoi.block=Defend
 potion.effect.paralysis=Paralysis
 item.shakuton.name=Scorch Release
 entity.firestream.name=Firestream
+chattext.jutsu.enabled=%s is now enabled!
 item.folding_fan.name=Giant Folding Fan
 splash_potion.effect.feather_falling=Splash Feather Falling
 tooltip.yooton.musthave=Must have Earth & Fire release

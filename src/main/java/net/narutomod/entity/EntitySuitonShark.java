@@ -196,13 +196,13 @@ public class EntitySuitonShark extends ElementsNarutomodMod.ModElement {
 		protected void onImpact(RayTraceResult result) {
 			if (result.entityHit != null && result.entityHit.equals(this.shootingEntity))
 				return;
-			float size = this.getEntityScale();
-			if (result.typeOfHit == RayTraceResult.Type.BLOCK && size >= 2.0f && this.ticksInAir <= 15) {
+			if (result.typeOfHit == RayTraceResult.Type.BLOCK && this.fullScale >= 2.0f && this.ticksInAir <= 15) {
 				return;
 			}
 			if (!this.world.isRemote) {
 				if (result.typeOfHit == RayTraceResult.Type.BLOCK
 				 || (result.entityHit != null && result.entityHit.equals(this.target))) {
+					float size = this.getEntityScale();
 					ProcedureAoeCommand.set(this, 0.0D, size).exclude(this.shootingEntity)
 					  .damageEntities(ItemJutsu.causeJutsuDamage(this, this.shootingEntity), size * (this.isInWater() ? 24f : 16f));
 					this.world.newExplosion(this.shootingEntity, this.posX, this.posY, this.posZ, size * 2.0F, false,
