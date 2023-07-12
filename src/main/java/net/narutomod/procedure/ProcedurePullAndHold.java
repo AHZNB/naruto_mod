@@ -4,6 +4,7 @@ import net.minecraft.util.math.Vec3d;
 //import net.minecraft.entity.item.EntityFallingBlock;
 import net.minecraft.entity.Entity;
 
+import net.narutomod.item.ItemJutsu;
 import net.narutomod.entity.EntityEarthBlocks;
 
 import com.google.common.collect.Lists;
@@ -34,11 +35,13 @@ public class ProcedurePullAndHold {
 				} else {
 					this.grabbedEntity.setPositionAndUpdate(vec3d.x, vec3d.y - 0.5D, vec3d.z);
 				}
-			} else {
+			} else if (ItemJutsu.canTarget(this.grabbedEntity)) {
 				Vec3d vec3d = ProcedureUtils.raytraceBlocks(puller, 3d).hitVec;
-				//this.grabbedEntity.motionY += 0.05D;
-				this.grabbedEntity.setNoGravity(true);
+				this.grabbedEntity.motionY += 0.08D;
+				//this.grabbedEntity.setNoGravity(true);
 				this.grabbedEntity.setPositionAndUpdate(vec3d.x, vec3d.y - this.grabbedEntity.height / 2.0F, vec3d.z);
+			} else {
+				this.reset();
 			}
 		} else if (this.grabbedEntity != null) {
 			this.reset();

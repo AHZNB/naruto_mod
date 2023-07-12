@@ -1,6 +1,0 @@
-{
-  "parent": "narutomod:custom/scrolls",
-  "textures": {
-    "0": "narutomod:blocks/scroll_s"
-  }
-}

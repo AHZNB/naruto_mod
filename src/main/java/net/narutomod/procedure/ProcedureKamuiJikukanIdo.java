@@ -99,6 +99,10 @@ public class ProcedureKamuiJikukanIdo extends ElementsNarutomodMod.ModElement {
 					((EntityPlayer) entity).capabilities.allowEdit = (!(f2));
 					((EntityPlayer) entity).sendPlayerAbilities();
 				}
+				if (entity instanceof EntityPlayer) {
+					((EntityPlayer) entity).capabilities.isFlying = (f2);
+					((EntityPlayer) entity).sendPlayerAbilities();
+				}
 				ProcedureOnLivingUpdate.setNoClip(entity, f2);
 				if (entity instanceof EntityPlayer && !entity.world.isRemote) {
 					((EntityPlayer) entity).sendStatusMessage(new TextComponentString(

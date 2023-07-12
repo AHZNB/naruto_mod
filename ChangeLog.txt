@@ -24,6 +24,8 @@ Jutsus:
  - large projectiles will ignore blocks within 15 ticks
  - faster ice spears and sand binding
  - kirin will be auto unlocked when player fully learns chidori
+ - better kamui intangible maneuverability (flying)
+ - senpo big ball rasengan, ultra rasenshuriken and 6-path truth seeking rasenshuriken now causes senjutsu damage
 
 Items:
  - fixed explosive tags breaking blocks when mobGriefing false
@@ -38,6 +40,7 @@ Items:
  - re-modeled hiramekarei sword
  - added Metal gauntlet and recipe, shoots claw connected to a chain, right click to pull
  - added chakra blades recipe
+ - removed rasenshuriken scroll (its enabled when rasengan is fully learned)
  
 Entities:
  - re-textured white zetsu, itachi

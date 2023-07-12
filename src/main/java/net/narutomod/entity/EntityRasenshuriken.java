@@ -8,6 +8,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 
 import net.minecraft.world.World;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.SoundCategory;
@@ -67,13 +68,13 @@ public class EntityRasenshuriken extends ElementsNarutomodMod.ModElement {
 		private float fullScale;
 		private Vec3d impactVec;
 		protected float impactDamageMultiplier = 2.0f;
+		private DamageSource damageSource;
 
 		public EC(World a) {
 			super(a);
 			this.setOGSize(2.5F, 0.5F);
 			this.isImmuneToFire = true;
-			//for (int i = 0; i < this.s; i++ ) 
-			//	this.randomStartTick[i] = this.rand.nextInt(50);
+			this.damageSource = ItemJutsu.NINJUTSU_DAMAGE.setDamageBypassesArmor();
 		}
 
 		public EC(EntityLivingBase shooter, float scale) {
@@ -83,6 +84,7 @@ public class EntityRasenshuriken extends ElementsNarutomodMod.ModElement {
 			this.fullScale = scale;
 			this.setEntityScale(0.1f);
 			this.isImmuneToFire = true;
+			this.damageSource = ItemJutsu.causeJutsuDamage(this, shooter).setDamageBypassesArmor();
 		}
 
 		@Override
@@ -111,8 +113,7 @@ public class EntityRasenshuriken extends ElementsNarutomodMod.ModElement {
 		protected void doImpactDamage() {
 			ProcedureAoeCommand.set(this.world, this.impactVec.x, this.impactVec.y, this.impactVec.z, 0d, this.width/2)
 			  .exclude(this.shootingEntity).resetHurtResistanceTime()
-			  .damageEntities(ItemJutsu.causeJutsuDamage(this, this.shootingEntity).setDamageBypassesArmor(),
-			   this.fullScale * this.impactDamageMultiplier)
+			  .damageEntities(this.damageSource, this.fullScale * this.impactDamageMultiplier)
 			  .motion(0d, 0d, 0d);
 		}
 
@@ -247,11 +248,12 @@ public class EntityRasenshuriken extends ElementsNarutomodMod.ModElement {
 			}
 		}
 
-		private static EC create(EntityLivingBase entity, float power) {
-			entity.world.playSound(null, entity.posX, entity.posY, entity.posZ, (SoundEvent) 
+		private static EC create(EntityLivingBase entity, float power, boolean isSenjutsu) {
+			entity.world.playSound(null, entity.posX, entity.posY, entity.posZ,
 				  SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:rasenshuriken")),
 				  SoundCategory.PLAYERS, 5, 1f);
 			EC entity1 = new EC(entity, power);
+			entity1.damageSource = ItemJutsu.causeSenjutsuDamage(entity1, entity).setDamageBypassesArmor();
 			entity.world.spawnEntity(entity1);
 			return entity1;
 		}
@@ -260,7 +262,7 @@ public class EntityRasenshuriken extends ElementsNarutomodMod.ModElement {
 			@Override
 			public boolean createJutsu(ItemStack stack, EntityLivingBase entity, float power) {
 				if ((stack.getItem() == ItemFuton.block && power >= 0.1f) || (stack.getItem() == ItemSenjutsu.block && power >= 2.0f)) {
-					EC.create(entity, power);
+					EC.create(entity, power, stack.getItem() == ItemSenjutsu.block);
 					return true;
 				}
 				return false;
@@ -270,7 +272,7 @@ public class EntityRasenshuriken extends ElementsNarutomodMod.ModElement {
 		public static class TSBVariant implements ItemJutsu.IJutsuCallback {
 			@Override
 			public boolean createJutsu(ItemStack stack, EntityLivingBase entity, float power) {
-				EC entity1 = EC.create(entity, 4.0f);
+				EC entity1 = EC.create(entity, 4.0f, true);
 				entity1.setBallColor(0xE0101010);
 				entity1.impactDamageMultiplier = 8.0f;
 				return true;

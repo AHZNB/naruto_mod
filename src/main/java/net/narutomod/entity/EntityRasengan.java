@@ -6,12 +6,18 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
-//import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-//import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
-//import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 import net.minecraft.world.World;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.DamageSource;
+import net.minecraft.util.EnumHandSide;
+import net.minecraft.util.SoundEvent;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -31,19 +37,10 @@ import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.SoundEvent;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.EnumHandSide;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.init.SoundEvents;
 
 import net.narutomod.NarutomodModVariables;
 import net.narutomod.ElementsNarutomodMod;
-//import net.narutomod.NarutomodMod;
 import net.narutomod.Particles;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.procedure.ProcedureSync;
@@ -51,7 +48,6 @@ import net.narutomod.item.ItemSenjutsu;
 import net.narutomod.item.ItemNinjutsu;
 import net.narutomod.item.ItemJutsu;
 
-//import io.netty.buffer.ByteBuf;
 import java.util.List;
 import java.util.Random;
 import javax.annotation.Nullable;
@@ -69,7 +65,6 @@ public class EntityRasengan extends ElementsNarutomodMod.ModElement {
 	public void initElements() {
 		elements.entities.add(() -> EntityEntryBuilder.create().entity(EC.class)
 				.id(new ResourceLocation("narutomod", "rasengan"), ENTITYID).name("rasengan").tracker(64, 3, true).build());
-		//elements.addNetworkMessage(ArmRotationsPacket.Handler.class, ArmRotationsPacket.class, Side.SERVER);
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -86,11 +81,13 @@ public class EntityRasengan extends ElementsNarutomodMod.ModElement {
 		private ItemStack usingItemstack;
 		private float fullScale;
 		private Vec3d angles;
+		private DamageSource damageSource;
 
 		public EC(World a) {
 			super(a);
 			this.setOGSize(0.35F, 0.35F);
 			this.isImmuneToFire = true;
+			this.damageSource = ItemJutsu.NINJUTSU_DAMAGE;
 		}
 
 		public EC(EntityLivingBase shooter, float scale, ItemStack stack) {
@@ -102,6 +99,7 @@ public class EntityRasengan extends ElementsNarutomodMod.ModElement {
 			this.fullScale = scale;
 			this.usingItemstack = stack;
 			this.isImmuneToFire = true;
+			this.damageSource = ItemJutsu.causeJutsuDamage(this, shooter);
 		}
 
 		@Override
@@ -235,7 +233,7 @@ public class EntityRasengan extends ElementsNarutomodMod.ModElement {
 		public void applyEntityCollision(Entity entityIn) {
 			if (this.ticksAlive > this.growTime && this.shootingEntity != null
 			 && !entityIn.equals(this.shootingEntity) && !this.bunshinHasSameSummoner(entityIn)) {
-				if (entityIn.attackEntityFrom(ItemJutsu.causeJutsuDamage(this, this.shootingEntity), 10f + this.fullScale * this.fullScale * 20f)) {
+				if (entityIn.attackEntityFrom(this.damageSource, 10f + this.fullScale * this.fullScale * 20f)) {
 					this.playSound(SoundEvents.ENTITY_GENERIC_EXPLODE, 1.0F, this.rand.nextFloat() * 0.5F + 0.5F);
 					Vec3d vec = ProcedureUtils.pushEntity(this.shootingEntity, entityIn, 20d, 2f);
 					Vec3d vec1 = this.shootingEntity.getLookVec().add(this.shootingEntity.getPositionEyes(1.0f));
@@ -268,6 +266,9 @@ public class EntityRasengan extends ElementsNarutomodMod.ModElement {
 					entity.world.playSound(null, entity.posX, entity.posY, entity.posZ, SoundEvent.REGISTRY
 					  .getObject(new ResourceLocation("narutomod:rasengan_start")), SoundCategory.NEUTRAL, 1.0F, 1.0F);
 					EC entity2 = new EC(entity, power, stack);
+					if (stack.getItem() == ItemSenjutsu.block) {
+						entity2.damageSource = ItemJutsu.causeSenjutsuDamage(entity2, entity);
+					}
 					entity.world.spawnEntity(entity2);
 					stack.getTagCompound().setInteger(ID_KEY, entity2.getEntityId());
 					stack.getTagCompound().setFloat("RasenganSize", power);

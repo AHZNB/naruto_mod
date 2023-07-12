@@ -118,7 +118,7 @@ public class ProcedureBanShoTenin extends ElementsNarutomodMod.ModElement {
 	}
 
 	public class PlayerHook {
-		@SubscribeEvent(priority = EventPriority.LOW)
+		@SubscribeEvent(priority = EventPriority.HIGH)
 		public void onDeath(LivingDeathEvent event) {
 			Entity entity = event.getEntityLiving();
 			if (entity instanceof EntityPlayer && !entity.world.isRemote && map.containsKey(entity)) {
