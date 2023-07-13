@@ -26,6 +26,8 @@ Jutsus:
  - kirin will be auto unlocked when player fully learns chidori
  - better kamui intangible maneuverability (flying)
  - senpo big ball rasengan, ultra rasenshuriken and 6-path truth seeking rasenshuriken now causes senjutsu damage
+ - fixed kamui teleport damaging 1024 bug, now max is 1024 damage
+ - truth seeking orbs can only be damaged when launched or becomes a shield
 
 Items:
  - fixed explosive tags breaking blocks when mobGriefing false
@@ -41,6 +43,7 @@ Items:
  - added Metal gauntlet and recipe, shoots claw connected to a chain, right click to pull
  - added chakra blades recipe
  - removed rasenshuriken scroll (its enabled when rasengan is fully learned)
+ - better kusanagi sword's entity targeting
  
 Entities:
  - re-textured white zetsu, itachi

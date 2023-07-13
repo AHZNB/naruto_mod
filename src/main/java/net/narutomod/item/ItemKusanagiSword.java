@@ -183,7 +183,10 @@ public class ItemKusanagiSword extends ElementsNarutomodMod.ModElement {
 				if (this.target != null && this.target.isEntityAlive()) {
 					if (this.target.getDistance(this.shootingEntity) <= this.maxRange) {
 						Vec3d vec = this.target.getPositionEyes(1f).subtract(this.getPositionVector());
-						this.shoot(vec.x, vec.y, vec.z, 0.95f, 0f);
+						this.motionX *= 0.1d;
+						this.motionY *= 0.1d;
+						this.motionZ *= 0.1d;
+						this.shoot(vec.x, vec.y, vec.z, 9.5f, 0f);
 					} else {
 						this.target = null;
 						this.haltMotion();

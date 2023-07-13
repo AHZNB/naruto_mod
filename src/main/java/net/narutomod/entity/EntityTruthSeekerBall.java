@@ -140,6 +140,11 @@ public class EntityTruthSeekerBall extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
+		public boolean isImmuneToExplosions() {
+			return true;
+		}
+
+		@Override
 		public boolean attackEntityFrom(DamageSource source, float amount) {
 			if (!this.world.isRemote && !this.getIsInvulnerable()) {
 				if (ItemJutsu.isDamageSourceNinjutsu(source)) {
@@ -148,7 +153,7 @@ public class EntityTruthSeekerBall extends ElementsNarutomodMod.ModElement {
 						entity.setDead();
 					}
 				} else if (source.getTrueSource() == null || !source.getTrueSource().equals(this.shootingEntity)) {
-					if (this.hurtResistantTime > 10) {
+					if (this.hurtResistantTime > 10 || (!this.isLauchedAtTarget() && !this.isShieldOn())) {
 						return false;
 					}
 					this.hp -= amount;
@@ -206,6 +211,10 @@ public class EntityTruthSeekerBall extends ElementsNarutomodMod.ModElement {
 		@Nullable
 		public Entity getTarget() {
 			return this.target;
+		}
+
+		public boolean isLauchedAtTarget() {
+			return this.target != null && this.targetTime > 0;
 		}
 
 		public void setMaxScale(float scale) {
