@@ -105,11 +105,16 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 			this.setNoAI(player == null);
 		}
 
+		protected Vec3d getOffsetToOwner() {
+			return new Vec3d(0.0d, 0.0d, 4.0d);
+		}
+
 		@Override
 		protected void initEntityAI() {
 			super.initEntityAI();
 			this.tasks.addTask(0, new EntityAISwimming(this));
-			this.tasks.addTask(3, new AIStayInFrontOfOwner(this, 0d, 0d, 4d));
+			Vec3d vec = this.getOffsetToOwner();
+			this.tasks.addTask(3, new AIStayInFrontOfOwner(this, vec.x, vec.y, vec.z));
 			this.targetTasks.addTask(0, new AICopyOwnerTarget(this));
 		}
 

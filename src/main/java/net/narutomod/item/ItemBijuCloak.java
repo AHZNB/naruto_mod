@@ -452,7 +452,7 @@ public class ItemBijuCloak extends ElementsNarutomodMod.ModElement {
 	// Exported for Minecraft version 1.7 - 1.12
 	// Paste this class into your mod and generate all required imports
 	@SideOnly(Side.CLIENT)
-	private class ModelBijuCloak extends ModelBiped {
+	public class ModelBijuCloak extends ModelBiped {
 		//private final ModelRenderer bipedHead;
 		private final ModelRenderer earLeft[] = new ModelRenderer[6];
 		private final ModelRenderer earRight[] = new ModelRenderer[6];
@@ -482,6 +482,7 @@ public class ItemBijuCloak extends ElementsNarutomodMod.ModElement {
 		private int[] tailShowMap = { 0, 1, 6, 0x19, 0x1E, 0x1F, 0x1F8, 0x7F, 0x1FE, 0x1FF };
 		private boolean bodyShine;
 		private boolean layerShine;
+		private boolean narutoRunPose;
 		private final Random rand = new Random();
 	
 		public ModelBijuCloak(int tails) {
@@ -491,9 +492,9 @@ public class ItemBijuCloak extends ElementsNarutomodMod.ModElement {
 			bipedHead.setRotationPoint(0.0F, 0.0F, 0.0F);
 			bipedHead.cubeList.add(new ModelBox(bipedHead, 0, 0, -4.0F, -8.0F, -4.0F, 8, 8, 8, 0.6F, false));
 			earLeft[0] = new ModelRenderer(this);
-			earLeft[0].setRotationPoint(3.5F, -8.5F, -0.5F);
+			earLeft[0].setRotationPoint(3.5F, -8.25F, -0.5F);
 			bipedHead.addChild(earLeft[0]);
-			setRotationAngle(earLeft[0], 0.0F, 0.0F, 0.7854F);
+			setRotationAngle(earLeft[0], -0.5236F, 0.0F, 0.7854F);
 			earLeft[0].cubeList.add(new ModelBox(earLeft[0], 32, 0, -0.5F, -1.5F, -0.5F, 1, 2, 1, 0.8F, false));
 			earLeft[1] = new ModelRenderer(this);
 			earLeft[1].setRotationPoint(0.0F, -1.0F, 0.0F);
@@ -521,9 +522,9 @@ public class ItemBijuCloak extends ElementsNarutomodMod.ModElement {
 			setRotationAngle(earLeft[5], 0.0F, 0.0F, -0.1745F);
 			earLeft[5].cubeList.add(new ModelBox(earLeft[5], 32, 0, -0.5F, -1.5F, -0.5F, 1, 2, 1, -0.1F, false));
 			earRight[0] = new ModelRenderer(this);
-			earRight[0].setRotationPoint(-3.5F, -8.5F, -0.5F);
+			earRight[0].setRotationPoint(-3.5F, -8.25F, -0.5F);
 			bipedHead.addChild(earRight[0]);
-			setRotationAngle(earRight[0], 0.0F, 0.0F, -0.7854F);
+			setRotationAngle(earRight[0], -0.5236F, 0.0F, -0.7854F);
 			earRight[0].cubeList.add(new ModelBox(earRight[0], 32, 0, -0.5F, -1.5F, -0.5F, 1, 2, 1, 0.8F, false));
 			earRight[1] = new ModelRenderer(this);
 			earRight[1].setRotationPoint(0.0F, -1.0F, 0.0F);
@@ -1125,22 +1126,6 @@ public class ItemBijuCloak extends ElementsNarutomodMod.ModElement {
 		public void render(Entity entity, float f0, float f1, float f2, float f3, float f4, float f5) {
 			bipedHeadwear.showModel = false;
 			bipedBody.showModel = bipedBody.showModel && !bipedRightLeg.showModel && !bipedLeftLeg.showModel;
-			for (int i = 1; i < 6; i++) {
-				earLeft[i].rotateAngleX = -0.1745F + MathHelper.sin(f2 * 0.15F) * leftEarSwayX[i];
-				earLeft[i].rotateAngleZ = MathHelper.cos(f2 * 0.15F) * leftEarSwayZ[i];
-				earRight[i].rotateAngleX = 0.1745F + MathHelper.sin(f2 * 0.15F) * rightEarSwayX[i];
-				earRight[i].rotateAngleZ = MathHelper.cos(f2 * 0.15F) * rightEarSwayZ[i];
-			}
-			for (int i = 0; i < 9; i++) {
-				for (int j = 2; j < 8; j++) {
-					tail[i][j].rotateAngleX = 0.2618F + MathHelper.sin(f2 * 0.15F) * tailSwayX[i][j];
-					tail[i][j].rotateAngleZ = MathHelper.cos(f2 * 0.15F) * tailSwayZ[i][j];
-					if (i == 0) {
-						tailWear[i][j].rotateAngleX = tail[i][j].rotateAngleX;
-						tailWear[i][j].rotateAngleZ = tail[i][j].rotateAngleZ;
-					}
-				}
-			}
 			GlStateManager.pushMatrix();
 			GlStateManager.depthMask(true);
 			GlStateManager.matrixMode(5890);
@@ -1157,9 +1142,9 @@ public class ItemBijuCloak extends ElementsNarutomodMod.ModElement {
 			} else {
 				OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float)(k % 65536), (float)(k / 65536));
 			}
-			(Minecraft.getMinecraft()).entityRenderer.setupFogColor(true);
+			Minecraft.getMinecraft().entityRenderer.setupFogColor(true);
 			super.render(entity, f0, f1, f2, f3, f4, f5);// + MathHelper.sin(f2 * 0.1f) * 0.003125F + 0.00625F);
-			(Minecraft.getMinecraft()).entityRenderer.setupFogColor(false);
+			Minecraft.getMinecraft().entityRenderer.setupFogColor(false);
 			GlStateManager.matrixMode(5890);
 			GlStateManager.loadIdentity();
 			GlStateManager.matrixMode(5888);
@@ -1200,19 +1185,38 @@ public class ItemBijuCloak extends ElementsNarutomodMod.ModElement {
 			modelRenderer.rotateAngleZ = z;
 		}
 
-		/*@Override
+		@Override
 		public void setRotationAngles(float f, float f1, float f2, float f3, float f4, float f5, Entity e) {
+			if (this.narutoRunPose) {
+				this.isSneak = true;
+			}
 			super.setRotationAngles(f, f1, f2, f3, f4, f5, e);
 			for (int i = 1; i < 6; i++) {
-				earLeft[i].rotateAngleY += ((EntityLivingBase)e).getRNG().nextFloat() * 0.003125F;
-				earRight[i].rotateAngleY -= ((EntityLivingBase)e).getRNG().nextFloat() * 0.003125F;
+				earLeft[i].rotateAngleX = -0.1745F + MathHelper.sin(f2 * 0.15F) * leftEarSwayX[i];
+				earLeft[i].rotateAngleZ = MathHelper.cos(f2 * 0.15F) * leftEarSwayZ[i];
+				earRight[i].rotateAngleX = 0.1745F + MathHelper.sin(f2 * 0.15F) * rightEarSwayX[i];
+				earRight[i].rotateAngleZ = MathHelper.cos(f2 * 0.15F) * rightEarSwayZ[i];
 			}
 			for (int i = 0; i < 9; i++) {
-				for (int j = 0; j < 6; j++) {
-					tail[i][j].rotateAngleY += ((EntityLivingBase)e).getRNG().nextFloat() * 0.003125F * (i % 2 == 0 ? -1F : 1F);
+				for (int j = 2; j < 8; j++) {
+					tail[i][j].rotateAngleX = 0.2618F + MathHelper.sin(f2 * 0.15F) * tailSwayX[i][j];
+					tail[i][j].rotateAngleZ = MathHelper.cos(f2 * 0.15F) * tailSwayZ[i][j];
+					if (i == 0) {
+						tailWear[i][j].rotateAngleX = tail[i][j].rotateAngleX;
+						tailWear[i][j].rotateAngleZ = tail[i][j].rotateAngleZ;
+					}
 				}
 			}
+			if (this.narutoRunPose) {
+				bipedRightArm.rotateAngleX = 1.4835F;
+				bipedRightArm.rotateAngleY = -0.3927F;
+				bipedLeftArm.rotateAngleX = 1.4835F;
+				bipedLeftArm.rotateAngleY = 0.3927F;
+			}
 		}
-*/
+
+		public void setNarutoRunPose(boolean b) {
+			this.narutoRunPose = b;
+		}
 	}
 }

@@ -54,6 +54,7 @@ Entities:
  - fixed player's outer skin layer not synced with arms when naruto running
  - added Enma summon (use summon jutsu on Enma to turn him into the staff)
  - increased itachi/kisame/zabuza spawn chances based on spawn weight
+ - fixed gedo mazo crash when attacked
 
 General:
  - resets tailed beasts spawn point if natural spawning is disabled in config

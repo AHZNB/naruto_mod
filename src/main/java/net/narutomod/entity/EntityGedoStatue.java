@@ -327,7 +327,7 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 			 || source == DamageSource.STARVE) {
 				return false;
 			}
-			return attackEntityFrom(source, amount);
+			return super.attackEntityFrom(source, amount);
 		}
 
 		@Override

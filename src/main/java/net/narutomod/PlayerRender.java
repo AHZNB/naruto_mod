@@ -49,6 +49,7 @@ import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.Minecraft;
 
 import net.narutomod.item.ItemOnBody;
+import net.narutomod.item.ItemBijuCloak;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.procedure.ProcedureSync;
 
@@ -372,7 +373,7 @@ public class PlayerRender extends ElementsNarutomodMod.ModElement {
 			GlStateManager.pushMatrix();
 			ModelBiped model = this.playerRenderer.getMainModel();
 			//model.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale, entityIn);
-			if (model.isSneak) {
+			if (entityIn.isSneaking()) {
 				GlStateManager.translate(0.0F, 0.2F, 0.0F);
 			}
 			switch (bodypart) {
@@ -465,9 +466,16 @@ public class PlayerRender extends ElementsNarutomodMod.ModElement {
 	    }
 
 		private void renderArmorModel(ModelBiped model, Entity entityIn, float f0, float f1, float f2, float f3, float f4, float f5) {
-			if (shouldNarutoRun(entityIn) && model.swingProgress == 0.0f
+			if ((model.bipedRightArm.showModel || model.bipedLeftArm.showModel)
+			 && shouldNarutoRun(entityIn) && model.swingProgress == 0.0f
 			 && model.rightArmPose == ModelBiped.ArmPose.EMPTY && model.leftArmPose == ModelBiped.ArmPose.EMPTY) {
-				this.renderer.renderNarutoRun(model, entityIn, f0, f1, f2, f3, f4, f5);
+				if (model instanceof ItemBijuCloak.ModelBijuCloak) {
+					((ItemBijuCloak.ModelBijuCloak)model).setNarutoRunPose(true);
+					model.render(entityIn, f0, f1, f2, f3, f4, f5);
+					((ItemBijuCloak.ModelBijuCloak)model).setNarutoRunPose(false);
+				} else {
+					this.renderer.renderNarutoRun(model, entityIn, f0, f1, f2, f3, f4, f5);
+				}
 			} else {
 				model.render(entityIn, f0, f1, f2, f3, f4, f5);
 			}
