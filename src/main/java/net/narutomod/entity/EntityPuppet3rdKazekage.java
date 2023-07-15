@@ -26,6 +26,9 @@ import net.minecraft.client.model.ModelBox;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.entity.layers.LayerHeldItem;
+import net.minecraft.network.datasync.DataSerializers;
+import net.minecraft.network.datasync.DataParameter;
+import net.minecraft.network.datasync.EntityDataManager;
 
 import javax.annotation.Nullable;
 
@@ -40,12 +43,13 @@ public class EntityPuppet3rdKazekage extends ElementsNarutomodMod.ModElement {
 
 	@Override
 	public void initElements() {
-		elements.entities.add(
-				() -> EntityEntryBuilder.create().entity(EntityCustom.class).id(new ResourceLocation("narutomod", "puppet_3rd_kazekage"), ENTITYID)
-						.name("puppet_3rd_kazekage").tracker(64, 3, true).egg(-1, -1).build());
+		elements.entities.add(() -> EntityEntryBuilder.create().entity(EntityCustom.class)
+		 .id(new ResourceLocation("narutomod", "puppet_3rd_kazekage"), ENTITYID)
+		 .name("puppet_3rd_kazekage").tracker(64, 3, true).egg(-1, -1).build());
 	}
 
 	public static class EntityCustom extends EntityPuppet.Base {
+		private static final DataParameter<Boolean> MOUTH_OPEN = EntityDataManager.<Boolean>createKey(EntityCustom.class, DataSerializers.BOOLEAN);
 		public static final float MAXHEALTH = 40.0f;
 
 		public EntityCustom(World worldIn) {
@@ -69,12 +73,31 @@ public class EntityPuppet3rdKazekage extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
+		protected void entityInit() {
+			super.entityInit();
+			this.getDataManager().register(MOUTH_OPEN, Boolean.valueOf(false));
+		}
+
+		protected boolean isMouthOpen() {
+			return ((Boolean)this.getDataManager().get(MOUTH_OPEN)).booleanValue();
+		}
+
+		public void setMouthOpen(boolean down) {
+			this.getDataManager().set(MOUTH_OPEN, Boolean.valueOf(down));
+		}
+
+		@Override
 		protected void applyEntityAttributes() {
 			super.applyEntityAttributes();
 			this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(MAXHEALTH);
 			this.getAttributeMap().registerAttribute(SharedMonsterAttributes.ATTACK_DAMAGE);
 			this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(10D);
 			this.getEntityAttribute(SharedMonsterAttributes.FLYING_SPEED).setBaseValue(0.4D);
+		}
+
+		@Override
+		protected Vec3d getOffsetToOwner() {
+			return new Vec3d(-0.8d, 0.5d, 4.0d);
 		}
 
 		@Override
@@ -98,7 +121,7 @@ public class EntityPuppet3rdKazekage extends ElementsNarutomodMod.ModElement {
 		}
 
 		@SideOnly(Side.CLIENT)
-		public class RenderCustom extends EntityPuppet.Renderer<EntityCustom> {
+		public class RenderCustom extends EntityPuppet.ClientClass.Renderer<EntityCustom> {
 			private final ResourceLocation texture = new ResourceLocation("narutomod:textures/puppet_3rdkazekage.png");
 	
 			public RenderCustom(RenderManager renderManagerIn) {
@@ -119,6 +142,7 @@ public class EntityPuppet3rdKazekage extends ElementsNarutomodMod.ModElement {
 		public class ModelPuppetHundred extends ModelBiped {
 			//private final ModelRenderer bipedHead;
 			private final ModelRenderer jaw;
+			private final ModelRenderer jaw2;
 			//private final ModelRenderer bipedHeadwear;
 			private final ModelRenderer niceHair;
 			private final ModelRenderer cube_r1;
@@ -161,7 +185,13 @@ public class EntityPuppet3rdKazekage extends ElementsNarutomodMod.ModElement {
 				jaw = new ModelRenderer(this);
 				jaw.setRotationPoint(0.0F, -1.0F, 0.0F);
 				bipedHead.addChild(jaw);
-				jaw.cubeList.add(new ModelBox(jaw, 50, 24, -1.5F, -1.0F, -4.0F, 3, 2, 4, 0.0F, false));
+				jaw.cubeList.add(new ModelBox(jaw, 50, 24, -1.5F, -1.0F, -4.01F, 3, 2, 4, 0.0F, false));
+		
+				jaw2 = new ModelRenderer(this);
+				jaw2.setRotationPoint(0.0F, -1.0F, 0.0F);
+				bipedHead.addChild(jaw2);
+				jaw2.cubeList.add(new ModelBox(jaw2, 36, 24, -4.0F, -2.0F, -4.0F, 3, 3, 4, -0.01F, false));
+				jaw2.cubeList.add(new ModelBox(jaw2, 36, 24, 1.0F, -2.0F, -4.0F, 3, 3, 4, -0.01F, true));
 		
 				bipedHeadwear = new ModelRenderer(this);
 				bipedHeadwear.setRotationPoint(0.0F, 0.0F, 0.0F);
@@ -364,10 +394,19 @@ public class EntityPuppet3rdKazekage extends ElementsNarutomodMod.ModElement {
 					float fa = MathHelper.clamp((float)velocity / 0.3F, 0F, 1F);
 					bipedBody.rotateAngleX += fa * 0.7854F;
 					collar.rotateAngleX = fa * -0.2618F;
-					bipedRightArm.rotateAngleZ += fa * 1.3963F;
+					if (this.swingProgress <= 0.0F) {
+						bipedRightArm.rotateAngleZ += fa * 1.3963F;
+					}
 					bipedLeftArm.rotateAngleZ += fa * -1.3963F;
 					bipedRightLeg.rotateAngleX = 0.0F;
 					bipedLeftLeg.rotateAngleX = 0.0F;
+				}
+				if (((EntityCustom)e).isMouthOpen()) {
+					jaw.rotateAngleX = 0.2618F;
+					jaw2.rotateAngleX = 0.1745F;
+				} else {
+					jaw.rotateAngleX = 0.0F;
+					jaw2.rotateAngleX = 0.0F;
 				}
 			}
 		}

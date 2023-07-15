@@ -1,17 +1,18 @@
 package net.narutomod.event;
 
 import net.minecraft.world.World;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.world.WorldServer;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.entity.Entity;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.init.SoundEvents;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.block.material.Material;
+import net.minecraft.nbt.NBTTagCompound;
 
 import net.narutomod.procedure.ProcedureAoeCommand;
 import net.narutomod.procedure.ProcedureCameraShake;
@@ -84,7 +85,7 @@ public class EventSphericalExplosion extends SpecialEvent {
 		if (this.radius > 20) {
 			float f = 1f - this.tr / this.radius;
 			ProcedureCameraShake.sendToClients(this.world.provider.getDimension(), this.x0, this.y0, this.z0,
-			 32f * f + this.radius, 80, 8f * f);
+			 8f * MathHelper.sqrt(f) + this.tr, 80, 8f * f);
 		}
 		for (int i = 0; i < 1024; ) {
 			this.posList[0].setPos(this.x0 + this.tx, this.y0 + this.ty, this.z0 + this.tz);

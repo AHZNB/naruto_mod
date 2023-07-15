@@ -34,6 +34,7 @@ import net.minecraft.client.renderer.RenderItem;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.Minecraft;
 
+import net.narutomod.entity.EntityRendererRegister;
 import net.narutomod.creativetab.TabModTab;
 import net.narutomod.NarutomodModVariables;
 import net.narutomod.ElementsNarutomodMod;
@@ -60,11 +61,6 @@ public class ItemAshBones extends ElementsNarutomodMod.ModElement {
 		ModelLoader.setCustomModelResourceLocation(block, 0, new ModelResourceLocation("narutomod:ashbones", "inventory"));
 	}
 
-	@SideOnly(Side.CLIENT)
-	public void preInit(FMLPreInitializationEvent event) {
-		RenderingRegistry.registerEntityRenderingHandler(EntityArrowCustom.class, renderManager -> new RenderCustom(renderManager));
-	}
-	
 	public static class RangedItem extends Item {
 		public RangedItem() {
 			this.setMaxDamage(0);
@@ -90,9 +86,8 @@ public class ItemAshBones extends ElementsNarutomodMod.ModElement {
 				int x = (int) entity.posX;
 				int y = (int) entity.posY;
 				int z = (int) entity.posZ;
-				world.playSound((EntityPlayer) null, x, y, z,
-						(net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY
-								.getObject(new ResourceLocation("narutomod:hand_shoot")),
+				world.playSound(null, x, y, z, net.minecraft.util.SoundEvent.REGISTRY
+						.getObject(new ResourceLocation("narutomod:hand_shoot")),
 						SoundCategory.NEUTRAL, 1.0F, 1.0F / (itemRand.nextFloat() * 0.5F + 1.0F) + power / 2.0F);
 				entityarrow.pickupStatus = EntityArrow.PickupStatus.DISALLOWED;
 				world.spawnEntity(entityarrow);
@@ -187,47 +182,60 @@ public class ItemAshBones extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-	@SideOnly(Side.CLIENT)
-	public class RenderCustom extends Render<EntityArrowCustom> {
-		protected final Item item;
-		private final RenderItem itemRenderer;
+	@Override
+	public void preInit(FMLPreInitializationEvent event) {
+		new Renderer().register();
+	}
 
-		public RenderCustom(RenderManager renderManager) {
-			super(renderManager);
-			this.shadowSize = 0.1F;
-			this.item = block;
-			this.itemRenderer = Minecraft.getMinecraft().getRenderItem();
-		}
-
+	public static class Renderer extends EntityRendererRegister {
+		@SideOnly(Side.CLIENT)
 		@Override
-		public void doRender(EntityArrowCustom entity, double x, double y, double z, float entityYaw, float partialTicks) {
-	        GlStateManager.pushMatrix();
-	        GlStateManager.translate((float)x, (float)y, (float)z);
-	        GlStateManager.enableRescaleNormal();
-	        GlStateManager.rotate(entity.prevRotationYaw + (entity.rotationYaw - entity.prevRotationYaw) * partialTicks - 90F, 0.0F, 1.0F, 0.0F);
-	        GlStateManager.rotate(entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks, 0.0F, 0.0F, 1.0F);
-	        this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
-	        if (this.renderOutlines) {
-	            GlStateManager.enableColorMaterial();
-	            GlStateManager.enableOutlineMode(this.getTeamColor(entity));
-	        }
-	        this.itemRenderer.renderItem(this.getStackToRender(entity), ItemCameraTransforms.TransformType.GROUND);
-	        if (this.renderOutlines) {
-	            GlStateManager.disableOutlineMode();
-	            GlStateManager.disableColorMaterial();
-	        }
-	        GlStateManager.disableRescaleNormal();
-	        GlStateManager.popMatrix();
-	        super.doRender(entity, x, y, z, entityYaw, partialTicks);
+		public void register() {
+			RenderingRegistry.registerEntityRenderingHandler(EntityArrowCustom.class, renderManager -> new RenderCustom(renderManager));
 		}
 
-	    public ItemStack getStackToRender(EntityArrowCustom entityIn) {
-	        return new ItemStack(this.item);
-	    }
+		@SideOnly(Side.CLIENT)
+		public class RenderCustom extends Render<EntityArrowCustom> {
+			protected final Item item;
+			private final RenderItem itemRenderer;
 	
-		@Override
-	    protected ResourceLocation getEntityTexture(EntityArrowCustom entity) {
-	        return TextureMap.LOCATION_BLOCKS_TEXTURE;
-	    }
+			public RenderCustom(RenderManager renderManager) {
+				super(renderManager);
+				this.shadowSize = 0.1F;
+				this.item = block;
+				this.itemRenderer = Minecraft.getMinecraft().getRenderItem();
+			}
+	
+			@Override
+			public void doRender(EntityArrowCustom entity, double x, double y, double z, float entityYaw, float partialTicks) {
+		        GlStateManager.pushMatrix();
+		        GlStateManager.translate((float)x, (float)y, (float)z);
+		        GlStateManager.enableRescaleNormal();
+		        GlStateManager.rotate(entity.prevRotationYaw + (entity.rotationYaw - entity.prevRotationYaw) * partialTicks - 90F, 0.0F, 1.0F, 0.0F);
+		        GlStateManager.rotate(entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks, 0.0F, 0.0F, 1.0F);
+		        this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+		        if (this.renderOutlines) {
+		            GlStateManager.enableColorMaterial();
+		            GlStateManager.enableOutlineMode(this.getTeamColor(entity));
+		        }
+		        this.itemRenderer.renderItem(this.getStackToRender(entity), ItemCameraTransforms.TransformType.GROUND);
+		        if (this.renderOutlines) {
+		            GlStateManager.disableOutlineMode();
+		            GlStateManager.disableColorMaterial();
+		        }
+		        GlStateManager.disableRescaleNormal();
+		        GlStateManager.popMatrix();
+		        super.doRender(entity, x, y, z, entityYaw, partialTicks);
+			}
+	
+		    public ItemStack getStackToRender(EntityArrowCustom entityIn) {
+		        return new ItemStack(this.item);
+		    }
+		
+			@Override
+		    protected ResourceLocation getEntityTexture(EntityArrowCustom entity) {
+		        return TextureMap.LOCATION_BLOCKS_TEXTURE;
+		    }
+		}
 	}
 }

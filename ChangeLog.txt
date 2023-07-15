@@ -59,6 +59,7 @@ Entities:
 General:
  - resets tailed beasts spawn point if natural spawning is disabled in config
  - better naruto run
+ - reduced camera shake radius on custom explosions
 
 0.2.12-beta ===============================================================================
 

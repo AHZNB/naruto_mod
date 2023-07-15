@@ -108,7 +108,7 @@ public class EntityPuppetKarasu extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void register() {
 			RenderingRegistry.registerEntityRenderingHandler(EntityCustom.class, renderManager -> {
-				return new EntityPuppet.Renderer<EntityCustom>(renderManager, new ModelKarasu(), 0.5f) {
+				return new EntityPuppet.ClientClass.Renderer<EntityCustom>(renderManager, new ModelKarasu(), 0.5f) {
 					private final ResourceLocation texture = new ResourceLocation("narutomod:textures/karasu.png");
 					@Override
 					protected ResourceLocation getEntityTexture(EntityCustom entity) {

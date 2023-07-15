@@ -3,6 +3,8 @@ package net.narutomod.item;
 
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.entity.EntityPuppetHiruko;
+import net.narutomod.entity.EntityPuppet;
+import net.narutomod.entity.EntityRendererRegister;
 import net.narutomod.creativetab.TabModTab;
 import net.narutomod.ElementsNarutomodMod;
 
@@ -23,23 +25,15 @@ import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Item;
 import net.minecraft.item.EnumAction;
-import net.minecraft.entity.projectile.EntityTippedArrow;
-import net.minecraft.entity.projectile.EntityArrow;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.client.model.ModelRenderer;
-import net.minecraft.client.model.ModelBox;
-import net.minecraft.client.model.ModelBase;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.init.SoundEvents;
 
@@ -65,14 +59,6 @@ public class ItemScrollHiruko extends ElementsNarutomodMod.ModElement {
 	@SideOnly(Side.CLIENT)
 	public void registerModels(ModelRegistryEvent event) {
 		ModelLoader.setCustomModelResourceLocation(block, 0, new ModelResourceLocation("narutomod:scroll_hiruko", "inventory"));
-	}
-
-	@SideOnly(Side.CLIENT)
-	@Override
-	public void preInit(FMLPreInitializationEvent event) {
-		RenderingRegistry.registerEntityRenderingHandler(EntityArrowCustom.class, renderManager -> {
-			return new RenderCustom(renderManager);
-		});
 	}
 
 	public static class RangedItem extends Item implements ItemOnBody.Interface {
@@ -187,138 +173,31 @@ public class ItemScrollHiruko extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-	
-	@SideOnly(Side.CLIENT)
-	public class RenderCustom extends Render<EntityArrowCustom> {
-		private final ResourceLocation texture = new ResourceLocation("narutomod:textures/scroll_hiruko.png");
-		private final ModelScroll model = new ModelScroll();
-
-		public RenderCustom(RenderManager renderManager) {
-			super(renderManager);
-			shadowSize = 0.1f;
-		}
-
-		@Override
-		public void doRender(EntityArrowCustom bullet, double d, double d1, double d2, float f, float f1) {
-			this.bindEntityTexture(bullet);
-			GlStateManager.pushMatrix();
-			GlStateManager.translate((float) d, (float) d1, (float) d2);
-			GlStateManager.scale(2.0f, 2.0f, 2.0f);
-			GlStateManager.rotate(-f, 0, 1, 0);
-			GlStateManager.rotate(180f - bullet.prevRotationPitch - (bullet.rotationPitch - bullet.prevRotationPitch) * f1, 1, 0, 0);
-			this.model.render(bullet, 0, 0, f1 + bullet.ticksExisted, 0, 0, 0.0625f);
-			GlStateManager.popMatrix();
-		}
-
-		@Override
-		protected ResourceLocation getEntityTexture(EntityArrowCustom entity) {
-			return this.texture;
-		}
+	@Override
+	public void preInit(FMLPreInitializationEvent event) {
+		new Renderer().register();
 	}
 
-	// Made with Blockbench 4.4.2
-	// Exported for Minecraft version 1.7 - 1.12
-	// Paste this class into your mod and generate all required imports
-	@SideOnly(Side.CLIENT)
-	public class ModelScroll extends ModelBase {
-		private final ModelRenderer hinge;
-		private final ModelRenderer[] bone = new ModelRenderer[14];
-		public ModelScroll() {
-			textureWidth = 16;
-			textureHeight = 16;
-			hinge = new ModelRenderer(this);
-			hinge.setRotationPoint(0.0F, -0.85F, 0.0F);
-			hinge.cubeList.add(new ModelBox(hinge, 0, 0, -4.0F, -0.5F, -0.5F, 4, 1, 1, 0.1F, false));
-			hinge.cubeList.add(new ModelBox(hinge, 0, 0, 0.0F, -0.5F, -0.5F, 4, 1, 1, 0.1F, true));
-			bone[0] = new ModelRenderer(this);
-			bone[0].setRotationPoint(0.0F, 0.0F, 0.5F);
-			setRotationAngle(bone[0], -1.5708F, 0.0F, 0.0F);
-			bone[0].cubeList.add(new ModelBox(bone[0], 0, 2, -4.0F, 0.0F, 0.0F, 8, 1, 0, 0.0F, false));
-			bone[1] = new ModelRenderer(this);
-			bone[1].setRotationPoint(0.0F, 1.0F, 0.0F);
-			bone[0].addChild(bone[1]);
-			setRotationAngle(bone[1], -1.0472F, 0.0F, 0.0F);
-			bone[1].cubeList.add(new ModelBox(bone[1], 0, 3, -4.0F, 0.0F, 0.0F, 8, 1, 0, 0.0F, false));
-			bone[2] = new ModelRenderer(this);
-			bone[2].setRotationPoint(0.0F, 1.0F, 0.0F);
-			bone[1].addChild(bone[2]);
-			setRotationAngle(bone[2], -1.0472F, 0.0F, 0.0F);
-			bone[2].cubeList.add(new ModelBox(bone[2], 0, 4, -4.0F, 0.0F, 0.0F, 8, 1, 0, 0.0F, false));
-			bone[3] = new ModelRenderer(this);
-			bone[3].setRotationPoint(0.0F, 1.0F, 0.0F);
-			bone[2].addChild(bone[3]);
-			setRotationAngle(bone[3], -1.0472F, 0.0F, 0.0F);
-			bone[3].cubeList.add(new ModelBox(bone[3], 0, 5, -4.0F, 0.0F, 0.0F, 8, 1, 0, 0.0F, false));
-			bone[4] = new ModelRenderer(this);
-			bone[4].setRotationPoint(0.0F, 1.0F, 0.0F);
-			bone[3].addChild(bone[4]);
-			setRotationAngle(bone[4], -1.0472F, 0.0F, 0.0F);
-			bone[4].cubeList.add(new ModelBox(bone[4], 0, 6, -4.0F, 0.0F, 0.0F, 8, 1, 0, 0.0F, false));
-			bone[5] = new ModelRenderer(this);
-			bone[5].setRotationPoint(0.0F, 1.0F, 0.0F);
-			bone[4].addChild(bone[5]);
-			setRotationAngle(bone[5], -1.0472F, 0.0F, 0.0F);
-			bone[5].cubeList.add(new ModelBox(bone[5], 0, 7, -4.0F, 0.0F, 0.0F, 8, 1, 0, 0.0F, false));
-			bone[6] = new ModelRenderer(this);
-			bone[6].setRotationPoint(0.0F, 1.0F, 0.0F);
-			bone[5].addChild(bone[6]);
-			setRotationAngle(bone[6], -1.0472F, 0.0F, 0.0F);
-			bone[6].cubeList.add(new ModelBox(bone[6], 0, 8, -4.0F, 0.0F, 0.0F, 8, 1, 0, 0.0F, false));
-			bone[7] = new ModelRenderer(this);
-			bone[7].setRotationPoint(0.0F, 1.0F, 0.0F);
-			bone[6].addChild(bone[7]);
-			setRotationAngle(bone[7], -1.0472F, 0.0F, 0.0F);
-			bone[7].cubeList.add(new ModelBox(bone[7], 0, 9, -4.0F, 0.0F, 0.0F, 8, 1, 0, 0.0F, false));
-			bone[8] = new ModelRenderer(this);
-			bone[8].setRotationPoint(0.0F, 1.0F, 0.0F);
-			bone[7].addChild(bone[8]);
-			setRotationAngle(bone[8], -1.0472F, 0.0F, 0.0F);
-			bone[8].cubeList.add(new ModelBox(bone[8], 0, 10, -4.0F, 0.0F, 0.0F, 8, 1, 0, 0.0F, false));
-			bone[9] = new ModelRenderer(this);
-			bone[9].setRotationPoint(0.0F, 1.0F, 0.0F);
-			bone[8].addChild(bone[9]);
-			setRotationAngle(bone[9], -1.0472F, 0.0F, 0.0F);
-			bone[9].cubeList.add(new ModelBox(bone[9], 0, 11, -4.0F, 0.0F, 0.0F, 8, 1, 0, 0.0F, false));
-			bone[10] = new ModelRenderer(this);
-			bone[10].setRotationPoint(0.0F, 1.0F, 0.0F);
-			bone[9].addChild(bone[10]);
-			setRotationAngle(bone[10], -1.0472F, 0.0F, 0.0F);
-			bone[10].cubeList.add(new ModelBox(bone[10], 0, 12, -4.0F, 0.0F, 0.0F, 8, 1, 0, 0.0F, false));
-			bone[11] = new ModelRenderer(this);
-			bone[11].setRotationPoint(0.0F, 1.0F, 0.0F);
-			bone[10].addChild(bone[11]);
-			setRotationAngle(bone[11], -1.0472F, 0.0F, 0.0F);
-			bone[11].cubeList.add(new ModelBox(bone[11], 0, 13, -4.0F, 0.0F, 0.0F, 8, 1, 0, 0.0F, false));
-			bone[12] = new ModelRenderer(this);
-			bone[12].setRotationPoint(0.0F, 1.0F, 0.0F);
-			bone[11].addChild(bone[12]);
-			setRotationAngle(bone[12], -1.0472F, 0.0F, 0.0F);
-			bone[12].cubeList.add(new ModelBox(bone[12], 0, 14, -4.0F, 0.0F, 0.0F, 8, 1, 0, 0.0F, false));
-			bone[13] = new ModelRenderer(this);
-			bone[13].setRotationPoint(0.0F, 1.0F, 0.0F);
-			bone[12].addChild(bone[13]);
-			setRotationAngle(bone[13], -1.0472F, 0.0F, 0.0F);
-			bone[13].cubeList.add(new ModelBox(bone[13], 0, 15, -4.0F, 0.0F, 0.0F, 8, 1, 0, 0.0F, false));
-		}
-
+	public class Renderer extends EntityRendererRegister {
+		@SideOnly(Side.CLIENT)
 		@Override
-		public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
-			this.setRotationAngles(f, f1, f2, f3, f4, f5, entity);
-			hinge.render(f5);
-			bone[0].render(f5);
+		public void register() {
+			RenderingRegistry.registerEntityRenderingHandler(EntityArrowCustom.class, renderManager -> {
+				return new RenderCustom(renderManager);
+			});
 		}
 
-		public void setRotationAngle(ModelRenderer modelRenderer, float x, float y, float z) {
-			modelRenderer.rotateAngleX = x;
-			modelRenderer.rotateAngleY = y;
-			modelRenderer.rotateAngleZ = z;
-		}
-
-		@Override
-		public void setRotationAngles(float f, float f1, float f2, float f3, float f4, float f5, Entity e) {
-			super.setRotationAngles(f, f1, f2, f3, f4, f5, e);
-			for (int i = 1; i < bone.length; i++) {
-				bone[i].rotateAngleX = MathHelper.clamp(1.0F - f2 + i, 0.0F, 1.0F) * -1.0472F;
+		@SideOnly(Side.CLIENT)
+		public class RenderCustom extends EntityPuppet.ClientClass.RenderScroll<EntityArrowCustom> {
+			private final ResourceLocation texture = new ResourceLocation("narutomod:textures/scroll_hiruko.png");
+	
+			public RenderCustom(RenderManager renderManager) {
+				super(renderManager);
+			}
+	
+			@Override
+			protected ResourceLocation getEntityTexture(EntityArrowCustom entity) {
+				return this.texture;
 			}
 		}
 	}
