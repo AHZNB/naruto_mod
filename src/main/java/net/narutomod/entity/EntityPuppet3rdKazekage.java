@@ -1,6 +1,7 @@
 
 package net.narutomod.entity;
 
+import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.item.ItemClaw;
 import net.narutomod.ElementsNarutomodMod;
 
@@ -105,6 +106,10 @@ public class EntityPuppet3rdKazekage extends ElementsNarutomodMod.ModElement {
 			super.initEntityAI();
 			//this.tasks.addTask(1, new EntityAIAttackRanged(this, 1.0d, 20, 48f));
 			this.tasks.addTask(1, new EntityPuppet.Base.AIChargeAttack(this));
+		}
+
+		private boolean isMovingForward() {
+			return Math.abs(MathHelper.wrapDegrees(ProcedureUtils.getYawFromVec(this.motionX, this.motionZ) - this.rotationYaw)) < 90.0f;
 		}
 	}
 
@@ -389,9 +394,9 @@ public class EntityPuppet3rdKazekage extends ElementsNarutomodMod.ModElement {
 			@Override
 			public void setRotationAngles(float f, float f1, float f2, float f3, float f4, float f5, Entity e) {
 				super.setRotationAngles(0f, 0f, f2, f3, f4, f5, e);
-				double velocity = ((EntityCustom)e).getVelocity();
-				if (velocity > 0.001d) {
-					float fa = MathHelper.clamp((float)velocity / 0.3F, 0F, 1F);
+				double d = ((EntityCustom)e).getVelocity();
+				if (d > 0.001d && ((EntityCustom)e).isMovingForward()) {
+					float fa = MathHelper.clamp((float)d / 0.3F, 0F, 1F);
 					bipedBody.rotateAngleX += fa * 0.7854F;
 					collar.rotateAngleX = fa * -0.2618F;
 					if (this.swingProgress <= 0.0F) {

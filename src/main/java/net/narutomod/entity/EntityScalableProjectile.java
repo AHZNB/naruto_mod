@@ -114,6 +114,14 @@ public class EntityScalableProjectile extends ElementsNarutomodMod.ModElement {
 			this.motionZ = 0.0d;
 		}
 
+		protected void setMotionFactor(float f) {
+			this.motionFactor = f;
+		}
+
+		protected float getMotionFactor() {
+			return this.motionFactor;
+		}
+
 		/*public void onKillCommand() {
 		}*/
 

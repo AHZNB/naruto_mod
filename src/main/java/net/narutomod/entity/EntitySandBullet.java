@@ -66,10 +66,9 @@ public class EntitySandBullet extends ElementsNarutomodMod.ModElement {
 		}
 		@Override
 		public void doRender(EC entity, double x, double y, double z, float entityYaw, float partialTicks) {
-			/*for (int i = 0; i < 10; i++) {
-				entity.world.spawnParticle(EnumParticleTypes.SUSPENDED, entity.posX + rand.nextGaussian() * 0.1d, 
-				 entity.posY + rand.nextDouble() * 0.2d, entity.posZ + rand.nextGaussian() * 0.1d, 0d, 0d, 0d);
-			}*/
+			Particles.spawnParticle(entity.world, Particles.Types.SUSPENDED,
+			 x + this.renderManager.viewerPosX, y + this.renderManager.viewerPosY+0.1d, z + this.renderManager.viewerPosZ,
+			 5, 0.1d, 0.1d, 0.1d, 0d, 0d, 0d, entity.getColor(), 15, 5);
 		}
 		@Override
 		protected ResourceLocation getEntityTexture(EC entity) {
@@ -79,6 +78,8 @@ public class EntitySandBullet extends ElementsNarutomodMod.ModElement {
 
 	public static class EC extends EntityScalableProjectile.Base {
 		private static final DataParameter<Integer> COLOR = EntityDataManager.<Integer>createKey(EC.class, DataSerializers.VARINT);
+		private int delay;
+		private float ogMotionFactor;
 
 		public EC(World worldIn) {
 			super(worldIn);
@@ -86,14 +87,15 @@ public class EntitySandBullet extends ElementsNarutomodMod.ModElement {
 		}
 
 		public EC(EntityLivingBase shooter, ItemJiton.Type sandType) {
-			this(shooter, sandType, shooter.posX, shooter.posY + shooter.getEyeHeight(), shooter.posZ);
+			this(shooter, sandType, shooter.posX, shooter.posY + shooter.getEyeHeight(), shooter.posZ, 0);
 		}
 
-		public EC(EntityLivingBase shooter, ItemJiton.Type sandType, double x, double y, double z) {
+		public EC(EntityLivingBase shooter, ItemJiton.Type sandType, double x, double y, double z, int delayTicks) {
 			super(shooter);
 			this.setOGSize(0.2f, 0.2f);
 			this.setPosition(x, y, z);
 			this.setColor(sandType.getColor());
+			this.delay = delayTicks;
 		}
 
 		@Override
@@ -112,8 +114,17 @@ public class EntitySandBullet extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public void onUpdate() {
+			if (this.ticksAlive < this.delay) {
+				if (this.ogMotionFactor == 0f) {
+					this.ogMotionFactor = this.getMotionFactor();
+					this.setMotionFactor(0f);
+				}
+			} else if (this.ogMotionFactor != 0f) {
+				this.setMotionFactor(this.ogMotionFactor);
+				this.ogMotionFactor = 0f;
+			}
 			super.onUpdate();
-			if (this.ticksAlive > 80) {
+			if (this.ticksAlive > this.delay + 80) {
 				this.setDead();
 			}
 		}
@@ -121,11 +132,13 @@ public class EntitySandBullet extends ElementsNarutomodMod.ModElement {
 		@Override
 		protected void onImpact(RayTraceResult result) {
 			if (!this.world.isRemote) {
+				this.playSound(net.minecraft.util.SoundEvent.REGISTRY
+				 .getObject(new ResourceLocation("narutomod:bullet_impact")), 1f, 0.4f + this.rand.nextFloat() * 0.6f);
+				this.world.createExplosion(this.shootingEntity, result.hitVec.x, result.hitVec.y, result.hitVec.z, 3f,
+				  net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.world, this.shootingEntity));
 				if (result.entityHit instanceof EntityLivingBase) {
-					this.playSound((net.minecraft.util.SoundEvent)net.minecraft.util.SoundEvent.REGISTRY
-					 .getObject(new ResourceLocation("narutomod:bullet_impact")), 1f, 0.4f + this.rand.nextFloat() * 0.6f);
 					result.entityHit.hurtResistantTime = 10;
-					result.entityHit.attackEntityFrom(ItemJutsu.causeJutsuDamage(this, this.shootingEntity).setProjectile(), 10f);
+					result.entityHit.attackEntityFrom(ItemJutsu.causeJutsuDamage(this, this.shootingEntity).setProjectile(), 15f);
 					ProcedureUtils.pushEntity(this, result.entityHit, 10d, 3.0f);
 				}
 				this.setDead();
@@ -138,11 +151,10 @@ public class EntitySandBullet extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public void renderParticles() {
-			if (this.world.isRemote) {
-				Particles.spawnParticle(this.world, Particles.Types.SUSPENDED, this.posX, this.posY+0.1d, this.posZ,
- 				 10, 0.03d, 0.03d, 0.03d, 0d, 0d, 0d, this.getColor(), 10, 5);
-
-			}
+			//if (this.world.isRemote) {
+			//	Particles.spawnParticle(this.world, Particles.Types.SUSPENDED, this.posX, this.posY+0.1d, this.posZ,
+ 			//	 10, 0.03d, 0.03d, 0.03d, 0d, 0d, 0d, this.getColor(), 10, 5);
+			//}
 		}
 
 		public static class Jutsu implements ItemJutsu.IJutsuCallback {
@@ -151,24 +163,24 @@ public class EntitySandBullet extends ElementsNarutomodMod.ModElement {
 				List<ItemJiton.SwarmTarget> list = getStartPosList(stack);
 				if (list != null) {
 					Iterator<ItemJiton.SwarmTarget> iter = list.iterator();
-					while (iter.hasNext()) {
+					for (int i = 0; iter.hasNext(); i++) {
 						ItemJiton.SwarmTarget st = iter.next();
 						Vec3d vec = st.getTargetPos();
-						this.createJutsu(ItemJiton.getSandType(stack), entity, vec.x, vec.y, vec.z);
+						this.createJutsu(ItemJiton.getSandType(stack), entity, vec.x, vec.y, vec.z, i);
 						st.forceRemove();
 						iter.remove();
 					}
 				} else {
-					this.createJutsu(ItemJiton.getSandType(stack), entity, entity.posX, entity.posY + entity.getEyeHeight(), entity.posZ);
+					this.createJutsu(ItemJiton.getSandType(stack), entity, entity.posX, entity.posY + entity.getEyeHeight(), entity.posZ, 0);
 				}
 				return true;
 			}
 
-			public void createJutsu(ItemJiton.Type type, EntityLivingBase entity, double x, double y, double z) {
+			public void createJutsu(ItemJiton.Type type, EntityLivingBase entity, double x, double y, double z, int delay) {
 				entity.world.playSound(null, x, y, z, SoundEvents.BLOCK_SAND_PLACE,
 				 net.minecraft.util.SoundCategory.BLOCKS, 0.5f, entity.getRNG().nextFloat() * 0.4f + 0.6f);
 				Vec3d vec = entity.getLookVec();
-				EC entity1 = new EC(entity, type, x, y, z);
+				EC entity1 = new EC(entity, type, x, y, z, delay);
 				entity1.shoot(vec.x, vec.y, vec.z, 1.2f, 0.1f);
 				entity.world.spawnEntity(entity1);
 			}

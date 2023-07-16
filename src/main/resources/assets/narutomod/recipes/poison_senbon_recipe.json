@@ -1,0 +1,44 @@
+{
+  "group": "narutomod",
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "012",
+    "345",
+    "678"
+  ],
+  "key": {
+    "0": {
+      "item": "narutomod:senbon"
+    },
+    "1": {
+      "item": "narutomod:senbon"
+    },
+    "2": {
+      "item": "narutomod:senbon"
+    },
+    "3": {
+      "item": "narutomod:senbon"
+    },
+    "4": {
+      "item": "minecraft:lingering_potion",
+      "type": "minecraft:item_nbt",
+      "nbt": "{Potion:\"minecraft:strong_poison\"}"
+    },
+    "5": {
+      "item": "narutomod:senbon"
+    },
+    "6": {
+      "item": "narutomod:senbon"
+    },
+    "7": {
+      "item": "narutomod:senbon"
+    },
+    "8": {
+      "item": "narutomod:senbon"
+    }
+  },
+  "result": {
+    "item": "narutomod:poison_senbon",
+    "count": 8
+  }
+}

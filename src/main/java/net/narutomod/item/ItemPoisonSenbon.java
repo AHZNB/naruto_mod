@@ -8,29 +8,29 @@ import net.narutomod.ElementsNarutomodMod;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.common.registry.GameRegistry;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+//import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.event.ModelRegistryEvent;
-import net.minecraftforge.common.crafting.IShapedRecipe;
-import net.minecraftforge.registries.GameData;
+//import net.minecraftforge.common.crafting.IShapedRecipe;
+//import net.minecraftforge.registries.GameData;
 
 import net.minecraft.world.World;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.NonNullList;
+//import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipe;
+//import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.inventory.InventoryCrafting;
-import net.minecraft.potion.PotionUtils;
+//import net.minecraft.inventory.InventoryCrafting;
+//import net.minecraft.potion.PotionUtils;
 import net.minecraft.init.Enchantments;
-import net.minecraft.init.Items;
-import net.minecraft.init.PotionTypes;
+//import net.minecraft.init.Items;
+//import net.minecraft.init.PotionTypes;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class ItemPoisonSenbon extends ElementsNarutomodMod.ModElement {
@@ -137,7 +137,7 @@ public class ItemPoisonSenbon extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-	public static class RecipePoisonSenbon extends net.minecraftforge.registries.IForgeRegistryEntry.Impl<IRecipe> implements IShapedRecipe {
+	/*public static class RecipePoisonSenbon extends net.minecraftforge.registries.IForgeRegistryEntry.Impl<IRecipe> implements IShapedRecipe {
 	    @Override
 	    public boolean matches(InventoryCrafting inv, World worldIn) {
 	        if (inv.getWidth() == 3 && inv.getHeight() == 3) {
@@ -207,5 +207,5 @@ public class ItemPoisonSenbon extends ElementsNarutomodMod.ModElement {
 	@Override
 	public void init(FMLInitializationEvent event) {
 		GameData.register_impl(new RecipePoisonSenbon().setRegistryName(new ResourceLocation("narutomod", "poisonsenbon")));
-	}
+	}*/
 }

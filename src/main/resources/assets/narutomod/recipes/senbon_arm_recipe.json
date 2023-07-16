@@ -1,0 +1,43 @@
+{
+  "group": "narutomod",
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "012",
+    "345",
+    "678"
+  ],
+  "key": {
+    "0": {
+      "item": "narutomod:poison_senbon"
+    },
+    "1": {
+      "item": "narutomod:poison_senbon"
+    },
+    "2": {
+      "item": "narutomod:poison_senbon"
+    },
+    "3": {
+      "item": "narutomod:poison_senbon"
+    },
+    "4": {
+      "item": "minecraft:planks",
+      "data": 0
+    },
+    "5": {
+      "item": "narutomod:poison_senbon"
+    },
+    "6": {
+      "item": "narutomod:poison_senbon"
+    },
+    "7": {
+      "item": "minecraft:wooden_button"
+    },
+    "8": {
+      "item": "narutomod:poison_senbon"
+    }
+  },
+  "result": {
+    "item": "narutomod:senbon_arm",
+    "count": 1
+  }
+}

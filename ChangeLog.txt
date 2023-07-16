@@ -28,6 +28,7 @@ Jutsus:
  - senpo big ball rasengan, ultra rasenshuriken and 6-path truth seeking rasenshuriken now causes senjutsu damage
  - fixed kamui teleport damaging 1024 bug, now max is 1024 damage
  - truth seeking orbs can only be damaged when launched or becomes a shield
+ - updated sand bullets particle effects
 
 Items:
  - fixed explosive tags breaking blocks when mobGriefing false
@@ -44,6 +45,7 @@ Items:
  - added chakra blades recipe
  - removed rasenshuriken scroll (its enabled when rasengan is fully learned)
  - better kusanagi sword's entity targeting
+ - added recipies for posion bomb, poison senbon, and senbon puppet arm
  
 Entities:
  - re-textured white zetsu, itachi

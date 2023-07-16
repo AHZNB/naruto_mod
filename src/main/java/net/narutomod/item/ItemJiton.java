@@ -427,16 +427,20 @@ public class ItemJiton extends ElementsNarutomodMod.ModElement {
 					Particles.spawnParticle(this.world, Particles.Types.SAND,
 					 this.posX + (this.rand.nextDouble()-0.5d) * this.width,
 					 this.posY + this.rand.nextDouble() * this.height,
-					 this.posZ + (this.rand.nextDouble()-0.5d) * this.width,
-					 1, 0d, 0d, 0d,
+					 this.posZ + (this.rand.nextDouble()-0.5d) * this.width, 1, 0d, 0d, 0d,
 					 this.motionX * (this.rand.nextDouble() * 0.2d + 0.9d),
 					 this.motionY * (this.rand.nextDouble() * 0.2d + 0.9d),
 					 this.motionZ * (this.rand.nextDouble() * 0.2d + 0.9d),
-					 this.getColorInt(), (int)(this.getScale() * 8), 5);
+					 this.getColorInt(), (int)(this.getScale(0f) * 8), 5);
 				}
 			} else if (this.idleTime > 1000) {
 				this.setAge(this.getMaxAge());
 			}
+		}
+
+		@Override
+		public float getScale(float partialTicks) {
+			return MathHelper.clamp(((float)this.getAge() + partialTicks) / 10.0F, 0.2F, 1.0F) * this.getScale();
 		}
 	}
 
