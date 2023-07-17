@@ -24,6 +24,7 @@ Jutsus:
  - large projectiles will ignore blocks within 15 ticks
  - faster ice spears and sand binding
  - kirin will be auto unlocked when player fully learns chidori
+ - chidori minimum cooldown 5 seconds
  - better kamui intangible maneuverability (flying)
  - senpo big ball rasengan, ultra rasenshuriken and 6-path truth seeking rasenshuriken now causes senjutsu damage
  - fixed kamui teleport damaging 1024 bug, now max is 1024 damage

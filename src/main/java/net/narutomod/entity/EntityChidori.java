@@ -141,11 +141,14 @@ public class EntityChidori extends ElementsNarutomodMod.ModElement {
 			super.setDead();
 			if (!this.world.isRemote && this.summoner != null) {
 				ProcedureSync.EntityNBTTag.removeAndSync(this.summoner, NarutomodModVariables.forceBowPose);
-				ItemJutsu.IJutsuCallback.JutsuData jd = ItemRaiton.CHIDORI.jutsu.getData(this.summoner);
-				if (jd != null) {
-					ItemJutsu.Base item = (ItemJutsu.Base)jd.stack.getItem();
-					item.setJutsuCooldown(jd.stack, ItemRaiton.CHIDORI, (long)((float)this.ticksExisted * item.getModifier(jd.stack, this.summoner)));
-					jd.stack.getTagCompound().removeTag(Jutsu.ID_KEY);
+				if (this.getClass() == EC.class) {
+					ItemJutsu.IJutsuCallback.JutsuData jd = ItemRaiton.CHIDORI.jutsu.getData(this.summoner);
+					if (jd != null) {
+						ItemJutsu.Base item = (ItemJutsu.Base)jd.stack.getItem();
+						item.setJutsuCooldown(jd.stack, ItemRaiton.CHIDORI,
+						 (long)((float)this.ticksExisted * item.getModifier(jd.stack, this.summoner)) + 100);
+						jd.stack.getTagCompound().removeTag(Jutsu.ID_KEY);
+					}
 				}
 			}
 		}

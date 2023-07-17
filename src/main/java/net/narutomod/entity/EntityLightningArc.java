@@ -108,6 +108,7 @@ public class EntityLightningArc extends ElementsNarutomodMod.ModElement {
 		private static final DataParameter<Integer> COLOR = EntityDataManager.<Integer>createKey(Base.class, DataSerializers.VARINT);
 		private static final DataParameter<Float> THICKNESS = EntityDataManager.<Float>createKey(Base.class, DataSerializers.FLOAT);
 		private static final DataParameter<Integer> MAX_RECURSIVE_DEPTH = EntityDataManager.<Integer>createKey(Base.class, DataSerializers.VARINT);
+		//private static final DataParameter<Boolean> IS_STATIC = EntityDataManager.<Boolean>createKey(Base.class, DataSerializers.BOOLEAN);
 		private Vec3d ogEndVec;
 		private float inaccuracy;
 		private int livingTime;
@@ -116,6 +117,8 @@ public class EntityLightningArc extends ElementsNarutomodMod.ModElement {
 		private float damageAmount;
 		private boolean resetHurtResistantTime;
 		private int paralysisTicks;
+		private final Vec3d[] segment = new Vec3d[65];
+		private int segmentIndex;
 		
 		public Base(World worldIn) {
 			super(worldIn);
@@ -182,6 +185,7 @@ public class EntityLightningArc extends ElementsNarutomodMod.ModElement {
 			this.getDataManager().register(COLOR, Integer.valueOf(-1));
 			this.getDataManager().register(THICKNESS, Float.valueOf(0f));
 			this.getDataManager().register(MAX_RECURSIVE_DEPTH, Integer.valueOf(4));
+			//this.getDataManager().register(IS_STATIC, Boolean.valueOf(false));
 		}
 
 		public Vec3d getEndVec() {
@@ -219,6 +223,14 @@ public class EntityLightningArc extends ElementsNarutomodMod.ModElement {
 		private void setMaxRecursiveDepth(int depth) {
 			this.getDataManager().set(MAX_RECURSIVE_DEPTH, Integer.valueOf(depth));
 		}
+
+		/*public boolean isStatic() {
+			return ((Boolean)this.getDataManager().get(IS_STATIC)).booleanValue();
+		}
+
+		public void setStatic(boolean b) {
+			this.getDataManager().set(IS_STATIC, Boolean.valueOf(b));
+		}*/
 
 		public void setDamage(DamageSource source, float amount, @Nullable EntityLivingBase entity) {
 			this.setDamage(source, amount, false, entity, 100);
@@ -297,6 +309,7 @@ public class EntityLightningArc extends ElementsNarutomodMod.ModElement {
 		public class RenderCustom extends Render<Base> {
 			private final double segmentOffset = 0.1d;
 			private int maxRecursiveDepth;
+			private final Random rand = new Random();
 
 			public RenderCustom(RenderManager renderManagerIn) {
 				super(renderManagerIn);
@@ -321,6 +334,18 @@ public class EntityLightningArc extends ElementsNarutomodMod.ModElement {
 				d = d == 0d ? Math.max(vec3d.lengthVector() * 0.004d, 0.0006d) : d;
 				this.renderSection(new Vec3d(0d, 0d, 0d), new Vec3d(0d, 0d, vec3d.lengthVector()), d, entity.getColor(), 0, false);
 				GlStateManager.popMatrix();
+			}
+
+			private void calcSections(Base entity, Vec3d fromVec, Vec3d toVec, int recursiveDepth) {
+				if (recursiveDepth == this.maxRecursiveDepth) {
+					entity.segment[entity.segmentIndex++] = toVec;
+				} else {
+					Vec3d vec3d = toVec.subtract(fromVec).scale(0.5d);
+					double offset = vec3d.lengthVector() * this.segmentOffset;
+					vec3d = vec3d.addVector(rand.nextGaussian() * offset, rand.nextGaussian() * offset, rand.nextGaussian() * offset);
+					this.calcSections(entity, fromVec, fromVec.add(vec3d), recursiveDepth + 1);
+					this.calcSections(entity, fromVec.add(vec3d), toVec, recursiveDepth + 1);
+				}
 			}
 
 			private void renderSection(Vec3d fromVec, Vec3d toVec, double thickness, int color, int recursiveDepth, boolean isBranch) {
@@ -374,7 +399,6 @@ public class EntityLightningArc extends ElementsNarutomodMod.ModElement {
 					GlStateManager.disableBlend();
 					GlStateManager.enableTexture2D();
 				} else {
-					Random rand = new Random();
 					Vec3d vec3d = toVec.subtract(fromVec).scale(0.5d);
 					double offset = vec3d.lengthVector() * this.segmentOffset;
 					vec3d = vec3d.addVector(rand.nextGaussian() * offset, rand.nextGaussian() * offset, rand.nextGaussian() * offset);
