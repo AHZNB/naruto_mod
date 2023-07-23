@@ -114,6 +114,18 @@ public class ItemHyoton extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
+		protected float getMaxPower(ItemStack stack, EntityLivingBase entity) {
+			float f = super.getMaxPower(stack, entity);
+			ItemJutsu.JutsuEnum jutsu = this.getCurrentJutsu(stack);
+			if (jutsu == KILLSPIKES) {
+				return Math.min(f, 300f);
+			} else if (jutsu == ICESPEARS) {
+				return Math.min(f, 50f);
+			}
+			return f;
+		}
+
+		@Override
 		public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer entity, EnumHand hand) {
 			if (entity.isCreative() || (ProcedureUtils.hasItemInInventory(entity, ItemFuton.block) 
 			 && ProcedureUtils.hasItemInInventory(entity, ItemSuiton.block))) { 

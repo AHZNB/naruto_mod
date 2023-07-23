@@ -88,7 +88,8 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 		private static final DataParameter<Float> CHAKRA_MAX = EntityDataManager.createKey(Base.class, DataSerializers.FLOAT);
 		private static final DataParameter<Float> CHAKRA = EntityDataManager.createKey(Base.class, DataSerializers.FLOAT);
 		private final PathwayNinjaMob chakraPathway;
-		private final NonNullList<ItemStack> inventory = NonNullList.<ItemStack>withSize(2, ItemStack.EMPTY);
+		private static final int inventorySize = 2;
+		private final NonNullList<ItemStack> inventory = NonNullList.<ItemStack>withSize(inventorySize, ItemStack.EMPTY);
 		public int peacefulTicks;
 		private int standStillTicks;
 
@@ -335,9 +336,11 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 			compound.setDouble("maxChakra", this.chakraPathway.getMax());
 			compound.setDouble("chakra", this.getChakra());
 			NBTTagList nbttaglist = new NBTTagList();
-			for (ItemStack stack : this.inventory) {
+			for (int i = 0; i < this.inventory.size(); i++) {
+				ItemStack stack = this.inventory.get(i);
 				if (!stack.isEmpty()) {
 					NBTTagCompound nbttagcompound = new NBTTagCompound();
+					nbttagcompound.setInteger("slotNo", i);
 					stack.writeToNBT(nbttagcompound);
 					nbttaglist.appendTag(nbttagcompound);
 				}
@@ -352,10 +355,14 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 			this.chakraPathway.set(compound.getDouble("chakra"));
 			if (compound.hasKey("sideInventory", 9)) {
 				NBTTagList nbttaglist = compound.getTagList("sideInventory", 10);
-				for (int i = 0; i < this.inventory.size() && i < nbttaglist.tagCount(); ++i) {
-					this.inventory.set(i, new ItemStack(nbttaglist.getCompoundTagAt(i)));
+				for (int i = 0; i < nbttaglist.tagCount(); ++i) {
+					NBTTagCompound cmp = nbttaglist.getCompoundTagAt(i);
+					int j = cmp.getInteger("slotNo");
+					if (j >= 0 && j < this.inventory.size()) {
+						this.inventory.set(j, new ItemStack(cmp));
+					}
 				}
-				InventoryMessage.sendToTracking(this);
+				//InventoryMessage.sendToTracking(this);
 			}
 		}
 
@@ -959,7 +966,6 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 
 	public static class InventoryMessage implements IMessage {
 		int id;
-		int listSize;
 		List<ItemStack> list;
 
 		public InventoryMessage() {
@@ -967,7 +973,6 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 
 		public InventoryMessage(Base entity) {
 			this.id = entity.getEntityId();
-			this.listSize = entity.inventory.size();
 			this.list = entity.inventory;
 		}
 
@@ -987,7 +992,7 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 				mc.addScheduledTask(() -> {
 					Entity entity = mc.world.getEntityByID(message.id);
 					if (entity instanceof Base) {
-						for (int i = 0; i < message.listSize; i++) {
+						for (int i = 0; i < message.list.size() && i < Base.inventorySize; i++) {
 							((Base)entity).inventory.set(i, message.list.get(i));
 						}
 					}
@@ -999,8 +1004,9 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 		public void toBytes(ByteBuf buf) {
 			PacketBuffer pbuf = new PacketBuffer(buf);
 			pbuf.writeInt(this.id);
-			pbuf.writeInt(this.listSize);
-			for (int i = 0; i < this.listSize; i++) {
+			int j = this.list.size();
+			pbuf.writeInt(j);
+			for (int i = 0; i < j; i++) {
 				pbuf.writeItemStack(this.list.get(i));
 			}
 		}
@@ -1008,11 +1014,11 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 		public void fromBytes(ByteBuf buf) {
 			PacketBuffer pbuf = new PacketBuffer(buf);
 			this.id = pbuf.readInt();
-			this.listSize = pbuf.readInt();
+			int j = pbuf.readInt();
 			this.list = Lists.newArrayList();
 			try {
-				for (int i = 0; i < this.listSize; i++) {
-					list.add(pbuf.readItemStack());
+				for (int i = 0; i < j; i++) {
+					this.list.add(pbuf.readItemStack());
 				}
 			} catch (Exception e) {
 				new IOException("NinjaMob@inventory packet: ", e);

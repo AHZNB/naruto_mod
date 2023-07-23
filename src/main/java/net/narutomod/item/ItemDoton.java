@@ -129,6 +129,8 @@ public class ItemDoton extends ElementsNarutomodMod.ModElement {
 				return Math.min(f, 5f);
 			} else if (jutsu == SWAMPPIT) {
 				return Math.min(f, 30f);
+			} else if (jutsu == SPEARS) {
+				return Math.min(f, 100f);
 			}
 			return f;
 		}

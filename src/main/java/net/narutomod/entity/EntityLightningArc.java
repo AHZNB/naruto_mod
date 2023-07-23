@@ -38,7 +38,8 @@ import net.narutomod.procedure.ProcedureSync;
 
 import java.util.Random;
 import javax.annotation.Nullable;
-
+import java.util.List;
+import com.google.common.collect.Lists;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityLightningArc extends ElementsNarutomodMod.ModElement {
@@ -108,17 +109,15 @@ public class EntityLightningArc extends ElementsNarutomodMod.ModElement {
 		private static final DataParameter<Integer> COLOR = EntityDataManager.<Integer>createKey(Base.class, DataSerializers.VARINT);
 		private static final DataParameter<Float> THICKNESS = EntityDataManager.<Float>createKey(Base.class, DataSerializers.FLOAT);
 		private static final DataParameter<Integer> MAX_RECURSIVE_DEPTH = EntityDataManager.<Integer>createKey(Base.class, DataSerializers.VARINT);
-		//private static final DataParameter<Boolean> IS_STATIC = EntityDataManager.<Boolean>createKey(Base.class, DataSerializers.BOOLEAN);
-		private Vec3d ogEndVec;
+		private static final DataParameter<Boolean> IS_STATIC = EntityDataManager.<Boolean>createKey(Base.class, DataSerializers.BOOLEAN);
+		private static final DataParameter<Integer> LIFE = EntityDataManager.<Integer>createKey(Base.class, DataSerializers.VARINT);		private Vec3d ogEndVec;
 		private float inaccuracy;
-		private int livingTime;
 		private DamageSource damageSource;
 		private EntityLivingBase excludeEntity;
 		private float damageAmount;
 		private boolean resetHurtResistantTime;
 		private int paralysisTicks;
-		private final Vec3d[] segment = new Vec3d[65];
-		private int segmentIndex;
+		private final List<SegmentInfo> branches = Lists.newArrayList(new SegmentInfo());
 		
 		public Base(World worldIn) {
 			super(worldIn);
@@ -126,7 +125,6 @@ public class EntityLightningArc extends ElementsNarutomodMod.ModElement {
 			//this.setRenderDistanceWeight(10d);
 			this.isImmuneToFire = true;
 			this.ignoreFrustumCheck = true;
-			this.livingTime = this.rand.nextInt(3) + 1;
 		}
 
 		public Base(World worldIn, Vec3d centerVec, double length, double xMotion, double yMotion, double zMotion) {
@@ -169,7 +167,7 @@ public class EntityLightningArc extends ElementsNarutomodMod.ModElement {
 			  this.rand.nextGaussian() * inaccuracyIn));
 			this.setColor(colorIn);
 			if (duration > 0)
-				this.livingTime = duration;
+				this.setLifeSpan(duration);
 			this.inaccuracy = inaccuracyIn;
 			if (thickness != 0f) {
 				this.setThickness(thickness);
@@ -185,7 +183,8 @@ public class EntityLightningArc extends ElementsNarutomodMod.ModElement {
 			this.getDataManager().register(COLOR, Integer.valueOf(-1));
 			this.getDataManager().register(THICKNESS, Float.valueOf(0f));
 			this.getDataManager().register(MAX_RECURSIVE_DEPTH, Integer.valueOf(4));
-			//this.getDataManager().register(IS_STATIC, Boolean.valueOf(false));
+			this.getDataManager().register(IS_STATIC, Boolean.valueOf(false));
+			this.getDataManager().register(LIFE, Integer.valueOf(this.rand.nextInt(3) + 1));
 		}
 
 		public Vec3d getEndVec() {
@@ -224,13 +223,23 @@ public class EntityLightningArc extends ElementsNarutomodMod.ModElement {
 			this.getDataManager().set(MAX_RECURSIVE_DEPTH, Integer.valueOf(depth));
 		}
 
-		/*public boolean isStatic() {
+		public boolean isStatic() {
 			return ((Boolean)this.getDataManager().get(IS_STATIC)).booleanValue();
 		}
 
-		public void setStatic(boolean b) {
-			this.getDataManager().set(IS_STATIC, Boolean.valueOf(b));
-		}*/
+		public Base setStatic() {
+			this.getDataManager().set(IS_STATIC, Boolean.valueOf(true));
+			this.setLifeSpan(20);
+			return this;
+		}
+
+		private int getLifeSpan() {
+			return ((Integer)this.getDataManager().get(LIFE)).intValue();
+		}
+
+		private void setLifeSpan(int life) {
+			this.getDataManager().set(LIFE, Integer.valueOf(life));
+		}
 
 		public void setDamage(DamageSource source, float amount, @Nullable EntityLivingBase entity) {
 			this.setDamage(source, amount, false, entity, 100);
@@ -273,8 +282,13 @@ public class EntityLightningArc extends ElementsNarutomodMod.ModElement {
 					}
 				}
 			}
-			if (!this.world.isRemote && --this.livingTime <= 0) {
-				this.setDead();
+			if (!this.world.isRemote) {
+				int i = this.getLifeSpan();
+				if (--i <= 0) {
+					this.setDead();
+				} else {
+					this.setLifeSpan(i);
+				}
 			}
 		}
 
@@ -289,6 +303,39 @@ public class EntityLightningArc extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		protected void writeEntityToNBT(NBTTagCompound compound) {
+		}
+
+		private void resetBranches() {
+			for (int i = 1; i < this.branches.size(); i++) {
+				this.branches.remove(i);
+			}
+			this.branches.get(0).setTotal(0);
+		}
+
+		static class SegmentInfo {
+			final Vec3d[][] segment = new Vec3d[65][2];
+			int totalSegments;
+
+			void setData(int index, Vec3d from, Vec3d to) {
+				this.segment[index][0] = from;
+				this.segment[index][1] = to;
+			}
+
+			Vec3d getFrom(int index) {
+				return this.segment[index][0];
+			}
+
+			Vec3d getTo(int index) {
+				return this.segment[index][1];
+			}
+
+			void setTotal(int i) {
+				this.totalSegments = i;
+			}
+
+			int getTotal() {
+				return this.totalSegments;
+			}
 		}
 	}
 
@@ -326,88 +373,97 @@ public class EntityLightningArc extends ElementsNarutomodMod.ModElement {
 				GlStateManager.pushMatrix();
 				GlStateManager.translate(x, y, z);
 				Vec3d vec3d = entity.getEndVec().subtract(entity.posX, entity.posY, entity.posZ);
-				float yaw = (float) (MathHelper.atan2(vec3d.x, vec3d.z) * (180d / Math.PI));
-				float pitch = (float) (-MathHelper.atan2(vec3d.y, MathHelper.sqrt(vec3d.x * vec3d.x + vec3d.z * vec3d.z)) * (180d / Math.PI));
-				GlStateManager.rotate(yaw, 0.0F, 1.0F, 0.0F);
-				GlStateManager.rotate(pitch, 1.0F, 0.0F, 0.0F);
+				GlStateManager.rotate((float)(MathHelper.atan2(vec3d.x, vec3d.z) * (180d / Math.PI)), 0.0F, 1.0F, 0.0F);
+				GlStateManager.rotate((float)(-MathHelper.atan2(vec3d.y, MathHelper.sqrt(vec3d.x * vec3d.x + vec3d.z * vec3d.z)) * (180d / Math.PI)), 1.0F, 0.0F, 0.0F);
 				double d = (double) entity.getThickness();
 				d = d == 0d ? Math.max(vec3d.lengthVector() * 0.004d, 0.0006d) : d;
-				this.renderSection(new Vec3d(0d, 0d, 0d), new Vec3d(0d, 0d, vec3d.lengthVector()), d, entity.getColor(), 0, false);
+				int color = entity.getColor();
+				boolean isstatic = entity.isStatic();
+				Base.SegmentInfo si = entity.branches.get(0);
+				if (!isstatic || si.getTotal() == 0) {
+					entity.resetBranches();
+					this.calcSections(entity, new Vec3d(0d, 0d, 0d), new Vec3d(0d, 0d, vec3d.lengthVector()), 0, si);
+				}
+				float f = isstatic ? ((float)entity.getLifeSpan() - partialTicks) / 20f : 1.0f;
+				GlStateManager.disableTexture2D();
+				GlStateManager.enableAlpha();
+				GlStateManager.alphaFunc(0x204, 0.0f);
+				GlStateManager.enableBlend();
+				GlStateManager.disableCull();
+				GlStateManager.depthMask(false);
+				GlStateManager.disableLighting();
+				for (int j = 0; j < entity.branches.size(); j++) {
+					si = entity.branches.get(j);
+					for (int i = 0; i < si.getTotal(); i++) {
+						this.renderSection(si.getFrom(i), si.getTo(i), d * (j == 0 ? 1d : 0.6d), color, f, j > 0);
+					}
+				}
+				GlStateManager.enableLighting();
+				GlStateManager.depthMask(true);
+				GlStateManager.enableCull();
+				GlStateManager.disableBlend();
+				GlStateManager.alphaFunc(0x204, 0.1f);
+				GlStateManager.disableAlpha();
+				GlStateManager.enableTexture2D();
 				GlStateManager.popMatrix();
 			}
 
-			private void calcSections(Base entity, Vec3d fromVec, Vec3d toVec, int recursiveDepth) {
+			private void calcSections(Base entity, Vec3d fromVec, Vec3d toVec, int recursiveDepth, Base.SegmentInfo segdata) {
 				if (recursiveDepth == this.maxRecursiveDepth) {
-					entity.segment[entity.segmentIndex++] = toVec;
+					int i = segdata.getTotal();
+					segdata.setData(i, fromVec, toVec);
+					segdata.setTotal(i + 1);
 				} else {
 					Vec3d vec3d = toVec.subtract(fromVec).scale(0.5d);
 					double offset = vec3d.lengthVector() * this.segmentOffset;
 					vec3d = vec3d.addVector(rand.nextGaussian() * offset, rand.nextGaussian() * offset, rand.nextGaussian() * offset);
-					this.calcSections(entity, fromVec, fromVec.add(vec3d), recursiveDepth + 1);
-					this.calcSections(entity, fromVec.add(vec3d), toVec, recursiveDepth + 1);
+					this.calcSections(entity, fromVec, fromVec.add(vec3d), recursiveDepth + 1, segdata);
+					this.calcSections(entity, fromVec.add(vec3d), toVec, recursiveDepth + 1, segdata);
+					if (this.rand.nextInt(5) == 0) {
+						Base.SegmentInfo si = new Base.SegmentInfo();
+						this.calcSections(entity, fromVec.add(vec3d), fromVec.add(vec3d.scale(1.8d)), recursiveDepth + 1, si);
+						entity.branches.add(si);
+					}
 				}
 			}
 
-			private void renderSection(Vec3d fromVec, Vec3d toVec, double thickness, int color, int recursiveDepth, boolean isBranch) {
-				if (recursiveDepth == this.maxRecursiveDepth) {
-					Tessellator tessellator = Tessellator.getInstance();
-					BufferBuilder bufferbuilder = tessellator.getBuffer();
-					GlStateManager.disableTexture2D();
-					GlStateManager.enableBlend();
-					GlStateManager.disableCull();
-					GlStateManager.depthMask(false);
-					GlStateManager.disableLighting();
-					//GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE);
-					OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, isBranch ? 160F : 240F, isBranch ? 160F : 240F);
-					bufferbuilder.begin(5, DefaultVertexFormats.POSITION_COLOR);
-					//int a = (color & 0xFF000000) >> 24;
-					int r = (color & 0x00FF0000) >> 16;
-					int g = (color & 0x0000FF00) >> 8;
-					int b = color & 0x000000FF;
-					for (int i = 1; i <= 3; i++) {
-						if (!isBranch || i >= 2) {
-							double w = thickness * i;
-							int a = 0xF0;
-							int r1 = r;
-							int g1 = g;
-							int b1 = b;
-							if (i == 1) {
-								r1 = 255;
-								g1 = 255;
-								b1 = 255;
-								GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE);
-							} else {
-								a = i == 3 ? 0x10 : 0x20;
-								GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-							}
-							bufferbuilder.pos(fromVec.x - w, fromVec.y - w, fromVec.z).color(r1, g1, b1, a).endVertex();
-							bufferbuilder.pos(toVec.x - w, toVec.y - w, toVec.z).color(r1, g1, b1, a).endVertex();
-							bufferbuilder.pos(fromVec.x - w, fromVec.y + w, fromVec.z).color(r1, g1, b1, a).endVertex();
-							bufferbuilder.pos(toVec.x - w, toVec.y + w, toVec.z).color(r1, g1, b1, a).endVertex();
-							bufferbuilder.pos(fromVec.x + w, fromVec.y + w, fromVec.z).color(r1, g1, b1, a).endVertex();
-							bufferbuilder.pos(toVec.x + w, toVec.y + w, toVec.z).color(r1, g1, b1, a).endVertex();
-							bufferbuilder.pos(fromVec.x + w, fromVec.y - w, fromVec.z).color(r1, g1, b1, a).endVertex();
-							bufferbuilder.pos(toVec.x + w, toVec.y - w, toVec.z).color(r1, g1, b1, a).endVertex();
-							bufferbuilder.pos(fromVec.x - w, fromVec.y - w, fromVec.z).color(r1, g1, b1, a).endVertex();
-							bufferbuilder.pos(toVec.x - w, toVec.y - w, toVec.z).color(r1, g1, b1, a).endVertex();
-						}
+			private void renderSection(Vec3d fromVec, Vec3d toVec, double thickness, int color, float opacity, boolean isBranch) {
+				OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, isBranch ? 160F : 240F, isBranch ? 160F : 240F);
+				Tessellator tessellator = Tessellator.getInstance();
+				BufferBuilder bufferbuilder = tessellator.getBuffer();
+				bufferbuilder.begin(5, DefaultVertexFormats.POSITION_COLOR);
+				//int a = (color & 0xFF000000) >> 24;
+				int r = (color & 0x00FF0000) >> 16;
+				int g = (color & 0x0000FF00) >> 8;
+				int b = color & 0x000000FF;
+				for (int i = 1; i <= 3; i++) {
+					double w = thickness * i;
+					int a = isBranch ? 0x40: 0xF0;
+					int r1 = r;
+					int g1 = g;
+					int b1 = b;
+					if (i == 1) {
+						r1 = 255;
+						g1 = 255;
+						b1 = 255;
+						GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE);
+					} else {
+						a = i == 3 ? 0x10 : 0x20;
+						GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 					}
-					tessellator.draw();
-					GlStateManager.enableLighting();
-					GlStateManager.depthMask(true);
-					GlStateManager.enableCull();
-					GlStateManager.disableBlend();
-					GlStateManager.enableTexture2D();
-				} else {
-					Vec3d vec3d = toVec.subtract(fromVec).scale(0.5d);
-					double offset = vec3d.lengthVector() * this.segmentOffset;
-					vec3d = vec3d.addVector(rand.nextGaussian() * offset, rand.nextGaussian() * offset, rand.nextGaussian() * offset);
-					this.renderSection(fromVec, fromVec.add(vec3d), thickness, color, recursiveDepth + 1, isBranch);
-					this.renderSection(fromVec.add(vec3d), toVec, thickness, color, recursiveDepth + 1, isBranch);
-					if (rand.nextInt(5) == 0) {
-						this.renderSection(fromVec.add(vec3d), fromVec.add(vec3d.scale(1.8d)), thickness * 0.6d, color, recursiveDepth + 1, true);
-					}
+					a = (int)((float)a * opacity);
+					bufferbuilder.pos(fromVec.x - w, fromVec.y - w, fromVec.z).color(r1, g1, b1, a).endVertex();
+					bufferbuilder.pos(toVec.x - w, toVec.y - w, toVec.z).color(r1, g1, b1, a).endVertex();
+					bufferbuilder.pos(fromVec.x - w, fromVec.y + w, fromVec.z).color(r1, g1, b1, a).endVertex();
+					bufferbuilder.pos(toVec.x - w, toVec.y + w, toVec.z).color(r1, g1, b1, a).endVertex();
+					bufferbuilder.pos(fromVec.x + w, fromVec.y + w, fromVec.z).color(r1, g1, b1, a).endVertex();
+					bufferbuilder.pos(toVec.x + w, toVec.y + w, toVec.z).color(r1, g1, b1, a).endVertex();
+					bufferbuilder.pos(fromVec.x + w, fromVec.y - w, fromVec.z).color(r1, g1, b1, a).endVertex();
+					bufferbuilder.pos(toVec.x + w, toVec.y - w, toVec.z).color(r1, g1, b1, a).endVertex();
+					bufferbuilder.pos(fromVec.x - w, fromVec.y - w, fromVec.z).color(r1, g1, b1, a).endVertex();
+					bufferbuilder.pos(toVec.x - w, toVec.y - w, toVec.z).color(r1, g1, b1, a).endVertex();
 				}
+				tessellator.draw();
 			}
 
 			@Override

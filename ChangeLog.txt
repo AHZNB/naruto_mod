@@ -30,6 +30,8 @@ Jutsus:
  - fixed kamui teleport damaging 1024 bug, now max is 1024 damage
  - truth seeking orbs can only be damaged when launched or becomes a shield
  - updated sand bullets particle effects
+ - updated kirin lightning storm effects
+ - widened ice spears spawn range when charged more
 
 Items:
  - fixed explosive tags breaking blocks when mobGriefing false

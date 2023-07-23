@@ -125,8 +125,10 @@ public class EntityIceSpear extends ElementsNarutomodMod.ModElement {
 			public boolean createJutsu(ItemStack stack, EntityLivingBase entity, float power) {
 				Vec3d vec = entity.getLookVec();
 				Vec3d vec1 = entity.getPositionEyes(1f).add(vec.scale(1.5d));
+				double d = MathHelper.sqrt(power);
 				for (int i = 0; i < (int)(power * 3f); i++) {
-					Vec3d vec2 = vec1.addVector(entity.getRNG().nextDouble()-0.5d, entity.getRNG().nextDouble()-0.5d, entity.getRNG().nextDouble()-0.5d);
+					Vec3d vec2 = vec1.addVector((entity.getRNG().nextDouble()-0.5d) * d, entity.getRNG().nextDouble()-0.5d,
+					 (entity.getRNG().nextDouble()-0.5d) * d);
 					Vec3d vec3 = vec2.add(vec);
 					this.createJutsu(entity.world, entity, vec2.x, vec2.y, vec2.z, vec3.x, vec3.y, vec3.z, 1.2f, 0.05f);
 				}

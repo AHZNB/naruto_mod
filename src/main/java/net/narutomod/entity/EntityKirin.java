@@ -85,7 +85,7 @@ public class EntityKirin extends ElementsNarutomodMod.ModElement {
 			this.setOGSize(1.0F, 1.0F);
 			this.setEntityScale(10.0f);
 			this.setLocationAndAngles(shooter.posX, shooter.posY + 100d, shooter.posZ, shooter.rotationYaw, 80f);
-			this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation(("narutomod:dragon_roar"))),
+			this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:dragon_roar")),
 			 100f, this.rand.nextFloat() * 0.4f + 0.8f);
 		}
 
@@ -105,7 +105,7 @@ public class EntityKirin extends ElementsNarutomodMod.ModElement {
 
 		private void shoot(double x, double y, double z) {
 			this.shoot(x, y, z, 1.2f, 0f);
-			this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation(("narutomod:lightning_shoot"))),
+			this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:lightning_shoot")),
 			 100f, this.rand.nextFloat() * 0.4f + 0.8f);
 		}
 
@@ -217,14 +217,14 @@ public class EntityKirin extends ElementsNarutomodMod.ModElement {
 	public static void chargingEffects(EntityLivingBase player, float pct) {
 		if (pct >= 0.8f && pct < 0.81f) {
 			player.world.playSound(null, player.posX, player.posY, player.posZ,
-			 SoundEvent.REGISTRY.getObject(new ResourceLocation(("narutomod:kirin_dialog"))),
+			 SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:kirin_dialog")),
 			 SoundCategory.PLAYERS, 5f, 1f);
 		}
-		for (int i = 0; i < 10 + player.getRNG().nextInt(21); i++) {
-			Vec3d vec = player.getPositionVector().addVector((player.getRNG().nextDouble()-0.5d) * 100d,
-			 95d + player.getRNG().nextDouble() * 10d, (player.getRNG().nextDouble()-0.5d) * 100d);
+		for (int i = 0; i < player.getRNG().nextInt(11); i++) {
+			Vec3d vec = player.getPositionVector().addVector((player.getRNG().nextDouble()-0.5d) * 120d,
+			 95d + player.getRNG().nextDouble() * 10d, (player.getRNG().nextDouble()-0.5d) * 120d);
 			EntityLightningArc.Base entity = new EntityLightningArc.Base(player.world, vec,
-			 player.getRNG().nextDouble() * 40d + 10d, 0d, 0d, 0d, 0xc00000ff, 1, 0f, 5f);
+			 player.getRNG().nextDouble() * 120d + 10d, 0d, 0d, 0d, 0xc00000ff, 1, 0f, 0f).setStatic();
 			player.world.spawnEntity(entity);
 		}
 	}
