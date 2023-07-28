@@ -2,6 +2,7 @@
 
 Jutsus:
  - if susanoo or shield based jutsus gets killed by enough damage, residual damage will be transfered to player
+ - susanoo now works in peaceful
  - properly set 8-trigrams heavenly rotation cooldown
  - reduced debuff duration when chakra/attack absorbed by preta path
  - optimize sand jutsus on server side

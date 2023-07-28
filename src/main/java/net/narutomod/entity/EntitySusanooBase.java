@@ -12,7 +12,7 @@ import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.IRangedAttackMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.entity.monster.EntityMob;
+import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.EntityAILookIdle;
 import net.minecraft.entity.SharedMonsterAttributes;
@@ -41,7 +41,7 @@ import net.narutomod.ElementsNarutomodMod;
 import javax.annotation.Nullable;
 
 @ElementsNarutomodMod.ModElement.Tag
-public abstract class EntitySusanooBase extends EntityMob implements IRangedAttackMob {
+public abstract class EntitySusanooBase extends EntityCreature implements IRangedAttackMob {
 	private static final DataParameter<Integer> OWNER_ID = EntityDataManager.<Integer>createKey(EntitySusanooBase.class, DataSerializers.VARINT);
 	private static final DataParameter<Integer> FLAME_COLOR = EntityDataManager.<Integer>createKey(EntitySusanooBase.class, DataSerializers.VARINT);
 	public static final double BXP_REQUIRED_L0 = 2000.0d;
@@ -132,10 +132,34 @@ public abstract class EntitySusanooBase extends EntityMob implements IRangedAtta
 	}
 
 	@Override
+	protected boolean canDropLoot() {
+		return false;
+	}
+
+	@Override
+	protected void applyEntityAttributes() {
+		super.applyEntityAttributes();
+		this.getAttributeMap().registerAttribute(ProcedureUtils.MAXHEALTH);
+		this.getAttributeMap().registerAttribute(SharedMonsterAttributes.ATTACK_DAMAGE);
+		this.getAttributeMap().registerAttribute(EntityPlayer.REACH_DISTANCE);
+		this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(100.0D);
+		this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.05D);
+		this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(100.0D);
+		this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(10.0D);
+		this.getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(1.0D);
+		this.getEntityAttribute(EntityPlayer.REACH_DISTANCE).setBaseValue(7.0D);
+	}
+
+	@Override
+	public IAttributeInstance getEntityAttribute(IAttribute attribute) {
+		return super.getEntityAttribute(attribute == SharedMonsterAttributes.MAX_HEALTH ? ProcedureUtils.MAXHEALTH : attribute);
+	}
+
+	@Override
 	public boolean attackEntityFrom(DamageSource source, float amount) {
 		if (source.getImmediateSource() instanceof EntityPlayer && source.getImmediateSource().equals(getControllingPassenger()))
 			return false;
-		if (source.getImmediateSource() instanceof EntityMob && source.getImmediateSource().equals(this))
+		if (source.getImmediateSource() instanceof EntityCreature && source.getImmediateSource().equals(this))
 			return false;
 		if (source.getImmediateSource() instanceof net.minecraft.entity.projectile.EntityArrow)
 			return false;
@@ -206,24 +230,6 @@ public abstract class EntitySusanooBase extends EntityMob implements IRangedAtta
 			return true;
 		}
 		return false;
-	}
-
-	@Override
-	protected void applyEntityAttributes() {
-		super.applyEntityAttributes();
-		this.getAttributeMap().registerAttribute(ProcedureUtils.MAXHEALTH);
-		this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(100.0D);
-		this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.05D);
-		this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(100.0D);
-		this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(10.0D);
-		this.getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(1.0D);
-		this.getAttributeMap().registerAttribute(EntityPlayer.REACH_DISTANCE);
-		this.getEntityAttribute(EntityPlayer.REACH_DISTANCE).setBaseValue(7.0D);
-	}
-
-	@Override
-	public IAttributeInstance getEntityAttribute(IAttribute attribute) {
-		return super.getEntityAttribute(attribute == SharedMonsterAttributes.MAX_HEALTH ? ProcedureUtils.MAXHEALTH : attribute);
 	}
 
 	@Override
@@ -337,6 +343,7 @@ public abstract class EntitySusanooBase extends EntityMob implements IRangedAtta
 			}
 		}
 
+		this.updateArmSwingProgress();
 		super.onLivingUpdate();
 		
 		this.clampMotion(0.05D);
