@@ -422,32 +422,15 @@ public class EntityZabuzaMomochi extends ElementsNarutomodMod.ModElement {
 
 		@SideOnly(Side.CLIENT)
 		public class RenderCustom extends EntityNinjaMob.RenderBase<EntityCustom> {
-			private final ResourceLocation TEXTURE = new ResourceLocation("narutomod:textures/zabuzamomochi.png");
+			private final ResourceLocation texture = new ResourceLocation("narutomod:textures/zabuzamomochi.png");
 
 			public RenderCustom(RenderManager renderManager) {
-				//super(renderManager, new ModelBiped64(), 0.5f);
-				//this.addLayer(new EntityNinjaMob.LayerInventoryItem(this));
 				super(renderManager, new ModelBiped64());
 			}
 
-		/*@Override
-		public void doRender(EntityCustom entity, double x, double y, double z, float entityYaw, float partialTicks) {
-			((ModelBiped)this.mainModel).rightArmPose = ModelBiped.ArmPose.EMPTY;
-			((ModelBiped)this.mainModel).leftArmPose = ModelBiped.ArmPose.EMPTY;
-			if (!entity.getHeldItemMainhand().isEmpty()) {
-				ModelBiped.ArmPose armpos = entity.getItemInUseCount() > 0 ? ModelBiped.ArmPose.BLOCK : ModelBiped.ArmPose.ITEM;
-				if (entity.getPrimaryHand() == EnumHandSide.RIGHT) {
-					((ModelBiped)this.mainModel).rightArmPose = armpos;
-				} else {
-					((ModelBiped)this.mainModel).leftArmPose = armpos;
-				}
-			}
-			super.doRender(entity, x, y, z, entityYaw, partialTicks);
-		}*/
-
 			@Override
 			protected ResourceLocation getEntityTexture(EntityCustom entity) {
-				return TEXTURE;
+				return this.texture;
 			}
 		}
 

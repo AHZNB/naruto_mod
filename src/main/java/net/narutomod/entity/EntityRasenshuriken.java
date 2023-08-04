@@ -138,9 +138,9 @@ public class EntityRasenshuriken extends ElementsNarutomodMod.ModElement {
 				Particles.Renderer particles = new Particles.Renderer(this.world);
 				for (int i = 0; i < 300; i++) {
 					particles.spawnParticles(Particles.Types.SMOKE, this.posX, this.posY+this.height*0.5, this.posZ,
-					  1, 1d, 0d, 1d, (this.rand.nextDouble()-0.5d) * this.fullScale * 2.0d,
-					  0.5d * this.rand.nextGaussian(), 2.0d * (this.rand.nextDouble()-0.5d) * this.fullScale,
-					  0x10FFFFFF, 80 + (int)scale, 0);
+					  1, 1d, 0d, 1d, (this.rand.nextDouble()-0.5d) * this.fullScale * 4.0d,
+					  0.5d * this.rand.nextGaussian(), 4.0d * (this.rand.nextDouble()-0.5d) * this.fullScale,
+					  0x10FFFFFF, (int)(scale * 16f), 20);
 				}
 				particles.send();
 				if (impactTicks >= 200) {

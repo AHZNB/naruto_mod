@@ -68,7 +68,7 @@ public class EntitySandBullet extends ElementsNarutomodMod.ModElement {
 		public void doRender(EC entity, double x, double y, double z, float entityYaw, float partialTicks) {
 			Particles.spawnParticle(entity.world, Particles.Types.SUSPENDED,
 			 x + this.renderManager.viewerPosX, y + this.renderManager.viewerPosY+0.1d, z + this.renderManager.viewerPosZ,
-			 5, 0.1d, 0.1d, 0.1d, 0d, 0d, 0d, entity.getColor(), 15, 5);
+			 10, 0.1d, 0.1d, 0.1d, 0d, 0d, 0d, entity.getColor(), 15, 5);
 		}
 		@Override
 		protected ResourceLocation getEntityTexture(EC entity) {
@@ -79,7 +79,6 @@ public class EntitySandBullet extends ElementsNarutomodMod.ModElement {
 	public static class EC extends EntityScalableProjectile.Base {
 		private static final DataParameter<Integer> COLOR = EntityDataManager.<Integer>createKey(EC.class, DataSerializers.VARINT);
 		private int delay;
-		private float ogMotionFactor;
 
 		public EC(World worldIn) {
 			super(worldIn);
@@ -114,14 +113,9 @@ public class EntitySandBullet extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public void onUpdate() {
-			if (this.ticksAlive < this.delay) {
-				if (this.ogMotionFactor == 0f) {
-					this.ogMotionFactor = this.getMotionFactor();
-					this.setMotionFactor(0f);
-				}
-			} else if (this.ogMotionFactor != 0f) {
-				this.setMotionFactor(this.ogMotionFactor);
-				this.ogMotionFactor = 0f;
+			if (this.ticksAlive >= this.delay && this.shootingEntity != null) {
+				Vec3d vec = this.shootingEntity.getLookVec();
+				this.shoot(vec.x, vec.y, vec.z, 1.2f, 0.1f);
 			}
 			super.onUpdate();
 			if (this.ticksAlive > this.delay + 80) {
@@ -179,10 +173,7 @@ public class EntitySandBullet extends ElementsNarutomodMod.ModElement {
 			public void createJutsu(ItemJiton.Type type, EntityLivingBase entity, double x, double y, double z, int delay) {
 				entity.world.playSound(null, x, y, z, SoundEvents.BLOCK_SAND_PLACE,
 				 net.minecraft.util.SoundCategory.BLOCKS, 0.5f, entity.getRNG().nextFloat() * 0.4f + 0.6f);
-				Vec3d vec = entity.getLookVec();
-				EC entity1 = new EC(entity, type, x, y, z, delay);
-				entity1.shoot(vec.x, vec.y, vec.z, 1.2f, 0.1f);
-				entity.world.spawnEntity(entity1);
+				entity.world.spawnEntity(new EC(entity, type, x, y, z, delay));
 			}
 		}
 	}
