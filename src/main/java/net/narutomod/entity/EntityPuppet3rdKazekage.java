@@ -32,6 +32,7 @@ import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.EntityDataManager;
 
 import javax.annotation.Nullable;
+import net.minecraft.entity.ai.EntityAIAttackMelee;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityPuppet3rdKazekage extends ElementsNarutomodMod.ModElement {
@@ -93,7 +94,6 @@ public class EntityPuppet3rdKazekage extends ElementsNarutomodMod.ModElement {
 			this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(MAXHEALTH);
 			this.getAttributeMap().registerAttribute(SharedMonsterAttributes.ATTACK_DAMAGE);
 			this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(10D);
-			this.getEntityAttribute(SharedMonsterAttributes.FLYING_SPEED).setBaseValue(0.4D);
 		}
 
 		@Override
@@ -105,7 +105,12 @@ public class EntityPuppet3rdKazekage extends ElementsNarutomodMod.ModElement {
 		protected void initEntityAI() {
 			super.initEntityAI();
 			//this.tasks.addTask(1, new EntityAIAttackRanged(this, 1.0d, 20, 48f));
-			this.tasks.addTask(1, new EntityPuppet.Base.AIChargeAttack(this));
+			this.tasks.addTask(1, new EntityAIAttackMelee(this, 1.5d, true));
+		}
+
+		@Override
+		public boolean attackEntityAsMob(Entity entityIn) {
+			return ProcedureUtils.attackEntityAsMob(this, entityIn);
 		}
 
 		private boolean isMovingForward() {
@@ -399,10 +404,12 @@ public class EntityPuppet3rdKazekage extends ElementsNarutomodMod.ModElement {
 					float fa = MathHelper.clamp((float)d / 0.3F, 0F, 1F);
 					bipedBody.rotateAngleX += fa * 0.7854F;
 					collar.rotateAngleX = fa * -0.2618F;
-					if (this.swingProgress <= 0.0F) {
+					if (this.swingProgress <= 0.0F && rightArmPose == ModelBiped.ArmPose.EMPTY) {
 						bipedRightArm.rotateAngleZ += fa * 1.3963F;
 					}
-					bipedLeftArm.rotateAngleZ += fa * -1.3963F;
+					if (leftArmPose == ModelBiped.ArmPose.EMPTY) {
+						bipedLeftArm.rotateAngleZ += fa * -1.3963F;
+					}
 					bipedRightLeg.rotateAngleX = 0.0F;
 					bipedLeftLeg.rotateAngleX = 0.0F;
 				}

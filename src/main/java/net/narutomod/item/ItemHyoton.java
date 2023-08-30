@@ -41,6 +41,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.enchantment.EnchantmentFrostWalker;
 import net.minecraft.nbt.NBTTagCompound;
 
+import net.narutomod.entity.EntityRendererRegister;
 import net.narutomod.entity.EntitySpike;
 import net.narutomod.entity.EntityIceSpear;
 import net.narutomod.entity.EntityIceDome;
@@ -77,12 +78,6 @@ public class ItemHyoton extends ElementsNarutomodMod.ModElement {
 	@SideOnly(Side.CLIENT)
 	public void registerModels(ModelRegistryEvent event) {
 		ModelLoader.setCustomModelResourceLocation(block, 0, new ModelResourceLocation("narutomod:hyoton", "inventory"));
-	}
-
-	@SideOnly(Side.CLIENT)
-	@Override
-	public void preInit(FMLPreInitializationEvent event) {
-		RenderingRegistry.registerEntityRenderingHandler(EntityIceSpike.class, renderManager -> new CustomRender(renderManager));
 	}
 
 	@Override
@@ -255,17 +250,30 @@ public class ItemHyoton extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-	@SideOnly(Side.CLIENT)
-	public class CustomRender extends EntitySpike.Renderer<EntityIceSpike> {
-		private final ResourceLocation TEXTURE = new ResourceLocation("narutomod:textures/spike_ice.png");
+	@Override
+	public void preInit(FMLPreInitializationEvent event) {
+		new Renderer().register();
+	}
 
-		public CustomRender(RenderManager renderManagerIn) {
-			super(renderManagerIn);
+	public static class Renderer extends EntityRendererRegister {
+		@SideOnly(Side.CLIENT)
+		@Override
+		public void register() {
+			RenderingRegistry.registerEntityRenderingHandler(EntityIceSpike.class, renderManager -> new CustomRender(renderManager));
 		}
 
-		@Override
-		protected ResourceLocation getEntityTexture(EntityIceSpike entity) {
-			return TEXTURE;
+		@SideOnly(Side.CLIENT)
+		public class CustomRender extends EntitySpike.Renderer<EntityIceSpike> {
+			private final ResourceLocation texture = new ResourceLocation("narutomod:textures/spike_ice.png");
+	
+			public CustomRender(RenderManager renderManagerIn) {
+				super(renderManagerIn);
+			}
+	
+			@Override
+			protected ResourceLocation getEntityTexture(EntityIceSpike entity) {
+				return this.texture;
+			}
 		}
 	}
 }

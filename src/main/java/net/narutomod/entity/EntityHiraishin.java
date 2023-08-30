@@ -70,8 +70,8 @@ import javax.vecmath.Vector2f;
 import com.google.common.collect.Maps;
 import com.google.common.base.Optional;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.client.renderer.culling.Frustum;
-import net.minecraft.client.renderer.culling.ICamera;
+//import net.minecraft.client.renderer.culling.Frustum;
+//import net.minecraft.client.renderer.culling.ICamera;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityHiraishin extends ElementsNarutomodMod.ModElement {

@@ -45,6 +45,7 @@ import net.narutomod.entity.EntityShieldBase;
 import net.narutomod.entity.EntitySandBullet;
 import net.narutomod.entity.EntitySandBind;
 import net.narutomod.entity.EntitySandLevitation;
+import net.narutomod.entity.EntitySandGathering;
 import net.narutomod.entity.EntityBijuManager;
 import net.narutomod.PlayerTracker;
 import net.narutomod.Chakra;
@@ -69,6 +70,7 @@ public class ItemJiton extends ElementsNarutomodMod.ModElement {
 	public static final ItemJutsu.JutsuEnum SANDBULLET = new ItemJutsu.JutsuEnum(1, "sand_bullet", 'S', 100, 20d, new EntitySandBullet.EC.Jutsu());
 	public static final ItemJutsu.JutsuEnum SANDBIND = new ItemJutsu.JutsuEnum(2, "sand_bind", 'S', 200, 100d, new EntitySandBind.EC.Jutsu());
 	public static final ItemJutsu.JutsuEnum SANDFLY = new ItemJutsu.JutsuEnum(3, "sand_levitation", 'S', 200, 0.25d, new EntitySandLevitation.EC.Jutsu());
+	public static final ItemJutsu.JutsuEnum GATHERING = new ItemJutsu.JutsuEnum(4, "sand_gathering", 'S', 200, 0.25d, new EntitySandGathering.EC.Jutsu());
 
 	public ItemJiton(ElementsNarutomodMod instance) {
 		super(instance, 518);
@@ -76,7 +78,7 @@ public class ItemJiton extends ElementsNarutomodMod.ModElement {
 
 	@Override
 	public void initElements() {
-		elements.items.add(() -> new RangedItem(SANDSHIELD, SANDBULLET, SANDBIND, SANDFLY));
+		elements.items.add(() -> new RangedItem(SANDSHIELD, SANDBULLET, SANDBIND, SANDFLY, GATHERING));
 		elements.entities.add(() -> EntityEntryBuilder.create().entity(EntitySandShield.class)
 		 .id(new ResourceLocation("narutomod", "entityjitonshield"), ENTITYID).name("entityjitonshield").tracker(64, 1, true).build());
 		elements.entities.add(() -> EntityEntryBuilder.create().entity(SandParticle.class)
@@ -233,7 +235,7 @@ public class ItemJiton extends ElementsNarutomodMod.ModElement {
 		}
 
 		public static Type getTypeFromId(int i) {
-			return TYPES.get(Integer.valueOf(i));
+			return i >= 0 && i <= 2 ? TYPES.get(Integer.valueOf(i)) : IRON;
 		}
 	}
 

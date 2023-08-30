@@ -139,6 +139,7 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 			this.getAttributeMap().registerAttribute(SharedMonsterAttributes.FLYING_SPEED);
 			this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(100D);
 			this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(48D);
+			this.getEntityAttribute(SharedMonsterAttributes.FLYING_SPEED).setBaseValue(0.4D);
 		}
 
 	    @Override
@@ -171,6 +172,12 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 				return true;
 			}
 			return false;
+		}
+
+		@Override
+		public void onLivingUpdate() {
+			this.updateArmSwingProgress();
+			super.onLivingUpdate();
 		}
 
 	    @Override
@@ -229,10 +236,7 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 					if (d3 < 1.6E-7D) {
 						ProcedureUtils.multiplyVelocity(this.entity, 0.0d);
 					} else {
-						float f = this.entity.onGround 
-						 ? (float)(this.speed * this.entity.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).getAttributeValue())
-						 : (float)(this.speed * this.entity.getEntityAttribute(SharedMonsterAttributes.FLYING_SPEED).getAttributeValue());
-						f *= 0.1f;
+						float f = (float)(this.speed * this.entity.getEntityAttribute(SharedMonsterAttributes.FLYING_SPEED).getAttributeValue()) * 0.1f;
 						this.entity.motionX += d0 / d3 * f;
 						this.entity.motionY += d1 / d3 * f;
 						this.entity.motionZ += d2 / d3 * f;

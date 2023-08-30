@@ -14,6 +14,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.EnumActionResult;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.item.ItemStack;
@@ -147,38 +148,20 @@ public class ItemRaiton extends ElementsNarutomodMod.ModElement {
 
 	public static class EntityChakraMode extends Entity {
 		private final double CHAKRA_BURN = CHAKRAMODE.chakraUsage; // per second
-		//private int maxCooldown = 400;
 		private EntityLivingBase summoner;
 		private ItemStack usingItemstack;
 		private int strengthAmplifier = 9;
-		//private int jutsuIndex;
-		//private int duration;
 
 		public EntityChakraMode(World a) {
 			super(a);
 			this.setSize(0.01f, 0.01f);
 		}
 
-		/*public EntityChakraMode(World worldIn, Vec3d fromVec, Vec3d toVec) {
-			super(worldIn, fromVec, toVec, 0xC000E5FF, 200, 0.2f);
-			this.soundVolume = 2f;
-			this.soundPitch = 0.6f;
-		}
-
-		public EntityLightning(World world, Vec3d cVec, double length, double xMotion, double yMotion, double zMotion) {
-			super(world, cVec, length, xMotion, yMotion, zMotion, 0xC000E5FF);
-			this.soundVolume = 0.1f;
-			this.soundPitch = 0.3f;
-		}*/
-
 		protected EntityChakraMode(EntityLivingBase summonerIn, ItemStack stack) {
 			this(summonerIn.world);
 			this.summoner = summonerIn;
 			this.setPosition(summonerIn.posX, summonerIn.posY, summonerIn.posZ);
-			//this.maxCooldown *= Chakra.getChakraModifier(summonerIn);
 			if (stack.getItem() instanceof ItemJutsu.Base) {
-				//this.jutsuIndex = ((ItemJutsu.Base)stack.getItem()).getCurrentJutsuIndex(stack);
-				//((ItemJutsu.Base)stack.getItem()).setCurrentJutsuCooldown(stack, this.duration + this.maxCooldown);
 				this.usingItemstack = stack;
 			}
 			if (summonerIn.isPotionActive(MobEffects.STRENGTH)) {
@@ -201,12 +184,14 @@ public class ItemRaiton extends ElementsNarutomodMod.ModElement {
 			super.onUpdate();
 			if (this.summoner != null && this.summoner.isEntityAlive()) {
 				if (this.ticksExisted % 20 == 2) {
-					if (!Chakra.pathway(this.summoner).consume(this.CHAKRA_BURN)) {
+					Chakra.Pathway chakra = Chakra.pathway(this.summoner);
+					if (!chakra.consume(this.CHAKRA_BURN)) {
 						this.setDead();
 					}
+					int i = Math.max((int)(MathHelper.sqrt(chakra.getAmount()) / (2.5d * 3d)), 9) - 9;
 					this.summoner.addPotionEffect(new PotionEffect(MobEffects.RESISTANCE, 22, 3, false, false));
 					this.summoner.addPotionEffect(new PotionEffect(MobEffects.SPEED, 22, 32, false, false));
-					this.summoner.addPotionEffect(new PotionEffect(MobEffects.STRENGTH, 22, this.strengthAmplifier, false, false));
+					this.summoner.addPotionEffect(new PotionEffect(MobEffects.STRENGTH, 22, this.strengthAmplifier + i, false, false));
 					this.summoner.addPotionEffect(new PotionEffect(MobEffects.JUMP_BOOST, 22, 5, false, false));
 				}
 				this.setPosition(this.summoner.posX, this.summoner.posY, this.summoner.posZ);

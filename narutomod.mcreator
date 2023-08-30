@@ -1,7 +1,7 @@
 {
   "id_map": {
-    "ENTITY": 429,
     "DIMENSION": 13,
+    "ENTITY": 431,
     "GUI": 64
   },
   "mod_elements": [
@@ -7191,6 +7191,18 @@
       "locked_code": true,
       "ids": {},
       "registry_name": "poison_senbon_recipe"
+    },
+    {
+      "name": "SandGathering",
+      "type": "mob",
+      "sortid": 858,
+      "compiles": true,
+      "locked_code": true,
+      "ids": {
+        "0": 430,
+        "1": 431
+      },
+      "registry_name": "sand_gathering"
     }
   ],
   "variable_elements": [
@@ -8784,6 +8796,7 @@
       "item.kamuidimension.name": "Kamui Dimension Portal Igniter",
       "item.iryo_jutsu.name": "Medical Ninjutsu",
       "item.mask_anbu_1helmet.name": "Mask Anbu",
+      "entity.sand_gathering.name": "Sand Gathering",
       "advancements.rinneganawakened.descr": "It is said that in times of disorder, one who wields the Rinnegan is sent down from the heavens to become either a \"God of Creation\" who will calm the world or a \"God of Destruction\" who will reduce everything to nothingness.",
       "tipped_arrow.effect.heaviness": "Arrow of Heaviness",
       "subtitles.woodgrow": "",

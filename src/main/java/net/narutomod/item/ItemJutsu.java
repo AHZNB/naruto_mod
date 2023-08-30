@@ -5,6 +5,10 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.event.entity.living.LivingEquipmentChangeEvent;
+import net.minecraftforge.common.MinecraftForge;
 
 import net.minecraft.world.World;
 import net.minecraft.util.ActionResult;
@@ -17,6 +21,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Item;
 import net.minecraft.item.EnumAction;
@@ -41,16 +46,21 @@ import java.util.List;
 import java.util.UUID;
 import javax.annotation.Nullable;
 
+@ElementsNarutomodMod.ModElement.Tag
 public class ItemJutsu extends ElementsNarutomodMod.ModElement {
 	public static final String NINJUTSU_TYPE = "ninjutsu_damage";
 	public static final String SENJUTSU_TYPE = "senjutsu_damage";
+	public static final DamageSource NINJUTSU_DAMAGE = new DamageSource(NINJUTSU_TYPE);
+	public static final DamageSource SENJUTSU_DAMAGE = new DamageSource(SENJUTSU_TYPE);
 
 	public ItemJutsu(ElementsNarutomodMod instance) {
 		super(instance, 369);
 	}
 
-	public static final DamageSource NINJUTSU_DAMAGE = new DamageSource(NINJUTSU_TYPE);
-	public static final DamageSource SENJUTSU_DAMAGE = new DamageSource(SENJUTSU_TYPE);
+	@Override
+	public void init(FMLInitializationEvent event) {
+		MinecraftForge.EVENT_BUS.register(new Base.EquipmentHook());
+	}
 	
 	public static DamageSource causeJutsuDamage(Entity source, @Nullable EntityLivingBase indirectEntityIn) {
 		return new EntityDamageSourceIndirect(NINJUTSU_TYPE, source, indirectEntityIn);
@@ -478,11 +488,20 @@ public class ItemJutsu extends ElementsNarutomodMod.ModElement {
 				if (!this.isOwner(itemstack, livingEntity)) {
 					return;
 				}
-				//if (livingEntity.getHeldItemMainhand().equals(itemstack) || livingEntity.getHeldItemOffhand().equals(itemstack)) {
-				//	if (livingEntity.isSneaking() && livingEntity.ticksExisted % 30 == 0) {
-				//		this.setNextJutsu(itemstack, livingEntity);
-				//	}
-				//}
+			}
+		}
+
+		public static class EquipmentHook {
+			@SubscribeEvent
+			public void onEquipmentChange(LivingEquipmentChangeEvent event) {
+				EntityLivingBase entity = event.getEntityLiving();
+				ItemStack stack = event.getTo();
+				if (entity instanceof EntityPlayer && !entity.world.isRemote
+				 && event.getSlot().getSlotType() == EntityEquipmentSlot.Type.HAND && stack.getItem() instanceof Base) {
+					if (event.getSlot() == EntityEquipmentSlot.MAINHAND || !(entity.getHeldItemMainhand().getItem() instanceof Base)) {
+						((EntityPlayer)entity).sendStatusMessage(new TextComponentString(ItemJutsu.getCurrentJutsu(stack).getName()), true);
+					}
+				}
 			}
 		}
 

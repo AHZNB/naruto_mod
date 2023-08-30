@@ -249,7 +249,8 @@ public class EntityKisameHoshigaki extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public boolean attackEntityFrom(DamageSource source, float amount) {
-			if (!this.isAIDisabled() && source instanceof EntityDamageSource && !((EntityDamageSource)source).getIsThornsDamage()) {
+			if (!this.isAIDisabled() && source instanceof EntityDamageSource
+			 && !((EntityDamageSource)source).getIsThornsDamage() && !source.isUnblockable()) {
 				if (this.getHeldItemMainhand().isEmpty()) {
 					this.swapWithInventory(EntityEquipmentSlot.MAINHAND, 0);
 				}

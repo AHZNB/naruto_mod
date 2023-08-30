@@ -65,7 +65,7 @@ public class EntityPuppetKarasu extends ElementsNarutomodMod.ModElement {
 		@Override
 		protected void initEntityAI() {
 			super.initEntityAI();
-			this.tasks.addTask(1, new EntityAIAttackRanged(this, 1.0d, 20, 48f));
+			this.tasks.addTask(1, new EntityAIAttackRanged(this, 1.2d, 20, 48f));
 			this.tasks.addTask(2, new EntityPuppet.Base.AIChargeAttack(this));
 		}
 
@@ -75,7 +75,6 @@ public class EntityPuppetKarasu extends ElementsNarutomodMod.ModElement {
 			this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(MAXHEALTH);
 			this.getAttributeMap().registerAttribute(SharedMonsterAttributes.ATTACK_DAMAGE);
 			this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(10D);
-			this.getEntityAttribute(SharedMonsterAttributes.FLYING_SPEED).setBaseValue(0.4D);
 		}
 
 		@Override

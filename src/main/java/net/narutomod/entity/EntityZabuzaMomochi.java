@@ -217,7 +217,7 @@ public class EntityZabuzaMomochi extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public boolean attackEntityFrom(DamageSource source, float amount) {
-			if (!this.isAIDisabled()) {
+			if (!this.isAIDisabled() && !source.isUnblockable()) {
 				if (this.getHeldItemMainhand().isEmpty() && source.getTrueSource() instanceof EntityLivingBase) {
 					this.swapWithInventory(EntityEquipmentSlot.MAINHAND, 0);
 				}

@@ -328,7 +328,8 @@ public class ItemAdamantineNyoi extends ElementsNarutomodMod.ModElement {
 							if (this.segment[i].collisionhelper.anyBlockHits()) {
 								if (net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.world, shooter)) {
 									for (BlockPos pos : this.segment[i].collisionhelper.getHitBlocks()) {
-										if (this.world.getBlockState(pos).getBlockHardness(this.world, pos) <= f) {
+										float f1 = this.world.getBlockState(pos).getBlockHardness(this.world, pos);
+										if (f1 >= 0.0f && f1 <= f) {
 											this.world.destroyBlock(pos, this.rand.nextFloat() < 0.1f);
 										}
 									}
