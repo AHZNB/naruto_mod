@@ -51,12 +51,6 @@ public class EntityPretaShield extends ElementsNarutomodMod.ModElement {
 				.id(new ResourceLocation("narutomod", "pretashieldentity"), ENTITYID).name("pretashieldentity").tracker(64, 1, true).build());
 	}
 
-	@SideOnly(Side.CLIENT)
-	@Override
-	public void preInit(FMLPreInitializationEvent event) {
-		RenderingRegistry.registerEntityRenderingHandler(EntityCustom.class, renderManager -> new RenderCustom(renderManager));
-	}
-
 	public static class EntityCustom extends EntityShieldBase {
 		public EntityCustom(World world) {
 			super(world);
@@ -192,139 +186,152 @@ public class EntityPretaShield extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-	@SideOnly(Side.CLIENT)
-	public class RenderCustom extends RenderLivingBase<EntityCustom> {
-		private final ResourceLocation TEXTURE = new ResourceLocation("narutomod:textures/electric_armor.png");
-		private final DynamicTexture TEXTURE_BRIGHTNESS = new DynamicTexture(16, 16);
-
-		public RenderCustom(RenderManager renderManagerIn) {
-			super(renderManagerIn, new ModelPretaShield(), 0.1F);
-	        int[] aint = TEXTURE_BRIGHTNESS.getTextureData();
-	        for (int i = 0; i < 256; ++i) {
-	            aint[i] = -1;
-	        }
-	        TEXTURE_BRIGHTNESS.updateDynamicTexture();
-		}
-
-		@Override
-	    protected boolean setBrightness(EntityCustom entitylivingbaseIn, float partialTicks, boolean combineTextures) {
-	        float f = entitylivingbaseIn.getBrightness();
-	        int i = this.getColorMultiplier(entitylivingbaseIn, f, partialTicks);
-	        boolean flag = (i >> 24 & 255) > 0;
-	        boolean flag1 = entitylivingbaseIn.hurtTime > 0 || entitylivingbaseIn.deathTime > 0;
-	        if (!flag && !flag1) {
-	            return false;
-	        } else if (!flag && !combineTextures) {
-	            return false;
-	        } else {
-	            GlStateManager.setActiveTexture(OpenGlHelper.defaultTexUnit);
-	            GlStateManager.enableTexture2D();
-	            GlStateManager.glTexEnvi(8960, 8704, OpenGlHelper.GL_COMBINE);
-	            GlStateManager.glTexEnvi(8960, OpenGlHelper.GL_COMBINE_RGB, 8448);
-	            GlStateManager.glTexEnvi(8960, OpenGlHelper.GL_SOURCE0_RGB, OpenGlHelper.defaultTexUnit);
-	            GlStateManager.glTexEnvi(8960, OpenGlHelper.GL_SOURCE1_RGB, OpenGlHelper.GL_PRIMARY_COLOR);
-	            GlStateManager.glTexEnvi(8960, OpenGlHelper.GL_OPERAND0_RGB, 768);
-	            GlStateManager.glTexEnvi(8960, OpenGlHelper.GL_OPERAND1_RGB, 768);
-	            GlStateManager.glTexEnvi(8960, OpenGlHelper.GL_COMBINE_ALPHA, 7681);
-	            GlStateManager.glTexEnvi(8960, OpenGlHelper.GL_SOURCE0_ALPHA, OpenGlHelper.defaultTexUnit);
-	            GlStateManager.glTexEnvi(8960, OpenGlHelper.GL_OPERAND0_ALPHA, 770);
-	            GlStateManager.setActiveTexture(OpenGlHelper.lightmapTexUnit);
-	            GlStateManager.enableTexture2D();
-	            GlStateManager.glTexEnvi(8960, 8704, OpenGlHelper.GL_COMBINE);
-	            GlStateManager.glTexEnvi(8960, OpenGlHelper.GL_COMBINE_RGB, OpenGlHelper.GL_INTERPOLATE);
-	            GlStateManager.glTexEnvi(8960, OpenGlHelper.GL_SOURCE0_RGB, OpenGlHelper.GL_CONSTANT);
-	            GlStateManager.glTexEnvi(8960, OpenGlHelper.GL_SOURCE1_RGB, OpenGlHelper.GL_PREVIOUS);
-	            GlStateManager.glTexEnvi(8960, OpenGlHelper.GL_SOURCE2_RGB, OpenGlHelper.GL_CONSTANT);
-	            GlStateManager.glTexEnvi(8960, OpenGlHelper.GL_OPERAND0_RGB, 768);
-	            GlStateManager.glTexEnvi(8960, OpenGlHelper.GL_OPERAND1_RGB, 768);
-	            GlStateManager.glTexEnvi(8960, OpenGlHelper.GL_OPERAND2_RGB, 770);
-	            GlStateManager.glTexEnvi(8960, OpenGlHelper.GL_COMBINE_ALPHA, 7681);
-	            GlStateManager.glTexEnvi(8960, OpenGlHelper.GL_SOURCE0_ALPHA, OpenGlHelper.GL_PREVIOUS);
-	            GlStateManager.glTexEnvi(8960, OpenGlHelper.GL_OPERAND0_ALPHA, 770);
-	            this.brightnessBuffer.position(0);
-	            if (flag1) {
-	                this.brightnessBuffer.put(0.6F);
-	                this.brightnessBuffer.put(0.6F);
-	                this.brightnessBuffer.put(0.6F);
-	                this.brightnessBuffer.put(0.6F);
-	            } else {
-	                float f1 = (float)(i >> 24 & 255) / 255.0F;
-	                float f2 = (float)(i >> 16 & 255) / 255.0F;
-	                float f3 = (float)(i >> 8 & 255) / 255.0F;
-	                float f4 = (float)(i & 255) / 255.0F;
-	                this.brightnessBuffer.put(f2);
-	                this.brightnessBuffer.put(f3);
-	                this.brightnessBuffer.put(f4);
-	                this.brightnessBuffer.put(1.0F - f1);
-	            }
-	            this.brightnessBuffer.flip();
-	            GlStateManager.glTexEnv(8960, 8705, this.brightnessBuffer);
-	            GlStateManager.setActiveTexture(OpenGlHelper.GL_TEXTURE2);
-	            GlStateManager.enableTexture2D();
-	            GlStateManager.bindTexture(TEXTURE_BRIGHTNESS.getGlTextureId());
-	            GlStateManager.glTexEnvi(8960, 8704, OpenGlHelper.GL_COMBINE);
-	            GlStateManager.glTexEnvi(8960, OpenGlHelper.GL_COMBINE_RGB, 8448);
-	            GlStateManager.glTexEnvi(8960, OpenGlHelper.GL_SOURCE0_RGB, OpenGlHelper.GL_PREVIOUS);
-	            GlStateManager.glTexEnvi(8960, OpenGlHelper.GL_SOURCE1_RGB, OpenGlHelper.lightmapTexUnit);
-	            GlStateManager.glTexEnvi(8960, OpenGlHelper.GL_OPERAND0_RGB, 768);
-	            GlStateManager.glTexEnvi(8960, OpenGlHelper.GL_OPERAND1_RGB, 768);
-	            GlStateManager.glTexEnvi(8960, OpenGlHelper.GL_COMBINE_ALPHA, 7681);
-	            GlStateManager.glTexEnvi(8960, OpenGlHelper.GL_SOURCE0_ALPHA, OpenGlHelper.GL_PREVIOUS);
-	            GlStateManager.glTexEnvi(8960, OpenGlHelper.GL_OPERAND0_ALPHA, 770);
-	            GlStateManager.setActiveTexture(OpenGlHelper.defaultTexUnit);
-	            return true;
-	        }
-	    }
-
-		@Override
-		protected ResourceLocation getEntityTexture(EntityCustom entity) {
-			return TEXTURE;
-		}
+	@Override
+	public void preInit(FMLPreInitializationEvent event) {
+		new Renderer().register();
 	}
 
-	@SideOnly(Side.CLIENT)
-	public class ModelPretaShield extends ModelBase {
-		private final ModelRenderer bone;
-
-		public ModelPretaShield() {
-			this.textureWidth = 32;
-			this.textureHeight = 32;
-			this.bone = new ModelRenderer(this);
-			this.bone.setRotationPoint(0.0F, 24.0F, 0.0F);
-			this.bone.cubeList.add(new ModelBox(this.bone, 0, 0, -8.0F, -33.0F, -8.0F, 16, 32, 16, 2.0F, false));
+	public static class Renderer extends EntityRendererRegister {
+		@SideOnly(Side.CLIENT)
+		@Override
+		public void register() {
+			RenderingRegistry.registerEntityRenderingHandler(EntityCustom.class, renderManager -> new RenderCustom(renderManager));
 		}
 
-		@Override
-		public void render(Entity entity, float f0, float f1, float f2, float f3, float f4, float f5) {
-			GlStateManager.pushMatrix();
-			GlStateManager.depthMask(true);
-			if (entity.ticksExisted < 30) {
-				float scale = entity.ticksExisted / 30.0F;
-				GlStateManager.scale(scale, scale, scale);
+		@SideOnly(Side.CLIENT)
+		public class RenderCustom extends RenderLivingBase<EntityCustom> {
+			private final ResourceLocation TEXTURE = new ResourceLocation("narutomod:textures/electric_armor.png");
+			private final DynamicTexture TEXTURE_BRIGHTNESS = new DynamicTexture(16, 16);
+	
+			public RenderCustom(RenderManager renderManagerIn) {
+				super(renderManagerIn, new ModelPretaShield(), 0.1F);
+		        int[] aint = TEXTURE_BRIGHTNESS.getTextureData();
+		        for (int i = 0; i < 256; ++i) {
+		            aint[i] = -1;
+		        }
+		        TEXTURE_BRIGHTNESS.updateDynamicTexture();
 			}
-			GlStateManager.matrixMode(5890);
-			GlStateManager.loadIdentity();
-			float f = entity.ticksExisted;
-			GlStateManager.translate(f * 0.04F, f * 0.02F, 0.0F);
-			GlStateManager.matrixMode(5888);
-			GlStateManager.enableAlpha();
-			GlStateManager.enableBlend();
-			GlStateManager.color(1.0F, 1.0F, 1.0F, 0.2F);
-			GlStateManager.disableLighting();
-			GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-			OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240.0F, 240.0F);
-			//GlStateManager.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE);
-			//(Minecraft.getMinecraft()).entityRenderer.setupFogColor(true);
-			this.bone.render(f5);
-			//(Minecraft.getMinecraft()).entityRenderer.setupFogColor(false);
-			GlStateManager.matrixMode(5890);
-			GlStateManager.loadIdentity();
-			GlStateManager.matrixMode(5888);
-			GlStateManager.enableLighting();
-			GlStateManager.disableBlend();
-			GlStateManager.disableAlpha();
-			GlStateManager.depthMask(false);
-			GlStateManager.popMatrix();
+	
+			@Override
+		    protected boolean setBrightness(EntityCustom entitylivingbaseIn, float partialTicks, boolean combineTextures) {
+		        float f = entitylivingbaseIn.getBrightness();
+		        int i = this.getColorMultiplier(entitylivingbaseIn, f, partialTicks);
+		        boolean flag = (i >> 24 & 255) > 0;
+		        boolean flag1 = entitylivingbaseIn.hurtTime > 0 || entitylivingbaseIn.deathTime > 0;
+		        if (!flag && !flag1) {
+		            return false;
+		        } else if (!flag && !combineTextures) {
+		            return false;
+		        } else {
+		            GlStateManager.setActiveTexture(OpenGlHelper.defaultTexUnit);
+		            GlStateManager.enableTexture2D();
+		            GlStateManager.glTexEnvi(8960, 8704, OpenGlHelper.GL_COMBINE);
+		            GlStateManager.glTexEnvi(8960, OpenGlHelper.GL_COMBINE_RGB, 8448);
+		            GlStateManager.glTexEnvi(8960, OpenGlHelper.GL_SOURCE0_RGB, OpenGlHelper.defaultTexUnit);
+		            GlStateManager.glTexEnvi(8960, OpenGlHelper.GL_SOURCE1_RGB, OpenGlHelper.GL_PRIMARY_COLOR);
+		            GlStateManager.glTexEnvi(8960, OpenGlHelper.GL_OPERAND0_RGB, 768);
+		            GlStateManager.glTexEnvi(8960, OpenGlHelper.GL_OPERAND1_RGB, 768);
+		            GlStateManager.glTexEnvi(8960, OpenGlHelper.GL_COMBINE_ALPHA, 7681);
+		            GlStateManager.glTexEnvi(8960, OpenGlHelper.GL_SOURCE0_ALPHA, OpenGlHelper.defaultTexUnit);
+		            GlStateManager.glTexEnvi(8960, OpenGlHelper.GL_OPERAND0_ALPHA, 770);
+		            GlStateManager.setActiveTexture(OpenGlHelper.lightmapTexUnit);
+		            GlStateManager.enableTexture2D();
+		            GlStateManager.glTexEnvi(8960, 8704, OpenGlHelper.GL_COMBINE);
+		            GlStateManager.glTexEnvi(8960, OpenGlHelper.GL_COMBINE_RGB, OpenGlHelper.GL_INTERPOLATE);
+		            GlStateManager.glTexEnvi(8960, OpenGlHelper.GL_SOURCE0_RGB, OpenGlHelper.GL_CONSTANT);
+		            GlStateManager.glTexEnvi(8960, OpenGlHelper.GL_SOURCE1_RGB, OpenGlHelper.GL_PREVIOUS);
+		            GlStateManager.glTexEnvi(8960, OpenGlHelper.GL_SOURCE2_RGB, OpenGlHelper.GL_CONSTANT);
+		            GlStateManager.glTexEnvi(8960, OpenGlHelper.GL_OPERAND0_RGB, 768);
+		            GlStateManager.glTexEnvi(8960, OpenGlHelper.GL_OPERAND1_RGB, 768);
+		            GlStateManager.glTexEnvi(8960, OpenGlHelper.GL_OPERAND2_RGB, 770);
+		            GlStateManager.glTexEnvi(8960, OpenGlHelper.GL_COMBINE_ALPHA, 7681);
+		            GlStateManager.glTexEnvi(8960, OpenGlHelper.GL_SOURCE0_ALPHA, OpenGlHelper.GL_PREVIOUS);
+		            GlStateManager.glTexEnvi(8960, OpenGlHelper.GL_OPERAND0_ALPHA, 770);
+		            this.brightnessBuffer.position(0);
+		            if (flag1) {
+		                this.brightnessBuffer.put(0.6F);
+		                this.brightnessBuffer.put(0.6F);
+		                this.brightnessBuffer.put(0.6F);
+		                this.brightnessBuffer.put(0.6F);
+		            } else {
+		                float f1 = (float)(i >> 24 & 255) / 255.0F;
+		                float f2 = (float)(i >> 16 & 255) / 255.0F;
+		                float f3 = (float)(i >> 8 & 255) / 255.0F;
+		                float f4 = (float)(i & 255) / 255.0F;
+		                this.brightnessBuffer.put(f2);
+		                this.brightnessBuffer.put(f3);
+		                this.brightnessBuffer.put(f4);
+		                this.brightnessBuffer.put(1.0F - f1);
+		            }
+		            this.brightnessBuffer.flip();
+		            GlStateManager.glTexEnv(8960, 8705, this.brightnessBuffer);
+		            GlStateManager.setActiveTexture(OpenGlHelper.GL_TEXTURE2);
+		            GlStateManager.enableTexture2D();
+		            GlStateManager.bindTexture(TEXTURE_BRIGHTNESS.getGlTextureId());
+		            GlStateManager.glTexEnvi(8960, 8704, OpenGlHelper.GL_COMBINE);
+		            GlStateManager.glTexEnvi(8960, OpenGlHelper.GL_COMBINE_RGB, 8448);
+		            GlStateManager.glTexEnvi(8960, OpenGlHelper.GL_SOURCE0_RGB, OpenGlHelper.GL_PREVIOUS);
+		            GlStateManager.glTexEnvi(8960, OpenGlHelper.GL_SOURCE1_RGB, OpenGlHelper.lightmapTexUnit);
+		            GlStateManager.glTexEnvi(8960, OpenGlHelper.GL_OPERAND0_RGB, 768);
+		            GlStateManager.glTexEnvi(8960, OpenGlHelper.GL_OPERAND1_RGB, 768);
+		            GlStateManager.glTexEnvi(8960, OpenGlHelper.GL_COMBINE_ALPHA, 7681);
+		            GlStateManager.glTexEnvi(8960, OpenGlHelper.GL_SOURCE0_ALPHA, OpenGlHelper.GL_PREVIOUS);
+		            GlStateManager.glTexEnvi(8960, OpenGlHelper.GL_OPERAND0_ALPHA, 770);
+		            GlStateManager.setActiveTexture(OpenGlHelper.defaultTexUnit);
+		            return true;
+		        }
+		    }
+	
+			@Override
+			protected ResourceLocation getEntityTexture(EntityCustom entity) {
+				return TEXTURE;
+			}
+		}
+	
+		@SideOnly(Side.CLIENT)
+		public class ModelPretaShield extends ModelBase {
+			private final ModelRenderer bone;
+	
+			public ModelPretaShield() {
+				this.textureWidth = 32;
+				this.textureHeight = 32;
+				this.bone = new ModelRenderer(this);
+				this.bone.setRotationPoint(0.0F, 24.0F, 0.0F);
+				this.bone.cubeList.add(new ModelBox(this.bone, 0, 0, -8.0F, -33.0F, -8.0F, 16, 32, 16, 2.0F, false));
+			}
+	
+			@Override
+			public void render(Entity entity, float f0, float f1, float f2, float f3, float f4, float f5) {
+				GlStateManager.pushMatrix();
+				GlStateManager.depthMask(true);
+				if (entity.ticksExisted < 30) {
+					float scale = entity.ticksExisted / 30.0F;
+					GlStateManager.scale(scale, scale, scale);
+				}
+				GlStateManager.matrixMode(5890);
+				GlStateManager.loadIdentity();
+				float f = entity.ticksExisted;
+				GlStateManager.translate(f * 0.04F, f * 0.02F, 0.0F);
+				GlStateManager.matrixMode(5888);
+				GlStateManager.enableAlpha();
+				GlStateManager.enableBlend();
+				GlStateManager.color(1.0F, 1.0F, 1.0F, 0.2F);
+				GlStateManager.disableLighting();
+				GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+				OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240.0F, 240.0F);
+				//GlStateManager.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE);
+				//(Minecraft.getMinecraft()).entityRenderer.setupFogColor(true);
+				this.bone.render(f5);
+				//(Minecraft.getMinecraft()).entityRenderer.setupFogColor(false);
+				GlStateManager.matrixMode(5890);
+				GlStateManager.loadIdentity();
+				GlStateManager.matrixMode(5888);
+				GlStateManager.enableLighting();
+				GlStateManager.disableBlend();
+				GlStateManager.disableAlpha();
+				GlStateManager.depthMask(false);
+				GlStateManager.popMatrix();
+			}
 		}
 	}
 }

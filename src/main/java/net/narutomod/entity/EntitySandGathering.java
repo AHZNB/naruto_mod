@@ -36,7 +36,7 @@ import javax.annotation.Nullable;
 public class EntitySandGathering extends ElementsNarutomodMod.ModElement {
 	public static final int ENTITYID = 430;
 	public static final int ENTITYID_RANGED = 431;
-	private static final float SCALE = 4f;
+	private static final float SCALE = 8f;
 
 	public EntitySandGathering(ElementsNarutomodMod instance) {
 		super(instance, 858);
@@ -46,12 +46,6 @@ public class EntitySandGathering extends ElementsNarutomodMod.ModElement {
 	public void initElements() {
 		elements.entities.add(() -> EntityEntryBuilder.create().entity(EC.class)
 				.id(new ResourceLocation("narutomod", "sand_gathering"), ENTITYID).name("sand_gathering").tracker(64, 3, true).build());
-	}
-
-	@SideOnly(Side.CLIENT)
-	@Override
-	public void preInit(FMLPreInitializationEvent event) {
-		RenderingRegistry.registerEntityRenderingHandler(EC.class, renderManager -> new CustomRender(renderManager));
 	}
 
 	public static class EC extends Entity {
@@ -103,17 +97,13 @@ public class EntitySandGathering extends ElementsNarutomodMod.ModElement {
 				if (this.sandCloud.shouldRemove()) {
 					this.sandCloud = null;
 				} else {
-					if (i == 0) {
-						if (this.sandCloud.getTicks() > this.waitTime) {
-							this.sandCloud.forceRemove();
-						}
-					} else {
-						this.sandCloud.setTarget(this.getMouthPos(), true);
+					if (i == 0 && this.sandCloud.getTicks() > this.waitTime) {
+						this.sandCloud.forceRemove();
 					}
 					this.sandCloud.onUpdate();
 				}
-			} else if (i > 0) {
-				this.sandCloud = new ItemJiton.SwarmTarget(this.world, 50, this.getPositionVector(), 
+			} else if (!this.world.isRemote && i > 0) {
+				this.sandCloud = new ItemJiton.SwarmTarget(this.world, 50, this.getEntityBoundingBox(),
 			 	 this.getMouthPos(), new Vec3d(0.2d, -0.1d, 0.2d), 0.5f, 0.03f, true, 2f, ItemJiton.Type.IRON.getColor());
 			}
 		}
@@ -121,7 +111,7 @@ public class EntitySandGathering extends ElementsNarutomodMod.ModElement {
 		private void onDeathUpdate() {
 			int i = this.getDeathTicks() + 1;
 			this.setDeathTicks(i);
-			if (this.sandCloud == null) {
+			if (i > 2 && this.sandCloud == null) {
 				this.setDead();
 			}
 		}
@@ -158,16 +148,16 @@ public class EntitySandGathering extends ElementsNarutomodMod.ModElement {
 				this.motionY = 0.0d;
 			}
 			this.setPosition(this.posX, this.posY, this.posZ);
-			if (!this.world.isRemote && (this.summoner == null || this.getDeathTicks() > 0)) {
+			if (!this.world.isRemote && (this.summoner == null || this.getDeathTicks() > 0 || this.ticksExisted > 300)) {
 				this.onDeathUpdate();
 			}
 		}
 
 		public void shoot(Vec3d vec) {
-			Vec3d vec1 = vec.normalize();
-			this.accelX = vec1.x * 0.1d;
-			this.accelY = vec1.y * 0.1d;
-			this.accelZ = vec1.z * 0.1d;
+			Vec3d vec1 = vec.normalize().scale(0.15d);
+			this.accelX = vec1.x;
+			this.accelY = vec1.y;
+			this.accelZ = vec1.z;
 			this.motionX = 0.0d;
 			this.motionY = 0.0d;
 			this.motionZ = 0.0d;
@@ -207,96 +197,107 @@ public class EntitySandGathering extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-	@SideOnly(Side.CLIENT)
-	public class CustomRender extends Render<EC> {
-		private final ResourceLocation texture = new ResourceLocation("narutomod:textures/sandpyramid.png");
-		private final ModelSandPyramid model = new ModelSandPyramid();
-
-		public CustomRender(RenderManager renderManagerIn) {
-			super(renderManagerIn);
-			this.shadowSize = 0.3f * SCALE;
-		}
-
-		@Override
-		public void doRender(EC entity, double x, double y, double z, float entityYaw, float partialTicks) {
-			GlStateManager.pushMatrix();
-			this.bindEntityTexture(entity);
-			GlStateManager.translate(x, y, z);
-			GlStateManager.rotate(180.0F, 1.0F, 0.0F, 0.0F);
-			float f = (float)entity.ticksExisted + partialTicks;
-			float scale = Math.min(f / ((float)entity.waitTime / SCALE), SCALE);
-			GlStateManager.rotate(scale == SCALE ? f * 20.0F : 0.0F, 0.0F, 1.0F, 0.0F);
-			GlStateManager.scale(scale, scale, scale);
-			this.model.render(entity, 0f, 0f, 0f, 0f, 0f, 0.0625f);
-			GlStateManager.popMatrix();
-		}
-
-		@Override
-		protected ResourceLocation getEntityTexture(EC entity) {
-			return this.texture;
-		}
+	@Override
+	public void preInit(FMLPreInitializationEvent event) {
+		new Renderer().register();
 	}
 
-	// Made with Blockbench 4.8.1
-	// Exported for Minecraft version 1.7 - 1.12
-	// Paste this class into your mod and generate all required imports
-	public static class ModelSandPyramid extends ModelBase {
-		private final ModelRenderer bone;
-		private final ModelRenderer bone3;
-		private final ModelRenderer bone4;
-		private final ModelRenderer bone2;
-		private final ModelRenderer bb_main;
-		public ModelSandPyramid() {
-			textureWidth = 16;
-			textureHeight = 16;
-	
-			bone = new ModelRenderer(this);
-			bone.setRotationPoint(0.0F, 0.0F, 0.0F);
-			setRotationAngle(bone, 0.3927F, 0.0F, 0.0F);
-			bone.cubeList.add(new ModelBox(bone, 0, 0, -3.0F, -8.0F, 0.0F, 6, 8, 0, 0.0F, false));
-			bone.cubeList.add(new ModelBox(bone, 0, 0, -3.0F, -8.0F, 0.0F, 6, 8, 0, -0.05F, false));
-	
-			bone3 = new ModelRenderer(this);
-			bone3.setRotationPoint(0.0F, 0.0F, 0.0F);
-			setRotationAngle(bone3, 0.0F, 1.5708F, -0.3927F);
-			bone3.cubeList.add(new ModelBox(bone3, 0, 0, -3.0F, -8.0F, 0.0F, 6, 8, 0, 0.0F, false));
-			bone3.cubeList.add(new ModelBox(bone3, 0, 0, -3.0F, -8.0F, 0.0F, 6, 8, 0, -0.05F, false));
-	
-			bone4 = new ModelRenderer(this);
-			bone4.setRotationPoint(0.0F, 0.0F, 0.0F);
-			setRotationAngle(bone4, 0.0F, -1.5708F, 0.3927F);
-			bone4.cubeList.add(new ModelBox(bone4, 0, 0, -3.0F, -8.0F, 0.0F, 6, 8, 0, 0.0F, true));
-			bone4.cubeList.add(new ModelBox(bone4, 0, 0, -3.0F, -8.0F, 0.0F, 6, 8, 0, -0.05F, true));
-	
-			bone2 = new ModelRenderer(this);
-			bone2.setRotationPoint(0.0F, 0.0F, 0.0F);
-			setRotationAngle(bone2, -2.7489F, 0.0F, -3.1416F);
-			bone2.cubeList.add(new ModelBox(bone2, 0, 0, -3.0F, -8.0F, 0.0F, 6, 8, 0, 0.0F, false));
-			bone2.cubeList.add(new ModelBox(bone2, 0, 0, -3.0F, -8.0F, 0.0F, 6, 8, 0, -0.05F, false));
-	
-			bb_main = new ModelRenderer(this);
-			bb_main.setRotationPoint(0.0F, 0.0F, 0.0F);
-			bb_main.cubeList.add(new ModelBox(bb_main, -6, 10, -3.0F, -7.17F, -3.0F, 6, 0, 6, 0.0F, false));
-		}
-
+	public static class Renderer extends EntityRendererRegister {
+		@SideOnly(Side.CLIENT)
 		@Override
-		public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
-			bone.render(f5);
-			bone3.render(f5);
-			bone4.render(f5);
-			bone2.render(f5);
-			bb_main.render(f5);
+		public void register() {
+			RenderingRegistry.registerEntityRenderingHandler(EC.class, renderManager -> new CustomRender(renderManager));
 		}
 
-		public void setRotationAngle(ModelRenderer modelRenderer, float x, float y, float z) {
-			modelRenderer.rotateAngleX = x;
-			modelRenderer.rotateAngleY = y;
-			modelRenderer.rotateAngleZ = z;
+		@SideOnly(Side.CLIENT)
+		public class CustomRender extends Render<EC> {
+			private final ResourceLocation texture = new ResourceLocation("narutomod:textures/sandpyramid.png");
+			private final ModelSandPyramid model = new ModelSandPyramid();
+	
+			public CustomRender(RenderManager renderManagerIn) {
+				super(renderManagerIn);
+				this.shadowSize = 0.3f * SCALE;
+			}
+	
+			@Override
+			public void doRender(EC entity, double x, double y, double z, float entityYaw, float partialTicks) {
+				GlStateManager.pushMatrix();
+				this.bindEntityTexture(entity);
+				GlStateManager.translate(x, y, z);
+				GlStateManager.rotate(180.0F, 1.0F, 0.0F, 0.0F);
+				float f = (float)entity.ticksExisted + partialTicks;
+				int i = entity.getDeathTicks();
+				float scale = i > 0 ? (1.0f - Math.min((partialTicks + i) / 20f, 1.0f)) * SCALE
+				 : Math.min(f / ((float)entity.waitTime / SCALE), SCALE);
+				GlStateManager.rotate(scale == SCALE ? f * 20.0F : 0.0F, 0.0F, 1.0F, 0.0F);
+				GlStateManager.scale(scale, scale, scale);
+				this.model.render(entity, 0f, 0f, 0f, 0f, 0f, 0.0625f);
+				GlStateManager.popMatrix();
+			}
+	
+			@Override
+			protected ResourceLocation getEntityTexture(EC entity) {
+				return this.texture;
+			}
 		}
-
-		@Override
-		public void setRotationAngles(float f, float f1, float f2, float f3, float f4, float f5, Entity e) {
-			super.setRotationAngles(f, f1, f2, f3, f4, f5, e);
+	
+		// Made with Blockbench 4.8.1
+		// Exported for Minecraft version 1.7 - 1.12
+		// Paste this class into your mod and generate all required imports
+		@SideOnly(Side.CLIENT)
+		public class ModelSandPyramid extends ModelBase {
+			private final ModelRenderer bone;
+			private final ModelRenderer bone3;
+			private final ModelRenderer bone4;
+			private final ModelRenderer bone2;
+			private final ModelRenderer bb_main;
+			public ModelSandPyramid() {
+				textureWidth = 16;
+				textureHeight = 16;
+		
+				bone = new ModelRenderer(this);
+				bone.setRotationPoint(0.0F, 0.0F, 0.0F);
+				setRotationAngle(bone, 0.3927F, 0.0F, 0.0F);
+				bone.cubeList.add(new ModelBox(bone, 0, 0, -3.0F, -8.0F, 0.0F, 6, 8, 0, 0.0F, false));
+				bone.cubeList.add(new ModelBox(bone, 0, 0, -3.0F, -8.0F, 0.0F, 6, 8, 0, -0.05F, false));
+		
+				bone3 = new ModelRenderer(this);
+				bone3.setRotationPoint(0.0F, 0.0F, 0.0F);
+				setRotationAngle(bone3, 0.0F, 1.5708F, -0.3927F);
+				bone3.cubeList.add(new ModelBox(bone3, 0, 0, -3.0F, -8.0F, 0.0F, 6, 8, 0, 0.0F, false));
+				bone3.cubeList.add(new ModelBox(bone3, 0, 0, -3.0F, -8.0F, 0.0F, 6, 8, 0, -0.05F, false));
+		
+				bone4 = new ModelRenderer(this);
+				bone4.setRotationPoint(0.0F, 0.0F, 0.0F);
+				setRotationAngle(bone4, 0.0F, -1.5708F, 0.3927F);
+				bone4.cubeList.add(new ModelBox(bone4, 0, 0, -3.0F, -8.0F, 0.0F, 6, 8, 0, 0.0F, true));
+				bone4.cubeList.add(new ModelBox(bone4, 0, 0, -3.0F, -8.0F, 0.0F, 6, 8, 0, -0.05F, true));
+		
+				bone2 = new ModelRenderer(this);
+				bone2.setRotationPoint(0.0F, 0.0F, 0.0F);
+				setRotationAngle(bone2, -2.7489F, 0.0F, -3.1416F);
+				bone2.cubeList.add(new ModelBox(bone2, 0, 0, -3.0F, -8.0F, 0.0F, 6, 8, 0, 0.0F, false));
+				bone2.cubeList.add(new ModelBox(bone2, 0, 0, -3.0F, -8.0F, 0.0F, 6, 8, 0, -0.05F, false));
+		
+				bb_main = new ModelRenderer(this);
+				bb_main.setRotationPoint(0.0F, 0.0F, 0.0F);
+				bb_main.cubeList.add(new ModelBox(bb_main, -6, 10, -3.0F, -7.17F, -3.0F, 6, 0, 6, 0.0F, false));
+			}
+	
+			@Override
+			public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
+				bone.render(f5);
+				bone3.render(f5);
+				bone4.render(f5);
+				bone2.render(f5);
+				bb_main.render(f5);
+			}
+	
+			public void setRotationAngle(ModelRenderer modelRenderer, float x, float y, float z) {
+				modelRenderer.rotateAngleX = x;
+				modelRenderer.rotateAngleY = y;
+				modelRenderer.rotateAngleZ = z;
+			}
 		}
 	}
 }

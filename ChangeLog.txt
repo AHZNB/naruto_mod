@@ -35,7 +35,7 @@ Jutsus:
  - widened ice spears spawn range when charged more
  - reduced rasenshuriken effect particles to reduce client lag
  - buffed lightning chakra mode strength, depends on chakra level
- - added sand gathering jutsu (WIP)
+ - added sand gathering jutsu
 
 Items:
  - fixed explosive tags breaking blocks when mobGriefing false
