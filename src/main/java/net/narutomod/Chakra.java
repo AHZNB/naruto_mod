@@ -258,7 +258,7 @@ public class Chakra extends ElementsNarutomodMod.ModElement {
 					} else {
 						Pathway p = playerMap.get((EntityPlayer)entity);
 						if (p != null) {
-							p.set(Math.min(10d, p.getMax()));
+							p.set(Math.min(PlayerTracker.keepNinjaXp(entity.world) && PlayerTracker.getBattleXp((EntityPlayer)entity) > 10d ? 10d : 0d, p.getMax()));
 							playerMap.remove((EntityPlayer)entity);
 						}
 					}

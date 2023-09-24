@@ -55,6 +55,10 @@ public class PlayerTracker extends ElementsNarutomodMod.ModElement {
 		super(instance, 181);
 	}
 
+	public static boolean keepNinjaXp(World world) {
+		return world.getGameRules().getBoolean(KEEPXP_RULE);
+	}
+
 	public static boolean isNinja(EntityPlayer player) {
 		return player.getEntityData().getDouble(BATTLEXP) > 0.0d;
 	}
@@ -131,7 +135,7 @@ public class PlayerTracker extends ElementsNarutomodMod.ModElement {
 				}
 			}
 			deadPlayers.add(new Deaths(entity));
-			if (!entity.world.getGameRules().getBoolean(KEEPXP_RULE)) {
+			if (!keepNinjaXp(entity.world)) {
 				entity.getEntityData().setDouble(BATTLEXP, 0.0D);
 				if (entity instanceof EntityPlayerMP) {
 					sendBattleXPToTracking((EntityPlayerMP)entity);
@@ -238,9 +242,10 @@ public class PlayerTracker extends ElementsNarutomodMod.ModElement {
 
 		@SubscribeEvent(priority = EventPriority.LOWEST)
 		public void onDeath(LivingDeathEvent event) {
-			Entity entity = event.getEntityLiving();
+			EntityLivingBase entity = event.getEntityLiving();
 			if (entity instanceof EntityPlayerMP) {
 				Deaths.log((EntityPlayer) entity);
+				entity.clearActivePotions();
 			}
 		}
 
