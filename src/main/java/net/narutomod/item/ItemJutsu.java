@@ -87,6 +87,12 @@ public class ItemJutsu extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
+	public static void setCurrentJutsuCooldown(ItemStack stack, long cd) {
+		if (stack.getItem() instanceof Base) {
+			((Base)stack.getItem()).setCurrentJutsuCooldown(stack, cd);
+		}
+	}
+
 	public static void logBattleXP(EntityPlayer player) {
 		ItemStack stack = player.getHeldItemMainhand();
 		if (!(stack.getItem() instanceof Base)) {

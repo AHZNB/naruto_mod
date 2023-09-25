@@ -349,6 +349,7 @@ public class EntityBuddha1000 extends ElementsNarutomodMod.ModElement {
 					 SoundCategory.PLAYERS, 5f, 1f);
 					entity.world.spawnEntity(new EC(entity, ItemSenjutsu.WOODBUDDHA.chakraUsage * 0.02d *
 					 ((ItemSenjutsu.RangedItem)stack.getItem()).getCurrentJutsuXpModifier(stack, entity)));
+					ItemJutsu.setCurrentJutsuCooldown(stack, 3600);
 					return true;
 				} else if (((EC)entity.getRidingEntity()).isSitting()) {
 					entity.getRidingEntity().playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:woodspawn")),
@@ -393,7 +394,7 @@ public class EntityBuddha1000 extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void onUpdate() {
 			super.onUpdate();
-			if (!this.world.isRemote && this.ticksAlive > (this.shouldGrow() ? 100 : 20)) {
+			if (this.ticksAlive > (this.shouldGrow() ? 100 : 20)) {
 				this.setDead();
 			}
 		}

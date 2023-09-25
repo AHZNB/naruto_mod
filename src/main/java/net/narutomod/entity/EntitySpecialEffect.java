@@ -48,12 +48,6 @@ public class EntitySpecialEffect extends ElementsNarutomodMod.ModElement {
 		  .id(new ResourceLocation("narutomod", "specialeffectentity"), ENTITYID).name("specialeffectentity").tracker(128, 1, true).build());
 	}
 
-	@SideOnly(Side.CLIENT)
-	@Override
-	public void preInit(FMLPreInitializationEvent event) {
-		RenderingRegistry.registerEntityRenderingHandler(EntityCustom.class, renderManager -> new RenderSpecialEffect(renderManager));
-	}
-
 	public enum Type {
 		ROTATING_LINES_COLOR_END(0),
 		EXPANDING_SPHERES_FADE_TO_BLACK(1);
@@ -211,145 +205,158 @@ public class EntitySpecialEffect extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-	@SideOnly(Side.CLIENT)
-	public class RenderSpecialEffect extends Render<EntityCustom> {
-		private final ResourceLocation TEXTURE = new ResourceLocation("narutomod:textures/white_square.png");
-		public int sphereIdOutside;
-		public int sphereIdInside;
-		public final Sphere sphere;
+	@Override
+	public void preInit(FMLPreInitializationEvent event) {
+		new Renderer().register();
+	}
 
-		public RenderSpecialEffect(RenderManager renderManagerIn) {
-			super(renderManagerIn);
-			this.sphere = new Sphere();
-			this.initSphere();
-		}
-
-		private void initSphere() {
-			this.sphere.setDrawStyle(GLU.GLU_FILL);
-			this.sphere.setNormals(GLU.GLU_SMOOTH);
-			this.sphere.setOrientation(GLU.GLU_OUTSIDE);
-			this.sphereIdOutside = GLAllocation.generateDisplayLists(1);
-			GlStateManager.glNewList(this.sphereIdOutside, 0x1300);
-			this.bindTexture(TEXTURE);
-			this.sphere.draw(1.0F, 32, 32);
-			GlStateManager.glEndList();	
-			this.sphere.setOrientation(GLU.GLU_INSIDE);
-			this.sphereIdInside = GLAllocation.generateDisplayLists(1);
-			GlStateManager.glNewList(this.sphereIdInside, 0x1300);
-			this.bindTexture(TEXTURE);
-			this.sphere.draw(1.0F, 32, 32);
-			GlStateManager.glEndList();
-		}
-
+	public static class Renderer extends EntityRendererRegister {
+		@SideOnly(Side.CLIENT)
 		@Override
-		public boolean shouldRender(EntityCustom livingEntity, ICamera camera, double camX, double camY, double camZ) {
-			return true;
+		public void register() {
+			RenderingRegistry.registerEntityRenderingHandler(EntityCustom.class, renderManager -> new RenderSpecialEffect(renderManager));
 		}
 
-		@Override
-		public void doRender(EntityCustom entity, double x, double y, double z, float entityYaw, float partialTicks) {
-			switch (entity.getEffectType()) {
-				case ROTATING_LINES_COLOR_END:
-					this.renderRotatingLines(entity, x, y, z, entityYaw, partialTicks);
-					break;
-				case EXPANDING_SPHERES_FADE_TO_BLACK:
-					this.renderExpandingSphere(entity, x, y, z, entityYaw, partialTicks);
-					break;
+		@SideOnly(Side.CLIENT)
+		public class RenderSpecialEffect extends Render<EntityCustom> {
+			private final ResourceLocation TEXTURE = new ResourceLocation("narutomod:textures/white_square.png");
+			public int sphereIdOutside;
+			public int sphereIdInside;
+			public final Sphere sphere;
+	
+			public RenderSpecialEffect(RenderManager renderManagerIn) {
+				super(renderManagerIn);
+				this.sphere = new Sphere();
+				this.initSphere();
 			}
-			super.doRender(entity, x, y, z, entityYaw, partialTicks);
-		}
-
-		private void renderRotatingLines(EntityCustom entity, double x, double y, double z, float entityYaw, float partialTicks) {
-			GlStateManager.pushMatrix();
-			GlStateManager.translate(x, y + entity.height / 2, z);
-			GlStateManager.rotate(entityYaw, 0.0F, 1.0F, 0.0F);
-			Tessellator tessellator = Tessellator.getInstance();
-			BufferBuilder bufferbuilder = tessellator.getBuffer();
-			RenderHelper.disableStandardItemLighting();
-			float f = (entity.getAge() + partialTicks) / entity.getLifespan();
-			float f1 = f;// 0.0F;
-			// if (f > 0.5F)
-			// f1 = (f - 0.5F) / 0.5F;
-			Random random = new Random(432L);
-			GlStateManager.disableTexture2D();
-			GlStateManager.shadeModel(7425);
-			GlStateManager.enableBlend();
-			GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE);
-			GlStateManager.disableAlpha();
-			GlStateManager.enableCull();//GlStateManager.disableCull();
-			GlStateManager.depthMask(false);
-			float r = entity.getRadius();
-			int j = entity.getColor();
-			int red = j >> 16 & 0xFF;
-			int green = j >> 8 & 0xFF;
-			int blue = j & 0xFF;
-			// for (int i = 0; i < (f + f * f) / 2.0F * 60.0F; i++) {
-			for (int i = 0; i < 120.0F; i++) {
-				GlStateManager.rotate(random.nextFloat() * 360.0F, 1.0F, 0.0F, 0.0F);
-				GlStateManager.rotate(random.nextFloat() * 360.0F, 0.0F, 1.0F, 0.0F);
-				GlStateManager.rotate(random.nextFloat() * 360.0F, 0.0F, 0.0F, 1.0F);
-				GlStateManager.rotate(random.nextFloat() * 360.0F, 1.0F, 0.0F, 0.0F);
-				GlStateManager.rotate(random.nextFloat() * 360.0F, 0.0F, 1.0F, 0.0F);
-				GlStateManager.rotate(random.nextFloat() * 360.0F + f * 90.0F, 0.0F, 0.0F, 1.0F);
-				float f2 = (random.nextFloat() + f1) * 0.5F * r;
-				float f3 = (random.nextFloat() + f1) * 0.12F * r;
-				bufferbuilder.begin(6, DefaultVertexFormats.POSITION_COLOR);
-				bufferbuilder.pos(0.0D, 0.0D, 0.0D).color(255, 255, 255, (int) (255.0F * (1.0F - f1))).endVertex();
-				bufferbuilder.pos(-0.866D * f3, f2, (-0.5F * f3)).color(red, green, blue, 0).endVertex();
-				bufferbuilder.pos(0.866D * f3, f2, (-0.5F * f3)).color(red, green, blue, 0).endVertex();
-				bufferbuilder.pos(0.0D, f2, (1.0F * f3)).color(red, green, blue, 0).endVertex();
-				bufferbuilder.pos(-0.866D * f3, f2, (-0.5F * f3)).color(red, green, blue, 0).endVertex();
-				tessellator.draw();
+	
+			private void initSphere() {
+				this.sphere.setDrawStyle(GLU.GLU_FILL);
+				this.sphere.setNormals(GLU.GLU_SMOOTH);
+				this.sphere.setOrientation(GLU.GLU_OUTSIDE);
+				this.sphereIdOutside = GLAllocation.generateDisplayLists(1);
+				GlStateManager.glNewList(this.sphereIdOutside, 0x1300);
+				this.bindTexture(TEXTURE);
+				this.sphere.draw(1.0F, 32, 32);
+				GlStateManager.glEndList();	
+				this.sphere.setOrientation(GLU.GLU_INSIDE);
+				this.sphereIdInside = GLAllocation.generateDisplayLists(1);
+				GlStateManager.glNewList(this.sphereIdInside, 0x1300);
+				this.bindTexture(TEXTURE);
+				this.sphere.draw(1.0F, 32, 32);
+				GlStateManager.glEndList();
 			}
-			GlStateManager.depthMask(true);
-			GlStateManager.disableCull();//GlStateManager.enableCull();
-			GlStateManager.disableBlend();
-			GlStateManager.shadeModel(7424);
-			GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-			GlStateManager.enableTexture2D();
-			GlStateManager.enableAlpha();
-			RenderHelper.enableStandardItemLighting();
-			GlStateManager.popMatrix();
-		}
-
-		private void renderExpandingSphere(EntityCustom entity, double x, double y, double z, float entityYaw, float partialTicks) {
-			int life = entity.getLifespan();
-			float maxscale = entity.getRadius();
-			float age = (float)entity.getAge() + partialTicks;
-			float f = 1.0f;
-			if (age > 0.6f * life) {
-				f = 1.0f - (age - 0.6f * life) / (0.4f * life);
+	
+			@Override
+			public boolean shouldRender(EntityCustom livingEntity, ICamera camera, double camX, double camY, double camZ) {
+				return true;
 			}
-			GlStateManager.pushMatrix();
-			GlStateManager.enableAlpha();
-			GlStateManager.enableBlend();
-			GlStateManager.depthMask(false);
-			GlStateManager.disableLighting();
-			GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-			OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 0xF0, 0xF0);
-			for (int i = 0; age - i > 0f; i++)  {
-				if (age <= maxscale || i > age - maxscale) {
-					float scale = (age - i) * 0.7f;
-					float c = 1.0F - 0.05F * i;
-					GlStateManager.pushMatrix();
-					GlStateManager.color(c, c, c, 0.101F);
-					GlStateManager.translate(x, y, z);
-					GlStateManager.scale(scale, scale, scale);
-					GlStateManager.callList(this.sphereIdOutside);
-					GlStateManager.callList(this.sphereIdInside);
-					GlStateManager.popMatrix();
+	
+			@Override
+			public void doRender(EntityCustom entity, double x, double y, double z, float entityYaw, float partialTicks) {
+				switch (entity.getEffectType()) {
+					case ROTATING_LINES_COLOR_END:
+						this.renderRotatingLines(entity, x, y, z, entityYaw, partialTicks);
+						break;
+					case EXPANDING_SPHERES_FADE_TO_BLACK:
+						this.renderExpandingSphere(entity, x, y, z, entityYaw, partialTicks);
+						break;
 				}
+				super.doRender(entity, x, y, z, entityYaw, partialTicks);
 			}
-			GlStateManager.enableLighting();
-			GlStateManager.depthMask(true);
-			GlStateManager.disableBlend();
-			GlStateManager.disableAlpha();
-			GlStateManager.popMatrix();
-		}
-
-		@Override
-		protected ResourceLocation getEntityTexture(EntityCustom entity) {
-			return null;
+	
+			private void renderRotatingLines(EntityCustom entity, double x, double y, double z, float entityYaw, float partialTicks) {
+				GlStateManager.pushMatrix();
+				GlStateManager.translate(x, y + entity.height / 2, z);
+				GlStateManager.rotate(entityYaw, 0.0F, 1.0F, 0.0F);
+				Tessellator tessellator = Tessellator.getInstance();
+				BufferBuilder bufferbuilder = tessellator.getBuffer();
+				RenderHelper.disableStandardItemLighting();
+				float f = (entity.getAge() + partialTicks) / entity.getLifespan();
+				float f1 = f;// 0.0F;
+				// if (f > 0.5F)
+				// f1 = (f - 0.5F) / 0.5F;
+				Random random = new Random(432L);
+				GlStateManager.disableTexture2D();
+				GlStateManager.shadeModel(7425);
+				GlStateManager.enableBlend();
+				GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE);
+				GlStateManager.disableAlpha();
+				GlStateManager.enableCull();//GlStateManager.disableCull();
+				GlStateManager.depthMask(false);
+				float r = entity.getRadius();
+				int j = entity.getColor();
+				int red = j >> 16 & 0xFF;
+				int green = j >> 8 & 0xFF;
+				int blue = j & 0xFF;
+				// for (int i = 0; i < (f + f * f) / 2.0F * 60.0F; i++) {
+				for (int i = 0; i < 120.0F; i++) {
+					GlStateManager.rotate(random.nextFloat() * 360.0F, 1.0F, 0.0F, 0.0F);
+					GlStateManager.rotate(random.nextFloat() * 360.0F, 0.0F, 1.0F, 0.0F);
+					GlStateManager.rotate(random.nextFloat() * 360.0F, 0.0F, 0.0F, 1.0F);
+					GlStateManager.rotate(random.nextFloat() * 360.0F, 1.0F, 0.0F, 0.0F);
+					GlStateManager.rotate(random.nextFloat() * 360.0F, 0.0F, 1.0F, 0.0F);
+					GlStateManager.rotate(random.nextFloat() * 360.0F + f * 90.0F, 0.0F, 0.0F, 1.0F);
+					float f2 = (random.nextFloat() + f1) * 0.5F * r;
+					float f3 = (random.nextFloat() + f1) * 0.12F * r;
+					bufferbuilder.begin(6, DefaultVertexFormats.POSITION_COLOR);
+					bufferbuilder.pos(0.0D, 0.0D, 0.0D).color(255, 255, 255, (int) (255.0F * (1.0F - f1))).endVertex();
+					bufferbuilder.pos(-0.866D * f3, f2, (-0.5F * f3)).color(red, green, blue, 0).endVertex();
+					bufferbuilder.pos(0.866D * f3, f2, (-0.5F * f3)).color(red, green, blue, 0).endVertex();
+					bufferbuilder.pos(0.0D, f2, (1.0F * f3)).color(red, green, blue, 0).endVertex();
+					bufferbuilder.pos(-0.866D * f3, f2, (-0.5F * f3)).color(red, green, blue, 0).endVertex();
+					tessellator.draw();
+				}
+				GlStateManager.depthMask(true);
+				GlStateManager.disableCull();//GlStateManager.enableCull();
+				GlStateManager.disableBlend();
+				GlStateManager.shadeModel(7424);
+				GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+				GlStateManager.enableTexture2D();
+				GlStateManager.enableAlpha();
+				RenderHelper.enableStandardItemLighting();
+				GlStateManager.popMatrix();
+			}
+	
+			private void renderExpandingSphere(EntityCustom entity, double x, double y, double z, float entityYaw, float partialTicks) {
+				int life = entity.getLifespan();
+				float maxscale = entity.getRadius();
+				float age = (float)entity.getAge() + partialTicks;
+				float f = 1.0f;
+				if (age > 0.6f * life) {
+					f = 1.0f - (age - 0.6f * life) / (0.4f * life);
+				}
+				GlStateManager.pushMatrix();
+				GlStateManager.enableAlpha();
+				GlStateManager.enableBlend();
+				GlStateManager.depthMask(false);
+				GlStateManager.disableLighting();
+				GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+				OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 0xF0, 0xF0);
+				for (int i = 0; age - i > 0f; i++)  {
+					if (age <= maxscale || i > age - maxscale) {
+						float scale = (age - i) * 0.7f;
+						float c = 1.0F - 0.05F * i;
+						GlStateManager.pushMatrix();
+						GlStateManager.color(c, c, c, 0.101F);
+						GlStateManager.translate(x, y, z);
+						GlStateManager.scale(scale, scale, scale);
+						GlStateManager.callList(this.sphereIdOutside);
+						GlStateManager.callList(this.sphereIdInside);
+						GlStateManager.popMatrix();
+					}
+				}
+				GlStateManager.enableLighting();
+				GlStateManager.depthMask(true);
+				GlStateManager.disableBlend();
+				GlStateManager.disableAlpha();
+				GlStateManager.popMatrix();
+			}
+	
+			@Override
+			protected ResourceLocation getEntityTexture(EntityCustom entity) {
+				return null;
+			}
 		}
 	}
 }
