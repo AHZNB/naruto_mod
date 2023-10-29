@@ -1,22 +1,22 @@
 package net.narutomod.procedure;
 
-import net.minecraft.util.text.TextComponentTranslation;
-import org.lwjgl.input.Mouse;
-
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.common.MinecraftForge;
+
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvent;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.entity.item.EntityFallingBlock;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.entity.item.EntityFallingBlock;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.Entity;
 
 import net.narutomod.NarutomodModVariables;
 import net.narutomod.ElementsNarutomodMod;
@@ -64,24 +64,17 @@ public class ProcedureBanShoTenin extends ElementsNarutomodMod.ModElement {
 				if (cp.getAmount() < CHAKRA_USAGE) {
 					is_pressed = false;
 					cp.warningDisplay();
-				/*} else if (Mouse.isButtonDown(0) && procedure.getGrabbedEntity() != null) {
-					Entity entity1 = procedure.getGrabbedEntity();
-					ProcedureUtils.pushEntity(entity, entity1, 30d, 1.0F);// / MathHelper.sqrt(entity1.getEntityBoundingBox().getAverageEdgeLength()));
-					procedure.reset();
-					cooldown = (int)entity.world.getTotalWorldTime() + 100;*/
 				} else if (procedure.getGrabbedEntity() == null) {
 					if (t.entityHit != null && !(t.entityHit instanceof EntityChibakuTenseiBall.EntityCustom)
 					 && (!(t.entityHit instanceof EntityEarthBlocks.Base) || t.entityHit.ticksExisted > 5)
 					 && t.entityHit.height < 24) {
 						grabbedEntity = t.entityHit;
 						entity.world.playSound(null, entity.posX, entity.posY, entity.posZ,
-						  net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:BanshoTenin")), 
+						  SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:BanshoTenin")), 
 						  SoundCategory.PLAYERS, 5.0F, 1.0F);
 					} else if (entity.isSneaking() && t.typeOfHit == RayTraceResult.Type.BLOCK) {
-						entity.world.playSound(null, t.getBlockPos(), net.minecraft.util.SoundEvent.REGISTRY
-						  .getObject(new ResourceLocation("narutomod:rocks")), SoundCategory.NEUTRAL, 50.0F, 0.5F);
-						//ProcedureGravityPower.Obj gravobj = new ProcedureGravityPower.Obj(entity.world, 5);
-						//gravobj.dislodge(t);
+						entity.world.playSound(null, t.getBlockPos(), SoundEvent.REGISTRY
+						  .getObject(new ResourceLocation("narutomod:rocks")), SoundCategory.NEUTRAL, 5.0F, 0.5F);
 						EntityEarthBlocks.Base entity1 = ProcedureGravityPower.dislodgeBlocks(entity.world, t.getBlockPos(), 5);
 						if (entity1 != null) {
 							entity1.motionX = 0.2D * t.sideHit.getDirectionVec().getX();

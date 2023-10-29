@@ -28,14 +28,14 @@ public class ProcedurePullAndHold {
 				this.grabbedEntity.setPosition(puller.posX, puller.posY, puller.posZ);
 			} else if (this.grabbedEntity instanceof EntityEarthBlocks.Base) {
 				Vec3d vec3d = ProcedureUtils.raytraceBlocks(puller, 5d).hitVec;
-				if (this.grabbedEntity.getDistance(vec3d.x, vec3d.y, vec3d.z) > 2.0D) {
+				//if (this.grabbedEntity.getDistance(vec3d.x, vec3d.y, vec3d.z) > 2.0D) {
 					this.grabbedEntity.setNoGravity(true);
 					ProcedureUtils.pullEntity(vec3d, this.grabbedEntity, 
 					  2.5f / (float)this.grabbedEntity.getEntityBoundingBox().getAverageEdgeLength());
-				} else {
-					this.grabbedEntity.setPositionAndUpdate(vec3d.x, vec3d.y - 0.5D, vec3d.z);
-				}
-			} else if (ItemJutsu.canTarget(this.grabbedEntity)) {
+				//} else {
+				//	this.grabbedEntity.setPositionAndUpdate(vec3d.x, vec3d.y - 0.5D, vec3d.z);
+				//}
+			} else if (ItemJutsu.canTarget(this.grabbedEntity) && this.grabbedEntity.height < 10f) {
 				Vec3d vec3d = ProcedureUtils.raytraceBlocks(puller, 3d).hitVec;
 				this.grabbedEntity.motionY += 0.08D;
 				//this.grabbedEntity.setNoGravity(true);
