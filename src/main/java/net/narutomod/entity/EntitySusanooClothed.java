@@ -552,7 +552,7 @@ public class EntitySusanooClothed extends ElementsNarutomodMod.ModElement {
 
 		@SideOnly(Side.CLIENT)
 		public class ModelSusanooClothed extends ModelBiped {
-			private final float maxAlpha = 0.5f;
+			private final float maxAlpha = 0.8f;
 			private final float modelscale = MODELSCALE;
 			//private final ModelRenderer bipedHead;
 			private final ModelRenderer Chin;

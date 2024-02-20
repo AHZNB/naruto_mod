@@ -67,14 +67,6 @@ public class EntityRasengan extends ElementsNarutomodMod.ModElement {
 				.id(new ResourceLocation("narutomod", "rasengan"), ENTITYID).name("rasengan").tracker(64, 3, true).build());
 	}
 
-	@SideOnly(Side.CLIENT)
-	@Override
-	public void preInit(FMLPreInitializationEvent event) {
-		RenderingRegistry.registerEntityRenderingHandler(EC.class, renderManager -> {
-			return new RenderRasengan(renderManager);
-		});
-	}
-
 	public static class EC extends EntityScalableProjectile.Base implements ProcedureSync.CPacketVec3d.IHandler {
 		private static final DataParameter<Integer> OWNER_ID = EntityDataManager.<Integer>createKey(EC.class, DataSerializers.VARINT);
 		private final int growTime = 30;
@@ -289,231 +281,246 @@ public class EntityRasengan extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-    @SideOnly(Side.CLIENT)
-    public static void rotateArmIn1stPerson(Entity viewer, float partialTicks) {
-    	if (viewer instanceof EntityPlayerSP) {
-	        EntityPlayerSP entityplayersp = (EntityPlayerSP)viewer;
-	        float swingProgress = entityplayersp.getSwingProgress(partialTicks);
-	        float f0 = entityplayersp.prevRenderArmPitch + (entityplayersp.renderArmPitch - entityplayersp.prevRenderArmPitch) * partialTicks;
-	        float f01 = entityplayersp.prevRenderArmYaw + (entityplayersp.renderArmYaw - entityplayersp.prevRenderArmYaw) * partialTicks;
-	        GlStateManager.rotate((entityplayersp.rotationPitch - f0) * 0.1F, 1.0F, 0.0F, 0.0F);
-	        GlStateManager.rotate((entityplayersp.rotationYaw - f01) * 0.1F, 0.0F, 1.0F, 0.0F);
-	        float f = 1.0F;
-	        float f1 = MathHelper.sqrt(swingProgress);
-	        float f2 = -0.3F * MathHelper.sin(f1 * (float)Math.PI);
-	        float f3 = 0.4F * MathHelper.sin(f1 * ((float)Math.PI * 2F));
-	        float f4 = -0.4F * MathHelper.sin(swingProgress * (float)Math.PI);
-	        GlStateManager.translate(f * (f2 + 0.64000005F), f3 + -0.6F + 0F * -0.6F, f4 + -0.71999997F);
-	        GlStateManager.rotate(f * 45.0F, 0.0F, 1.0F, 0.0F);
-	        float f5 = MathHelper.sin(swingProgress * swingProgress * (float)Math.PI);
-	        float f6 = MathHelper.sin(f1 * (float)Math.PI);
-	        GlStateManager.rotate(f * f6 * 70.0F, 0.0F, 1.0F, 0.0F);
-	        GlStateManager.rotate(f * f5 * -20.0F, 0.0F, 0.0F, 1.0F);
-	        GlStateManager.translate(f * -1.0F, 3.6F, 3.5F);
-	        GlStateManager.rotate(f * 120.0F, 0.0F, 0.0F, 1.0F);
-	        GlStateManager.rotate(200.0F, 1.0F, 0.0F, 0.0F);
-	        GlStateManager.rotate(f * -135.0F, 0.0F, 1.0F, 0.0F);
-	        GlStateManager.translate(f * 5.6F, 0.0F, 0.0F);
-    	}
-    }
-
-	@SideOnly(Side.CLIENT)
-	public class RenderRasengan extends Render<EC> {
-		private final ResourceLocation texture = new ResourceLocation("narutomod:textures/longcube_white.png");
-		private final Random rand = new Random();
-		protected ModelBase mainModel;
-
-		public RenderRasengan(RenderManager renderManager) {
-			super(renderManager);
-			this.mainModel = new ModelRasengan();
-			shadowSize = 0.1f;
-		}
-
-		private Vec3d transform3rdPerson(Vec3d startvec, Vec3d angles, EntityLivingBase entity, float pt) {
-			return ProcedureUtils.rotateRoll(startvec, (float)-angles.z).rotatePitch((float)-angles.x).rotateYaw((float)-angles.y)
-			   .addVector(0.0586F * -6F, 1.02F-(entity.isSneaking()?0.3f:0f), 0.0F)
-			   .rotateYaw((-entity.prevRenderYawOffset - (entity.renderYawOffset - entity.prevRenderYawOffset) * pt) * (float)(Math.PI / 180d))
-			   .addVector(entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * pt, entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * pt, entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * pt);
-		}
-
-		@Override
-		public void doRender(EC entity, double x, double y, double z, float f, float partialTicks) {
-			this.bindEntityTexture(entity);
-			EntityLivingBase owner = entity.getOwner();
-			float scale = entity.getEntityScale();
-            GlStateManager.pushMatrix();
-            if (owner != null) {
-				Entity viewer = Minecraft.getMinecraft().getRenderViewEntity();
-				ModelBiped model = (ModelBiped)((RenderLivingBase)this.renderManager.getEntityRenderObject(owner)).getMainModel();
-				this.forceRightArmBowPose(model, owner, partialTicks);
-				Vec3d ballVec = this.transform3rdPerson(new Vec3d(0.0d, -0.5825d - entity.height * 0.5d, 0.0d),
-				 new Vec3d(model.bipedRightArm.rotateAngleX, model.bipedRightArm.rotateAngleY, model.bipedRightArm.rotateAngleZ),
-				 owner, partialTicks).addVector(0.0d, 0.275d - entity.height * 0.5d, 0.0d);
-				if (viewer.equals(owner) || !(owner instanceof EntityPlayer)) {
-					entity.angles = ballVec;
-					//ProcedureSync.CPacketVec3d.sendToServer(entity, entity.angles);
-				}
-	            if (viewer.equals(owner) && this.renderManager.options.thirdPersonView == 0) {
-		            GlStateManager.translate(0F, 1.925F, 0F);
-		            GlStateManager.rotate(-this.interpolateRotation(owner.prevRotationYaw, owner.rotationYaw, partialTicks), 0.0F, 1.0F, 0.0F);
-		            GlStateManager.rotate(owner.prevRotationPitch + (owner.rotationPitch - owner.prevRotationPitch) * partialTicks, 1.0F, 0.0F, 0.0F);
-		            GlStateManager.rotate(180F, 0.0F, 1.0F, 0.0F);
-	            	rotateArmIn1stPerson(owner, partialTicks);
-		            model.postRenderArm(0.0625F * 0.9375F, EnumHandSide.RIGHT);
-		            GlStateManager.translate(-0.125F, entity.height - 0.025F, 0.0F);
-	            } else {
-					this.renderParticles(entity.world, ballVec.addVector(0.0d, entity.height/2, 0.0d), scale);
-					x = owner.lastTickPosX + (owner.posX - owner.lastTickPosX) * partialTicks - this.renderManager.viewerPosX;
-					y = owner.lastTickPosY + (owner.posY - owner.lastTickPosY) * partialTicks - this.renderManager.viewerPosY;
-					z = owner.lastTickPosZ + (owner.posZ - owner.lastTickPosZ) * partialTicks - this.renderManager.viewerPosZ;
-		            GlStateManager.translate(x, y, z);
-		            GlStateManager.rotate(-this.interpolateRotation(owner.prevRenderYawOffset, owner.renderYawOffset, partialTicks), 0.0F, 1.0F, 0.0F);
-		            GlStateManager.translate(0.0F, 1.4F, 0.0F);
-		            GlStateManager.rotate(180F, 1.0F, 0.0F, 0.0F);
-		            if (owner.isSneaking()) 
-		                GlStateManager.translate(0.0F, 0.2F, 0.0F);
-		            model.postRenderArm(0.0625F * 0.9375F, EnumHandSide.RIGHT);
-		            GlStateManager.translate(-0.05F, entity.height + 0.125F, 0.0F);
-	            }
-			}
-			GlStateManager.translate(0f, 0.5F - 0.175F * scale, 0f);
-			GlStateManager.scale(scale, scale, scale);
-			GlStateManager.rotate(entity.ticksExisted * 30.0F, 1.0F, 1.0F, 0.0F);
-			GlStateManager.enableAlpha();
-			GlStateManager.enableBlend();
-			GlStateManager.disableCull();
-			GlStateManager.disableLighting();
-			GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-			OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240.0F, 240.0F);
-			for (int i = 0; i < 10; i++) {
-				GlStateManager.rotate(rand.nextFloat() * 30f, 0f, 1f, 0f);
-				GlStateManager.rotate(rand.nextFloat() * 30f, 1f, 1f, 0f);
-				this.mainModel.render(entity, 0.0F, 0.0F, partialTicks + entity.ticksExisted, 0.0F, 0.0F, 0.0625F);
-			}
-			GlStateManager.enableLighting();
-			GlStateManager.enableCull();
-			GlStateManager.disableAlpha();
-			GlStateManager.disableBlend();
-			GlStateManager.popMatrix();
-		}
-
-		private void forceRightArmBowPose(ModelBiped model, EntityLivingBase owner, float partialTicks) {
-            float f = this.interpolateRotation(owner.prevRenderYawOffset, owner.renderYawOffset, partialTicks);
-            float f1 = this.interpolateRotation(owner.prevRotationYawHead, owner.rotationYawHead, partialTicks);
-            float f2 = (f1 - f) * 0.017453292F;
-            float f7 = (owner.prevRotationPitch + (owner.rotationPitch - owner.prevRotationPitch) * partialTicks) * 0.017453292F;
-			model.bipedRightArm.rotateAngleY = -0.1F + f2;
-			model.bipedRightArm.rotateAngleX = -((float)Math.PI / 2F) + f7;
-		}
-
-		private void renderParticles(World worldIn, Vec3d vec, float size) {
-			for (int i = 0; i < 10; i++) {
-				Particles.spawnParticle(worldIn, Particles.Types.SMOKE, vec.x, vec.y, vec.z,
-				 1, 0d, 0.02d, 0d, 0.2d * worldIn.rand.nextGaussian(), 0.2d * worldIn.rand.nextGaussian(), 
-				 0.2d * worldIn.rand.nextGaussian(), 0x10FFFFFF, (int)(size * 5), 0);
-			}
-		}
-
-		private float interpolateRotation(float prevYawOffset, float yawOffset, float partialTicks) {
-			return prevYawOffset + ProcedureUtils.Vec2f.wrapDegrees(yawOffset - prevYawOffset) * partialTicks;
-		}
-
-		@Override
-		protected ResourceLocation getEntityTexture(EC entity) {
-			return texture;
-		}
+	@Override
+	public void preInit(FMLPreInitializationEvent event) {
+		new Renderer().register();
 	}
 
-	// Made with Blockbench 3.6.5
-	// Exported for Minecraft version 1.12
-	// Paste this class into your mod and generate all required imports
-	@SideOnly(Side.CLIENT)
-	public class ModelRasengan extends ModelBase {
-		private final ModelRenderer core;
-		private final ModelRenderer bone;
-		private final ModelRenderer bone8;
-		private final ModelRenderer bone7;
-		private final ModelRenderer bone6;
-		private final ModelRenderer shell;
-		private final ModelRenderer bone5;
-		private final ModelRenderer bone4;
-		private final ModelRenderer bone3;
-		private final ModelRenderer bone2;
-	
-		public ModelRasengan() {
-			textureWidth = 32;
-			textureHeight = 32;
-	
-			core = new ModelRenderer(this);
-			core.setRotationPoint(0.0F, 0.0F, 0.0F);
-			bone = new ModelRenderer(this);
-			bone.setRotationPoint(0.0F, 0.0F, 0.0F);
-			core.addChild(bone);
-			bone.cubeList.add(new ModelBox(bone, 0, 0, -0.5F, -0.5F, -0.5F, 1, 1, 1, 0.0F, false));
-			bone.cubeList.add(new ModelBox(bone, 0, 0, -1.0F, -1.0F, -1.0F, 2, 2, 2, 0.0F, false));
-			bone.cubeList.add(new ModelBox(bone, 0, 0, -1.5F, -1.5F, -1.5F, 3, 3, 3, 0.0F, false));
-			bone8 = new ModelRenderer(this);
-			bone8.setRotationPoint(0.0F, 0.0F, 0.0F);
-			core.addChild(bone8);
-			setRotationAngle(bone8, 0.0F, 0.0F, 0.7854F);
-			bone8.cubeList.add(new ModelBox(bone8, 0, 0, -0.5F, -0.5F, -0.5F, 1, 1, 1, 0.0F, false));
-			bone8.cubeList.add(new ModelBox(bone8, 0, 0, -1.0F, -1.0F, -1.0F, 2, 2, 2, 0.0F, false));
-			bone8.cubeList.add(new ModelBox(bone8, 0, 0, -1.5F, -1.5F, -1.5F, 3, 3, 3, 0.0F, false));
-			bone7 = new ModelRenderer(this);
-			bone7.setRotationPoint(0.0F, 0.0F, 0.0F);
-			core.addChild(bone7);
-			setRotationAngle(bone7, 0.0F, -0.7854F, 0.0F);
-			bone7.cubeList.add(new ModelBox(bone7, 0, 0, -0.5F, -0.5F, -0.5F, 1, 1, 1, 0.0F, false));
-			bone7.cubeList.add(new ModelBox(bone7, 0, 0, -1.0F, -1.0F, -1.0F, 2, 2, 2, 0.0F, false));
-			bone7.cubeList.add(new ModelBox(bone7, 0, 0, -1.5F, -1.5F, -1.5F, 3, 3, 3, 0.0F, false));
-			bone6 = new ModelRenderer(this);
-			bone6.setRotationPoint(0.0F, 0.0F, 0.0F);
-			core.addChild(bone6);
-			setRotationAngle(bone6, -0.7854F, 0.0F, 0.0F);
-			bone6.cubeList.add(new ModelBox(bone6, 0, 0, -0.5F, -0.5F, -0.5F, 1, 1, 1, 0.0F, false));
-			bone6.cubeList.add(new ModelBox(bone6, 0, 0, -1.0F, -1.0F, -1.0F, 2, 2, 2, 0.0F, false));
-			bone6.cubeList.add(new ModelBox(bone6, 0, 0, -1.5F, -1.5F, -1.5F, 3, 3, 3, 0.0F, false));
-	
-			shell = new ModelRenderer(this);
-			shell.setRotationPoint(0.0F, 0.0F, 0.0F);
-			bone5 = new ModelRenderer(this);
-			bone5.setRotationPoint(0.0F, 0.0F, 0.0F);
-			shell.addChild(bone5);
-			bone5.cubeList.add(new ModelBox(bone5, 0, 0, -2.0F, -2.0F, -2.0F, 4, 4, 4, 0.0F, false));
-			bone4 = new ModelRenderer(this);
-			bone4.setRotationPoint(0.0F, 0.0F, 0.0F);
-			shell.addChild(bone4);
-			setRotationAngle(bone4, 0.0F, 0.0F, 0.7854F);
-			bone4.cubeList.add(new ModelBox(bone4, 0, 0, -2.0F, -2.0F, -2.0F, 4, 4, 4, 0.0F, false));
-			bone3 = new ModelRenderer(this);
-			bone3.setRotationPoint(0.0F, 0.0F, 0.0F);
-			shell.addChild(bone3);
-			setRotationAngle(bone3, 0.0F, -0.7854F, 0.0F);
-			bone3.cubeList.add(new ModelBox(bone3, 0, 0, -2.0F, -2.0F, -2.0F, 4, 4, 4, 0.0F, false));
-			bone2 = new ModelRenderer(this);
-			bone2.setRotationPoint(0.0F, 0.0F, 0.0F);
-			shell.addChild(bone2);
-			setRotationAngle(bone2, -0.7854F, 0.0F, 0.0F);
-			bone2.cubeList.add(new ModelBox(bone2, 0, 0, -2.0F, -2.0F, -2.0F, 4, 4, 4, 0.0F, false));
-		}
-
+	public static class Renderer extends EntityRendererRegister {
+		@SideOnly(Side.CLIENT)
 		@Override
-		public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
-			GlStateManager.color(1f, 1f, 1f, 0.3f);
-			core.render(f5);
-			GlStateManager.color(0.66F, 0.87F, 1.0F, 0.3F);
-			shell.render(f5);
+		public void register() {
+			RenderingRegistry.registerEntityRenderingHandler(EC.class, renderManager -> {
+				return new RenderRasengan(renderManager);
+			});
 		}
 
-		public void setRotationAngle(ModelRenderer modelRenderer, float x, float y, float z) {
-			modelRenderer.rotateAngleX = x;
-			modelRenderer.rotateAngleY = y;
-			modelRenderer.rotateAngleZ = z;
+	    @SideOnly(Side.CLIENT)
+	    public static void rotateArmIn1stPerson(Entity viewer, float partialTicks) {
+	    	if (viewer instanceof EntityPlayerSP) {
+		        EntityPlayerSP entityplayersp = (EntityPlayerSP)viewer;
+		        float swingProgress = entityplayersp.getSwingProgress(partialTicks);
+		        float f0 = entityplayersp.prevRenderArmPitch + (entityplayersp.renderArmPitch - entityplayersp.prevRenderArmPitch) * partialTicks;
+		        float f01 = entityplayersp.prevRenderArmYaw + (entityplayersp.renderArmYaw - entityplayersp.prevRenderArmYaw) * partialTicks;
+		        GlStateManager.rotate((entityplayersp.rotationPitch - f0) * 0.1F, 1.0F, 0.0F, 0.0F);
+		        GlStateManager.rotate((entityplayersp.rotationYaw - f01) * 0.1F, 0.0F, 1.0F, 0.0F);
+		        float f = 1.0F;
+		        float f1 = MathHelper.sqrt(swingProgress);
+		        float f2 = -0.3F * MathHelper.sin(f1 * (float)Math.PI);
+		        float f3 = 0.4F * MathHelper.sin(f1 * ((float)Math.PI * 2F));
+		        float f4 = -0.4F * MathHelper.sin(swingProgress * (float)Math.PI);
+		        GlStateManager.translate(f * (f2 + 0.64000005F), f3 + -0.6F + 0F * -0.6F, f4 + -0.71999997F);
+		        GlStateManager.rotate(f * 45.0F, 0.0F, 1.0F, 0.0F);
+		        float f5 = MathHelper.sin(swingProgress * swingProgress * (float)Math.PI);
+		        float f6 = MathHelper.sin(f1 * (float)Math.PI);
+		        GlStateManager.rotate(f * f6 * 70.0F, 0.0F, 1.0F, 0.0F);
+		        GlStateManager.rotate(f * f5 * -20.0F, 0.0F, 0.0F, 1.0F);
+		        GlStateManager.translate(f * -1.0F, 3.6F, 3.5F);
+		        GlStateManager.rotate(f * 120.0F, 0.0F, 0.0F, 1.0F);
+		        GlStateManager.rotate(200.0F, 1.0F, 0.0F, 0.0F);
+		        GlStateManager.rotate(f * -135.0F, 0.0F, 1.0F, 0.0F);
+		        GlStateManager.translate(f * 5.6F, 0.0F, 0.0F);
+	    	}
+	    }
+	
+		@SideOnly(Side.CLIENT)
+		public class RenderRasengan extends Render<EC> {
+			private final ResourceLocation texture = new ResourceLocation("narutomod:textures/longcube_white.png");
+			private final Random rand = new Random();
+			protected ModelBase mainModel;
+	
+			public RenderRasengan(RenderManager renderManager) {
+				super(renderManager);
+				this.mainModel = new ModelRasengan();
+				shadowSize = 0.1f;
+			}
+	
+			private Vec3d transform3rdPerson(Vec3d startvec, Vec3d angles, EntityLivingBase entity, float pt) {
+				return ProcedureUtils.rotateRoll(startvec, (float)-angles.z).rotatePitch((float)-angles.x).rotateYaw((float)-angles.y)
+				   .addVector(0.0586F * -6F, 1.02F-(entity.isSneaking()?0.3f:0f), 0.0F)
+				   .rotateYaw((-entity.prevRenderYawOffset - (entity.renderYawOffset - entity.prevRenderYawOffset) * pt) * (float)(Math.PI / 180d))
+				   .addVector(entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * pt, entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * pt, entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * pt);
+			}
+	
+			@Override
+			public void doRender(EC entity, double x, double y, double z, float f, float partialTicks) {
+				this.bindEntityTexture(entity);
+				EntityLivingBase owner = entity.getOwner();
+				float scale = entity.getEntityScale();
+	            GlStateManager.pushMatrix();
+	            if (owner != null) {
+					Entity viewer = Minecraft.getMinecraft().getRenderViewEntity();
+					ModelBiped model = (ModelBiped)((RenderLivingBase)this.renderManager.getEntityRenderObject(owner)).getMainModel();
+					this.forceRightArmBowPose(model, owner, partialTicks);
+					Vec3d ballVec = this.transform3rdPerson(new Vec3d(0.0d, -0.5825d - entity.height * 0.5d, 0.0d),
+					 new Vec3d(model.bipedRightArm.rotateAngleX, model.bipedRightArm.rotateAngleY, model.bipedRightArm.rotateAngleZ),
+					 owner, partialTicks).addVector(0.0d, 0.275d - entity.height * 0.5d, 0.0d);
+					if (viewer.equals(owner) || !(owner instanceof EntityPlayer)) {
+						entity.angles = ballVec;
+						//ProcedureSync.CPacketVec3d.sendToServer(entity, entity.angles);
+					}
+		            if (viewer.equals(owner) && this.renderManager.options.thirdPersonView == 0) {
+			            GlStateManager.translate(0F, 1.925F, 0F);
+			            GlStateManager.rotate(-this.interpolateRotation(owner.prevRotationYaw, owner.rotationYaw, partialTicks), 0.0F, 1.0F, 0.0F);
+			            GlStateManager.rotate(owner.prevRotationPitch + (owner.rotationPitch - owner.prevRotationPitch) * partialTicks, 1.0F, 0.0F, 0.0F);
+			            GlStateManager.rotate(180F, 0.0F, 1.0F, 0.0F);
+		            	rotateArmIn1stPerson(owner, partialTicks);
+			            model.postRenderArm(0.0625F * 0.9375F, EnumHandSide.RIGHT);
+			            GlStateManager.translate(-0.125F, entity.height - 0.025F, 0.0F);
+		            } else {
+						this.renderParticles(entity.world, ballVec.addVector(0.0d, entity.height/2, 0.0d), scale);
+						x = owner.lastTickPosX + (owner.posX - owner.lastTickPosX) * partialTicks - this.renderManager.viewerPosX;
+						y = owner.lastTickPosY + (owner.posY - owner.lastTickPosY) * partialTicks - this.renderManager.viewerPosY;
+						z = owner.lastTickPosZ + (owner.posZ - owner.lastTickPosZ) * partialTicks - this.renderManager.viewerPosZ;
+			            GlStateManager.translate(x, y, z);
+			            GlStateManager.rotate(-this.interpolateRotation(owner.prevRenderYawOffset, owner.renderYawOffset, partialTicks), 0.0F, 1.0F, 0.0F);
+			            GlStateManager.translate(0.0F, 1.4F, 0.0F);
+			            GlStateManager.rotate(180F, 1.0F, 0.0F, 0.0F);
+			            if (owner.isSneaking()) 
+			                GlStateManager.translate(0.0F, 0.2F, 0.0F);
+			            model.postRenderArm(0.0625F * 0.9375F, EnumHandSide.RIGHT);
+			            GlStateManager.translate(-0.05F, entity.height + 0.125F, 0.0F);
+		            }
+				}
+				GlStateManager.translate(0f, 0.5F - 0.175F * scale, 0f);
+				GlStateManager.scale(scale, scale, scale);
+				GlStateManager.rotate(entity.ticksExisted * 30.0F, 1.0F, 1.0F, 0.0F);
+				GlStateManager.enableAlpha();
+				GlStateManager.enableBlend();
+				GlStateManager.disableCull();
+				GlStateManager.disableLighting();
+				GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+				OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240.0F, 240.0F);
+				for (int i = 0; i < 10; i++) {
+					GlStateManager.rotate(rand.nextFloat() * 30f, 0f, 1f, 0f);
+					GlStateManager.rotate(rand.nextFloat() * 30f, 1f, 1f, 0f);
+					this.mainModel.render(entity, 0.0F, 0.0F, partialTicks + entity.ticksExisted, 0.0F, 0.0F, 0.0625F);
+				}
+				GlStateManager.enableLighting();
+				GlStateManager.enableCull();
+				GlStateManager.disableAlpha();
+				GlStateManager.disableBlend();
+				GlStateManager.popMatrix();
+			}
+	
+			private void forceRightArmBowPose(ModelBiped model, EntityLivingBase owner, float partialTicks) {
+	            float f = this.interpolateRotation(owner.prevRenderYawOffset, owner.renderYawOffset, partialTicks);
+	            float f1 = this.interpolateRotation(owner.prevRotationYawHead, owner.rotationYawHead, partialTicks);
+	            float f2 = (f1 - f) * 0.017453292F;
+	            float f7 = (owner.prevRotationPitch + (owner.rotationPitch - owner.prevRotationPitch) * partialTicks) * 0.017453292F;
+				model.bipedRightArm.rotateAngleY = -0.1F + f2;
+				model.bipedRightArm.rotateAngleX = -((float)Math.PI / 2F) + f7;
+			}
+	
+			private void renderParticles(World worldIn, Vec3d vec, float size) {
+				for (int i = 0; i < 10; i++) {
+					Particles.spawnParticle(worldIn, Particles.Types.SMOKE, vec.x, vec.y, vec.z,
+					 1, 0d, 0.02d, 0d, 0.2d * worldIn.rand.nextGaussian(), 0.2d * worldIn.rand.nextGaussian(), 
+					 0.2d * worldIn.rand.nextGaussian(), 0x10FFFFFF, (int)(size * 5), 0);
+				}
+			}
+	
+			private float interpolateRotation(float prevYawOffset, float yawOffset, float partialTicks) {
+				return prevYawOffset + ProcedureUtils.Vec2f.wrapDegrees(yawOffset - prevYawOffset) * partialTicks;
+			}
+	
+			@Override
+			protected ResourceLocation getEntityTexture(EC entity) {
+				return texture;
+			}
 		}
-
-		@Override
-		public void setRotationAngles(float f, float f1, float f2, float f3, float f4, float f5, Entity e) {
-			super.setRotationAngles(f, f1, f2, f3, f4, f5, e);
+	
+		// Made with Blockbench 3.6.5
+		// Exported for Minecraft version 1.12
+		// Paste this class into your mod and generate all required imports
+		@SideOnly(Side.CLIENT)
+		public class ModelRasengan extends ModelBase {
+			private final ModelRenderer core;
+			private final ModelRenderer bone;
+			private final ModelRenderer bone8;
+			private final ModelRenderer bone7;
+			private final ModelRenderer bone6;
+			private final ModelRenderer shell;
+			private final ModelRenderer bone5;
+			private final ModelRenderer bone4;
+			private final ModelRenderer bone3;
+			private final ModelRenderer bone2;
+		
+			public ModelRasengan() {
+				textureWidth = 32;
+				textureHeight = 32;
+		
+				core = new ModelRenderer(this);
+				core.setRotationPoint(0.0F, 0.0F, 0.0F);
+				bone = new ModelRenderer(this);
+				bone.setRotationPoint(0.0F, 0.0F, 0.0F);
+				core.addChild(bone);
+				bone.cubeList.add(new ModelBox(bone, 0, 0, -0.5F, -0.5F, -0.5F, 1, 1, 1, 0.0F, false));
+				bone.cubeList.add(new ModelBox(bone, 0, 0, -1.0F, -1.0F, -1.0F, 2, 2, 2, 0.0F, false));
+				bone.cubeList.add(new ModelBox(bone, 0, 0, -1.5F, -1.5F, -1.5F, 3, 3, 3, 0.0F, false));
+				bone8 = new ModelRenderer(this);
+				bone8.setRotationPoint(0.0F, 0.0F, 0.0F);
+				core.addChild(bone8);
+				setRotationAngle(bone8, 0.0F, 0.0F, 0.7854F);
+				bone8.cubeList.add(new ModelBox(bone8, 0, 0, -0.5F, -0.5F, -0.5F, 1, 1, 1, 0.0F, false));
+				bone8.cubeList.add(new ModelBox(bone8, 0, 0, -1.0F, -1.0F, -1.0F, 2, 2, 2, 0.0F, false));
+				bone8.cubeList.add(new ModelBox(bone8, 0, 0, -1.5F, -1.5F, -1.5F, 3, 3, 3, 0.0F, false));
+				bone7 = new ModelRenderer(this);
+				bone7.setRotationPoint(0.0F, 0.0F, 0.0F);
+				core.addChild(bone7);
+				setRotationAngle(bone7, 0.0F, -0.7854F, 0.0F);
+				bone7.cubeList.add(new ModelBox(bone7, 0, 0, -0.5F, -0.5F, -0.5F, 1, 1, 1, 0.0F, false));
+				bone7.cubeList.add(new ModelBox(bone7, 0, 0, -1.0F, -1.0F, -1.0F, 2, 2, 2, 0.0F, false));
+				bone7.cubeList.add(new ModelBox(bone7, 0, 0, -1.5F, -1.5F, -1.5F, 3, 3, 3, 0.0F, false));
+				bone6 = new ModelRenderer(this);
+				bone6.setRotationPoint(0.0F, 0.0F, 0.0F);
+				core.addChild(bone6);
+				setRotationAngle(bone6, -0.7854F, 0.0F, 0.0F);
+				bone6.cubeList.add(new ModelBox(bone6, 0, 0, -0.5F, -0.5F, -0.5F, 1, 1, 1, 0.0F, false));
+				bone6.cubeList.add(new ModelBox(bone6, 0, 0, -1.0F, -1.0F, -1.0F, 2, 2, 2, 0.0F, false));
+				bone6.cubeList.add(new ModelBox(bone6, 0, 0, -1.5F, -1.5F, -1.5F, 3, 3, 3, 0.0F, false));
+		
+				shell = new ModelRenderer(this);
+				shell.setRotationPoint(0.0F, 0.0F, 0.0F);
+				bone5 = new ModelRenderer(this);
+				bone5.setRotationPoint(0.0F, 0.0F, 0.0F);
+				shell.addChild(bone5);
+				bone5.cubeList.add(new ModelBox(bone5, 0, 0, -2.0F, -2.0F, -2.0F, 4, 4, 4, 0.0F, false));
+				bone4 = new ModelRenderer(this);
+				bone4.setRotationPoint(0.0F, 0.0F, 0.0F);
+				shell.addChild(bone4);
+				setRotationAngle(bone4, 0.0F, 0.0F, 0.7854F);
+				bone4.cubeList.add(new ModelBox(bone4, 0, 0, -2.0F, -2.0F, -2.0F, 4, 4, 4, 0.0F, false));
+				bone3 = new ModelRenderer(this);
+				bone3.setRotationPoint(0.0F, 0.0F, 0.0F);
+				shell.addChild(bone3);
+				setRotationAngle(bone3, 0.0F, -0.7854F, 0.0F);
+				bone3.cubeList.add(new ModelBox(bone3, 0, 0, -2.0F, -2.0F, -2.0F, 4, 4, 4, 0.0F, false));
+				bone2 = new ModelRenderer(this);
+				bone2.setRotationPoint(0.0F, 0.0F, 0.0F);
+				shell.addChild(bone2);
+				setRotationAngle(bone2, -0.7854F, 0.0F, 0.0F);
+				bone2.cubeList.add(new ModelBox(bone2, 0, 0, -2.0F, -2.0F, -2.0F, 4, 4, 4, 0.0F, false));
+			}
+	
+			@Override
+			public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
+				GlStateManager.color(1f, 1f, 1f, 0.3f);
+				core.render(f5);
+				GlStateManager.color(0.66F, 0.87F, 1.0F, 0.3F);
+				shell.render(f5);
+			}
+	
+			public void setRotationAngle(ModelRenderer modelRenderer, float x, float y, float z) {
+				modelRenderer.rotateAngleX = x;
+				modelRenderer.rotateAngleY = y;
+				modelRenderer.rotateAngleZ = z;
+			}
+	
+			@Override
+			public void setRotationAngles(float f, float f1, float f2, float f3, float f4, float f5, Entity e) {
+				super.setRotationAngles(f, f1, f2, f3, f4, f5, e);
+			}
 		}
 	}
 }

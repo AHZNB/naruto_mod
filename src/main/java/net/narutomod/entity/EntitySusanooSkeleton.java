@@ -215,7 +215,7 @@ public class EntitySusanooSkeleton extends ElementsNarutomodMod.ModElement {
 			private final ModelRenderer Arm4_r3;
 			private final ModelRenderer Arm5_r1;
 			private final ModelRenderer Arm5_r2;
-			private final float maxAlpha = 0.5f;
+			private final float maxAlpha = 0.6f;
 			private boolean renderFlame;
 
 			public ModelSusanooSkeleton() {

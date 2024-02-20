@@ -2,6 +2,7 @@
 
 Jutsus:
  - added 3 minute coolddown on shinsusenju
+ - tweaked susanoo transparency
 
 0.3.0-beta ================================================================================
 

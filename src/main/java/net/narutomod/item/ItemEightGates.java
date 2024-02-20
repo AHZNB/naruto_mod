@@ -1401,12 +1401,12 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 			this.leftear.setRotationPoint(4.0F, 9.0F, -6.0F);
 			setRotationAngle(this.leftear, 0.0F, 0.5236F, 0.0F);
 			this.head.addChild(this.leftear);
-			this.leftear.cubeList.add(new ModelBox(this.leftear, 38, 0, -1.0F, -2.0F, 0.0F, 1, 4, 4, 0.0F, false));
+			this.leftear.cubeList.add(new ModelBox(this.leftear, 38, 0, -1.0F, -2.0F, 0.0F, 1, 4, 4, -0.2F, false));
 			this.rightear = new ModelRenderer(this);
 			this.rightear.setRotationPoint(-4.0F, 8.0F, -6.0F);
 			setRotationAngle(this.rightear, 0.0F, -0.5236F, 0.0F);
 			this.head.addChild(this.rightear);
-			this.rightear.cubeList.add(new ModelBox(this.rightear, 38, 0, 0.0F, -1.0F, 0.0F, 1, 4, 4, 0.0F, true));
+			this.rightear.cubeList.add(new ModelBox(this.rightear, 38, 0, 0.0F, -1.0F, 0.0F, 1, 4, 4, -0.2F, true));
 			this.eyes = new ModelRenderer(this);
 			this.eyes.setRotationPoint(0.0F, 0.0F, 0.0F);
 			this.eyes.cubeList.add(new ModelBox(this.eyes, 0, 33, -3.0F, 9.0F, -8.1F, 6, 2, 0, 0.0F, false));

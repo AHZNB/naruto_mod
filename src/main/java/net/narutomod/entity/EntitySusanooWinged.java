@@ -563,7 +563,7 @@ public class EntitySusanooWinged extends ElementsNarutomodMod.ModElement {
 			private final ModelRenderer flap15;
 			private final ModelRenderer flap16;
 			private final float modelScale = MODELSCALE;
-			private final float maxAlpha = 0.7f;
+			private final float maxAlpha = 0.9f;
 			private boolean renderFlame;
 			public float wingSwingProgress;
 		
