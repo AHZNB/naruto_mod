@@ -3,6 +3,10 @@
 Jutsus:
  - added 3 minute coolddown on shinsusenju
  - tweaked susanoo transparency
+ - fixed rinnegan owner giving limbo or amenotejikara to other player's ninjutsu
+
+Entities:
+ - re-textured kisame's face
 
 0.3.0-beta ================================================================================
 

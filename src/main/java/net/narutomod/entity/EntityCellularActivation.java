@@ -50,12 +50,6 @@ public class EntityCellularActivation extends ElementsNarutomodMod.ModElement {
 		 .id(new ResourceLocation("narutomod", "cellular_activation"), ENTITYID).name("cellular_activation").tracker(64, 3, true).build());
 	}
 
-	@SideOnly(Side.CLIENT)
-	@Override
-	public void preInit(FMLPreInitializationEvent event) {
-		RenderingRegistry.registerEntityRenderingHandler(EC.class, renderManager -> new RenderCustom(renderManager));
-	}
-
 	@Override
 	public void init(FMLInitializationEvent event) {
 		MinecraftForge.EVENT_BUS.register(new EC.UserHook());
@@ -188,33 +182,46 @@ public class EntityCellularActivation extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-	@SideOnly(Side.CLIENT)
-	public class RenderCustom extends Render<EC> {
-		public RenderCustom(RenderManager rendermanager) {
-			super(rendermanager);
+	@Override
+	public void preInit(FMLPreInitializationEvent event) {
+		new Renderer().register();
+	}
+
+	public static class Renderer extends EntityRendererRegister {
+		@SideOnly(Side.CLIENT)
+		@Override
+		public void register() {
+			RenderingRegistry.registerEntityRenderingHandler(EC.class, renderManager -> new RenderCustom(renderManager));
 		}
 
-		@Override
-		public boolean shouldRender(EC livingEntity, ICamera camera, double camX, double camY, double camZ) {
-			return true;
-		}
-
-		@Override
-		public void doRender(EC entity, double x, double y, double z, float entityYaw, float partialTicks) {
-			EntityLivingBase user = entity.getUser();
-			if (user != null && entity.getReductionAmount() > 0) {
-				x = user.lastTickPosX + (user.posX - user.lastTickPosX) * partialTicks;
-				y = user.lastTickPosY + (user.posY - user.lastTickPosY) * partialTicks;
-				z = user.lastTickPosZ + (user.posZ - user.lastTickPosZ) * partialTicks;
-				Particles.spawnParticle(entity.world, Particles.Types.SMOKE, x, y+user.height/2, z,
-				 1, 0d, 0d, 0d, 0d, 0d, 0d, 0x0000fff6|((0x10+user.getRNG().nextInt(0x20))<<24),
-				 10 + user.getRNG().nextInt(25), 5, 0xF0, -1);
+		@SideOnly(Side.CLIENT)
+		public class RenderCustom extends Render<EC> {
+			public RenderCustom(RenderManager rendermanager) {
+				super(rendermanager);
 			}
-		}
-
-		@Override
-		protected ResourceLocation getEntityTexture(EC entity) {
-			return null;
+	
+			@Override
+			public boolean shouldRender(EC livingEntity, ICamera camera, double camX, double camY, double camZ) {
+				return true;
+			}
+	
+			@Override
+			public void doRender(EC entity, double x, double y, double z, float entityYaw, float partialTicks) {
+				EntityLivingBase user = entity.getUser();
+				if (user != null && entity.getReductionAmount() > 0) {
+					x = user.lastTickPosX + (user.posX - user.lastTickPosX) * partialTicks;
+					y = user.lastTickPosY + (user.posY - user.lastTickPosY) * partialTicks;
+					z = user.lastTickPosZ + (user.posZ - user.lastTickPosZ) * partialTicks;
+					Particles.spawnParticle(entity.world, Particles.Types.SMOKE, x, y+user.height/2, z,
+					 1, 0d, 0d, 0d, 0d, 0d, 0d, 0x0000fff6|((0x10+user.getRNG().nextInt(0x20))<<24),
+					 10 + user.getRNG().nextInt(25), 5, 0xF0, -1);
+				}
+			}
+	
+			@Override
+			protected ResourceLocation getEntityTexture(EC entity) {
+				return null;
+			}
 		}
 	}
 }
