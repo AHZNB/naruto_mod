@@ -51,12 +51,6 @@ public class EntityMeltingJutsu extends ElementsNarutomodMod.ModElement {
 				.id(new ResourceLocation("narutomod", "melting_jutsu"), ENTITYID).name("melting_jutsu").tracker(64, 3, true).build());
 	}
 
-	@SideOnly(Side.CLIENT)
-	@Override
-	public void preInit(FMLPreInitializationEvent event) {
-		RenderingRegistry.registerEntityRenderingHandler(EC.class, renderManager -> new RenderCustom(renderManager));
-	}
-
 	public static class EC extends EntityScalableProjectile.Base {
 		private final int growTime = 20;
 		private int duration;
@@ -221,64 +215,77 @@ public class EntityMeltingJutsu extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-	@SideOnly(Side.CLIENT)
-	public class RenderCustom extends Render<EC> {
-		private final ResourceLocation TEXTURE = new ResourceLocation("narutomod:textures/lava.png");
-		private final ModelBlock renderModel = new ModelBlock();
-
-		public RenderCustom(RenderManager renderManagerIn) {
-			super(renderManagerIn);
-			this.shadowSize = 0.3f;
-		}
-
-		@Override
-		public void doRender(EC entity, double x, double y, double z, float entityYaw, float partialTicks) {
-			this.bindEntityTexture(entity);
-			GlStateManager.pushMatrix();
-			float scale = entity.getEntityScale();
-			GlStateManager.translate(x, y + scale * 0.25f, z);
-			GlStateManager.rotate(entityYaw, 0.0f, 1.0f, 0.0f);
-			GlStateManager.scale(scale, scale, scale);
-			GlStateManager.depthMask(true);
-			GlStateManager.matrixMode(5890);
-			GlStateManager.loadIdentity();
-			float f = entity.ticksExisted + partialTicks;
-			GlStateManager.translate(0.0F, f * 0.01F, 0.0F);
-			GlStateManager.matrixMode(5888);
-			GlStateManager.disableLighting();
-			OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240.0F, 240.0F);
-			this.renderModel.render(entity, 0.0F, 0.0F, f, 0.0F, 0.0F, 0.0625F);
-			GlStateManager.enableLighting();
-			GlStateManager.matrixMode(5890);
-			GlStateManager.loadIdentity();
-			GlStateManager.matrixMode(5888);
-			GlStateManager.depthMask(false);
-			GlStateManager.popMatrix();
-		}
-
-		@Override
-		protected ResourceLocation getEntityTexture(EC entity) {
-			return TEXTURE;
-		}
+	@Override
+	public void preInit(FMLPreInitializationEvent event) {
+		new Renderer().register();
 	}
 
-	// Made with Blockbench 3.9.2
-	// Exported for Minecraft version 1.7 - 1.12
-	// Paste this class into your mod and generate all required imports
-	@SideOnly(Side.CLIENT)
-	public class ModelBlock extends ModelBase {
-		private final ModelRenderer bb_main;
-		public ModelBlock() {
-			textureWidth = 16;
-			textureHeight = 16;
-			bb_main = new ModelRenderer(this);
-			bb_main.setRotationPoint(0.0F, 0.0F, 0.0F);
-			bb_main.cubeList.add(new ModelBox(bb_main, 0, 0, -2.0F, -4.0F, -2.0F, 4, 4, 4, 0.0F, false));
+	public static class Renderer extends EntityRendererRegister {
+		@SideOnly(Side.CLIENT)
+		@Override
+		public void register() {
+			RenderingRegistry.registerEntityRenderingHandler(EC.class, renderManager -> new RenderCustom(renderManager));
 		}
 
-		@Override
-		public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
-			bb_main.render(f5);
+		@SideOnly(Side.CLIENT)
+		public class RenderCustom extends Render<EC> {
+			private final ResourceLocation TEXTURE = new ResourceLocation("narutomod:textures/lava.png");
+			private final ModelBlock renderModel = new ModelBlock();
+	
+			public RenderCustom(RenderManager renderManagerIn) {
+				super(renderManagerIn);
+				this.shadowSize = 0.3f;
+			}
+	
+			@Override
+			public void doRender(EC entity, double x, double y, double z, float entityYaw, float partialTicks) {
+				this.bindEntityTexture(entity);
+				GlStateManager.pushMatrix();
+				float scale = entity.getEntityScale();
+				GlStateManager.translate(x, y + scale * 0.25f, z);
+				GlStateManager.rotate(entityYaw, 0.0f, 1.0f, 0.0f);
+				GlStateManager.scale(scale, scale, scale);
+				GlStateManager.depthMask(true);
+				GlStateManager.matrixMode(5890);
+				GlStateManager.loadIdentity();
+				float f = entity.ticksExisted + partialTicks;
+				GlStateManager.translate(0.0F, f * 0.01F, 0.0F);
+				GlStateManager.matrixMode(5888);
+				GlStateManager.disableLighting();
+				OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240.0F, 240.0F);
+				this.renderModel.render(entity, 0.0F, 0.0F, f, 0.0F, 0.0F, 0.0625F);
+				GlStateManager.enableLighting();
+				GlStateManager.matrixMode(5890);
+				GlStateManager.loadIdentity();
+				GlStateManager.matrixMode(5888);
+				GlStateManager.depthMask(false);
+				GlStateManager.popMatrix();
+			}
+	
+			@Override
+			protected ResourceLocation getEntityTexture(EC entity) {
+				return TEXTURE;
+			}
+		}
+	
+		// Made with Blockbench 3.9.2
+		// Exported for Minecraft version 1.7 - 1.12
+		// Paste this class into your mod and generate all required imports
+		@SideOnly(Side.CLIENT)
+		public class ModelBlock extends ModelBase {
+			private final ModelRenderer bb_main;
+			public ModelBlock() {
+				textureWidth = 16;
+				textureHeight = 16;
+				bb_main = new ModelRenderer(this);
+				bb_main.setRotationPoint(0.0F, 0.0F, 0.0F);
+				bb_main.cubeList.add(new ModelBox(bb_main, 0, 0, -2.0F, -4.0F, -2.0F, 4, 4, 4, 0.0F, false));
+			}
+	
+			@Override
+			public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
+				bb_main.render(f5);
+			}
 		}
 	}
 }

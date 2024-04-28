@@ -7,6 +7,7 @@ Jutsus:
 
 Entities:
  - re-textured kisame's face
+ - fix remaining server crashes due to "NoClassDefFoundError"
 
 0.3.0-beta ================================================================================
 
