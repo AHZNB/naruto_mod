@@ -66,6 +66,7 @@ import net.minecraft.network.datasync.EntityDataManager;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.item.ItemEightGates;
 import net.narutomod.item.ItemNinjaArmorJumpsuit;
+import net.narutomod.item.ItemNinjaArmorKonoha;
 import net.narutomod.event.SpecialEvent;
 import net.narutomod.event.EventVillageSiege;
 import net.narutomod.Chakra;
@@ -142,6 +143,7 @@ public class EntityMightGuy extends ElementsNarutomodMod.ModElement {
 		public IEntityLivingData onInitialSpawn(DifficultyInstance difficulty, @Nullable IEntityLivingData livingdata) {
 			livingdata = super.onInitialSpawn(difficulty, livingdata);
 			this.setItemToInventory(new ItemStack(ItemEightGates.block), 0);
+			this.setItemStackToSlot(EntityEquipmentSlot.CHEST, new ItemStack(ItemNinjaArmorKonoha.body, 1));
 			return livingdata;
 		}
 
@@ -544,11 +546,11 @@ public class EntityMightGuy extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void register() {
 			RenderingRegistry.registerEntityRenderingHandler(EntityCustom.class, renderManager -> {
-				RenderBiped customRender = new EntityNinjaMob.RenderBase<EntityCustom>(renderManager, new ModelMightguy()) {
+				return new EntityNinjaMob.RenderBase<EntityCustom>(renderManager, new ModelMightguy()) {
 					private final ResourceLocation texture = new ResourceLocation("narutomod:textures/might_guy.png");
 					@Override
 					protected ResourceLocation getEntityTexture(EntityCustom entity) {
-						return texture;
+						return this.texture;
 					}
 					@Override
 					protected int getColorMultiplier(EntityCustom entity, float lightBrightness, float partialTick) {
@@ -558,36 +560,17 @@ public class EntityMightGuy extends ElementsNarutomodMod.ModElement {
 						return super.getColorMultiplier(entity, lightBrightness, partialTick);
 					}
 				};
-			/*customRender.addLayer(new net.minecraft.client.renderer.entity.layers.LayerBipedArmor(customRender) {
-				protected void initArmor() {
-					this.modelLeggings = new ModelBiped(0.5f);
-					this.modelArmor = new ModelBiped(1);
-				}
-			});*/
-				return customRender;
 			});
 		}
 
 		@SideOnly(Side.CLIENT)
-		public class ModelMightguy extends ModelBiped {
+		public class ModelMightguy extends EntityNinjaMob.ModelNinja {
 			public ModelMightguy() {
 				super(0f, 0f, 64, 64);
 				bipedBody.cubeList.add(new ModelBox(bipedBody, 16, 32, -4.0F, 0.0F, -2.0F, 8, 12, 4, 0.25F, false));
-				//bipedRightArm = new ModelRenderer(this);
-				//bipedRightArm.setRotationPoint(-5.0F, 2.0F, 0.0F);
-				//bipedRightArm.cubeList.add(new ModelBox(bipedRightArm, 40, 16, -3.0F, -2.0F, -2.0F, 4, 12, 4, 0.0F, false));
 				bipedRightArm.cubeList.add(new ModelBox(bipedRightArm, 40, 32, -3.0F, -2.0F, -2.0F, 4, 12, 4, 0.25F, false));
-				//bipedLeftArm = new ModelRenderer(this);
-				//bipedLeftArm.setRotationPoint(5.0F, 2.0F, 0.0F);
-				//bipedLeftArm.cubeList.add(new ModelBox(bipedLeftArm, 32, 48, -1.0F, -2.0F, -2.0F, 4, 12, 4, 0.0F, false));
 				bipedLeftArm.cubeList.add(new ModelBox(bipedLeftArm, 48, 48, -1.0F, -2.0F, -2.0F, 4, 12, 4, 0.25F, false));
-				//bipedRightLeg = new ModelRenderer(this);
-				//bipedRightLeg.setRotationPoint(-1.9F, 12.0F, 0.0F);
-				//bipedRightLeg.cubeList.add(new ModelBox(bipedRightLeg, 0, 16, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.0F, false));
 				bipedRightLeg.cubeList.add(new ModelBox(bipedRightLeg, 0, 32, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.25F, false));
-				//bipedLeftLeg = new ModelRenderer(this);
-				//bipedLeftLeg.setRotationPoint(1.9F, 12.0F, 0.0F);
-				//bipedLeftLeg.cubeList.add(new ModelBox(bipedLeftLeg, 16, 48, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.0F, false));
 				bipedLeftLeg.cubeList.add(new ModelBox(bipedLeftLeg, 0, 48, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.25F, false));
 			}
 

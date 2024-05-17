@@ -502,10 +502,9 @@ public class EntityKisameHoshigaki extends ElementsNarutomodMod.ModElement {
 		// Exported for Minecraft version 1.12
 		// Paste this class into your mod and generate all required imports
 		@SideOnly(Side.CLIENT)
-		public class ModelKisame extends ModelBiped {
+		public class ModelKisame extends EntityNinjaMob.ModelNinja {
 			public ModelKisame() {
-				textureWidth = 64;
-				textureHeight = 64;
+				super();
 				bipedHead = new ModelRenderer(this);
 				bipedHead.setRotationPoint(0.0F, 0.0F, 0.0F);
 				bipedHead.cubeList.add(new ModelBox(bipedHead, 0, 0, -4.0F, -8.0F, -4.0F, 8, 8, 8, 0.0F, false));
@@ -539,13 +538,12 @@ public class EntityKisameHoshigaki extends ElementsNarutomodMod.ModElement {
 		}
 
 		@SideOnly(Side.CLIENT)
-		public class ModelKisameFused extends ModelBiped {
+		public class ModelKisameFused extends EntityNinjaMob.ModelNinja {
 			private final ModelRenderer RightFin;
 			private final ModelRenderer LeftFin;
 
 			public ModelKisameFused() {
-				textureWidth = 64;
-				textureHeight = 64;
+				super();
 				bipedHead = new ModelRenderer(this);
 				bipedHead.setRotationPoint(0.0F, 0.0F, 0.0F);
 				bipedHead.cubeList.add(new ModelBox(bipedHead, 0, 0, -4.0F, -8.0F, -4.0F, 8, 8, 8, 0.0F, false));

@@ -65,6 +65,7 @@ import net.narutomod.item.ItemOnBody;
 import net.narutomod.potion.PotionFeatherFalling;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.Chakra;
+import net.narutomod.PlayerRender;
 import net.narutomod.ElementsNarutomodMod;
 import net.narutomod.NarutomodMod;
 
@@ -916,6 +917,41 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 		@Override
 		public boolean shouldCombineTextures() {
 			return false;
+		}
+	}
+
+	@SideOnly(Side.CLIENT)
+	public static class ModelNinja extends ModelBiped {
+		public ModelNinja() {
+			this.textureWidth = 64;
+			this.textureHeight = 64;
+			this.leftArmPose = ModelBiped.ArmPose.EMPTY;
+			this.rightArmPose = ModelBiped.ArmPose.EMPTY;
+		}
+
+		public ModelNinja(float modelSize) {
+			super(modelSize);
+		}
+
+		public ModelNinja(float modelSize, float p_i1149_2_, int textureWidthIn, int textureHeightIn) {
+			super(modelSize, p_i1149_2_, textureWidthIn, textureHeightIn);
+		}
+
+		@Override
+		public void setRotationAngles(float f0, float f1, float f2, float f3, float f4, float f5, Entity entityIn) {
+			boolean flag1 = this.isSneak;
+			boolean flag2 = PlayerRender.shouldNarutoRun(entityIn) && this.swingProgress == 0.0f;
+			if (flag2) {
+				this.isSneak = true;
+			}
+			super.setRotationAngles(f0, f1, f2, f3, f4, f5, entityIn);
+			if (flag2) {
+				this.isSneak = flag1;
+				this.bipedRightArm.rotateAngleX = 1.4835F;
+				this.bipedRightArm.rotateAngleY = -0.3927F;
+				this.bipedLeftArm.rotateAngleX = 1.4835F;
+				this.bipedLeftArm.rotateAngleY = 0.3927F;
+			}
 		}
 	}
 

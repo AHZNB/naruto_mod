@@ -16,6 +16,8 @@ import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.World;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.init.Items;
 import net.minecraft.entity.IEntityLivingData;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.EnumCreatureType;
@@ -25,8 +27,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
 import net.minecraft.village.MerchantRecipeList;
 import net.minecraft.village.MerchantRecipe;
-import net.minecraft.item.ItemStack;
-import net.minecraft.init.Items;
+import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.client.renderer.entity.RenderLiving;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.model.ModelBox;
@@ -35,6 +36,7 @@ import net.minecraft.client.model.ModelBiped;
 import net.narutomod.item.ItemScrollBodyReplacement;
 import net.narutomod.item.ItemScrollKageBunshin;
 import net.narutomod.item.ItemKunai;
+import net.narutomod.item.ItemNinjaArmorKonoha;
 import net.narutomod.ElementsNarutomodMod;
 
 import javax.annotation.Nullable;
@@ -94,6 +96,7 @@ public class EntityIrukaSensei extends ElementsNarutomodMod.ModElement {
 		@Override
 		public IEntityLivingData onInitialSpawn(DifficultyInstance difficulty, @Nullable IEntityLivingData livingdata) {
 			this.setItemToInventory(new ItemStack(ItemKunai.block), 0);
+			this.setItemStackToSlot(EntityEquipmentSlot.CHEST, new ItemStack(ItemNinjaArmorKonoha.body, 1));
 			return super.onInitialSpawn(difficulty, livingdata);
 		}
 
@@ -142,25 +145,24 @@ public class EntityIrukaSensei extends ElementsNarutomodMod.ModElement {
 		@SideOnly(Side.CLIENT)
 		@Override
 		public void register() {
-			RenderingRegistry.registerEntityRenderingHandler(EntityCustom.class, renderManager ->
-				new RenderLiving(renderManager, new ModelBiped64(), 0.5f) {
+			RenderingRegistry.registerEntityRenderingHandler(EntityCustom.class, renderManager -> {
+				return new EntityNinjaMob.RenderBase<EntityCustom>(renderManager, new ModelBiped64()) {
 					private final ResourceLocation texture = new ResourceLocation("narutomod:textures/iruka64x64.png");
-					protected ResourceLocation getEntityTexture(Entity entity) {
+					@Override
+					protected ResourceLocation getEntityTexture(EntityCustom entity) {
 						return this.texture;
 					}
-				});
+				};
+			});
 		}
 
 		// Made with Blockbench 3.7.4
 		// Exported for Minecraft version 1.12
 		// Paste this class into your mod and generate all required imports
 		@SideOnly(Side.CLIENT)
-		public class ModelBiped64 extends ModelBiped {
+		public class ModelBiped64 extends EntityNinjaMob.ModelNinja {
 			public ModelBiped64() {
-				this.textureWidth = 64;
-				this.textureHeight = 64;
-				this.leftArmPose = ModelBiped.ArmPose.EMPTY;
-				this.rightArmPose = ModelBiped.ArmPose.EMPTY;
+				super();
 				this.bipedHead = new ModelRenderer(this);
 				this.bipedHead.setRotationPoint(0.0F, 0.0F, 0.0F);
 				this.bipedHead.cubeList.add(new ModelBox(this.bipedHead, 0, 0, -4.0F, -8.0F, -4.0F, 8, 8, 8, 0.0F, false));

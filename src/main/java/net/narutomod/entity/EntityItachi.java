@@ -436,7 +436,7 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void register() {
 			RenderingRegistry.registerEntityRenderingHandler(EntityCustom.class, renderManager ->
-					new RenderCustom(renderManager, new ModelBiped()));
+					new RenderCustom(renderManager, new EntityNinjaMob.ModelNinja(0.0f)));
 		}
 
 		@SideOnly(Side.CLIENT)
@@ -445,9 +445,6 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 
 			public RenderCustom(RenderManager renderManagerIn, ModelBiped modelIn) {
 				super(renderManagerIn, modelIn);
-				//this.addLayer(new net.minecraft.client.renderer.entity.layers.LayerCustomHead(modelIn.bipedHead));
-				//this.addLayer(new net.minecraft.client.renderer.entity.layers.LayerHeldItem(this));
-				//this.addLayer(new EntityClone.ClientRLM().new BipedArmorLayer(this));
 			}
 
 			@Override

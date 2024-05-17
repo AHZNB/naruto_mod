@@ -255,12 +255,9 @@ public class EntityHaku extends ElementsNarutomodMod.ModElement {
 		// Exported for Minecraft version 1.12
 		// Paste this class into your mod and generate all required imports
 		@SideOnly(Side.CLIENT)
-		public class ModelBiped64slim extends ModelBiped {
+		public class ModelBiped64slim extends EntityNinjaMob.ModelNinja {
 			public ModelBiped64slim() {
-				this.textureWidth = 64;
-				this.textureHeight = 64;
-				this.leftArmPose = ModelBiped.ArmPose.EMPTY;
-				this.rightArmPose = ModelBiped.ArmPose.EMPTY;
+				super();
 				this.bipedHead = new ModelRenderer(this);
 				this.bipedHead.setRotationPoint(0.0F, 0.0F, 0.0F);
 				this.bipedHead.cubeList.add(new ModelBox(this.bipedHead, 0, 0, -4.0F, -8.0F, -4.0F, 8, 8, 8, 0.0F, false));
@@ -287,11 +284,6 @@ public class EntityHaku extends ElementsNarutomodMod.ModElement {
 				this.bipedLeftLeg.setRotationPoint(1.9F, 12.0F, 0.0F);
 				this.bipedLeftLeg.cubeList.add(new ModelBox(this.bipedLeftLeg, 16, 48, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.0F, false));
 				this.bipedLeftLeg.cubeList.add(new ModelBox(this.bipedLeftLeg, 0, 48, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.25F, false));
-			}
-
-			@Override
-			public void setRotationAngles(float f, float f1, float f2, float f3, float f4, float f5, Entity e) {
-				super.setRotationAngles(f, f1, f2, f3, f4, f5, e);
 			}
 		}
 	}

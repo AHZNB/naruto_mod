@@ -8,24 +8,25 @@ import net.minecraftforge.common.util.EnumHelper;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 
+import net.minecraft.world.World;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.Item;
 import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.model.ModelRenderer;
+import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelBox;
 import net.minecraft.client.model.ModelBiped;
 
 import net.narutomod.creativetab.TabModTab;
 import net.narutomod.ElementsNarutomodMod;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.world.World;
-import net.minecraft.init.SoundEvents;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class ItemAkatsukiRobe extends ElementsNarutomodMod.ModElement {
@@ -138,6 +139,7 @@ public class ItemAkatsukiRobe extends ElementsNarutomodMod.ModElement {
 		private final ModelRenderer bone2;
 		//private final ModelRenderer bipedRightArm;
 		//private final ModelRenderer bipedLeftArm;
+		private ModelBiped wearerModel;
 	
 		public ModelAkatsukiRobe() {
 			textureWidth = 64;
@@ -320,12 +322,24 @@ public class ItemAkatsukiRobe extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
-		public void setRotationAngles(float f, float f1, float f2, float f3, float f4, float f5, Entity e) {
-			if (e instanceof AbstractClientPlayer && ((AbstractClientPlayer)e).getSkinType().equals("slim")) {
+		public void setModelAttributes(ModelBase model) {
+			super.setModelAttributes(model);
+			if (model instanceof ModelBiped) {
+				this.wearerModel = (ModelBiped)model;
+			}
+		}
+
+		@Override
+		public void setRotationAngles(float f, float f1, float f2, float f3, float f4, float f5, Entity entity) {
+			if (entity instanceof AbstractClientPlayer && ((AbstractClientPlayer)entity).getSkinType().equals("slim")) {
 				this.bipedLeftArm.setRotationPoint(5.0F, 2.5F, 0.0F);
 				this.bipedRightArm.setRotationPoint(-5.0F, 2.5F, 0.0F);
 			}
-			super.setRotationAngles(f, f1, f2, f3, f4, f5, e);
+			super.setRotationAngles(f, f1, f2, f3, f4, f5, entity);
+			if (!(entity instanceof AbstractClientPlayer) && this.wearerModel != null) {
+				copyModelAngles(this.wearerModel.bipedLeftArm, this.bipedLeftArm);
+				copyModelAngles(this.wearerModel.bipedRightArm, this.bipedRightArm);
+			}
 		}
 	}
 }

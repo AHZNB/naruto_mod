@@ -435,12 +435,9 @@ public class EntityZabuzaMomochi extends ElementsNarutomodMod.ModElement {
 		}
 
 		@SideOnly(Side.CLIENT)
-		public class ModelBiped64 extends ModelBiped {
+		public class ModelBiped64 extends EntityNinjaMob.ModelNinja {
 			public ModelBiped64() {
-				this.textureWidth = 64;
-				this.textureHeight = 64;
-				this.leftArmPose = ModelBiped.ArmPose.EMPTY;
-				this.rightArmPose = ModelBiped.ArmPose.EMPTY;
+				super();
 				this.bipedHead = new ModelRenderer(this);
 				this.bipedHead.setRotationPoint(0.0F, 0.0F, 0.0F);
 				this.bipedHead.cubeList.add(new ModelBox(this.bipedHead, 0, 0, -4.0F, -8.0F, -4.0F, 8, 8, 8, 0.0F, false));
