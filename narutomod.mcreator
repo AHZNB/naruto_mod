@@ -1,8 +1,8 @@
 {
   "id_map": {
+    "ENTITY": 431,
     "DIMENSION": 13,
-    "GUI": 64,
-    "ENTITY": 431
+    "GUI": 64
   },
   "mod_elements": [
     {
@@ -7203,6 +7203,23 @@
         "1": 431
       },
       "registry_name": "sand_gathering"
+    },
+    {
+      "name": "ZzzEntitySwingsItem",
+      "type": "procedure",
+      "sortid": 859,
+      "compiles": true,
+      "locked_code": false,
+      "ids": {},
+      "registry_name": "zzz_entity_swings_item",
+      "metadata": {
+        "dependencies": [
+          {
+            "name": "entity",
+            "type": "entity"
+          }
+        ]
+      }
     }
   ],
   "variable_elements": [

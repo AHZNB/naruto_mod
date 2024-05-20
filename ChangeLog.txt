@@ -9,7 +9,7 @@ Entities:
  - re-textured kisame's face
  - fix remaining server crashes due to "NoClassDefFoundError"
  - all "smart" ninja NPCs can naruto run
- - Might Guy and Iruka wears konoha flak jackets now and has a change to drop it
+ - Might Guy and Iruka wears konoha flak jackets now and has a chance to drop it
 
 0.3.0-beta ================================================================================
 

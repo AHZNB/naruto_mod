@@ -678,7 +678,8 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 			this.target = this.defendedEntity.getRevengeTarget();
 			if (this.target == null) {
 				EntityLivingBase living = this.defendedEntity.getLastAttackedEntity();
-				if (living != null && this.defendedEntity.ticksExisted - this.defendedEntity.getLastAttackedEntityTime() < 200) {
+				//if (living != null && this.defendedEntity.ticksExisted - this.defendedEntity.getLastAttackedEntityTime() < 200) {
+				if (living != null) {
 					this.target = living;
 				}
 			}
