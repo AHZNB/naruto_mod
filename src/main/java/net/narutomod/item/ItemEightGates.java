@@ -81,7 +81,7 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 	public static final int ENTITYID = 67;
 	public static final int ENTITYID2 = 1067;
 	public static final int ENTITYID3 = 1167;
-	private static final ResourceLocation HIRUDORA_TEXTURE = new ResourceLocation("narutomod:textures/HirudoraTiger.png");
+	private static final ResourceLocation HIRUDORA_TEXTURE = new ResourceLocation("narutomod:textures/WhiteTiger.png");
 	private static final ResourceLocation SEKIZO_TEXTURE = new ResourceLocation("narutomod:textures/longcube_white.png");
 	private static final ResourceLocation NGDRAGON_TEXTURE = new ResourceLocation("narutomod:textures/dragon_red.png");
 	private static final int NGD_SUSPEND_TIME = 20;
@@ -928,7 +928,8 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 
 	@SideOnly(Side.CLIENT)
 	public class RenderHirudora extends Render<EntityHirudora> {
-		private final ModelWhiteTiger model = new ModelWhiteTiger();
+		//private final ModelWhiteTiger model = new ModelWhiteTiger();
+		private final ModelHirudora model = new ModelHirudora();
 
 		public RenderHirudora(RenderManager renderManager) {
 			super(renderManager);
@@ -944,7 +945,7 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 			GlStateManager.rotate(-entity.prevRotationYaw - (entity.rotationYaw - entity.prevRotationYaw) * pt, 0.0F, 1.0F, 0.0F);
 			GlStateManager.rotate(entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * pt - 180.0F, 1.0F, 0.0F, 0.0F);
 			GlStateManager.scale(scale, scale, scale);
-			this.model.render(entity, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
+			this.model.render(entity, 0.0F, 0.0F, pt + entity.ticksExisted, 0.0F, 0.0F, 0.0625F);
 			GlStateManager.popMatrix();
 		}
 
@@ -1374,59 +1375,205 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 				//spine8.rotateAngleX = f6 * 0.05F * f1;
 			}
 		}
-	}
+	}
 
 	@SideOnly(Side.CLIENT)
-	public class ModelWhiteTiger extends ModelBase {
+	public class ModelHirudora extends ModelBase {
 		private final ModelRenderer head;
+		private final ModelRenderer neck;
+		private final ModelRenderer[] neck1 = new ModelRenderer[12];
+		private final ModelRenderer forehead;
+		private final ModelRenderer bone14;
+		private final ModelRenderer bone15;
+		private final ModelRenderer bone16;
+		private final ModelRenderer nose;
+		private final ModelRenderer bone3;
+		private final ModelRenderer bone12;
+		private final ModelRenderer bone4;
+		private final ModelRenderer bone13;
+		private final ModelRenderer bone2;
+		private final ModelRenderer cheekRight;
+		private final ModelRenderer bone5;
+		private final ModelRenderer bone6;
+		private final ModelRenderer cheekLeft;
+		private final ModelRenderer bone7;
+		private final ModelRenderer bone8;
+		private final ModelRenderer browLeft;
+		private final ModelRenderer browRight;
 		private final ModelRenderer jaw;
 		private final ModelRenderer leftear;
 		private final ModelRenderer rightear;
 		private final ModelRenderer eyes;
-		
-		public ModelWhiteTiger() {
-			this.textureWidth = 64;
-			this.textureHeight = 64;
-			this.head = new ModelRenderer(this);
-			this.head.setRotationPoint(0.0F, 0.0F, 0.0F);
-			this.head.cubeList.add(new ModelBox(this.head, 0, 0, -4.0F, 8.0F, -8.0F, 8, 8, 16, 0.0F, false));
-			this.head.cubeList.add(new ModelBox(this.head, 0, 24, -3.0F, 11.0F, -12.0F, 6, 3, 4, 0.0F, false));
-			this.head.cubeList.add(new ModelBox(this.head, 0, 0, -1.0F, 10.75F, -12.25F, 2, 1, 1, 0.0F, false));
-			this.jaw = new ModelRenderer(this);
-			this.jaw.setRotationPoint(0.0F, 14.0F, -8.0F);
-			setRotationAngle(this.jaw, 0.6109F, 0.0F, 0.0F);
-			this.head.addChild(this.jaw);
-			this.jaw.cubeList.add(new ModelBox(this.jaw, 20, 24, -3.0F, 0.0F, -4.0F, 6, 2, 4, 0.0F, false));
-			this.leftear = new ModelRenderer(this);
-			this.leftear.setRotationPoint(4.0F, 9.0F, -6.0F);
-			setRotationAngle(this.leftear, 0.0F, 0.5236F, 0.0F);
-			this.head.addChild(this.leftear);
-			this.leftear.cubeList.add(new ModelBox(this.leftear, 38, 0, -1.0F, -2.0F, 0.0F, 1, 4, 4, -0.2F, false));
-			this.rightear = new ModelRenderer(this);
-			this.rightear.setRotationPoint(-4.0F, 8.0F, -6.0F);
-			setRotationAngle(this.rightear, 0.0F, -0.5236F, 0.0F);
-			this.head.addChild(this.rightear);
-			this.rightear.cubeList.add(new ModelBox(this.rightear, 38, 0, 0.0F, -1.0F, 0.0F, 1, 4, 4, -0.2F, true));
-			this.eyes = new ModelRenderer(this);
-			this.eyes.setRotationPoint(0.0F, 0.0F, 0.0F);
-			this.eyes.cubeList.add(new ModelBox(this.eyes, 0, 33, -3.0F, 9.0F, -8.1F, 6, 2, 0, 0.0F, false));
-		}
+	
+		public ModelHirudora() {
+			textureWidth = 64;
+			textureHeight = 64;
+	
+			head = new ModelRenderer(this);
+			head.setRotationPoint(0.0F, 0.0F, 0.0F);
+			head.cubeList.add(new ModelBox(head, 12, 12, -4.0F, 8.0F, -8.0F, 8, 8, 4, 0.0F, false));
+	
+			neck = new ModelRenderer(this);
+			neck.setRotationPoint(0.0F, 11.75F, -3.5F);
+			head.addChild(neck);
+			setRotationAngle(neck, -0.1309F, 0.0F, 0.0F);
+			neck.cubeList.add(new ModelBox(neck, 0, 32, -4.0F, -4.5F, -2.0F, 8, 9, 6, -0.2F, false));
+	
+			forehead = new ModelRenderer(this);
+			forehead.setRotationPoint(0.0F, 0.0F, 0.0F);
+			head.addChild(forehead);
+			
+			bone14 = new ModelRenderer(this);
+			bone14.setRotationPoint(0.0F, 8.0F, -8.0F);
+			forehead.addChild(bone14);
+			setRotationAngle(bone14, 0.3927F, 0.0F, 0.0F);
+			bone14.cubeList.add(new ModelBox(bone14, 32, 10, -2.0F, 0.0F, 0.0F, 4, 2, 4, 0.0F, false));
+	
+			bone15 = new ModelRenderer(this);
+			bone15.setRotationPoint(-2.0F, 8.0F, -8.0F);
+			forehead.addChild(bone15);
+			setRotationAngle(bone15, 0.3491F, 0.2618F, -0.1745F);
+			bone15.cubeList.add(new ModelBox(bone15, 0, 18, -2.0F, 0.0F, 0.0F, 2, 2, 4, 0.0F, false));
+	
+			bone16 = new ModelRenderer(this);
+			bone16.setRotationPoint(2.0F, 8.0F, -8.0F);
+			forehead.addChild(bone16);
+			setRotationAngle(bone16, 0.3491F, -0.2618F, 0.1745F);
+			bone16.cubeList.add(new ModelBox(bone16, 0, 18, 0.0F, 0.0F, 0.0F, 2, 2, 4, 0.0F, true));
+	
+			nose = new ModelRenderer(this);
+			nose.setRotationPoint(0.0F, 12.25F, -7.75F);
+			head.addChild(nose);
+			nose.cubeList.add(new ModelBox(nose, 16, 24, -1.0F, -1.5F, -4.5F, 2, 1, 1, 0.0F, false));
+	
+			bone3 = new ModelRenderer(this);
+			bone3.setRotationPoint(1.25F, 0.25F, -4.0F);
+			nose.addChild(bone3);
+			setRotationAngle(bone3, 0.1452F, 0.2555F, 0.2256F);
+			bone3.cubeList.add(new ModelBox(bone3, 3, 24, -1.5F, -1.5F, 0.0F, 3, 3, 4, 0.0F, false));
+	
+			bone12 = new ModelRenderer(this);
+			bone12.setRotationPoint(0.0F, -0.25F, 4.75F);
+			bone3.addChild(bone12);
+			setRotationAngle(bone12, 0.3927F, 0.1745F, 0.0F);
+			bone12.cubeList.add(new ModelBox(bone12, 8, 4, -1.5F, -1.5F, -0.5F, 3, 3, 1, 0.0F, false));
+	
+			bone4 = new ModelRenderer(this);
+			bone4.setRotationPoint(-1.25F, 0.25F, -4.0F);
+			nose.addChild(bone4);
+			setRotationAngle(bone4, 0.1452F, -0.2555F, -0.2256F);
+			bone4.cubeList.add(new ModelBox(bone4, 3, 24, -1.5F, -1.5F, 0.0F, 3, 3, 4, 0.0F, true));
+	
+			bone13 = new ModelRenderer(this);
+			bone13.setRotationPoint(0.0F, -0.25F, 4.75F);
+			bone4.addChild(bone13);
+			setRotationAngle(bone13, 0.3927F, -0.1745F, 0.0F);
+			bone13.cubeList.add(new ModelBox(bone13, 8, 4, -1.5F, -1.5F, -0.5F, 3, 3, 1, 0.0F, true));
+	
+			bone2 = new ModelRenderer(this);
+			bone2.setRotationPoint(0.0F, -1.25F, -4.5F);
+			nose.addChild(bone2);
+			setRotationAngle(bone2, 0.5672F, 0.0F, 0.0F);
+			bone2.cubeList.add(new ModelBox(bone2, 16, 0, -1.5F, 0.0F, 0.0F, 3, 2, 5, 0.0F, false));
+	
+			cheekRight = new ModelRenderer(this);
+			cheekRight.setRotationPoint(-3.75F, 10.25F, -8.5F);
+			head.addChild(cheekRight);
+			
+			bone5 = new ModelRenderer(this);
+			bone5.setRotationPoint(0.0F, 0.0F, 0.0F);
+			cheekRight.addChild(bone5);
+			setRotationAngle(bone5, 0.3927F, -0.4363F, 0.1309F);
+			bone5.cubeList.add(new ModelBox(bone5, 0, 4, 0.0F, 0.0F, 0.0F, 1, 4, 3, 0.0F, false));
+	
+			bone6 = new ModelRenderer(this);
+			bone6.setRotationPoint(0.25F, 4.0F, -0.5F);
+			cheekRight.addChild(bone6);
+			setRotationAngle(bone6, -0.3927F, -0.5672F, 0.0F);
+			bone6.cubeList.add(new ModelBox(bone6, 0, 11, 0.0F, -3.0F, 0.0F, 1, 3, 3, 0.0F, false));
+	
+			cheekLeft = new ModelRenderer(this);
+			cheekLeft.setRotationPoint(3.75F, 10.25F, -8.5F);
+			head.addChild(cheekLeft);
+			
+			bone7 = new ModelRenderer(this);
+			bone7.setRotationPoint(0.0F, 0.0F, 0.0F);
+			cheekLeft.addChild(bone7);
+			setRotationAngle(bone7, 0.3927F, 0.4363F, -0.1309F);
+			bone7.cubeList.add(new ModelBox(bone7, 0, 4, -1.0F, 0.0F, 0.0F, 1, 4, 3, 0.0F, true));
+	
+			bone8 = new ModelRenderer(this);
+			bone8.setRotationPoint(-0.25F, 4.0F, -0.5F);
+			cheekLeft.addChild(bone8);
+			setRotationAngle(bone8, -0.3927F, 0.5672F, 0.0F);
+			bone8.cubeList.add(new ModelBox(bone8, 0, 11, -1.0F, -3.0F, 0.0F, 1, 3, 3, 0.0F, true));
+	
+			browLeft = new ModelRenderer(this);
+			browLeft.setRotationPoint(3.5F, 8.65F, -8.0F);
+			head.addChild(browLeft);
+			setRotationAngle(browLeft, 0.0873F, -0.1745F, -0.0873F);
+			browLeft.cubeList.add(new ModelBox(browLeft, 0, 0, -2.0F, -0.5F, 0.0F, 2, 1, 2, 0.0F, false));
+	
+			browRight = new ModelRenderer(this);
+			browRight.setRotationPoint(-3.5F, 8.65F, -8.0F);
+			head.addChild(browRight);
+			setRotationAngle(browRight, 0.0873F, 0.1745F, 0.0873F);
+			browRight.cubeList.add(new ModelBox(browRight, 0, 0, 0.0F, -0.5F, 0.0F, 2, 1, 2, 0.0F, true));
+	
+			jaw = new ModelRenderer(this);
+			jaw.setRotationPoint(0.0F, 13.5F, -7.75F);
+			head.addChild(jaw);
+			setRotationAngle(jaw, 0.5236F, 0.0F, 0.0F);
+			jaw.cubeList.add(new ModelBox(jaw, 20, 24, -3.0F, 0.0F, -4.0F, 6, 2, 4, -0.2F, false));
+			jaw.cubeList.add(new ModelBox(jaw, 36, 0, -3.0F, 1.25F, -3.75F, 6, 0, 3, -0.2F, false));
+	
+			leftear = new ModelRenderer(this);
+			leftear.setRotationPoint(3.25F, 9.75F, -6.75F);
+			head.addChild(leftear);
+			setRotationAngle(leftear, 0.9599F, 0.8727F, 0.2618F);
+			leftear.cubeList.add(new ModelBox(leftear, 32, 0, -1.0F, -2.0F, 0.0F, 1, 4, 4, -0.3F, false));
+	
+			rightear = new ModelRenderer(this);
+			rightear.setRotationPoint(-3.25F, 9.75F, -6.75F);
+			head.addChild(rightear);
+			setRotationAngle(rightear, 0.9599F, -0.8727F, -0.2618F);
+			rightear.cubeList.add(new ModelBox(rightear, 32, 0, 0.0F, -2.0F, 0.0F, 1, 4, 4, -0.3F, true));
+	
+			eyes = new ModelRenderer(this);
+			eyes.setRotationPoint(0.0F, 0.0F, 0.0F);
+			eyes.cubeList.add(new ModelBox(eyes, 32, 8, -3.0F, 8.5F, -8.1F, 6, 2, 0, 0.0F, false));
 
+			for (int i = 0; i < neck1.length; i++) {
+				neck1[i] = new ModelRenderer(this);
+				neck1[i].setRotationPoint(0.0F, 0.0F, 1.5F + 5.0F * i);
+				neck1[i].cubeList.add(new ModelBox(neck1[i], 0, 32, -4.0F, 7.7F, -2.0F, 8, 9, 6, 0.2F * i, false));
+			}
+		}
+	
 		@Override
 		public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
 			GlStateManager.enableAlpha();
 			GlStateManager.enableBlend();
 			GlStateManager.disableLighting();
-			GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+			GlStateManager.color(1.0F, 1.0F, 1.0F, 0.7F);
 			GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 			this.head.render(f5);
+			if (f2 > (float)NGD_SUSPEND_TIME) {
+				for (int i = 0; i < neck1.length; i++) {
+					if (f2 - (float)NGD_SUSPEND_TIME > (float)i * (4.0F - 0.4F * i) + 3.0F) {
+						GlStateManager.color(1.0F, 1.0F, 1.0F, 0.64F - 0.06F * i);
+						this.neck1[i].render(f5);
+					}
+				}
+			}
 			OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240.0F, 240.0F);
+			GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 			this.eyes.render(f5);
 			GlStateManager.enableLighting();
 			GlStateManager.disableBlend();
 			GlStateManager.disableAlpha();
 		}
-
+	
 		public void setRotationAngle(ModelRenderer modelRenderer, float x, float y, float z) {
 			modelRenderer.rotateAngleX = x;
 			modelRenderer.rotateAngleY = y;
