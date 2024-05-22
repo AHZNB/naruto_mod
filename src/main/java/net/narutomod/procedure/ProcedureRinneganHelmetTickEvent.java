@@ -113,6 +113,16 @@ public class ProcedureRinneganHelmetTickEvent extends ElementsNarutomodMod.ModEl
 							ItemHandlerHelper.giveItemToPlayer(((EntityPlayer) entity), _setstack);
 						}
 					}
+					if ((((itemstack).getItem() == new ItemStack(ItemTenseigan.helmet, (int) (1)).getItem())
+							&& (ItemTenseigan.canUseChakraMode(itemstack, (EntityPlayer) entity) && (!((entity instanceof EntityPlayer)
+									? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemTenseiganChakraMode.block, (int) (1)))
+									: false))))) {
+						if (entity instanceof EntityPlayer) {
+							ItemStack _setstack = new ItemStack(ItemTenseiganChakraMode.block, (int) (1));
+							_setstack.setCount(1);
+							ItemHandlerHelper.giveItemToPlayer(((EntityPlayer) entity), _setstack);
+						}
+					}
 				}
 			} else {
 				if ((((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
