@@ -129,24 +129,6 @@ public class ItemJiton extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
-		protected float getPower(ItemStack stack, EntityLivingBase entity, int timeLeft) {
-			if (this.getCurrentJutsu(stack) == SANDBULLET) {
-				return this.getPower(stack, entity, timeLeft, 0.0f, 50f);
-			}
-			return 1f;
-		}
-
-		@Override
-		protected float getMaxPower(ItemStack stack, EntityLivingBase entity) {
-			ItemJutsu.JutsuEnum jutsu = this.getCurrentJutsu(stack);
-			float f = super.getMaxPower(stack, entity);
-			if (jutsu == SANDBULLET) {
-				return Math.min(f, 5.0f);
-			}
-			return f;
-		}
-
-		@Override
 		public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer entity, EnumHand hand) {
 			if ((entity.isCreative() || (ProcedureUtils.hasItemInInventory(entity, ItemFuton.block) 
 			 && ProcedureUtils.hasItemInInventory(entity, ItemDoton.block))) 

@@ -133,6 +133,16 @@ public class EntityFirestream extends ElementsNarutomodMod.ModElement {
 				//ItemJutsu.setCurrentJutsuCooldown(stack, (EntityPlayer)entity, (long)(power * 200));
 				return true;
 			}
+
+			@Override
+			public float getPowerupDelay() {
+				return 30.0f;
+			}
+	
+			@Override
+			public float getMaxPower() {
+				return 20.0f;
+			}
 		}
 
 		public static class Jutsu2 implements ItemJutsu.IJutsuCallback {
@@ -144,6 +154,16 @@ public class EntityFirestream extends ElementsNarutomodMod.ModElement {
 				entity.world.spawnEntity(entity1);
 				//ItemJutsu.setCurrentJutsuCooldown(stack, (EntityPlayer)entity, (long)(power * 200));
 				return true;
+			}
+
+			@Override
+			public float getPowerupDelay() {
+				return 30.0f;
+			}
+	
+			@Override
+			public float getMaxPower() {
+				return 30.0f;
 			}
 		}
 	}

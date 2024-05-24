@@ -155,6 +155,21 @@ public class EntityTenseiBakuGold extends ElementsNarutomodMod.ModElement {
 				 net.minecraft.util.SoundCategory.PLAYERS, 4.0f, 1.0f);
 				return true;
 			}
+
+			@Override
+			public float getBasePower() {
+				return 10.0f;
+			}
+	
+			@Override
+			public float getPowerupDelay() {
+				return 5.0f;
+			}
+	
+			@Override
+			public float getMaxPower() {
+				return 200.0f;
+			}
 		}
 	}
 

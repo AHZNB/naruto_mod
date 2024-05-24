@@ -95,31 +95,7 @@ public class ItemSuiton extends ElementsNarutomodMod.ModElement {
 			//this.defaultCooldownMap[HIDINGINMIST.index] = 0;
 			//this.defaultCooldownMap[WATERBULLET.index] = 0;
 		}
-
-		@Override
-		protected float getPower(ItemStack stack, EntityLivingBase entity, int timeLeft) {
-			ItemJutsu.JutsuEnum jutsu = this.getCurrentJutsu(stack);
-			if (jutsu == WATERSHARK || jutsu == WATERDRAGON) {
-				return this.getPower(stack, entity, timeLeft, 0.9f, 150);
-			} else if (jutsu == WATERSHOCK) {
-				return this.getPower(stack, entity, timeLeft, 5f, 50);
-			} else if (jutsu == WATERBULLET) {
-				return this.getPower(stack, entity, timeLeft, 5f, 20);
-			}
-			return 1f;
-		}
-
-		@Override
-		protected float getMaxPower(ItemStack stack, EntityLivingBase entity) {
-			float ret = super.getMaxPower(stack, entity);
-			ItemJutsu.JutsuEnum jutsu = this.getCurrentJutsu(stack);
-			return jutsu == WATERSHOCK ? Math.min(ret, 25f)
-			     : jutsu == WATERBULLET ? Math.min(ret, 30f)
-			     : jutsu == WATERSHARK ? Math.min(ret, 5f)
-			     : jutsu == WATERDRAGON ? Math.min(ret, 5f)
-			     : ret;
-		}
-	}
+	}
 
 	public static class EntityMist extends Entity {
 		private static final UUID FOLLOW_MODIFIER = UUID.fromString("7c3e5536-e32d-4ef7-8cf2-e5ef57f9d48f");
@@ -328,6 +304,21 @@ public class ItemSuiton extends ElementsNarutomodMod.ModElement {
 					return true;
 				}
 				return false;
+			}
+
+			@Override
+			public float getBasePower() {
+				return 5.0f;
+			}
+	
+			@Override
+			public float getPowerupDelay() {
+				return 20.0f;
+			}
+	
+			@Override
+			public float getMaxPower() {
+				return 30.0f;
 			}
 		}
 	}

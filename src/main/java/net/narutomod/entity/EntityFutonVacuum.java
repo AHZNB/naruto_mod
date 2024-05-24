@@ -97,6 +97,21 @@ public class EntityFutonVacuum extends ElementsNarutomodMod.ModElement {
 				}
 				return false;
 			}
+
+			@Override
+			public float getBasePower() {
+				return 0.0f;
+			}
+	
+			@Override
+			public float getPowerupDelay() {
+				return 20.0f;
+			}
+	
+			@Override
+			public float getMaxPower() {
+				return 50.0f;
+			}
 		}
 
 		public void playImpactSound(double x, double y, double z) {

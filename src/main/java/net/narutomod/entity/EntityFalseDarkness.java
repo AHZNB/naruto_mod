@@ -119,6 +119,11 @@ public class EntityFalseDarkness extends ElementsNarutomodMod.ModElement {
 				}
 				return false;
 			}
+
+			@Override
+			public float getPowerupDelay() {
+				return 150.0f;
+			}
 		}
 	}
 }

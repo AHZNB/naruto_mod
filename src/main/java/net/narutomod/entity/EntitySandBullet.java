@@ -175,6 +175,21 @@ public class EntitySandBullet extends ElementsNarutomodMod.ModElement {
 				 net.minecraft.util.SoundCategory.BLOCKS, 0.5f, entity.getRNG().nextFloat() * 0.4f + 0.6f);
 				entity.world.spawnEntity(new EC(entity, type, x, y, z, delay));
 			}
+
+			@Override
+			public float getBasePower() {
+				return 0.0f;
+			}
+	
+			@Override
+			public float getPowerupDelay() {
+				return 50.0f;
+			}
+	
+			@Override
+			public float getMaxPower() {
+				return 5.0f;
+			}
 		}
 	}
 

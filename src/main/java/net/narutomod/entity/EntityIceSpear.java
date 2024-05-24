@@ -160,6 +160,16 @@ public class EntityIceSpear extends ElementsNarutomodMod.ModElement {
 				entity1.setNoGravity(true);
 				world.spawnEntity(entity1);
 			}
+
+			@Override
+			public float getPowerupDelay() {
+				return 40.0f;
+			}
+	
+			@Override
+			public float getMaxPower() {
+				return 50.0f;
+			}
 		}
 
 		public static void spawnShatteredShard(World worldIn, double x, double y, double z, double mX, double mY, double mZ) {

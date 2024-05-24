@@ -11,6 +11,7 @@ import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 
 import net.minecraft.world.World;
+import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
@@ -91,18 +92,10 @@ public class ItemKekkeiMora extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
-		protected float getPower(ItemStack stack, EntityLivingBase entity, int timeLeft) {
-			ItemJutsu.JutsuEnum jutsu = this.getCurrentJutsu(stack);
-			if (jutsu == PULSE) {
-				return this.getPower(stack, entity, timeLeft, 10f, 20f);
-			}
-			return 1f;
-		}
-
-		@Override
 		public void onUsingTick(ItemStack stack, EntityLivingBase player, int count) {
 			if (this.getCurrentJutsu(stack) == EIGHTYGODS) {
-				if (!player.world.isRemote && player.ticksExisted % 4 == 1) {
+				if (!player.world.isRemote && player.ticksExisted % 4 == 1 && player instanceof EntityPlayer
+				 && this.canActivateJutsu(stack, EIGHTYGODS, (EntityPlayer)player) == EnumActionResult.SUCCESS) {
 					this.executeJutsu(stack, player, 1.0f);
 				}
 				return;
@@ -163,6 +156,16 @@ public class ItemKekkeiMora extends ElementsNarutomodMod.ModElement {
 			ProcedureUtils.purgeHarmfulEffects(entity);
 			entity.extinguish();
 			return true;
+		}
+
+		@Override
+		public float getBasePower() {
+			return 10.0f;
+		}
+	
+		@Override
+		public float getPowerupDelay() {
+			return 20.0f;
 		}
 	}
 

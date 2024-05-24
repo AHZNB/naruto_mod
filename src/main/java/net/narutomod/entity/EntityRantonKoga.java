@@ -86,6 +86,16 @@ public class EntityRantonKoga extends ElementsNarutomodMod.ModElement {
 				entity.world.spawnEntity(new EC(entity, power));
 				return true;
 			}
+	
+			@Override
+			public float getPowerupDelay() {
+				return 50.0f;
+			}
+	
+			@Override
+			public float getMaxPower() {
+				return 10.0f;
+			}
 		}
 	}
 }

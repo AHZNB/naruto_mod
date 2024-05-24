@@ -102,29 +102,6 @@ public class ItemBakuton extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
-		protected float getPower(ItemStack stack, EntityLivingBase entity, int timeLeft) {
-			ItemJutsu.JutsuEnum jutsu = this.getCurrentJutsu(stack);
-			if (jutsu == JIRAIKEN) {
-				return this.getPower(stack, entity, timeLeft, 0.2f, 200f);
-			} else if (jutsu == CLAY) {
-				return (float)Math.floor(this.getPower(stack, entity, timeLeft, 1f, 150f));
-			}
-			return 1f;
-		}
-
-		@Override
-		protected float getMaxPower(ItemStack stack, EntityLivingBase entity) {
-			float f = super.getMaxPower(stack, entity);
-			ItemJutsu.JutsuEnum jutsu = this.getCurrentJutsu(stack);
-			if (jutsu == CLAY) {
-				return Math.min(3.1f, f);
-			} else if (jutsu == JIRAIKEN) {
-				return Math.min(10.0f, f);
-			}
-			return f;
-		}
-
-		@Override
 		public void onUsingTick(ItemStack stack, EntityLivingBase player, int count) {
 			if (player instanceof EntityPlayer && !player.world.isRemote && this.getCurrentJutsu(stack) == CLAY) {
 				((EntityPlayer)player).sendStatusMessage(
@@ -195,6 +172,21 @@ public class ItemBakuton extends ElementsNarutomodMod.ModElement {
 		@Override
 		public float getPower(ItemStack stack) {
 			return stack.hasTagCompound() ? stack.getTagCompound().getFloat("JiraikenPower") : 0f;
+		}
+
+		@Override
+		public float getBasePower() {
+			return 0.2f;
+		}
+
+		@Override
+		public float getPowerupDelay() {
+			return 200.0f;
+		}
+
+		@Override
+		public float getMaxPower() {
+			return 10.0f;
 		}
 	}
 
@@ -318,6 +310,16 @@ public class ItemBakuton extends ElementsNarutomodMod.ModElement {
 				ec.setRotationYawHead(entity.rotationYaw);
 				entity.world.spawnEntity(ec);
 				return true;
+			}
+
+			@Override
+			public float getPowerupDelay() {
+				return 150.0f;
+			}
+
+			@Override
+			public float getMaxPower() {
+				return 3.1f;
 			}
 	    }
 	

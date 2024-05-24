@@ -86,26 +86,6 @@ public class ItemFutton extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
-		protected float getPower(ItemStack stack, EntityLivingBase entity, int timeLeft) {
-			ItemJutsu.JutsuEnum jutsu = this.getCurrentJutsu(stack);
-			if (jutsu == MIST) {
-				return this.getPower(stack, entity, timeLeft, 0.1f, 30f);
-			}
-			return this.getPower(stack, entity, timeLeft, 1.0f, 100f);
-		}
-
-		@Override
-		protected float getMaxPower(ItemStack stack, EntityLivingBase entity) {
-			ItemJutsu.JutsuEnum jutsu = this.getCurrentJutsu(stack);
-			float f = super.getMaxPower(stack, entity);
-			if (jutsu == MIST) {
-				return Math.min(f, 30.0f);
-			} else {
-				return Math.min(f, 20.0f);
-			}
-		}
-
-		@Override
 		public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer entity, EnumHand hand) {
 		 	ItemStack stack = entity.getHeldItem(hand);
 			if (entity.isCreative() || (ProcedureUtils.hasItemInInventory(entity, ItemKaton.block) 
@@ -222,6 +202,21 @@ public class ItemFutton extends ElementsNarutomodMod.ModElement {
 			public boolean createJutsu(ItemStack stack, EntityLivingBase entity, float power) {
 				entity.world.spawnEntity(new EntityBoilingMist(entity, power));
 				return true;
+			}
+
+			@Override
+			public float getBasePower() {
+				return 0.1f;
+			}
+	
+			@Override
+			public float getPowerupDelay() {
+				return 30.0f;
+			}
+	
+			@Override
+			public float getMaxPower() {
+				return 30.0f;
 			}
 		}
 	}

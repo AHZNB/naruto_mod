@@ -248,6 +248,21 @@ public class EntityWaterShockwave extends ElementsNarutomodMod.ModElement {
 				entity.world.spawnEntity(entity1);
 				return entity1;
 			}
+
+			@Override
+			public float getBasePower() {
+				return 5.0f;
+			}
+	
+			@Override
+			public float getPowerupDelay() {
+				return 50.0f;
+			}
+	
+			@Override
+			public float getMaxPower() {
+				return 25.0f;
+			}
 		}
 	}
 }

@@ -124,6 +124,16 @@ public class EntitySwampPit extends ElementsNarutomodMod.ModElement {
 				}
 				return false;
 			}
+
+			@Override
+			public float getPowerupDelay() {
+				return 100.0f;
+			}
+	
+			@Override
+			public float getMaxPower() {
+				return 30.0f;
+			}
 		}
 	}
 }

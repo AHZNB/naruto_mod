@@ -102,29 +102,6 @@ public class ItemYooton extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
-		protected float getPower(ItemStack stack, EntityLivingBase entity, int timeLeft) {
-			ItemJutsu.JutsuEnum jutsu = this.getCurrentJutsu(stack);
-			if (jutsu == ROCKS) {
-				return this.getPower(stack, entity, timeLeft, 1.0f, 50f);
-			} else if (jutsu == STREAM) {
-				return this.getPower(stack, entity, timeLeft, 0.5f, 200f);
-			}
-			return 1f;
-		}
-
-		@Override
-		protected float getMaxPower(ItemStack stack, EntityLivingBase entity) {
-			float mp = super.getMaxPower(stack, entity);
-			ItemJutsu.JutsuEnum jutsu = this.getCurrentJutsu(stack);
-			if (jutsu == ROCKS) {
-				return Math.min(mp, 20f);
-			} else if (jutsu == STREAM) {
-				return Math.min(mp, 10f);
-			}
-			return mp;
-		}
-
-		@Override
 		public void onUpdate(ItemStack itemstack, World world, Entity entity, int par4, boolean par5) {
 			super.onUpdate(itemstack, world, entity, par4, par5);
 			if (!world.isRemote && entity instanceof EntityLivingBase) {
@@ -236,6 +213,16 @@ public class ItemYooton extends ElementsNarutomodMod.ModElement {
 				EntityMagmaBall entityarrow = new EntityMagmaBall(entity, power);
 				entityarrow.shoot(x, y, z, 1.05f, 0);
 				entity.world.spawnEntity(entityarrow);
+			}
+
+			@Override
+			public float getPowerupDelay() {
+				return 50.0f;
+			}
+
+			@Override
+			public float getMaxPower() {
+				return 20.0f;
 			}
 		}
 	}

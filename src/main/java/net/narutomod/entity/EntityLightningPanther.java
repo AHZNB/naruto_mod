@@ -284,6 +284,21 @@ public class EntityLightningPanther extends ElementsNarutomodMod.ModElement {
 				}
 				return false;
 			}
+
+			@Override
+			public float getBasePower() {
+				return 0.0f;
+			}
+	
+			@Override
+			public float getPowerupDelay() {
+				return 100.0f;
+			}
+	
+			@Override
+			public float getMaxPower() {
+				return 5.0f;
+			}
 		}
 	}
 

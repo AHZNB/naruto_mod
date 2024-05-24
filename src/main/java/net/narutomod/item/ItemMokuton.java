@@ -96,21 +96,6 @@ public class ItemMokuton extends ElementsNarutomodMod.ModElement {
 			this.defaultCooldownMap[ARMATTACK.index] = 0;
 		}
 
-		@Override
-		protected float getPower(ItemStack stack, EntityLivingBase entity, int timeLeft) {
-			if (this.getCurrentJutsu(stack) == WOODPRISON) {
-				return this.getPower(stack, entity, timeLeft, 1f, 50f);
-			}
-			return 1f;
-		}
-
-		@Override
-		protected float getMaxPower(ItemStack stack, EntityLivingBase entity) {
-			float ret = super.getMaxPower(stack, entity);
-			ItemJutsu.JutsuEnum jutsu = this.getCurrentJutsu(stack);
-			return jutsu == WOODPRISON ? Math.min(ret, 40f) : ret;
-		}
-
 		private static boolean canSpawnStructureHere(World world, BlockPos pos) {
 			if (world.getBlockState(pos).getMaterial() == Material.GROUND || world.getBlockState(pos).getMaterial() == Material.SAND
 			 || world.getBlockState(pos).getMaterial() == Material.GRASS || world.getBlockState(pos).getMaterial() == Material.ROCK)

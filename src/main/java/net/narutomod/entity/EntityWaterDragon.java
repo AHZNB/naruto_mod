@@ -227,6 +227,21 @@ public class EntityWaterDragon extends ElementsNarutomodMod.ModElement {
 				  net.minecraft.util.SoundCategory.NEUTRAL, 5, 1f);
 				entity.world.spawnEntity(new EC(entity, power));
 			}
+
+			@Override
+			public float getBasePower() {
+				return 0.9f;
+			}
+	
+			@Override
+			public float getPowerupDelay() {
+				return 150.0f;
+			}
+	
+			@Override
+			public float getMaxPower() {
+				return 5.0f;
+			}
 		}
 	}
 

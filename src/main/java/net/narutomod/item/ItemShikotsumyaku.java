@@ -88,14 +88,6 @@ public class ItemShikotsumyaku extends ElementsNarutomodMod.ModElement {
 				this.defaultCooldownMap[i] = 0;
 			}
 		}
-
-		@Override
-		protected float getPower(ItemStack stack, EntityLivingBase entity, int timeLeft) {
-			 if (this.getCurrentJutsu(stack) == BRACKEN) {
-				return this.getPower(stack, entity, timeLeft, 0.5f, 10f);
-			 }
-			return 1f;
-		}
 	}
 
 	public static class LarchDance implements ItemJutsu.IJutsuCallback {
@@ -269,6 +261,16 @@ public class ItemShikotsumyaku extends ElementsNarutomodMod.ModElement {
 					return true;
 				}
 				return false;
+			}
+
+			@Override
+			public float getBasePower() {
+				return 0.5f;
+			}
+	
+			@Override
+			public float getPowerupDelay() {
+				return 10.0f;
 			}
 		}
 	}

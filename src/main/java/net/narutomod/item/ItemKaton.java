@@ -75,34 +75,6 @@ public class ItemKaton extends ElementsNarutomodMod.ModElement {
 			//this.defaultCooldownMap[GREATFIREBALL.index] = 0;
 			//this.defaultCooldownMap[1] = 0;
 		}
-
-		@Override
-		protected float getPower(ItemStack stack, EntityLivingBase entity, int timeLeft) {
-			ItemJutsu.JutsuEnum je = this.getCurrentJutsu(stack);
-			if (je == HIDINGINASH) {
-				return this.getPower(stack, entity, timeLeft, 1.0f, 15f);
-			} else if (je == GREATFIREBALL) {
-				return this.getPower(stack, entity, timeLeft, 0.5f, 30f);
-			} else {
-				return this.getPower(stack, entity, timeLeft, 1.0f, 30f);
-			}
-			//float power = 1f + (float)(this.getMaxUseDuration() - timeLeft) / (this.getCurrentJutsu(stack) == HIDINGINASH ? 10 : 20);
-			//return Math.min(power, this.getMaxPower(stack, entity));
-		}
-
-		@Override
-		protected float getMaxPower(ItemStack stack, EntityLivingBase entity) {
-			ItemJutsu.JutsuEnum jutsu = this.getCurrentJutsu(stack);
-			float f = super.getMaxPower(stack, entity);
-			if (jutsu == GREATFLAME) {
-				return Math.min(f, 30.0f);
-			} else if (jutsu == GFANNIHILATION) {
-				return Math.min(f, 20.0f);
-			} else if (jutsu == GREATFIREBALL) {
-				return Math.min(f, 10.0f);
-			}
-			return f;
-		}
 	}
 
 	public static class EntityBigFireball extends EntityScalableProjectile.Base {
@@ -192,6 +164,21 @@ public class ItemKaton extends ElementsNarutomodMod.ModElement {
 				EntityBigFireball entityarrow = new EntityBigFireball(entity, power);
 				entityarrow.shoot(x, y, z, 0.95f, 0);
 				entity.world.spawnEntity(entityarrow);
+			}
+
+			@Override
+			public float getBasePower() {
+				return 0.5f;
+			}
+	
+			@Override
+			public float getPowerupDelay() {
+				return 30.0f;
+			}
+	
+			@Override
+			public float getMaxPower() {
+				return 10.0f;
 			}
 		}
 	}

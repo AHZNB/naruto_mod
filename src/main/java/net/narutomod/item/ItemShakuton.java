@@ -89,11 +89,6 @@ public class ItemShakuton extends ElementsNarutomodMod.ModElement {
 			this.defaultCooldownMap[BLAST.index] = 0;
 		}
 
-		@Override
-		protected float getPower(ItemStack stack, EntityLivingBase entity, int timeLeft) {
-			return 1f;
-		}
-
 		protected void saveSpawnedBall(ItemStack stack, Entity entity) {
 			if (!stack.hasTagCompound()) {
 				stack.setTagCompound(new NBTTagCompound());

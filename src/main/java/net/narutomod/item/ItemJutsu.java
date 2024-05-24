@@ -168,7 +168,13 @@ public class ItemJutsu extends ElementsNarutomodMod.ModElement {
 			return false;
 		}
 
-		protected abstract float getPower(ItemStack stack, EntityLivingBase entity, int timeLeft);
+		protected float getPower(ItemStack stack, EntityLivingBase entity, int timeLeft) {
+			JutsuEnum jutsuEnum = this.getCurrentJutsu(stack);
+			if (jutsuEnum.jutsu.getPowerupDelay() > 0.0f) {
+				return this.getPower(stack, entity, timeLeft, jutsuEnum.jutsu.getBasePower(), jutsuEnum.jutsu.getPowerupDelay());
+			}
+			return jutsuEnum.jutsu.getBasePower();
+		}
 
 		protected float getPower(ItemStack stack, EntityLivingBase entity, int timeLeft, float basePower, float powerupDelay) {
 			//boolean flag = entity instanceof EntityPlayer && ((EntityPlayer)entity).isCreative();
@@ -184,8 +190,10 @@ public class ItemJutsu extends ElementsNarutomodMod.ModElement {
 		}
 
 		protected float getMaxPower(ItemStack stack, EntityLivingBase entity) {
-			//return (float)(Chakra.pathway(entity).getAmount() / this.getCurrentJutsu(stack).chakraUsage);
-			return (float)ItemJutsu.getMaxPower(entity, this.getCurrentJutsu(stack).chakraUsage);
+			//return (float)ItemJutsu.getMaxPower(entity, this.getCurrentJutsu(stack).chakraUsage);
+			JutsuEnum jutsuEnum = this.getCurrentJutsu(stack);
+			float mp = (float)ItemJutsu.getMaxPower(entity, jutsuEnum.chakraUsage);
+			return Math.min(mp, jutsuEnum.jutsu.getMaxPower());
 		}
 
 		@Override
@@ -599,7 +607,19 @@ public class ItemJutsu extends ElementsNarutomodMod.ModElement {
 		default float getPower(ItemStack stack) {
 			return 0.0f;
 		}
+
+		default float getBasePower() {
+			return 1.0f;
+		}
+
+		default float getPowerupDelay() {
+			return 0.0f;
+		}
 		
+		default float getMaxPower() {
+			return 1000.0f;
+		}
+
 		default JutsuData getData(EntityLivingBase entity) {
 			return null;
 		}

@@ -267,6 +267,38 @@ public class EntityRasenshuriken extends ElementsNarutomodMod.ModElement {
 				}
 				return false;
 			}
+
+			@Override
+			public float getBasePower() {
+				return 0.0f;
+			}
+	
+			@Override
+			public float getPowerupDelay() {
+				return 300.0f;
+			}
+	
+			@Override
+			public float getMaxPower() {
+				return 2.0f;
+			}
+		}
+
+		public static class SageModeVairant extends Jutsu {
+			@Override
+			public float getBasePower() {
+				return 1.9f;
+			}
+	
+			@Override
+			public float getPowerupDelay() {
+				return 300.0f;
+			}
+	
+			@Override
+			public float getMaxPower() {
+				return 6.0f;
+			}
 		}
 
 		public static class TSBVariant implements ItemJutsu.IJutsuCallback {

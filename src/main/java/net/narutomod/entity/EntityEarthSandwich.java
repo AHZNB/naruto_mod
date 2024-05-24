@@ -200,6 +200,21 @@ public class EntityEarthSandwich extends ElementsNarutomodMod.ModElement {
 				}
 				return false;
 			}
+
+			@Override
+			public float getBasePower() {
+				return 2.0f;
+			}
+	
+			@Override
+			public float getPowerupDelay() {
+				return 150.0f;
+			}
+	
+			@Override
+			public float getMaxPower() {
+				return 20.0f;
+			}
 		}
 	}
 

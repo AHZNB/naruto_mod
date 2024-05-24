@@ -120,6 +120,16 @@ public class EntityIntonRaiha extends ElementsNarutomodMod.ModElement {
 				entity.world.spawnEntity(new EC(entity, power));
 				return true;
 			}
+	
+			@Override
+			public float getPowerupDelay() {
+				return 80.0f;
+			}
+	
+			@Override
+			public float getMaxPower() {
+				return 6.0f;
+			}
 		}
 	}
 }

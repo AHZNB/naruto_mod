@@ -60,11 +60,6 @@ public class ItemInton extends ElementsNarutomodMod.ModElement {
 			this.setRegistryName("inton");
 			this.setCreativeTab(TabModTab.tab);
 		}
-
-		@Override
-		protected float getPower(ItemStack stack, EntityLivingBase entity, int timeLeft) {
-			return 1f;
-		}
 	}
 
 	public static class Genjutsu implements ItemJutsu.IJutsuCallback {

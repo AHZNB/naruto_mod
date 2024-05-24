@@ -212,6 +212,21 @@ public class EntityMeltingJutsu extends ElementsNarutomodMod.ModElement {
 				}
 				return false;
 			}
+
+			@Override
+			public float getBasePower() {
+				return 0.5f;
+			}
+
+			@Override
+			public float getPowerupDelay() {
+				return 200.0f;
+			}
+
+			@Override
+			public float getMaxPower() {
+				return 10.0f;
+			}
 		}
 	}
 

@@ -172,19 +172,7 @@ public class ItemAdamantineNyoi extends ElementsNarutomodMod.ModElement {
 			Entity entity = world.getEntityByID(stack.getTagCompound().getInteger("staffEntityId"));
 			return entity instanceof EntityExtend && !entity.isDead ? (EntityExtend)entity : null;
 		}
-
-		@Override
-		protected float getPower(ItemStack stack, EntityLivingBase entity, int timeLeft) {
-			return this.getCurrentJutsu(stack) == EXTEND ? this.getPower(stack, entity, timeLeft, 1.0f, 30f) : 1.0f;
-		}
-
-		@Override
-		protected float getMaxPower(ItemStack stack, EntityLivingBase entity) {
-			float ret = super.getMaxPower(stack, entity);
-			ItemJutsu.JutsuEnum jutsu = this.getCurrentJutsu(stack);
-			return jutsu == EXTEND ? Math.min(ret, 15f) : ret;
-		}
-
+
 		@Override
 		public EnumAction getItemUseAction(ItemStack itemstack) {
 			return this.getCurrentJutsu(itemstack) == WEAPON ? EnumAction.BLOCK : EnumAction.BOW;
@@ -407,6 +395,16 @@ public class ItemAdamantineNyoi extends ElementsNarutomodMod.ModElement {
 			public boolean createJutsu(ItemStack stack, EntityLivingBase entity, float power) {
 				((RangedItem)stack.getItem()).setCurrentJutsuCooldown(stack, 300);
 				return true;
+			}
+	
+			@Override
+			public float getPowerupDelay() {
+				return 30.0f;
+			}
+	
+			@Override
+			public float getMaxPower() {
+				return 15.0f;
 			}
 		}
 	}

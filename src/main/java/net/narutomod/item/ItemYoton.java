@@ -84,19 +84,6 @@ public class ItemYoton extends ElementsNarutomodMod.ModElement {
 			this.setRegistryName("yoton");
 			this.setCreativeTab(TabModTab.tab);
 		}
-
-		@Override
-		protected float getPower(ItemStack stack, EntityLivingBase entity, int timeLeft) {
-			if (this.getCurrentJutsu(stack) == MULTISIZE) {
-				return this.getPower(stack, entity, timeLeft, 2f, 50f);
-			}
-			return 1.0f;
-		}
-
-		@Override
-		protected float getMaxPower(ItemStack stack, EntityLivingBase entity) {
-			return Math.min(super.getMaxPower(stack, entity), 10f);
-		}
 	}
 
 	public static class EntityBiggerMe extends EntityClone.Base {
@@ -219,6 +206,21 @@ public class ItemYoton extends ElementsNarutomodMod.ModElement {
 			public boolean createJutsu(ItemStack stack, EntityLivingBase entity, float power) {
 				entity.world.spawnEntity(new EntityBiggerMe(entity, power));
 				return true;
+			}
+
+			@Override
+			public float getBasePower() {
+				return 2.0f;
+			}
+	
+			@Override
+			public float getPowerupDelay() {
+				return 5.0f;
+			}
+	
+			@Override
+			public float getMaxPower() {
+				return 10.0f;
 			}
 		}
 	}

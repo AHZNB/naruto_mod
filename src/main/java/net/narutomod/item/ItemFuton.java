@@ -94,38 +94,6 @@ public class ItemFuton extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
-		protected float getMaxPower(ItemStack stack, EntityLivingBase entity) {
-			ItemJutsu.JutsuEnum jutsu = this.getCurrentJutsu(stack);
-			float f = super.getMaxPower(stack, entity);
-			if (jutsu == RASENSHURIKEN) {
-				return Math.min(f, 2.0f);
-			} else if (jutsu == VACUUMS) {
-				return Math.min(f, 50.0f);
-			} else if (jutsu == BIGBLOW) {
-				return Math.min(f, EntityFutonGreatBreakthrough.EC.MAX_RANGE);
-			}
-			return f;
-		}
-
-		@Override
-		protected float getPower(ItemStack stack, EntityLivingBase entity, int timeLeft) {
-			ItemJutsu.JutsuEnum jutsu = this.getCurrentJutsu(stack);
-			if (jutsu == RASENSHURIKEN) {
-				//float f = entity instanceof EntityPlayer ? 0.0334f * ((EntityPlayer)entity).experienceLevel : 1;
-				//f *= Math.min(0.01f * (this.getMaxUseDuration() - timeLeft), 1f);
-				//return Math.min(f, this.getMaxPower(stack, entity));
-				return this.getPower(stack, entity, timeLeft, 0f, 300f);
-			} else if (jutsu == VACUUMS) {
-				return this.getPower(stack, entity, timeLeft, 0f, 20f);
-				//return Math.min((float)(this.getMaxUseDuration() - timeLeft) / 5f, this.getMaxPower(stack, entity));
-			} else if (jutsu == BIGBLOW) {
-				return this.getPower(stack, entity, timeLeft, 5f, 20f);
-				//return Math.min(5f + (float)(this.getMaxUseDuration() - timeLeft) / 10f, this.getMaxPower(stack, entity));
-			}
-			return 1f;
-		}
-
-		@Override
 		public void onUpdate(ItemStack itemstack, World world, Entity entity, int par4, boolean par5) {
 			super.onUpdate(itemstack, world, entity, par4, par5);
 			if (!world.isRemote && entity instanceof EntityPlayer && entity.ticksExisted % 10 == 3) {

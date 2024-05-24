@@ -73,8 +73,8 @@ public class ItemSenjutsu extends ElementsNarutomodMod.ModElement {
 	private static final String SAGEMODEACTIVATEDKEY = "SageModeActivated";
 	private static final String SAGECHAKRADEPLETIONAMOUNT = "SageChakraDepletionAmount";
 	public static final ItemJutsu.JutsuEnum SAGEMODE = new ItemJutsu.JutsuEnum(0, "tooltip.senjutsu.sagemode", 'S', 10d, new SageMode());
-	public static final ItemJutsu.JutsuEnum RASENGAN = new ItemJutsu.JutsuEnum(1, "tooltip.senjutsu.rasengan", 'S', ItemNinjutsu.RASENGAN.chakraUsage, new EntityRasengan.EC.Jutsu());
-	public static final ItemJutsu.JutsuEnum RASENSHURIKEN = new ItemJutsu.JutsuEnum(2, "tooltip.senjutsu.rasenshuriken", 'S', ItemFuton.RASENSHURIKEN.chakraUsage, new EntityRasenshuriken.EC.Jutsu());
+	public static final ItemJutsu.JutsuEnum RASENGAN = new ItemJutsu.JutsuEnum(1, "tooltip.senjutsu.rasengan", 'S', ItemNinjutsu.RASENGAN.chakraUsage, new EntityRasengan.EC.SageModeVariant());
+	public static final ItemJutsu.JutsuEnum RASENSHURIKEN = new ItemJutsu.JutsuEnum(2, "tooltip.senjutsu.rasenshuriken", 'S', ItemFuton.RASENSHURIKEN.chakraUsage, new EntityRasenshuriken.EC.SageModeVairant());
 	public static final ItemJutsu.JutsuEnum WOODBUDDHA = new ItemJutsu.JutsuEnum(3, "buddha_1000", 'S', 5000d, new EntityBuddha1000.EC.Jutsu());
 	public static final ItemJutsu.JutsuEnum SNAKE8H = new ItemJutsu.JutsuEnum(4, "snake_8_heads", 'S', 3000d, new EntitySnake8Heads.EC.Jutsu());
 	private static final Random RAND = new Random();
@@ -134,7 +134,7 @@ public class ItemSenjutsu extends ElementsNarutomodMod.ModElement {
 			return stack.hasTagCompound() ? Type.getTypeFromId(stack.getTagCompound().getInteger(TYPEKEY)) : Type.NONE;
 		}
 
-		@Override
+/*		@Override
 		protected float getMaxPower(ItemStack stack, EntityLivingBase entity) {
 			ItemJutsu.JutsuEnum jutsu = this.getCurrentJutsu(stack);
 			float f = super.getMaxPower(stack, entity);
@@ -153,12 +153,11 @@ public class ItemSenjutsu extends ElementsNarutomodMod.ModElement {
 				return this.getPower(stack, entity, timeLeft, 2.9f, 200f);
 			} else if (jutsu == RASENSHURIKEN) {
 				return this.getPower(stack, entity, timeLeft, 1.9f, 300f);
-			} else if (jutsu == SAGEMODE) {
-				return this.getPower(stack, entity, timeLeft, 0f, 20f);
+			} else {
+				return super.getPower(stack, entity, timeLeft);
 			}
-			return 1f;
 		}
-
+*/
 		@Override
 		public void onUpdate(ItemStack itemstack, World world, Entity entity, int par4, boolean par5) {
 			super.onUpdate(itemstack, world, entity, par4, par5);
@@ -402,6 +401,21 @@ public class ItemSenjutsu extends ElementsNarutomodMod.ModElement {
 		@Override
 		public boolean isActivated(ItemStack stack) {
 			return isSageModeActivated(stack);
+		}
+
+		@Override
+		public float getBasePower() {
+			return 0.0f;
+		}
+	
+		@Override
+		public float getPowerupDelay() {
+			return 20.0f;
+		}
+	
+		@Override
+		public float getMaxPower() {
+			return 100.0f;
 		}
 	}
 

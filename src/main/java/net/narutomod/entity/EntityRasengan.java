@@ -278,6 +278,39 @@ public class EntityRasengan extends ElementsNarutomodMod.ModElement {
 			public float getPower(ItemStack stack) {
 				return stack.hasTagCompound() ? stack.getTagCompound().getFloat("RasenganSize") : 0.0f;
 			}
+
+			@Override
+			public float getBasePower() {
+				return 0.0f;
+			}
+	
+			@Override
+			public float getPowerupDelay() {
+				return 200.0f;
+			}
+	
+			@Override
+			public float getMaxPower() {
+				return 3.0f;
+			}
+		}
+
+		public static class SageModeVariant extends Jutsu {			
+			@Override
+			public float getBasePower() {
+				return 2.9f;
+			}
+	
+			@Override
+			public float getPowerupDelay() {
+				return 200.0f;
+			}
+	
+			@Override
+			public float getMaxPower() {
+				return 6.0f;
+			}
+
 		}
 	}
 

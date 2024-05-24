@@ -5,6 +5,7 @@ Jutsus:
  - tweaked susanoo transparency
  - fixed rinnegan owner giving limbo or amenotejikara to other player's ninjutsu
  - fixed tenseibyakugan losing tensei chakra mode
+ - fixed 80 gods vacuum fist usable without any jutsuXP
 
 Entities:
  - re-textured kisame's face

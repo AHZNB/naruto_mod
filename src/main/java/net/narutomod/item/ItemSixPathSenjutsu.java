@@ -74,26 +74,6 @@ public class ItemSixPathSenjutsu extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
-		protected float getMaxPower(ItemStack stack, EntityLivingBase entity) {
-			if (this.getCurrentJutsu(stack) == LASER) {
-				return 10.0f;
-			} else if (this.getCurrentJutsu(stack) == THUNDER) {
-				return 6.0f;
-			}
-			return super.getMaxPower(stack, entity);
-		}
-
-		@Override
-		protected float getPower(ItemStack stack, EntityLivingBase entity, int timeLeft) {
-			if (this.getCurrentJutsu(stack) == THUNDER) {
-				return this.getPower(stack, entity, timeLeft, 1f, 80f);
-			} else if (this.getCurrentJutsu(stack) == LASER) {
-				return this.getPower(stack, entity, timeLeft, 1f, 50f);
-			}
-			return 1f;
-		}
-
-		@Override
 		public void onUpdate(ItemStack itemstack, World world, Entity entity, int par4, boolean par5) {
 			super.onUpdate(itemstack, world, entity, par4, par5);
 			if (!itemstack.hasTagCompound()) {

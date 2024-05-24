@@ -97,45 +97,6 @@ public class ItemDoton extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
-		protected float getPower(ItemStack stack, EntityLivingBase entity, int timeLeft) {
-			float base = 2f;
-			ItemJutsu.JutsuEnum jutsu = this.getCurrentJutsu(stack);
-			if (jutsu == EARTHWALL) {
-				return this.getPower(stack, entity, timeLeft, base, 15f);
-				//return Math.min(base + (float)(this.getMaxUseDuration() - timeLeft) / 10, this.getMaxPower(stack, entity));
-			} else if (jutsu == SANDWICH) {
-				return this.getPower(stack, entity, timeLeft, base, 150f);
-				//return Math.min(base + (float)(this.getMaxUseDuration() - timeLeft) / 50, this.getMaxPower(stack, entity));
-			} else if (jutsu == SWAMPPIT) {
-				return this.getPower(stack, entity, timeLeft, 1f, 100f);
-				//return MathHelper.floor(Math.min(1f + (float)(this.getMaxUseDuration() - timeLeft) / 20, this.getMaxPower(stack, entity)));
-			} else if (jutsu == SPEARS) {
-				return this.getPower(stack, entity, timeLeft, 0.5f, 20f);
-			} else if (jutsu == GOLEM) {
-				return this.getPower(stack, entity, timeLeft, 0.0f, 150f);
-			}
-			return base;
-		}
-
-		@Override
-		protected float getMaxPower(ItemStack stack, EntityLivingBase entity) {
-			float f = super.getMaxPower(stack, entity);
-			ItemJutsu.JutsuEnum jutsu = this.getCurrentJutsu(stack);
-			if (jutsu == EARTHWALL) {
-				return Math.min(f, 50f);
-			} else if (jutsu == SANDWICH) {
-				return Math.min(f, 20f);
-			} else if (jutsu == GOLEM) {
-				return Math.min(f, 5f);
-			} else if (jutsu == SWAMPPIT) {
-				return Math.min(f, 30f);
-			} else if (jutsu == SPEARS) {
-				return Math.min(f, 100f);
-			}
-			return f;
-		}
-
-		@Override
 		public void onUsingTick(ItemStack stack, EntityLivingBase player, int count) {
 			if (this.getCurrentJutsu(stack) != HIDINGINROCK) {
 				super.onUsingTick(stack, player, count);
@@ -451,6 +412,21 @@ public class ItemDoton extends ElementsNarutomodMod.ModElement {
 					}
 				}
 				return false;
+			}
+
+			@Override
+			public float getBasePower() {
+				return 2.0f;
+			}
+	
+			@Override
+			public float getPowerupDelay() {
+				return 15.0f;
+			}
+	
+			@Override
+			public float getMaxPower() {
+				return 50.0f;
 			}
 		}
 	}

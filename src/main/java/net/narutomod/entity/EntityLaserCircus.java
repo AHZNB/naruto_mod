@@ -138,6 +138,16 @@ public class EntityLaserCircus extends ElementsNarutomodMod.ModElement {
 				entity.world.spawnEntity(new EC(entity, power, stack));
 				return true;
 			}
+
+			@Override
+			public float getBasePower() {
+				return 0.1f;
+			}
+	
+			@Override
+			public float getPowerupDelay() {
+				return 50.0f;
+			}
 		}
 	}
 

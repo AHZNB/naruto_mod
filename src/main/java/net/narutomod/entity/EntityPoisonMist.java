@@ -127,6 +127,21 @@ public class EntityPoisonMist extends ElementsNarutomodMod.ModElement {
 				entity.world.spawnEntity(new EC(entity, power));
 				return true;
 			}
+
+			@Override
+			public float getBasePower() {
+				return 5.0f;
+			}
+	
+			@Override
+			public float getPowerupDelay() {
+				return 15.0f;
+			}
+	
+			@Override
+			public float getMaxPower() {
+				return 35.0f;
+			}
 		}
 	}
 }

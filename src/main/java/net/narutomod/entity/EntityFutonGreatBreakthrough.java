@@ -137,6 +137,21 @@ public class EntityFutonGreatBreakthrough extends ElementsNarutomodMod.ModElemen
 				entity.world.spawnEntity(new EC(entity, power));
 				return true;
 			}
+
+			@Override
+			public float getBasePower() {
+				return 5.0f;
+			}
+	
+			@Override
+			public float getPowerupDelay() {
+				return 20.0f;
+			}
+	
+			@Override
+			public float getMaxPower() {
+				return EC.MAX_RANGE;
+			}
 		}
 	}
 }

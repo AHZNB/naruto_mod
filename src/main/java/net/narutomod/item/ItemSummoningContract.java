@@ -119,20 +119,6 @@ public class ItemSummoningContract extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
-		protected float getPower(ItemStack stack, EntityLivingBase entity, int timeLeft) {
-			ItemJutsu.JutsuEnum jutsu = this.getCurrentJutsu(stack);
-			return jutsu == SUMMONENMA ? this.getPower(stack, entity, timeLeft, 0.0f, 200)
-			 : this.getPower(stack, entity, timeLeft, 0.0f, 80);
-		}
-
-		@Override
-		protected float getMaxPower(ItemStack stack, EntityLivingBase entity) {
-			float ret = super.getMaxPower(stack, entity);
-			ItemJutsu.JutsuEnum jutsu = this.getCurrentJutsu(stack);
-			return jutsu == SUMMONENMA ? Math.min(ret, 1.0f) : ret;
-		}
-
-		@Override
 		protected boolean executeJutsu(ItemStack stack, EntityLivingBase entity, float power) {
 			return power >= 0.1f ? super.executeJutsu(stack, entity, power) : false;
 		}
@@ -225,6 +211,16 @@ public class ItemSummoningContract extends ElementsNarutomodMod.ModElement {
 				net.narutomod.event.SpecialEvent.setDelayedSpawnEvent(entity.world, entity1, 0, 0, 0, entity.world.getTotalWorldTime() + 20);
 				return true;
 			}
+
+			@Override
+			public float getBasePower() {
+				return 0.0f;
+			}
+	
+			@Override
+			public float getPowerupDelay() {
+				return 80.0f;
+			}
 		}
 	}
 
@@ -267,6 +263,16 @@ public class ItemSummoningContract extends ElementsNarutomodMod.ModElement {
 				entity1.setLocationAndAngles(entity.posX, entity.posY, entity.posZ, entity.rotationYaw, 0.0f);
 				net.narutomod.event.SpecialEvent.setDelayedSpawnEvent(entity.world, entity1, 0, 0, 0, entity.world.getTotalWorldTime() + 20);
 				return true;
+			}
+
+			@Override
+			public float getBasePower() {
+				return 0.0f;
+			}
+	
+			@Override
+			public float getPowerupDelay() {
+				return 80.0f;
 			}
 		}
 	}

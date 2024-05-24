@@ -111,29 +111,6 @@ public class ItemNinjutsu extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
-		protected float getMaxPower(ItemStack stack, EntityLivingBase entity) {
-			ItemJutsu.JutsuEnum jutsu = this.getCurrentJutsu(stack);
-			float f = super.getMaxPower(stack, entity);
-			if (jutsu == RASENGAN) {
-				return Math.min(f, 3.0f);
-			} else if (jutsu == BUGSWARM) {
-				return Math.min(f, 10.0f);
-			}
-			return f;
-		}
-
-		@Override
-		protected float getPower(ItemStack stack, EntityLivingBase entity, int timeLeft) {
-			ItemJutsu.JutsuEnum jutsu = this.getCurrentJutsu(stack);
-			if (jutsu == RASENGAN) {
-				return this.getPower(stack, entity, timeLeft, 0.0f, 200f);
-			} else if (jutsu == BUGSWARM) {
-				return this.getPower(stack, entity, timeLeft, 0.0f, 100f);
-			}
-			return 1f;
-		}
-
-		@Override
 		public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer entity, EnumHand hand) {
 			ActionResult<ItemStack> ares = super.onItemRightClick(world, entity, hand);
 			ItemStack stack = entity.getHeldItem(hand);

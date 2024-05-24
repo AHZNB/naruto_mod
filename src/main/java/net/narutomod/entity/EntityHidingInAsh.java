@@ -121,6 +121,11 @@ public class EntityHidingInAsh extends ElementsNarutomodMod.ModElement {
 				entity.world.spawnEntity(new EC(entity, power));
 				return true;
 			}
+	
+			@Override
+			public float getPowerupDelay() {
+				return 15.0f;
+			}
 		}
 	}
 }

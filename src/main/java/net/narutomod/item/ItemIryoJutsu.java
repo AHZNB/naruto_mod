@@ -73,24 +73,6 @@ public class ItemIryoJutsu extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
-		protected float getPower(ItemStack stack, EntityLivingBase entity, int timeLeft) {
-			if (this.getCurrentJutsu(stack) == POISONMIST) {
-				return this.getPower(stack, entity, timeLeft, 5f, 15f);
-			}
-			return 1.0f;
-		}
-
-		@Override
-		protected float getMaxPower(ItemStack stack, EntityLivingBase entity) {
-			ItemJutsu.JutsuEnum jutsu = this.getCurrentJutsu(stack);
-			float f = super.getMaxPower(stack, entity);
-			if (jutsu == POISONMIST) {
-				return Math.min(f, 35.0f);
-			}
-			return f;
-		}
-
-		@Override
 		public void onPlayerStoppedUsing(ItemStack stack, World world, EntityLivingBase entity, int timeLeft) {
 			if (!world.isRemote) {
 				float power = this.getPower(stack, entity, timeLeft);

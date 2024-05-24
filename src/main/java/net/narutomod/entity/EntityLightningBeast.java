@@ -242,6 +242,16 @@ public class EntityLightningBeast extends ElementsNarutomodMod.ModElement {
 				}
 				return false;
 			}
+
+			@Override
+			public float getBasePower() {
+				return 4.0f;
+			}
+	
+			@Override
+			public float getPowerupDelay() {
+				return 30.0f;
+			}
 		}
 	}
 

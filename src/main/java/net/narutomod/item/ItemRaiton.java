@@ -81,33 +81,6 @@ public class ItemRaiton extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
-		protected float getPower(ItemStack stack, EntityLivingBase entity, int timeLeft) {
-			ItemJutsu.JutsuEnum jutsu = this.getCurrentJutsu(stack);
-			if (jutsu == CHASINGDOG) {
-				return this.getPower(stack, entity, timeLeft, 4f, 30f);
-			} else if (jutsu == GIAN) {
-				return this.getPower(stack, entity, timeLeft, 1f, 150f);
-			} else if (jutsu == KIRIN) {
-				return this.getPower(stack, entity, timeLeft, 0f, 400f);
-			} else if (jutsu == BLACKPANTHER) {
-				return this.getPower(stack, entity, timeLeft, 0f, 100f);
-			}
-			return 1f;
-		}
-
-		@Override
-		protected float getMaxPower(ItemStack stack, EntityLivingBase entity) {
-			float f = super.getMaxPower(stack, entity);
-			ItemJutsu.JutsuEnum jutsu = this.getCurrentJutsu(stack);
-			if (jutsu == KIRIN) {
-				return Math.min(f, 1.0f);
-			} else if (jutsu == BLACKPANTHER) {
-				return Math.min(f, 5.0f);
-			}
-			return f;
-		}
-
-		@Override
 		public void onUpdate(ItemStack itemstack, World world, Entity entity, int par4, boolean par5) {
 			super.onUpdate(itemstack, world, entity, par4, par5);
 			if (!world.isRemote && entity instanceof EntityPlayer && entity.ticksExisted % 10 == 3) {

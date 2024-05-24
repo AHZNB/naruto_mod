@@ -147,6 +147,16 @@ public class EntityWoodPrison extends ElementsNarutomodMod.ModElement {
 				}
 				return false;
 			}
+
+			@Override
+			public float getPowerupDelay() {
+				return 50.0f;
+			}
+	
+			@Override
+			public float getMaxPower() {
+				return 40.0f;
+			}
 		}
 	}
 }

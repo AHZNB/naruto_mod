@@ -71,14 +71,6 @@ public class ItemRanton extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
-		protected float getPower(ItemStack stack, EntityLivingBase entity, int timeLeft) {
-			if (this.getCurrentJutsu(stack) == LASERCIRCUS) {
-				return this.getPower(stack, entity, timeLeft, 0.1f, 50f);
-			}
-			return 1.0f;
-		}
-
-		@Override
 		public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer entity, EnumHand hand) {
 		 	ItemStack stack = entity.getHeldItem(hand);
 			if (entity.isCreative() || (ProcedureUtils.hasItemInInventory(entity, ItemRaiton.block) 

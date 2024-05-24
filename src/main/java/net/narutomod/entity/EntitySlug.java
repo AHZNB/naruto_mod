@@ -294,6 +294,16 @@ public class EntitySlug extends ElementsNarutomodMod.ModElement {
 			net.narutomod.event.SpecialEvent.setDelayedSpawnEvent(entity.world, entity1, 0, 0, 0, entity.world.getTotalWorldTime() + 20);
 			return true;
 		}
+
+		@Override
+		public float getBasePower() {
+			return 0.0f;
+		}
+	
+		@Override
+		public float getPowerupDelay() {
+			return 80.0f;
+		}
 	}
 
 	@Override
