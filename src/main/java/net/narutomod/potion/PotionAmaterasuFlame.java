@@ -89,5 +89,10 @@ public class PotionAmaterasuFlame extends ElementsNarutomodMod.ModElement {
 		public boolean isReady(int duration, int amplifier) {
 			return true;
 		}
+
+		@Override
+		public java.util.List<net.minecraft.item.ItemStack> getCurativeItems() {
+			return new java.util.ArrayList<net.minecraft.item.ItemStack>();
+		}
 	}
 }

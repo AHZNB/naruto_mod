@@ -52,7 +52,7 @@ public class EntityPuppet3rdKazekage extends ElementsNarutomodMod.ModElement {
 
 	public static class EntityCustom extends EntityPuppet.Base {
 		private static final DataParameter<Boolean> MOUTH_OPEN = EntityDataManager.<Boolean>createKey(EntityCustom.class, DataSerializers.BOOLEAN);
-		public static final float MAXHEALTH = 40.0f;
+		public static final float MAXHEALTH = 60.0f;
 
 		public EntityCustom(World worldIn) {
 			super(worldIn);

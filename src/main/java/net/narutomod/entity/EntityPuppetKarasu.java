@@ -42,7 +42,7 @@ public class EntityPuppetKarasu extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static class EntityCustom extends EntityPuppet.Base implements IRangedAttackMob {
-		public static final float MAXHEALTH = 40.0f;
+		public static final float MAXHEALTH = 60.0f;
 		
 		public EntityCustom(World worldIn) {
 			super(worldIn);

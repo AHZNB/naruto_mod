@@ -852,7 +852,7 @@
       "type": "potion",
       "sortid": 175,
       "compiles": true,
-      "locked_code": false,
+      "locked_code": true,
       "ids": {}
     },
     {

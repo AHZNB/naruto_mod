@@ -345,7 +345,8 @@ public class EntityTruthSeekerBall extends ElementsNarutomodMod.ModElement {
 			//float damage = (radius >= 30) ? Float.MAX_VALUE : (radius * 5);
 			float damage = radius * 10;
 			ProcedureAoeCommand.set(world, x, y, z, 0.0D, radius).exclude(entity).exclude(EntityCustom.class)
-			 .resetHurtResistanceTime().damageEntities(DamageSource.GENERIC.setDamageIsAbsolute(), damage);
+			 .resetHurtResistanceTime().damageEntities(
+			 DamageSource.causeIndirectDamage(this, this.shootingEntity).setDamageIsAbsolute().setDamageBypassesArmor(), damage);
 		}
 
 		@Override

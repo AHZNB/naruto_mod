@@ -6,6 +6,7 @@ Jutsus:
  - fixed rinnegan owner giving limbo or amenotejikara to other player's ninjutsu
  - fixed tenseibyakugan losing tensei chakra mode
  - fixed 80 gods vacuum fist usable without any jutsuXP
+ - amaterasu can't be cured with milk
 
 Entities:
  - re-textured kisame's face
@@ -13,6 +14,7 @@ Entities:
  - all "smart" ninja NPCs can naruto run
  - Might Guy and Iruka wears konoha flak jackets now and has a chance to drop it
  - improved Hirudora model
+ - slightly buffed puppets health
 
 0.3.0-beta ================================================================================
 
