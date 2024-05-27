@@ -118,6 +118,7 @@ public class EntityParticle extends ElementsNarutomodMod.ModElement {
 
 		protected void setScale(float f) {
 			this.dataManager.set(SCALE, Float.valueOf(f));
+			this.setSize(0.2f * f, 0.2f * f);
 		}
 
 		public int getColorInt() {
@@ -154,10 +155,10 @@ public class EntityParticle extends ElementsNarutomodMod.ModElement {
 			return false;
 		}
 
-		@Override
-		public boolean canBeCollidedWith() {
-			return !this.isDead;
-		}
+		//@Override
+		//public boolean canBeCollidedWith() {
+		//	return !this.isDead;
+		//}
 
     	public void move(double x, double y, double z) {
 	        double d0 = y;

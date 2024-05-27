@@ -1033,5 +1033,14 @@
         "stream": false
       }
     ]
+  },
+  "spitbig": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "narutomod:spitbig",
+        "stream": false
+      }
+    ]
   }
 }

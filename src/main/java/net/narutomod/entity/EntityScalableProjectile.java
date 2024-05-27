@@ -346,30 +346,42 @@ public class EntityScalableProjectile extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static RayTraceResult forwardsRaycast(Entity projectile, Vec3d motion, boolean includeEntities, boolean ignoreExcludedEntity, @Nullable Entity excludedEntity) {
+		return forwardsRaycast(projectile, motion, true, includeEntities, ignoreExcludedEntity, excludedEntity);
+	}
+
+	public static RayTraceResult forwardsRaycast(Entity projectile, boolean includeEntities, boolean ignoreExcludedEntity, @Nullable Entity excludedEntity) {
+		return forwardsRaycast(projectile, ProcedureUtils.getMotion(projectile), false, includeEntities, ignoreExcludedEntity, excludedEntity);
+	}
+
+	public static RayTraceResult forwardsRaycast(Entity projectile, Vec3d motion, boolean scaleBlocks, boolean includeEntities, boolean ignoreExcludedEntity, @Nullable Entity excludedEntity) {
 		World world = projectile.world;
 		Vec3d vec3d = new Vec3d(projectile.posX, projectile.posY + (projectile.height / 2.0F), projectile.posZ);
 		Vec3d vec3d2 = vec3d.add(motion);
 		AxisAlignedBB bigAABB = projectile.getEntityBoundingBox().expand(motion.x, motion.y, motion.z).grow(1.0D);
-		double d0 = 0.0D;
-		BlockPos.PooledMutableBlockPos blockpos = BlockPos.PooledMutableBlockPos.retain();
-		EnumFacing facing = null;
 		RayTraceResult raytraceresult = null;
-		for (AxisAlignedBB aabb : world.getCollisionBoxes(null, bigAABB)) {
-			RayTraceResult result = aabb.grow(projectile.width / 2, projectile.height / 2, projectile.width / 2).calculateIntercept(vec3d, vec3d2);
-			if (result != null) {
- 				double d = projectile.getDistanceSq((aabb.minX + aabb.maxX) / 2, (aabb.minY + aabb.maxY) / 2, (aabb.minZ + aabb.maxZ) / 2);
-				if (d < d0 || d0 == 0.0D) {
-					blockpos.setPos(aabb.minX, aabb.minY, aabb.minZ);
-					facing = result.sideHit;
-					d0 = d;
+		double d0 = 0.0D;
+		if (scaleBlocks) {
+			BlockPos.PooledMutableBlockPos blockpos = BlockPos.PooledMutableBlockPos.retain();
+			EnumFacing facing = null;
+			for (AxisAlignedBB aabb : world.getCollisionBoxes(null, bigAABB)) {
+				RayTraceResult result = aabb.grow(projectile.width / 2, projectile.height / 2, projectile.width / 2).calculateIntercept(vec3d, vec3d2);
+				if (result != null) {
+	 				double d = projectile.getDistanceSq((aabb.minX + aabb.maxX) / 2, (aabb.minY + aabb.maxY) / 2, (aabb.minZ + aabb.maxZ) / 2);
+					if (d < d0 || d0 == 0.0D) {
+						blockpos.setPos(aabb.minX, aabb.minY, aabb.minZ);
+						facing = result.sideHit;
+						d0 = d;
+					}
 				}
 			}
+			if (facing != null) {
+				BlockPos pos = blockpos.toImmutable();
+				raytraceresult = new RayTraceResult(new Vec3d(pos), facing, pos);
+			}
+			blockpos.release();
+		} else {
+			raytraceresult = world.rayTraceBlocks(vec3d, vec3d2, false, true, false);
 		}
-		if (facing != null) {
-			BlockPos pos = blockpos.toImmutable();
-			raytraceresult = new RayTraceResult(new Vec3d(pos), facing, pos);
-		}
-		blockpos.release();
 		if (includeEntities) {
 			Entity entity = null;
 			Vec3d hitvec = null;
