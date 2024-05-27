@@ -43,6 +43,7 @@ import net.minecraft.init.SoundEvents;
 import net.narutomod.entity.EntityScalableProjectile;
 import net.narutomod.entity.EntityMeltingJutsu;
 import net.narutomod.entity.EntityLavaChakraMode;
+import net.narutomod.entity.EntityQuicklime;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.creativetab.TabModTab;
 import net.narutomod.Particles;
@@ -60,6 +61,7 @@ public class ItemYooton extends ElementsNarutomodMod.ModElement {
 	public static final ItemJutsu.JutsuEnum ROCKS = new ItemJutsu.JutsuEnum(0, "magmaball", 'S', 200, 40d, new EntityMagmaBall.Jutsu());
 	public static final ItemJutsu.JutsuEnum STREAM = new ItemJutsu.JutsuEnum(1, "melting_jutsu", 'S', 200, 50d, new EntityMeltingJutsu.EC.Jutsu());
 	public static final ItemJutsu.JutsuEnum CHAKRAMODE = new ItemJutsu.JutsuEnum(2, "lava_chakra_mode", 'S', 250, 10d, new EntityLavaChakraMode.EC.Jutsu());
+	public static final ItemJutsu.JutsuEnum QUICKLIME = new ItemJutsu.JutsuEnum(3, "quicklime", 'S', 200, 50d, new EntityQuicklime.EC.Jutsu());
 
 	public ItemYooton(ElementsNarutomodMod instance) {
 		super(instance, 592);
@@ -67,7 +69,7 @@ public class ItemYooton extends ElementsNarutomodMod.ModElement {
 
 	@Override
 	public void initElements() {
-		elements.items.add(() -> new RangedItem(ROCKS, STREAM, CHAKRAMODE));
+		elements.items.add(() -> new RangedItem(ROCKS, STREAM, CHAKRAMODE, QUICKLIME));
 		elements.entities.add(() -> EntityEntryBuilder.create().entity(EntityMagmaBall.class)
 				.id(new ResourceLocation("narutomod", "magmaball"), ENTITYID).name("magmaball").tracker(64, 1, true).build());
 	}
@@ -99,6 +101,7 @@ public class ItemYooton extends ElementsNarutomodMod.ModElement {
 			this.setCreativeTab(TabModTab.tab);
 			this.defaultCooldownMap[ROCKS.index] = 0;
 			this.defaultCooldownMap[STREAM.index] = 0;
+			this.defaultCooldownMap[QUICKLIME.index] = 0;
 		}
 
 		@Override

@@ -7,6 +7,7 @@ Jutsus:
  - fixed tenseibyakugan losing tensei chakra mode
  - fixed 80 gods vacuum fist usable without any jutsuXP
  - amaterasu can't be cured with milk
+ - Adding quicklime jutsu for lava release (WIP)
 
 Entities:
  - re-textured kisame's face

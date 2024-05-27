@@ -223,7 +223,7 @@ public class EntitySlug extends ElementsNarutomodMod.ModElement {
 			vec1 = vec1.normalize();
 			vec = vec.add(this.getLookVec().scale(this.getScale()));
 			for (int i = 0; i < 300; i++) {
-				Vec3d vec2 = vec1.scale(dist * 0.1d * (this.rand.nextDouble() * 0.8d + 0.2d));
+				Vec3d vec2 = vec1.scale(dist * 0.2d * (this.rand.nextDouble() * 0.8d + 0.2d));
 				Particles.spawnParticle(this.world, Particles.Types.ACID_SPIT, vec.x, vec.y, vec.z, 1,
 				 0d, 0d, 0d, vec2.x, vec2.y, vec2.z, this.getEntityId());
 			}

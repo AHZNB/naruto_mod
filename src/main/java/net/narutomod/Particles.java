@@ -80,6 +80,7 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 		Minecraft.getMinecraft().effectRenderer.registerParticle(Types.PORTAL_SPIRAL.getID(), new SpiralPortal.Factory());
 		Minecraft.getMinecraft().effectRenderer.registerParticle(Types.EXPANDING_SPHERE.getID(), new ExpandingSphere.Factory());
 		Minecraft.getMinecraft().effectRenderer.registerParticle(Types.SEAL_FORMULA.getID(), new SealFormula.Factory());
+		Minecraft.getMinecraft().effectRenderer.registerParticle(Types.SPIT.getID(), new Spit.Factory());
 		Minecraft.getMinecraft().effectRenderer.registerParticle(Types.ACID_SPIT.getID(), new AcidSpit.Factory());
 		Minecraft.getMinecraft().effectRenderer.registerParticle(Types.WHIRLPOOL.getID(), new Whirlpool.Factory());
 		Minecraft.getMinecraft().effectRenderer.registerParticle(Types.SONIC_BOOM.getID(), new SonicBoom.Factory());
@@ -923,41 +924,72 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 	}
 
 	@SideOnly(Side.CLIENT)
-	public static class AcidSpit extends Smoke {
-		private static int PARTICLE_ID = -1;
-		private final int id = PARTICLE_ID--;
+	public static class Spit extends Smoke {
 		private final Entity excludedEntity;
-		private EntityLivingBase affectedEntity;
+		protected EntityLivingBase affectedEntity;
 		private double heightOffset;
 
-		protected AcidSpit(World worldIn, double xCoordIn, double yCoordIn, double zCoordIn, 
-		 double xSpeedIn, double ySpeedIn, double zSpeedIn, int excludeEntityId, int color) {
-			super(worldIn, xCoordIn, yCoordIn, zCoordIn, xSpeedIn, ySpeedIn, zSpeedIn, color, 0.5f + Particles.rand.nextFloat() * 4.5f, 0, 0, -1, -0.005f);
-			this.excludedEntity = worldIn.getEntityByID(excludeEntityId);
+		protected Spit(World worldIn, double xCoordIn, double yCoordIn, double zCoordIn, 
+		 double xSpeedIn, double ySpeedIn, double zSpeedIn, int color, float scale, int excludedEntityId) {
+			super(worldIn, xCoordIn, yCoordIn, zCoordIn, xSpeedIn, ySpeedIn, zSpeedIn, color, scale, 0, 0, -1, -0.05f);
+			this.excludedEntity = worldIn.getEntityByID(excludedEntityId);
 			this.setSize(this.width * this.particleScale, this.height * this.particleScale);
 		}
 
 		@Override
 		public void onUpdate() {
 			super.onUpdate();
-			if (this.isAlive()) {
-				if (this.affectedEntity == null) {
-					for (EntityLivingBase entity : this.world.getEntitiesWithinAABB(EntityLivingBase.class, this.getBoundingBox())) {
-						if (!entity.equals(this.excludedEntity)) {
-							NarutomodMod.PACKET_HANDLER.sendToServer(new Message(entity.getEntityId(), this.particleMaxAge - this.particleAge));
-							this.affectedEntity = entity;
-							this.heightOffset = this.posY - entity.posY;
-						}
+			if (this.onGround) {
+				this.motionX *= 0.6D;
+				this.motionZ *= 0.6D;
+			}
+			if (this.affectedEntity == null) {
+				for (EntityLivingBase entity : this.world.getEntitiesWithinAABB(EntityLivingBase.class, this.getBoundingBox())) {
+					if (!entity.equals(this.excludedEntity)) {
+						this.affectedEntity = entity;
+						this.heightOffset = this.posY - entity.posY;
 					}
-				} else {
-					this.setPosition(this.affectedEntity.posX, this.affectedEntity.posY + this.heightOffset, this.affectedEntity.posZ);
-					this.heightOffset += this.floatMotionY;
 				}
-				BlockPos pos = ProcedureUtils.getNearestNonAirBlock(this.world, this.getBoundingBox().grow(0.01d),
-				 new BlockPos(this.posX, this.posY, this.posZ), 50f, true);
-				if (pos != null) {
-					Minecraft.getMinecraft().renderGlobal.sendBlockBreakProgress(this.id, pos, 5);
-				}
+			} else {
+				this.setPosition(this.affectedEntity.posX, this.affectedEntity.posY + this.heightOffset, this.affectedEntity.posZ);
+				this.heightOffset -= 0.005f;
+			}
+		}
+
+		@SideOnly(Side.CLIENT)
+		public static class Factory implements IParticleFactory {
+			public Particle createParticle(int particleID, World worldIn, double xCoordIn, double yCoordIn, double zCoordIn, double xSpeedIn,
+					double ySpeedIn, double zSpeedIn, int... parameters) {
+				int arg2 = (parameters.length > 2) ? parameters[2] : -1;
+				float arg1 = (parameters.length > 1) ? (float)parameters[1] / 10.0f : 1.0f;
+				int arg0 = (parameters.length > 0) ? parameters[0] : 0x80000000;
+				return new Spit(worldIn, xCoordIn, yCoordIn, zCoordIn, xSpeedIn, ySpeedIn, zSpeedIn, arg0, arg1, arg2);
+			}
+		}
+	}
+
+	@SideOnly(Side.CLIENT)
+	public static class AcidSpit extends Spit {
+		private static int PARTICLE_ID = -1;
+		private final int id = PARTICLE_ID--;
+		private boolean affected;
+
+		protected AcidSpit(World worldIn, double xCoordIn, double yCoordIn, double zCoordIn, 
+		 double xSpeedIn, double ySpeedIn, double zSpeedIn, int excludeEntityId, int color) {
+			super(worldIn, xCoordIn, yCoordIn, zCoordIn, xSpeedIn, ySpeedIn, zSpeedIn, color, 0.5f + Particles.rand.nextFloat() * 4.5f, excludeEntityId);
+		}
+
+		@Override
+		public void onUpdate() {
+			super.onUpdate();
+			if (this.affectedEntity != null && !this.affected) {
+				NarutomodMod.PACKET_HANDLER.sendToServer(new Message(this.affectedEntity.getEntityId(), this.particleMaxAge - this.particleAge));
+				this.affected = true;
+			}
+			BlockPos pos = ProcedureUtils.getNearestNonAirBlock(this.world, this.getBoundingBox().grow(0.01d),
+			 new BlockPos(this.posX, this.posY, this.posZ), 50f, true);
+			if (pos != null) {
+				Minecraft.getMinecraft().renderGlobal.sendBlockBreakProgress(this.id, pos, 5);
 			}
 		}
 
@@ -1486,7 +1518,8 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 		BLOCK_DUST("block_dust", 54678412, 2),
 		SONIC_BOOM("sonic_boom", 54678413, 4),
 		SAND("sand_colored", 54678414, 4),
-		WATER_SPLASH("water_splash", 54678415, 1);
+		WATER_SPLASH("water_splash", 54678415, 1),
+		SPIT("spit", 54678416, 3);
 		
 		private final String particleName;
 		private final int particleID;
