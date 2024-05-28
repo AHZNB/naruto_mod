@@ -234,6 +234,7 @@ public class ItemNinjaArmor extends ElementsNarutomodMod.ModElement {
 					setRotationAngle(neckwear, 0.0873F, 0.0F, 0.0F);
 					neckwear.cubeList.add(new ModelBox(neckwear, 32, 6, -4.0F, -0.25F, -3.0F, 8, 2, 6, 0.6F, false));
 				case OBITOWAR:
+				case SAKURA_S:
 					vest.addChild(vestGroup);
 					ModelRenderer bone = new ModelRenderer(this);
 					bone.setRotationPoint(0.0F, 10.75F, -2.35F);
@@ -267,7 +268,11 @@ public class ItemNinjaArmor extends ElementsNarutomodMod.ModElement {
 			rightArmVestLayer = new ModelRenderer(this);
 			rightArmVestLayer.setRotationPoint(5.0F, 22.0F, 0.0F);
 			bipedRightArm.addChild(rightArmVestLayer);
-			rightArmVestLayer.cubeList.add(new ModelBox(rightArmVestLayer, 48, 48, -8.0F, -24.0F, -2.0F, 4, 12, 4, 0.35F, true));
+			if (type == Type.SAKURA_S) {
+				rightArmVestLayer.cubeList.add(new ModelBox(rightArmVestLayer, 49, 48, -7.0F, -24.0F, -2.0F, 3, 12, 4, 0.35F, true));
+			} else {
+				rightArmVestLayer.cubeList.add(new ModelBox(rightArmVestLayer, 48, 48, -8.0F, -24.0F, -2.0F, 4, 12, 4, 0.35F, true));
+			}
 
 			rightShoulder = new ModelRenderer(this);
 			if (type == Type.SUNA || type == Type.KIRI || type == Type.WAR1 || type == Type.SAMURAI) {
@@ -309,7 +314,11 @@ public class ItemNinjaArmor extends ElementsNarutomodMod.ModElement {
 			leftArmVestLayer = new ModelRenderer(this);
 			leftArmVestLayer.setRotationPoint(1.0F, 4.0F, 0.0F);
 			bipedLeftArm.addChild(leftArmVestLayer);
-			leftArmVestLayer.cubeList.add(new ModelBox(leftArmVestLayer, 48, 48, -2.0F, -6.0F, -2.0F, 4, 12, 4, 0.35F, false));
+			if (type == Type.SAKURA_S) {
+				leftArmVestLayer.cubeList.add(new ModelBox(leftArmVestLayer, 49, 48, -2.0F, -6.0F, -2.0F, 3, 12, 4, 0.35F, false));
+			} else {
+				leftArmVestLayer.cubeList.add(new ModelBox(leftArmVestLayer, 48, 48, -2.0F, -6.0F, -2.0F, 4, 12, 4, 0.35F, false));
+			}
 	
 			leftShoulder = new ModelRenderer(this);
 			if (type == Type.SUNA || type == Type.KIRI || type == Type.WAR1 || type == Type.SAMURAI) {
@@ -471,6 +480,7 @@ public class ItemNinjaArmor extends ElementsNarutomodMod.ModElement {
 		SAMURAI,
 		OTO,
 		OBITOWAR,
+		SAKURA_S,
 		OTHER
 	}
 }

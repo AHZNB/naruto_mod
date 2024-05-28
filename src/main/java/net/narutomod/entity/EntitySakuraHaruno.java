@@ -50,6 +50,7 @@ import net.narutomod.item.ItemScrollEnhancedStrength;
 import net.narutomod.item.ItemMilitaryRationsPill;
 import net.narutomod.item.ItemMilitaryRationsPillGold;
 import net.narutomod.item.ItemIryoJutsu;
+import net.narutomod.item.ItemNinjaArmorSakura1;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.potion.PotionChakraEnhancedStrength;
 import net.narutomod.ElementsNarutomodMod;
@@ -134,6 +135,8 @@ public class EntitySakuraHaruno extends ElementsNarutomodMod.ModElement {
 			item.enableJutsu(iryoJutsu, ItemIryoJutsu.HEALING, true);
 			item.addCurrentJutsuXp(iryoJutsu, item.getCurrentJutsuRequiredXp(iryoJutsu));
 			this.setItemToInventory(iryoJutsu, 0);
+			this.setItemStackToSlot(EntityEquipmentSlot.CHEST, new ItemStack(ItemNinjaArmorSakura1.body, 1));
+			this.setItemStackToSlot(EntityEquipmentSlot.LEGS, new ItemStack(ItemNinjaArmorSakura1.legs, 1));
 			return livingdata;
 		}
 

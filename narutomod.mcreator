@@ -1,8 +1,8 @@
 {
   "id_map": {
-    "GUI": 64,
+    "DIMENSION": 13,
     "ENTITY": 435,
-    "DIMENSION": 13
+    "GUI": 64
   },
   "mod_elements": [
     {
@@ -7232,6 +7232,21 @@
         "1": 435
       },
       "registry_name": "quicklime"
+    },
+    {
+      "name": "NinjaArmorSakura1",
+      "type": "armor",
+      "sortid": 861,
+      "compiles": true,
+      "locked_code": true,
+      "ids": {},
+      "registry_name": "ninja_armor_sakura_1",
+      "metadata": {
+        "eh": false,
+        "el": true,
+        "eb": false,
+        "ec": true
+      }
     }
   ],
   "variable_elements": [
@@ -8204,16 +8219,16 @@
   ],
   "language_map": {
     "en_us": {
-      "entity.crow.name": "Crow",
       "item.kiba_blades.name": "Kiba Blades",
+      "entity.crow.name": "Crow",
       "chattext.gedomazo.cantspawn": "Can\u0027t summon Gedo Mazo, it\u0027s already in the world",
       "entity.tenten.name": "Tenten",
       "item.futton.name": "Boil Release",
       "item.scroll_water_prison.name": "Water Release - Water Prison jutsu",
       "subtitles.sando_no_jutsi": "",
       "item.steam_armorlegs.name": "Steam Armor Leggings",
-      "item.futon.name": "Wind Release",
       "subtitles.sando_no_jutsu": "",
+      "item.futon.name": "Wind Release",
       "subtitles.laser": "",
       "item.ryo_100.name": "100 Ryo",
       "tooltip.samehada.general": "Samehada is a sentient sword utilised by the Seven Ninja Swordsmen of the Mist and is regarded as the most terrifying out of all the Seven Swordsmen\u0027s blades.",
@@ -8221,10 +8236,10 @@
       "item.shuriken.name": "Shuriken",
       "entity.cellular_activation.name": "Cellular Activation",
       "entity.entityasakujaku.name": "Asakujaku (Morning Peacock)",
-      "tooltip.kekkeimora.expansivetsb": "Expansive Truth Seeking Ball",
       "item.scroll_water_dragon.name": "Water Release - Water Dragon Bullet",
-      "entity.tailed_beast.name": "Tailed Beast",
+      "tooltip.kekkeimora.expansivetsb": "Expansive Truth Seeking Ball",
       "item.gunbai.name": "Gunbai",
+      "entity.tailed_beast.name": "Tailed Beast",
       "entity.itachi.name": "Itachi Uchiha",
       "item.scroll_lightning_panther.name": "Lightning Release: Black Panther",
       "item.clothes_raikagehelmet.name": "Raikage Hat",
@@ -8445,6 +8460,7 @@
       "advancements.ninjaachievement.title": "Shinobi",
       "potion.effect.heaviness": "Heaviness",
       "advancements.hyoton_acquired.descr": "Ice Release is a nature transformation kekkei genkai, a combination of water and wind.",
+      "item.ninja_armor_sakura_1body.name": "Sakura Vest",
       "item.yooton.name": "Lava Release",
       "entity.pretashield.name": "Preta Shield",
       "entity.sand_bind.name": "Sand Binding / [Left click] Sand Funeral",
@@ -8525,6 +8541,7 @@
       "subtitles.spitbig": "",
       "advancements.shakuton_acquired.descr": "Scorch Release is a nature transformation kekkei genkai, a combination of fire and wind.",
       "lingering_potion.effect.paralysis": "Lingering Paralysis",
+      "item.ninja_armor_sakura_1legs.name": "Sakura Leggings",
       "advancements.ninjaachievement.descr": "You may now begin your ninja training!",
       "advancements.hyoton_acquired.title": "Ice Release Acquired",
       "item.yagura_staff.name": "Yagura Staff",
@@ -8672,6 +8689,7 @@
       "item.ninja_armor_konohabody.name": "Flak Jacket (Konoha)",
       "item.scroll_kirin.name": "Lightning Release - Kirin",
       "entity.five_tails.name": "Kokuo",
+      "item.ninja_armor_sakura_1helmet.name": "Ninja Armor Sakura 1 Helmet",
       "item.eightgates.name": "Eight Gates Release",
       "tooltip.sharingan.descr": "50% chance to evade attacks",
       "item.ninja_armor_kiriboots.name": "Ninja Boots (Kirigakure)",
@@ -8835,6 +8853,7 @@
       "item.kamuidimension.name": "Kamui Dimension Portal Igniter",
       "item.iryo_jutsu.name": "Medical Ninjutsu",
       "item.mask_anbu_1helmet.name": "Mask Anbu",
+      "item.ninja_armor_sakura_1boots.name": "Ninja Armor Sakura 1 Boots",
       "entity.sand_gathering.name": "Sand Gathering",
       "advancements.rinneganawakened.descr": "It is said that in times of disorder, one who wields the Rinnegan is sent down from the heavens to become either a \"God of Creation\" who will calm the world or a \"God of Destruction\" who will reduce everything to nothingness.",
       "tipped_arrow.effect.heaviness": "Arrow of Heaviness",

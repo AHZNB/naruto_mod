@@ -9,11 +9,15 @@ Jutsus:
  - amaterasu can't be cured with milk
  - Add quicklime jutsu for lava release (paralyzes target for 10s)
 
+Items:
+ - added Sakura shippuden clothing and leggings
+
 Entities:
  - re-textured kisame's face
  - fix remaining server crashes due to "NoClassDefFoundError"
  - all "smart" ninja NPCs can naruto run
  - Might Guy and Iruka wears konoha flak jackets now and has a chance to drop it
+ - Sakura wears Sakura clothing and leggings now and has a chance to drop it
  - improved Hirudora model
  - slightly buffed puppets health
 

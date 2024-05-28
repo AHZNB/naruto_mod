@@ -126,14 +126,14 @@ public class EntityQuicklime extends ElementsNarutomodMod.ModElement {
 		}
 
 		public static class Jutsu implements ItemJutsu.IJutsuCallback {
-			private final float basePower = 20.0f;
+			private final float baseDamage = 20.0f;
 			@Override
 			public boolean createJutsu(ItemStack stack, EntityLivingBase entityIn, float power) {
 				if (stack.getItem() instanceof ItemYooton.RangedItem) {
 					Vec3d vec = entityIn.getPositionEyes(1.0f);
 					Vec3d vec1 = entityIn.getLookVec().scale(2.0d);
 					power = 1.0f / ((ItemYooton.RangedItem)stack.getItem()).getCurrentJutsuXpModifier(stack, entityIn);
-					if (entityIn.world.spawnEntity(new EC(entityIn, vec.x, vec.y, vec.z, vec1.x, vec1.y, vec1.z, power * basePower))) {
+					if (entityIn.world.spawnEntity(new EC(entityIn, vec.x, vec.y, vec.z, vec1.x, vec1.y, vec1.z, power * baseDamage))) {
 						entityIn.world.playSound(null, entityIn.posX, entityIn.posY, entityIn.posZ, 
 						 net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:spitbig")),
 						 net.minecraft.util.SoundCategory.NEUTRAL, 1f, 0.8f + entityIn.getRNG().nextFloat() * 0.3f);
