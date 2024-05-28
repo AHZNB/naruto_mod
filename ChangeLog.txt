@@ -10,7 +10,8 @@ Jutsus:
  - Add quicklime jutsu for lava release (paralyzes target for 10s)
 
 Items:
- - added Sakura shippuden clothing and leggings
+ - added Sakura shippuden clothing and leggings (for slim player models only)
+ - added Naruto shippuden jacket and pants
 
 Entities:
  - re-textured kisame's face

@@ -318,6 +318,15 @@ public class ItemNinjaArmor extends ElementsNarutomodMod.ModElement {
 				leftArmVestLayer.cubeList.add(new ModelBox(leftArmVestLayer, 49, 48, -2.0F, -6.0F, -2.0F, 3, 12, 4, 0.35F, false));
 			} else {
 				leftArmVestLayer.cubeList.add(new ModelBox(leftArmVestLayer, 48, 48, -2.0F, -6.0F, -2.0F, 4, 12, 4, 0.35F, false));
+				if (type == Type.NARUTO_S) {
+					ModelRenderer naruto = new ModelRenderer(this);
+					naruto.setRotationPoint(-6.5F, 18.0F, 0.5F);
+					leftArmVestLayer.addChild(naruto);
+					naruto.cubeList.add(new ModelBox(naruto, 40, 17, 8.475F, -20.2F, -1.0F, 1, 2, 1, -0.2F, false));
+					naruto.cubeList.add(new ModelBox(naruto, 36, 16, 8.475F, -24.2F, -2.5F, 1, 3, 1, -0.2F, false));
+					naruto.cubeList.add(new ModelBox(naruto, 36, 16, 8.475F, -24.2F, 0.5F, 1, 3, 1, -0.2F, false));
+					naruto.cubeList.add(new ModelBox(naruto, 34, 48, 9.05F, -24.3F, -2.5F, 0, 5, 4, 0.0F, false));
+				}
 			}
 	
 			leftShoulder = new ModelRenderer(this);
@@ -481,6 +490,7 @@ public class ItemNinjaArmor extends ElementsNarutomodMod.ModElement {
 		OTO,
 		OBITOWAR,
 		SAKURA_S,
+		NARUTO_S,
 		OTHER
 	}
 }

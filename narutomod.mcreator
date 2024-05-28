@@ -1,8 +1,8 @@
 {
   "id_map": {
+    "GUI": 64,
     "DIMENSION": 13,
-    "ENTITY": 435,
-    "GUI": 64
+    "ENTITY": 435
   },
   "mod_elements": [
     {
@@ -7247,6 +7247,21 @@
         "eb": false,
         "ec": true
       }
+    },
+    {
+      "name": "NinjaArmorNarutoS",
+      "type": "armor",
+      "sortid": 862,
+      "compiles": true,
+      "locked_code": true,
+      "ids": {},
+      "registry_name": "ninja_armor_naruto_s",
+      "metadata": {
+        "eh": false,
+        "el": true,
+        "eb": false,
+        "ec": true
+      }
     }
   ],
   "variable_elements": [
@@ -8219,16 +8234,16 @@
   ],
   "language_map": {
     "en_us": {
-      "item.kiba_blades.name": "Kiba Blades",
       "entity.crow.name": "Crow",
+      "item.kiba_blades.name": "Kiba Blades",
       "chattext.gedomazo.cantspawn": "Can\u0027t summon Gedo Mazo, it\u0027s already in the world",
       "entity.tenten.name": "Tenten",
       "item.futton.name": "Boil Release",
       "item.scroll_water_prison.name": "Water Release - Water Prison jutsu",
       "subtitles.sando_no_jutsi": "",
       "item.steam_armorlegs.name": "Steam Armor Leggings",
-      "subtitles.sando_no_jutsu": "",
       "item.futon.name": "Wind Release",
+      "subtitles.sando_no_jutsu": "",
       "subtitles.laser": "",
       "item.ryo_100.name": "100 Ryo",
       "tooltip.samehada.general": "Samehada is a sentient sword utilised by the Seven Ninja Swordsmen of the Mist and is regarded as the most terrifying out of all the Seven Swordsmen\u0027s blades.",
@@ -8236,10 +8251,10 @@
       "item.shuriken.name": "Shuriken",
       "entity.cellular_activation.name": "Cellular Activation",
       "entity.entityasakujaku.name": "Asakujaku (Morning Peacock)",
-      "item.scroll_water_dragon.name": "Water Release - Water Dragon Bullet",
       "tooltip.kekkeimora.expansivetsb": "Expansive Truth Seeking Ball",
-      "item.gunbai.name": "Gunbai",
+      "item.scroll_water_dragon.name": "Water Release - Water Dragon Bullet",
       "entity.tailed_beast.name": "Tailed Beast",
+      "item.gunbai.name": "Gunbai",
       "entity.itachi.name": "Itachi Uchiha",
       "item.scroll_lightning_panther.name": "Lightning Release: Black Panther",
       "item.clothes_raikagehelmet.name": "Raikage Hat",
@@ -8254,6 +8269,7 @@
       "subtitles.chains": "",
       "item.bone_sword.name": "Bone Sword",
       "item.rinneganboots.name": "",
+      "item.ninja_armor_naruto_sbody.name": "Naruto Jacket",
       "chattext.outerpath.alreadyhere": "Unable to summon Ten Tails, it is already here.",
       "entity.gaara.name": "Gaara",
       "item.curryof_life.name": "Curry of Life",
@@ -8766,6 +8782,7 @@
       "item.clothes_mizukagebody.name": "Clothes Mizukage Body",
       "item.bakuton.name": "Explosion Release",
       "entity.renderer_register.name": "Renderer Register",
+      "item.ninja_armor_naruto_sboots.name": "Ninja Armor Naruto S Boots",
       "item.team_scroll.name": "Team Scroll",
       "advancements.bakuton_acquired.descr": "Explosion Release is a nature transformation kekkei genkai, a combination of earth and lightning. Explosion Release users utilise explosive chakra in combat.",
       "entity.toad_summon.name": "Toad summon",
@@ -8808,6 +8825,7 @@
       "item.kusanagi_sword.name": "Kusanagi Sword",
       "itemGroup.tabmodtab": "Naruto",
       "item.scroll_healing.name": "Medical Ninjutsu - Healing jutsu",
+      "item.ninja_armor_naruto_slegs.name": "Naruto Pants",
       "item.totsuka_sword.name": "Totsuka Sword",
       "subtitles.hand_press": "",
       "tooltip.shakuton.scorchkill": "Steam Kill",
@@ -8848,6 +8866,7 @@
       "entity.giant_dog_2h.name": "Giant Dog",
       "tooltip.eightgates.currentxp": "Current XP: %d",
       "item.ninja_armor_anbuhelmet.name": "Ninja Armor Anbu Helmet",
+      "item.ninja_armor_naruto_shelmet.name": "Ninja Armor Naruto S Helmet",
       "item.ninja_armor_iwalegs.name": "Ninja Pants (Iwagakure)",
       "item.ninja_armor_obito_warlegs.name": "Ninja Armor Obito War Leggings",
       "item.kamuidimension.name": "Kamui Dimension Portal Igniter",
