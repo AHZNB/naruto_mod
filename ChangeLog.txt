@@ -18,6 +18,7 @@ Entities:
  - all "smart" ninja NPCs can naruto run
  - Might Guy and Iruka wears konoha flak jackets now and has a chance to drop it
  - Sakura wears Sakura clothing and leggings now and has a chance to drop it
+ - Kisame wears Akatsuki robe now and has a chance to drop it
  - improved Hirudora model
  - slightly buffed puppets health
 
