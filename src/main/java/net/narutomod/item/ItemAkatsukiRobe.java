@@ -4,15 +4,12 @@ package net.narutomod.item;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.common.registry.GameRegistry;
-import net.minecraftforge.common.util.EnumHelper;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 
 import net.minecraft.world.World;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemArmor;
 import net.minecraft.item.Item;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.entity.player.EntityPlayer;
@@ -41,19 +38,13 @@ public class ItemAkatsukiRobe extends ElementsNarutomodMod.ModElement {
 
 	@Override
 	public void initElements() {
-		ItemArmor.ArmorMaterial enuma = EnumHelper.addArmorMaterial("AKATSUKI_ROBE", "narutomod:sasuke_",
-		 100, new int[]{1, 2, 3, 1}, 9, SoundEvents.ITEM_ARMOR_EQUIP_LEATHER, 0f);
-		elements.items.add(() -> new ItemArmor(enuma, 0, EntityEquipmentSlot.HEAD) {
-			@SideOnly(Side.CLIENT)
-			private ModelBiped armorModel;
-
+		elements.items.add(() -> new ItemRobe.Base(EntityEquipmentSlot.HEAD) {
 			@Override
 			@SideOnly(Side.CLIENT)
 			public ModelBiped getArmorModel(EntityLivingBase living, ItemStack stack, EntityEquipmentSlot slot, ModelBiped defaultModel) {
 				if (this.armorModel == null) {
 					this.armorModel = new ModelAkatsukiRobe();
-				}
-
+				}
 				this.armorModel.isSneak = living.isSneaking();
 				this.armorModel.isRiding = living.isRiding();
 				this.armorModel.isChild = living.isChild();
@@ -74,10 +65,7 @@ public class ItemAkatsukiRobe extends ElementsNarutomodMod.ModElement {
 				return "narutomod:textures/robe_akatsuki.png";
 			}
 		}.setUnlocalizedName("akatsuki_robehelmet").setRegistryName("akatsuki_robehelmet").setCreativeTab(TabModTab.tab));
-		elements.items.add(() -> new ItemArmor(enuma, 0, EntityEquipmentSlot.CHEST) {
-			@SideOnly(Side.CLIENT)
-			private ModelBiped armorModel;
-
+		elements.items.add(() -> new ItemRobe.Base(EntityEquipmentSlot.CHEST) {
 			@Override
 			@SideOnly(Side.CLIENT)
 			public ModelBiped getArmorModel(EntityLivingBase living, ItemStack stack, EntityEquipmentSlot slot, ModelBiped defaultModel) {
@@ -108,7 +96,7 @@ public class ItemAkatsukiRobe extends ElementsNarutomodMod.ModElement {
 	// Exported for Minecraft version 1.7 - 1.12
 	// Paste this class into your mod and generate all required imports
 	@SideOnly(Side.CLIENT)
-	public class ModelAkatsukiRobe extends ModelBiped {
+	public class ModelAkatsukiRobe extends ItemRobe.ModelRobe {
 		//private final ModelRenderer bipedHead;
 		private final ModelRenderer Hat;
 		private final ModelRenderer cube_r1;
@@ -131,20 +119,13 @@ public class ItemAkatsukiRobe extends ElementsNarutomodMod.ModElement {
 		private final ModelRenderer Bell_r2;
 		//private final ModelRenderer bipedHeadwear;
 		//private final ModelRenderer bipedBody;
-		private final ModelRenderer bone;
-		private final ModelRenderer bone8;
-		private final ModelRenderer collar;
-		private final ModelRenderer bone6;
-		private final ModelRenderer collar2;
-		private final ModelRenderer bone2;
 		//private final ModelRenderer bipedRightArm;
 		//private final ModelRenderer bipedLeftArm;
 		private ModelBiped wearerModel;
 	
 		public ModelAkatsukiRobe() {
-			textureWidth = 64;
-			textureHeight = 64;
-	
+			super();
+
 			bipedHead = new ModelRenderer(this);
 			bipedHead.setRotationPoint(0.0F, 0.0F, 0.0F);
 				
@@ -265,54 +246,6 @@ public class ItemAkatsukiRobe extends ElementsNarutomodMod.ModElement {
 			bipedHeadwear = new ModelRenderer(this);
 			bipedHeadwear.setRotationPoint(0.0F, 0.0F, 0.0F);
 			bipedHeadwear.cubeList.add(new ModelBox(bipedHeadwear, 32, 0, -4.0F, -8.6F, -4.0F, 8, 8, 8, 2.0F, false));
-	
-			bipedBody = new ModelRenderer(this);
-			bipedBody.setRotationPoint(0.0F, 0.0F, 0.0F);
-			
-	
-			bone = new ModelRenderer(this);
-			bone.setRotationPoint(0.0F, 0.0F, 0.0F);
-			bipedBody.addChild(bone);
-			setRotationAngle(bone, 0.1222F, 0.0F, 0.0F);
-			bone.cubeList.add(new ModelBox(bone, 40, 32, -4.0F, 0.0F, -2.0F, 8, 20, 4, 0.6F, false));
-	
-			bone8 = new ModelRenderer(this);
-			bone8.setRotationPoint(0.0F, 0.0F, 0.0F);
-			bipedBody.addChild(bone8);
-			setRotationAngle(bone8, -0.1222F, 0.0F, 0.0F);
-			bone8.cubeList.add(new ModelBox(bone8, 16, 32, -4.0F, 0.0F, -2.0F, 8, 20, 4, 0.6F, false));
-	
-			collar = new ModelRenderer(this);
-			collar.setRotationPoint(0.0F, 0.0F, -1.8F);
-			bipedBody.addChild(collar);
-			setRotationAngle(collar, -0.2182F, 0.0F, 0.0F);
-			collar.cubeList.add(new ModelBox(collar, 40, 56, -4.0F, -4.0F, 0.0F, 8, 4, 4, 1.5F, false));
-	
-			bone6 = new ModelRenderer(this);
-			bone6.setRotationPoint(0.0F, 0.35F, 3.25F);
-			collar.addChild(bone6);
-			setRotationAngle(bone6, -0.6109F, 0.0F, 0.0F);
-			bone6.cubeList.add(new ModelBox(bone6, 20, 57, -4.0F, -6.0F, -1.0F, 8, 5, 2, 1.5F, false));
-	
-			collar2 = new ModelRenderer(this);
-			collar2.setRotationPoint(0.0F, 0.0F, -1.8F);
-			bipedBody.addChild(collar2);
-			setRotationAngle(collar2, -0.2182F, 0.0F, 0.0F);
-			collar2.cubeList.add(new ModelBox(collar2, 20, 21, -4.0F, -4.0F, 0.0F, 8, 4, 4, 1.4F, false));
-	
-			bone2 = new ModelRenderer(this);
-			bone2.setRotationPoint(0.0F, 0.35F, 3.25F);
-			collar2.addChild(bone2);
-			setRotationAngle(bone2, -0.6109F, 0.0F, 0.0F);
-			bone2.cubeList.add(new ModelBox(bone2, 0, 22, -4.0F, -6.0F, -1.0F, 8, 5, 2, 1.4F, false));
-	
-			bipedRightArm = new ModelRenderer(this);
-			bipedRightArm.setRotationPoint(-5.0F, 2.0F, 0.0F);
-			bipedRightArm.cubeList.add(new ModelBox(bipedRightArm, 0, 32, -3.0F, -2.0F, -2.0F, 4, 12, 4, 0.5F, false));
-	
-			bipedLeftArm = new ModelRenderer(this);
-			bipedLeftArm.setRotationPoint(5.0F, 2.0F, 0.0F);
-			bipedLeftArm.cubeList.add(new ModelBox(bipedLeftArm, 0, 32, -1.0F, -2.0F, -2.0F, 4, 12, 4, 0.5F, true));
 		}
 
 		public void setRotationAngle(ModelRenderer modelRenderer, float x, float y, float z) {

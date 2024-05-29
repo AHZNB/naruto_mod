@@ -12,6 +12,8 @@ Jutsus:
 Items:
  - added Sakura shippuden clothing and leggings (for slim player models only)
  - added Naruto shippuden jacket and pants
+ - added Sound 5 clothing and forehead protector
+ - added Jiraiya jacket, clothing, forehead protector and robe
 
 Entities:
  - re-textured kisame's face
