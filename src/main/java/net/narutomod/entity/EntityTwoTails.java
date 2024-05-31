@@ -175,12 +175,12 @@ public class EntityTwoTails extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public double getMountedYOffset() {
-			return this.isFaceDown() ? 8.0d * 0.0625d * MODELSCALE : (double)this.height + 0.35D;
+			return this.isFaceDown() ? 8.0d * 0.0625d * MODELSCALE : (double)this.height - 0.35D;
 		}
 
 		@Override
 		public void updatePassenger(Entity passenger) {
-			Vec3d vec[] = { new Vec3d(0.25d * MODELSCALE, 0d, 0d) };
+			Vec3d vec[] = { new Vec3d(0.4d * MODELSCALE, 0d, 0d) };
 			if (this.isPassenger(passenger)) {
 				int i = this.getPassengers().indexOf(passenger);
 				Vec3d vec2 = vec[i].rotateYaw(-this.rotationYaw * 0.017453292F - ((float)Math.PI / 2F));
@@ -249,6 +249,16 @@ public class EntityTwoTails extends ElementsNarutomodMod.ModElement {
 			}
 
 			@Override
+			protected void setModelVisibilities(EntityCustom entity) {
+				super.setModelVisibilities(entity);
+				if (this.getMainModel() instanceof ModelTwoTails) {
+					ModelTwoTails model = (ModelTwoTails) this.getMainModel();
+					model.cube_r3.showModel = Minecraft.getMinecraft().getRenderViewEntity().equals(entity.getControllingPassenger())
+					 && this.renderManager.options.thirdPersonView == 0 ? false : true;
+				}
+			}
+
+			@Override
 			protected ResourceLocation getEntityTexture(EntityCustom entity) {
 				return this.texture;
 			}
@@ -287,6 +297,10 @@ public class EntityTwoTails extends ElementsNarutomodMod.ModElement {
 				this.renderModel.setModelAttributes(this.renderer.getMainModel());
 				Minecraft.getMinecraft().entityRenderer.setupFogColor(true);
 				this.renderModel.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale, entitylivingbaseIn);
+				boolean flag = Minecraft.getMinecraft().getRenderViewEntity().equals(entitylivingbaseIn.getControllingPassenger())
+				 && this.renderer.getRenderManager().options.thirdPersonView == 0;
+				this.renderModel.headFlamed.showModel = !flag;
+				this.renderModel.cube_r68.showModel = !flag;
 				this.renderModel.render(entitylivingbaseIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale);
 				Minecraft.getMinecraft().entityRenderer.setupFogColor(false);
 				GlStateManager.enableLighting();

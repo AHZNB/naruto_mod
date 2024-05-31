@@ -76,6 +76,7 @@ import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelBiped;
+import net.minecraft.client.model.ModelQuadruped;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.pathfinding.PathPoint;
@@ -1428,7 +1429,12 @@ System.out.println("====== totalTicks:"+totalTicks+", lastTimeAtPathIndex:"+last
 							&& this.renderManager.options.thirdPersonView == 0) {
 						model.bipedHead.showModel = false;
 						model.bipedHeadwear.showModel = false;
+						model.bipedBody.showModel = false;
 					}
+				} else if (this.getMainModel() instanceof ModelQuadruped) {
+					ModelQuadruped model = (ModelQuadruped) this.getMainModel();
+					model.head.showModel = Minecraft.getMinecraft().getRenderViewEntity().equals(entity.getControllingPassenger())
+					 && this.renderManager.options.thirdPersonView == 0 ? false : true;
 				}
 			}
 		}

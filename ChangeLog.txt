@@ -24,6 +24,7 @@ Entities:
  - Kisame wears Akatsuki robe now and has a chance to drop it
  - improved Hirudora model
  - slightly buffed puppets health
+ - fixed jinchuriki's biju mode visibility bug
 
 0.3.0-beta ================================================================================
 
