@@ -328,8 +328,8 @@ public class EntityPretaShield extends ElementsNarutomodMod.ModElement {
 				GlStateManager.matrixMode(5888);
 				GlStateManager.enableLighting();
 				GlStateManager.disableBlend();
-				GlStateManager.disableAlpha();
-				GlStateManager.depthMask(false);
+				//GlStateManager.disableAlpha();
+				//GlStateManager.depthMask(false);
 				GlStateManager.popMatrix();
 			}
 		}

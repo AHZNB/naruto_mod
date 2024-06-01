@@ -243,7 +243,7 @@ public class EntityTenseiBakuGold extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		protected ResourceLocation getEntityTexture(EC entity) {
-			return texture;
+			return this.texture;
 		}
 	}
 }

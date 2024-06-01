@@ -437,7 +437,7 @@ public class EntityHiraishin extends ElementsNarutomodMod.ModElement {
 					GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 					GlStateManager.enableLighting();
 					GlStateManager.disableBlend();
-					GlStateManager.disableAlpha();
+					//GlStateManager.disableAlpha();
 					GlStateManager.enableCull();
 					GlStateManager.popMatrix();
 				}

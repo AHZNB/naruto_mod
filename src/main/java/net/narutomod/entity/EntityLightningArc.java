@@ -403,7 +403,7 @@ public class EntityLightningArc extends ElementsNarutomodMod.ModElement {
 				GlStateManager.enableCull();
 				GlStateManager.disableBlend();
 				GlStateManager.alphaFunc(0x204, 0.1f);
-				GlStateManager.disableAlpha();
+				//GlStateManager.disableAlpha();
 				GlStateManager.enableTexture2D();
 				GlStateManager.popMatrix();
 			}

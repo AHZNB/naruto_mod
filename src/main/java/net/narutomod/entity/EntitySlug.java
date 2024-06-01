@@ -320,7 +320,7 @@ public class EntitySlug extends ElementsNarutomodMod.ModElement {
 
 		@SideOnly(Side.CLIENT)
 		public class RenderCustom extends RenderLiving<EntityCustom> {
-			private final ResourceLocation TEXTURE = new ResourceLocation("narutomod:textures/slug.png");
+			private final ResourceLocation texture = new ResourceLocation("narutomod:textures/slug.png");
 	
 			public RenderCustom(RenderManager renderManagerIn) {
 				super(renderManagerIn, new ModelSlug(), 0.5f);
@@ -336,7 +336,7 @@ public class EntitySlug extends ElementsNarutomodMod.ModElement {
 	
 			@Override
 			protected ResourceLocation getEntityTexture(EntityCustom entity) {
-				return TEXTURE;
+				return this.texture;
 			}
 		}
 	

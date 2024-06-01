@@ -229,7 +229,7 @@ public class EntityHakkeshoKeiten extends ElementsNarutomodMod.ModElement {
 				this.model.render(entity, 0f, 0f, f2, 0f, 0f, 0.0625f);
 				GlStateManager.enableLighting();
 				GlStateManager.enableCull();
-				GlStateManager.disableAlpha();
+				//GlStateManager.disableAlpha();
 				GlStateManager.disableBlend();
 				//GlStateManager.color(1f, 1f, 1f, 1f);
 				GlStateManager.popMatrix();

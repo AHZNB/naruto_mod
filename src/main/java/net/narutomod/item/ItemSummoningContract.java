@@ -88,7 +88,7 @@ public class ItemSummoningContract extends ElementsNarutomodMod.ModElement {
 				}
 				@Override
 				protected ResourceLocation getEntityTexture(EntityGenericToad entity) {
-					return texture;
+					return this.texture;
 				}
 			};
 		});
@@ -98,7 +98,7 @@ public class ItemSummoningContract extends ElementsNarutomodMod.ModElement {
 				private final ResourceLocation texture2 = new ResourceLocation("narutomod:textures/snake_blue.png");
 				@Override
 				protected ResourceLocation getEntityTexture(EntityGenericSnake entity) {
-					return entity.getScale() > 4.0f ? texture2 : texture1;
+					return entity.getScale() > 4.0f ? this.texture2 : this.texture1;
 				}
 			};
 		});

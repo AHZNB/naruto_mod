@@ -215,7 +215,7 @@ public class EntityLaserCircus extends ElementsNarutomodMod.ModElement {
 
 	@SideOnly(Side.CLIENT)
 	public class RenderRing extends Render<EntityRing> {
-		private final ResourceLocation TEXTURE = new ResourceLocation("narutomod:textures/ring_lightning.png");
+		private final ResourceLocation texture = new ResourceLocation("narutomod:textures/ring_lightning.png");
 
 		public RenderRing(RenderManager renderManager) {
 			super(renderManager);
@@ -250,7 +250,7 @@ public class EntityLaserCircus extends ElementsNarutomodMod.ModElement {
 			tessellator.draw();
 			GlStateManager.enableLighting();
 			GlStateManager.disableBlend();
-			GlStateManager.disableAlpha();
+			//GlStateManager.disableAlpha();
 			GlStateManager.enableCull();
 			GlStateManager.disableRescaleNormal();
 			GlStateManager.popMatrix();
@@ -258,7 +258,7 @@ public class EntityLaserCircus extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		protected ResourceLocation getEntityTexture(EntityRing entity) {
-			return TEXTURE;
+			return this.texture;
 		}
 	}
 }

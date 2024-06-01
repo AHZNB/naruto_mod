@@ -62,8 +62,10 @@ public class EntityGaara extends ElementsNarutomodMod.ModElement {
 	public void preInit(FMLPreInitializationEvent event) {
 		RenderingRegistry.registerEntityRenderingHandler(EntityCustom.class, renderManager -> {
 			RenderBiped customRender = new RenderBiped(renderManager, new ModelBiped64(), 0.5f) {
+				private final ResourceLocation texture = new ResourceLocation("narutomod:textures/gaara.png");
+				@Override
 				protected ResourceLocation getEntityTexture(Entity entity) {
-					return new ResourceLocation("narutomod:textures/gaara.png");
+					return this.texture;
 				}
 			};
 			customRender.addLayer(new net.minecraft.client.renderer.entity.layers.LayerBipedArmor(customRender) {

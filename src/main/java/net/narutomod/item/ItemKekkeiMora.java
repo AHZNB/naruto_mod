@@ -283,7 +283,7 @@ public class ItemKekkeiMora extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		protected ResourceLocation getEntityTexture(Entity80Gods entity) {
-			return texture;
+			return this.texture;
 		}
 	}
 

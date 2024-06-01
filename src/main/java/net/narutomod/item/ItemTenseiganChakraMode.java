@@ -260,7 +260,7 @@ public class ItemTenseiganChakraMode extends ElementsNarutomodMod.ModElement {
 
 		@SideOnly(Side.CLIENT)
 		public class RenderCustom extends Render<EntityOrbs> {
-			private final ResourceLocation TEXTURE = new ResourceLocation("narutomod:textures/white_orb.png");
+			private final ResourceLocation texture = new ResourceLocation("narutomod:textures/white_orb.png");
 			private final float red = 0.592F;
 			private final float green = 0.984F;
 			private final float blue = 0.91F;
@@ -311,7 +311,7 @@ public class ItemTenseiganChakraMode extends ElementsNarutomodMod.ModElement {
 
 			@Override
 			protected ResourceLocation getEntityTexture(EntityOrbs entity) {
-				return TEXTURE;
+				return this.texture;
 			}
 		}
 	}

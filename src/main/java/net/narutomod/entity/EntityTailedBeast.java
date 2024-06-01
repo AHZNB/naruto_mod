@@ -1431,7 +1431,7 @@ System.out.println("====== totalTicks:"+totalTicks+", lastTimeAtPathIndex:"+last
 						model.bipedHeadwear.showModel = false;
 						model.bipedBody.showModel = false;
 					}
-				} else if (this.getMainModel() instanceof ModelQuadruped) {
+				} else if (this.getMainModel() instanceof ModelQuadruped) {
 					ModelQuadruped model = (ModelQuadruped) this.getMainModel();
 					model.head.showModel = Minecraft.getMinecraft().getRenderViewEntity().equals(entity.getControllingPassenger())
 					 && this.renderManager.options.thirdPersonView == 0 ? false : true;
@@ -1441,7 +1441,7 @@ System.out.println("====== totalTicks:"+totalTicks+", lastTimeAtPathIndex:"+last
 
 		@SideOnly(Side.CLIENT)
 		public class RenderTailBeastBall extends Render<EntityTailBeastBall> {
-			private final ResourceLocation BIJUDAMA_TEXTURE = new ResourceLocation("narutomod:textures/longcube_white.png");
+			private final ResourceLocation texture = new ResourceLocation("narutomod:textures/longcube_white.png");
 			protected final ModelBase mainModel;
 
 			public RenderTailBeastBall(RenderManager renderManagerIn) {
@@ -1469,7 +1469,7 @@ System.out.println("====== totalTicks:"+totalTicks+", lastTimeAtPathIndex:"+last
 					this.mainModel.render(entity, 0.0F, 0.0F, partialTicks + entity.ticksExisted, 0.0F, 0.0F, 0.0625F);
 				}
 				GlStateManager.enableLighting();
-				GlStateManager.disableAlpha();
+				//GlStateManager.disableAlpha();
 				GlStateManager.disableBlend();
 				//GlStateManager.enableCull();
 				GlStateManager.popMatrix();
@@ -1478,7 +1478,7 @@ System.out.println("====== totalTicks:"+totalTicks+", lastTimeAtPathIndex:"+last
 
 			@Override
 			protected ResourceLocation getEntityTexture(EntityTailBeastBall entity) {
-				return BIJUDAMA_TEXTURE;
+				return this.texture;
 			}
 		}
 

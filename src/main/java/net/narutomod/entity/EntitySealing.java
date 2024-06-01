@@ -322,7 +322,7 @@ public class EntitySealing extends ElementsNarutomodMod.ModElement {
 				this.mainModel.render(entity, 0.0F, 0.0F, f, 0.0F, 0.0F, 0.85F);
 				GlStateManager.enableLighting();
 				GlStateManager.disableBlend();
-				GlStateManager.disableAlpha();
+				//GlStateManager.disableAlpha();
 				GlStateManager.enableCull();
 				GlStateManager.popMatrix();
 				super.doRender(entity, x, y, z, entityYaw, partialTicks);
@@ -330,7 +330,7 @@ public class EntitySealing extends ElementsNarutomodMod.ModElement {
 
 			@Override
 			protected ResourceLocation getEntityTexture(EC entity) {
-				return texture;
+				return this.texture;
 			}
 		}
 

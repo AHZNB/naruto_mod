@@ -310,7 +310,7 @@ public class EntityParticle extends ElementsNarutomodMod.ModElement {
 				GlStateManager.depthMask(true);
 				if (vec.w < 1.0F) {
 					GlStateManager.disableBlend();
-					GlStateManager.disableAlpha();
+					//GlStateManager.disableAlpha();
 				}
 				GlStateManager.popMatrix();
 			}

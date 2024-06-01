@@ -404,13 +404,13 @@ public class ItemJinton extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		protected ResourceLocation getEntityTexture(EntityBeam entity) {
-			return texture;
+			return this.texture;
 		}
 	}
 
 	@SideOnly(Side.CLIENT)
 	public class RenderCube extends Render<EntityCube> {
-		private final ResourceLocation TEXTURE = new ResourceLocation("narutomod:textures/longcube_white.png");
+		private final ResourceLocation texture = new ResourceLocation("narutomod:textures/longcube_white.png");
 		private final ModelCube model = new ModelCube();
 
 		public RenderCube(RenderManager renderManager) {
@@ -437,14 +437,14 @@ public class ItemJinton extends ElementsNarutomodMod.ModElement {
 			GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 			GlStateManager.enableLighting();
 			GlStateManager.enableCull();
-			GlStateManager.disableAlpha();
+			//GlStateManager.disableAlpha();
 			GlStateManager.disableBlend();
 			GlStateManager.popMatrix();
 		}
 
 		@Override
 		protected ResourceLocation getEntityTexture(EntityCube entity) {
-			return TEXTURE;
+			return this.texture;
 		}
 	}
 

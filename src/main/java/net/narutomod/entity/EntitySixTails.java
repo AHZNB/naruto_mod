@@ -216,7 +216,7 @@ public class EntitySixTails extends ElementsNarutomodMod.ModElement {
 
 		@SideOnly(Side.CLIENT)
 		public class RenderCustom extends EntityTailedBeast.ClientOnly.Renderer<EntityCustom> {
-			private final ResourceLocation TEXTURE = new ResourceLocation("narutomod:textures/sixtails.png");
+			private final ResourceLocation texture = new ResourceLocation("narutomod:textures/sixtails.png");
 
 			public RenderCustom(RenderManager renderManagerIn) {
 				super(renderManagerIn, new ModelSixTails(), MODELSCALE * 0.5F);
@@ -224,7 +224,7 @@ public class EntitySixTails extends ElementsNarutomodMod.ModElement {
 
 			@Override
 			protected ResourceLocation getEntityTexture(EntityCustom entity) {
-				return TEXTURE;
+				return this.texture;
 			}
 		}
 

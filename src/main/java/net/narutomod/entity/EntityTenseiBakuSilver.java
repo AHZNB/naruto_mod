@@ -237,8 +237,8 @@ public class EntityTenseiBakuSilver extends ElementsNarutomodMod.ModElement {
 
 	@SideOnly(Side.CLIENT)
 	public class RenderCustom extends Render<EC> {
-		private final ResourceLocation TEXTURE = new ResourceLocation("narutomod:textures/ring_green.png");
-		private final ResourceLocation TEXTURE2 = new ResourceLocation("narutomod:textures/white_orb.png");
+		private final ResourceLocation texture = new ResourceLocation("narutomod:textures/ring_green.png");
+		private final ResourceLocation texture2 = new ResourceLocation("narutomod:textures/white_orb.png");
 
 		public RenderCustom(RenderManager renderManager) {
 			super(renderManager);
@@ -276,7 +276,7 @@ public class EntityTenseiBakuSilver extends ElementsNarutomodMod.ModElement {
 			tessellator.draw();
 			GlStateManager.popMatrix();
 			
-			this.bindTexture(TEXTURE2);
+			this.bindTexture(this.texture2);
 			alpha = MathHelper.sqrt(1.0F - Math.min(ageInTicks / (float)entity.growTime, 1.0F));
 			GlStateManager.scale(0.5F, 0.5F, 0.5F);
 			GlStateManager.rotate(180F - this.renderManager.playerViewY, 0.0F, 1.0F, 0.0F);
@@ -291,7 +291,7 @@ public class EntityTenseiBakuSilver extends ElementsNarutomodMod.ModElement {
 			
 			GlStateManager.enableLighting();
 			GlStateManager.disableBlend();
-			GlStateManager.disableAlpha();
+			//GlStateManager.disableAlpha();
 			GlStateManager.enableCull();
 			GlStateManager.disableRescaleNormal();
 			GlStateManager.popMatrix();
@@ -299,7 +299,7 @@ public class EntityTenseiBakuSilver extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		protected ResourceLocation getEntityTexture(EC entity) {
-			return TEXTURE;
+			return this.texture;
 		}
 	}
 }

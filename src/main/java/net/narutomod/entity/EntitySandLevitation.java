@@ -266,8 +266,8 @@ public class EntitySandLevitation extends ElementsNarutomodMod.ModElement {
 
 		@SideOnly(Side.CLIENT)
 		public class CustomRender extends Render<EC> {
-			private final ResourceLocation IRON_TEXTURE = new ResourceLocation("narutomod:textures/gray_dark.png");
-			private final ResourceLocation SAND_TEXTURE = new ResourceLocation("minecraft:textures/blocks/sand.png");
+			private final ResourceLocation iron_texture = new ResourceLocation("narutomod:textures/gray_dark.png");
+			private final ResourceLocation sand_texture = new ResourceLocation("minecraft:textures/blocks/sand.png");
 			private final ModelSandCloud model = new ModelSandCloud();
 	
 			public CustomRender(RenderManager renderManagerIn) {
@@ -291,7 +291,7 @@ public class EntitySandLevitation extends ElementsNarutomodMod.ModElement {
 			}
 			@Override
 			protected ResourceLocation getEntityTexture(EC entity) {
-				return entity.getSandType() == ItemJiton.Type.SAND ? SAND_TEXTURE : IRON_TEXTURE;
+				return entity.getSandType() == ItemJiton.Type.SAND ? this.sand_texture : this.iron_texture;
 			}
 		}
 	

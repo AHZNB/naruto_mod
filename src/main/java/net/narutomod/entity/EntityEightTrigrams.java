@@ -242,7 +242,7 @@ public class EntityEightTrigrams extends ElementsNarutomodMod.ModElement {
 				this.mainModel.render(entity, 0.0F, 0.0F, partialTicks + entity.ticksExisted, 0.0F, 0.0F, 1.0F);
 				GlStateManager.enableLighting();
 				GlStateManager.disableBlend();
-				GlStateManager.disableAlpha();
+				//GlStateManager.disableAlpha();
 				GlStateManager.enableCull();
 				GlStateManager.popMatrix();
 				super.doRender(entity, x, y, z, entityYaw, partialTicks);

@@ -296,7 +296,7 @@ public class EntityWaterDragon extends ElementsNarutomodMod.ModElement {
 				GlStateManager.enableBlend();
 				GlStateManager.disableCull();
 				GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-				this.bindTexture(texture2);
+				this.bindTexture(this.texture2);
 				GlStateManager.matrixMode(5890);
 				GlStateManager.loadIdentity();
 				GlStateManager.translate(0.0F, age * 0.01F, 0.0F);
@@ -322,7 +322,7 @@ public class EntityWaterDragon extends ElementsNarutomodMod.ModElement {
 
 			@Override
 			protected ResourceLocation getEntityTexture(EC entity) {
-				return texture;
+				return this.texture;
 			}
 		}
 

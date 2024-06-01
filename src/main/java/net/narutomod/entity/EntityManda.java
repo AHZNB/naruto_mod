@@ -35,10 +35,10 @@ public class EntityManda extends ElementsNarutomodMod.ModElement {
 	public void preInit(FMLPreInitializationEvent event) {
 		RenderingRegistry.registerEntityRenderingHandler(EntityCustom.class, renderManager -> {
 			return new EntitySnake.RenderSnake<EntityCustom>(renderManager) {
-				private final ResourceLocation TEXTURE = new ResourceLocation("narutomod:textures/snake_purple.png");
+				private final ResourceLocation texture = new ResourceLocation("narutomod:textures/snake_purple.png");
 				@Override
 				protected ResourceLocation getEntityTexture(EntityCustom entity) {
-					return TEXTURE;
+					return this.texture;
 				}
 			};
 		});

@@ -295,7 +295,7 @@ public class EntitySuitonShark extends ElementsNarutomodMod.ModElement {
 
 		@SideOnly(Side.CLIENT)
 		public class RenderCustom extends Render<EC> {
-			private final ResourceLocation TEXTURE = new ResourceLocation("narutomod:textures/shark.png");
+			private final ResourceLocation texture = new ResourceLocation("narutomod:textures/shark.png");
 			private final ModelShark model;
 
 			public RenderCustom(RenderManager renderManager) {
@@ -327,7 +327,7 @@ public class EntitySuitonShark extends ElementsNarutomodMod.ModElement {
 
 			@Override
 			protected ResourceLocation getEntityTexture(EC entity) {
-				return TEXTURE;
+				return this.texture;
 			}
 		}
 

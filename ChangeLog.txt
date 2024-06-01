@@ -25,6 +25,9 @@ Entities:
  - improved Hirudora model
  - slightly buffed puppets health
  - fixed jinchuriki's biju mode visibility bug
+ 
+General:
+ - fixed alpha transparency bug when using certain jutsus
 
 0.3.0-beta ================================================================================
 

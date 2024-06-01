@@ -1338,7 +1338,7 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 			GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 			GlStateManager.enableLighting();
 			GlStateManager.disableBlend();
-			GlStateManager.disableAlpha();
+			//GlStateManager.disableAlpha();
 		}
 
 		public void setRotationAngle(ModelRenderer modelRenderer, float x, float y, float z) {
@@ -1571,7 +1571,7 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 			this.eyes.render(f5);
 			GlStateManager.enableLighting();
 			GlStateManager.disableBlend();
-			GlStateManager.disableAlpha();
+			//GlStateManager.disableAlpha();
 		}
 	
 		public void setRotationAngle(ModelRenderer modelRenderer, float x, float y, float z) {

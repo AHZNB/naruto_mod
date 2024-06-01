@@ -304,8 +304,10 @@ public class EntityKingOfHell extends ElementsNarutomodMod.ModElement {
 		public void register() {
 			RenderingRegistry.registerEntityRenderingHandler(EntityCustom.class,
 					renderManager -> new RenderLiving(renderManager, new ModelKingofhell(), 4.8F) {
+						private final ResourceLocation texture = new ResourceLocation("narutomod:textures/kingofhell.png");
+						@Override
 						protected ResourceLocation getEntityTexture(Entity entity) {
-							return new ResourceLocation("narutomod:textures/kingofhell.png");
+							return this.texture;
 						}
 					});
 		}

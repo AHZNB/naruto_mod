@@ -200,9 +200,9 @@ public class EntityBeamBase extends ElementsNarutomodMod.ModElement {
 			GlStateManager.loadIdentity();
 			GlStateManager.matrixMode(5888);
 			GlStateManager.enableLighting();
-			GlStateManager.disableAlpha();
+			//GlStateManager.disableAlpha();
 			GlStateManager.disableBlend();
-			GlStateManager.depthMask(false);
+			//GlStateManager.depthMask(false);
 			GlStateManager.popMatrix();
 		}
 

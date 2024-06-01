@@ -45,9 +45,10 @@ public class EntityEarthSpears extends ElementsNarutomodMod.ModElement {
 	public void preInit(FMLPreInitializationEvent event) {
 		RenderingRegistry.registerEntityRenderingHandler(EC.class, renderManager -> {
 			return new EntitySpike.Renderer<EC>(renderManager) {
+				private final ResourceLocation texture = new ResourceLocation("narutomod:textures/spike_stone.png");
 				@Override
 				protected ResourceLocation getEntityTexture(EC entity) {
-					return new ResourceLocation("narutomod:textures/spike_stone.png");
+					return this.texture;
 				}
 			};
 		});

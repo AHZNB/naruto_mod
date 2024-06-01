@@ -53,7 +53,7 @@ public class EntityIceSpear extends ElementsNarutomodMod.ModElement {
 
 	@SideOnly(Side.CLIENT)
 	public class CustomRender extends EntitySpike.Renderer<EC> {
-		private final ResourceLocation TEXTURE = new ResourceLocation("narutomod:textures/spike_ice.png");
+		private final ResourceLocation texture = new ResourceLocation("narutomod:textures/spike_ice.png");
 
 		public CustomRender(RenderManager renderManagerIn) {
 			super(renderManagerIn);
@@ -61,7 +61,7 @@ public class EntityIceSpear extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		protected ResourceLocation getEntityTexture(EC entity) {
-			return TEXTURE;
+			return this.texture;
 		}
 	}
 

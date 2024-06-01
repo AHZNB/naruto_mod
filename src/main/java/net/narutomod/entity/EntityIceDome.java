@@ -407,7 +407,7 @@ public class EntityIceDome extends ElementsNarutomodMod.ModElement {
 				GlStateManager.enableLighting();
 				GlStateManager.enableCull();
 				GlStateManager.disableBlend();
-				GlStateManager.disableAlpha();
+				//GlStateManager.disableAlpha();
 				GlStateManager.popMatrix();
 			}
 

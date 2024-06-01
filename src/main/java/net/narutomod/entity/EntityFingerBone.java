@@ -156,7 +156,7 @@ public class EntityFingerBone extends ElementsNarutomodMod.ModElement {
 
 		@SideOnly(Side.CLIENT)
 		public class RenderCustom extends Render<EC> {
-			private final ResourceLocation TEXTURE = new ResourceLocation("narutomod:textures/fingerbone.png");
+			private final ResourceLocation texture = new ResourceLocation("narutomod:textures/fingerbone.png");
 			protected final ModelFingerBone model;
 	
 			public RenderCustom(RenderManager renderManagerIn) {
@@ -181,7 +181,7 @@ public class EntityFingerBone extends ElementsNarutomodMod.ModElement {
 	
 			@Override
 			protected ResourceLocation getEntityTexture(EC entity) {
-				return TEXTURE;
+				return this.texture;
 			}
 		}
 	

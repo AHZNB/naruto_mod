@@ -216,7 +216,7 @@ public class EntitySpike extends ElementsNarutomodMod.ModElement {
 			if (alpha < 1.0f) {
 				GlStateManager.enableLighting();
 				GlStateManager.disableBlend();
-				GlStateManager.disableAlpha();
+				//GlStateManager.disableAlpha();
 				GlStateManager.enableCull();
 			}
 			GlStateManager.popMatrix();

@@ -431,7 +431,7 @@ public class EntityRasengan extends ElementsNarutomodMod.ModElement {
 				}
 				GlStateManager.enableLighting();
 				GlStateManager.enableCull();
-				GlStateManager.disableAlpha();
+				//GlStateManager.disableAlpha();
 				GlStateManager.disableBlend();
 				GlStateManager.popMatrix();
 			}
@@ -459,7 +459,7 @@ public class EntityRasengan extends ElementsNarutomodMod.ModElement {
 	
 			@Override
 			protected ResourceLocation getEntityTexture(EC entity) {
-				return texture;
+				return this.texture;
 			}
 		}
 	

@@ -255,8 +255,10 @@ public class EntityGiantDog2h extends ElementsNarutomodMod.ModElement {
 		public void register() {
 			RenderingRegistry.registerEntityRenderingHandler(EntityCustom.class, renderManager -> {
 				return new RenderLiving(renderManager, new ModelDog2head(), 0.5f * ENTITY_SCALE) {
+					private final ResourceLocation texture = new ResourceLocation("narutomod:textures/dog.png");
+					@Override
 					protected ResourceLocation getEntityTexture(Entity entity) {
-						return new ResourceLocation("narutomod:textures/dog.png");
+						return this.texture;
 					}
 				};
 			});

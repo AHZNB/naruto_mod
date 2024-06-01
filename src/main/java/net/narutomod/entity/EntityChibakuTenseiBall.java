@@ -352,6 +352,8 @@ public class EntityChibakuTenseiBall extends ElementsNarutomodMod.ModElement {
 
 	@SideOnly(Side.CLIENT)
 	public class RenderCustom extends Render<EntityCustom> {
+		private final ResourceLocation blank_tex = new ResourceLocation("narutomod:textures/blank.png");
+		private final ResourceLocation texture = new ResourceLocation("narutomod:textures/truthhseekerball.png");
 		protected ModelBase mainModel;
 
 		public RenderCustom(RenderManager renderManagerIn) {
@@ -379,8 +381,7 @@ public class EntityChibakuTenseiBall extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		protected ResourceLocation getEntityTexture(EntityCustom entity) {
-			return new ResourceLocation(entity.getEntityScale() > entity.maxScale * 0.4f 
-			  ? "narutomod:textures/blank.png" : "narutomod:textures/truthhseekerball.png");
+			return entity.getEntityScale() > entity.maxScale * 0.4f ? this.blank_tex : this.texture;
 		} // meteor2
 	}
 

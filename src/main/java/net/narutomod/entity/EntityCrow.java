@@ -35,8 +35,10 @@ public class EntityCrow extends ElementsNarutomodMod.ModElement {
 	public void preInit(FMLPreInitializationEvent event) {
 		RenderingRegistry.registerEntityRenderingHandler(EntityCustom.class, renderManager -> {
 			return new RenderBat(renderManager) {
+				private final ResourceLocation texture = new ResourceLocation("narutomod:textures/crow.png");
+				@Override
 				protected ResourceLocation getEntityTexture(EntityBat entity) {
-					return new ResourceLocation("narutomod:textures/crow.png");
+					return this.texture;
 				}
 			};
 		});

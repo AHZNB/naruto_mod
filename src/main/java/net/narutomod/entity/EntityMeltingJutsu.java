@@ -244,7 +244,7 @@ public class EntityMeltingJutsu extends ElementsNarutomodMod.ModElement {
 
 		@SideOnly(Side.CLIENT)
 		public class RenderCustom extends Render<EC> {
-			private final ResourceLocation TEXTURE = new ResourceLocation("narutomod:textures/lava.png");
+			private final ResourceLocation texture = new ResourceLocation("narutomod:textures/lava.png");
 			private final ModelBlock renderModel = new ModelBlock();
 	
 			public RenderCustom(RenderManager renderManagerIn) {
@@ -279,7 +279,7 @@ public class EntityMeltingJutsu extends ElementsNarutomodMod.ModElement {
 	
 			@Override
 			protected ResourceLocation getEntityTexture(EC entity) {
-				return TEXTURE;
+				return this.texture;
 			}
 		}
 	

@@ -349,7 +349,7 @@ public class EntitySpecialEffect extends ElementsNarutomodMod.ModElement {
 				GlStateManager.enableLighting();
 				GlStateManager.depthMask(true);
 				GlStateManager.disableBlend();
-				GlStateManager.disableAlpha();
+				//GlStateManager.disableAlpha();
 				GlStateManager.popMatrix();
 			}
 	

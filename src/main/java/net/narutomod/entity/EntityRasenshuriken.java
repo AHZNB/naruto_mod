@@ -355,7 +355,7 @@ public class EntityRasenshuriken extends ElementsNarutomodMod.ModElement {
 				//}
 				GlStateManager.enableLighting();
 				GlStateManager.enableCull();
-				GlStateManager.disableAlpha();
+				//GlStateManager.disableAlpha();
 				GlStateManager.disableBlend();
 				GlStateManager.popMatrix();
 				//super.doRender(entity, x, y, z, entityYaw, partialTicks);

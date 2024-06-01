@@ -232,7 +232,7 @@ public class EntityHaku extends ElementsNarutomodMod.ModElement {
 
 		@SideOnly(Side.CLIENT)
 		public class RenderCustom extends EntityNinjaMob.RenderBase<EntityCustom> {
-			private final ResourceLocation TEXTURE = new ResourceLocation("narutomod:textures/haku.png");
+			private final ResourceLocation texture = new ResourceLocation("narutomod:textures/haku.png");
 
 			public RenderCustom(RenderManager renderManagerIn) {
 				super(renderManagerIn, new ModelBiped64slim());
@@ -247,7 +247,7 @@ public class EntityHaku extends ElementsNarutomodMod.ModElement {
 
 			@Override
 			protected ResourceLocation getEntityTexture(EntityCustom entity) {
-				return TEXTURE;
+				return this.texture;
 			}
 		}
 
