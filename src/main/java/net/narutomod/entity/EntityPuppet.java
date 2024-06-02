@@ -10,6 +10,7 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
@@ -119,7 +120,7 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 			super.initEntityAI();
 			this.tasks.addTask(0, new EntityAISwimming(this));
 			Vec3d vec = this.getOffsetToOwner();
-			this.tasks.addTask(3, new AIStayInFrontOfOwner(this, vec.x, vec.y, vec.z));
+			this.tasks.addTask(4, new AIStayInOffsetOfOwner(this, vec.x, vec.y, vec.z));
 			this.targetTasks.addTask(0, new AICopyOwnerTarget(this));
 		}
 
@@ -176,6 +177,11 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public void onLivingUpdate() {
+			EntityLivingBase owner = this.getOwner();
+			if (this.getAttackTarget() == null && owner != null) {
+		    	RayTraceResult res = ProcedureUtils.objectEntityLookingAt(owner, 60d);
+		        this.getLookHelper().setLookPosition(res.hitVec.x, res.hitVec.y, res.hitVec.z, (float)this.getHorizontalFaceSpeed(), (float)this.getVerticalFaceSpeed());
+			}
 			this.updateArmSwingProgress();
 			super.onLivingUpdate();
 		}
@@ -191,7 +197,7 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 	    	EntityLivingBase owner = this.getOwner();
 	    	this.setNoGravity(owner != null);
 			if (owner != null && this.getVelocity() > 0.1d && this.ticksExisted % 2 == 0) {
-				this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation(("narutomod:wood_click"))), 
+				this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:wood_click")), 
 				 0.6f, this.rand.nextFloat() * 0.6f + 0.6f);
 			}
 	    	if (!this.world.isRemote && owner != null && this.getDistanceSq(owner) > 1600d) {
@@ -248,12 +254,12 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 			}
 		}
 
-	    public class AIStayInFrontOfOwner extends EntityAIBase {
+	    public class AIStayInOffsetOfOwner extends EntityAIBase {
 	    	private final Base entity;
 	    	private EntityLivingBase owner;
 	    	private final Vec3d offsetVec;
 	    	
-	        public AIStayInFrontOfOwner(Base entityIn, double offX, double offY, double offZ) {
+	        public AIStayInOffsetOfOwner(Base entityIn, double offX, double offY, double offZ) {
 	        	this.entity = entityIn;
 	        	this.offsetVec = new Vec3d(offX, offY, offZ);
 	            this.setMutexBits(3);

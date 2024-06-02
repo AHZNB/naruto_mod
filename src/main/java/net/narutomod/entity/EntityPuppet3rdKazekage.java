@@ -18,6 +18,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
+import net.minecraft.entity.ai.EntityAIAttackMelee;
 import net.minecraft.entity.IEntityLivingData;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.EntityLivingBase;
@@ -32,7 +33,6 @@ import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.EntityDataManager;
 
 import javax.annotation.Nullable;
-import net.minecraft.entity.ai.EntityAIAttackMelee;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityPuppet3rdKazekage extends ElementsNarutomodMod.ModElement {
@@ -47,7 +47,7 @@ public class EntityPuppet3rdKazekage extends ElementsNarutomodMod.ModElement {
 	public void initElements() {
 		elements.entities.add(() -> EntityEntryBuilder.create().entity(EntityCustom.class)
 		 .id(new ResourceLocation("narutomod", "puppet_3rd_kazekage"), ENTITYID)
-		 .name("puppet_3rd_kazekage").tracker(64, 3, true).egg(-1, -1).build());
+		 .name("puppet_3rd_kazekage").tracker(64, 3, true).build());
 	}
 
 	public static class EntityCustom extends EntityPuppet.Base {
@@ -104,7 +104,6 @@ public class EntityPuppet3rdKazekage extends ElementsNarutomodMod.ModElement {
 		@Override
 		protected void initEntityAI() {
 			super.initEntityAI();
-			//this.tasks.addTask(1, new EntityAIAttackRanged(this, 1.0d, 20, 48f));
 			this.tasks.addTask(1, new EntityAIAttackMelee(this, 1.5d, true));
 		}
 
@@ -260,85 +259,85 @@ public class EntityPuppet3rdKazekage extends ElementsNarutomodMod.ModElement {
 				collar2 = new ModelRenderer(this);
 				collar2.setRotationPoint(0.0F, -0.116F, -2.884F);
 				collar.addChild(collar2);
-				setRotationAngle(collar2, -1.0908F, 0.0F, 0.0436F);
+				setRotationAngle(collar2, -1.0908F, 0.0F, 0.0873F);
 				collar2.cubeList.add(new ModelBox(collar2, 32, 0, -7.0F, -10.0F, 0.0F, 14, 10, 1, 0.0F, true));
 		
 				collar3 = new ModelRenderer(this);
 				collar3.setRotationPoint(0.0F, -0.116F, -2.884F);
 				collar.addChild(collar3);
-				setRotationAngle(collar3, -1.1345F, 0.0F, -0.0436F);
+				setRotationAngle(collar3, -1.1345F, 0.0F, -0.0873F);
 				collar3.cubeList.add(new ModelBox(collar3, 32, 0, -7.0F, -10.0F, 0.0F, 14, 10, 1, 0.0F, false));
 		
 				collar4 = new ModelRenderer(this);
 				collar4.setRotationPoint(0.0F, -0.116F, -2.884F);
 				collar.addChild(collar4);
-				setRotationAngle(collar4, -1.1781F, 0.0F, 0.0436F);
+				setRotationAngle(collar4, -1.1781F, 0.0F, 0.0873F);
 				collar4.cubeList.add(new ModelBox(collar4, 32, 0, -7.0F, -10.0F, 0.0F, 14, 10, 1, 0.0F, true));
 		
 				collar5 = new ModelRenderer(this);
 				collar5.setRotationPoint(0.0F, -0.116F, -2.634F);
 				collar.addChild(collar5);
-				setRotationAngle(collar5, -1.2217F, 0.0F, -0.0436F);
+				setRotationAngle(collar5, -1.2217F, 0.0F, -0.0873F);
 				collar5.cubeList.add(new ModelBox(collar5, 32, 0, -7.0F, -10.0F, 0.0F, 14, 10, 1, 0.0F, false));
 		
 				collar6 = new ModelRenderer(this);
 				collar6.setRotationPoint(0.0F, -0.116F, -2.634F);
 				collar.addChild(collar6);
-				setRotationAngle(collar6, -1.2654F, 0.0F, 0.0436F);
+				setRotationAngle(collar6, -1.2654F, 0.0F, 0.0873F);
 				collar6.cubeList.add(new ModelBox(collar6, 32, 0, -7.0F, -10.0F, 0.0F, 14, 10, 1, 0.0F, true));
 		
 				collar7 = new ModelRenderer(this);
 				collar7.setRotationPoint(0.0F, -0.116F, -2.634F);
 				collar.addChild(collar7);
-				setRotationAngle(collar7, -1.309F, 0.0F, -0.0436F);
+				setRotationAngle(collar7, -1.309F, 0.0F, -0.0873F);
 				collar7.cubeList.add(new ModelBox(collar7, 32, 0, -7.0F, -10.0F, 0.0F, 14, 10, 1, 0.0F, false));
 		
 				collar8 = new ModelRenderer(this);
 				collar8.setRotationPoint(0.0F, -0.116F, -2.634F);
 				collar.addChild(collar8);
-				setRotationAngle(collar8, -1.3526F, 0.0F, 0.0436F);
+				setRotationAngle(collar8, -1.3526F, 0.0F, 0.0873F);
 				collar8.cubeList.add(new ModelBox(collar8, 32, 0, -7.0F, -10.0F, 0.0F, 14, 10, 1, 0.0F, true));
 		
 				collar9 = new ModelRenderer(this);
 				collar9.setRotationPoint(0.0F, -0.116F, -2.884F);
 				collar.addChild(collar9);
-				setRotationAngle(collar9, -1.3963F, 0.0F, -0.0436F);
+				setRotationAngle(collar9, -1.3963F, 0.0F, -0.0873F);
 				collar9.cubeList.add(new ModelBox(collar9, 32, 0, -7.0F, -10.0F, 0.0F, 14, 10, 1, 0.0F, false));
 		
 				collar10 = new ModelRenderer(this);
 				collar10.setRotationPoint(0.0F, -0.116F, -2.884F);
 				collar.addChild(collar10);
-				setRotationAngle(collar10, -1.4399F, 0.0F, 0.0436F);
+				setRotationAngle(collar10, -1.4399F, 0.0F, 0.0873F);
 				collar10.cubeList.add(new ModelBox(collar10, 32, 0, -7.0F, -10.0F, 0.0F, 14, 10, 1, 0.0F, true));
 		
 				collar11 = new ModelRenderer(this);
 				collar11.setRotationPoint(0.0F, -0.116F, -2.884F);
 				collar.addChild(collar11);
-				setRotationAngle(collar11, -1.4835F, 0.0F, -0.0436F);
+				setRotationAngle(collar11, -1.4835F, 0.0F, -0.0873F);
 				collar11.cubeList.add(new ModelBox(collar11, 32, 0, -7.0F, -10.0F, 0.0F, 14, 10, 1, 0.0F, true));
 		
 				collar12 = new ModelRenderer(this);
 				collar12.setRotationPoint(0.0F, -0.116F, -2.884F);
 				collar.addChild(collar12);
-				setRotationAngle(collar12, -1.5272F, 0.0F, 0.0436F);
+				setRotationAngle(collar12, -1.5272F, 0.0F, 0.0873F);
 				collar12.cubeList.add(new ModelBox(collar12, 32, 0, -7.0F, -10.0F, 0.0F, 14, 10, 1, 0.0F, false));
 		
 				collar13 = new ModelRenderer(this);
 				collar13.setRotationPoint(0.0F, -0.116F, -2.884F);
 				collar.addChild(collar13);
-				setRotationAngle(collar13, -1.5708F, 0.0F, -0.0436F);
+				setRotationAngle(collar13, -1.5708F, 0.0F, -0.0873F);
 				collar13.cubeList.add(new ModelBox(collar13, 32, 0, -7.0F, -10.0F, 0.0F, 14, 10, 1, 0.0F, true));
 		
 				collar14 = new ModelRenderer(this);
 				collar14.setRotationPoint(0.0F, -0.116F, -2.884F);
 				collar.addChild(collar14);
-				setRotationAngle(collar14, -1.6144F, 0.0F, 0.0436F);
+				setRotationAngle(collar14, -1.6144F, 0.0F, 0.0873F);
 				collar14.cubeList.add(new ModelBox(collar14, 32, 0, -7.0F, -10.0F, 0.0F, 14, 10, 1, 0.0F, false));
 		
 				collar15 = new ModelRenderer(this);
 				collar15.setRotationPoint(0.0F, -0.116F, -2.884F);
 				collar.addChild(collar15);
-				setRotationAngle(collar15, -1.6581F, 0.0F, -0.0436F);
+				setRotationAngle(collar15, -1.6581F, 0.0F, -0.0873F);
 				collar15.cubeList.add(new ModelBox(collar15, 32, 0, -7.0F, -10.0F, 0.0F, 14, 10, 1, 0.0F, true));
 		
 				collar16 = new ModelRenderer(this);

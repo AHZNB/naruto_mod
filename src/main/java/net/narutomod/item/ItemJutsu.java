@@ -387,6 +387,14 @@ public class ItemJutsu extends ElementsNarutomodMod.ModElement {
 			return false;
 		}
 
+		public void enableAllJutsus(ItemStack stack, boolean enable) {
+			for (JutsuEnum je : this.jutsuList) {
+				if (this.isJutsuEnabled(stack, je.index) != enable) {
+					this.enableJutsu(stack, je.index, enable);
+				}
+			}
+		}
+
 		public List<JutsuEnum> getActivatedJutsus(ItemStack stack) {
 			List<JutsuEnum> list = Lists.newArrayList();
 			for (JutsuEnum je : this.jutsuList) {

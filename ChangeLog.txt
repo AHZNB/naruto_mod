@@ -14,6 +14,7 @@ Items:
  - added Naruto shippuden jacket and pants
  - added Sound 5 clothing and forehead protector
  - added Jiraiya jacket, clothing, forehead protector and robe
+ - added 3rd Kazekage puppet scroll
 
 Entities:
  - re-textured kisame's face
@@ -24,7 +25,9 @@ Entities:
  - Kisame wears Akatsuki robe now and has a chance to drop it
  - improved Hirudora model
  - slightly buffed puppets health
+ - 3rd kazekage puppet can use sand bullet jutsu (use with 3rd kazekage scroll)
  - fixed jinchuriki's biju mode visibility bug
+ - fixed perfect susanoo jerky body pitch when flying
  
 General:
  - fixed alpha transparency bug when using certain jutsus

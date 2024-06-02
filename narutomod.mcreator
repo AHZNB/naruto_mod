@@ -1,7 +1,7 @@
 {
   "id_map": {
     "GUI": 64,
-    "ENTITY": 435,
+    "ENTITY": 436,
     "DIMENSION": 13
   },
   "mod_elements": [
@@ -7316,6 +7316,17 @@
         "eb": false,
         "ec": true
       }
+    },
+    {
+      "name": "Scroll3rdKazekage",
+      "type": "gun",
+      "sortid": 867,
+      "compiles": true,
+      "locked_code": true,
+      "ids": {
+        "0": 436
+      },
+      "registry_name": "scroll_3rd_kazekage"
     }
   ],
   "variable_elements": [
@@ -8500,6 +8511,7 @@
       "entity.earth_sandwich.name": "Earth Sandwich Jutsu",
       "entity.wood_arm.name": "Big Forest Jutsu",
       "advancements.mangekyosharinganopened.descr": "A strong emotional response triggers your Sharingan to transform into Magekyo Shanringan.",
+      "item.scroll_3rd_kazekage.name": "3rd Kazekage puppet scroll",
       "tooltip.byakugan.jutsu1": "Activate, [Switch Jutsu] zoom-in, [SHIFT] 8-Trigrams Vacuum Palm",
       "tooltip.byakugan.jutsu2": "8-Trigrams 64 Palms",
       "item.rinneganhelmet.name": "Rinnegan ",

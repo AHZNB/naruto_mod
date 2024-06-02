@@ -210,6 +210,7 @@ advancements.achievementmedicalgenin.descr=You can now perform some medical juts
 entity.earth_sandwich.name=Earth Sandwich Jutsu
 entity.wood_arm.name=Big Forest Jutsu
 advancements.mangekyosharinganopened.descr=A strong emotional response triggers your Sharingan to transform into Magekyo Shanringan.
+item.scroll_3rd_kazekage.name=3rd Kazekage puppet scroll
 tooltip.byakugan.jutsu1=Activate, [Switch Jutsu] zoom-in, [SHIFT] 8-Trigrams Vacuum Palm
 tooltip.byakugan.jutsu2=8-Trigrams 64 Palms
 item.rinneganhelmet.name=Rinnegan 

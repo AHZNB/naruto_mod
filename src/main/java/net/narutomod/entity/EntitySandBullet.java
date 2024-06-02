@@ -12,6 +12,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.client.renderer.entity.RenderManager;
@@ -85,15 +86,15 @@ public class EntitySandBullet extends ElementsNarutomodMod.ModElement {
 			this.setOGSize(0.2f, 0.2f);
 		}
 
-		public EC(EntityLivingBase shooter, ItemJiton.Type sandType) {
-			this(shooter, sandType, shooter.posX, shooter.posY + shooter.getEyeHeight(), shooter.posZ, 0);
+		public EC(EntityLivingBase shooter, int sandColor) {
+			this(shooter, sandColor, shooter.posX, shooter.posY + shooter.getEyeHeight(), shooter.posZ, 0);
 		}
 
-		public EC(EntityLivingBase shooter, ItemJiton.Type sandType, double x, double y, double z, int delayTicks) {
+		public EC(EntityLivingBase shooter, int sandColor, double x, double y, double z, int delayTicks) {
 			super(shooter);
 			this.setOGSize(0.2f, 0.2f);
 			this.setPosition(x, y, z);
-			this.setColor(sandType.getColor());
+			this.setColor(sandColor);
 			this.delay = delayTicks;
 		}
 
@@ -114,7 +115,9 @@ public class EntitySandBullet extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void onUpdate() {
 			if (this.ticksAlive >= this.delay && this.shootingEntity != null) {
-				Vec3d vec = this.shootingEntity.getLookVec();
+				Vec3d vec = this.shootingEntity instanceof EntityLiving && ((EntityLiving)this.shootingEntity).getAttackTarget() != null
+				 ? ((EntityLiving)this.shootingEntity).getAttackTarget().getPositionEyes(1f).subtract(this.getPositionVector())
+				 : this.shootingEntity.getLookVec();
 				this.shoot(vec.x, vec.y, vec.z, 1.2f, 0.1f);
 			}
 			super.onUpdate();
@@ -133,7 +136,7 @@ public class EntitySandBullet extends ElementsNarutomodMod.ModElement {
 				if (result.entityHit instanceof EntityLivingBase) {
 					result.entityHit.hurtResistantTime = 10;
 					result.entityHit.attackEntityFrom(ItemJutsu.causeJutsuDamage(this, this.shootingEntity).setProjectile(), 15f);
-					ProcedureUtils.pushEntity(this, result.entityHit, 10d, 3.0f);
+					//ProcedureUtils.pushEntity(this, result.entityHit, 10d, 3.0f);
 				}
 				this.setDead();
 			}
@@ -154,26 +157,25 @@ public class EntitySandBullet extends ElementsNarutomodMod.ModElement {
 		public static class Jutsu implements ItemJutsu.IJutsuCallback {
 			@Override
 			public boolean createJutsu(ItemStack stack, EntityLivingBase entity, float power) {
-				List<ItemJiton.SwarmTarget> list = getStartPosList(stack);
+				List<ItemJiton.SwarmTarget> list = getStartPosList(entity);
 				if (list != null) {
 					Iterator<ItemJiton.SwarmTarget> iter = list.iterator();
 					for (int i = 0; iter.hasNext(); i++) {
 						ItemJiton.SwarmTarget st = iter.next();
 						Vec3d vec = st.getTargetPos();
-						this.createJutsu(ItemJiton.getSandType(stack), entity, vec.x, vec.y, vec.z, i);
+						this.createJutsu(st.getColor(), entity, vec.x, vec.y, vec.z, i);
 						st.forceRemove();
 						iter.remove();
 					}
-				} else {
-					this.createJutsu(ItemJiton.getSandType(stack), entity, entity.posX, entity.posY + entity.getEyeHeight(), entity.posZ, 0);
+					return true;
 				}
-				return true;
+				return false;
 			}
 
-			public void createJutsu(ItemJiton.Type type, EntityLivingBase entity, double x, double y, double z, int delay) {
+			public void createJutsu(int color, EntityLivingBase entity, double x, double y, double z, int delay) {
 				entity.world.playSound(null, x, y, z, SoundEvents.BLOCK_SAND_PLACE,
 				 net.minecraft.util.SoundCategory.BLOCKS, 0.5f, entity.getRNG().nextFloat() * 0.4f + 0.6f);
-				entity.world.spawnEntity(new EC(entity, type, x, y, z, delay));
+				entity.world.spawnEntity(new EC(entity, color, x, y, z, delay));
 			}
 
 			@Override
@@ -193,16 +195,17 @@ public class EntitySandBullet extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-	private static final Map<ItemStack, List<ItemJiton.SwarmTarget>> posMap = Maps.newHashMap();
+	private static final Map<Integer, List<ItemJiton.SwarmTarget>> posMap = Maps.newHashMap();
 
 	@Nullable
-	private static List<ItemJiton.SwarmTarget> getStartPosList(ItemStack stack) {
-		List<ItemJiton.SwarmTarget> list = posMap.get(stack);
+	private static List<ItemJiton.SwarmTarget> getStartPosList(EntityLivingBase entity) {
+		List<ItemJiton.SwarmTarget> list = posMap.get(entity.getEntityId());
 		if (list != null) {
 			return list;
 		} else {
-			for (Map.Entry<ItemStack, List<ItemJiton.SwarmTarget>> entry : posMap.entrySet()) {
-				if (ItemStack.areItemStacksEqual(entry.getKey(), stack)) {
+			for (Map.Entry<Integer, List<ItemJiton.SwarmTarget>> entry : posMap.entrySet()) {
+				if (entry.getKey().intValue() == entity.getEntityId()) {
+				//if (ItemStack.areItemStacksEqual(entry.getKey(), stack)) {
 					return entry.getValue();
 				}
 			}
@@ -210,19 +213,19 @@ public class EntitySandBullet extends ElementsNarutomodMod.ModElement {
 		return null;
 	}
 
-	public static void addPos(ItemStack stack, EntityLivingBase entity, float power) {
-		List<ItemJiton.SwarmTarget> list = getStartPosList(stack);
+	public static void addPos(ItemJiton.Type sandType, EntityLivingBase entity, float power, Vec3d sandOrigin) {
+		List<ItemJiton.SwarmTarget> list = getStartPosList(entity);
 		if (list == null) {
 			list = Lists.newArrayList();
-			posMap.put(stack, list);
+			posMap.put(entity.getEntityId(), list);
 		}
-		list.add(new ItemJiton.SwarmTarget(entity.world, 1, ItemGourd.getMouthPos(entity), 
+		list.add(new ItemJiton.SwarmTarget(entity.world, 1, sandOrigin, 
 		 new Vec3d(entity.posX + (entity.getRNG().nextDouble()-0.5d) * power * 2, entity.posY + entity.getEyeHeight() + (entity.getRNG().nextDouble()-0.5d) * 2d, entity.posZ + (entity.getRNG().nextDouble()-0.5d) * power * 2),
-		 new Vec3d(0.1d, 0.2d, 0.1d), 0.5f, 0.01f, false, 0.5f, ItemJiton.getSandType(stack).getColor()));
+		 new Vec3d(0.1d, 0.2d, 0.1d), 0.5f, 0.01f, false, 0.5f, sandType.getColor()));
 	}
 
-	public static void updateSwarms(ItemStack stack) {
-		List<ItemJiton.SwarmTarget> list = getStartPosList(stack);
+	public static void updateSwarms(EntityLivingBase entity) {
+		List<ItemJiton.SwarmTarget> list = getStartPosList(entity);
 		if (list != null && !list.isEmpty()) {
 			for (ItemJiton.SwarmTarget st : list) {
 				st.onUpdate();

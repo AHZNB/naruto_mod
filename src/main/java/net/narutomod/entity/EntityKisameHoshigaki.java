@@ -344,9 +344,6 @@ public class EntityKisameHoshigaki extends ElementsNarutomodMod.ModElement {
 		public void attackEntityWithRangedAttack(EntityLivingBase target, float flval) {
 			float power = this.useAltModel() ? 5f : (1f + this.rand.nextFloat());
 			if (!this.world.isRemote && this.consumeChakra(WATERSHARK_CHAKRA * power)) {
-				double d0 = target.posX - this.posX;
-				double d1 = target.posY - (this.posY + this.height);
-				double d2 = target.posZ - this.posZ;
 				new EntitySuitonShark.EC.Jutsu().createJutsu(this, power);
 				this.standStillFor(80);
 			}

@@ -144,7 +144,7 @@ public class ItemJiton extends ElementsNarutomodMod.ModElement {
 			super.onUsingTick(stack, player, timeLeft);
 			if (!player.world.isRemote && this.getCurrentJutsu(stack) == SANDBULLET
 			 && this.getPower(stack, player, timeLeft) < this.getMaxPower(stack, player)) {
-				EntitySandBullet.addPos(stack, player, this.getPower(stack, player, timeLeft));
+				EntitySandBullet.addPos(getSandType(stack), player, this.getPower(stack, player, timeLeft), ItemGourd.getMouthPos(player));
 			}
 		}
 
@@ -165,7 +165,7 @@ public class ItemJiton extends ElementsNarutomodMod.ModElement {
 				if ((player.getItemStackFromSlot(EntityEquipmentSlot.CHEST).getItem() == ItemGourd.body
 				  || (EntityBijuManager.getTails(player) == 1 && EntityBijuManager.cloakLevel(player) > 0))
 				 && this.getCurrentJutsu(itemstack) == SANDBULLET) {
-					EntitySandBullet.updateSwarms(itemstack);
+					EntitySandBullet.updateSwarms(player);
 				}
 				this.enableJutsu(itemstack, GATHERING, getSandType(itemstack) == Type.IRON);
 			}
@@ -418,9 +418,13 @@ public class ItemJiton extends ElementsNarutomodMod.ModElement {
 					 this.motionZ * (this.rand.nextDouble() * 0.2d + 0.9d),
 					 this.getColorInt(), (int)(this.getScale(0f) * 8), 5);
 				}
-			} else if (this.idleTime > 1000) {
-				this.setAge(this.getMaxAge());
+			} else if (this.idleTime > 100) {
+				this.fallAndDie();
 			}
+		}
+
+		protected void fallAndDie() {
+			this.setAge(this.getMaxAge());
 		}
 
 		@Override
@@ -636,6 +640,10 @@ public class ItemJiton extends ElementsNarutomodMod.ModElement {
 
 		public Vec3d getTargetPos() {
 			return this.randomPosOnBB(this.targetBB);
+		}
+
+		public int getColor() {
+			return this.color;
 		}
 
 		private Vec3d randomPosInBB(AxisAlignedBB aabb) {

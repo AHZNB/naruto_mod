@@ -80,6 +80,8 @@ public class EntitySusanooWinged extends ElementsNarutomodMod.ModElement {
 		private boolean isWingDetracting;
 		private int wingSwingProgressInt;
 		private EntitySusanooClothed.EntityMagatama bulletEntity;
+		private double lastX;
+		private double lastZ;
 
 		public EntityCustom(World world) {
 			super(world);
@@ -268,6 +270,8 @@ public class EntitySusanooWinged extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public void onEntityUpdate() {
+			this.lastX = this.posX;
+			this.lastZ = this.posZ;
 			this.showHeldWeapons();
 			this.updateWingSwing();
 			super.onEntityUpdate();
@@ -287,7 +291,7 @@ public class EntitySusanooWinged extends ElementsNarutomodMod.ModElement {
 				}
 			}
 			super.travel(ti, tj, tk);
-			this.setMotionXZ((float)(this.posX - this.prevPosX), (float)(this.posZ - this.prevPosZ), this.rotationYawHead);
+			this.setMotionXZ((float)(this.posX - this.lastX), (float)(this.posZ - this.lastZ), this.rotationYawHead);
 		}
 
 		@Override

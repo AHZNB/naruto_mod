@@ -3,6 +3,7 @@ package net.narutomod.entity;
 
 import net.narutomod.item.ItemJutsu;
 import net.narutomod.item.ItemJiton;
+import net.narutomod.item.ItemGourd;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.ElementsNarutomodMod;
 
@@ -16,6 +17,7 @@ import net.minecraft.world.World;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.client.model.ModelRenderer;
@@ -88,7 +90,8 @@ public class EntitySandGathering extends ElementsNarutomodMod.ModElement {
 		}
 
 		private Vec3d getMouthPos() {
-			return this.summoner != null ? this.summoner.getPositionVector().addVector(0d, 1.5d, 0d) : this.getPositionVector();
+			return this.summoner instanceof EntityPlayer ? ItemGourd.getMouthPos(this.summoner)
+			 : this.summoner != null ? this.summoner.getPositionVector().addVector(0d, 1.5d, 0d) : this.getPositionVector();
 		}
 
 		private void updateSandParticles() {
