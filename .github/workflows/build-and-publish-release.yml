@@ -11,12 +11,12 @@ jobs:
     
     steps:
     - name: delete old releases
-      uses: sgpublic/delete-release-action@v1.1
+      uses: Nats-ji/delete-old-releases@v1
       with:
-        release-drop: true
-        release-drop-tag: false
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        token: ${{ secrets.GITHUB_TOKEN }}
+        keep-count: 0
+        keep-old-minor-releases: false
+        keep-old-minor-releases-count: 0
     
     - name: checkout code
       uses: actions/checkout@v2
