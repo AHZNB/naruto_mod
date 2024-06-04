@@ -1,0 +1,36 @@
+name: Build and Publish Release
+
+on:
+  push:
+    branches:
+      - main
+jobs:
+  build:
+    permissions: write-all
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: checkout code
+      uses: actions/checkout@v2
+
+    - name: make gradlew executable
+      run: chmod +x ./gradlew
+
+    - name: set up Java
+      uses: actions/setup-java@v2
+      with:
+        java-version: '8'
+        distribution: 'adopt'
+        server-id: ${{ secrets.MAVEN_SETTINGS_SERVER_ID }}
+        
+    - name: build jar
+      run: |
+        ./gradlew build
+        
+    - name: create release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: build/libs/*.jar
+        tag_name: v0.3.1-beta
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
