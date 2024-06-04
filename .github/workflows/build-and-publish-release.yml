@@ -26,6 +26,10 @@ jobs:
     - name: build jar
       run: |
         ./gradlew build
+
+    - name: Rename JAR file
+      run: |
+          mv build/libs/*.jar build/libs/NarutoMod-1.12.2-0.3.1.beta.jar
         
     - name: create release
       uses: softprops/action-gh-release@v1
