@@ -159,6 +159,7 @@ public class EntityPuppet3rdKazekage extends ElementsNarutomodMod.ModElement {
 			private final ModelRenderer cube_r3;
 			private final ModelRenderer cube_r4;
 			private final ModelRenderer cube_r5;
+			private final ModelRenderer cube_r6;
 			//private final ModelRenderer bipedBody;
 			private final ModelRenderer collar;
 			private final ModelRenderer collar1;
@@ -210,7 +211,6 @@ public class EntityPuppet3rdKazekage extends ElementsNarutomodMod.ModElement {
 				niceHair.setRotationPoint(0.0F, 0.0F, 0.0F);
 				bipedHeadwear.addChild(niceHair);
 				
-		
 				cube_r1 = new ModelRenderer(this);
 				cube_r1.setRotationPoint(3.4118F, -8.1983F, -3.0337F);
 				niceHair.addChild(cube_r1);
@@ -226,21 +226,27 @@ public class EntityPuppet3rdKazekage extends ElementsNarutomodMod.ModElement {
 				cube_r3 = new ModelRenderer(this);
 				cube_r3.setRotationPoint(0.005F, -7.9697F, -3.8572F);
 				niceHair.addChild(cube_r3);
-				setRotationAngle(cube_r3, -1.0472F, 0.0F, 0.0F);
-				cube_r3.cubeList.add(new ModelBox(cube_r3, 32, 11, -4.0F, -6.15F, 0.15F, 8, 6, 7, 0.2F, false));
+				setRotationAngle(cube_r3, -0.8727F, 0.0F, 0.0F);
+				cube_r3.cubeList.add(new ModelBox(cube_r3, 32, 11, -4.0F, -6.15F, 0.15F, 8, 6, 7, 0.15F, true));
 		
 				cube_r4 = new ModelRenderer(this);
 				cube_r4.setRotationPoint(0.005F, -7.9697F, -3.8572F);
 				niceHair.addChild(cube_r4);
-				setRotationAngle(cube_r4, -1.2217F, 0.0F, 0.0F);
-				cube_r4.cubeList.add(new ModelBox(cube_r4, 32, 11, -4.0F, -6.65F, 0.25F, 8, 6, 7, 0.25F, true));
+				setRotationAngle(cube_r4, -1.0472F, 0.0F, 0.0F);
+				cube_r4.cubeList.add(new ModelBox(cube_r4, 32, 11, -4.0F, -6.15F, 0.15F, 8, 6, 7, 0.2F, false));
 		
 				cube_r5 = new ModelRenderer(this);
 				cube_r5.setRotationPoint(0.005F, -7.9697F, -3.8572F);
 				niceHair.addChild(cube_r5);
-				setRotationAngle(cube_r5, -1.3963F, 0.0F, 0.0F);
-				cube_r5.cubeList.add(new ModelBox(cube_r5, 32, 11, -4.0F, -7.15F, 0.35F, 8, 6, 7, 0.3F, false));
+				setRotationAngle(cube_r5, -1.2217F, 0.0F, 0.0F);
+				cube_r5.cubeList.add(new ModelBox(cube_r5, 32, 11, -4.0F, -6.65F, 0.25F, 8, 6, 7, 0.25F, true));
 		
+				cube_r6 = new ModelRenderer(this);
+				cube_r6.setRotationPoint(0.005F, -7.9697F, -3.8572F);
+				niceHair.addChild(cube_r6);
+				setRotationAngle(cube_r6, -1.3963F, 0.0F, 0.0F);
+				cube_r6.cubeList.add(new ModelBox(cube_r6, 32, 11, -4.0F, -7.15F, 0.35F, 8, 6, 7, 0.3F, false));
+
 				bipedBody = new ModelRenderer(this);
 				bipedBody.setRotationPoint(0.0F, 0.0F, 0.0F);
 				

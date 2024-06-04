@@ -167,7 +167,7 @@ public class ItemSenbon extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void onUpdate() {
 			super.onUpdate();
-			if (this.timeInGround > 400) {
+			if (this.timeInGround > 200) {
 				this.setDead();
 			}
 		}

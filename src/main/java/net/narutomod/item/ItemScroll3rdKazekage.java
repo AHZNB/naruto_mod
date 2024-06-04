@@ -3,6 +3,7 @@ package net.narutomod.item;
 
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.entity.EntitySandBullet;
+import net.narutomod.entity.EntitySandGathering;
 import net.narutomod.entity.EntityPuppet3rdKazekage;
 import net.narutomod.entity.EntityPuppet;
 import net.narutomod.entity.EntityRendererRegister;
@@ -47,6 +48,7 @@ public class ItemScroll3rdKazekage extends ElementsNarutomodMod.ModElement {
 	public static final Item block = null;
 	public static final int ENTITYID = 436;
 	public static final ItemJutsu.JutsuEnum SANDBULLET = new ItemJutsu.JutsuEnum(0, "sand_bullet", 'S', 100, 20d, new EntitySandBullet.EC.Jutsu());
+	public static final ItemJutsu.JutsuEnum GATHERING = new ItemJutsu.JutsuEnum(1, "sand_gathering", 'S', 200, 100d, new EntitySandGathering.EC.Jutsu());
 
 	public ItemScroll3rdKazekage(ElementsNarutomodMod instance) {
 		super(instance, 867);
@@ -54,7 +56,7 @@ public class ItemScroll3rdKazekage extends ElementsNarutomodMod.ModElement {
 
 	@Override
 	public void initElements() {
-		elements.items.add(() -> new RangedItem(SANDBULLET));
+		elements.items.add(() -> new RangedItem(SANDBULLET, GATHERING));
 		elements.entities.add(() -> EntityEntryBuilder.create().entity(EntityArrowCustom.class)
 				.id(new ResourceLocation("narutomod", "entitybulletscroll_3rd_kazekage"), ENTITYID).name("entitybulletscroll_3rd_kazekage")
 				.tracker(64, 1, true).build());
@@ -73,7 +75,6 @@ public class ItemScroll3rdKazekage extends ElementsNarutomodMod.ModElement {
 			this.setUnlocalizedName("scroll_3rd_kazekage");
 			this.setRegistryName("scroll_3rd_kazekage");
 			this.setCreativeTab(TabModTab.tab);
-			this.defaultCooldownMap[SANDBULLET.index] = 0;
 		}
 
 		@Override
@@ -114,7 +115,7 @@ public class ItemScroll3rdKazekage extends ElementsNarutomodMod.ModElement {
 			super.onUsingTick(stack, player, timeLeft);
 			if (!player.world.isRemote) {
 				EntityPuppet3rdKazekage.EntityCustom puppet = this.getPuppetEntity(stack, player.world);
-				if (puppet != null && this.getCurrentJutsu(stack) == SANDBULLET
+				if (puppet != null && puppet.isEntityAlive() && this.getCurrentJutsu(stack) == SANDBULLET
 				 && this.getPower(stack, player, timeLeft) < this.getMaxPower(stack, player)) {
 					EntitySandBullet.addPos(ItemJiton.Type.IRON, puppet, this.getPower(stack, player, timeLeft),
 					 puppet.getPositionVector().addVector(0d, 1.5d, 0d));
@@ -129,6 +130,9 @@ public class ItemScroll3rdKazekage extends ElementsNarutomodMod.ModElement {
 			if (!world.isRemote) {
 				if (this.getXpRatio(stack, SANDBULLET) < 1.0f) {
 					this.addJutsuXp(stack, SANDBULLET, this.getRequiredXp(stack, SANDBULLET) - this.getJutsuXp(stack, SANDBULLET));
+				}
+				if (this.getXpRatio(stack, GATHERING) < 1.0f) {
+					this.addJutsuXp(stack, GATHERING, this.getRequiredXp(stack, GATHERING) - this.getJutsuXp(stack, GATHERING));
 				}
 				EntityPuppet3rdKazekage.EntityCustom puppet = this.getPuppetEntity(stack, world);
 				if (puppet != null && puppet.isEntityAlive()) {

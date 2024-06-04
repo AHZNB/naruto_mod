@@ -79,7 +79,7 @@ import java.io.IOException;
 public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 	public static final List<Class <? extends Base>> TeamKonoha = Arrays.asList(EntityTenten.EntityCustom.class, EntitySakuraHaruno.EntityCustom.class, EntityIrukaSensei.EntityCustom.class, EntityMightGuy.EntityCustom.class);
 	public static final List<Class <? extends Base>> TeamZabuza = Arrays.asList(EntityZabuzaMomochi.EntityCustom.class, EntityHaku.EntityCustom.class);
-	public static final List<Class <? extends Base>> TeamItachi = Arrays.asList(EntityItachi.EntityCustom.class, EntityKisameHoshigaki.EntityCustom.class);
+	public static final List<Class <? extends Base>> TeamAkatsuki = Arrays.asList(EntityItachi.EntityCustom.class, EntityKisameHoshigaki.EntityCustom.class, EntitySasori.EntityCustom.class);
 
 	public EntityNinjaMob(ElementsNarutomodMod instance) {
 		super(instance, 404);

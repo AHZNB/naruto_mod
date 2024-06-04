@@ -167,6 +167,9 @@ public class EntitySandBullet extends ElementsNarutomodMod.ModElement {
 						st.forceRemove();
 						iter.remove();
 					}
+					if (entity instanceof EntityPuppet3rdKazekage.EntityCustom) {
+						((EntityPuppet3rdKazekage.EntityCustom)entity).setMouthOpen(false);
+					}
 					return true;
 				}
 				return false;

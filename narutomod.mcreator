@@ -1,8 +1,8 @@
 {
   "id_map": {
     "GUI": 64,
-    "ENTITY": 436,
-    "DIMENSION": 13
+    "DIMENSION": 13,
+    "ENTITY": 438
   },
   "mod_elements": [
     {
@@ -7327,6 +7327,18 @@
         "0": 436
       },
       "registry_name": "scroll_3rd_kazekage"
+    },
+    {
+      "name": "Sasori",
+      "type": "mob",
+      "sortid": 868,
+      "compiles": true,
+      "locked_code": true,
+      "ids": {
+        "0": 437,
+        "1": 438
+      },
+      "registry_name": "sasori"
     }
   ],
   "variable_elements": [
@@ -8968,6 +8980,7 @@
       "tooltip.shakuton.musthave": "Must have Fire \u0026 Wind release",
       "item.kunai_explosive.name": "Kunai Explosive",
       "item.scroll_hiding_in_camouflage.name": "Hiding In Camouflage jutsu",
+      "entity.sasori.name": "Sasori of the Red Sand",
       "effect.heaviness": "Heaviness",
       "item.samurai_armorlegs.name": "Samurai Leggings",
       "entity.sand_levitation.name": "Sand Levitation",

@@ -338,7 +338,7 @@ public class ItemSuiton extends ElementsNarutomodMod.ModElement {
 
 		@SideOnly(Side.CLIENT)
 		public class RenderStream extends EntityBeamBase.Renderer<EntityStream> {
-			private final ResourceLocation TEXTURE = new ResourceLocation("minecraft:textures/blocks/water_flow.png");
+			private final ResourceLocation texture = new ResourceLocation("minecraft:textures/blocks/water_flow.png");
 
 			public RenderStream(RenderManager renderManager) {
 				super(renderManager);
@@ -353,7 +353,7 @@ public class ItemSuiton extends ElementsNarutomodMod.ModElement {
 
 			@Override
 			protected ResourceLocation getEntityTexture(EntityStream entity) {
-				return TEXTURE;
+				return this.texture;
 			}
 		}
 
@@ -377,7 +377,7 @@ public class ItemSuiton extends ElementsNarutomodMod.ModElement {
 			public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
 				GlStateManager.pushMatrix();
 				GlStateManager.translate(0.0F, (this.scale - 1.0F) * 1.5F + 1F, 0.0F);
-				GlStateManager.scale(this.scale, this.scale, this.scale);
+				GlStateManager.scale(this.scale * 0.6F, this.scale, this.scale * 0.6F);
 				GlStateManager.color(1f, 1f, 1f, 1f);
 				this.bone.render(f5);
 				GlStateManager.popMatrix();

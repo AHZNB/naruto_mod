@@ -215,7 +215,7 @@ public class ItemYoton extends ElementsNarutomodMod.ModElement {
 	
 			@Override
 			public float getPowerupDelay() {
-				return 5.0f;
+				return 150.0f;
 			}
 	
 			@Override

@@ -185,6 +185,10 @@ public abstract class EntityShieldBase extends EntityLivingBase {
 		this.steerSpeed = speed;
 	}
 
+	public boolean canBeSteered() {
+		return this.ownerCanSteer;
+	}
+
 	@Override
 	public Entity getControllingPassenger() {
 		return this.getPassengers().isEmpty() ? null : this.getPassengers().get(0);

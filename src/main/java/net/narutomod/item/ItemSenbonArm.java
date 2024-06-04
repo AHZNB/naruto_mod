@@ -162,8 +162,8 @@ public class ItemSenbonArm extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void onUpdate() {
 			super.onUpdate();
-			if (!this.world.isRemote && this.ticksExisted > 10) {
-				for (int index0 = 0; index0 < 20; index0++) {
+			if (!this.world.isRemote && this.ticksExisted > 5) {
+				for (int index0 = 0; index0 < 30; index0++) {
 					ItemPoisonSenbon.spawnArrow(this, true);
 				}
 			}

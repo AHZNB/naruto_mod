@@ -93,7 +93,7 @@ public class ItemScrollHiruko extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public boolean itemInteractionForEntity(ItemStack stack, EntityPlayer playerIn, EntityLivingBase target, EnumHand hand) {
-			if (target instanceof EntityPuppetHiruko.EntityCustom && !playerIn.world.isRemote) {
+			if (target instanceof EntityPuppetHiruko.EntityCustom && !playerIn.world.isRemote && target.getControllingPassenger() == null) {
 				ItemStack stack1 = playerIn.getHeldItem(hand);
 				if (stack1.hasTagCompound() && !stack1.getTagCompound().getBoolean("sealed")) {
 					ProcedureUtils.poofWithSmoke(target);

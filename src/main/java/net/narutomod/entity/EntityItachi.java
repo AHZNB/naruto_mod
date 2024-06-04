@@ -231,7 +231,7 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public boolean isOnSameTeam(Entity entityIn) {
-			return super.isOnSameTeam(entityIn) || EntityNinjaMob.TeamItachi.contains(entityIn.getClass());
+			return super.isOnSameTeam(entityIn) || EntityNinjaMob.TeamAkatsuki.contains(entityIn.getClass());
 		}
 
 		private boolean isSusanooActive() {
@@ -425,7 +425,6 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-	@SideOnly(Side.CLIENT)
 	@Override
 	public void preInit(FMLPreInitializationEvent event) {
 		new Renderer().register();

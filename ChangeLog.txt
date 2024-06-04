@@ -25,9 +25,10 @@ Entities:
  - Kisame wears Akatsuki robe now and has a chance to drop it
  - improved Hirudora model
  - slightly buffed puppets health
- - 3rd kazekage puppet can use sand bullet jutsu (use with 3rd kazekage scroll)
+ - 3rd kazekage puppet can use sand bullet jutsu & sand gathering jutsu (use with 3rd kazekage scroll)
  - fixed jinchuriki's biju mode visibility bug
  - fixed perfect susanoo jerky body pitch when flying
+ - added Sasori mob, rides Hiruko puppet (WIP)
  
 General:
  - fixed alpha transparency bug when using certain jutsus

@@ -52,6 +52,8 @@ public class EntitySandGathering extends ElementsNarutomodMod.ModElement {
 
 	public static class EC extends Entity {
 		private static final DataParameter<Integer> DEATH_TICKS = EntityDataManager.<Integer>createKey(EC.class, DataSerializers.VARINT);
+		private final float baseExplosion = 6.0f;
+		private final int duration = 300;
 		private EntityLivingBase summoner;
 		private ItemJiton.SwarmTarget sandCloud;
 		private final int waitTime = 40;
@@ -72,6 +74,9 @@ public class EntitySandGathering extends ElementsNarutomodMod.ModElement {
 			Vec3d vec = summonerIn.getLookVec().scale(2d);
 			vec = summonerIn.getPositionVector().addVector(vec.x, 3.0d, vec.z);
 			this.setPosition(vec.x, vec.y, vec.z);
+			if (summonerIn instanceof EntityPuppet3rdKazekage.EntityCustom) {
+				((EntityPuppet3rdKazekage.EntityCustom)summonerIn).setMouthOpen(true);
+			}
 			this.sandCloud = new ItemJiton.SwarmTarget(this.world, 50, this.getMouthPos(), 
 			 this.getEntityBoundingBox(), new Vec3d(0.4d, 0.0d, 0.4d), 0.5f, 0.03f, false, 2f, ItemJiton.Type.IRON.getColor());
 		}
@@ -99,6 +104,9 @@ public class EntitySandGathering extends ElementsNarutomodMod.ModElement {
 			if (this.sandCloud != null) {
 				if (this.sandCloud.shouldRemove()) {
 					this.sandCloud = null;
+					if (this.summoner instanceof EntityPuppet3rdKazekage.EntityCustom) {
+						((EntityPuppet3rdKazekage.EntityCustom)this.summoner).setMouthOpen(false);
+					}
 				} else {
 					if (i == 0 && this.sandCloud.getTicks() > this.waitTime) {
 						this.sandCloud.forceRemove();
@@ -106,6 +114,9 @@ public class EntitySandGathering extends ElementsNarutomodMod.ModElement {
 					this.sandCloud.onUpdate();
 				}
 			} else if (!this.world.isRemote && i > 0) {
+				if (this.summoner instanceof EntityPuppet3rdKazekage.EntityCustom) {
+					((EntityPuppet3rdKazekage.EntityCustom)this.summoner).setMouthOpen(true);
+				}
 				this.sandCloud = new ItemJiton.SwarmTarget(this.world, 50, this.getEntityBoundingBox(),
 			 	 this.getMouthPos(), new Vec3d(0.2d, -0.1d, 0.2d), 0.5f, 0.03f, true, 2f, ItemJiton.Type.IRON.getColor());
 			}
@@ -123,36 +134,38 @@ public class EntitySandGathering extends ElementsNarutomodMod.ModElement {
 		public void onUpdate() {
 			super.onUpdate();
 			this.updateSandParticles();
-			if (this.motionX != 0d || this.motionY != 0d || this.motionZ != 0d) {
-				RayTraceResult result = this.forwardsRaycast(true);
-				if (!this.world.isRemote && result != null) {
-					this.world.createExplosion(this.summoner, result.hitVec.x, result.hitVec.y, result.hitVec.z, 3f,
-					  net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.world, this.summoner));
-					this.accelX = 0.0d;
-					this.accelY = 0.0d;
-					this.accelZ = 0.0d;
-					this.motionX = 0.0d;
-					this.motionZ = 0.0d;
-					this.motionY = 0.1d;
-					this.riseAgain = true;
-				}
-			}
-			this.posX += this.motionX;
-			this.posY += this.motionY;
-			this.posZ += this.motionZ;
-			this.motionX += this.accelX;
-			this.motionY += this.accelY;
-			this.motionZ += this.accelZ;
-			this.motionX *= 0.98D;
-			this.motionY *= 0.98D;
-			this.motionZ *= 0.98D;
-			if (this.riseAgain && this.summoner != null && this.posY >= this.summoner.posY + 3.0d) {
-				this.riseAgain = false;
-				this.motionY = 0.0d;
-			}
-			this.setPosition(this.posX, this.posY, this.posZ);
-			if (!this.world.isRemote && (this.summoner == null || this.getDeathTicks() > 0 || this.ticksExisted > 300)) {
+			if (!this.world.isRemote && (this.summoner == null || !this.summoner.isEntityAlive()
+			 || this.getDeathTicks() > 0 || this.ticksExisted > this.duration)) {
 				this.onDeathUpdate();
+			} else {
+				if (this.motionX != 0d || this.motionY != 0d || this.motionZ != 0d) {
+					RayTraceResult result = this.forwardsRaycast(true);
+					if (!this.world.isRemote && result != null) {
+						this.world.createExplosion(this.summoner, result.hitVec.x, result.hitVec.y, result.hitVec.z, this.baseExplosion,
+						  net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.world, this.summoner));
+						this.accelX = 0.0d;
+						this.accelY = 0.0d;
+						this.accelZ = 0.0d;
+						this.motionX = 0.0d;
+						this.motionZ = 0.0d;
+						this.motionY = 0.1d;
+						this.riseAgain = true;
+					}
+				}
+				this.posX += this.motionX;
+				this.posY += this.motionY;
+				this.posZ += this.motionZ;
+				this.motionX += this.accelX;
+				this.motionY += this.accelY;
+				this.motionZ += this.accelZ;
+				this.motionX *= 0.98D;
+				this.motionY *= 0.98D;
+				this.motionZ *= 0.98D;
+				if (this.riseAgain && this.summoner != null && this.posY >= this.summoner.posY + 3.0d) {
+					this.riseAgain = false;
+					this.motionY = 0.0d;
+				}
+				this.setPosition(this.posX, this.posY, this.posZ);
 			}
 		}
 
@@ -190,6 +203,12 @@ public class EntitySandGathering extends ElementsNarutomodMod.ModElement {
 					entity.getEntityData().setInteger(ID_KEY, entity1.getEntityId());
 					return true;
 				} else {
+					if (entity instanceof EntityPuppet3rdKazekage.EntityCustom) {
+						EntityLivingBase owner = ((EntityPuppet3rdKazekage.EntityCustom)entity).getOwner();
+						if (owner != null) {
+							entity = owner;
+						}
+					}
 					RayTraceResult res = ProcedureUtils.raytraceBlocks(entity, 40d);
 					if (res != null && res.typeOfHit == RayTraceResult.Type.BLOCK) {
 						((EC)entity1).shoot(res.hitVec.subtract(entity1.getPositionVector()));

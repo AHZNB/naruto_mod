@@ -67,7 +67,7 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 			super(worldIn);
 			this.experienceValue = 0;
 			this.enablePersistence();
-			this.setNoAI(true);
+			//this.setNoAI(true);
 			this.navigator = new PathNavigateFlying(this, worldIn);
 			this.moveHelper = new FlyHelper(this);
 		}
@@ -108,7 +108,7 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 
 		protected void setOwner(@Nullable EntityLivingBase player) {
 			this.getDataManager().set(OWNERID, Integer.valueOf(player != null ? player.getEntityId() : -1));
-			this.setNoAI(player == null);
+			//this.setNoAI(player == null);
 		}
 
 		protected Vec3d getOffsetToOwner() {
@@ -167,8 +167,8 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 		@Override
 		protected boolean processInteract(EntityPlayer player, EnumHand hand) {
 			ItemStack stack = player.getHeldItem(hand);
-			if (!this.world.isRemote && stack.getItem() == ItemNinjutsu.block 
-			 && ItemNinjutsu.getCurrentJutsu(stack) == ItemNinjutsu.PUPPET) {
+			if (!this.world.isRemote && stack.getItem() == ItemNinjutsu.block
+			 && ((ItemNinjutsu.RangedItem)stack.getItem()).canActivateJutsu(stack, ItemNinjutsu.PUPPET, player) == EnumActionResult.SUCCESS) {
 				this.setOwner(player.equals(this.getOwner()) ? null : player);
 				return true;
 			}
@@ -180,7 +180,7 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 			EntityLivingBase owner = this.getOwner();
 			if (this.getAttackTarget() == null && owner != null) {
 		    	RayTraceResult res = ProcedureUtils.objectEntityLookingAt(owner, 60d);
-		        this.getLookHelper().setLookPosition(res.hitVec.x, res.hitVec.y, res.hitVec.z, (float)this.getHorizontalFaceSpeed(), (float)this.getVerticalFaceSpeed());
+		        this.getLookHelper().setLookPosition(res.hitVec.x, res.hitVec.y, res.hitVec.z, 45.0f, 45.0f);
 			}
 			this.updateArmSwingProgress();
 			super.onLivingUpdate();
@@ -195,7 +195,7 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 	    	super.onUpdate();
 
 	    	EntityLivingBase owner = this.getOwner();
-	    	this.setNoGravity(owner != null);
+	    	//this.setNoGravity(owner != null);
 			if (owner != null && this.getVelocity() > 0.1d && this.ticksExisted % 2 == 0) {
 				this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:wood_click")), 
 				 0.6f, this.rand.nextFloat() * 0.6f + 0.6f);
@@ -234,6 +234,7 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 			@Override
 			public void onUpdateMoveHelper() {
 				if (this.action == EntityMoveHelper.Action.MOVE_TO) {
+	    			this.entity.setNoGravity(true);
 					this.action = EntityMoveHelper.Action.WAIT;
 					double d0 = this.posX - this.entity.posX;
 					double d1 = this.posY - this.entity.posY;
@@ -250,6 +251,8 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 						//this.entity.rotationYaw = this.limitAngle(this.entity.rotationYaw, f1, 10.0F);
 						this.entity.renderYawOffset = this.entity.rotationYaw = f1;
 					}
+				} else {
+	    			this.entity.setNoGravity(false);
 				}
 			}
 		}
@@ -282,7 +285,8 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 
 			@Override
 		    public boolean shouldContinueExecuting() {
-		        return this.owner != null && this.entity.getDistanceSq(this.owner) <= 1600d;
+		    	EntityLivingBase entitylb = this.entity.getOwner();
+		        return entitylb != null && this.entity.getDistanceSq(entitylb) <= 1600d;
 		    }
 
 			@Override

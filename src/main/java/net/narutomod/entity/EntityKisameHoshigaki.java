@@ -224,7 +224,7 @@ public class EntityKisameHoshigaki extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public boolean isOnSameTeam(Entity entityIn) {
-			return super.isOnSameTeam(entityIn) || EntityNinjaMob.TeamItachi.contains(entityIn.getClass());
+			return super.isOnSameTeam(entityIn) || EntityNinjaMob.TeamAkatsuki.contains(entityIn.getClass());
 		}
 
 		@Override
