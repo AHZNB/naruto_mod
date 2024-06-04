@@ -29,7 +29,8 @@ jobs:
 
     - name: Rename JAR file
       run: |
-          mv build/libs/*.jar build/libs/NarutoMod-1.12.2-0.3.1.beta.jar
+          DATE=$(date -u +'%Y-%m-%d')
+          mv build/libs/*.jar build/libs/NarutoMod-1.12.2-0.3.1.beta-${DATE}.jar
         
     - name: create release
       uses: softprops/action-gh-release@v1
