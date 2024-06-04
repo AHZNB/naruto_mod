@@ -10,6 +10,11 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
+    - name: delete old releases
+      uses: Nats-ji/delete-old-releases@v1
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+    
     - name: checkout code
       uses: actions/checkout@v2
 
