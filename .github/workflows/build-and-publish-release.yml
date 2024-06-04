@@ -34,7 +34,7 @@ jobs:
 
     - name: Rename JAR file
       run: |
-          DATE=$(date -u +'%Y-%m-%d')
+          DATE=$(date -u +'%Y-%m-%dT%H-%M-%S')
           mv build/libs/*.jar build/libs/NarutoMod-1.12.2-0.3.1.beta-${DATE}.jar
         
     - name: create release
