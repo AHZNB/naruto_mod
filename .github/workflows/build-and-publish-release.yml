@@ -16,7 +16,7 @@ jobs:
         release-drop: true
         release-drop-tag: false
       env:
-        GITHUB_TOKEN: ${{ secrets.TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     
     - name: checkout code
       uses: actions/checkout@v2
