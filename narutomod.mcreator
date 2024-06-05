@@ -1,8 +1,8 @@
 {
   "id_map": {
-    "GUI": 64,
     "DIMENSION": 13,
-    "ENTITY": 438
+    "ENTITY": 438,
+    "GUI": 64
   },
   "mod_elements": [
     {
@@ -7217,6 +7217,10 @@
           {
             "name": "entity",
             "type": "entity"
+          },
+          {
+            "name": "world",
+            "type": "world"
           }
         ]
       }
@@ -8311,8 +8315,8 @@
   ],
   "language_map": {
     "en_us": {
-      "item.kiba_blades.name": "Kiba Blades",
       "entity.crow.name": "Crow",
+      "item.kiba_blades.name": "Kiba Blades",
       "chattext.gedomazo.cantspawn": "Can\u0027t summon Gedo Mazo, it\u0027s already in the world",
       "entity.tenten.name": "Tenten",
       "item.futton.name": "Boil Release",
@@ -8326,8 +8330,8 @@
       "item.ryo_100.name": "100 Ryo",
       "tooltip.samehada.general": "Samehada is a sentient sword utilised by the Seven Ninja Swordsmen of the Mist and is regarded as the most terrifying out of all the Seven Swordsmen\u0027s blades.",
       "item.summoning_contract.name": "Summoning Contract",
-      "item.shuriken.name": "Shuriken",
       "item.ninja_armor_jiraiyaboots.name": "Ninja Armor Jiraiya Boots",
+      "item.shuriken.name": "Shuriken",
       "entity.cellular_activation.name": "Cellular Activation",
       "entity.entityasakujaku.name": "Asakujaku (Morning Peacock)",
       "item.scroll_water_dragon.name": "Water Release - Water Dragon Bullet",

@@ -378,6 +378,38 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 	    }
 	}
 
+	public static class AIRidingHurtByTarget extends EntityAITarget {
+	    EntityLivingBase attacker;
+	    private int timestamp;
+		
+	    public AIRidingHurtByTarget(EntityCreature theDefendingCreatureIn) {
+	        super(theDefendingCreatureIn, false);
+	        this.setMutexBits(1);
+	    }
+		
+	    @Override
+	    public boolean shouldExecute() {
+	        Entity entity = this.taskOwner.getRidingEntity();
+	        if (!(entity instanceof EntityLivingBase)) {
+	            return false;
+	        } else {
+	        	this.attacker = ((EntityLivingBase)entity).getRevengeTarget();
+		        int i = ((EntityLivingBase)entity).getRevengeTimer();
+		        return i != this.timestamp && this.isSuitableTarget(this.attacker, false);
+		    }
+		}
+		
+		@Override
+		public void startExecuting() {
+		    this.taskOwner.setAttackTarget(this.attacker);
+		    Entity entity = this.taskOwner.getRidingEntity();
+		    if (entity instanceof EntityLivingBase) {
+		        this.timestamp = ((EntityLivingBase)entity).getRevengeTimer();
+		    }
+		    super.startExecuting();
+		}
+	}
+
 	public static class ClientClass {
 		@SideOnly(Side.CLIENT)
 		public static abstract class RenderScroll<T extends Entity> extends Render<T> {

@@ -113,9 +113,11 @@ public class ItemZzz extends ElementsNarutomodMod.ModElement {
 			int x = (int) entity.posX;
 			int y = (int) entity.posY;
 			int z = (int) entity.posZ;
+			World world = entity.world;
 			{
 				Map<String, Object> $_dependencies = new HashMap<>();
 				$_dependencies.put("entity", entity);
+				$_dependencies.put("world", world);
 				ProcedureZzzEntitySwingsItem.executeProcedure($_dependencies);
 			}
 			return retval;

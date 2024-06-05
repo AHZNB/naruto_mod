@@ -68,44 +68,28 @@ public class ItemPoisonSenbon extends ElementsNarutomodMod.ModElement {
 			setCreativeTab(TabModTab.tab);
 		}
 
-		@Override
-		public void onPlayerStoppedUsing(ItemStack itemstack, World world, EntityLivingBase entityLivingBase, int timeLeft) {
-			if (entityLivingBase instanceof EntityPlayerMP) {
-				EntityPlayerMP entity = (EntityPlayerMP) entityLivingBase;
-				boolean flag = entity.getRidingEntity() instanceof EntityPuppetHiruko.EntityCustom;
-				if (flag) {
+		public static void shootItem(EntityLivingBase entity) {
+			if (!entity.world.isRemote) {
+				if (entity.getRidingEntity() instanceof EntityPuppetHiruko.EntityCustom) {
 					for (int i = 0; i < 3; i++) {
 						spawnArrow((EntityLivingBase)entity.getRidingEntity(), false);
 					}
 				} else {
 					spawnArrow(entity, false);
-				}
-				if (!entity.capabilities.isCreativeMode
-				 && EnchantmentHelper.getEnchantmentLevel(Enchantments.INFINITY, itemstack) <= 0) {
-					entity.inventory.clearMatchingItems(block, -1, flag ? 3 : 1, null);
 				}
 			}
 		}
 
-		/*@Override
-		public void onUsingTick(ItemStack itemstack, EntityLivingBase entityLivingBase, int count) {
-			if (entityLivingBase instanceof EntityPlayerMP) {
-				EntityPlayerMP entity = (EntityPlayerMP) entityLivingBase;
-				boolean flag = entity.getRidingEntity() instanceof EntityPuppetHiruko.EntityCustom;
-				if (flag) {
-					for (int i = 0; i < 3; i++) {
-						spawnArrow((EntityLivingBase)entity.getRidingEntity(), false);
-					}
-				} else {
-					spawnArrow(entity, false);
-				}
-				if (!entity.capabilities.isCreativeMode
+		@Override
+		public void onPlayerStoppedUsing(ItemStack itemstack, World world, EntityLivingBase entity, int timeLeft) {
+			if (entity instanceof EntityPlayerMP) {
+				shootItem(entity);
+				if (!((EntityPlayerMP)entity).isCreative()
 				 && EnchantmentHelper.getEnchantmentLevel(Enchantments.INFINITY, itemstack) <= 0) {
-					entity.inventory.clearMatchingItems(block, -1, flag ? 3 : 1, null);
+					((EntityPlayerMP)entity).inventory.clearMatchingItems(block, -1, entity.getRidingEntity() instanceof EntityPuppetHiruko.EntityCustom ? 3 : 1, null);
 				}
 			}
-			entityLivingBase.resetActiveHand();
-		}*/
+		}
 	}
 
 	public static void spawnArrow(Entity entity, boolean randomDirection) {

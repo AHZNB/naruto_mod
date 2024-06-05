@@ -79,32 +79,31 @@ public class ItemSenbonArm extends ElementsNarutomodMod.ModElement {
 			setCreativeTab(TabModTab.tab);
 		}
 
-		@Override
-		public void onPlayerStoppedUsing(ItemStack itemstack, World world, EntityLivingBase entityLivingBase, int timeLeft) {
-			float power = ItemBow.getArrowVelocity(this.getMaxItemUseDuration(itemstack) - timeLeft);
-			if (!world.isRemote && entityLivingBase instanceof EntityPlayerMP && power > 0.2f) {
-				EntityPlayerMP entity = (EntityPlayerMP) entityLivingBase;
-				EntityArrowCustom entityarrow = new EntityArrowCustom(world, entity);
+		public static void shootItem(EntityLivingBase entity, float power) {
+			if (!entity.world.isRemote) {
+				entity.world.playSound(null, entity.posX, entity.posY, entity.posZ, net.minecraft.util.SoundEvent.REGISTRY
+						.getObject(new ResourceLocation("narutomod:bullet")), SoundCategory.NEUTRAL,
+						1, 1f / (itemRand.nextFloat() * 0.5f + 1f) + (power / 2));
+				EntityArrowCustom entityarrow = new EntityArrowCustom(entity.world, entity);
 				entityarrow.shoot(entity.getLookVec().x, entity.getLookVec().y, entity.getLookVec().z, power * 3.0f, 2.0f);
 				entityarrow.setSilent(true);
 				entityarrow.setIsCritical(true);
 				entityarrow.setDamage(5);
 				entityarrow.setKnockbackStrength(5);
 				entityarrow.power = power;
-				itemstack.damageItem(1, entity);
-				int x = (int) entity.posX;
-				int y = (int) entity.posY;
-				int z = (int) entity.posZ;
-				world.playSound((EntityPlayer) null, (double) x, (double) y, (double) z,
-						(net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY
-								.getObject(new ResourceLocation(("narutomod:bullet"))),
-						SoundCategory.NEUTRAL, 1, 1f / (itemRand.nextFloat() * 0.5f + 1f) + (power / 2));
-				if (entity.capabilities.isCreativeMode) {
-					entityarrow.pickupStatus = EntityArrow.PickupStatus.CREATIVE_ONLY;
-				} else {
+				entityarrow.pickupStatus = EntityArrow.PickupStatus.DISALLOWED;
+				entity.world.spawnEntity(entityarrow);
+			}
+		}
+
+		@Override
+		public void onPlayerStoppedUsing(ItemStack itemstack, World world, EntityLivingBase entityLivingBase, int timeLeft) {
+			float power = ItemBow.getArrowVelocity(this.getMaxItemUseDuration(itemstack) - timeLeft);
+			if (!world.isRemote && power > 0.2f) {
+				shootItem(entityLivingBase, power);
+				if (entityLivingBase instanceof EntityPlayer && !((EntityPlayer)entityLivingBase).isCreative()) {
 					itemstack.shrink(1);
 				}
-				world.spawnEntity(entityarrow);
 			}
 			if (entityLivingBase.getRidingEntity() instanceof EntityPuppetHiruko.EntityCustom) {
 				((EntityPuppetHiruko.EntityCustom)entityLivingBase.getRidingEntity()).raiseLeftArm(false);
@@ -131,7 +130,7 @@ public class ItemSenbonArm extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-	public static class EntityArrowCustom extends EntityTippedArrow {
+	public static class EntityArrowCustom extends EntityArrow {
 		public float power;
 
 		public EntityArrowCustom(World a) {
@@ -170,6 +169,11 @@ public class ItemSenbonArm extends ElementsNarutomodMod.ModElement {
 			if (this.inGround) {
 				this.setDead();
 			}
+		}
+
+		@Override
+		protected ItemStack getArrowStack() {
+			return ItemStack.EMPTY;
 		}
 	}
 }

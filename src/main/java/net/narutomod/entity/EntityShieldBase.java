@@ -151,8 +151,8 @@ public abstract class EntityShieldBase extends EntityLivingBase {
 		this.prevRotationYaw = this.rotationYaw;
 		this.rotationPitch = passenger.rotationPitch;
 		this.setRotation(this.rotationYaw, this.rotationPitch);
-		this.renderYawOffset = passenger.rotationYaw;
-		this.rotationYawHead = passenger.rotationYaw;
+		this.renderYawOffset = passenger instanceof EntityLivingBase ? ((EntityLivingBase)passenger).renderYawOffset : passenger.rotationYaw;
+		this.rotationYawHead = passenger.getRotationYawHead();
 	}
 
 	@Override

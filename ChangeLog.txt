@@ -15,6 +15,7 @@ Items:
  - added Sound 5 clothing and forehead protector
  - added Jiraiya jacket, clothing, forehead protector and robe
  - added 3rd Kazekage puppet scroll
+ - senbons now does 4 melee damage, poison senbons 5 minute poison effect
 
 Entities:
  - re-textured kisame's face
@@ -28,7 +29,7 @@ Entities:
  - 3rd kazekage puppet can use sand bullet jutsu & sand gathering jutsu (use with 3rd kazekage scroll)
  - fixed jinchuriki's biju mode visibility bug
  - fixed perfect susanoo jerky body pitch when flying
- - added Sasori mob, rides Hiruko puppet (WIP)
+ - added Sasori mob, rides Hiruko puppet (WIP-2: improved AI while riding Hiruko puppet)
  
 General:
  - fixed alpha transparency bug when using certain jutsus

@@ -755,7 +755,7 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static class MoveHelper extends EntityMoveHelper {
-		public MoveHelper(EntityCreature entityIn) {
+		public MoveHelper(EntityLiving entityIn) {
 			super(entityIn);
 		}
 

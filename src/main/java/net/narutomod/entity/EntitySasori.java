@@ -25,8 +25,8 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntityDamageSource;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.entity.ai.EntityAISwimming;
-import net.minecraft.entity.ai.EntityAIAttackMelee;
 import net.minecraft.entity.ai.EntityAIWatchClosest2;
 import net.minecraft.entity.ai.EntityAIWander;
 import net.minecraft.entity.ai.EntityAILookIdle;
@@ -38,6 +38,7 @@ import net.minecraft.entity.IRangedAttackMob;
 import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.EntityPlayer;
+//import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.client.renderer.entity.RenderManager;
@@ -48,7 +49,6 @@ import net.minecraft.item.ItemStack;
 
 import javax.annotation.Nullable;
 import com.google.common.base.Predicate;
-import net.minecraft.entity.monster.EntityMob;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntitySasori extends ElementsNarutomodMod.ModElement {
@@ -70,7 +70,7 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 		MinecraftForge.EVENT_BUS.register(new EntityCustom.AttackHook());
 	}
 
-	public static class EntityCustom extends EntityNinjaMob.Base implements IMob/*, IRangedAttackMob*/ {
+	public static class EntityCustom extends EntityNinjaMob.Base implements IMob, IRangedAttackMob {
 		private final BossInfoServer bossInfo = new BossInfoServer(this.getDisplayName(), BossInfo.Color.RED, BossInfo.Overlay.PROGRESS);
 		private final int BLOCKING_CD = 30;
 		private int lastBlockTime;
@@ -100,39 +100,25 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 		protected void initEntityAI() {
 			super.initEntityAI();
 			this.tasks.addTask(0, new EntityAISwimming(this));
-			/*this.tasks.addTask(1, new EntityNinjaMob.AIAttackRangedJutsu(this, 100, 15.0F) {
-				@Override
-				public boolean shouldExecute() {
-					return super.shouldExecute() && (!EntityCustom.this.isRiding()
-							|| EntityCustom.this.getAttackTarget().getDistance(EntityCustom.this) >= 7d);
-				}
-			});*/
-			this.tasks.addTask(2, new EntityAIAttackMelee(this, 1.0d, true) {
+			this.tasks.addTask(1, new EntityNinjaMob.AIAttackRangedTactical(this, 0.6d, 30, 12.0F) {
 				@Override
 				public boolean shouldExecute() {
 					return super.shouldExecute() && EntityCustom.this.isRidingHiruko();
-					 //&& EntityCustom.this.getAttackTarget().getDistance(EntityCustom.this) < 7d;
-				}
-				@Override
-				public boolean shouldContinueExecuting() {
-					return super.shouldContinueExecuting() && EntityCustom.this.isRiding();
-				}
-				@Override
-				protected double getAttackReachSqr(EntityLivingBase attackTarget) {
-					return (5.3d + 0.5d * attackTarget.width) * (5.3d + 0.5d * attackTarget.width);
+					 //&& EntityCustom.this.getAttackTarget().getDistance(EntityCustom.this) < 15.0d;
 				}
 			});
 			this.tasks.addTask(3, new EntityAIWatchClosest2(this, EntityPlayer.class, 15.0F, 1.0F));
 			this.tasks.addTask(4, new EntityAIWander(this, 0.3));
 			this.tasks.addTask(5, new EntityAILookIdle(this));
 			this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, false));
-			this.targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, EntityPlayer.class, 10, true, false,
+			this.targetTasks.addTask(2, new EntityPuppet.AIRidingHurtByTarget(this));
+			this.targetTasks.addTask(3, new EntityAINearestAttackableTarget(this, EntityPlayer.class, 10, true, false,
 					new Predicate<EntityPlayer>() {
 						public boolean apply(@Nullable EntityPlayer p_apply_1_) {
 							return p_apply_1_ != null && EntityBijuManager.isJinchuriki(p_apply_1_);
 						}
 					}));
-			this.targetTasks.addTask(3, new EntityAINearestAttackableTarget(this, EntityMob.class, false, false));
+			//this.targetTasks.addTask(4, new EntityAINearestAttackableTarget(this, EntityMob.class, false, false));
 		}
 
 		@Override
@@ -158,25 +144,31 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
-		protected void updateAITasks() {
-			super.updateAITasks();
-			if (this.isRidingHiruko()) {
-				this.setAttackTarget(this.hirukoEntity.getRevengeTarget());
-			}
-		}
-		
-		/*@Override
 		public void setSwingingArms(boolean swingingArms) {
 		}
 
 		@Override
 		public void attackEntityWithRangedAttack(EntityLivingBase target, float flval) {
-			float power = this.useAltModel() ? 5f : (1f + this.rand.nextFloat());
-			if (!this.world.isRemote && this.consumeChakra(WATERSHARK_CHAKRA * power)) {
-				new EntitySuitonShark.EC.Jutsu().createJutsu(this, power);
-				this.standStillFor(80);
+			if (this.isRidingHiruko()) {
+				if (this.getDistance(target) < 7.0d) {
+					this.swingArm(EnumHand.MAIN_HAND);
+					this.attackEntityAsMob(target);
+				} else {
+					Vec3d vec = target.getPositionEyes(1f);
+					for (int i = 0; i < 20; i++) {
+						ItemPoisonSenbon.spawnArrow(this.hirukoEntity, vec);
+					}
+				}
 			}
-		}*/
+		}
+
+		@Override
+		public void travel(float strafe, float vertical, float forward) {
+			if (this.isServerWorld() && this.isRidingHiruko() && this.motionY > 0.01d) {
+				this.hirukoEntity.motionY = this.motionY * 0.8d;
+			}
+			super.travel(strafe, vertical, forward);
+		}
 
 		@Override
 		public boolean getCanSpawnHere() {
@@ -219,6 +211,15 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 					this.hirukoEntity = (EntityPuppetHiruko.EntityCustom)this.getRidingEntity();
 				}
 			}
+			if (!this.world.isRemote) {
+				if (this.isRidingHiruko()) {
+					if (this.width < this.hirukoEntity.width - 0.01f) {
+						this.setSize(this.hirukoEntity.width - 0.01f, this.hirukoEntity.height - 0.01f);
+					}
+				} else if (this.width > 0.525f) {
+					this.setSize(0.525f, 1.75f);
+				}
+			}
 			super.onUpdate();
 			if (!this.world.isRemote && this.isRidingHiruko() && this.ticksExisted > this.lastBlockTime + 20) {
 				this.hirukoEntity.blockAttack(false);
@@ -237,6 +238,11 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 
 		private boolean isRidingHiruko() {
 			return this.hirukoEntity != null && this.hirukoEntity.isEntityAlive() && this.hirukoEntity.equals(this.getRidingEntity());
+		}
+
+		@Override
+		public double getYOffset() {
+			return -0.35d;
 		}
 
 		public static class AttackHook {
