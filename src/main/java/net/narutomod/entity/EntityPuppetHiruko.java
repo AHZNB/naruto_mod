@@ -173,7 +173,7 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public float getEyeHeight() {
-			return this.isRobeOff() ? 0.4375f : 0.9375f;
+			return this.isRobeOff() ? 0.4375f : 1.0f;
 		}
 
 		@Override
@@ -202,11 +202,8 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		protected void damageEntity(DamageSource source, float amount) {
-			if (source.isProjectile()) {
-				amount *= 0.4f;
-			}
 			if (this.shouldBlock) {
-				amount *= 0.2f;
+				amount *= this.rand.nextFloat() * 0.2f;
 			}
 			super.damageEntity(source, amount);
 		}
@@ -233,7 +230,7 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 		public void onUpdate() {
 			super.onUpdate();
 			boolean robeOff = this.isRobeOff();
-			if (this.isAkatsuki() && !robeOff && this.rand.nextInt(200) == 0) {
+			if (this.isAkatsuki() && !robeOff && !this.maskOff && this.rand.nextInt(200) == 0) {
 				this.playSound(net.minecraft.util.SoundEvent.REGISTRY
 				 .getObject(new ResourceLocation("narutomod:dingding")), 0.8f, this.rand.nextFloat() * 0.1f + 0.95f);
 			}
@@ -286,10 +283,19 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 			  || ((EntityLivingBase)rider).getHeldItemOffhand().getItem() == ItemSenbonArm.block);
 		}
 
-		private boolean hasSenbonArmInRiderInventory() {
+		public boolean hasSenbonArmInRiderInventory() {
 			Entity rider = this.getControllingPassenger();
-			return rider instanceof EntityPlayer
-			 && ProcedureUtils.hasItemInInventory((EntityPlayer)rider, ItemSenbonArm.block);
+			if (rider instanceof EntityPlayer) {
+				return ProcedureUtils.hasItemInInventory((EntityPlayer)rider, ItemSenbonArm.block);
+			} else if (rider instanceof EntityNinjaMob.Base) {
+				for (int i = 0; i < ((EntityNinjaMob.Base)rider).getInventorySize(); i++) {
+					if (((EntityNinjaMob.Base)rider).getItemFromInventory(i).getItem() == ItemSenbonArm.block) {
+						return true;
+					}
+				}
+				return this.isRiderHoldingSenbonArm();
+			}
+			return false;
 		}
 
 		public void raiseLeftArm(boolean b) {
@@ -476,11 +482,7 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 			private final ModelRenderer leftThigh;
 			private final ModelRenderer calfLeft;
 			private final ModelRenderer[] tail = new ModelRenderer[30];
-			private final ModelRenderer tailEnd;
-			private final ModelRenderer bone;
-			private final ModelRenderer bone14;
-			private final ModelRenderer bone2;
-			private final ModelRenderer bone15;
+			private final ModelRenderer[] tailEnd = new ModelRenderer[21];
 			private final Vector3f[] tailSway = new Vector3f[10];
 			private final Vector3f[][] tailPoseRobeOn = {
 				{
@@ -524,8 +526,8 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 				{
 					new Vector3f(),
 					new Vector3f(0.2618F, 0.0F, 0.0F), new Vector3f(0.2618F, 0.0F, 0.0F), new Vector3f(0.1745F, 0.0F, 0.0F),
-					new Vector3f(0.0873F, 0.0F, 0.0F), new Vector3f(0.0436F, 0.0F, 0.0F), new Vector3f(0.0436F, 0.0F, 0.0F), 
-					new Vector3f(0.0436F, 0.0F, 0.0F), new Vector3f(0.0436F, 0.0F, 0.0F), new Vector3f(0.0436F, 0.0F, 0.0F),
+					new Vector3f(0.1745F, 0.0F, 0.0F), new Vector3f(0.1745F, 0.0F, 0.0F), new Vector3f(0.0873F, 0.0F, 0.0F), 
+					new Vector3f(0.0873F, 0.0F, 0.0F), new Vector3f(0.0436F, 0.0F, 0.0F), new Vector3f(0.0436F, 0.0F, 0.0F),
 					new Vector3f(0.0436F, 0.0F, 0.0F), new Vector3f(0.0436F, 0.0F, 0.0F), new Vector3f(0.0436F, 0.0F, 0.0F), 
 					new Vector3f(0.0436F, 0.0F, 0.0F), new Vector3f(0.0436F, 0.0F, 0.0F), new Vector3f(0.0436F, 0.0F, 0.0F), 
 					new Vector3f(0.0436F, 0.0F, 0.0F), new Vector3f(0.0436F, 0.0F, 0.0F), new Vector3f(0.0436F, 0.0F, 0.0F), 
@@ -585,7 +587,7 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 				hair.setRotationPoint(0.0F, 0.0F, 0.0F);
 				bipedHeadwear.addChild(hair);
 				bone16 = new ModelRenderer(this);
-				bone16.setRotationPoint(0.0F, -6.0F, 4.0F);
+				bone16.setRotationPoint(0.0F, -6.0F, 4.25F);
 				hair.addChild(bone16);
 				setRotationAngle(bone16, 1.0472F, 0.0F, 0.0F);
 				bone16.cubeList.add(new ModelBox(bone16, 74, 0, -0.5F, 0.0F, 0.0F, 1, 0, 2, 0.2F, false));
@@ -645,7 +647,7 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 				setRotationAngle(bone32, 0.2618F, 0.0F, 0.0F);
 				bone32.cubeList.add(new ModelBox(bone32, 74, 0, -0.5F, 0.0F, 0.0F, 1, 0, 2, 0.0F, false));
 				bone25 = new ModelRenderer(this);
-				bone25.setRotationPoint(-0.75F, -5.75F, 4.0F);
+				bone25.setRotationPoint(-0.75F, -5.75F, 4.25F);
 				hair.addChild(bone25);
 				setRotationAngle(bone25, 1.0472F, 0.0F, -0.4363F);
 				bone25.cubeList.add(new ModelBox(bone25, 74, 0, -0.5F, 0.0F, 0.0F, 1, 0, 2, 0.2F, false));
@@ -665,7 +667,7 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 				setRotationAngle(bone28, 0.2618F, 0.0F, 0.0F);
 				bone28.cubeList.add(new ModelBox(bone28, 74, 0, -0.5F, -0.1F, 0.0F, 1, 0, 2, 0.0F, false));
 				bone20 = new ModelRenderer(this);
-				bone20.setRotationPoint(0.75F, -5.75F, 4.0F);
+				bone20.setRotationPoint(0.75F, -5.75F, 4.25F);
 				hair.addChild(bone20);
 				setRotationAngle(bone20, 1.0472F, 0.0F, 0.4363F);
 				bone20.cubeList.add(new ModelBox(bone20, 74, 0, -0.5F, 0.0F, 0.0F, 1, 0, 2, 0.2F, false));
@@ -981,32 +983,31 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 					tail[i-1].addChild(tail[i]);
 					tail[i].cubeList.add(new ModelBox(tail[i], 32, 56, -2.0F, -0.5F, 0.0F, 4, 1, 4, 0.0F, false));
 				}
-				tailEnd = new ModelRenderer(this);
-				tailEnd.setRotationPoint(0.0F, 0.0F, 4.0F);
-				//tail[23].addChild(tailEnd);
-				tail[9].addChild(tailEnd);
-				tail[10].showModel = false;
-				setRotationAngle(tailEnd, 0.2618F, 0.0F, 0.0F);
-				tailEnd.cubeList.add(new ModelBox(tailEnd, 58, 58, -2.0F, -0.5F, 0.0F, 4, 1, 2, 0.0F, false));
-				bone = new ModelRenderer(this);
-				bone.setRotationPoint(0.0F, 0.5F, 2.0F);
-				tailEnd.addChild(bone);
-				setRotationAngle(bone, 0.2618F, 0.0F, 0.0F);
-				bone14 = new ModelRenderer(this);
-				bone14.setRotationPoint(0.0F, -1.0F, 0.0F);
-				bone.addChild(bone14);
-				setRotationAngle(bone14, 0.0F, 0.7854F, 0.0F);
-				bone14.cubeList.add(new ModelBox(bone14, 56, 50, -1.5F, 0.0F, -1.5F, 3, 1, 3, 0.0F, false));
-				bone2 = new ModelRenderer(this);
-				bone2.setRotationPoint(0.0F, -0.5F, 2.0F);
-				tailEnd.addChild(bone2);
-				setRotationAngle(bone2, -0.2618F, 0.0F, 0.0F);
-				bone15 = new ModelRenderer(this);
-				bone15.setRotationPoint(0.0F, 1.0F, 0.0F);
-				bone2.addChild(bone15);
-				setRotationAngle(bone15, 0.0F, 0.7854F, 0.0F);
-				bone15.cubeList.add(new ModelBox(bone15, 60, 54, -1.5F, -1.0F, -1.5F, 3, 1, 3, 0.0F, false));
-	
+				for (int i = 0; i < tailEnd.length; i++) {
+					tailEnd[i] = new ModelRenderer(this);
+					tailEnd[i].setRotationPoint(0.0F, 0.0F, 4.0F);
+					tail[9+i].addChild(tailEnd[i]);
+					setRotationAngle(tailEnd[i], 0.2618F, 0.0F, 0.0F);
+					tailEnd[i].cubeList.add(new ModelBox(tailEnd[i], 58, 58, -2.0F, -0.5F, 0.0F, 4, 1, 2, 0.0F, false));
+					ModelRenderer bone = new ModelRenderer(this);
+					bone.setRotationPoint(0.0F, 0.5F, 2.0F);
+					tailEnd[i].addChild(bone);
+					setRotationAngle(bone, 0.2618F, 0.0F, 0.0F);
+					ModelRenderer bone14 = new ModelRenderer(this);
+					bone14.setRotationPoint(0.0F, -1.0F, 0.0F);
+					bone.addChild(bone14);
+					setRotationAngle(bone14, 0.0F, 0.7854F, 0.0F);
+					bone14.cubeList.add(new ModelBox(bone14, 56, 50, -1.5F, 0.0F, -1.5F, 3, 1, 3, 0.0F, false));
+					ModelRenderer bone2 = new ModelRenderer(this);
+					bone2.setRotationPoint(0.0F, -0.5F, 2.0F);
+					tailEnd[i].addChild(bone2);
+					setRotationAngle(bone2, -0.2618F, 0.0F, 0.0F);
+					ModelRenderer bone15 = new ModelRenderer(this);
+					bone15.setRotationPoint(0.0F, 1.0F, 0.0F);
+					bone2.addChild(bone15);
+					setRotationAngle(bone15, 0.0F, 0.7854F, 0.0F);
+					bone15.cubeList.add(new ModelBox(bone15, 60, 54, -1.5F, -1.0F, -1.5F, 3, 1, 3, 0.0F, false));
+				}
 				for (int j = 1; j < tailSway.length; j++) {
 					tailSway[j] = new Vector3f((rand.nextFloat() - 0.5f) * 0.2618F,
 					 (rand.nextFloat() - 0.5f) * 0.5236F, (rand.nextFloat() - 0.5f) * 0.0436F);
@@ -1062,34 +1063,26 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 				if (entity.poseProgress >= 0) {
 					switch (pose) {
 					case 0:
-						int j = MathHelper.clamp((int)(((float)entity.poseProgressEnd - (float)entity.poseProgress - pt + 1f) / (float)entity.poseProgressEnd * 14f), 0, 14);
-						ModelRenderer mr = tail[8 + j];
-						if (mr.childModels == null || !mr.childModels.contains(tailEnd)) {
-							mr.addChild(tailEnd);
+						int j = MathHelper.clamp((int)(((float)entity.poseProgressEnd - (float)entity.poseProgress - pt + 1f) / (float)entity.poseProgressEnd * 13f), 0, 13);
+						tail[10+j].showModel = false;
+						for (int i = 0; i < tailEnd.length; i++) {
+							tailEnd[i].showModel = false;
 						}
-						tail[9 + j].showModel = false;
-						if (tail[9 + j].childModels != null) {
-							tail[9 + j].childModels.remove(tailEnd);
-						}
+						tailEnd[j].showModel = true;
 						break;
 					case 1:
 					case 2:
-						int segments = pose == 1 ? 20 : 14;
+						int segments = pose == 1 ? 19 : 13;
 						j = MathHelper.clamp((int)(((float)entity.poseProgress + pt) / (float)entity.poseProgressEnd * (float)segments), 0, segments);
-						if (tail[8 + j].childModels != null) {
-							tail[8 + j].childModels.remove(tailEnd);
+						for (int i = 0; i < tailEnd.length; i++) {
+							tailEnd[i].showModel = false;
 						}
-						mr = tail[9 + j];
-						if (mr.childModels == null || !mr.childModels.contains(tailEnd)) {
-							mr.addChild(tailEnd);
-						}
-						if (j < segments) {
-							tail[10 + j].showModel = false;
-						} else if (pose == 2) {
-							tail[24].showModel = false;
+						tailEnd[j+1].showModel = true;
+						if (j < 19) {
+							tail[11+j].showModel = false;
 						}
 						float f9 = (float)(entity.poseProgressEnd - entity.poseProgress + 1);
-						for (int i = 9 + j; i > 0; i--) {
+						for (int i = 10 + j; i > 0; i--) {
 							float f6 = tail[i-1].rotateAngleX;
 							float f7 = tail[i-1].rotateAngleY;
 							float f8 = tail[i-1].rotateAngleZ;
@@ -1108,10 +1101,10 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 					}
 				}
 				if (pose == 2 || entity.poseProgress < 0) {
-					for (int j = 1; j < 10; j++) {
-						tail[j].rotateAngleX = tailPose[pose][j].x + MathHelper.sin((f2 - j) * 0.1F) * tailSway[j].x;
-						tail[j].rotateAngleZ = tailPose[pose][j].z + MathHelper.cos((f2 - j) * 0.1F) * tailSway[j].z;
-						tail[j].rotateAngleY = tailPose[pose][j].y + MathHelper.sin((f2 - j) * 0.1F) * tailSway[j].y;
+					for (int i = 1; i < tailSway.length; i++) {
+						tail[i].rotateAngleX = tailPose[pose][i].x + MathHelper.sin((f2 - i) * 0.1F) * tailSway[i].x;
+						tail[i].rotateAngleZ = tailPose[pose][i].z + MathHelper.cos((f2 - i) * 0.1F) * tailSway[i].z;
+						tail[i].rotateAngleY = tailPose[pose][i].y + MathHelper.sin((f2 - i) * 0.1F) * tailSway[i].y;
 					}
 				}
 				this.copyModelAngles(bipedHead, bipedHeadwear);

@@ -1,7 +1,7 @@
 {
   "id_map": {
-    "DIMENSION": 13,
     "ENTITY": 438,
+    "DIMENSION": 13,
     "GUI": 64
   },
   "mod_elements": [
@@ -8617,7 +8617,7 @@
       "item.nuibari_thrown.name": "Nuibari Sword",
       "item.scroll_swamp_pit.name": "Earth Release: Hell Swamp",
       "entity.ice_prison.name": "Ice Prison",
-      "item.senbon_arm.name": "Senbon Arm",
+      "item.senbon_arm.name": "Puppet poison senbon arm canon",
       "chattext.mightguy.arrival": "Konoha\u0027s Noble Green Beast has arrived! This is the power of youth!",
       "chattext.amaterasu": "Amaterasu!",
       "item.clothes_mizukageboots.name": "Clothes Mizukage Boots",

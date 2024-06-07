@@ -71,7 +71,7 @@ public class ItemPoisonSenbon extends ElementsNarutomodMod.ModElement {
 		public static void shootItem(EntityLivingBase entity) {
 			if (!entity.world.isRemote) {
 				if (entity.getRidingEntity() instanceof EntityPuppetHiruko.EntityCustom) {
-					for (int i = 0; i < 3; i++) {
+					for (int i = 0; i < 5; i++) {
 						spawnArrow((EntityLivingBase)entity.getRidingEntity(), false);
 					}
 				} else {

@@ -105,7 +105,7 @@ public class ItemBakuton extends ElementsNarutomodMod.ModElement {
 		public void onUsingTick(ItemStack stack, EntityLivingBase player, int count) {
 			if (player instanceof EntityPlayer && !player.world.isRemote && this.getCurrentJutsu(stack) == CLAY) {
 				((EntityPlayer)player).sendStatusMessage(
-				 new TextComponentString("C-" + (int)this.getPower(stack, player, count)), true);
+				 new TextComponentString("C-" + Math.max(1, (int)this.getPower(stack, player, count))), true);
 			} else {
 				super.onUsingTick(stack, player, count);
 			}
@@ -193,6 +193,7 @@ public class ItemBakuton extends ElementsNarutomodMod.ModElement {
 	public abstract static class ExplosiveClay extends EntityCreature {
 		private EntityLivingBase owner;
 		private int lifeSpan = 600;
+		private float explosionSize = 3.0f;
 
 		public ExplosiveClay(World world) {
 			super(world);
@@ -247,6 +248,10 @@ public class ItemBakuton extends ElementsNarutomodMod.ModElement {
 			this.lifeSpan = this.ticksExisted + ticks;
 		}
 
+		protected void setExplosionSize(float size) {
+			this.explosionSize = size;
+		}
+
 		@Override
 		protected void applyEntityAttributes() {
 			super.applyEntityAttributes();
@@ -273,12 +278,33 @@ public class ItemBakuton extends ElementsNarutomodMod.ModElement {
 	    	return super.isOnSameTeam(entityIn) || entityIn.equals(this.owner);
 	    }
 
+	    @Override
+	    public boolean attackEntityAsMob(Entity entityIn) {
+	    	EntityLivingBase owner = this.getOwner();
+	    	if (!this.world.isRemote) {
+		    	this.world.createExplosion(owner, this.posX, this.posY, this.posZ,
+			     this.explosionSize, net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.world, owner));
+	    		this.setDead();
+	    		return true;
+	    	}
+	    	return false;
+	    }
+
 		@Override
 		public boolean attackEntityFrom(DamageSource source, float amount) {
 			if (source.isExplosion() || source == DamageSource.FALL) {
 				return false;
 			}
 			return super.attackEntityFrom(source, amount);
+		}
+
+		@Override
+		protected void onDeathUpdate() {
+			if (!this.world.isRemote) {
+		    	this.world.createExplosion(owner, this.posX, this.posY, this.posZ,
+			     this.explosionSize, net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.world, owner));
+			}
+    		this.setDead();
 		}
 
 	    @Override
@@ -297,7 +323,9 @@ public class ItemBakuton extends ElementsNarutomodMod.ModElement {
 				Entity ec;
 				Vec3d vec = entity.getLookVec();
 				vec = entity.getPositionVector().addVector(vec.x, 1d, vec.z);
-				if (powerIn < 2f) {
+				if (powerIn < 1f) {
+					return false;
+				} else if (powerIn < 2f) {
 					ec = new EntityC1.EC(entity);
 				} else if (powerIn < 3f) {
 					ec = new EntityC2.EC(entity);
@@ -310,6 +338,11 @@ public class ItemBakuton extends ElementsNarutomodMod.ModElement {
 				ec.setRotationYawHead(entity.rotationYaw);
 				entity.world.spawnEntity(ec);
 				return true;
+			}
+
+			@Override
+			public float getBasePower() {
+				return 0.9f;
 			}
 
 			@Override

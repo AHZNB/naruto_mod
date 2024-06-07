@@ -8,6 +8,7 @@ Jutsus:
  - fixed 80 gods vacuum fist usable without any jutsuXP
  - amaterasu can't be cured with milk
  - Add quicklime jutsu for lava release (paralyzes target for 10s)
+ - fixed explosion release C-1 activating without chakra
 
 Items:
  - added Sakura shippuden clothing and leggings (for slim player models only)
@@ -16,6 +17,7 @@ Items:
  - added Jiraiya jacket, clothing, forehead protector and robe
  - added 3rd Kazekage puppet scroll
  - senbons now does 4 melee damage, poison senbons 5 minute poison effect
+ - puppet senbon arm canon can bounce off blocks, shoots poison senbons in all directions for 4s
 
 Entities:
  - re-textured kisame's face
@@ -29,10 +31,13 @@ Entities:
  - 3rd kazekage puppet can use sand bullet jutsu & sand gathering jutsu (use with 3rd kazekage scroll)
  - fixed jinchuriki's biju mode visibility bug
  - fixed perfect susanoo jerky body pitch when flying
- - added Sasori mob, rides Hiruko puppet (WIP-2: improved AI while riding Hiruko puppet)
+ - added Sasori mob, rides Hiruko puppet (WIP-3: improved AI, shoots senbon canon, does not naturally spawn)
  
 General:
  - fixed alpha transparency bug when using certain jutsus
+ 
+Bugs & Issues:
+ - Hiruko puppet extending its tail to attack causes client side post render stack overflows
 
 0.3.0-beta ================================================================================
 

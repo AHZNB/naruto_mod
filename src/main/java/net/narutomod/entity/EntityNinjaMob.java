@@ -89,7 +89,7 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 		private static final DataParameter<Float> CHAKRA_MAX = EntityDataManager.createKey(Base.class, DataSerializers.FLOAT);
 		private static final DataParameter<Float> CHAKRA = EntityDataManager.createKey(Base.class, DataSerializers.FLOAT);
 		private final PathwayNinjaMob chakraPathway;
-		private static final int inventorySize = 2;
+		private final int inventorySize = 2;
 		private final NonNullList<ItemStack> inventory = NonNullList.<ItemStack>withSize(inventorySize, ItemStack.EMPTY);
 		public int peacefulTicks;
 		private int standStillTicks;
@@ -263,6 +263,10 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 			this.inventory.set(slotno, this.getItemStackFromSlot(slot));
 			this.setItemStackToSlot(slot, stack);
 			InventoryMessage.sendToTracking(this);
+		}
+
+		public int getInventorySize() {
+			return this.inventorySize;
 		}
 
 	    protected boolean isValidLightLevel() {
@@ -1029,7 +1033,7 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 				mc.addScheduledTask(() -> {
 					Entity entity = mc.world.getEntityByID(message.id);
 					if (entity instanceof Base) {
-						for (int i = 0; i < message.list.size() && i < Base.inventorySize; i++) {
+						for (int i = 0; i < message.list.size() && i < ((Base)entity).getInventorySize(); i++) {
 							((Base)entity).inventory.set(i, message.list.get(i));
 						}
 					}

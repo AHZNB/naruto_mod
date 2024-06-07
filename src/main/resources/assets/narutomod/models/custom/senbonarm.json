@@ -142,7 +142,7 @@
     "ground": {
       "rotation": [
         0,
-        -90,
+        0,
         -90
       ],
       "scale": [

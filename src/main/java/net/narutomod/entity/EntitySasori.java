@@ -38,14 +38,15 @@ import net.minecraft.entity.IRangedAttackMob;
 import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.EntityPlayer;
-//import net.minecraft.entity.monster.EntityMob;
+import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
+import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.item.ItemStack;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.model.ModelBox;
-import net.minecraft.item.ItemStack;
 
 import javax.annotation.Nullable;
 import com.google.common.base.Predicate;
@@ -75,6 +76,7 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 		private final int BLOCKING_CD = 30;
 		private int lastBlockTime;
 		private EntityPuppetHiruko.EntityCustom hirukoEntity;
+		private int senbonArmShootCount;
 
 		public EntityCustom(World world) {
 			super(world, 120, 7000d);
@@ -104,7 +106,6 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 				@Override
 				public boolean shouldExecute() {
 					return super.shouldExecute() && EntityCustom.this.isRidingHiruko();
-					 //&& EntityCustom.this.getAttackTarget().getDistance(EntityCustom.this) < 15.0d;
 				}
 			});
 			this.tasks.addTask(3, new EntityAIWatchClosest2(this, EntityPlayer.class, 15.0F, 1.0F));
@@ -119,6 +120,16 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 						}
 					}));
 			//this.targetTasks.addTask(4, new EntityAINearestAttackableTarget(this, EntityMob.class, false, false));
+		}
+
+		@Override
+		protected void updateAITasks() {
+			super.updateAITasks();
+			if (this.getAttackTarget() != null && this.rand.nextFloat() < 0.01f
+			 && this.isRidingHiruko() && this.hirukoEntity.getHealth() < this.hirukoEntity.getMaxHealth() * 0.3f
+			 && this.getItemFromInventory(1).getItem() == ItemSenbonArm.block) {
+				this.swapWithInventory(EntityEquipmentSlot.OFFHAND, 1);
+			}
 		}
 
 		@Override
@@ -150,7 +161,15 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void attackEntityWithRangedAttack(EntityLivingBase target, float flval) {
 			if (this.isRidingHiruko()) {
-				if (this.getDistance(target) < 7.0d) {
+				double d = this.getDistance(target);
+				if (d > 8.0d && this.getHeldItemOffhand().getItem() == ItemSenbonArm.block) {
+					Vec3d vec = target.getPositionEyes(1f).subtract(this.getPositionVector());
+					ItemSenbonArm.RangedItem.shootItem(this.hirukoEntity, vec.x, vec.y + d * 0.2d, vec.z, 0.5f);
+					if (++this.senbonArmShootCount > 1) {
+						this.setItemStackToSlot(EntityEquipmentSlot.OFFHAND, ItemStack.EMPTY);
+					}
+					this.swapWithInventory(EntityEquipmentSlot.OFFHAND, 1);
+				} else if (d < 7.0d) {
 					this.swingArm(EnumHand.MAIN_HAND);
 					this.attackEntityAsMob(target);
 				} else {
@@ -165,7 +184,7 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void travel(float strafe, float vertical, float forward) {
 			if (this.isServerWorld() && this.isRidingHiruko() && this.motionY > 0.01d) {
-				this.hirukoEntity.motionY = this.motionY * 0.8d;
+				this.hirukoEntity.motionY = this.motionY * 0.9d;
 			}
 			super.travel(strafe, vertical, forward);
 		}
@@ -203,12 +222,12 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void onUpdate() {
 			if (this.hirukoEntity == null) {
-				if (!this.world.isRemote) {
+				if (this.getRidingEntity() instanceof EntityPuppetHiruko.EntityCustom) {
+					this.hirukoEntity = (EntityPuppetHiruko.EntityCustom)this.getRidingEntity();
+				} else if (!this.world.isRemote) {
 					this.hirukoEntity = new EntityPuppetHiruko.EntityCustom(this, this.posX, this.posY, this.posZ);
 					this.hirukoEntity.setAkatsuki(true);
 					this.world.spawnEntity(this.hirukoEntity);
-				} else if (this.getRidingEntity() instanceof EntityPuppetHiruko.EntityCustom) {
-					this.hirukoEntity = (EntityPuppetHiruko.EntityCustom)this.getRidingEntity();
 				}
 			}
 			if (!this.world.isRemote) {
@@ -219,7 +238,10 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 				} else if (this.width > 0.525f) {
 					this.setSize(0.525f, 1.75f);
 				}
+			} else if (this.isRidingHiruko()) {
+				this.hirukoEntity.raiseLeftArm(this.getHeldItemOffhand().getItem() == ItemSenbonArm.block);
 			}
+			this.clearActivePotions();
 			super.onUpdate();
 			if (!this.world.isRemote && this.isRidingHiruko() && this.ticksExisted > this.lastBlockTime + 20) {
 				this.hirukoEntity.blockAttack(false);

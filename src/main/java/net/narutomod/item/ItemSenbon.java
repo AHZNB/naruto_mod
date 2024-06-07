@@ -2,6 +2,7 @@
 package net.narutomod.item;
 
 import net.narutomod.entity.EntityPuppetHiruko;
+import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.creativetab.TabModTab;
 import net.narutomod.ElementsNarutomodMod;
 
@@ -112,7 +113,7 @@ public class ItemSenbon extends ElementsNarutomodMod.ModElement {
 				EntityPlayerMP entity = (EntityPlayerMP) entityLivingBase;
 				boolean flag = entity.getRidingEntity() instanceof EntityPuppetHiruko.EntityCustom;
 				if (flag) {
-					for (int i = 0; i < 3; i++) {
+					for (int i = 0; i < 5; i++) {
 						spawnArrow((EntityLivingBase)entity.getRidingEntity(), false);
 					}
 				} else {
@@ -164,7 +165,7 @@ public class ItemSenbon extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void onUpdate() {
 			super.onUpdate();
-			if (this.timeInGround > 200) {
+			if (!this.world.isRemote && this.timeInGround > 100) {
 				this.setDead();
 			}
 		}
@@ -259,7 +260,7 @@ public class ItemSenbon extends ElementsNarutomodMod.ModElement {
 	        GlStateManager.pushMatrix();
 	        GlStateManager.translate((float)x, (float)y, (float)z);
 	        GlStateManager.enableRescaleNormal();
-	        GlStateManager.rotate(entityYaw - 90.0F, 0.0F, 1.0F, 0.0F);
+	        GlStateManager.rotate(ProcedureUtils.interpolateRotation(entity.prevRotationYaw, entity.rotationYaw, partialTicks) - 90.0F, 0.0F, 1.0F, 0.0F);
 	        GlStateManager.rotate(entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks, 0.0F, 0.0F, 1.0F);
 	        this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
 	        if (this.renderOutlines) {
