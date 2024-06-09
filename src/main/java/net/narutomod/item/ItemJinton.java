@@ -389,11 +389,11 @@ public class ItemJinton extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
-		public EntityBeamBase.Model getMainModel(EntityBeam entity) {
-			int i = entity.ticksAlive - entity.wait;
-			if (i > 0) {
-				float length = MathHelper.clamp(entity.getBeamLength() * (float)i / 10f, 1f, entity.getBeamLength());
-				float scale = entity.getScale() * 2 * length / entity.getBeamLength();
+		public EntityBeamBase.Model getMainModel(EntityBeam entity, float pt) {
+			float f = (float)entity.ticksAlive + pt - (float)entity.wait;
+			if (f > 0f) {
+				float length = MathHelper.clamp(entity.getBeamLength() * f / 10f, 1f, entity.getBeamLength());
+				float scale = entity.getScale() * 2f * length / entity.getBeamLength();
 				ModelLongCube model = new ModelLongCube(length / scale);
 				model.scale = scale;
 				return model;

@@ -163,7 +163,7 @@ public class EntityBeamBase extends ElementsNarutomodMod.ModElement {
 			this.shadowSize = 0.1F;
 		}
 
-		public Model getMainModel(T entity) {
+		public Model getMainModel(T entity, float partialTicks) {
 			return new Model(entity.getBeamLength());
 		}
 
@@ -194,7 +194,7 @@ public class EntityBeamBase extends ElementsNarutomodMod.ModElement {
 			GlStateManager.disableLighting();
 			OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240.0F, 240.0F);
 			//GlStateManager.color(1.0F, 1.0F, 1.0F, 0.3F);
-			this.getMainModel(bullet).render(bullet, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
+			this.getMainModel(bullet, pt).render(bullet, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
 			//GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 			GlStateManager.matrixMode(5890);
 			GlStateManager.loadIdentity();

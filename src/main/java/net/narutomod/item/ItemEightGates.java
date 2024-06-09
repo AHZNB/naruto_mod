@@ -962,8 +962,8 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
-		public EntityBeamBase.Model getMainModel(EntitySekizo entity) {
-			float length = MathHelper.clamp(entity.getBeamLength() * (float)entity.ticksAlive / 30f, 1f, entity.getBeamLength());
+		public EntityBeamBase.Model getMainModel(EntitySekizo entity, float pt) {
+			float length = MathHelper.clamp(entity.getBeamLength() * ((float)entity.ticksAlive + pt) / 30f, 1f, entity.getBeamLength());
 			ModelLongCube model = new ModelLongCube(length);
 			model.scale = 1.0F + length * 0.15F;
 			return model;

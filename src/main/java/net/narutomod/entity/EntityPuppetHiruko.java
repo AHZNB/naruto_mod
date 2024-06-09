@@ -484,7 +484,7 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 			private final ModelRenderer calfLeft;
 			private final ModelRenderer[][] tail = new ModelRenderer[30][2];
 			private final Vector3f[] tailSway = new Vector3f[10];
-			private final float[][][][] tailPose = {
+			private final float[][][][] tailPose = { // float[2][3][30][3]
 				{ // robe on
 					{
 						{ 0f, 0f, 0f }, 

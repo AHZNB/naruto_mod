@@ -339,16 +339,20 @@ public class ItemSuiton extends ElementsNarutomodMod.ModElement {
 		@SideOnly(Side.CLIENT)
 		public class RenderStream extends EntityBeamBase.Renderer<EntityStream> {
 			private final ResourceLocation texture = new ResourceLocation("minecraft:textures/blocks/water_flow.png");
+			private final ModelLongCube model = new ModelLongCube(1f);
 
 			public RenderStream(RenderManager renderManager) {
 				super(renderManager);
 			}
 
 			@Override
-			public EntityBeamBase.Model getMainModel(EntityStream entity) {
+			public EntityBeamBase.Model getMainModel(EntityStream entity, float pt) {
 				float f = entity.ticksAlive >= entity.maxLife - 10
-						? Math.max((float)(entity.maxLife - entity.ticksAlive) / 10f, 0f) : Math.min((float)entity.ticksAlive / 10f, 1f);
-				return new ModelLongCube(entity.getBeamLength() * f);
+						? Math.max(((float)entity.maxLife - (float)entity.ticksAlive - pt) / 10f, 0f)
+						: Math.min(((float)entity.ticksAlive + pt) / 10f, 1f);
+				this.model.setLength(entity.getBeamLength() * f);
+				return this.model;
+				//return new ModelLongCube(entity.getBeamLength() * f);
 			}
 
 			@Override
@@ -362,15 +366,23 @@ public class ItemSuiton extends ElementsNarutomodMod.ModElement {
 		// Paste this class into your mod and generate all required imports
 		@SideOnly(Side.CLIENT)
 		public class ModelLongCube extends EntityBeamBase.Model {
-			private final ModelRenderer bone;
+			private ModelRenderer bone;
+			private float length;
 			protected float scale = 1.0F;
 
-			public ModelLongCube(float length) {
+			public ModelLongCube(float lengthIn) {
 				this.textureWidth = 32;
 				this.textureHeight = 1024;
-				this.bone = new ModelRenderer(this);
-				this.bone.setRotationPoint(0.0F, 0.0F, 0.0F);
-				this.bone.cubeList.add(new ModelBox(this.bone, 0, 0, -4.0F, -16.0F, -4.0F, 8, (int) (16f * length), 8, 0.0F, false));
+				this.setLength(lengthIn);
+			}
+
+			public void setLength(float lengthIn) {
+				if (lengthIn < this.length - 0.01f || lengthIn > this.length + 0.01f) {
+					this.bone = new ModelRenderer(this);
+					this.bone.setRotationPoint(0.0F, 0.0F, 0.0F);
+					this.bone.cubeList.add(new ModelBox(this.bone, 0, 0, -4.0F, -16.0F, -4.0F, 8, (int) (16f * lengthIn), 8, 0.0F, false));
+					this.length = lengthIn;
+				}
 			}
 
 			@Override

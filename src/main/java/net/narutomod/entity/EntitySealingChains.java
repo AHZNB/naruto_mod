@@ -223,7 +223,7 @@ public class EntitySealingChains extends ElementsNarutomodMod.ModElement {
 			}
 
 			@Override
-			public EntityBeamBase.Model getMainModel(EC entity) {
+			public EntityBeamBase.Model getMainModel(EC entity, float pt) {
 				this.model.addLinks(MathHelper.ceil(entity.getBeamLength() * 6.4f) - 1);
 				return this.model;
 			}
@@ -252,7 +252,7 @@ public class EntitySealingChains extends ElementsNarutomodMod.ModElement {
 					GlStateManager.disableLighting();
 					OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240.0F, 240.0F);
 					GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-					this.getMainModel(bullet).render(bullet, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
+					this.getMainModel(bullet, pt).render(bullet, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
 					GlStateManager.enableLighting();
 					GlStateManager.enableCull();
 					GlStateManager.disableBlend();
