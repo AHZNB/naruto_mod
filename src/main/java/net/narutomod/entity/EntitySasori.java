@@ -3,6 +3,7 @@ package net.narutomod.entity;
 
 import net.narutomod.item.ItemSenbonArm;
 import net.narutomod.item.ItemPoisonSenbon;
+import net.narutomod.item.ItemScrollHiruko;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.ModConfig;
 import net.narutomod.ElementsNarutomodMod;
@@ -96,6 +97,13 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 			this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(100D);
 			this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.5D);
 			this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(10D);
+		}
+
+		@Override
+		protected void dropLoot(boolean wasRecentlyHit, int lootingModifier, DamageSource source) {
+			if (this.rand.nextFloat() < 0.5f) {
+				this.entityDropItem(new ItemStack(ItemScrollHiruko.block, 1), 0f);
+			}
 		}
 
 		@Override

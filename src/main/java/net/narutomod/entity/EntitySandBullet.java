@@ -128,7 +128,7 @@ public class EntitySandBullet extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		protected void onImpact(RayTraceResult result) {
-			if (!this.world.isRemote) {
+			if (!this.world.isRemote && (result.entityHit == null || !result.entityHit.equals(this.shootingEntity))) {
 				this.playSound(net.minecraft.util.SoundEvent.REGISTRY
 				 .getObject(new ResourceLocation("narutomod:bullet_impact")), 1f, 0.4f + this.rand.nextFloat() * 0.6f);
 				this.world.createExplosion(this.shootingEntity, result.hitVec.x, result.hitVec.y, result.hitVec.z, 3f,

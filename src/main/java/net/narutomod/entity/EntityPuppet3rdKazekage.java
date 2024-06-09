@@ -28,6 +28,7 @@ import net.minecraft.client.model.ModelBox;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.entity.layers.LayerHeldItem;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.EntityDataManager;
@@ -93,12 +94,12 @@ public class EntityPuppet3rdKazekage extends ElementsNarutomodMod.ModElement {
 			super.applyEntityAttributes();
 			this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(MAXHEALTH);
 			this.getAttributeMap().registerAttribute(SharedMonsterAttributes.ATTACK_DAMAGE);
-			this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(12D);
+			this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(14D);
 		}
 
 		@Override
 		protected Vec3d getOffsetToOwner() {
-			return new Vec3d(-0.8d, 0.5d, 4.0d);
+			return new Vec3d(-1.4d, 0.5d, 4.0d);
 		}
 
 		@Override
@@ -136,6 +137,12 @@ public class EntityPuppet3rdKazekage extends ElementsNarutomodMod.ModElement {
 			public RenderCustom(RenderManager renderManagerIn) {
 				super(renderManagerIn, new ModelPuppetHundred(), 0.5f);
 				this.addLayer(new LayerHeldItem(this));
+			}
+
+			@Override
+			protected void preRenderCallback(EntityCustom entity, float partialTickTime) {
+				float f = 0.0625f * 17f;
+				GlStateManager.scale(f, f, f);
 			}
 			
 			@Override
@@ -226,25 +233,25 @@ public class EntityPuppet3rdKazekage extends ElementsNarutomodMod.ModElement {
 				cube_r3 = new ModelRenderer(this);
 				cube_r3.setRotationPoint(0.005F, -7.9697F, -3.8572F);
 				niceHair.addChild(cube_r3);
-				setRotationAngle(cube_r3, -0.8727F, 0.0F, 0.0F);
+				setRotationAngle(cube_r3, -0.8727F, 0.0873F, 0.0F);
 				cube_r3.cubeList.add(new ModelBox(cube_r3, 32, 11, -4.0F, -6.15F, 0.15F, 8, 6, 7, 0.15F, true));
 		
 				cube_r4 = new ModelRenderer(this);
 				cube_r4.setRotationPoint(0.005F, -7.9697F, -3.8572F);
 				niceHair.addChild(cube_r4);
-				setRotationAngle(cube_r4, -1.0472F, 0.0F, 0.0F);
+				setRotationAngle(cube_r4, -1.0908F, -0.0873F, 0.0F);
 				cube_r4.cubeList.add(new ModelBox(cube_r4, 32, 11, -4.0F, -6.15F, 0.15F, 8, 6, 7, 0.2F, false));
 		
 				cube_r5 = new ModelRenderer(this);
 				cube_r5.setRotationPoint(0.005F, -7.9697F, -3.8572F);
 				niceHair.addChild(cube_r5);
-				setRotationAngle(cube_r5, -1.2217F, 0.0F, 0.0F);
+				setRotationAngle(cube_r5, -1.2654F, 0.1745F, 0.0F);
 				cube_r5.cubeList.add(new ModelBox(cube_r5, 32, 11, -4.0F, -6.65F, 0.25F, 8, 6, 7, 0.25F, true));
 		
 				cube_r6 = new ModelRenderer(this);
 				cube_r6.setRotationPoint(0.005F, -7.9697F, -3.8572F);
 				niceHair.addChild(cube_r6);
-				setRotationAngle(cube_r6, -1.3963F, 0.0F, 0.0F);
+				setRotationAngle(cube_r6, -1.4399F, -0.1745F, 0.0F);
 				cube_r6.cubeList.add(new ModelBox(cube_r6, 32, 11, -4.0F, -7.15F, 0.35F, 8, 6, 7, 0.3F, false));
 
 				bipedBody = new ModelRenderer(this);

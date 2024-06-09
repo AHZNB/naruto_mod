@@ -74,9 +74,7 @@ public class EntitySandGathering extends ElementsNarutomodMod.ModElement {
 			Vec3d vec = summonerIn.getLookVec().scale(2d);
 			vec = summonerIn.getPositionVector().addVector(vec.x, 3.0d, vec.z);
 			this.setPosition(vec.x, vec.y, vec.z);
-			if (summonerIn instanceof EntityPuppet3rdKazekage.EntityCustom) {
-				((EntityPuppet3rdKazekage.EntityCustom)summonerIn).setMouthOpen(true);
-			}
+			this.setPuppetMouthOpen(true);
 			this.sandCloud = new ItemJiton.SwarmTarget(this.world, 50, this.getMouthPos(), 
 			 this.getEntityBoundingBox(), new Vec3d(0.4d, 0.0d, 0.4d), 0.5f, 0.03f, false, 2f, ItemJiton.Type.IRON.getColor());
 		}
@@ -99,14 +97,18 @@ public class EntitySandGathering extends ElementsNarutomodMod.ModElement {
 			 : this.summoner != null ? this.summoner.getPositionVector().addVector(0d, 1.5d, 0d) : this.getPositionVector();
 		}
 
+		private void setPuppetMouthOpen(boolean open) {
+			if (this.summoner instanceof EntityPuppet3rdKazekage.EntityCustom) {
+				((EntityPuppet3rdKazekage.EntityCustom)this.summoner).setMouthOpen(open);
+			}
+		}
+
 		private void updateSandParticles() {
 			int i = this.getDeathTicks();
 			if (this.sandCloud != null) {
 				if (this.sandCloud.shouldRemove()) {
 					this.sandCloud = null;
-					if (this.summoner instanceof EntityPuppet3rdKazekage.EntityCustom) {
-						((EntityPuppet3rdKazekage.EntityCustom)this.summoner).setMouthOpen(false);
-					}
+					this.setPuppetMouthOpen(false);
 				} else {
 					if (i == 0 && this.sandCloud.getTicks() > this.waitTime) {
 						this.sandCloud.forceRemove();
@@ -114,9 +116,7 @@ public class EntitySandGathering extends ElementsNarutomodMod.ModElement {
 					this.sandCloud.onUpdate();
 				}
 			} else if (!this.world.isRemote && i > 0) {
-				if (this.summoner instanceof EntityPuppet3rdKazekage.EntityCustom) {
-					((EntityPuppet3rdKazekage.EntityCustom)this.summoner).setMouthOpen(true);
-				}
+				this.setPuppetMouthOpen(true);
 				this.sandCloud = new ItemJiton.SwarmTarget(this.world, 50, this.getEntityBoundingBox(),
 			 	 this.getMouthPos(), new Vec3d(0.2d, -0.1d, 0.2d), 0.5f, 0.03f, true, 2f, ItemJiton.Type.IRON.getColor());
 			}
@@ -181,7 +181,8 @@ public class EntitySandGathering extends ElementsNarutomodMod.ModElement {
 		}
 
 		protected RayTraceResult forwardsRaycast(boolean includeEntities) {
-			return EntityScalableProjectile.forwardsRaycast(this, ProcedureUtils.getMotion(this), includeEntities, false, null);
+			return EntityScalableProjectile.forwardsRaycast(this, ProcedureUtils.getMotion(this),
+			 includeEntities, includeEntities, this.summoner);
 		}
 
 		@Override

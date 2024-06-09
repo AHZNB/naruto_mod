@@ -31,7 +31,7 @@ Entities:
  - 3rd kazekage puppet can use sand bullet jutsu & sand gathering jutsu (use with 3rd kazekage scroll)
  - fixed jinchuriki's biju mode visibility bug
  - fixed perfect susanoo jerky body pitch when flying
- - added Sasori mob, rides Hiruko puppet (WIP-3: improved AI, shoots senbon canon, does not naturally spawn)
+ - added Sasori mob, rides Hiruko puppet (WIP-3: improved AI, shoots senbon canon, does not naturally spawn, has a chance to drop hiruko scroll)
  
 General:
  - fixed alpha transparency bug when using certain jutsus

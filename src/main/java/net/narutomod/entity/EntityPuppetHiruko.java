@@ -96,7 +96,7 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 		public EntityCustom(World world) {
 			super(world);
 			this.setSize(1.4f, 1.7f);
-			this.stepHeight = 3.0f;
+			this.stepHeight = 4.0f;
 			this.isImmuneToFire = false;
 			this.dieOnNoPassengers = false;
 		}
@@ -104,7 +104,7 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 		public EntityCustom(EntityLivingBase summonerIn, double x, double y, double z) {
 			super(summonerIn, x, y, z);
 			this.setSize(1.4f, 1.7f);
-			this.stepHeight = 3.0f;
+			this.stepHeight = 4.0f;
 			this.isImmuneToFire = false;
 			this.dieOnNoPassengers = false;
 			this.setHealth(this.getMaxHealth());
@@ -387,6 +387,7 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 		// Paste this class into your mod and generate all required imports
 		@SideOnly(Side.CLIENT)
 		public class ModelPuppetHiruko extends ModelBiped {
+			private final Random rand = new Random();
 			private final ModelRenderer body;
 			private final ModelRenderer head;
 			//private final ModelRenderer bipedHead;
@@ -481,74 +482,92 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 			//private final ModelRenderer bipedLeftLeg;
 			private final ModelRenderer leftThigh;
 			private final ModelRenderer calfLeft;
-			private final ModelRenderer[] tail = new ModelRenderer[30];
-			private final ModelRenderer[] tailEnd = new ModelRenderer[21];
+			private final ModelRenderer[][] tail = new ModelRenderer[30][2];
 			private final Vector3f[] tailSway = new Vector3f[10];
-			private final Vector3f[][] tailPoseRobeOn = {
-				{
-					new Vector3f(),
-					new Vector3f(0.2618F, 0.0F, 0.0F), new Vector3f(0.2618F, 0.0F, 0.0F), new Vector3f(0.2618F, 0.0F, 0.0F),
-					new Vector3f(0.2618F, 0.0F, 0.0F), new Vector3f(0.2618F, 0.0F, 0.0F), new Vector3f(0.2618F, 0.0F, 0.0F), 
-					new Vector3f(0.2618F, 0.0F, 0.0F), new Vector3f(0.2618F, 0.0F, 0.0F), new Vector3f(0.2618F, 0.0F, 0.0F)
+			private final float[][][][] tailPose = {
+				{ // robe on
+					{
+						{ 0f, 0f, 0f }, 
+						{ 0.2618F, 0.0F, 0.0F }, { 0.2618F, 0.0F, 0.0F }, { 0.2618F, 0.0F, 0.0F },
+						{ 0.2618F, 0.0F, 0.0F }, { 0.2618F, 0.0F, 0.0F }, { 0.2618F, 0.0F, 0.0F }, 
+						{ 0.2618F, 0.0F, 0.0F }, { 0.2618F, 0.0F, 0.0F }, { 0.2618F, 0.0F, 0.0F },
+						{ 0f, 0f, 0f }, { 0f, 0f, 0f }, { 0f, 0f, 0f }, 
+						{ 0f, 0f, 0f }, { 0f, 0f, 0f }, { 0f, 0f, 0f }, 
+						{ 0f, 0f, 0f }, { 0f, 0f, 0f }, { 0f, 0f, 0f }, 
+						{ 0f, 0f, 0f }, { 0f, 0f, 0f }, { 0f, 0f, 0f }, 
+						{ 0f, 0f, 0f }, { 0f, 0f, 0f }, { 0f, 0f, 0f }, 
+						{ 0f, 0f, 0f }, { 0f, 0f, 0f }, { 0f, 0f, 0f }, 
+						{ 0f, 0f, 0f }, { 0f, 0f, 0f }
+					},
+					{
+						{ 0f, 0f, 0f }, 
+						{ 0.2618F, 0.0F, 0.0F }, { 0.2618F, 0.0F, 0.0F }, { 0.2618F, 0.0F, 0.0F },
+						{ 0.2618F, 0.0F, 0.0F }, { 0.2618F, 0.0F, 0.0F }, { 0.2618F, 0.0F, 0.0F }, 
+						{ 0.2618F, 0.0F, 0.0F }, { 0.1745F, 0.0F, 0.0F }, { 0.0873F, 0.0F, 0.0F },
+						{ 0.0436F, 0.0F, 0.0F }, { 0.0436F, 0.0F, 0.0F }, { 0.0436F, 0.0F, 0.0F }, 
+						{ 0.0436F, 0.0F, 0.0F }, { 0.0436F, 0.0F, 0.0F }, { 0.0436F, 0.0F, 0.0F }, 
+						{ 0.0436F, 0.0F, 0.0F }, { 0.0436F, 0.0F, 0.0F }, { 0.0436F, 0.0F, 0.0F }, 
+						{ 0.0436F, 0.0F, 0.0F }, { 0.0436F, 0.0F, 0.0F }, { 0.0436F, 0.0F, 0.0F }, 
+						{ 0.0436F, 0.0F, 0.0F }, { 0.0436F, 0.0F, 0.0F }, { 0.0436F, 0.0F, 0.0F }, 
+						{ 0.0436F, 0.0F, 0.0F }, { 0.0436F, 0.0F, 0.0F }, { 0.0436F, 0.0F, 0.0F }, 
+						{ 0.0436F, 0.0F, 0.0F }, { 0.0436F, 0.0F, 0.0F }
+					},
+					{
+						{ 0f, 0f, 0f }, 
+						{ 0.2618F, -0.5236F, -0.0873F }, { 0.2618F, -0.5236F, -0.0873F }, { 0.2618F, -0.5236F, -0.0873F },
+						{ 0.2618F, -0.5236F, -0.1745F }, { 0.2618F, 0.0F, -0.1745F }, { 0.2618F, 0.0F, -0.1745F }, 
+						{ 0.2618F, 0.0F, 0.0F }, { 0.2618F, 0.0F, 0.0F }, { 0.2618F, 0.0F, 0.0F }, 
+						{ 0.2618F, 0.0F, 0.0F }, { 0.2618F, 0.0F, 0.0F }, { 0.2618F, 0.0F, 0.0F }, 
+						{ 0.2618F, 0.0F, 0.0F }, { 0.2618F, 0.0F, 0.0F }, { 0.2618F, 0.0F, 0.0F }, 
+						{ 0.2618F, 0.0F, 0.0F }, { 0.2618F, 0.0F, 0.0F }, { 0.2618F, 0.0F, 0.0F }, 
+						{ 0.2618F, 0.0F, 0.0F }, { 0.2618F, 0.0F, 0.0F }, { 0.2618F, 0.0F, 0.0F }, 
+						{ 0.1745F, 0.0F, 0.0F }, { 0.0873F, 0.0F, 0.0F }, { 0f, 0f, 0f }, 
+						{ 0f, 0f, 0f }, { 0f, 0f, 0f }, { 0f, 0f, 0f }, 
+						{ 0f, 0f, 0f }, { 0f, 0f, 0f }
+					}
 				},
-				{
-					new Vector3f(),
-					new Vector3f(0.2618F, 0.0F, 0.0F), new Vector3f(0.2618F, 0.0F, 0.0F), new Vector3f(0.2618F, 0.0F, 0.0F),
-					new Vector3f(0.2618F, 0.0F, 0.0F), new Vector3f(0.2618F, 0.0F, 0.0F), new Vector3f(0.2618F, 0.0F, 0.0F), 
-					new Vector3f(0.2618F, 0.0F, 0.0F), new Vector3f(0.1745F, 0.0F, 0.0F), new Vector3f(0.0873F, 0.0F, 0.0F),
-					new Vector3f(0.0436F, 0.0F, 0.0F), new Vector3f(0.0436F, 0.0F, 0.0F), new Vector3f(0.0436F, 0.0F, 0.0F), 
-					new Vector3f(0.0436F, 0.0F, 0.0F), new Vector3f(0.0436F, 0.0F, 0.0F), new Vector3f(0.0436F, 0.0F, 0.0F), 
-					new Vector3f(0.0436F, 0.0F, 0.0F), new Vector3f(0.0436F, 0.0F, 0.0F), new Vector3f(0.0436F, 0.0F, 0.0F), 
-					new Vector3f(0.0436F, 0.0F, 0.0F), new Vector3f(0.0436F, 0.0F, 0.0F), new Vector3f(0.0436F, 0.0F, 0.0F), 
-					new Vector3f(0.0436F, 0.0F, 0.0F), new Vector3f(0.0436F, 0.0F, 0.0F), new Vector3f(0.0436F, 0.0F, 0.0F), 
-					new Vector3f(0.0436F, 0.0F, 0.0F), new Vector3f(0.0436F, 0.0F, 0.0F), new Vector3f(0.0436F, 0.0F, 0.0F), 
-					new Vector3f(0.0436F, 0.0F, 0.0F), new Vector3f(0.0436F, 0.0F, 0.0F)
-				},
-				{
-					new Vector3f(),
-					new Vector3f(0.2618F, -0.5236F, -0.0873F), new Vector3f(0.2618F, -0.5236F, -0.0873F), new Vector3f(0.2618F, -0.5236F, -0.0873F), 
-					new Vector3f(0.2618F, -0.5236F, -0.1745F), new Vector3f(0.2618F, 0.0F, -0.1745F), new Vector3f(0.2618F, 0.0F, -0.1745F), 
-					new Vector3f(0.2618F, 0.0F, 0.0F), new Vector3f(0.2618F, 0.0F, 0.0F), new Vector3f(0.2618F, 0.0F, 0.0F), 
-					new Vector3f(0.2618F, 0.0F, 0.0F), new Vector3f(0.2618F, 0.0F, 0.0F), new Vector3f(0.2618F, 0.0F, 0.0F), 
-					new Vector3f(0.2618F, 0.0F, 0.0F), new Vector3f(0.2618F, 0.0F, 0.0F), new Vector3f(0.2618F, 0.0F, 0.0F), 
-					new Vector3f(0.2618F, 0.0F, 0.0F), new Vector3f(0.2618F, 0.0F, 0.0F), new Vector3f(0.2618F, 0.0F, 0.0F), 
-					new Vector3f(0.2618F, 0.0F, 0.0F), new Vector3f(0.2618F, 0.0F, 0.0F), new Vector3f(0.2618F, 0.0F, 0.0F), 
-					new Vector3f(0.1745F, 0.0F, 0.0F), new Vector3f(0.0873F, 0.0F, 0.0F)
+				{ // robe off
+					{
+						{ 0f, 0f, 0f }, 
+						{ 0.2618F, 0.0F, 0.0F }, { 0.2618F, 0.0F, 0.0F }, { 0.2618F, 0.0F, 0.0F },
+						{ 0.2618F, 0.0F, 0.0F }, { 0.1745F, 0.0F, 0.0F }, { 0.0873F, 0.0F, 0.0F }, 
+						{ 0.0436F, 0.0F, 0.0F }, { 0.0436F, 0.0F, 0.0F }, { 0.0436F, 0.0F, 0.0F },
+						{ 0f, 0f, 0f }, { 0f, 0f, 0f }, { 0f, 0f, 0f }, 
+						{ 0f, 0f, 0f }, { 0f, 0f, 0f }, { 0f, 0f, 0f }, 
+						{ 0f, 0f, 0f }, { 0f, 0f, 0f }, { 0f, 0f, 0f }, 
+						{ 0f, 0f, 0f }, { 0f, 0f, 0f }, { 0f, 0f, 0f }, 
+						{ 0f, 0f, 0f }, { 0f, 0f, 0f }, { 0f, 0f, 0f }, 
+						{ 0f, 0f, 0f }, { 0f, 0f, 0f }, { 0f, 0f, 0f }, 
+						{ 0f, 0f, 0f }, { 0f, 0f, 0f }
+					},
+					{
+						{ 0f, 0f, 0f }, 
+						{ 0.2618F, 0.0F, 0.0F }, { 0.2618F, 0.0F, 0.0F }, { 0.1745F, 0.0F, 0.0F },
+						{ 0.1745F, 0.0F, 0.0F }, { 0.1745F, 0.0F, 0.0F }, { 0.0873F, 0.0F, 0.0F }, 
+						{ 0.0873F, 0.0F, 0.0F }, { 0.0436F, 0.0F, 0.0F }, { 0.0436F, 0.0F, 0.0F },
+						{ 0.0436F, 0.0F, 0.0F }, { 0.0436F, 0.0F, 0.0F }, { 0.0436F, 0.0F, 0.0F }, 
+						{ 0.0436F, 0.0F, 0.0F }, { 0.0436F, 0.0F, 0.0F }, { 0.0436F, 0.0F, 0.0F }, 
+						{ 0.0436F, 0.0F, 0.0F }, { 0.0436F, 0.0F, 0.0F }, { 0.0436F, 0.0F, 0.0F }, 
+						{ 0.0436F, 0.0F, 0.0F }, { 0.0436F, 0.0F, 0.0F }, { 0.0436F, 0.0F, 0.0F }, 
+						{ 0.0436F, 0.0F, 0.0F }, { 0.0436F, 0.0F, 0.0F }, { 0.0436F, 0.0F, 0.0F },
+						{ 0.0436F, 0.0F, 0.0F }, { 0.0436F, 0.0F, 0.0F }, { 0.0436F, 0.0F, 0.0F },
+						{ 0.0436F, 0.0F, 0.0F }, { 0.0436F, 0.0F, 0.0F }
+					},
+					{
+						{ 0f, 0f, 0f }, 
+						{ 0.2618F, -0.5236F, 0.0F }, { 0.2618F, -0.5236F, 0.0F }, { 0.2618F, -0.5236F, 0.0F },
+						{ 0.2618F, -0.2618F, 0.0F }, { 0.2618F, 0.0F, 0.0F }, { 0.3491F, 0.0F, 0.0F },
+						{ 0.3491F, 0.0F, 0.0F }, { 0.3491F, 0.0F, 0.0F }, { 0.3491F, 0.0F, 0.0F }, 
+						{ 0.3491F, 0.0F, 0.0F }, { 0.3491F, -0.0873F, 0.0F }, { 0.2618F, -0.0873F, 0.0F }, 
+						{ 0.2618F, -0.0873F, 0.0F }, { 0.2618F, -0.0873F, 0.0F }, { 0.2618F, -0.0873F, 0.0F }, 
+						{ 0.2618F, -0.0873F, 0.0F }, { 0.1745F, -0.0873F, 0.0F }, { 0.1745F, -0.0873F, 0.0F }, 
+						{ 0.2618F, -0.0873F, 0.0F }, { 0.2618F, -0.0873F, 0.0F }, { 0.2618F, -0.0873F, 0.0F }, 
+						{ 0.2618F, -0.0873F, 0.0F }, { 0.2618F, 0.0F, 0.0F }, { 0f, 0f, 0f }, 
+						{ 0f, 0f, 0f }, { 0f, 0f, 0f }, { 0f, 0f, 0f }, 
+						{ 0f, 0f, 0f }, { 0f, 0f, 0f }
+					}
 				}
 			};
-			private final Vector3f[][] tailPoseRobeOff = {
-				{
-					new Vector3f(),
-					new Vector3f(0.2618F, 0.0F, 0.0F), new Vector3f(0.2618F, 0.0F, 0.0F), new Vector3f(0.2618F, 0.0F, 0.0F),
-					new Vector3f(0.2618F, 0.0F, 0.0F), new Vector3f(0.1745F, 0.0F, 0.0F), new Vector3f(0.0873F, 0.0F, 0.0F), 
-					new Vector3f(0.0436F, 0.0F, 0.0F), new Vector3f(0.0436F, 0.0F, 0.0F), new Vector3f(0.0436F, 0.0F, 0.0F)
-				},
-				{
-					new Vector3f(),
-					new Vector3f(0.2618F, 0.0F, 0.0F), new Vector3f(0.2618F, 0.0F, 0.0F), new Vector3f(0.1745F, 0.0F, 0.0F),
-					new Vector3f(0.1745F, 0.0F, 0.0F), new Vector3f(0.1745F, 0.0F, 0.0F), new Vector3f(0.0873F, 0.0F, 0.0F), 
-					new Vector3f(0.0873F, 0.0F, 0.0F), new Vector3f(0.0436F, 0.0F, 0.0F), new Vector3f(0.0436F, 0.0F, 0.0F),
-					new Vector3f(0.0436F, 0.0F, 0.0F), new Vector3f(0.0436F, 0.0F, 0.0F), new Vector3f(0.0436F, 0.0F, 0.0F), 
-					new Vector3f(0.0436F, 0.0F, 0.0F), new Vector3f(0.0436F, 0.0F, 0.0F), new Vector3f(0.0436F, 0.0F, 0.0F), 
-					new Vector3f(0.0436F, 0.0F, 0.0F), new Vector3f(0.0436F, 0.0F, 0.0F), new Vector3f(0.0436F, 0.0F, 0.0F), 
-					new Vector3f(0.0436F, 0.0F, 0.0F), new Vector3f(0.0436F, 0.0F, 0.0F), new Vector3f(0.0436F, 0.0F, 0.0F), 
-					new Vector3f(0.0436F, 0.0F, 0.0F), new Vector3f(0.0436F, 0.0F, 0.0F), new Vector3f(0.0436F, 0.0F, 0.0F),
-					new Vector3f(0.0436F, 0.0F, 0.0F), new Vector3f(0.0436F, 0.0F, 0.0F), new Vector3f(0.0436F, 0.0F, 0.0F),
-					new Vector3f(0.0436F, 0.0F, 0.0F), new Vector3f(0.0436F, 0.0F, 0.0F)
-				},
-				{
-					new Vector3f(),
-					new Vector3f(0.2618F, -0.5236F, 0.0F), new Vector3f(0.2618F, -0.5236F, 0.0F), new Vector3f(0.2618F, -0.5236F, 0.0F), 
-					new Vector3f(0.2618F, -0.2618F, 0.0F), new Vector3f(0.2618F, 0.0F, 0.0F), new Vector3f(0.3491F, 0.0F, 0.0F), 
-					new Vector3f(0.3491F, 0.0F, 0.0F), new Vector3f(0.3491F, 0.0F, 0.0F), new Vector3f(0.3491F, 0.0F, 0.0F), 
-					new Vector3f(0.3491F, 0.0F, 0.0F), new Vector3f(0.3491F, -0.0873F, 0.0F), new Vector3f(0.2618F, -0.0873F, 0.0F), 
-					new Vector3f(0.2618F, -0.0873F, 0.0F), new Vector3f(0.2618F, -0.0873F, 0.0F), new Vector3f(0.2618F, -0.0873F, 0.0F), 
-					new Vector3f(0.2618F, -0.0873F, 0.0F), new Vector3f(0.1745F, -0.0873F, 0.0F), new Vector3f(0.1745F, -0.0873F, 0.0F), 
-					new Vector3f(0.2618F, -0.0873F, 0.0F), new Vector3f(0.2618F, -0.0873F, 0.0F), new Vector3f(0.2618F, -0.0873F, 0.0F), 
-					new Vector3f(0.2618F, -0.0873F, 0.0F), new Vector3f(0.2618F, 0.0F, 0.0F)
-				}
-			};
-			private final Random rand = new Random();
 	
 			public ModelPuppetHiruko() {
 				textureWidth = 128;
@@ -973,25 +992,25 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 				leftThigh.addChild(calfLeft);
 				setRotationAngle(calfLeft, 0.7854F, 0.0F, 0.0F);
 				calfLeft.cubeList.add(new ModelBox(calfLeft, 52, 6, -2.0F, 0.0F, 0.0F, 4, 6, 4, 0.0F, true));
-				tail[0] = new ModelRenderer(this);
-				tail[0].setRotationPoint(0.0F, 15.0F, 0.0F);
-				setRotationAngle(tail[0], 0.7854F, 0.0F, 0.0F);
-				tail[0].cubeList.add(new ModelBox(tail[0], 32, 56, -2.0F, -0.5F, 0.0F, 4, 1, 4, 0.0F, false));
+
+				tail[0][0] = new ModelRenderer(this);
+				tail[0][0].setRotationPoint(0.0F, 15.0F, 0.0F);
+				setRotationAngle(tail[0][0], 0.7854F, 0.0F, 0.0F);
+				tail[0][0].cubeList.add(new ModelBox(tail[0][0], 32, 56, -2.0F, -0.5F, 0.0F, 4, 1, 4, 0.0F, false));
+				tail[0][1] = new ModelRenderer(this);
 				for (int i = 1; i < tail.length; i++) {
-					tail[i] = new ModelRenderer(this);
-					tail[i].setRotationPoint(0.0F, 0.0F, 4.0F);
-					tail[i-1].addChild(tail[i]);
-					tail[i].cubeList.add(new ModelBox(tail[i], 32, 56, -2.0F, -0.5F, 0.0F, 4, 1, 4, 0.0F, false));
-				}
-				for (int i = 0; i < tailEnd.length; i++) {
-					tailEnd[i] = new ModelRenderer(this);
-					tailEnd[i].setRotationPoint(0.0F, 0.0F, 4.0F);
-					tail[9+i].addChild(tailEnd[i]);
-					setRotationAngle(tailEnd[i], 0.2618F, 0.0F, 0.0F);
-					tailEnd[i].cubeList.add(new ModelBox(tailEnd[i], 58, 58, -2.0F, -0.5F, 0.0F, 4, 1, 2, 0.0F, false));
+					tail[i][0] = new ModelRenderer(this);
+					tail[i][0].setRotationPoint(0.0F, 0.0F, 4.0F);
+					tail[i-1][0].addChild(tail[i][0]);
+					tail[i][0].cubeList.add(new ModelBox(tail[i][0], 32, 56, -2.0F, -0.5F, 0.0F, 4, 1, 4, 0.0F, false));
+					tail[i][1] = new ModelRenderer(this);
+					tail[i][1].setRotationPoint(0.0F, 0.0F, 4.0F);
+					tail[i][0].addChild(tail[i][1]);
+					setRotationAngle(tail[i][1], 0.2618F, 0.0F, 0.0F);
+					tail[i][1].cubeList.add(new ModelBox(tail[i][1], 58, 58, -2.0F, -0.5F, 0.0F, 4, 1, 2, 0.0F, false));
 					ModelRenderer bone = new ModelRenderer(this);
 					bone.setRotationPoint(0.0F, 0.5F, 2.0F);
-					tailEnd[i].addChild(bone);
+					tail[i][1].addChild(bone);
 					setRotationAngle(bone, 0.2618F, 0.0F, 0.0F);
 					ModelRenderer bone14 = new ModelRenderer(this);
 					bone14.setRotationPoint(0.0F, -1.0F, 0.0F);
@@ -1000,7 +1019,7 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 					bone14.cubeList.add(new ModelBox(bone14, 56, 50, -1.5F, 0.0F, -1.5F, 3, 1, 3, 0.0F, false));
 					ModelRenderer bone2 = new ModelRenderer(this);
 					bone2.setRotationPoint(0.0F, -0.5F, 2.0F);
-					tailEnd[i].addChild(bone2);
+					tail[i][1].addChild(bone2);
 					setRotationAngle(bone2, -0.2618F, 0.0F, 0.0F);
 					ModelRenderer bone15 = new ModelRenderer(this);
 					bone15.setRotationPoint(0.0F, 1.0F, 0.0F);
@@ -1021,7 +1040,7 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 				body.render(f5);
 				bipedRightLeg.render(f5);
 				bipedLeftLeg.render(f5);
-				tail[0].render(f5);
+				tail[0][0].render(f5);
 				GlStateManager.popMatrix();
 			}
 	
@@ -1037,9 +1056,9 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 				EntityCustom entity = (EntityCustom)e;
 				float pt = f2 - entity.ticksExisted;
 				int pose = entity.getPose();
-				Vector3f[][] tailPose = tailPoseRobeOn;
-				if (entity.isRobeOff()) {
-					tailPose = tailPoseRobeOff;
+				boolean robeOff = entity.isRobeOff();
+				int robeIdx = robeOff ? 1 : 0;
+				if (robeOff) {
 					body.rotateAngleX = 1.8326F;
 					head.rotateAngleX = -1.5708F;
 					setRotationAngle(bipedRightUpperArm, -0.5236F, 0.2618F, 1.3963F);
@@ -1048,7 +1067,7 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 					bipedLeftForeArm.rotateAngleX = -1.0472F;
 					rightThigh.rotateAngleY = 1.309F;
 					leftThigh.rotateAngleY = -1.309F;
-					tail[0].rotateAngleX = 1.5708F;
+					tail[0][0].rotateAngleX = 1.5708F;
 				} else {
 					body.rotateAngleX = 1.0472F;
 					head.rotateAngleX = -1.0472F;
@@ -1058,53 +1077,54 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 					bipedLeftForeArm.rotateAngleX = -0.2618F;
 					rightThigh.rotateAngleY = 0.6545F;
 					leftThigh.rotateAngleY = -0.6545F;
-					tail[0].rotateAngleX = 0.7854F;
+					tail[0][0].rotateAngleX = 0.7854F;
 				}
 				if (entity.poseProgress >= 0) {
 					switch (pose) {
 					case 0:
 						int j = MathHelper.clamp((int)(((float)entity.poseProgressEnd - (float)entity.poseProgress - pt + 1f) / (float)entity.poseProgressEnd * 13f), 0, 13);
-						tail[10+j].showModel = false;
-						for (int i = 0; i < tailEnd.length; i++) {
-							tailEnd[i].showModel = false;
+						tail[10+j][0].showModel = false;
+						for (int i = 1; i < tail.length; i++) {
+							tail[i][1].showModel = false;
 						}
-						tailEnd[j].showModel = true;
+						tail[9+j][1].showModel = true;
 						break;
 					case 1:
 					case 2:
 						int segments = pose == 1 ? 19 : 13;
 						j = MathHelper.clamp((int)(((float)entity.poseProgress + pt) / (float)entity.poseProgressEnd * (float)segments), 0, segments);
-						for (int i = 0; i < tailEnd.length; i++) {
-							tailEnd[i].showModel = false;
+						for (int i = 1; i < tail.length; i++) {
+							tail[i][1].showModel = false;
 						}
-						tailEnd[j+1].showModel = true;
+						tail[10+j][1].showModel = true;
 						if (j < 19) {
-							tail[11+j].showModel = false;
+							tail[11+j][0].showModel = false;
 						}
 						float f9 = (float)(entity.poseProgressEnd - entity.poseProgress + 1);
 						for (int i = 10 + j; i > 0; i--) {
-							float f6 = tail[i-1].rotateAngleX;
-							float f7 = tail[i-1].rotateAngleY;
-							float f8 = tail[i-1].rotateAngleZ;
+							float f6 = tail[i-1][0].rotateAngleX;
+							float f7 = tail[i-1][0].rotateAngleY;
+							float f8 = tail[i-1][0].rotateAngleZ;
 							if (i == 1) {
 								f6 = 0.0F;
 								f7 = 0.0F;
 								f8 = 0.0F;
 							}
-							f6 += (tailPose[pose][i].x - f6) / f9;
-							f7 += (tailPose[pose][i].y - f7) / f9;
-							f8 += (tailPose[pose][i].z - f8) / f9;
-							this.setRotationAngle(tail[i], f6, f7, f8);
-							tail[i].showModel = true;
+							// the following 3 lines causes stack overflow post rendering the model if j > 13, don't know why
+							f6 += (tailPose[robeIdx][pose][i][0] - f6) / f9;
+							f7 += (tailPose[robeIdx][pose][i][1] - f7) / f9;
+							f8 += (tailPose[robeIdx][pose][i][2] - f8) / f9;
+							this.setRotationAngle(tail[i][0], f6, f7, f8);
+							tail[i][0].showModel = true;
 						}
 						break;
 					}
 				}
 				if (pose == 2 || entity.poseProgress < 0) {
 					for (int i = 1; i < tailSway.length; i++) {
-						tail[i].rotateAngleX = tailPose[pose][i].x + MathHelper.sin((f2 - i) * 0.1F) * tailSway[i].x;
-						tail[i].rotateAngleZ = tailPose[pose][i].z + MathHelper.cos((f2 - i) * 0.1F) * tailSway[i].z;
-						tail[i].rotateAngleY = tailPose[pose][i].y + MathHelper.sin((f2 - i) * 0.1F) * tailSway[i].y;
+						tail[i][0].rotateAngleX = tailPose[robeIdx][pose][i][0] + MathHelper.sin((f2 - i) * 0.1F) * tailSway[i].x;
+						tail[i][0].rotateAngleZ = tailPose[robeIdx][pose][i][2] + MathHelper.cos((f2 - i) * 0.1F) * tailSway[i].z;
+						tail[i][0].rotateAngleY = tailPose[robeIdx][pose][i][1] + MathHelper.sin((f2 - i) * 0.1F) * tailSway[i].y;
 					}
 				}
 				this.copyModelAngles(bipedHead, bipedHeadwear);

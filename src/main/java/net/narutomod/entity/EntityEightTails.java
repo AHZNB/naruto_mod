@@ -227,6 +227,8 @@ public class EntityEightTails extends ElementsNarutomodMod.ModElement {
 			//private final ModelRenderer bipedHeadwear;
 			private final ModelRenderer eyes;
 			//private final ModelRenderer bipedBody;
+			private final ModelRenderer bipedBody_r1;
+			private final ModelRenderer bipedBody_r2;
 			//private final ModelRenderer bipedHead;
 			private final ModelRenderer bipedHead_r1;
 			private final ModelRenderer hornRight1;
@@ -295,6 +297,7 @@ public class EntityEightTails extends ElementsNarutomodMod.ModElement {
 			private final ModelRenderer chest_r2;
 			private final ModelRenderer chest_r3;
 			private final ModelRenderer hump;
+			private final ModelRenderer hump_r1;
 			private final ModelRenderer bone7;
 			//private final ModelRenderer bipedRightArm;
 			private final ModelRenderer upperArmRight;
@@ -329,10 +332,20 @@ public class EntityEightTails extends ElementsNarutomodMod.ModElement {
 
 				bipedBody = new ModelRenderer(this);
 				bipedBody.setRotationPoint(0.0F, 23.5F, 0.0F);
-				bipedBody.cubeList.add(new ModelBox(bipedBody, 0, 0, -6.75F, -11.4F, -4.0F, 7, 10, 8, -0.2F, false));
-				bipedBody.cubeList.add(new ModelBox(bipedBody, 0, 0, -0.25F, -11.4F, -4.0F, 7, 10, 8, -0.2F, true));
 				bipedBody.cubeList.add(new ModelBox(bipedBody, 18, 48, -6.7F, -9.5F, -4.5F, 7, 8, 1, -0.3F, false));
 				bipedBody.cubeList.add(new ModelBox(bipedBody, 18, 48, -0.3F, -9.5F, -4.5F, 7, 8, 1, -0.3F, true));
+		
+				bipedBody_r1 = new ModelRenderer(this);
+				bipedBody_r1.setRotationPoint(0.25F, -1.5F, 0.0F);
+				bipedBody.addChild(bipedBody_r1);
+				setRotationAngle(bipedBody_r1, 0.0F, 0.0F, 0.0873F);
+				bipedBody_r1.cubeList.add(new ModelBox(bipedBody_r1, 0, 0, -0.25F, -9.9F, -4.0F, 7, 10, 8, 0.0F, true));
+		
+				bipedBody_r2 = new ModelRenderer(this);
+				bipedBody_r2.setRotationPoint(-0.25F, -1.5F, 0.0F);
+				bipedBody.addChild(bipedBody_r2);
+				setRotationAngle(bipedBody_r2, 0.0F, 0.0F, -0.0873F);
+				bipedBody_r2.cubeList.add(new ModelBox(bipedBody_r2, 0, 0, -6.75F, -9.9F, -4.0F, 7, 10, 8, 0.0F, false));
 
 				bipedHead = new ModelRenderer(this);
 				bipedHead.setRotationPoint(0.0F, -19.5F, -5.0F);
@@ -743,7 +756,13 @@ public class EntityEightTails extends ElementsNarutomodMod.ModElement {
 				setRotationAngle(hump, -0.5236F, -0.6981F, 0.3491F);
 				hump.cubeList.add(new ModelBox(hump, 0, 20, -3.9676F, 3.2835F, -4.2957F, 8, 6, 8, -0.5F, false));
 				hump.cubeList.add(new ModelBox(hump, 0, 20, -4.3176F, -1.8165F, -4.6457F, 8, 6, 8, 0.0F, false));
-
+		
+				hump_r1 = new ModelRenderer(this);
+				hump_r1.setRotationPoint(3.1824F, 8.8335F, 2.7543F);
+				hump.addChild(hump_r1);
+				setRotationAngle(hump_r1, -0.2499F, 0.061F, 0.3F);
+				hump_r1.cubeList.add(new ModelBox(hump_r1, 0, 20, -7.25F, -0.75F, -7.25F, 8, 6, 8, -0.5F, false));
+		
 				bone7 = new ModelRenderer(this);
 				bone7.setRotationPoint(1.8824F, -1.2165F, 1.5543F);
 				hump.addChild(bone7);
@@ -786,7 +805,7 @@ public class EntityEightTails extends ElementsNarutomodMod.ModElement {
 				foreArmRight_r3.setRotationPoint(10.0F, 10.0F, 3.0F);
 				foreArmRight.addChild(foreArmRight_r3);
 				setRotationAngle(foreArmRight_r3, 0.0F, 0.2182F, 0.0F);
-				foreArmRight_r3.cubeList.add(new ModelBox(foreArmRight_r3, 26, 30, -10.1038F, -0.3403F, -10.2795F, 6, 3, 4, -0.2F, false));
+				foreArmRight_r3.cubeList.add(new ModelBox(foreArmRight_r3, 28, 40, -10.1038F, -0.3403F, -10.2795F, 6, 3, 4, -0.2F, false));
 
 				bipedLeftArm = new ModelRenderer(this);
 				bipedLeftArm.setRotationPoint(7.0F, -17.5F, -5.0F);
@@ -818,7 +837,7 @@ public class EntityEightTails extends ElementsNarutomodMod.ModElement {
 				foreArmRight_r5.setRotationPoint(-10.0F, 10.0F, 3.0F);
 				foreArmLeft.addChild(foreArmRight_r5);
 				setRotationAngle(foreArmRight_r5, 0.0F, -0.2182F, 0.0F);
-				foreArmRight_r5.cubeList.add(new ModelBox(foreArmRight_r5, 26, 30, 4.1038F, -0.3403F, -10.2795F, 6, 3, 4, -0.2F, true));
+				foreArmRight_r5.cubeList.add(new ModelBox(foreArmRight_r5, 28, 40, 4.1038F, -0.3403F, -10.2795F, 6, 3, 4, -0.2F, true));
 
 				foreArmRight_r6 = new ModelRenderer(this);
 				foreArmRight_r6.setRotationPoint(-10.0F, 10.0F, 3.0F);
