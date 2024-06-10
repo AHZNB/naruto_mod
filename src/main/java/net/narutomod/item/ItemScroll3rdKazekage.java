@@ -77,20 +77,23 @@ public class ItemScroll3rdKazekage extends ElementsNarutomodMod.ModElement {
 			this.setCreativeTab(TabModTab.tab);
 		}
 
+		public void useItem(ItemStack stack, EntityLivingBase entity, BlockPos pos) {
+			if (!entity.world.isRemote && (!stack.hasTagCompound() || stack.getTagCompound().getInteger("puppetId") == 0)) {
+				entity.world.playSound(null, entity.posX, entity.posY, entity.posZ, SoundEvents.BLOCK_CLOTH_PLACE,
+						SoundCategory.NEUTRAL, 1, 1f / (this.itemRand.nextFloat() * 0.5f + 1f) + 0.5f);
+				EntityArrowCustom entityarrow = new EntityArrowCustom(entity, this.getMaxDamage() - this.getDamage(stack));
+				entityarrow.setLocationAndAngles(0.5d + pos.getX(), 1.1d + pos.getY(), 0.5d + pos.getZ(), entity.rotationYaw, 0f);
+				entity.world.spawnEntity(entityarrow);
+				if (!stack.hasTagCompound()) {
+					stack.setTagCompound(new NBTTagCompound());
+				}
+			}
+		}
+
 		@Override
 		public EnumActionResult onItemUse(EntityPlayer entity, World world, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-			if (!world.isRemote && world.getBlockState(pos).isTopSolid() && facing == EnumFacing.UP && hand == EnumHand.MAIN_HAND) {
-				ItemStack stack = entity.getHeldItem(hand);
-				if (!stack.hasTagCompound() || stack.getTagCompound().getInteger("puppetId") == 0) {
-					world.playSound(null, entity.posX, entity.posY, entity.posZ, SoundEvents.BLOCK_CLOTH_PLACE,
-							SoundCategory.NEUTRAL, 1, 1f / (itemRand.nextFloat() * 0.5f + 1f) + 0.5f);
-					EntityArrowCustom entityarrow = new EntityArrowCustom(entity, this.getMaxDamage() - this.getDamage(stack));
-					entityarrow.setLocationAndAngles(0.5d + pos.getX(), 1.1d + pos.getY(), 0.5d + pos.getZ(), entity.rotationYaw, 0f);
-					world.spawnEntity(entityarrow);
-					if (!stack.hasTagCompound()) {
-						stack.setTagCompound(new NBTTagCompound());
-					}
-				}
+			if (world.getBlockState(pos).isTopSolid() && facing == EnumFacing.UP) {
+				this.useItem(entity.getHeldItem(hand), entity, pos);
 			}
 			return EnumActionResult.PASS;
 		}
@@ -156,7 +159,7 @@ public class ItemScroll3rdKazekage extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
-		protected boolean executeJutsu(ItemStack stack, EntityLivingBase entity, float power) {
+		public boolean executeJutsu(ItemStack stack, EntityLivingBase entity, float power) {
 			EntityPuppet3rdKazekage.EntityCustom puppet = this.getPuppetEntity(stack, entity.world);
 			if (puppet != null) {
 				ItemJutsu.JutsuEnum jutsuEnum = this.getCurrentJutsu(stack);
@@ -215,12 +218,14 @@ public class ItemScroll3rdKazekage extends ElementsNarutomodMod.ModElement {
 			} else if (this.ticksExisted > this.openScrollTime) {
 				if (this.summoner != null) {
 					EntityPuppet3rdKazekage.EntityCustom entity = new EntityPuppet3rdKazekage.EntityCustom(this.summoner);
-					this.setLocationAndAngles(this.posX, this.posY, this.posZ, this.summoner.rotationYaw, 0f);
+					entity.setLocationAndAngles(this.posX, this.posY, this.posZ, this.summoner.rotationYaw, 0f);
+					entity.onInitialSpawn(this.world.getDifficultyForLocation(this.getPosition()), null);
 					this.world.spawnEntity(entity);
 					entity.setHealth(this.puppetHealth);
 					ProcedureUtils.poofWithSmoke(entity);
 					ItemStack stack1 = this.summoner.getHeldItemMainhand();
-					if (stack1.getItem() instanceof RangedItem) {
+					if (stack1.getItem() instanceof RangedItem
+					 || (stack1 = this.summoner.getHeldItemOffhand()).getItem() instanceof RangedItem) {
 						if (!stack1.hasTagCompound()) {
 							stack1.setTagCompound(new NBTTagCompound());
 						}

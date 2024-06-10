@@ -127,6 +127,9 @@ public class EntitySandGathering extends ElementsNarutomodMod.ModElement {
 			this.setDeathTicks(i);
 			if (i > 2 && this.sandCloud == null) {
 				this.setDead();
+				if (this.summoner != null) {
+					this.summoner.getEntityData().removeTag(Jutsu.ID_KEY);
+				}
 			}
 		}
 
@@ -205,6 +208,11 @@ public class EntitySandGathering extends ElementsNarutomodMod.ModElement {
 					return true;
 				} else {
 					if (entity instanceof EntityPuppet3rdKazekage.EntityCustom) {
+						EntityLivingBase target = ((EntityPuppet3rdKazekage.EntityCustom)entity).getAttackTarget();
+						if (target != null) {
+							((EC)entity1).shoot(target.getPositionVector().subtract(entity1.getPositionVector()));
+							return false;
+						}
 						EntityLivingBase owner = ((EntityPuppet3rdKazekage.EntityCustom)entity).getOwner();
 						if (owner != null) {
 							entity = owner;
@@ -216,6 +224,11 @@ public class EntitySandGathering extends ElementsNarutomodMod.ModElement {
 					}
 					return false;
 				}
+			}
+
+			@Override
+			public boolean isActivated(EntityLivingBase entity) {
+				return entity.getEntityData().hasKey(ID_KEY);
 			}
 		}
 	}
