@@ -116,6 +116,15 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
+		protected void applyEntityAttributes() {
+			super.applyEntityAttributes();
+			this.getAttributeMap().registerAttribute(SharedMonsterAttributes.FLYING_SPEED);
+			this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(100D);
+			this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(48D);
+			this.getEntityAttribute(SharedMonsterAttributes.FLYING_SPEED).setBaseValue(0.4D);
+		}
+
+		@Override
 		protected void initEntityAI() {
 			super.initEntityAI();
 			this.tasks.addTask(0, new EntityAISwimming(this));
@@ -132,15 +141,6 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 		@Override
 		protected Item getDropItem() {
 			return null;
-		}
-
-		@Override
-		protected void applyEntityAttributes() {
-			super.applyEntityAttributes();
-			this.getAttributeMap().registerAttribute(SharedMonsterAttributes.FLYING_SPEED);
-			this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(100D);
-			this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(48D);
-			this.getEntityAttribute(SharedMonsterAttributes.FLYING_SPEED).setBaseValue(0.4D);
 		}
 
 	    @Override

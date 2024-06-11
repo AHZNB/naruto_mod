@@ -24,7 +24,10 @@ public class ProcedureFeatherFallingOnPotionActiveTick extends ElementsNarutomod
 		Entity entity = (Entity) dependencies.get("entity");
 		int amplifier = (int) dependencies.get("amplifier");
 		double fallDistance = 0;
-		fallDistance = entity.fallDistance;
-		entity.fallDistance = (float) (((fallDistance) - (0.3 * ((amplifier) + 1))));
+		fallDistance = (double) (entity.fallDistance - (0.3 * ((amplifier) + 1)));
+		if (((fallDistance) < 0)) {
+			fallDistance = (double) 0;
+		}
+		entity.fallDistance = (float) ((fallDistance));
 	}
 }

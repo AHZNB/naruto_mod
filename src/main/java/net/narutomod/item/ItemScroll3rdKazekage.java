@@ -57,7 +57,7 @@ public class ItemScroll3rdKazekage extends ElementsNarutomodMod.ModElement {
 	@Override
 	public void initElements() {
 		elements.items.add(() -> new RangedItem(SANDBULLET, GATHERING));
-		elements.entities.add(() -> EntityEntryBuilder.create().entity(EntityArrowCustom.class)
+		elements.entities.add(() -> EntityEntryBuilder.create().entity(EntityScroll.class)
 				.id(new ResourceLocation("narutomod", "entitybulletscroll_3rd_kazekage"), ENTITYID).name("entitybulletscroll_3rd_kazekage")
 				.tracker(64, 1, true).build());
 	}
@@ -81,9 +81,9 @@ public class ItemScroll3rdKazekage extends ElementsNarutomodMod.ModElement {
 			if (!entity.world.isRemote && (!stack.hasTagCompound() || stack.getTagCompound().getInteger("puppetId") == 0)) {
 				entity.world.playSound(null, entity.posX, entity.posY, entity.posZ, SoundEvents.BLOCK_CLOTH_PLACE,
 						SoundCategory.NEUTRAL, 1, 1f / (this.itemRand.nextFloat() * 0.5f + 1f) + 0.5f);
-				EntityArrowCustom entityarrow = new EntityArrowCustom(entity, this.getMaxDamage() - this.getDamage(stack));
-				entityarrow.setLocationAndAngles(0.5d + pos.getX(), 1.1d + pos.getY(), 0.5d + pos.getZ(), entity.rotationYaw, 0f);
-				entity.world.spawnEntity(entityarrow);
+				EntityScroll entity1 = new EntityScroll(entity, this.getMaxDamage() - this.getDamage(stack));
+				entity1.setLocationAndAngles(0.5d + pos.getX(), 1.1d + pos.getY(), 0.5d + pos.getZ(), entity.rotationYaw, 0f);
+				entity.world.spawnEntity(entity1);
 				if (!stack.hasTagCompound()) {
 					stack.setTagCompound(new NBTTagCompound());
 				}
@@ -190,17 +190,17 @@ public class ItemScroll3rdKazekage extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-	public static class EntityArrowCustom extends Entity {
+	public static class EntityScroll extends Entity {
 		private final int openScrollTime = 30;
 		private EntityLivingBase summoner;
 		private float puppetHealth;
 		
-		public EntityArrowCustom(World a) {
+		public EntityScroll(World a) {
 			super(a);
 			this.setSize(1.0f, 0.2f);
 		}
 
-		public EntityArrowCustom(EntityLivingBase summonerIn, float health) {
+		public EntityScroll(EntityLivingBase summonerIn, float health) {
 			this(summonerIn.world);
 			this.summoner = summonerIn;
 			this.puppetHealth = health;
@@ -254,13 +254,13 @@ public class ItemScroll3rdKazekage extends ElementsNarutomodMod.ModElement {
 		@SideOnly(Side.CLIENT)
 		@Override
 		public void register() {
-			RenderingRegistry.registerEntityRenderingHandler(EntityArrowCustom.class, renderManager -> {
+			RenderingRegistry.registerEntityRenderingHandler(EntityScroll.class, renderManager -> {
 				return new RenderCustom(renderManager);
 			});
 		}
 
 		@SideOnly(Side.CLIENT)
-		public class RenderCustom extends EntityPuppet.ClientClass.RenderScroll<EntityArrowCustom> {
+		public class RenderCustom extends EntityPuppet.ClientClass.RenderScroll<EntityScroll> {
 			private final ResourceLocation texture = new ResourceLocation("narutomod:textures/scroll_3rdkazekage.png");
 	
 			public RenderCustom(RenderManager renderManager) {
@@ -268,7 +268,7 @@ public class ItemScroll3rdKazekage extends ElementsNarutomodMod.ModElement {
 			}
 	
 			@Override
-			protected ResourceLocation getEntityTexture(EntityArrowCustom entity) {
+			protected ResourceLocation getEntityTexture(EntityScroll entity) {
 				return this.texture;
 			}
 		}

@@ -6,7 +6,9 @@ import net.narutomod.item.ItemPoisonSenbon;
 import net.narutomod.item.ItemScrollHiruko;
 import net.narutomod.item.ItemScroll3rdKazekage;
 import net.narutomod.procedure.ProcedureUtils;
+import net.narutomod.procedure.ProcedureSync;
 import net.narutomod.ModConfig;
+import net.narutomod.NarutomodModVariables;
 import net.narutomod.ElementsNarutomodMod;
 
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -42,7 +44,6 @@ import net.minecraft.entity.IRangedAttackMob;
 import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.inventory.EntityEquipmentSlot;
@@ -97,7 +98,7 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 		private int lastSandGatheringTime;
 
 		public EntityCustom(World world) {
-			super(world, 120, 7000d);
+			super(world, 60, 7000d);
 			this.setSize(0.525f, 1.75f);
 		}
 
@@ -127,6 +128,10 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 			this.setRobeOffTicks(off ? 0 : -1);
 		}
 
+		protected boolean isRobeOff() {
+			return this.getRobeOffTicks() >= 0;
+		}
+
 		@Override
 		protected void applyEntityAttributes() {
 			super.applyEntityAttributes();
@@ -146,7 +151,7 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 		protected void initEntityAI() {
 			super.initEntityAI();
 			this.tasks.addTask(0, new EntityAISwimming(this));
-			this.tasks.addTask(1, new EntityNinjaMob.AIAttackRangedTactical(this, 0.6d, 30, 12.0F) {
+			this.tasks.addTask(1, new EntityNinjaMob.AIAttackRangedTactical(this, 0.5d, 30, 12.0F) {
 				@Override
 				public boolean shouldExecute() {
 					return super.shouldExecute() && EntityCustom.this.isRidingHiruko();
@@ -186,18 +191,25 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 			 			this.swapWithInventory(EntityEquipmentSlot.OFFHAND, 1);
 			 		} else if (stack.getItem() == ItemScroll3rdKazekage.block) {
 				 		this.swingArm(EnumHand.OFF_HAND);
-						Vec3d vec1 = this.getAttackTarget().getPositionVector().subtract(this.getPositionEyes(1f))
-						 .normalize().scale(1.5d).add(this.getPositionEyes(1f));
-						//Vec3d vec1 = this.getLookVec().scale(1.5d).add(this.getPositionEyes(1f));
-						BlockPos pos = new BlockPos(vec1);
+						BlockPos pos = new BlockPos(this.getAttackTarget().getPositionVector()
+						 .subtract(this.getPositionEyes(1f)).normalize().scale(1.5d).add(this.getPositionEyes(1f)));
 						for ( ; this.world.isAirBlock(pos); pos = pos.down()) ;
 						((ItemScroll3rdKazekage.RangedItem)stack.getItem()).useItem(stack, this, pos);
 						this.standStillFor(30);
 						this.thirdScrollUsed = true;
 			 		}
-				} else if (this.isThirdSummoned() && stack.getItem() == ItemScroll3rdKazekage.block
-				 && this.isHandActive() && stack.getMaxItemUseDuration() - this.getItemInUseCount() > 80) {
-					this.stopActiveHand();
+				} else if (this.isThirdSummoned() && stack.getItem() == ItemScroll3rdKazekage.block) {
+					if (this.isHandActive()) {
+						if (stack.getMaxItemUseDuration() - this.getItemInUseCount() >= 80) {
+							this.stopActiveHand();
+						}
+					} else if (ItemScroll3rdKazekage.GATHERING.jutsu.isActivated(this.thirdEntity)
+					 && (this.ticksExisted - this.lastSandGatheringTime) % 80 == 50) {
+						((ItemScroll3rdKazekage.RangedItem)stack.getItem()).executeJutsu(stack, this, 1f);
+					}
+				} else if (this.thirdEntity != null && !this.thirdEntity.isEntityAlive() && !this.isRobeOff()) {
+					this.takeOffRobe(true);
+					this.setItemStackToSlot(EntityEquipmentSlot.OFFHAND, ItemStack.EMPTY);
 				}
 			}
 		}
@@ -215,7 +227,7 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 				 : this.getLookVec().scale(-0.5d);
 				this.motionX = vec.x;
 				this.motionZ = vec.z;
-				this.motionY = 0.6d;
+				this.motionY = 0.62d;
 				this.isAirBorne = true;
 				this.fallDistance = 0.0f;
 			} else {
@@ -237,11 +249,20 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 				this.hirukoEntity.attackEntityFrom(source, amount);
 				return false;
 			}
+			if (source == DamageSource.FALL) {
+				return false;
+			}
+			if (source.isExplosion() && source.getTrueSource() != null && source.getTrueSource().equals(this.thirdEntity)) {
+				return false;
+			}
 			return super.attackEntityFrom(source, amount);
 		}
 
 		@Override
 		public void setSwingingArms(boolean swingingArms) {
+			if (this.isThirdSummoned()) {
+				ProcedureSync.EntityNBTTag.setAndSync(this, NarutomodModVariables.forceBowPose, swingingArms);
+			}
 		}
 
 		@Override
@@ -265,14 +286,13 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 						ItemPoisonSenbon.spawnArrow(this.hirukoEntity, vec);
 					}
 				}
-			} else if (this.isThirdSummoned() && stack.getItem() == ItemScroll3rdKazekage.block) {
-			 //&& !ItemScroll3rdKazekage.GATHERING.jutsu.isActivated(this)) {
-				//if (this.ticksExisted - this.lastSandGatheringTime > SANDGATHERING_CD && this.rand.nextFloat() < 0.25f) {
-				//	((ItemScroll3rdKazekage.RangedItem)stack.getItem()).setCurrentJutsu(stack, ItemScroll3rdKazekage.GATHERING);
-				//	((ItemScroll3rdKazekage.RangedItem)stack.getItem()).executeJutsu(stack, this, 1f);
-				//	this.lastSandGatheringTime = this.ticksExisted;
-				//} else
-				if (this.ticksExisted - this.lastSandBulletTime > SANDBULLET_CD && !this.isHandActive()) {
+			} else if (this.isThirdSummoned() && stack.getItem() == ItemScroll3rdKazekage.block
+			 && !ItemScroll3rdKazekage.GATHERING.jutsu.isActivated(this.thirdEntity)) {
+				if (this.ticksExisted - this.lastSandGatheringTime > SANDGATHERING_CD && this.rand.nextFloat() < 0.25f) {
+					((ItemScroll3rdKazekage.RangedItem)stack.getItem()).setCurrentJutsu(stack, ItemScroll3rdKazekage.GATHERING);
+					((ItemScroll3rdKazekage.RangedItem)stack.getItem()).executeJutsu(stack, this, 1f);
+					this.lastSandGatheringTime = this.ticksExisted;
+				} else if (this.ticksExisted - this.lastSandBulletTime > SANDBULLET_CD && !this.isHandActive()) {
 					((ItemScroll3rdKazekage.RangedItem)stack.getItem()).setCurrentJutsu(stack, ItemScroll3rdKazekage.SANDBULLET);
 					this.setActiveHand(EnumHand.OFF_HAND);
 					this.lastSandBulletTime = this.ticksExisted;
@@ -291,7 +311,7 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 		@Override
 		protected void collideWithNearbyEntities() {
 			if (this.getRobeOffTicks() > this.bladesOpenTime) {
-				for (Entity entity : this.world.getEntitiesInAABBexcluding(this, this.getEntityBoundingBox().grow(2d, 0d, 2d),
+				for (Entity entity : this.world.getEntitiesInAABBexcluding(this, this.getEntityBoundingBox().grow(2.4d, 0d, 2.4d),
 					Predicates.and(EntitySelectors.getTeamCollisionPredicate(this), new Predicate<Entity>() {
 						@Override
 						public boolean apply(@Nullable Entity p_apply_1_) {
@@ -609,7 +629,7 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 			@Override
 			public void render(Entity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
 				if (entityIn instanceof EntityCustom) {
-					boolean robeOff = ((EntityCustom)entityIn).getRobeOffTicks() >= 0;
+					boolean robeOff = ((EntityCustom)entityIn).isRobeOff();
 					this.robeHead.showModel = !robeOff;
 					this.robeBody.showModel = !robeOff;
 					this.robeLeftArm.showModel = !robeOff;

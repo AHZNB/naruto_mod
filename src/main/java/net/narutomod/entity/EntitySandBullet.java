@@ -80,6 +80,7 @@ public class EntitySandBullet extends ElementsNarutomodMod.ModElement {
 	public static class EC extends EntityScalableProjectile.Base {
 		private static final DataParameter<Integer> COLOR = EntityDataManager.<Integer>createKey(EC.class, DataSerializers.VARINT);
 		private int delay;
+		private final List<Entity> ignoreEntities = Lists.newArrayList();
 
 		public EC(World worldIn) {
 			super(worldIn);
@@ -96,6 +97,7 @@ public class EntitySandBullet extends ElementsNarutomodMod.ModElement {
 			this.setPosition(x, y, z);
 			this.setColor(sandColor);
 			this.delay = delayTicks;
+			this.ignoreEntities.add(shooter);
 		}
 
 		@Override
@@ -128,7 +130,7 @@ public class EntitySandBullet extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		protected void onImpact(RayTraceResult result) {
-			if (!this.world.isRemote && (result.entityHit == null || !result.entityHit.equals(this.shootingEntity))) {
+			if (!this.world.isRemote && (result.entityHit == null || !this.ignoreEntities.contains(result.entityHit))) {
 				this.playSound(net.minecraft.util.SoundEvent.REGISTRY
 				 .getObject(new ResourceLocation("narutomod:bullet_impact")), 1f, 0.4f + this.rand.nextFloat() * 0.6f);
 				this.world.createExplosion(this.shootingEntity, result.hitVec.x, result.hitVec.y, result.hitVec.z, 3f,
@@ -152,6 +154,12 @@ public class EntitySandBullet extends ElementsNarutomodMod.ModElement {
 			//	Particles.spawnParticle(this.world, Particles.Types.SUSPENDED, this.posX, this.posY+0.1d, this.posZ,
  			//	 10, 0.03d, 0.03d, 0.03d, 0d, 0d, 0d, this.getColor(), 10, 5);
 			//}
+		}
+
+		protected void setIgnoreEntities(Entity... ignoreEntity) {
+			for (int i = 0; i < ignoreEntity.length; i++) {
+				this.ignoreEntities.add(ignoreEntity[i]);
+			}
 		}
 
 		public static class Jutsu implements ItemJutsu.IJutsuCallback {
@@ -178,7 +186,11 @@ public class EntitySandBullet extends ElementsNarutomodMod.ModElement {
 			public void createJutsu(int color, EntityLivingBase entity, double x, double y, double z, int delay) {
 				entity.world.playSound(null, x, y, z, SoundEvents.BLOCK_SAND_PLACE,
 				 net.minecraft.util.SoundCategory.BLOCKS, 0.5f, entity.getRNG().nextFloat() * 0.4f + 0.6f);
-				entity.world.spawnEntity(new EC(entity, color, x, y, z, delay));
+				EC ecEntity = new EC(entity, color, x, y, z, delay);
+				if (entity instanceof EntityPuppet3rdKazekage.EntityCustom) {
+					ecEntity.setIgnoreEntities(((EntityPuppet3rdKazekage.EntityCustom)entity).getOwner());
+				}
+				entity.world.spawnEntity(ecEntity);
 			}
 
 			@Override

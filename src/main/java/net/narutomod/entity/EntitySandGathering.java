@@ -52,7 +52,6 @@ public class EntitySandGathering extends ElementsNarutomodMod.ModElement {
 
 	public static class EC extends Entity {
 		private static final DataParameter<Integer> DEATH_TICKS = EntityDataManager.<Integer>createKey(EC.class, DataSerializers.VARINT);
-		private final float baseExplosion = 6.0f;
 		private final int duration = 300;
 		private EntityLivingBase summoner;
 		private ItemJiton.SwarmTarget sandCloud;
@@ -110,7 +109,11 @@ public class EntitySandGathering extends ElementsNarutomodMod.ModElement {
 					this.sandCloud = null;
 					this.setPuppetMouthOpen(false);
 				} else {
-					if (i == 0 && this.sandCloud.getTicks() > this.waitTime) {
+					if (i > 20) {
+						this.cleanUp();
+					} else if (i > 0) {
+						this.sandCloud.setTarget(this.getMouthPos(), 0.8f, 0.03f, true);
+					} else if (this.sandCloud.getTicks() > this.waitTime) {
 						this.sandCloud.forceRemove();
 					}
 					this.sandCloud.onUpdate();
@@ -118,7 +121,7 @@ public class EntitySandGathering extends ElementsNarutomodMod.ModElement {
 			} else if (!this.world.isRemote && i > 0) {
 				this.setPuppetMouthOpen(true);
 				this.sandCloud = new ItemJiton.SwarmTarget(this.world, 50, this.getEntityBoundingBox(),
-			 	 this.getMouthPos(), new Vec3d(0.2d, -0.1d, 0.2d), 0.5f, 0.03f, true, 2f, ItemJiton.Type.IRON.getColor());
+			 	 this.getMouthPos(), new Vec3d(0.2d, -0.1d, 0.2d), 0.8f, 0.03f, true, 2f, ItemJiton.Type.IRON.getColor());
 			}
 		}
 
@@ -127,10 +130,13 @@ public class EntitySandGathering extends ElementsNarutomodMod.ModElement {
 			this.setDeathTicks(i);
 			if (i > 2 && this.sandCloud == null) {
 				this.setDead();
-				if (this.summoner != null) {
-					this.summoner.getEntityData().removeTag(Jutsu.ID_KEY);
-				}
 			}
+		}
+
+		@Override
+		public void setDead() {
+			super.setDead();
+			this.cleanUp();
 		}
 
 		@Override
@@ -144,8 +150,8 @@ public class EntitySandGathering extends ElementsNarutomodMod.ModElement {
 				if (this.motionX != 0d || this.motionY != 0d || this.motionZ != 0d) {
 					RayTraceResult result = this.forwardsRaycast(true);
 					if (!this.world.isRemote && result != null) {
-						this.world.createExplosion(this.summoner, result.hitVec.x, result.hitVec.y, result.hitVec.z, this.baseExplosion,
-						  net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.world, this.summoner));
+						this.world.createExplosion(this.summoner, result.hitVec.x, result.hitVec.y, result.hitVec.z, SCALE * 0.8f,
+						 net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.world, this.summoner));
 						this.accelX = 0.0d;
 						this.accelY = 0.0d;
 						this.accelZ = 0.0d;
@@ -189,11 +195,22 @@ public class EntitySandGathering extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
+		public boolean canBeCollidedWith() {
+			return !this.isDead;
+		}
+
+		@Override
 		protected void readEntityFromNBT(NBTTagCompound compound) {
 		}
 
 		@Override
 		protected void writeEntityToNBT(NBTTagCompound compound) {
+		}
+
+		private void cleanUp() {
+			if (!this.world.isRemote && this.summoner != null) {
+				Jutsu.deActivateCleanup(this.summoner);
+			}
 		}
 
 		public static class Jutsu implements ItemJutsu.IJutsuCallback {
@@ -224,6 +241,10 @@ public class EntitySandGathering extends ElementsNarutomodMod.ModElement {
 					}
 					return false;
 				}
+			}
+
+			public static void deActivateCleanup(EntityLivingBase entity) {
+				entity.getEntityData().removeTag(ID_KEY);
 			}
 
 			@Override

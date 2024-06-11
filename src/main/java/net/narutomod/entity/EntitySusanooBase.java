@@ -142,7 +142,7 @@ public abstract class EntitySusanooBase extends EntityCreature implements IRange
 		this.getAttributeMap().registerAttribute(ProcedureUtils.MAXHEALTH);
 		this.getAttributeMap().registerAttribute(SharedMonsterAttributes.ATTACK_DAMAGE);
 		this.getAttributeMap().registerAttribute(EntityPlayer.REACH_DISTANCE);
-		this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(100.0D);
+		//this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(100.0D);
 		this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.05D);
 		this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(100.0D);
 		this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(10.0D);

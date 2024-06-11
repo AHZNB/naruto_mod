@@ -107,7 +107,6 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 			this.setAlwaysRenderNameTag(true);
 			this.chakraPathway = new PathwayNinjaMob(this, chakraAmountIn);
 			this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(50d + 0.005d * level * level);
-			// .applyModifier(new AttributeModifier(NINJA_HEALTH, "ninja.maxhealth", 0.005d * level * level, 0));
 			this.setHealth(this.getMaxHealth());
 		}
 
@@ -834,6 +833,7 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 
 	    private void setPose(T entity) {
 	    	ModelBiped model = (ModelBiped)this.getMainModel();
+	    	model.isSneak = entity.isSneaking();
             ItemStack itemstack = entity.getHeldItemMainhand();
             ItemStack itemstack1 = entity.getHeldItemOffhand();
             ModelBiped.ArmPose mainhandpose = ModelBiped.ArmPose.EMPTY;
@@ -944,14 +944,12 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public void setRotationAngles(float f0, float f1, float f2, float f3, float f4, float f5, Entity entityIn) {
-			boolean flag1 = this.isSneak;
 			boolean flag2 = PlayerRender.shouldNarutoRun(entityIn) && this.swingProgress == 0.0f;
 			if (flag2) {
 				this.isSneak = true;
 			}
 			super.setRotationAngles(f0, f1, f2, f3, f4, f5, entityIn);
 			if (flag2) {
-				this.isSneak = flag1;
 				this.bipedRightArm.rotateAngleX = 1.4835F;
 				this.bipedRightArm.rotateAngleY = -0.3927F;
 				this.bipedLeftArm.rotateAngleX = 1.4835F;
