@@ -224,8 +224,7 @@ public class ItemSuiton extends ElementsNarutomodMod.ModElement {
 		public void shoot() {
 			if (this.shootingEntity != null) {
 				Vec3d vec3d = this.shootingEntity.getLookVec();
-				Vec3d vec3d1 = vec3d.addVector(this.shootingEntity.posX,
-						this.shootingEntity.posY + this.shootingEntity.getEyeHeight() - 0.2d, this.shootingEntity.posZ);
+				Vec3d vec3d1 = vec3d.add(this.shootingEntity.getPositionEyes(1f).subtract(0d, 0.2d, 0d));
 				this.setPositionAndRotation(vec3d1.x, vec3d1.y, vec3d1.z, this.shootingEntity.rotationYaw, this.shootingEntity.rotationPitch);
 				vec3d1 = vec3d.scale(this.power);
 				this.shoot(vec3d1.x, vec3d1.y, vec3d1.z);
@@ -298,12 +297,16 @@ public class ItemSuiton extends ElementsNarutomodMod.ModElement {
 			@Override
 			public boolean createJutsu(ItemStack stack, EntityLivingBase entity, float power) {
 				if (power >= 5.0f) {
-					EntityStream entityarrow = new EntityStream(entity, power);
-					entityarrow.shoot();
-					entity.world.spawnEntity(entityarrow);
+					this.createJutsu(entity, power);
 					return true;
 				}
 				return false;
+			}
+
+			public void createJutsu(EntityLivingBase entity, float power) {
+				EntityStream entityarrow = new EntityStream(entity, power);
+				entityarrow.shoot();
+				entity.world.spawnEntity(entityarrow);
 			}
 
 			@Override

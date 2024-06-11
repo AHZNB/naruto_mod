@@ -2,6 +2,7 @@
 package net.narutomod.entity;
 
 import net.narutomod.item.ItemJutsu;
+import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.Particles;
 import net.narutomod.ElementsNarutomodMod;
 
@@ -18,6 +19,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.entity.projectile.ProjectileHelper;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
@@ -85,7 +87,13 @@ public class EntityFirestream extends ElementsNarutomodMod.ModElement {
 					if (this.shooter != null) {
 						double d = (double)this.ticksExisted / this.maxLife;
 						d = 1.0d - d * d * 0.8d;
-						this.preExecuteParticles(this.range * d, this.width * d);
+						if (this.shooter instanceof EntityLiving && ((EntityLiving)this.shooter).getAttackTarget() != null) {
+							ProcedureUtils.Vec2f rota = ProcedureUtils.getYawPitchFromVec(((EntityLiving)this.shooter)
+							 .getAttackTarget().getPositionVector().subtract(this.shooter.getPositionEyes(1f)));
+							this.shoot(rota.x, rota.y, this.range * d, this.width * d);
+						} else {
+							this.shoot(this.shooter.rotationYaw, this.shooter.rotationPitch, this.range * d, this.width * d);
+						}
 					}
 					if (this.ticksExisted < this.maxLife - 20 && this.ticksExisted % 10 == 1) {
 						this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:flamethrow")), 
@@ -95,19 +103,19 @@ public class EntityFirestream extends ElementsNarutomodMod.ModElement {
 			}
 		}
 
-		protected void preExecuteParticles(double range, double radius) {
+		protected void shoot(float directionYaw, float directionPitch, double range, double radius) {
 			double angle = Math.atan(radius / range) * 180d / Math.PI;
 			for (int i = 0; i < (int)(MathHelper.sqrt(radius) * 2.5d); i++) {
-				Vec3d vec3d = Vec3d.fromPitchYaw(this.shooter.rotationPitch + (float)((this.rand.nextDouble()-0.5d) * angle * 3.0d),
-				 this.shooter.rotationYaw + (float)((this.rand.nextDouble()-0.5d) * angle * 3.0d)).scale(range * 0.1d);
+				Vec3d vec3d = Vec3d.fromPitchYaw(directionPitch + (float)((this.rand.nextDouble()-0.5d) * angle * 3.0d),
+				 directionYaw + (float)((this.rand.nextDouble()-0.5d) * angle * 3.0d)).scale(range * 0.1d);
 				this.world.spawnEntity(new FlameParticle(this.shooter, this.posX, this.posY, this.posZ,
 				 vec3d.x, vec3d.y, vec3d.z, 0xffffcf00, (float)vec3d.lengthVector()*5f + this.rand.nextFloat()*2f,
 				 (float)range * (this.rand.nextFloat() * 0.5f + 0.5f)));
 			}
 			Particles.Renderer particles = new Particles.Renderer(this.world);
 			for (int i = 0; i < (int)(range * radius * 0.8d); i++) {
-				Vec3d vec3d = Vec3d.fromPitchYaw(this.shooter.rotationPitch + (float)((this.rand.nextDouble()-0.5d) * angle * 3.0d),
-				 this.shooter.rotationYaw + (float)((this.rand.nextDouble()-0.5d) * angle * 3.0d)).scale(range * 0.1d);
+				Vec3d vec3d = Vec3d.fromPitchYaw(directionPitch + (float)((this.rand.nextDouble()-0.5d) * angle * 3.0d),
+				 directionYaw + (float)((this.rand.nextDouble()-0.5d) * angle * 3.0d)).scale(range * 0.1d);
 				particles.spawnParticles(Particles.Types.FLAME, this.posX, this.posY, this.posZ, 1, 0, 0, 0,
 				 vec3d.x, vec3d.y, vec3d.z, 0xffffcf00, (int)(vec3d.lengthVector()*50d)+this.rand.nextInt(20));
 			}
@@ -148,12 +156,16 @@ public class EntityFirestream extends ElementsNarutomodMod.ModElement {
 		public static class Jutsu2 implements ItemJutsu.IJutsuCallback {
 			@Override
 			public boolean createJutsu(ItemStack stack, EntityLivingBase entity, float power) {
+				this.createJutsu(entity, power);
+				//ItemJutsu.setCurrentJutsuCooldown(stack, (EntityPlayer)entity, (long)(power * 200));
+				return true;
+			}
+
+			public void createJutsu(EntityLivingBase entity, float power) {
 				EC entity1 = new EC(entity, 1.0f, power);
 				entity1.wait = 0;
 				entity1.maxLife = (int)(power * 10f);
 				entity.world.spawnEntity(entity1);
-				//ItemJutsu.setCurrentJutsuCooldown(stack, (EntityPlayer)entity, (long)(power * 200));
-				return true;
 			}
 
 			@Override

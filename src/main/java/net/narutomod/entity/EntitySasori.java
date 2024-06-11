@@ -57,9 +57,9 @@ import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.network.datasync.DataSerializers;
 
 import javax.annotation.Nullable;
+import javax.vecmath.Vector3f;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
-import javax.vecmath.Vector3f;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntitySasori extends ElementsNarutomodMod.ModElement {
@@ -88,6 +88,7 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 		private final int JUTSU_CD = 300;
 		private final int SANDGATHERING_CD = 400;
 		private final int SANDBULLET_CD = 200;
+		private final double chakra4fire = 300d;
 		private int lastBlockTime;
 		private EntityPuppetHiruko.EntityCustom hirukoEntity;
 		private EntityPuppet3rdKazekage.EntityCustom thirdEntity;
@@ -96,6 +97,7 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 		private boolean thirdScrollUsed;
 		private int lastSandBulletTime;
 		private int lastSandGatheringTime;
+		private int realFightStage;
 
 		public EntityCustom(World world) {
 			super(world, 60, 7000d);
@@ -143,7 +145,14 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 		@Override
 		protected void dropLoot(boolean wasRecentlyHit, int lootingModifier, DamageSource source) {
 			if (this.rand.nextFloat() < 0.5f) {
-				this.entityDropItem(new ItemStack(ItemScrollHiruko.block, 1), 0f);
+				ItemStack stack = new ItemStack(ItemScrollHiruko.block);
+				stack.setItemDamage(this.rand.nextInt((int)EntityPuppetHiruko.EntityCustom.MAXHEALTH));
+				this.entityDropItem(stack, 0.0f);
+			}
+			if (this.rand.nextFloat() < 0.25f) {
+				ItemStack stack = new ItemStack(ItemScroll3rdKazekage.block);
+				stack.setItemDamage(this.rand.nextInt((int)EntityPuppet3rdKazekage.EntityCustom.MAXHEALTH));
+				this.entityDropItem(stack, 0.0f);
 			}
 		}
 
@@ -209,6 +218,7 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 					}
 				} else if (this.thirdEntity != null && !this.thirdEntity.isEntityAlive() && !this.isRobeOff()) {
 					this.takeOffRobe(true);
+					this.resetActiveHand();
 					this.setItemStackToSlot(EntityEquipmentSlot.OFFHAND, ItemStack.EMPTY);
 				}
 			}
@@ -296,6 +306,10 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 					((ItemScroll3rdKazekage.RangedItem)stack.getItem()).setCurrentJutsu(stack, ItemScroll3rdKazekage.SANDBULLET);
 					this.setActiveHand(EnumHand.OFF_HAND);
 					this.lastSandBulletTime = this.ticksExisted;
+				}
+			} else if (this.isRobeOff()) {
+				if (this.consumeChakra(this.chakra4fire)) {
+					new EntityFirestream.EC.Jutsu2().createJutsu(this, 30.0f);
 				}
 			}
 		}
