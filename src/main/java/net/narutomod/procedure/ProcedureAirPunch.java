@@ -10,7 +10,7 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.EntityLivingBase;
+//import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.EnumFacing;
@@ -20,9 +20,9 @@ import net.narutomod.Particles;
 
 import java.util.Random;
 import java.util.List;
+import javax.annotation.Nullable;
 import com.google.common.collect.Lists;
 import com.google.common.base.Predicate;
-import javax.annotation.Nullable;
 
 public abstract class ProcedureAirPunch {
 	private final List<RayTraceResult> affectedTraceList = Lists.newArrayList();
@@ -62,15 +62,15 @@ public abstract class ProcedureAirPunch {
 		setPressDuration(player, pressDuration);
 	}
 
-	public void execute(EntityLivingBase player, double range, double radius) {
+	public void execute(Entity player, double range, double radius) {
 		execute(player, range, radius, 0d, 1.5d);
 	}
 
-	public void execute2(EntityLivingBase player, double range, double radius) {
+	public void execute2(Entity player, double range, double radius) {
 		execute(player, range, radius, radius, 0);
 	}
 
-	public void execute(EntityLivingBase player, double range, double radius, double radiusNear, double random) {
+	public void execute(Entity player, double range, double radius, double radiusNear, double random) {
 		World world = player.world;
 		this.range = range;
 		this.radius = radius;
@@ -96,7 +96,7 @@ public abstract class ProcedureAirPunch {
 		}
 	}
 
-	protected void preExecuteParticles(EntityLivingBase player) {
+	protected void preExecuteParticles(Entity player) {
 		if (this.particlesPre != null) {
 			for (int i = 1; i <= this.range; i++) {
 				Vec3d vec3d = player.getLookVec().scale(i);
@@ -115,7 +115,7 @@ public abstract class ProcedureAirPunch {
 	}
 
 	@Nullable
-	protected EntityItem processAffectedBlock(EntityLivingBase player, BlockPos pos, EnumFacing facing) {
+	protected EntityItem processAffectedBlock(Entity player, BlockPos pos, EnumFacing facing) {
 		return ProcedureUtils.breakBlockAndDropWithChance(player.world, pos, this.blockHardnessLimit, 
 		  net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(player.world, player) 
 		  ? this.getBreakChance(pos, player, this.range) : 0f, this.blockDropChance, false);
@@ -129,13 +129,13 @@ public abstract class ProcedureAirPunch {
 		return this.radius;
 	}
 
-	protected void attackEntityFrom(EntityLivingBase player, Entity target) {
+	protected void attackEntityFrom(Entity player, Entity target) {
 		if (target.canBePushed()) {
 			ProcedureUtils.pushEntity(player, target, this.range, 2.0F);
 		}
 	}
 
-	protected abstract float getBreakChance(BlockPos paramBlockPos, EntityLivingBase paramEntityPlayer, double paramDouble);
+	protected abstract float getBreakChance(BlockPos paramBlockPos, Entity paramEntityPlayer, double paramDouble);
 
 	protected boolean getAffectedInSight(Entity entity, double range, double nearRadius, double farRadius, double randomness) {
 		this.affectedTraceList.clear();

@@ -68,7 +68,7 @@ public class EntityFutonGreatBreakthrough extends ElementsNarutomodMod.ModElemen
 			if (this.user != null) {
 				this.setPosition(this.user.posX, this.user.posY, this.user.posZ);
 				if (this.ticksExisted == 1) {
-					this.playSound(net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation(("narutomod:wind"))),
+					this.playSound(net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:wind")),
 					 1f, this.power * 0.2f);
 				}
 				this.airPunch.execute(this.user, this.power, this.power * 0.25d);
@@ -93,39 +93,39 @@ public class EntityFutonGreatBreakthrough extends ElementsNarutomodMod.ModElemen
 		protected void writeEntityToNBT(NBTTagCompound compound) {
 		}
 
-		public static class AirPunch extends ProcedureAirPunch {
+		public class AirPunch extends ProcedureAirPunch {
 			public AirPunch() {
 				this.particlesDuring = null;
 			}
 
-			public void execute(EntityLivingBase player, double range, double radius) {
+			public void execute(Entity player, double range, double radius) {
 				this.blockHardnessLimit = (float)range / MAX_RANGE;
 				super.execute(player, range, radius);
 			}
 
 			@Override
-			protected void preExecuteParticles(EntityLivingBase player) {
+			protected void preExecuteParticles(Entity player) {
 				Vec3d vec0 = player.getLookVec();
 				Vec3d vec = vec0.scale(2d).addVector(player.posX, player.posY + 1.5d, player.posZ);
 				Particles.Renderer pRender = new Particles.Renderer(player.world);
 				for (int i = 1; i <= 50; i++) {
-					Vec3d vec1 = vec0.scale((player.getRNG().nextDouble()*0.8d+0.2d) * this.getRange(0) * 0.1d);
+					Vec3d vec1 = vec0.scale((EC.this.rand.nextDouble()*0.8d+0.2d) * this.getRange(0) * 0.1d);
 					pRender.spawnParticles(Particles.Types.SMOKE, vec.x, vec.y, vec.z, 1, 0d, 0d, 0d, 
-					 vec1.x + (player.getRNG().nextDouble()-0.5d) * this.getFarRadius(0) * 0.15d,
-					 vec1.y + (player.getRNG().nextDouble()-0.5d) * this.getFarRadius(0) * 0.15d,
-					 vec1.z + (player.getRNG().nextDouble()-0.5d) * this.getFarRadius(0) * 0.15d,
-					 0x80FFFFFF, 80 + player.getRNG().nextInt(20), (int)(16.0D / (player.getRNG().nextDouble()*0.8D+0.2D)));
+					 vec1.x + (EC.this.rand.nextDouble()-0.5d) * this.getFarRadius(0) * 0.15d,
+					 vec1.y + (EC.this.rand.nextDouble()-0.5d) * this.getFarRadius(0) * 0.15d,
+					 vec1.z + (EC.this.rand.nextDouble()-0.5d) * this.getFarRadius(0) * 0.15d,
+					 0x80FFFFFF, 80 + EC.this.rand.nextInt(20), (int)(16.0D / (EC.this.rand.nextDouble()*0.8D+0.2D)));
 				}
 				pRender.send();
 			}
 
 			@Override
-			protected void attackEntityFrom(EntityLivingBase player, Entity target) {
+			protected void attackEntityFrom(Entity player, Entity target) {
 				ProcedureUtils.pushEntity(player, target, this.getRange(0) * 1.6d, 3.0F);
 			}
 
 			@Override
-			protected float getBreakChance(BlockPos pos, EntityLivingBase player, double range) {
+			protected float getBreakChance(BlockPos pos, Entity player, double range) {
 				return (1.0F - (float) (Math.sqrt(player.getDistanceSqToCenter(pos)) / MathHelper.clamp(range, 0.0D, 30.0D))) * 0.2f;
 				//return 0.0f;
 			}

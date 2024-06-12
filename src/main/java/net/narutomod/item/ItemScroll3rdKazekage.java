@@ -2,6 +2,7 @@
 package net.narutomod.item;
 
 import net.narutomod.procedure.ProcedureUtils;
+import net.narutomod.procedure.ProcedureOnLeftClickEmpty;
 import net.narutomod.entity.EntitySandBullet;
 import net.narutomod.entity.EntitySandGathering;
 import net.narutomod.entity.EntityPuppet3rdKazekage;
@@ -17,6 +18,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.event.ModelRegistryEvent;
@@ -68,6 +70,11 @@ public class ItemScroll3rdKazekage extends ElementsNarutomodMod.ModElement {
 		ModelLoader.setCustomModelResourceLocation(block, 0, new ModelResourceLocation("narutomod:scroll_3rd_kazekage", "inventory"));
 	}
 
+	@Override
+	public void init(FMLInitializationEvent event) {
+		ProcedureOnLeftClickEmpty.addQualifiedItem(block, EnumHand.MAIN_HAND);
+	}
+
 	public static class RangedItem extends ItemJutsu.Base {
 		public RangedItem(ItemJutsu.JutsuEnum... list) {
 			super(ItemJutsu.JutsuEnum.Type.OTHER, list);
@@ -98,6 +105,17 @@ public class ItemScroll3rdKazekage extends ElementsNarutomodMod.ModElement {
 			return EnumActionResult.PASS;
 		}
 
+		public void interactWithEntity(ItemStack stack, EntityLivingBase playerIn, EntityLivingBase target) {
+			if (target instanceof EntityPuppet3rdKazekage.EntityCustom && !playerIn.world.isRemote) {
+				if (stack.hasTagCompound() && stack.getTagCompound().getInteger("puppetId") > 0) {
+					ProcedureUtils.poofWithSmoke(target);
+					this.setDamage(stack, (int)(target.getMaxHealth() - target.getHealth()));
+					target.setDead();
+					stack.getTagCompound().setInteger("puppetId", 0);
+				}
+			}
+		}
+
 		@Override
 		public boolean itemInteractionForEntity(ItemStack stack, EntityPlayer playerIn, EntityLivingBase target, EnumHand hand) {
 			if (target instanceof EntityPuppet3rdKazekage.EntityCustom && !playerIn.world.isRemote) {
@@ -111,6 +129,17 @@ public class ItemScroll3rdKazekage extends ElementsNarutomodMod.ModElement {
 				}
 			}
 			return false;
+		}
+
+		@Override
+		public boolean onLeftClickEntity(ItemStack itemstack, EntityPlayer attacker, Entity target) {
+			if (attacker.equals(target)) {
+				target = ProcedureUtils.objectEntityLookingAt(attacker, 50d, 3d).entityHit;
+			}
+			if (target instanceof EntityLivingBase) {
+				attacker.setRevengeTarget((EntityLivingBase)target);
+			}
+			return super.onLeftClickEntity(itemstack, attacker, target);
 		}
 
 		@Override

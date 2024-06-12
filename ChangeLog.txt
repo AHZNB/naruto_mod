@@ -16,6 +16,7 @@ Items:
  - added Sound 5 clothing and forehead protector
  - added Jiraiya jacket, clothing, forehead protector and robe
  - added 3rd Kazekage puppet scroll
+ - attack puppet scrolls: left click entity from a distance to set as puppet attack target 
  - senbons now does 4 melee damage, poison senbons 5 minute poison effect
  - puppet senbon arm canon can bounce off blocks, shoots poison senbons in all directions for 4s
 
@@ -31,7 +32,7 @@ Entities:
  - 3rd kazekage puppet can use sand bullet jutsu & sand gathering jutsu (use with 3rd kazekage scroll)
  - fixed jinchuriki's biju mode visibility bug
  - fixed perfect susanoo jerky body pitch when flying
- - added Sasori mob (WIP-4: improved AI, summons 3rd kazekage puppet after hiruko puppet dies)
+ - added Sasori mob (WIP-5: main body shoots water, fire, air after 3rd kazekage puppet dies, has a chance to drop hiruko or 3rd scrolls)
  
 General:
  - fixed alpha transparency bug when using certain jutsus

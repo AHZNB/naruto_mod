@@ -12,18 +12,21 @@ import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.common.MinecraftForge;
 
 import net.minecraft.world.World;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.init.SoundEvents;
+import net.minecraft.util.EntityDamageSource;
+import net.minecraft.util.EntityDamageSourceIndirect;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.item.EntityFallingBlock;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.Entity;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.gui.Gui;
@@ -38,8 +41,6 @@ import net.narutomod.procedure.ProcedureAirPunch;
 import net.narutomod.Chakra;
 import net.narutomod.Particles;
 import net.narutomod.ElementsNarutomodMod;
-import net.minecraft.util.EntityDamageSource;
-import net.minecraft.util.EntityDamageSourceIndirect;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class PotionChakraEnhancedStrength extends ElementsNarutomodMod.ModElement {
@@ -115,7 +116,7 @@ public class PotionChakraEnhancedStrength extends ElementsNarutomodMod.ModElemen
 			}
 
 			@Override
-			protected void preExecuteParticles(EntityLivingBase player) {
+			protected void preExecuteParticles(Entity player) {
 				Vec3d vec = player.getLookVec();
 				Vec3d vec1 = player.getPositionVector().addVector(0d, 1.2d, 0d).add(vec);
 				Vec3d vec2 = vec.scale(this.getRange(0));
@@ -140,7 +141,7 @@ public class PotionChakraEnhancedStrength extends ElementsNarutomodMod.ModElemen
 			}
 
 			@Override
-			protected EntityItem processAffectedBlock(EntityLivingBase player, BlockPos pos, EnumFacing facing) {
+			protected EntityItem processAffectedBlock(Entity player, BlockPos pos, EnumFacing facing) {
 				if (this.griefing && player.world.getBlockState(pos).isFullBlock()
 				 && player.world.getBlockState(pos.up()).getCollisionBoundingBox(player.world, pos.up()) == Block.NULL_AABB) {
 					EntityFallingBlock entity = new EntityFallingBlock(player.world, 0.5d+pos.getX(), pos.getY(), 0.5d+pos.getZ(), player.world.getBlockState(pos));
@@ -151,8 +152,8 @@ public class PotionChakraEnhancedStrength extends ElementsNarutomodMod.ModElemen
 			}
 
 			@Override
-			protected float getBreakChance(BlockPos pos, EntityLivingBase player, double range) {
-				return player.getActivePotionEffect(potion).getIsAmbient()
+			protected float getBreakChance(BlockPos pos, Entity player, double range) {
+				return player instanceof EntityLivingBase && ((EntityLivingBase)player).getActivePotionEffect(potion).getIsAmbient()
 				//return player instanceof EntityPlayer 
 				 ? 1.0F - (float)((Math.sqrt(player.getDistanceSqToCenter(pos)) - 4.0D) / range)
 				 : 0.0F;

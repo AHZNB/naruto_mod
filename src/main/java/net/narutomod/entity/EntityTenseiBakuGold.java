@@ -119,17 +119,17 @@ public class EntityTenseiBakuGold extends ElementsNarutomodMod.ModElement {
 			}
 			
 			@Override
-			protected void attackEntityFrom(EntityLivingBase player, Entity target) {
+			protected void attackEntityFrom(Entity player, Entity target) {
 				target.hurtResistantTime = 10;
 				target.attackEntityFrom(DamageSource.causeIndirectMagicDamage(EC.this, player), EC.this.power * 0.6f);
 			}
 
 			@Nullable
-			protected net.minecraft.entity.item.EntityItem processAffectedBlock(EntityLivingBase player, BlockPos pos, EnumFacing facing) {
-				if (player.getRNG().nextFloat() < 0.005f) {
+			protected net.minecraft.entity.item.EntityItem processAffectedBlock(Entity player, BlockPos pos, EnumFacing facing) {
+				if (EC.this.rand.nextFloat() < 0.005f) {
 					player.world.playSound(null, pos,
 					 net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation(("narutomod:explosion"))),
-					 net.minecraft.util.SoundCategory.BLOCKS, 4.0f, player.getRNG().nextFloat() * 0.5f + 0.75f);
+					 net.minecraft.util.SoundCategory.BLOCKS, 4.0f, EC.this.rand.nextFloat() * 0.5f + 0.75f);
 				}
 				return super.processAffectedBlock(player, pos, facing);
 			}
@@ -141,7 +141,7 @@ public class EntityTenseiBakuGold extends ElementsNarutomodMod.ModElement {
 			}
 
 			@Override
-			protected float getBreakChance(BlockPos pos, EntityLivingBase player, double range) {
+			protected float getBreakChance(BlockPos pos, Entity player, double range) {
 				return 1.0F;
 			}
 		}

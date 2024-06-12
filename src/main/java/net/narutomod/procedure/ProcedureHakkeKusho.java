@@ -40,7 +40,7 @@ public class ProcedureHakkeKusho extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
-		protected void attackEntityFrom(EntityLivingBase player, Entity target) {
+		protected void attackEntityFrom(Entity player, Entity target) {
 			super.attackEntityFrom(player, target);
 			if (target instanceof EntityLivingBase && player instanceof EntityPlayer) {
 				int strength = ProcedureAirPunch.getPressDuration(player);
@@ -50,7 +50,7 @@ public class ProcedureHakkeKusho extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
-		protected EntityItem processAffectedBlock(EntityLivingBase player, BlockPos pos, EnumFacing facing) {
+		protected EntityItem processAffectedBlock(Entity player, BlockPos pos, EnumFacing facing) {
 			if (player.world.getGameRules().getBoolean("mobGriefing") && player.world.getBlockState(pos).isFullBlock()
 			 && player.world.getBlockState(pos.up()).getCollisionBoundingBox(player.world, pos.up()) == Block.NULL_AABB) {
 				EntityFallingBlock entity = new EntityFallingBlock(player.world, 0.5d+pos.getX(), pos.getY(), 0.5d+pos.getZ(), player.world.getBlockState(pos));
@@ -61,7 +61,7 @@ public class ProcedureHakkeKusho extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
-		protected float getBreakChance(BlockPos pos, EntityLivingBase player, double range) {
+		protected float getBreakChance(BlockPos pos, Entity player, double range) {
 			return player.world.getGameRules().getBoolean("mobGriefing")
 			 && player instanceof EntityPlayer && PlayerTracker.getBattleXp((EntityPlayer)player) >= XP_REQUIRED + 850d
 					? (1.0F - (float) ((Math.sqrt(player.getDistanceSqToCenter(pos)) - 4.0D) / MathHelper.clamp(range, 0.0D, 30.0D)))

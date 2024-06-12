@@ -551,7 +551,7 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 	                } else if (d0 < (double)(this.maxAttackDistance * 0.25F)) {
 	                    this.strafingBackwards = true;
 	                }
-	                this.entity.getMoveHelper().strafe(this.strafingBackwards ? -0.5F : 0.5F, this.strafingClockwise ? 0.5F : -0.5F);
+	                this.entity.getMoveHelper().strafe(this.strafingBackwards ? (float)-this.moveSpeedAmp : (float)this.moveSpeedAmp, this.strafingClockwise ? 0.5F : -0.5F);
 	                this.entity.faceEntity(entitylivingbase, 30.0F, 30.0F);
 	            } else {
 	                this.entity.getLookHelper().setLookPositionWithEntity(entitylivingbase, 30.0F, 30.0F);

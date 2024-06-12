@@ -156,33 +156,33 @@ public class EntityTenseiBakuSilver extends ElementsNarutomodMod.ModElement {
 			}
 
 			@Override
-			public void execute(EntityLivingBase player, double range, double radius) {
+			public void execute(Entity player, double range, double radius) {
 				this.griefing = world.getGameRules().getBoolean("mobGriefing");
 				super.execute(player, range, radius);
 			}
 
 			@Override
-			protected void preExecuteParticles(EntityLivingBase player) {
+			protected void preExecuteParticles(Entity player) {
 				Vec3d vec0 = player.getLookVec();
 				Vec3d vec = vec0.scale(2d).addVector(player.posX, player.posY + 1.5d, player.posZ);
 				for (int i = 1; i <= 50; i++) {
-					Vec3d vec1 = vec0.scale((player.getRNG().nextDouble()*0.8d+0.2d) * this.getRange(0) * 0.125d);
+					Vec3d vec1 = vec0.scale((EC.this.rand.nextDouble()*0.8d+0.2d) * this.getRange(0) * 0.125d);
 					Particles.spawnParticle(player.world, Particles.Types.SMOKE, vec.x, vec.y, vec.z, 1, 0d, 0d, 0d, 
-					 vec1.x + (player.getRNG().nextDouble()-0.5d) * this.getFarRadius(0) * 0.15d,
-					 vec1.y + (player.getRNG().nextDouble()-0.5d) * this.getFarRadius(0) * 0.15d,
-					 vec1.z + (player.getRNG().nextDouble()-0.5d) * this.getFarRadius(0) * 0.15d,
-					 0x80C0C0C0, 80 + player.getRNG().nextInt(20), (int)(16.0D / (player.getRNG().nextDouble()*0.8D+0.2D)));
+					 vec1.x + (EC.this.rand.nextDouble()-0.5d) * this.getFarRadius(0) * 0.15d,
+					 vec1.y + (EC.this.rand.nextDouble()-0.5d) * this.getFarRadius(0) * 0.15d,
+					 vec1.z + (EC.this.rand.nextDouble()-0.5d) * this.getFarRadius(0) * 0.15d,
+					 0x80C0C0C0, 80 + EC.this.rand.nextInt(20), (int)(16.0D / (EC.this.rand.nextDouble()*0.8D+0.2D)));
 				}
 			}
 
 			@Override
-			protected void attackEntityFrom(EntityLivingBase player, Entity target) {
+			protected void attackEntityFrom(Entity player, Entity target) {
 				ProcedureUtils.pushEntity(player, target, this.getRange(0), target instanceof EntityFallingBlock ? 1.0f : 2.0f);
 			}
 
 			@Override
-			protected EntityItem processAffectedBlock(EntityLivingBase player, BlockPos pos, EnumFacing facing) {
-				if (this.griefing && player.getRNG().nextInt(10) == 0) {
+			protected EntityItem processAffectedBlock(Entity player, BlockPos pos, EnumFacing facing) {
+				if (this.griefing && EC.this.rand.nextInt(10) == 0) {
 					Entity falling = new EntityFallingBlock(player.world, 0.5d+pos.getX(), pos.getY(), 0.5d+pos.getZ(), player.world.getBlockState(pos)) {
 						{
 							this.shouldDropItem = false;
@@ -206,7 +206,7 @@ public class EntityTenseiBakuSilver extends ElementsNarutomodMod.ModElement {
 			}
 
 			@Override
-			protected float getBreakChance(BlockPos pos, EntityLivingBase player, double range) {
+			protected float getBreakChance(BlockPos pos, Entity player, double range) {
 				return 0.0f;
 			}
 		}

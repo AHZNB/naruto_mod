@@ -122,8 +122,6 @@ public class EntityToad extends ElementsNarutomodMod.ModElement {
 			this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(6D * f);
 			this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(13D + 3D * f);
 			super.postScaleFixup();
-			//this.setSize(this.ogWidth * f, this.ogHeight * f);
-			//this.setHealth(this.getMaxHealth());
 			this.experienceValue = (int)(f * 10);
 		}
 
@@ -277,7 +275,7 @@ public class EntityToad extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public void attackEntityWithRangedAttack(EntityLivingBase target, float distanceFactor) {
-			new ItemSuiton.EntityStream.Jutsu().createJutsu(ItemStack.EMPTY, this, distanceFactor);
+			new EntityWaterStream.EC.Jutsu().createJutsu(this, (float)ProcedureUtils.getFollowRange(this), 200);
 		}
 
 		public class Navigator {
@@ -427,9 +425,8 @@ public class EntityToad extends ElementsNarutomodMod.ModElement {
 			}
 		}
 
-		static class AIAttackRanged extends EntityAIBase {
-		    private final EntityCustom entityHost;
-		    private final IRangedAttackMob rangedAttackEntityHost;
+		static class AIAttackRanged<T extends EntityCustom & IRangedAttackMob> extends EntityAIBase {
+		    private final T entityHost;
 		    private EntityLivingBase attackTarget;
 		    private int rangedAttackTime;
 		    private int seeTime;
@@ -438,23 +435,18 @@ public class EntityToad extends ElementsNarutomodMod.ModElement {
 		    private final float attackRadius;
 		    private final float maxAttackDistance;
 		
-		    public AIAttackRanged(IRangedAttackMob attacker, int maxAttackTime, float maxAttackDistanceIn) {
+		    public AIAttackRanged(T attacker, int maxAttackTime, float maxAttackDistanceIn) {
 		        this(attacker, maxAttackTime, maxAttackTime, maxAttackDistanceIn);
 		    }
 		
-		    public AIAttackRanged(IRangedAttackMob attacker, int p_i1650_4_, int maxAttackTime, float maxAttackDistanceIn) {
+		    public AIAttackRanged(T attacker, int p_i1650_4_, int maxAttackTime, float maxAttackDistanceIn) {
 		        this.rangedAttackTime = -1;
-		        if (!(attacker instanceof EntityCustom)) {
-		            throw new IllegalArgumentException("AIAttackRanged requires Mob implements RangedAttackMob");
-		        } else {
-		            this.rangedAttackEntityHost = attacker;
-		            this.entityHost = (EntityCustom)attacker;
-		            this.attackIntervalMin = p_i1650_4_;
-		            this.maxRangedAttackTime = maxAttackTime;
-		            this.attackRadius = maxAttackDistanceIn;
-		            this.maxAttackDistance = maxAttackDistanceIn * maxAttackDistanceIn;
-		            this.setMutexBits(3);
-		        }
+	            this.entityHost = attacker;
+	            this.attackIntervalMin = p_i1650_4_;
+	            this.maxRangedAttackTime = maxAttackTime;
+	            this.attackRadius = maxAttackDistanceIn;
+	            this.maxAttackDistance = maxAttackDistanceIn * maxAttackDistanceIn;
+	            this.setMutexBits(3);
 		    }
 		
 		    @Override
@@ -501,7 +493,7 @@ public class EntityToad extends ElementsNarutomodMod.ModElement {
 		            }
 		            float f = MathHelper.sqrt(d0) / this.attackRadius;
 		            float lvt_5_1_ = MathHelper.clamp(f, 0.1F, 1.0F);
-		            this.rangedAttackEntityHost.attackEntityWithRangedAttack(this.attackTarget, lvt_5_1_);
+		            ((IRangedAttackMob)this.entityHost).attackEntityWithRangedAttack(this.attackTarget, lvt_5_1_);
 		            this.rangedAttackTime = MathHelper.floor(f * (float)(this.maxRangedAttackTime - this.attackIntervalMin) + (float)this.attackIntervalMin);
 		        } else if (this.rangedAttackTime < 0) {
 		            float f2 = MathHelper.sqrt(d0) / this.attackRadius;

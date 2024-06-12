@@ -93,7 +93,7 @@ public class EntityPoisonMist extends ElementsNarutomodMod.ModElement {
 			}
 
 			@Override
-			protected void preExecuteParticles(EntityLivingBase player) {
+			protected void preExecuteParticles(Entity player) {
 				Vec3d vec = player.getLookVec().scale(2d);
 				Particles.Renderer particles = new Particles.Renderer(player.world);
 				for (int i = 1; i <= 50; i++) {
@@ -109,14 +109,14 @@ public class EntityPoisonMist extends ElementsNarutomodMod.ModElement {
 			}
 
 			@Override
-			protected void attackEntityFrom(EntityLivingBase player, Entity target) {
+			protected void attackEntityFrom(Entity player, Entity target) {
 				if (target instanceof EntityLivingBase) {
 					((EntityLivingBase)target).addPotionEffect(new PotionEffect(MobEffects.WITHER, 300, 2));
 				}
 			}
 
 			@Override
-			protected float getBreakChance(BlockPos pos, EntityLivingBase player, double range) {
+			protected float getBreakChance(BlockPos pos, Entity player, double range) {
 				return 0.0f;
 			}
 		}

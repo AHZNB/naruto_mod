@@ -62,11 +62,11 @@ public class ItemJutsu extends ElementsNarutomodMod.ModElement {
 		MinecraftForge.EVENT_BUS.register(new Base.EquipmentHook());
 	}
 	
-	public static DamageSource causeJutsuDamage(Entity source, @Nullable EntityLivingBase indirectEntityIn) {
+	public static DamageSource causeJutsuDamage(Entity source, @Nullable Entity indirectEntityIn) {
 		return new EntityDamageSourceIndirect(NINJUTSU_TYPE, source, indirectEntityIn);
 	}
 
-	public static DamageSource causeSenjutsuDamage(Entity source, @Nullable EntityLivingBase indirectEntityIn) {
+	public static DamageSource causeSenjutsuDamage(Entity source, @Nullable Entity indirectEntityIn) {
 		return new EntityDamageSourceIndirect(SENJUTSU_TYPE, source, indirectEntityIn).setDamageIsAbsolute();
 	}
 

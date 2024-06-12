@@ -79,7 +79,8 @@ public class EntityFirestream extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void onUpdate() {
 			//super.onUpdate();
-			if (!this.world.isRemote && (this.ticksExisted > this.maxLife || this.handleWaterMovement())) {
+			if (!this.world.isRemote && (this.ticksExisted > this.maxLife || this.handleWaterMovement()
+			 || this.shooter == null || !this.shooter.isEntityAlive())) {
 				this.setDead();
 			} else {
 				this.setIdlePosition();
@@ -156,15 +157,15 @@ public class EntityFirestream extends ElementsNarutomodMod.ModElement {
 		public static class Jutsu2 implements ItemJutsu.IJutsuCallback {
 			@Override
 			public boolean createJutsu(ItemStack stack, EntityLivingBase entity, float power) {
-				this.createJutsu(entity, power);
+				this.createJutsu(entity, power, (int)(power * 10f));
 				//ItemJutsu.setCurrentJutsuCooldown(stack, (EntityPlayer)entity, (long)(power * 200));
 				return true;
 			}
 
-			public void createJutsu(EntityLivingBase entity, float power) {
+			public void createJutsu(EntityLivingBase entity, float power, int duration) {
 				EC entity1 = new EC(entity, 1.0f, power);
 				entity1.wait = 0;
-				entity1.maxLife = (int)(power * 10f);
+				entity1.maxLife = duration;
 				entity.world.spawnEntity(entity1);
 			}
 

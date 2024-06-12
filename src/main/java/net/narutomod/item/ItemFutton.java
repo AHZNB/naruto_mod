@@ -151,7 +151,7 @@ public class ItemFutton extends ElementsNarutomodMod.ModElement {
 			}
 
 			@Override
-			protected void preExecuteParticles(EntityLivingBase player) {
+			protected void preExecuteParticles(Entity player) {
 				Vec3d vec0 = player.getLookVec();
 				Vec3d vec = vec0.scale(2d).addVector(player.posX, player.posY + 1.5d, player.posZ);
 				//Particles.Renderer particles = new Particles.Renderer(player.world);
@@ -167,7 +167,7 @@ public class ItemFutton extends ElementsNarutomodMod.ModElement {
 			}
 
 			@Override
-			protected void attackEntityFrom(EntityLivingBase player, Entity target) {
+			protected void attackEntityFrom(Entity player, Entity target) {
 				if (target instanceof EntityLivingBase) {
 					target.playSound(SoundEvents.BLOCK_FIRE_EXTINGUISH, 1f, this.rand.nextFloat() + 0.5f);
 					((EntityLivingBase)target).addPotionEffect(new PotionEffect(PotionCorrosion.potion, 200, 15));
@@ -175,7 +175,7 @@ public class ItemFutton extends ElementsNarutomodMod.ModElement {
 			}
 
 			@Override
-			protected EntityItem processAffectedBlock(EntityLivingBase player, BlockPos pos, EnumFacing facing) {
+			protected EntityItem processAffectedBlock(Entity player, BlockPos pos, EnumFacing facing) {
 				if (net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(player.world, player)) {
 					Material mat = player.world.getBlockState(pos).getMaterial();
 					if (mat == Material.ICE || mat == Material.PACKED_ICE) {
@@ -192,7 +192,7 @@ public class ItemFutton extends ElementsNarutomodMod.ModElement {
 			}
 
 			@Override
-			protected float getBreakChance(BlockPos pos, EntityLivingBase player, double range) {
+			protected float getBreakChance(BlockPos pos, Entity player, double range) {
 				return 0.0f;
 			}
 		}

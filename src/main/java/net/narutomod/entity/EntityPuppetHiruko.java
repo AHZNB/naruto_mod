@@ -133,7 +133,7 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 			return ((Integer)this.getDataManager().get(POSE)).intValue();
 		}
 
-		private void takeRobeOff(boolean b) {
+		protected void takeRobeOff(boolean b) {
 			this.dataManager.set(ROBE_OFF, Boolean.valueOf(b));
 		}
 	

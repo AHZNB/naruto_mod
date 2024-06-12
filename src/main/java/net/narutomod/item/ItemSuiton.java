@@ -5,44 +5,29 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 
-import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 import net.minecraft.util.SoundCategory;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
-import net.minecraft.util.EnumParticleTypes;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Item;
-import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
-import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
-import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.client.renderer.entity.Render;
+import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.client.model.ModelRenderer;
-import net.minecraft.client.model.ModelBox;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.block.BlockLiquid;
 
 import net.narutomod.entity.*;
-import net.narutomod.procedure.ProcedureAirPunch;
 import net.narutomod.procedure.ProcedureRenderView;
 import net.narutomod.procedure.ProcedureSync;
 import net.narutomod.creativetab.TabModTab;
@@ -50,8 +35,6 @@ import net.narutomod.Particles;
 import net.narutomod.ElementsNarutomodMod;
 
 import java.util.UUID;
-import java.util.Random;
-import com.google.common.collect.ImmutableMap;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class ItemSuiton extends ElementsNarutomodMod.ModElement {
@@ -61,7 +44,7 @@ public class ItemSuiton extends ElementsNarutomodMod.ModElement {
 	public static final int ENTITY2ID = 10125;
 	public static final int ENTITY3ID = 11125;
 	public static final ItemJutsu.JutsuEnum HIDINGINMIST = new ItemJutsu.JutsuEnum(0, "suitonmist", 'D', 100d, new EntityMist.Jutsu());
-	public static final ItemJutsu.JutsuEnum WATERBULLET = new ItemJutsu.JutsuEnum(1, "suitonstream", 'C', 10d, new EntityStream.Jutsu());
+	public static final ItemJutsu.JutsuEnum WATERBULLET = new ItemJutsu.JutsuEnum(1, "water_stream", 'C', 10d, new EntityWaterStream.EC.Jutsu());
 	public static final ItemJutsu.JutsuEnum WATERDRAGON = new ItemJutsu.JutsuEnum(2, "water_dragon", 'B', 50d, new EntityWaterDragon.EC.Jutsu());
 	public static final ItemJutsu.JutsuEnum WATERPRISON = new ItemJutsu.JutsuEnum(3, "water_prison", 'C', 200d, new EntityWaterPrison.EC.Jutsu());
 	public static final ItemJutsu.JutsuEnum WATERSHARK = new ItemJutsu.JutsuEnum(4, "suiton_shark", 'B', 75d, new EntitySuitonShark.EC.Jutsu());
@@ -74,10 +57,8 @@ public class ItemSuiton extends ElementsNarutomodMod.ModElement {
 	@Override
 	public void initElements() {
 		elements.items.add(() -> new RangedItem(HIDINGINMIST, WATERBULLET, WATERDRAGON, WATERPRISON, WATERSHARK, WATERSHOCK));
-		elements.entities.add(() -> EntityEntryBuilder.create().entity(EntityStream.class)
-				.id(new ResourceLocation("narutomod", "suitonstream"), ENTITYID).name("suitonstream").tracker(64, 1, true).build());
 		elements.entities.add(() -> EntityEntryBuilder.create().entity(EntityMist.class)
-				.id(new ResourceLocation("narutomod", "suitonmist"), ENTITY2ID).name("suitonmist").tracker(64, 1, true).build());
+				.id(new ResourceLocation("narutomod", "suitonmist"), ENTITYID).name("suitonmist").tracker(64, 1, true).build());
 	}
 
 	@Override
@@ -202,200 +183,6 @@ public class ItemSuiton extends ElementsNarutomodMod.ModElement {
 						SoundCategory.PLAYERS, 5, 1f);
 				entity.world.spawnEntity(new EntityMist(entity));
 				return true;
-			}
-		}
-	}
-
-	public static class EntityStream extends EntityBeamBase.Base {
-		private final AirPunch stream = new AirPunch();
-		private final int maxLife = 100;
-		private final float damageModifier = 0.5f;
-		private float power;
-
-		public EntityStream(World a) {
-			super(a);
-		}
-
-		public EntityStream(EntityLivingBase shooter, float scale) {
-			super(shooter);
-			this.power = scale;
-		}
-
-		public void shoot() {
-			if (this.shootingEntity != null) {
-				Vec3d vec3d = this.shootingEntity.getLookVec();
-				Vec3d vec3d1 = vec3d.add(this.shootingEntity.getPositionEyes(1f).subtract(0d, 0.2d, 0d));
-				this.setPositionAndRotation(vec3d1.x, vec3d1.y, vec3d1.z, this.shootingEntity.rotationYaw, this.shootingEntity.rotationPitch);
-				vec3d1 = vec3d.scale(this.power);
-				this.shoot(vec3d1.x, vec3d1.y, vec3d1.z);
-			}
-		}
-
-		@Override
-		public void onUpdate() {
-			super.onUpdate();
-			if (this.shootingEntity != null) {
-				if (this.ticksAlive == 1) {
-					this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:waterblast")), 0.5f, this.power / 30f);
-				}
-				this.shoot();
-				//if (this.ticksAlive % 2 == 1) {
-					this.stream.execute2((EntityLivingBase)this.shootingEntity, (double)this.power, 0.5d);
-				//}
-			}
-			if (this.ticksAlive > this.maxLife) {
-				this.setDead();
-			}
-		}
-
-		public class AirPunch extends ProcedureAirPunch {
-			public AirPunch() {
-				this.blockDropChance = 0.4F;
-				this.blockHardnessLimit = 5f;
-				this.particlesPre = EnumParticleTypes.WATER_DROP;
-				this.particlesDuring = EnumParticleTypes.WATER_WAKE;
-			}
-
-			@Override
-			protected void preExecuteParticles(EntityLivingBase player) {
-				double range = this.getRange(0);
-				Particles.Renderer particles = new Particles.Renderer(player.world);
-				for (int i = 1, j = (int)(range * 5d); i < j; i++) {
-					Vec3d vec = EntityStream.this.getPositionVector().addVector((this.rand.nextDouble()-0.5d) * 0.25d,
-					 this.rand.nextDouble() * 0.25d, (this.rand.nextDouble()-0.5d) * 0.25d);
-					Vec3d vec3d = player.getLookVec().scale(range * (this.rand.nextDouble() * 0.5d + 0.5d) * 0.4d);
-					particles.spawnParticles(Particles.Types.WATER_SPLASH, vec.x, vec.y, vec.z,
-					 1, 0, 0, 0, vec3d.x, vec3d.y, vec3d.z, 10 + this.rand.nextInt(15));
-				}
-				particles.send();
-			}
-
-			@Override
-			protected void attackEntityFrom(EntityLivingBase player, Entity target) {
-				target.attackEntityFrom(ItemJutsu.causeJutsuDamage(EntityStream.this, player),
-						EntityStream.this.power * EntityStream.this.damageModifier);
-			}
-
-			@Override
-			protected EntityItem processAffectedBlock(EntityLivingBase player, BlockPos pos, EnumFacing facing) {
-				EntityItem ret = super.processAffectedBlock(player, pos, facing);
-				if (ret != null && player.world.isAirBlock(pos.up())) {
-					new net.narutomod.event.EventSetBlocks(player.world, ImmutableMap.of(pos.up(),
-					 Blocks.FLOWING_WATER.getDefaultState().withProperty(BlockLiquid.LEVEL, Integer.valueOf(1))),
-					 0, 10, false, false);
-				}
-				return ret;
-			}
-
-			@Override
-			protected float getBreakChance(BlockPos pos, EntityLivingBase player, double range) {
-				return 1.0F - (float) ((Math.sqrt(player.getDistanceSqToCenter(pos))) / range);
-			}
-		}
-
-		public static class Jutsu implements ItemJutsu.IJutsuCallback {
-			@Override
-			public boolean createJutsu(ItemStack stack, EntityLivingBase entity, float power) {
-				if (power >= 5.0f) {
-					this.createJutsu(entity, power);
-					return true;
-				}
-				return false;
-			}
-
-			public void createJutsu(EntityLivingBase entity, float power) {
-				EntityStream entityarrow = new EntityStream(entity, power);
-				entityarrow.shoot();
-				entity.world.spawnEntity(entityarrow);
-			}
-
-			@Override
-			public float getBasePower() {
-				return 5.0f;
-			}
-	
-			@Override
-			public float getPowerupDelay() {
-				return 20.0f;
-			}
-	
-			@Override
-			public float getMaxPower() {
-				return 30.0f;
-			}
-		}
-	}
-
-	@SideOnly(Side.CLIENT)
-	@Override
-	public void preInit(FMLPreInitializationEvent event) {
-		new Renderer().register();
-	}
-
-	public static class Renderer extends EntityRendererRegister {
-		@SideOnly(Side.CLIENT)
-		@Override
-		public void register() {
-			RenderingRegistry.registerEntityRenderingHandler(EntityStream.class, renderManager -> new RenderStream(renderManager));
-		}
-
-		@SideOnly(Side.CLIENT)
-		public class RenderStream extends EntityBeamBase.Renderer<EntityStream> {
-			private final ResourceLocation texture = new ResourceLocation("minecraft:textures/blocks/water_flow.png");
-			private final ModelLongCube model = new ModelLongCube(1f);
-
-			public RenderStream(RenderManager renderManager) {
-				super(renderManager);
-			}
-
-			@Override
-			public EntityBeamBase.Model getMainModel(EntityStream entity, float pt) {
-				float f = entity.ticksAlive >= entity.maxLife - 10
-						? Math.max(((float)entity.maxLife - (float)entity.ticksAlive - pt) / 10f, 0f)
-						: Math.min(((float)entity.ticksAlive + pt) / 10f, 1f);
-				this.model.setLength(entity.getBeamLength() * f);
-				return this.model;
-				//return new ModelLongCube(entity.getBeamLength() * f);
-			}
-
-			@Override
-			protected ResourceLocation getEntityTexture(EntityStream entity) {
-				return this.texture;
-			}
-		}
-
-		// Made with Blockbench 3.5.4
-		// Exported for Minecraft version 1.12
-		// Paste this class into your mod and generate all required imports
-		@SideOnly(Side.CLIENT)
-		public class ModelLongCube extends EntityBeamBase.Model {
-			private ModelRenderer bone;
-			private float length;
-			protected float scale = 1.0F;
-
-			public ModelLongCube(float lengthIn) {
-				this.textureWidth = 32;
-				this.textureHeight = 1024;
-				this.setLength(lengthIn);
-			}
-
-			public void setLength(float lengthIn) {
-				if (lengthIn < this.length - 0.01f || lengthIn > this.length + 0.01f) {
-					this.bone = new ModelRenderer(this);
-					this.bone.setRotationPoint(0.0F, 0.0F, 0.0F);
-					this.bone.cubeList.add(new ModelBox(this.bone, 0, 0, -4.0F, -16.0F, -4.0F, 8, (int) (16f * lengthIn), 8, 0.0F, false));
-					this.length = lengthIn;
-				}
-			}
-
-			@Override
-			public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
-				GlStateManager.pushMatrix();
-				GlStateManager.translate(0.0F, (this.scale - 1.0F) * 1.5F + 1F, 0.0F);
-				GlStateManager.scale(this.scale * 0.6F, this.scale, this.scale * 0.6F);
-				GlStateManager.color(1f, 1f, 1f, 1f);
-				this.bone.render(f5);
-				GlStateManager.popMatrix();
 			}
 		}
 	}

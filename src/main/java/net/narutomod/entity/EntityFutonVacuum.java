@@ -42,6 +42,7 @@ public class EntityFutonVacuum extends ElementsNarutomodMod.ModElement {
 		private final float damageModifier = 0.5f;
 		private EntityLivingBase user;
 		private float power;
+		private int maxDuration;
 
 		public EC(World world) {
 			super(world);
@@ -52,6 +53,7 @@ public class EntityFutonVacuum extends ElementsNarutomodMod.ModElement {
 			this(userIn.world);
 			this.user = userIn;
 			this.power = powerIn;
+			this.maxDuration = (int)(powerIn * 4f);
 			this.setPosition(userIn.posX, userIn.posY, userIn.posZ);
 		}
 
@@ -68,7 +70,7 @@ public class EntityFutonVacuum extends ElementsNarutomodMod.ModElement {
 					this.airStream.execute2(this.user, this.power, 0.5d);
 				}
 			}
-			if (!this.world.isRemote && this.ticksExisted > (int)this.power * 4) {
+			if (!this.world.isRemote && (this.ticksExisted > this.maxDuration || this.user == null || !this.user.isEntityAlive())) {
 				this.setDead();
 			}
 		}
@@ -92,10 +94,16 @@ public class EntityFutonVacuum extends ElementsNarutomodMod.ModElement {
 			@Override
 			public boolean createJutsu(ItemStack stack, EntityLivingBase entity, float power) {
 				if (power >= 1.0f) {
-					entity.world.spawnEntity(new EC(entity, power));
+					this.createJutsu(entity, power, (int)(power * 4f));
 					return true;
 				}
 				return false;
+			}
+
+			public void createJutsu(EntityLivingBase entity, float power, int duration) {
+				EC entity1 = new EC(entity, power);
+				entity1.maxDuration = duration;
+				entity.world.spawnEntity(entity1);
 			}
 
 			@Override
@@ -115,7 +123,7 @@ public class EntityFutonVacuum extends ElementsNarutomodMod.ModElement {
 		}
 
 		public void playImpactSound(double x, double y, double z) {
-			this.world.playSound(null, x, y, z, (net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY
+			this.world.playSound(null, x, y, z, net.minecraft.util.SoundEvent.REGISTRY
 			 .getObject(new ResourceLocation("narutomod:bullet_impact")), SoundCategory.NEUTRAL, 
 			 1f, 0.4f + this.rand.nextFloat() * 0.6f);
 		}
@@ -126,25 +134,27 @@ public class EntityFutonVacuum extends ElementsNarutomodMod.ModElement {
 			}
 	
 			@Override
-			protected void attackEntityFrom(EntityLivingBase player, Entity target) {
+			protected void attackEntityFrom(Entity player, Entity target) {
 				if (!target.equals(player)) {
 					EC.this.playImpactSound(target.posX, target.posY, target.posZ);
 					target.attackEntityFrom(ItemJutsu.causeJutsuDamage(EC.this, player), EC.this.power * EC.this.damageModifier);				}
 			}
 	
 			@Override
-			protected void preExecuteParticles(EntityLivingBase player) {
+			protected void preExecuteParticles(Entity player) {
 				Vec3d vec = player.getLookVec();
 				Vec3d vec0 = vec.scale(2d).addVector(player.posX, player.posY+1.6d, player.posZ);
+				Particles.Renderer particles = new Particles.Renderer(player.world);
 				for (int i = 1; i < 400; i++) {
-					Vec3d vec1 = vec.scale(player.getRNG().nextDouble() * EC.this.power * 0.25d);
-					Particles.spawnParticle(player.world, Particles.Types.SMOKE, vec0.x, vec0.y, vec0.z,
+					Vec3d vec1 = vec.scale(EC.this.rand.nextDouble() * EC.this.power * 0.25d);
+					particles.spawnParticles(Particles.Types.SMOKE, vec0.x, vec0.y, vec0.z,
 					 1, 0d, 0d, 0d, vec1.x, vec1.y, vec1.z, 0x20FFFFFF, 10);
 				}
+				particles.send();
 			}
 		
 			@Override
-			protected float getBreakChance(BlockPos pos, EntityLivingBase player, double range) {
+			protected float getBreakChance(BlockPos pos, Entity player, double range) {
 				EC.this.playImpactSound(pos.getX(), pos.getY(), pos.getZ());
 				return 0.2F;
 			}
