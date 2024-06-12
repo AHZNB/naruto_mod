@@ -97,11 +97,13 @@ public class EntityWaterStream extends ElementsNarutomodMod.ModElement {
 			@Override
 			protected void preExecuteParticles(Entity player) {
 				double range = this.getRange(0);
+				Vec3d vec0 = EC.this.getPositionVector();
+				Vec3d vec1 = player.getLookVec();
 				Particles.Renderer particles = new Particles.Renderer(player.world);
 				for (int i = 1, j = (int)(range * 10d); i < j; i++) {
-					Vec3d vec = EC.this.getPositionVector().addVector((this.rand.nextDouble()-0.5d) * 0.2d,
+					Vec3d vec = vec0.addVector((this.rand.nextDouble()-0.5d) * 0.2d,
 					 this.rand.nextDouble() * 0.2d, (this.rand.nextDouble()-0.5d) * 0.2d);
-					Vec3d vec3d = player.getLookVec().scale(range * (this.rand.nextDouble() * 0.5d + 0.5d) * 0.4d);
+					Vec3d vec3d = vec1.scale(range * (this.rand.nextDouble() * 0.5d + 0.5d) * 0.4d);
 					particles.spawnParticles(Particles.Types.WATER_SPLASH, vec.x, vec.y, vec.z,
 					 1, 0, 0, 0, vec3d.x, vec3d.y, vec3d.z, 35 + this.rand.nextInt(15));
 				}
