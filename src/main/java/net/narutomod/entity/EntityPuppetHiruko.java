@@ -1027,6 +1027,7 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 					setRotationAngle(bone15, 0.0F, 0.7854F, 0.0F);
 					bone15.cubeList.add(new ModelBox(bone15, 60, 54, -1.5F, -1.0F, -1.5F, 3, 1, 3, 0.0F, false));
 				}
+				tail[10][0].showModel = false;
 				for (int j = 1; j < tailSway.length; j++) {
 					tailSway[j] = new Vector3f((rand.nextFloat() - 0.5f) * 0.2618F,
 					 (rand.nextFloat() - 0.5f) * 0.5236F, (rand.nextFloat() - 0.5f) * 0.0436F);

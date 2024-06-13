@@ -84,32 +84,38 @@ public class ItemScroll3rdKazekage extends ElementsNarutomodMod.ModElement {
 			this.setCreativeTab(TabModTab.tab);
 		}
 
-		public void useItem(ItemStack stack, EntityLivingBase entity, BlockPos pos) {
-			if (!entity.world.isRemote && (!stack.hasTagCompound() || stack.getTagCompound().getInteger("puppetId") == 0)) {
+		public static void useItem(ItemStack stack, EntityLivingBase entity, BlockPos pos) {
+			if (!entity.world.isRemote && (!stack.hasTagCompound()
+			 || (!stack.getTagCompound().getBoolean("isScrollOpening") && stack.getTagCompound().getInteger("puppetId") == 0))) {
 				entity.world.playSound(null, entity.posX, entity.posY, entity.posZ, SoundEvents.BLOCK_CLOTH_PLACE,
-						SoundCategory.NEUTRAL, 1, 1f / (this.itemRand.nextFloat() * 0.5f + 1f) + 0.5f);
-				EntityScroll entity1 = new EntityScroll(entity, this.getMaxDamage() - this.getDamage(stack));
+						SoundCategory.NEUTRAL, 1, 1f / (entity.getRNG().nextFloat() * 0.5f + 1f) + 0.5f);
+				EntityScroll entity1 = new EntityScroll(entity, stack.getMaxDamage() - stack.getItemDamage());
 				entity1.setLocationAndAngles(0.5d + pos.getX(), 1.1d + pos.getY(), 0.5d + pos.getZ(), entity.rotationYaw, 0f);
 				entity.world.spawnEntity(entity1);
 				if (!stack.hasTagCompound()) {
 					stack.setTagCompound(new NBTTagCompound());
 				}
+				stack.getTagCompound().setBoolean("isScrollOpening", true);
 			}
+		}
+
+		public static boolean isScrollOpening(ItemStack stack) {
+			return stack.hasTagCompound() && stack.getTagCompound().getBoolean("isScrollOpening");
 		}
 
 		@Override
 		public EnumActionResult onItemUse(EntityPlayer entity, World world, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
 			if (world.getBlockState(pos).isTopSolid() && facing == EnumFacing.UP) {
-				this.useItem(entity.getHeldItem(hand), entity, pos);
+				useItem(entity.getHeldItem(hand), entity, pos);
 			}
 			return EnumActionResult.PASS;
 		}
 
-		public void interactWithEntity(ItemStack stack, EntityLivingBase playerIn, EntityLivingBase target) {
+		public static void interactWithEntity(ItemStack stack, EntityLivingBase playerIn, EntityLivingBase target) {
 			if (target instanceof EntityPuppet3rdKazekage.EntityCustom && !playerIn.world.isRemote) {
 				if (stack.hasTagCompound() && stack.getTagCompound().getInteger("puppetId") > 0) {
 					ProcedureUtils.poofWithSmoke(target);
-					this.setDamage(stack, (int)(target.getMaxHealth() - target.getHealth()));
+					stack.setItemDamage((int)(target.getMaxHealth() - target.getHealth()));
 					target.setDead();
 					stack.getTagCompound().setInteger("puppetId", 0);
 				}
@@ -259,6 +265,7 @@ public class ItemScroll3rdKazekage extends ElementsNarutomodMod.ModElement {
 							stack1.setTagCompound(new NBTTagCompound());
 						}
 						stack1.getTagCompound().setInteger("puppetId", entity.getEntityId());
+						stack1.getTagCompound().removeTag("isScrollOpening");
 					}
 				}
 				this.setDead();

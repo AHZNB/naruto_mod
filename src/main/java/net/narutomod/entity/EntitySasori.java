@@ -60,6 +60,13 @@ import javax.annotation.Nullable;
 import javax.vecmath.Vector3f;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
+import net.minecraft.entity.projectile.EntityThrowable;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraftforge.fml.relauncher.ReflectionHelper;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.renderer.entity.Render;
+import net.minecraft.client.model.ModelBase;
+import net.minecraft.util.EnumFacing;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntitySasori extends ElementsNarutomodMod.ModElement {
@@ -72,8 +79,10 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 
 	@Override
 	public void initElements() {
-		elements.entities.add(() -> EntityEntryBuilder.create().entity(EntityCustom.class).id(new ResourceLocation("narutomod", "sasori"), ENTITYID)
-				.name("sasori").tracker(64, 3, true).egg(-16777216, -65485).build());
+		elements.entities.add(() -> EntityEntryBuilder.create().entity(EntityCustom.class)
+		 .id(new ResourceLocation("narutomod", "sasori"), ENTITYID).name("sasori").tracker(64, 3, true).egg(-16777216, -65485).build());
+		elements.entities.add(() -> EntityEntryBuilder.create().entity(EntityCore.class)
+		 .id(new ResourceLocation("narutomod", "sasori_core"), ENTITYID_RANGED).name("sasori_core").tracker(64, 3, true).build());
 	}
 
 	@Override
@@ -90,6 +99,7 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 		private final int SANDBULLET_CD = 200;
 		private final double chakra4elementals = 200d;
 		private int lastBlockTime;
+		private EntityCore coreEntity;
 		private EntityPuppetHiruko.EntityCustom hirukoEntity;
 		private EntityPuppet3rdKazekage.EntityCustom thirdEntity;
 		private int senbonArmShootCount;
@@ -191,45 +201,52 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 		@Override
 		protected void updateAITasks() {
 			super.updateAITasks();
-			ItemStack stack = this.getHeldItemOffhand();
+			ItemStack offStack = this.getHeldItemOffhand();
+			ItemStack inv1Stack = this.getItemFromInventory(1);
 			if (this.getAttackTarget() != null) {
-				if (this.rand.nextFloat() < 0.01f && this.isRidingHiruko()
-				 && this.hirukoEntity.getHealth() < this.hirukoEntity.getMaxHealth() * 0.5f
-			 	 && this.getItemFromInventory(1).getItem() == ItemSenbonArm.block) {
+				if (this.isRidingHiruko() && this.hirukoEntity.getHealth() < this.hirukoEntity.getMaxHealth() * 0.5f
+			 	 && inv1Stack.getItem() == ItemSenbonArm.block && this.rand.nextFloat() < 0.01f) {
 					this.swapWithInventory(EntityEquipmentSlot.OFFHAND, 1);
-			 	} else if (!this.isRidingHiruko() && !this.thirdScrollUsed && this.onGround) {
-			 		if (this.getItemFromInventory(1).getItem() == ItemScroll3rdKazekage.block) {
+			 	} else if (!this.isRidingHiruko() && !this.thirdScrollUsed) {
+			 		if (inv1Stack.getItem() == ItemScroll3rdKazekage.block) {
 			 			this.swapWithInventory(EntityEquipmentSlot.OFFHAND, 1);
-			 		} else if (stack.getItem() == ItemScroll3rdKazekage.block) {
-				 		this.swingArm(EnumHand.OFF_HAND);
-						BlockPos pos = new BlockPos(this.getAttackTarget().getPositionVector()
-						 .subtract(this.getPositionEyes(1f)).normalize().scale(1.5d).add(this.getPositionEyes(1f)));
-						for ( ; this.world.isAirBlock(pos); pos = pos.down()) ;
-						((ItemScroll3rdKazekage.RangedItem)stack.getItem()).useItem(stack, this, pos);
-						this.standStillFor(30);
-						this.thirdScrollUsed = true;
+			 		} else if (offStack.getItem() == ItemScroll3rdKazekage.block) {
+			 			if (this.onGround) {
+					 		this.swingArm(EnumHand.OFF_HAND);
+							BlockPos pos = new BlockPos(this.getAttackTarget().getPositionVector()
+							 .subtract(this.getPositionEyes(1f)).normalize().scale(1.5d).add(this.getPositionEyes(1f)));
+							for ( ; this.world.isAirBlock(pos); pos = pos.down()) ;
+							ItemScroll3rdKazekage.RangedItem.useItem(offStack, this, pos);
+							this.standStillFor(30);
+							this.thirdScrollUsed = true;
+			 			}
+			 		} else {
+			 			this.thirdScrollUsed = true;
 			 		}
-				} else if (this.isThirdSummoned() && stack.getItem() == ItemScroll3rdKazekage.block) {
+				} else if (this.isThirdSummoned() && offStack.getItem() == ItemScroll3rdKazekage.block) {
 					if (this.isHandActive()) {
-						if (stack.getMaxItemUseDuration() - this.getItemInUseCount() >= 80) {
+						if (offStack.getMaxItemUseDuration() - this.getItemInUseCount() >= 80) {
 							this.stopActiveHand();
 						}
 					} else if (ItemScroll3rdKazekage.GATHERING.jutsu.isActivated(this.thirdEntity)
 					 && (this.ticksExisted - this.lastSandGatheringTime) % 80 == 50) {
-						((ItemScroll3rdKazekage.RangedItem)stack.getItem()).executeJutsu(stack, this, 1f);
+						((ItemScroll3rdKazekage.RangedItem)offStack.getItem()).executeJutsu(offStack, this, 1f);
 					}
-				} else if (this.thirdEntity != null && !this.thirdEntity.isEntityAlive() && !this.isRobeOff()) {
+				} else if (((offStack.getItem() != ItemScroll3rdKazekage.block && inv1Stack.getItem() != ItemScroll3rdKazekage.block)
+				 || (this.thirdEntity != null && !this.thirdEntity.isEntityAlive())) && !this.isRidingHiruko() && !this.isRobeOff()) {
 					this.takeOffRobe(true);
 					this.resetActiveHand();
-					this.setItemStackToSlot(EntityEquipmentSlot.OFFHAND, ItemStack.EMPTY);
+					if (offStack.getItem() == ItemScroll3rdKazekage.block) {
+						this.setItemStackToSlot(EntityEquipmentSlot.OFFHAND, ItemStack.EMPTY);
+					}
 				}
 			} else {
 				this.takeOffRobe(false);
 				if (this.isRidingHiruko()) {
 					this.hirukoEntity.takeRobeOff(false);
-				} else if (this.isThirdSummoned() && stack.getItem() == ItemScroll3rdKazekage.block) {
+				} else if (this.isThirdSummoned() && offStack.getItem() == ItemScroll3rdKazekage.block) {
 					this.resetActiveHand();
-					((ItemScroll3rdKazekage.RangedItem)stack.getItem()).interactWithEntity(stack, this, this.thirdEntity);
+					ItemScroll3rdKazekage.RangedItem.interactWithEntity(offStack, this, this.thirdEntity);
 					this.thirdScrollUsed = false;
 					this.thirdEntity = null;
 				}
@@ -400,6 +417,11 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 					this.hirukoEntity = new EntityPuppetHiruko.EntityCustom(this, this.posX, this.posY, this.posZ);
 					this.hirukoEntity.setAkatsuki(true);
 					this.world.spawnEntity(this.hirukoEntity);
+					
+					Vec3d vec = this.getLookVec();
+					this.coreEntity = new EntityCore(this);
+					this.coreEntity.shoot(vec.x, vec.y, vec.z, 0.9f, 0.1f);
+					this.world.spawnEntity(this.coreEntity);
 				}
 			}
 			ItemStack stack = this.getHeldItemOffhand();
@@ -472,6 +494,71 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
+	public static class EntityCore extends EntityThrowable {
+		public EntityCore(World worldIn) {
+			super(worldIn);
+			this.setSize(0.3f, 0.25f);
+		}
+
+		public EntityCore(EntityLivingBase throwerIn) {
+			super(throwerIn.world, throwerIn);
+			this.setSize(0.3f, 0.25f);
+		}
+
+		@Override
+		protected float getGravityVelocity() {
+			return 0.05f;
+		}
+
+		@Override
+		protected void onImpact(RayTraceResult result) {
+			if (ProcedureUtils.getVelocity(this) < 0.1d) {
+				BlockPos blockpos = result.getBlockPos();
+				ReflectionHelper.setPrivateValue(EntityThrowable.class, this, blockpos.getX(), 0); //this.xTile = blockpos.getX();
+				ReflectionHelper.setPrivateValue(EntityThrowable.class, this, blockpos.getY(), 1); // this.yTile = blockpos.getY();
+				ReflectionHelper.setPrivateValue(EntityThrowable.class, this, blockpos.getZ(), 2); // this.zTile = blockpos.getZ();
+		        IBlockState iblockstate = this.world.getBlockState(blockpos);
+		        ReflectionHelper.setPrivateValue(EntityThrowable.class, this, iblockstate.getBlock(), 3); //this.inTile = iblockstate.getBlock();
+				//ReflectionHelper.setPrivateValue(EntityThrowable.class, this, 900, 8); // this.ticksInGround = 900;
+		        this.motionX = 0.0d;
+		        this.motionY = 0.0d;
+		        this.motionZ = 0.0d;
+		        this.posX = result.hitVec.x;
+		        this.posY = result.hitVec.y;
+		        this.posZ = result.hitVec.z;
+		        this.inGround = true;
+		        //if (iblockstate.getMaterial() != Material.AIR) {
+		         //   iblockstate.getBlock().onEntityCollidedWithBlock(this.world, blockpos, iblockstate, this);
+		        //}
+			} else if (result.entityHit != null) {
+				if (!result.entityHit.equals(this.thrower)) {
+					this.motionX *= -0.4d;
+					this.motionY *= -0.4d;
+					this.motionZ *= -0.4d;
+			        this.posX = result.hitVec.x;
+			        this.posY = result.hitVec.y;
+			        this.posZ = result.hitVec.z;
+				}
+			} else {
+				this.motionX *= 0.4d;
+				this.motionY *= 0.4d;
+				this.motionZ *= 0.4d;
+		        this.posX = result.hitVec.x;
+		        this.posY = result.hitVec.y;
+		        this.posZ = result.hitVec.z;
+				if (result.sideHit.getAxis() == EnumFacing.Axis.X) {
+					this.motionX *= -0.8d;
+				}
+				if (result.sideHit.getAxis() == EnumFacing.Axis.Y) {
+					this.motionY *= -0.8d;
+				}
+				if (result.sideHit.getAxis() == EnumFacing.Axis.Z) {
+					this.motionZ *= -0.8d;
+				}
+			}
+		}
+	}
+
 	@Override
 	public void preInit(FMLPreInitializationEvent event) {
 		new Renderer().register();
@@ -482,6 +569,7 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void register() {
 			RenderingRegistry.registerEntityRenderingHandler(EntityCustom.class, renderManager -> new RenderCustom(renderManager));
+			RenderingRegistry.registerEntityRenderingHandler(EntityCore.class, renderManager -> new RenderCore(renderManager));
 		}
 
 		@SideOnly(Side.CLIENT)
@@ -510,7 +598,34 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 				return this.texture;
 			}
 		}
-		
+
+		@SideOnly(Side.CLIENT)
+		public class RenderCore extends Render<EntityCore> {
+			private final ResourceLocation texture = new ResourceLocation("narutomod:textures/sasori_core.png");
+			private final ModelSasoriCore model = new ModelSasoriCore();
+	
+			public RenderCore(RenderManager renderManager) {
+				super(renderManager);
+				this.shadowSize = 0.1F;
+			}
+	
+			@Override
+			public void doRender(EntityCore entity, double x, double y, double z, float yaw, float pt) {
+				this.bindEntityTexture(entity);
+				GlStateManager.pushMatrix();
+				GlStateManager.translate((float) x, (float) y + 0.25f, (float) z);
+				GlStateManager.rotate(-entity.prevRotationYaw - (entity.rotationYaw - entity.prevRotationYaw) * pt, 0.0F, 1.0F, 0.0F);
+				GlStateManager.rotate(entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * pt - 180.0F, 1.0F, 0.0F, 0.0F);
+				this.model.render(entity, 0.0F, 0.0F, pt + entity.ticksExisted, 0.0F, 0.0F, 0.0625F);
+				GlStateManager.popMatrix();
+			}
+	
+			@Override
+			protected ResourceLocation getEntityTexture(EntityCore entity) {
+				return this.texture;
+			}
+		}
+
 		@SideOnly(Side.CLIENT)
 		public class ModelSasori extends EntityNinjaMob.ModelNinja {
 			//private final ModelRenderer bipedHead;
@@ -524,6 +639,7 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 			private final ModelRenderer[] blade = new ModelRenderer[10];
 			private final ModelRenderer backBladesLeft;
 			private final ModelRenderer bone12;
+			private final ModelRenderer core;
 			//private final ModelRenderer bipedRightArm;
 			private final ModelRenderer robeRightArm;
 			private final ModelRenderer gunRight;
@@ -619,6 +735,10 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 					blade[i].cubeList.add(new ModelBox(blade[i], 0, 2, 8.0F, -0.5F, -0.5F, 4, 1, 0, 0.0F, true));
 					blade[i].cubeList.add(new ModelBox(blade[i], 0, 3, 12.0F, -0.5F, -0.5F, 4, 1, 0, 0.0F, true));
 				}
+				core = new ModelRenderer(this);
+				core.setRotationPoint(0.0F, 5.0F, 0.9F);
+				bipedBody.addChild(core);
+				core.cubeList.add(new ModelBox(core, 14, 16, 0.75F, -3.6F, -3.0F, 3, 3, 0, 0.0F, false));
 				bipedRightArm = new ModelRenderer(this);
 				bipedRightArm.setRotationPoint(-5.0F, 2.5F, 0.0F);
 				setRotationAngle(bipedRightArm, -0.1745F, 0.0F, 0.0F);
@@ -709,6 +829,63 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 						}
 					}
 				}
+			}
+		}
+		
+		@SideOnly(Side.CLIENT)
+		public class ModelSasoriCore extends ModelBase {
+			private final ModelRenderer hexadecagon;
+			private final ModelRenderer hexadecagon_r1;
+			private final ModelRenderer hexadecagon_r2;
+			private final ModelRenderer hexadecagon_r3;
+			private final ModelRenderer hexadecagon_r4;
+		
+			public ModelSasoriCore() {
+				textureWidth = 32;
+				textureHeight = 32;
+		
+				hexadecagon = new ModelRenderer(this);
+				hexadecagon.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon.cubeList.add(new ModelBox(hexadecagon, 0, 15, -0.2984F, -3.0F, -2.0F, 0, 3, 4, 0.0F, false));
+				hexadecagon.cubeList.add(new ModelBox(hexadecagon, 0, 5, -1.5F, -1.7984F, -2.0F, 3, 0, 4, 0.0F, false));
+				hexadecagon.cubeList.add(new ModelBox(hexadecagon, 16, 0, -1.5F, -3.0F, -2.01F, 3, 3, 0, 0.0F, false));
+		
+				hexadecagon_r1 = new ModelRenderer(this);
+				hexadecagon_r1.setRotationPoint(0.0F, -1.5F, 0.0F);
+				hexadecagon.addChild(hexadecagon_r1);
+				setRotationAngle(hexadecagon_r1, 0.0F, 0.0F, 0.3927F);
+				hexadecagon_r1.cubeList.add(new ModelBox(hexadecagon_r1, 0, 0, -1.5F, -0.2984F, -2.0F, 3, 0, 4, 0.0F, false));
+				hexadecagon_r1.cubeList.add(new ModelBox(hexadecagon_r1, 10, 11, -0.2984F, -1.5F, -2.0F, 0, 3, 4, 0.0F, false));
+		
+				hexadecagon_r2 = new ModelRenderer(this);
+				hexadecagon_r2.setRotationPoint(0.0F, -1.5F, 0.0F);
+				hexadecagon.addChild(hexadecagon_r2);
+				setRotationAngle(hexadecagon_r2, 0.0F, 0.0F, -0.3927F);
+				hexadecagon_r2.cubeList.add(new ModelBox(hexadecagon_r2, 0, 10, -1.5F, -0.2984F, -2.0F, 3, 0, 4, 0.0F, false));
+				hexadecagon_r2.cubeList.add(new ModelBox(hexadecagon_r2, 16, 4, -0.2984F, -1.5F, -2.0F, 0, 3, 4, 0.0F, false));
+		
+				hexadecagon_r3 = new ModelRenderer(this);
+				hexadecagon_r3.setRotationPoint(0.0F, -1.5F, 0.0F);
+				hexadecagon.addChild(hexadecagon_r3);
+				setRotationAngle(hexadecagon_r3, 0.0F, 0.0F, 0.7854F);
+				hexadecagon_r3.cubeList.add(new ModelBox(hexadecagon_r3, 10, 1, -0.2984F, -1.5F, -2.0F, 0, 3, 4, 0.0F, false));
+		
+				hexadecagon_r4 = new ModelRenderer(this);
+				hexadecagon_r4.setRotationPoint(0.0F, -1.5F, 0.0F);
+				hexadecagon.addChild(hexadecagon_r4);
+				setRotationAngle(hexadecagon_r4, 0.0F, 0.0F, -0.7854F);
+				hexadecagon_r4.cubeList.add(new ModelBox(hexadecagon_r4, 16, 14, -0.2984F, -1.5F, -2.0F, 0, 3, 4, 0.0F, false));
+			}
+		
+			@Override
+			public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
+				hexadecagon.render(f5);
+			}
+		
+			public void setRotationAngle(ModelRenderer modelRenderer, float x, float y, float z) {
+				modelRenderer.rotateAngleX = x;
+				modelRenderer.rotateAngleY = y;
+				modelRenderer.rotateAngleZ = z;
 			}
 		}
 	}
