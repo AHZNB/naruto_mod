@@ -92,6 +92,7 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 
 	public static class EntityCustom extends EntityNinjaMob.Base implements IMob, IRangedAttackMob {
 		private static final DataParameter<Integer> ROBE_OFF_TICKS = EntityDataManager.<Integer>createKey(EntityCustom.class, DataSerializers.VARINT);
+		private static final DataParameter<Integer> BREAK_TICKS = EntityDataManager.<Integer>createKey(EntityCustom.class, DataSerializers.VARINT);
 		private final BossInfoServer bossInfo = new BossInfoServer(this.getDisplayName(), BossInfo.Color.RED, BossInfo.Overlay.PROGRESS);
 		private final int BLOCKING_CD = 30;
 		private final int JUTSU_CD = 300;
@@ -128,6 +129,7 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 		protected void entityInit() {
 			super.entityInit();
 			this.dataManager.register(ROBE_OFF_TICKS, Integer.valueOf(-1));
+			this.dataManager.register(BREAK_TICKS, Integer.valueOf(-1));
 		}
 
 		private void setRobeOffTicks(int ticks) {
@@ -144,6 +146,22 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 
 		protected boolean isRobeOff() {
 			return this.getRobeOffTicks() >= 0;
+		}
+
+		private void setBreakingTicks(int ticks) {
+			this.dataManager.set(BREAK_TICKS, Integer.valueOf(ticks));
+		}
+	
+		private int getBreakingTicks() {
+			return ((Integer)this.getDataManager().get(BREAK_TICKS)).intValue();
+		}
+
+		public void setBreak(boolean b) {
+			this.setBreakingTicks(b ? 0 : -1);
+		}
+
+		public boolean isBroken() {
+			return this.getBreakingTicks() >= 0;
 		}
 
 		@Override
@@ -417,11 +435,6 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 					this.hirukoEntity = new EntityPuppetHiruko.EntityCustom(this, this.posX, this.posY, this.posZ);
 					this.hirukoEntity.setAkatsuki(true);
 					this.world.spawnEntity(this.hirukoEntity);
-					
-					Vec3d vec = this.getLookVec();
-					this.coreEntity = new EntityCore(this);
-					this.coreEntity.shoot(vec.x, vec.y, vec.z, 0.9f, 0.1f);
-					this.world.spawnEntity(this.coreEntity);
 				}
 			}
 			ItemStack stack = this.getHeldItemOffhand();
@@ -497,12 +510,12 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 	public static class EntityCore extends EntityThrowable {
 		public EntityCore(World worldIn) {
 			super(worldIn);
-			this.setSize(0.3f, 0.25f);
+			this.setSize(0.4f, 0.25f);
 		}
 
 		public EntityCore(EntityLivingBase throwerIn) {
 			super(throwerIn.world, throwerIn);
-			this.setSize(0.3f, 0.25f);
+			this.setSize(0.4f, 0.25f);
 		}
 
 		@Override
@@ -531,7 +544,7 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 		         //   iblockstate.getBlock().onEntityCollidedWithBlock(this.world, blockpos, iblockstate, this);
 		        //}
 			} else if (result.entityHit != null) {
-				if (!result.entityHit.equals(this.thrower)) {
+				if (this.thrower != null && !result.entityHit.isRidingSameEntity(this.thrower)) {
 					this.motionX *= -0.4d;
 					this.motionY *= -0.4d;
 					this.motionZ *= -0.4d;
@@ -613,7 +626,7 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 			public void doRender(EntityCore entity, double x, double y, double z, float yaw, float pt) {
 				this.bindEntityTexture(entity);
 				GlStateManager.pushMatrix();
-				GlStateManager.translate((float) x, (float) y + 0.25f, (float) z);
+				GlStateManager.translate((float) x, (float) y + 0.125f, (float) z);
 				GlStateManager.rotate(-entity.prevRotationYaw - (entity.rotationYaw - entity.prevRotationYaw) * pt, 0.0F, 1.0F, 0.0F);
 				GlStateManager.rotate(entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * pt - 180.0F, 1.0F, 0.0F, 0.0F);
 				this.model.render(entity, 0.0F, 0.0F, pt + entity.ticksExisted, 0.0F, 0.0F, 0.0625F);
@@ -841,40 +854,40 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 			private final ModelRenderer hexadecagon_r4;
 		
 			public ModelSasoriCore() {
-				textureWidth = 32;
-				textureHeight = 32;
+				textureWidth = 64;
+				textureHeight = 64;
 		
 				hexadecagon = new ModelRenderer(this);
 				hexadecagon.setRotationPoint(0.0F, 0.0F, 0.0F);
-				hexadecagon.cubeList.add(new ModelBox(hexadecagon, 0, 15, -0.2984F, -3.0F, -2.0F, 0, 3, 4, 0.0F, false));
-				hexadecagon.cubeList.add(new ModelBox(hexadecagon, 0, 5, -1.5F, -1.7984F, -2.0F, 3, 0, 4, 0.0F, false));
-				hexadecagon.cubeList.add(new ModelBox(hexadecagon, 16, 0, -1.5F, -3.0F, -2.01F, 3, 3, 0, 0.0F, false));
+				hexadecagon.cubeList.add(new ModelBox(hexadecagon, 0, 27, -0.5027F, -2.5F, -4.0F, 1, 5, 8, 0.0F, false));
+				hexadecagon.cubeList.add(new ModelBox(hexadecagon, 0, 9, -2.5F, -0.5027F, -4.0F, 5, 1, 8, 0.0F, false));
+				hexadecagon.cubeList.add(new ModelBox(hexadecagon, 28, 0, -2.5F, -2.5F, -4.0F, 5, 5, 0, 0.0F, false));
 		
 				hexadecagon_r1 = new ModelRenderer(this);
-				hexadecagon_r1.setRotationPoint(0.0F, -1.5F, 0.0F);
+				hexadecagon_r1.setRotationPoint(0.0F, 0.0F, -2.0F);
 				hexadecagon.addChild(hexadecagon_r1);
 				setRotationAngle(hexadecagon_r1, 0.0F, 0.0F, 0.3927F);
-				hexadecagon_r1.cubeList.add(new ModelBox(hexadecagon_r1, 0, 0, -1.5F, -0.2984F, -2.0F, 3, 0, 4, 0.0F, false));
-				hexadecagon_r1.cubeList.add(new ModelBox(hexadecagon_r1, 10, 11, -0.2984F, -1.5F, -2.0F, 0, 3, 4, 0.0F, false));
+				hexadecagon_r1.cubeList.add(new ModelBox(hexadecagon_r1, 0, 0, -2.5F, -0.5027F, -2.0F, 5, 1, 8, 0.0F, false));
+				hexadecagon_r1.cubeList.add(new ModelBox(hexadecagon_r1, 18, 19, -0.5027F, -2.5F, -2.0F, 1, 5, 8, 0.0F, false));
 		
 				hexadecagon_r2 = new ModelRenderer(this);
-				hexadecagon_r2.setRotationPoint(0.0F, -1.5F, 0.0F);
+				hexadecagon_r2.setRotationPoint(0.0F, 0.0F, -2.0F);
 				hexadecagon.addChild(hexadecagon_r2);
 				setRotationAngle(hexadecagon_r2, 0.0F, 0.0F, -0.3927F);
-				hexadecagon_r2.cubeList.add(new ModelBox(hexadecagon_r2, 0, 10, -1.5F, -0.2984F, -2.0F, 3, 0, 4, 0.0F, false));
-				hexadecagon_r2.cubeList.add(new ModelBox(hexadecagon_r2, 16, 4, -0.2984F, -1.5F, -2.0F, 0, 3, 4, 0.0F, false));
+				hexadecagon_r2.cubeList.add(new ModelBox(hexadecagon_r2, 0, 18, -2.5F, -0.5027F, -2.0F, 5, 1, 8, 0.0F, false));
+				hexadecagon_r2.cubeList.add(new ModelBox(hexadecagon_r2, 28, 6, -0.5027F, -2.5F, -2.0F, 1, 5, 8, 0.0F, false));
 		
 				hexadecagon_r3 = new ModelRenderer(this);
-				hexadecagon_r3.setRotationPoint(0.0F, -1.5F, 0.0F);
+				hexadecagon_r3.setRotationPoint(0.0F, 0.0F, -2.0F);
 				hexadecagon.addChild(hexadecagon_r3);
 				setRotationAngle(hexadecagon_r3, 0.0F, 0.0F, 0.7854F);
-				hexadecagon_r3.cubeList.add(new ModelBox(hexadecagon_r3, 10, 1, -0.2984F, -1.5F, -2.0F, 0, 3, 4, 0.0F, false));
+				hexadecagon_r3.cubeList.add(new ModelBox(hexadecagon_r3, 18, 1, -0.5027F, -2.5F, -2.0F, 1, 5, 8, 0.0F, false));
 		
 				hexadecagon_r4 = new ModelRenderer(this);
-				hexadecagon_r4.setRotationPoint(0.0F, -1.5F, 0.0F);
+				hexadecagon_r4.setRotationPoint(0.0F, 0.0F, -2.0F);
 				hexadecagon.addChild(hexadecagon_r4);
 				setRotationAngle(hexadecagon_r4, 0.0F, 0.0F, -0.7854F);
-				hexadecagon_r4.cubeList.add(new ModelBox(hexadecagon_r4, 16, 14, -0.2984F, -1.5F, -2.0F, 0, 3, 4, 0.0F, false));
+				hexadecagon_r4.cubeList.add(new ModelBox(hexadecagon_r4, 28, 24, -0.5027F, -2.5F, -2.0F, 1, 5, 8, 0.0F, false));
 			}
 		
 			@Override
