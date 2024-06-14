@@ -93,6 +93,9 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 		private final NonNullList<ItemStack> inventory = NonNullList.<ItemStack>withSize(inventorySize, ItemStack.EMPTY);
 		public int peacefulTicks;
 		private int standStillTicks;
+		private float haltedYaw;
+		private float haltedYawHead;
+		private float haltedPitch;
 
 		public Base(World worldIn, int level, double chakraAmountIn) {
 			super(worldIn);
@@ -208,15 +211,24 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 		public void travel(float strafe, float vertical, float forward) {
 			if (this.standStillTicks > 0) {
 				vertical = forward = strafe = 0.0f;
-				//this.motionX = this.motionZ = 0.0f;
+				this.rotationYaw = this.haltedYaw;
+				this.rotationYawHead = this.haltedYawHead;
+				this.rotationPitch = this.haltedPitch;
 				--this.standStillTicks;
 			}
 			super.travel(strafe, vertical, forward);
 		}
 
-		public void standStillFor(int ticks) {
+		protected void standStillFor(int ticks) {
 			this.standStillTicks = ticks;
+			this.haltedYaw = this.rotationYaw;
+			this.haltedYawHead = this.rotationYawHead;
+			this.haltedPitch = this.rotationPitch;
 			StandStillMessage.sendToTracking(this);
+		}
+
+		protected boolean isStandingStill() {
+			return this.standStillTicks > 0;
 		}
 
 		@Override
@@ -1088,7 +1100,7 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 				mc.addScheduledTask(() -> {
 					Entity entity = mc.world.getEntityByID(message.id);
 					if (entity instanceof Base) {
-						((Base)entity).standStillTicks = message.ticks;
+						((Base)entity).standStillFor(message.ticks);
 					}
 				});
 				return null;

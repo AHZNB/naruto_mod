@@ -7,12 +7,14 @@ import net.narutomod.item.ItemScrollHiruko;
 import net.narutomod.item.ItemScroll3rdKazekage;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.procedure.ProcedureSync;
+import net.narutomod.Particles;
 import net.narutomod.ModConfig;
 import net.narutomod.NarutomodModVariables;
 import net.narutomod.ElementsNarutomodMod;
 
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
@@ -28,8 +30,11 @@ import net.minecraft.world.World;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntityDamageSource;
 import net.minecraft.util.EntitySelectors;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.entity.ai.EntityAISwimming;
@@ -42,16 +47,20 @@ import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.IEntityLivingData;
 import net.minecraft.entity.IRangedAttackMob;
 import net.minecraft.entity.monster.IMob;
+import net.minecraft.entity.projectile.EntityThrowable;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.MoverType;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.model.ModelBox;
+import net.minecraft.client.model.ModelBase;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.network.datasync.DataSerializers;
@@ -60,13 +69,6 @@ import javax.annotation.Nullable;
 import javax.vecmath.Vector3f;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
-import net.minecraft.entity.projectile.EntityThrowable;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraftforge.fml.relauncher.ReflectionHelper;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.renderer.entity.Render;
-import net.minecraft.client.model.ModelBase;
-import net.minecraft.util.EnumFacing;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntitySasori extends ElementsNarutomodMod.ModElement {
@@ -87,12 +89,12 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 
 	@Override
 	public void init(FMLInitializationEvent event) {
-		MinecraftForge.EVENT_BUS.register(new EntityCustom.AttackHook());
+		MinecraftForge.EVENT_BUS.register(new AttackHook());
 	}
 
 	public static class EntityCustom extends EntityNinjaMob.Base implements IMob, IRangedAttackMob {
 		private static final DataParameter<Integer> ROBE_OFF_TICKS = EntityDataManager.<Integer>createKey(EntityCustom.class, DataSerializers.VARINT);
-		private static final DataParameter<Integer> BREAK_TICKS = EntityDataManager.<Integer>createKey(EntityCustom.class, DataSerializers.VARINT);
+		private static final DataParameter<Integer> BREAKING_TICKS = EntityDataManager.<Integer>createKey(EntityCustom.class, DataSerializers.VARINT);
 		private final BossInfoServer bossInfo = new BossInfoServer(this.getDisplayName(), BossInfo.Color.RED, BossInfo.Overlay.PROGRESS);
 		private final int BLOCKING_CD = 30;
 		private final int JUTSU_CD = 300;
@@ -111,6 +113,10 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 		private int lastElementalJutsuTime;
 		private int realFightStage;
 		private int fireImmuneTicks;
+		private final int breakingProgressEnd = 10;
+		private final int breakingEnd = 150;
+		private int breakingDirection;
+		private boolean canDie;
 
 		public EntityCustom(World world) {
 			super(world, 60, 7000d);
@@ -129,7 +135,7 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 		protected void entityInit() {
 			super.entityInit();
 			this.dataManager.register(ROBE_OFF_TICKS, Integer.valueOf(-1));
-			this.dataManager.register(BREAK_TICKS, Integer.valueOf(-1));
+			this.dataManager.register(BREAKING_TICKS, Integer.valueOf(-1));
 		}
 
 		private void setRobeOffTicks(int ticks) {
@@ -149,15 +155,41 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 		}
 
 		private void setBreakingTicks(int ticks) {
-			this.dataManager.set(BREAK_TICKS, Integer.valueOf(ticks));
+			this.dataManager.set(BREAKING_TICKS, Integer.valueOf(ticks));
+			if (ticks < 0) {
+				this.setEntityInvulnerable(false);
+				this.breakingDirection = 0;
+			}
 		}
 	
 		private int getBreakingTicks() {
-			return ((Integer)this.getDataManager().get(BREAK_TICKS)).intValue();
+			return ((Integer)this.getDataManager().get(BREAKING_TICKS)).intValue();
 		}
 
-		public void setBreak(boolean b) {
-			this.setBreakingTicks(b ? 0 : -1);
+		private void setBreaking(boolean b) {
+			if (b) {
+				this.setBreakingTicks(0);
+				this.breakingDirection = 1;
+				this.setEntityInvulnerable(true);
+				Vec3d vec = this.getRevengeTarget() != null ? this.getPositionVector().subtract(this.getRevengeTarget().getPositionVector()) : new Vec3d(this.motionX, this.motionY, this.motionZ);
+				this.coreEntity = new EntityCore(this);
+				this.coreEntity.shoot(vec.x, vec.y, vec.z, 0.95f, 0.1f);
+				this.world.spawnEntity(this.coreEntity);
+			} else {
+				this.setBreakingTicks(-1);
+				this.breakingDirection = 0;
+			}
+		}
+
+		private void reverseBreak() {
+			this.setBreakingTicks(this.breakingProgressEnd);
+			this.breakingDirection = -1;
+			if (this.coreEntity != null) {
+				this.coreEntity.setReturnToOwner();
+				Vec3d vec = this.coreEntity.getPositionVector().subtract(this.getPositionVector());
+				vec = vec.addVector(0.0d, MathHelper.sqrt(vec.x * vec.x + vec.z * vec.z) * 0.4d, 0.0d).scale(0.4d);
+				this.move(MoverType.SELF, vec.x, vec.y, vec.z);
+			}
 		}
 
 		public boolean isBroken() {
@@ -250,8 +282,15 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 					 && (this.ticksExisted - this.lastSandGatheringTime) % 80 == 50) {
 						((ItemScroll3rdKazekage.RangedItem)offStack.getItem()).executeJutsu(offStack, this, 1f);
 					}
+				} else if (this.isRobeOff()) {
+					boolean flag = this.getEntityData().getBoolean(NarutomodModVariables.forceBowPose);
+					if (this.ticksExisted - this.lastElementalJutsuTime < 200) {
+						if (!flag) ProcedureSync.EntityNBTTag.setAndSync(this, NarutomodModVariables.forceBowPose, true);
+					} else if (flag) {
+						ProcedureSync.EntityNBTTag.setAndSync(this, NarutomodModVariables.forceBowPose, false);
+					}
 				} else if (((offStack.getItem() != ItemScroll3rdKazekage.block && inv1Stack.getItem() != ItemScroll3rdKazekage.block)
-				 || (this.thirdEntity != null && !this.thirdEntity.isEntityAlive())) && !this.isRidingHiruko() && !this.isRobeOff()) {
+				 || (this.thirdEntity != null && !this.thirdEntity.isEntityAlive())) && !this.isRidingHiruko()) {
 					this.takeOffRobe(true);
 					this.resetActiveHand();
 					if (offStack.getItem() == ItemScroll3rdKazekage.block) {
@@ -317,6 +356,30 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 			}
 			return super.attackEntityFrom(source, amount);
 		}
+
+	    @Override
+	    protected void damageEntity(DamageSource damageSrc, float damageAmount) {
+	        if (!this.isEntityInvulnerable(damageSrc)) {
+	            damageAmount = net.minecraftforge.common.ForgeHooks.onLivingHurt(this, damageSrc, damageAmount);
+	            if (damageAmount <= 0) return;
+	            damageAmount = this.applyArmorCalculations(damageSrc, damageAmount);
+	            damageAmount = this.applyPotionDamageCalculations(damageSrc, damageAmount);
+	            damageAmount = net.minecraftforge.common.ForgeHooks.onLivingDamage(this, damageSrc, damageAmount);
+	            if (damageAmount != 0.0F) {
+	                float f1 = this.getHealth();
+	            	if (!this.canDie && f1 - damageAmount <= 0.0F) {
+	            		if (f1 > 0.1f) {
+			                this.getCombatTracker().trackDamage(damageSrc, f1, damageAmount);
+			                this.setHealth(0.1F);
+	            			this.setBreaking(true);
+	            		} 
+	            	} else {
+		                this.getCombatTracker().trackDamage(damageSrc, f1, damageAmount);
+		                this.setHealth(f1 - damageAmount); // Forge: moved to fix MC-121048
+	            	}
+	            }
+	        }
+	    }
 
 		@Override
 		public void setSwingingArms(boolean swingingArms) {
@@ -431,6 +494,7 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 			if (this.hirukoEntity == null) {
 				if (this.getRidingEntity() instanceof EntityPuppetHiruko.EntityCustom) {
 					this.hirukoEntity = (EntityPuppetHiruko.EntityCustom)this.getRidingEntity();
+					this.hirukoEntity.setAkatsuki(true);
 				} else if (!this.world.isRemote) {
 					this.hirukoEntity = new EntityPuppetHiruko.EntityCustom(this, this.posX, this.posY, this.posZ);
 					this.hirukoEntity.setAkatsuki(true);
@@ -454,16 +518,30 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 			}
 			this.clearActivePotions();
 			super.onUpdate();
-			if (!this.world.isRemote && this.isRidingHiruko() && this.ticksExisted > this.lastBlockTime + 20) {
-				this.hirukoEntity.blockAttack(false);
+			if (!this.world.isRemote) {
+				if (this.isRidingHiruko() && this.ticksExisted > this.lastBlockTime + 20) {
+					this.hirukoEntity.blockAttack(false);
+				}
+				int robeOffTicks = this.getRobeOffTicks();
+				if (!this.isRidingHiruko() && robeOffTicks >= 0) {
+					this.setRobeOffTicks(++robeOffTicks);
+				}
+				int breakingTicks = this.getBreakingTicks();
+				if (breakingTicks > this.breakingEnd) {
+					this.reverseBreak();
+				} else if (breakingTicks >= 0) {
+					this.setBreakingTicks(breakingTicks + this.breakingDirection);
+					if (breakingTicks > this.breakingProgressEnd && !this.isAIDisabled()) {
+						this.setNoAI(true);
+					}
+				} else if (this.isAIDisabled()) {
+					this.setNoAI(false);
+					this.setHealth(this.getMaxHealth());
+				}
 			}
 			this.isImmuneToFire = this.fireImmuneTicks > 0;
 			if (this.fireImmuneTicks > 0) {
 				--this.fireImmuneTicks;
-			}
-			int robeOffTicks = this.getRobeOffTicks();
-			if (!this.world.isRemote && !this.isRidingHiruko() && robeOffTicks >= 0) {
-				this.setRobeOffTicks(++robeOffTicks);
 			}
 			this.trackAttackedPlayers();
 			this.bossInfo.setPercent(this.getHealth() / this.getMaxHealth());
@@ -489,33 +567,39 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 		public double getYOffset() {
 			return -0.35d;
 		}
+	}
 
-		public static class AttackHook {
-			@SubscribeEvent
-			public void onAttacked(LivingAttackEvent event) {
-				if (event.getEntityLiving() instanceof EntityPuppetHiruko.EntityCustom
-				 && event.getEntityLiving().getControllingPassenger() instanceof EntityCustom
-				 && !event.getSource().isUnblockable()) {
-					EntityPuppetHiruko.EntityCustom hiruko = (EntityPuppetHiruko.EntityCustom)event.getEntityLiving();
-					EntityCustom sasori = (EntityCustom)event.getEntityLiving().getControllingPassenger();
-					if (sasori.ticksExisted > sasori.lastBlockTime + sasori.BLOCKING_CD) {
-						hiruko.blockAttack(true);
-						sasori.lastBlockTime = sasori.ticksExisted;
-					}
+	public static class AttackHook {
+		@SubscribeEvent
+		public void onAttacked(LivingAttackEvent event) {
+			if (event.getEntityLiving() instanceof EntityPuppetHiruko.EntityCustom
+			 && event.getEntityLiving().getControllingPassenger() instanceof EntityCustom
+			 && !event.getSource().isUnblockable()) {
+				EntityPuppetHiruko.EntityCustom hiruko = (EntityPuppetHiruko.EntityCustom)event.getEntityLiving();
+				EntityCustom sasori = (EntityCustom)event.getEntityLiving().getControllingPassenger();
+				if (sasori.ticksExisted > sasori.lastBlockTime + sasori.BLOCKING_CD) {
+					hiruko.blockAttack(true);
+					sasori.lastBlockTime = sasori.ticksExisted;
 				}
 			}
 		}
 	}
 
 	public static class EntityCore extends EntityThrowable {
+		private float health = 40.0f;
+		private EntityCustom owner;
+		private boolean returnToOwner;
+		private int hurtTime;
+
 		public EntityCore(World worldIn) {
 			super(worldIn);
-			this.setSize(0.4f, 0.25f);
+			this.setSize(0.25f, 0.15f);
 		}
 
-		public EntityCore(EntityLivingBase throwerIn) {
+		public EntityCore(EntityCustom throwerIn) {
 			super(throwerIn.world, throwerIn);
-			this.setSize(0.4f, 0.25f);
+			this.setSize(0.25f, 0.15f);
+			this.owner = throwerIn;
 		}
 
 		@Override
@@ -523,15 +607,57 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 			return 0.05f;
 		}
 
+		protected void setReturnToOwner() {
+			this.returnToOwner = true;
+			this.world.setEntityState(this, (byte)17);
+		}
+
+		@SideOnly(Side.CLIENT)
+		public void handleStatusUpdate(byte id) {
+			if (id == 17) {
+				this.returnToOwner = true;
+			} else if (id == 18) {
+				this.hurtTime = 10;
+			}
+		}
+
+		@Override
+		public void onUpdate() {
+			if (this.returnToOwner && this.owner != null) {
+				this.inGround = false;
+				Vec3d vec = this.owner.getPositionVector().addVector(0d, 1.5d, 0d).subtract(this.getPositionVector()).scale(0.15d);
+				this.motionX = vec.x;
+				this.motionY = vec.y;
+				this.motionZ = vec.z;
+				this.isAirBorne = true;
+			}
+			super.onUpdate();
+			if (this.hurtTime > 0) {
+				--this.hurtTime;
+			}
+		}
+
 		@Override
 		protected void onImpact(RayTraceResult result) {
-			if (ProcedureUtils.getVelocity(this) < 0.1d) {
+			if (this.returnToOwner) {
+				if (result.entityHit != null && result.entityHit.equals(this.thrower)) {
+					this.setDead();
+				}
+			} else if (result.entityHit != null) {
+				if (this.ticksExisted > 8) {
+					this.motionX *= -0.4d;
+					this.motionY *= -0.4d;
+					this.motionZ *= -0.4d;
+			        this.posX = result.hitVec.x;
+			        this.posY = result.hitVec.y;
+			        this.posZ = result.hitVec.z;
+				}
+			} else if (ProcedureUtils.getVelocity(this) < 0.1d) {
 				BlockPos blockpos = result.getBlockPos();
 				ReflectionHelper.setPrivateValue(EntityThrowable.class, this, blockpos.getX(), 0); //this.xTile = blockpos.getX();
 				ReflectionHelper.setPrivateValue(EntityThrowable.class, this, blockpos.getY(), 1); // this.yTile = blockpos.getY();
 				ReflectionHelper.setPrivateValue(EntityThrowable.class, this, blockpos.getZ(), 2); // this.zTile = blockpos.getZ();
-		        IBlockState iblockstate = this.world.getBlockState(blockpos);
-		        ReflectionHelper.setPrivateValue(EntityThrowable.class, this, iblockstate.getBlock(), 3); //this.inTile = iblockstate.getBlock();
+		        ReflectionHelper.setPrivateValue(EntityThrowable.class, this, this.world.getBlockState(blockpos).getBlock(), 3); //this.inTile = iblockstate.getBlock();
 				//ReflectionHelper.setPrivateValue(EntityThrowable.class, this, 900, 8); // this.ticksInGround = 900;
 		        this.motionX = 0.0d;
 		        this.motionY = 0.0d;
@@ -540,18 +666,6 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 		        this.posY = result.hitVec.y;
 		        this.posZ = result.hitVec.z;
 		        this.inGround = true;
-		        //if (iblockstate.getMaterial() != Material.AIR) {
-		         //   iblockstate.getBlock().onEntityCollidedWithBlock(this.world, blockpos, iblockstate, this);
-		        //}
-			} else if (result.entityHit != null) {
-				if (this.thrower != null && !result.entityHit.isRidingSameEntity(this.thrower)) {
-					this.motionX *= -0.4d;
-					this.motionY *= -0.4d;
-					this.motionZ *= -0.4d;
-			        this.posX = result.hitVec.x;
-			        this.posY = result.hitVec.y;
-			        this.posZ = result.hitVec.z;
-				}
 			} else {
 				this.motionX *= 0.4d;
 				this.motionY *= 0.4d;
@@ -569,6 +683,31 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 					this.motionZ *= -0.8d;
 				}
 			}
+		}
+
+		@Override
+		public boolean canBeCollidedWith() {
+			return true;
+		}
+
+		@Override
+		public boolean attackEntityFrom(DamageSource source, float amount) {
+			if (!this.world.isRemote && source.getImmediateSource() instanceof EntityLivingBase) {
+				this.health -= amount;
+				this.world.setEntityState(this, (byte)18);
+				if (this.health <= 0.0f) {
+					this.setDead();
+					Particles.spawnParticle(this.world, Particles.Types.SMOKE, this.posX, this.posY+this.height/2, this.posZ,
+					 300, this.width * 0.5d, this.height * 0.3d, this.width * 0.5d, 0d, 0d, 0d, 0xD0FFFFFF, 30);
+					if (this.owner != null) {
+						this.owner.canDie = true;
+						this.owner.setEntityInvulnerable(false);
+						this.owner.attackEntityFrom(source, amount);
+					}
+				}
+				return true;
+			}
+			return false;
 		}
 	}
 
@@ -626,10 +765,15 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 			public void doRender(EntityCore entity, double x, double y, double z, float yaw, float pt) {
 				this.bindEntityTexture(entity);
 				GlStateManager.pushMatrix();
-				GlStateManager.translate((float) x, (float) y + 0.125f, (float) z);
+				GlStateManager.translate((float) x, (float) y + entity.height * 0.5f, (float) z);
+				GlStateManager.scale(0.6f, 0.6f, 0.6f);
 				GlStateManager.rotate(-entity.prevRotationYaw - (entity.rotationYaw - entity.prevRotationYaw) * pt, 0.0F, 1.0F, 0.0F);
 				GlStateManager.rotate(entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * pt - 180.0F, 1.0F, 0.0F, 0.0F);
+				if (entity.hurtTime > 0) {
+					GlStateManager.color(1.0f, 0.4f, 0.4f, 1.0f);
+				}
 				this.model.render(entity, 0.0F, 0.0F, pt + entity.ticksExisted, 0.0F, 0.0F, 0.0625F);
+				GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 				GlStateManager.popMatrix();
 			}
 	
@@ -642,6 +786,8 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 		@SideOnly(Side.CLIENT)
 		public class ModelSasori extends EntityNinjaMob.ModelNinja {
 			//private final ModelRenderer bipedHead;
+			private final ModelRenderer eyesPiercing;
+			private final ModelRenderer eyesDead;
 			//private final ModelRenderer bipedHeadwear;
 			private final ModelRenderer robeHead;
 			//private final ModelRenderer bipedBody;
@@ -668,8 +814,8 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 			private final float[][] bladePresetZ = { { -3.1416F, -0.5236F }, { -3.098F, 0.0873F }, { -3.0543F, 0.6981F }, { -3.0107F, 1.309F }, { -2.9671F, 1.9199F }, { 3.1398F, 0.5236F }, { 3.098F, -0.0873F }, { 3.0543F, -0.6981F }, { 3.0107F, -1.309F }, { 2.9671F, -1.9199F } };
 			private final float[][] bipedHeadPreset = { { 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F }, { -5.0F, 21.0F, 26.0F, -1.5708F, 0.0F, 1.0908F } };
 			private final float[][] bipedBodyPreset = { { 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F }, { 10.0F, 22.0F, 1.0F, -1.5708F, 0.5236F, 0.0F } };
-			private final float[][] bipedRightArmPreset = { { -5.0F, 2.5F, 0.0F, 0.0F, 0.0F, 0.0F }, { -22.0F, 22.5F, 19.0F, 0.8727F, 0.0F, 1.5708F } };
-			private final float[][] bipedLeftArmPreset = { { 5.0F, 2.5F, 0.0F, 0.0F, 0.0F, 0.0F }, { 18.0F, 27.5F, 12.0F, 1.5708F, -1.2217F, 3.1416F } };
+			private final float[][] bipedRightArmPreset = { { -5.0F, 2.5F, 0.0F, 0.0F, 0.0F, 0.0F }, { -22.0F, 23.0F, 19.0F, 0.8727F, 0.0F, 1.5708F } };
+			private final float[][] bipedLeftArmPreset = { { 5.0F, 2.5F, 0.0F, 0.0F, 0.0F, 0.0F }, { 18.0F, 22.0F, 12.0F, 1.5708F, -1.2217F, 3.1416F } };
 			private final float[][] bipedRightLegPreset = { { -1.9F, 12.0F, 0.0F, 0.0F, 0.0F, 0.0F }, { -15.9F, 22.0F, -10.0F, -1.5708F, 0.829F, 0.0F } };
 			private final float[][] bipedLeftLegPreset = { { 1.9F, 12.0F, 0.0F, 0.0F, 0.0F, 0.0F }, { 19.9F, 22.0F, 0.0F, -1.5708F, -1.309F, 0.0F } };
 			
@@ -681,6 +827,14 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 				setRotationAngle(bipedHead, -0.1047F, 0.0873F, 0.0F);
 				bipedHead.cubeList.add(new ModelBox(bipedHead, 0, 0, -4.0F, -8.0F, -4.0F, 8, 8, 8, 0.0F, false));
 				bipedHead.cubeList.add(new ModelBox(bipedHead, 32, 0, -4.0F, -8.0F, -4.0F, 8, 8, 8, 0.3F, false));
+				eyesPiercing = new ModelRenderer(this);
+				eyesPiercing.setRotationPoint(0.0F, 0.0F, 0.0F);
+				bipedHead.addChild(eyesPiercing);
+				eyesPiercing.cubeList.add(new ModelBox(eyesPiercing, 24, 4, -4.0F, -5.0F, -4.01F, 8, 2, 0, 0.0F, false));
+				eyesDead = new ModelRenderer(this);
+				eyesDead.setRotationPoint(0.0F, 0.0F, 0.0F);
+				bipedHead.addChild(eyesDead);
+				eyesDead.cubeList.add(new ModelBox(eyesDead, 24, 6, -4.0F, -5.0F, -4.01F, 8, 2, 0, 0.0F, false));
 				bipedHeadwear = new ModelRenderer(this);
 				bipedHeadwear.setRotationPoint(0.0F, 0.0F, 0.0F);
 				setRotationAngle(bipedHeadwear, -0.1047F, 0.0873F, 0.0F);
@@ -803,29 +957,41 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 			@Override
 			public void render(Entity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
 				if (entityIn instanceof EntityCustom) {
-					boolean robeOff = ((EntityCustom)entityIn).isRobeOff();
-					this.robeHead.showModel = !robeOff;
-					this.robeBody.showModel = !robeOff;
-					this.robeLeftArm.showModel = !robeOff;
-					this.robeLeftLeg.showModel = !robeOff;
-					this.robeRightArm.showModel = !robeOff;
-					this.robeRightLeg.showModel = !robeOff;
-					this.scrolls.showModel = robeOff;
-					this.backBladesLeft.showModel = robeOff;
-					this.backBladesRight.showModel = robeOff;
+					this.setRobeOff(((EntityCustom)entityIn).isRobeOff());
 				}
 				super.render(entityIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale);
 			}
 
+			private void setRobeOff(boolean robeOff) {
+				this.robeHead.showModel = !robeOff;
+				this.robeBody.showModel = !robeOff;
+				this.robeLeftArm.showModel = !robeOff;
+				this.robeLeftLeg.showModel = !robeOff;
+				this.robeRightArm.showModel = !robeOff;
+				this.robeRightLeg.showModel = !robeOff;
+				this.scrolls.showModel = robeOff;
+				this.backBladesLeft.showModel = robeOff;
+				this.backBladesRight.showModel = robeOff;
+			}
+
 			@Override
 			public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn) {
+				this.bodyPartAngles(this.bipedHead, this.bipedHeadPreset, 0.0f);
+				this.bodyPartAngles(this.bipedBody, this.bipedBodyPreset, 0.0f);
+				this.bodyPartAngles(this.bipedRightArm, this.bipedRightArmPreset, 0.0f);
+				this.bodyPartAngles(this.bipedLeftArm, this.bipedLeftArmPreset, 0.0f);
+				this.bodyPartAngles(this.bipedRightLeg, this.bipedRightLegPreset, 0.0f);
+				this.bodyPartAngles(this.bipedLeftLeg, this.bipedLeftLegPreset, 0.0f);
+
 				super.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scaleFactor, entityIn);
+
 				if (entityIn instanceof EntityCustom) {
-					int robeOffTicks = ((EntityCustom)entityIn).getRobeOffTicks();
+					EntityCustom entity = (EntityCustom)entityIn;
+					float partialTicks = ageInTicks - entityIn.ticksExisted;
+					float robeOffTicks = (float)entity.getRobeOffTicks() + partialTicks;
 					if (robeOffTicks >= 0) {
-						float partialTicks = ageInTicks - entityIn.ticksExisted;
-						if (robeOffTicks <= ((EntityCustom)entityIn).bladesOpenTime) {
-							float f = Math.min(((float)robeOffTicks + partialTicks) / ((EntityCustom)entityIn).bladesOpenTime, 1.0F);
+						if (robeOffTicks <= entity.bladesOpenTime) {
+							float f = Math.min(robeOffTicks / entity.bladesOpenTime, 1.0F);
 							this.backBladesRight.rotateAngleX = this.backBladesRightPreset[0].x + (this.backBladesRightPreset[1].x - this.backBladesRightPreset[0].x) * f;
 							this.backBladesRight.rotateAngleY = this.backBladesRightPreset[0].y + (this.backBladesRightPreset[1].y - this.backBladesRightPreset[0].y) * f;
 							this.backBladesRight.rotateAngleZ = this.backBladesRightPreset[0].z + (this.backBladesRightPreset[1].z - this.backBladesRightPreset[0].z) * f;
@@ -841,7 +1007,34 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 							}
 						}
 					}
+					int bt = entity.getBreakingTicks();
+					float breakingTicks = (float)bt + partialTicks * entity.breakingDirection;
+					if (bt >= 0) {
+						float f = MathHelper.clamp(breakingTicks / entity.breakingProgressEnd, 0.0F, 1.0F);
+						this.bodyPartAngles(this.bipedHead, this.bipedHeadPreset, f);
+						this.bodyPartAngles(this.bipedBody, this.bipedBodyPreset, f);
+						this.bodyPartAngles(this.bipedRightArm, this.bipedRightArmPreset, f);
+						this.bodyPartAngles(this.bipedLeftArm, this.bipedLeftArmPreset, f);
+						this.bodyPartAngles(this.bipedRightLeg, this.bipedRightLegPreset, f);
+						this.bodyPartAngles(this.bipedLeftLeg, this.bipedLeftLegPreset, f);
+						this.setRobeOff(true);
+						this.core.showModel = false;
+						this.eyesPiercing.showModel = false;
+					} else {
+						this.core.showModel = true;
+						this.eyesPiercing.showModel = true;
+					}
+					this.eyesDead.showModel = !this.eyesPiercing.showModel;
 				}
+			}
+
+			private void bodyPartAngles(ModelRenderer part, float[][] preset, float progress) {
+				part.rotationPointX = preset[0][0] + (preset[1][0] - preset[0][0]) * progress;
+				part.rotationPointY = preset[0][1] + (preset[1][1] - preset[0][1]) * progress;
+				part.rotationPointZ = preset[0][2] + (preset[1][2] - preset[0][2]) * progress;
+				part.rotateAngleX = preset[0][3] + (preset[1][3] - preset[0][3]) * progress;
+				part.rotateAngleY = preset[0][4] + (preset[1][4] - preset[0][4]) * progress;
+				part.rotateAngleZ = preset[0][5] + (preset[1][5] - preset[0][5]) * progress;
 			}
 		}
 		

@@ -32,7 +32,7 @@ Entities:
  - 3rd kazekage puppet can use sand bullet jutsu & sand gathering jutsu (use with 3rd kazekage scroll)
  - fixed jinchuriki's biju mode visibility bug
  - fixed perfect susanoo jerky body pitch when flying
- - added Sasori mob (WIP-5: main body shoots water, fire, air after 3rd kazekage puppet dies, has a chance to drop hiruko or 3rd scrolls)
+ - added Sasori mob (WIP-6: can't die unless core killed. has a chance to drop hiruko and 3rd scrolls)
  
 General:
  - fixed alpha transparency bug when using certain jutsus
