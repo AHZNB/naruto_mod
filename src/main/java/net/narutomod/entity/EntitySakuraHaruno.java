@@ -245,7 +245,7 @@ public class EntitySakuraHaruno extends ElementsNarutomodMod.ModElement {
 				if (this.getHealth() < this.getMaxHealth()) {
 					this.heal(10f);
 				}
-				this.addPotionEffect(new PotionEffect(PotionChakraEnhancedStrength.potion, 21, 10, false, false));
+				this.addPotionEffect(new PotionEffect(PotionChakraEnhancedStrength.potion, 21, 15, false, false));
 			}
 		}
 

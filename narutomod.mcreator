@@ -1,8 +1,8 @@
 {
   "id_map": {
     "GUI": 64,
-    "ENTITY": 440,
-    "DIMENSION": 13
+    "DIMENSION": 13,
+    "ENTITY": 442
   },
   "mod_elements": [
     {
@@ -7355,6 +7355,36 @@
         "1": 440
       },
       "registry_name": "water_stream"
+    },
+    {
+      "name": "KunaiBlade",
+      "type": "tool",
+      "sortid": 870,
+      "compiles": true,
+      "locked_code": false,
+      "ids": {},
+      "registry_name": "kunai_blade"
+    },
+    {
+      "name": "PuppetHundred",
+      "type": "mob",
+      "sortid": 871,
+      "compiles": true,
+      "locked_code": true,
+      "ids": {
+        "0": 441,
+        "1": 442
+      },
+      "registry_name": "puppet_hundred"
+    },
+    {
+      "name": "KunaiBladeRecipe",
+      "type": "recipe",
+      "sortid": 872,
+      "compiles": true,
+      "locked_code": false,
+      "ids": {},
+      "registry_name": "kunai_blade_recipe"
     }
   ],
   "variable_elements": [
@@ -8323,6 +8353,14 @@
       ],
       "category": "master",
       "subtitle": ""
+    },
+    {
+      "name": "waterstream",
+      "files": [
+        "waterstream"
+      ],
+      "category": "master",
+      "subtitle": ""
     }
   ],
   "language_map": {
@@ -8490,6 +8528,7 @@
       "chattext.chibakutensei": "Chibaku Tensei!",
       "chattext.outerpath.notenoughxp": "You do not have enough experience.",
       "entity.ninja_suna.name": "Ninja Suna",
+      "item.kunai_blade.name": "Kunai Blade",
       "effect.chakra_enhanced_strength": "Chakra Enhanced Strength",
       "item.biju_cloakhelmet.name": "Biju Cloak Helmet",
       "advancements.achievementmedicalgenin.title": "Medical Genin",
@@ -8640,6 +8679,7 @@
       "subtitles.dojutsu": "",
       "item.ninja_armor.name": "Ninja Armor",
       "item.samurai_armorboots.name": "Samurai Armor Boots",
+      "subtitles.waterstream": "",
       "lingering_potion.effect.reach": "Lingering Reach",
       "entity.c_1.name": "Explosive Clay ([Left click] to set target)",
       "item.byakurinnesharinganboots.name": "",
@@ -8682,6 +8722,7 @@
       "chattext.eightgates.gate6": "6th Gate: Gate of View",
       "tipped_arrow.effect.amaterasuflame": "Arrow of Amaterasu",
       "entity.snake.name": "Snake",
+      "entity.puppet_hundred.name": "Puppet Hundred",
       "item.jiton.name": "Magnet Release",
       "tooltip.mangekyo.amaterasu.jutsu1": "Amaterasu,  [SHIFT] Extinguish",
       "entity.kurotsuchi.name": "Kurotsuchi",

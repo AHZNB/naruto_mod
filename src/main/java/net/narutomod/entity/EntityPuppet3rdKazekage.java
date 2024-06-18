@@ -99,22 +99,18 @@ public class EntityPuppet3rdKazekage extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		protected Vec3d getOffsetToOwner() {
-			return new Vec3d(-1.4d, 0.5d, 4.0d);
+			return new Vec3d(-1.4d, 0.5d, 3.0d);
 		}
 
 		@Override
 		protected void initEntityAI() {
 			super.initEntityAI();
-			this.tasks.addTask(1, new EntityAIAttackMelee(this, 1.5d, true));
+			this.tasks.addTask(1, new EntityAIAttackMelee(this, 2.0d, true));
 		}
 
 		@Override
 		public boolean attackEntityAsMob(Entity entityIn) {
 			return ProcedureUtils.attackEntityAsMob(this, entityIn);
-		}
-
-		private boolean isMovingForward() {
-			return Math.abs(MathHelper.wrapDegrees(ProcedureUtils.getYawFromVec(this.motionX, this.motionZ) - this.rotationYaw)) < 90.0f;
 		}
 	}
 

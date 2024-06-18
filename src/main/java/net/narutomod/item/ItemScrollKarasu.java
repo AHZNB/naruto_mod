@@ -85,16 +85,17 @@ public class ItemScrollKarasu extends ElementsNarutomodMod.ModElement {
 		public EnumActionResult onItemUse(EntityPlayer entity, World world, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
 			if (!world.isRemote && world.getBlockState(pos).isTopSolid() && facing == EnumFacing.UP) {
 				ItemStack stack = entity.getHeldItem(hand);
-				if (!stack.hasTagCompound() || stack.getTagCompound().getBoolean("sealed")) {
+				if (!stack.hasTagCompound()
+				 || (!stack.getTagCompound().getBoolean("isScrollOpening") && stack.getTagCompound().getInteger("puppetId") == 0)) {
 					world.playSound(null, entity.posX, entity.posY, entity.posZ, SoundEvents.BLOCK_CLOTH_PLACE,
 							SoundCategory.NEUTRAL, 1, 1f / (itemRand.nextFloat() * 0.5f + 1f) + 0.5f);
-					EntityArrowCustom entityarrow = new EntityArrowCustom(entity, this.getMaxDamage() - this.getDamage(stack));
+					EntityArrowCustom entityarrow = new EntityArrowCustom(entity, this.getMaxDamage() - this.getDamage(stack), stack);
 					entityarrow.setLocationAndAngles(0.5d + pos.getX(), 1.1d + pos.getY(), 0.5d + pos.getZ(), entity.rotationYaw, 0f);
 					world.spawnEntity(entityarrow);
 					if (!stack.hasTagCompound()) {
 						stack.setTagCompound(new NBTTagCompound());
 					}
-					stack.getTagCompound().setBoolean("sealed", false);
+					stack.getTagCompound().setBoolean("isScrollOpening", true);
 				}
 			}
 			return EnumActionResult.PASS;
@@ -104,11 +105,11 @@ public class ItemScrollKarasu extends ElementsNarutomodMod.ModElement {
 		public boolean itemInteractionForEntity(ItemStack stack, EntityPlayer playerIn, EntityLivingBase target, EnumHand hand) {
 			if (target instanceof EntityPuppetKarasu.EntityCustom && !playerIn.world.isRemote) {
 				ItemStack stack1 = playerIn.getHeldItem(hand);
-				if (stack1.hasTagCompound() && !stack1.getTagCompound().getBoolean("sealed")) {
+				if (stack1.hasTagCompound() && stack1.getTagCompound().getInteger("puppetId") > 0) {
 					ProcedureUtils.poofWithSmoke(target);
 					this.setDamage(stack1, (int)(target.getMaxHealth() - target.getHealth()));
 					target.setDead();
-					stack1.getTagCompound().setBoolean("sealed", true);
+					stack1.getTagCompound().setInteger("puppetId", 0);
 					return true;
 				}
 			}
@@ -117,13 +118,37 @@ public class ItemScrollKarasu extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public boolean onLeftClickEntity(ItemStack itemstack, EntityPlayer attacker, Entity target) {
+			EntityPuppetKarasu.EntityCustom puppet = this.getPuppetEntity(itemstack, attacker.world);
 			if (attacker.equals(target)) {
-				target = ProcedureUtils.objectEntityLookingAt(attacker, 50d, 3d).entityHit;
+				target = ProcedureUtils.objectEntityLookingAt(attacker, 50d, 3d, puppet == null || puppet.getAttackTarget() == null ? puppet : null).entityHit;
 			}
-			if (target instanceof EntityLivingBase) {
-				attacker.setRevengeTarget((EntityLivingBase)target);
+			if (target != null && target.equals(puppet)) {
+				puppet.setAttackTarget(null);
+				return true;
+			}
+			if (target instanceof EntityLivingBase && puppet != null) {
+				puppet.setAttackTarget((EntityLivingBase)target);
 			}
 			return super.onLeftClickEntity(itemstack, attacker, target);
+		}
+
+		@Override
+		public void onUpdate(ItemStack stack, World world, Entity entity, int par4, boolean par5) {
+			super.onUpdate(stack, world, entity, par4, par5);
+			if (!world.isRemote && entity.ticksExisted % 20 == 3) {
+				EntityPuppetKarasu.EntityCustom puppet = this.getPuppetEntity(stack, world);
+				if (puppet != null && puppet.isEntityAlive()) {
+					this.setDamage(stack, (int)(puppet.getMaxHealth() - puppet.getHealth()));
+				}
+			}
+		}
+
+		public EntityPuppetKarasu.EntityCustom getPuppetEntity(ItemStack stack, World world) {
+			if (stack.hasTagCompound() && stack.getTagCompound().getInteger("puppetId") > 0) {
+				Entity entity = world.getEntityByID(stack.getTagCompound().getInteger("puppetId"));
+				return entity instanceof EntityPuppetKarasu.EntityCustom ? (EntityPuppetKarasu.EntityCustom)entity : null;
+			}
+			return null;
 		}
 
 		@Override
@@ -147,16 +172,18 @@ public class ItemScrollKarasu extends ElementsNarutomodMod.ModElement {
 		private final int openScrollTime = 30;
 		private EntityLivingBase summoner;
 		private float puppetHealth;
+		private ItemStack scrollStack;
 		
 		public EntityArrowCustom(World a) {
 			super(a);
 			this.setSize(1.0f, 0.2f);
 		}
 
-		public EntityArrowCustom(EntityLivingBase summonerIn, float health) {
+		public EntityArrowCustom(EntityLivingBase summonerIn, float health, ItemStack stack) {
 			this(summonerIn.world);
 			this.summoner = summonerIn;
 			this.puppetHealth = health;
+			this.scrollStack = stack;
 		}
 
 		@Override
@@ -175,6 +202,16 @@ public class ItemScrollKarasu extends ElementsNarutomodMod.ModElement {
 					entity.setHealth(this.puppetHealth);
 					this.world.spawnEntity(entity);
 					ProcedureUtils.poofWithSmoke(entity);
+					if (this.scrollStack != null) {
+						ItemStack stack = this.summoner instanceof EntityPlayer
+						 ? ProcedureUtils.getMatchingItemStack((EntityPlayer)this.summoner, this.scrollStack)
+						 : this.scrollStack;
+						if (!stack.hasTagCompound()) {
+							stack.setTagCompound(new NBTTagCompound());
+						}
+						stack.getTagCompound().setInteger("puppetId", entity.getEntityId());
+						stack.getTagCompound().removeTag("isScrollOpening");
+					}
 				}
 				this.setDead();
 			}

@@ -1042,5 +1042,14 @@
         "stream": false
       }
     ]
+  },
+  "waterstream": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "narutomod:waterstream",
+        "stream": false
+      }
+    ]
   }
 }

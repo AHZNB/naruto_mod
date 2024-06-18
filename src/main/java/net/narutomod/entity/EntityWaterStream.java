@@ -77,6 +77,8 @@ public class EntityWaterStream extends ElementsNarutomodMod.ModElement {
 			if (this.shootingEntity != null) {
 				if (this.ticksAlive == 1) {
 					this.playSound(net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:waterblast")), 0.5f, this.power / 30f);
+				} else if (this.ticksAlive > 40 && this.ticksAlive % 20 == 1) {
+					this.playSound(net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:waterstream")), 0.4f, this.power / 30f - this.rand.nextFloat() * 0.1f);
 				}
 				this.shoot();
 				this.stream.execute2(this.shootingEntity, (double)this.power, 0.5d);
@@ -143,11 +145,12 @@ public class EntityWaterStream extends ElementsNarutomodMod.ModElement {
 				return false;
 			}
 
-			public void createJutsu(EntityLivingBase entity, float power, int duration) {
+			public EC createJutsu(EntityLivingBase entity, float power, int duration) {
 				EC entityarrow = new EC(entity, power);
 				entityarrow.maxLife = duration;
 				entityarrow.shoot();
 				entity.world.spawnEntity(entityarrow);
+				return entityarrow;
 			}
 
 			@Override

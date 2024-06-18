@@ -115,6 +115,17 @@ public class EntityPuppetSanshouo extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
+		protected void addPassenger(Entity passenger) {
+			super.addPassenger(passenger);
+			if (passenger instanceof EntityPlayer) {
+				ItemStack stack = ProcedureUtils.getMatchingItemStack((EntityPlayer)passenger, ItemNinjutsu.block);
+				boolean flag = stack != null && ((ItemNinjutsu.RangedItem)stack.getItem())
+				 .canActivateJutsu(stack, ItemNinjutsu.PUPPET, (EntityPlayer)passenger) == EnumActionResult.SUCCESS;
+				this.setOwnerCanSteer(flag, this.driveSpeed);
+			}
+		}
+
+		@Override
 		public void updatePassenger(Entity passenger) {
 			Vec3d vec[] = { new Vec3d(0d, 0.1875d * MODELSCALE, 0.125d * MODELSCALE), new Vec3d(0d, 0.1875d * MODELSCALE, -0.1875d * MODELSCALE) };
 			if (this.isPassenger(passenger)) {
@@ -144,18 +155,7 @@ public class EntityPuppetSanshouo extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void onUpdate() {
 			super.onUpdate();
-			int age = this.getAge();
-			//if (age == 0 && !this.world.isRemote) {
-			//	ProcedureUtils.poofWithSmoke(this);
-			//}
-			Entity controllingRider = this.getControllingPassenger();
-			if (controllingRider instanceof EntityPlayer && this.ticksExisted % 10 == 3) {
-				ItemStack stack = ProcedureUtils.getMatchingItemStack((EntityPlayer)controllingRider, ItemNinjutsu.block);
-				boolean flag = stack != null && ((ItemNinjutsu.RangedItem)stack.getItem())
-				 .canActivateJutsu(stack, ItemNinjutsu.PUPPET, (EntityPlayer)controllingRider) == EnumActionResult.SUCCESS;
-				this.setOwnerCanSteer(flag, this.driveSpeed);
-			}
-			this.setAge(age + 1);
+			this.setAge(this.getAge() + 1);
 		}
 
 		@Override

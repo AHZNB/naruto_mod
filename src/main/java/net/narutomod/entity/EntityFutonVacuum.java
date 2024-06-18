@@ -100,10 +100,11 @@ public class EntityFutonVacuum extends ElementsNarutomodMod.ModElement {
 				return false;
 			}
 
-			public void createJutsu(EntityLivingBase entity, float power, int duration) {
+			public EC createJutsu(EntityLivingBase entity, float power, int duration) {
 				EC entity1 = new EC(entity, power);
 				entity1.maxDuration = duration;
 				entity.world.spawnEntity(entity1);
+				return entity1;
 			}
 
 			@Override

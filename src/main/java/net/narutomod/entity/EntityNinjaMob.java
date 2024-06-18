@@ -224,7 +224,9 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 			this.haltedYaw = this.rotationYaw;
 			this.haltedYawHead = this.rotationYawHead;
 			this.haltedPitch = this.rotationPitch;
-			StandStillMessage.sendToTracking(this);
+			if (!this.world.isRemote) {
+				StandStillMessage.sendToTracking(this);
+			}
 		}
 
 		protected boolean isStandingStill() {
@@ -549,10 +551,10 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 	                this.strafingTime = -1;
 	            }
 	            if (this.strafingTime >= 20) {
-	                if ((double)this.entity.getRNG().nextFloat() < 0.3D) {
+	                if (this.entity.getRNG().nextFloat() < 0.3F) {
 	                    this.strafingClockwise = !this.strafingClockwise;
 	                }
-	                if ((double)this.entity.getRNG().nextFloat() < 0.3D) {
+	                if (this.entity.getRNG().nextFloat() < 0.3F) {
 	                    this.strafingBackwards = !this.strafingBackwards;
 	                }
 	                this.strafingTime = 0;
@@ -563,7 +565,8 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 	                } else if (d0 < (double)(this.maxAttackDistance * 0.25F)) {
 	                    this.strafingBackwards = true;
 	                }
-	                this.entity.getMoveHelper().strafe(this.strafingBackwards ? (float)-this.moveSpeedAmp : (float)this.moveSpeedAmp, this.strafingClockwise ? 0.5F : -0.5F);
+	                float f = (float)this.moveSpeedAmp;
+	                this.entity.getMoveHelper().strafe(this.strafingBackwards ? -f : f, this.strafingClockwise ? 0.5F : -0.5F);
 	                this.entity.faceEntity(entitylivingbase, 30.0F, 30.0F);
 	            } else {
 	                this.entity.getLookHelper().setLookPositionWithEntity(entitylivingbase, 30.0F, 30.0F);
@@ -580,6 +583,8 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 		            float f = MathHelper.sqrt(d0) / this.attackRadius;
 		            this.attackTime = MathHelper.floor(f * (float)(this.attackCooldown));
 		        }
+	        } else {
+	        	this.entity.getNavigator().clearPath();
 	        }
 	    }
 	}

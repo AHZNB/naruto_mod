@@ -9,6 +9,8 @@ Jutsus:
  - amaterasu can't be cured with milk
  - Add quicklime jutsu for lava release (paralyzes target for 10s)
  - fixed explosion release C-1 activating without chakra
+ - water bullet jutsu now shoots particles instead of a beam
+ - when opening gates, user no longer invulnerable (possible random dying bug when opening gates, needs testing)
 
 Items:
  - added Sakura shippuden clothing and leggings (for slim player models only)
@@ -16,15 +18,17 @@ Items:
  - added Sound 5 clothing and forehead protector
  - added Jiraiya jacket, clothing, forehead protector and robe
  - added 3rd Kazekage puppet scroll
- - attack puppet scrolls: left click entity from a distance to set as puppet attack target 
+ - attack puppet scrolls: within 50 blocks, left click entity to set as puppet attack target, left click puppet to cancel target
  - senbons now does 4 melee damage, poison senbons 5 minute poison effect
  - puppet senbon arm canon can bounce off blocks, shoots poison senbons in all directions for 4s
+ - poison bombs also inflicts blindness for 5s
+ - added kunai sword and recipe
 
 Entities:
- - re-textured kisame's face
+ - re-textured kisame
  - fix remaining server crashes due to "NoClassDefFoundError"
  - all "smart" ninja NPCs can naruto run
- - Might Guy and Iruka wears konoha flak jackets now and has a chance to drop it
+ - Might Guy and Iruka wears konoha flak jackets and jumpsuit/pants now and has a chance to drop it
  - Sakura wears Sakura clothing and leggings now and has a chance to drop it
  - Kisame wears Akatsuki robe now and has a chance to drop it
  - improved Hirudora model
@@ -32,14 +36,15 @@ Entities:
  - 3rd kazekage puppet can use sand bullet jutsu & sand gathering jutsu (use with 3rd kazekage scroll)
  - fixed jinchuriki's biju mode visibility bug
  - fixed perfect susanoo jerky body pitch when flying
- - added Sasori mob (WIP-6: can't die unless core killed. has a chance to drop hiruko and 3rd scrolls)
+ - added Sasori mob (WIP-7: summons 100 puppets jutsu at end stage)
+ - Karasu puppet shoots poison bombs as well as senbons, better AI
+ - added sasori's 100 puppet
  
 General:
  - fixed alpha transparency bug when using certain jutsus
  
 Bugs & Issues:
  - Hiruko puppet extending its tail to attack causes client side post render stack overflows
- - puppet user chakra strings going past the user's back
 
 0.3.0-beta ================================================================================
 

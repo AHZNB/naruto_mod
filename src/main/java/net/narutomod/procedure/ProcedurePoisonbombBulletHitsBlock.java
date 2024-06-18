@@ -68,6 +68,7 @@ public class ProcedurePoisonbombBulletHitsBlock extends ElementsNarutomodMod.Mod
 			for (EntityLivingBase entity : world.getEntitiesWithinAABB(EntityLivingBase.class, new AxisAlignedBB(x-4, y-4, z-4, x+4, y+4, z+4))) {
 				if (excludeEntity == null || !excludeEntity.equals(entity)) {
 					entity.addPotionEffect(new PotionEffect(MobEffects.WITHER, 300, 2));
+					entity.addPotionEffect(new PotionEffect(MobEffects.BLINDNESS, 100, 2));
 				}
 			}
 		}

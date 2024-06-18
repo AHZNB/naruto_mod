@@ -47,6 +47,8 @@ import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.client.renderer.entity.RenderLivingBase;
+import net.minecraft.client.model.ModelBiped;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.network.datasync.DataSerializers;
@@ -56,6 +58,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.network.play.server.SPacketCollectItem;
 
 import net.narutomod.creativetab.TabModTab;
+import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.ElementsNarutomodMod;
 
 //import java.util.List;
@@ -357,12 +360,22 @@ public class ItemScytheHidan extends ElementsNarutomodMod.ModElement {
 			EntityLivingBase shooter = entity.getShooter();
 			if (shooter != null) {
 				Vec3d vec0 = entity.getNeedleEyePos(pt);
-				this.renderLine(vec0, this.getPosVec(shooter, pt).addVector(0d, 1d, 0d));
+				ModelBiped model = (ModelBiped)((RenderLivingBase)this.renderManager.getEntityRenderObject(shooter)).getMainModel();
+				Vec3d vec1 = this.transform3rdPerson(new Vec3d(0.0d, -0.5825d, 0.0d),
+				 new Vec3d(model.bipedRightArm.rotateAngleX, model.bipedRightArm.rotateAngleY, model.bipedRightArm.rotateAngleZ),
+				 shooter, pt).addVector(0.0d, 0.275d, 0.0d);
+				this.renderLine(vec0, vec1);
 			}
 		}
 
+		private Vec3d transform3rdPerson(Vec3d startvec, Vec3d angles, EntityLivingBase entity, float pt) {
+			return ProcedureUtils.rotateRoll(startvec, (float)-angles.z).rotatePitch((float)-angles.x).rotateYaw((float)-angles.y)
+			   .addVector(0.0586F * -6F, 1.02F-(entity.isSneaking()?0.3f:0f), 0.0F)
+			   .rotateYaw(-ProcedureUtils.interpolateRotation(entity.prevRenderYawOffset, entity.renderYawOffset, pt) * (float)(Math.PI / 180d))
+			   .add(this.getPosVec(entity, pt));
+		}
+
 		private Vec3d getPosVec(Entity entity, float pt) {
-			//return new Vec3d(entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * pt, entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * pt, entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * pt);
 			Vec3d vec1 = new Vec3d(entity.lastTickPosX, entity.lastTickPosY, entity.lastTickPosZ);
 			return entity.getPositionVector().subtract(vec1).scale(pt).add(vec1);
 		}

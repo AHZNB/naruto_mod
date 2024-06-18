@@ -97,6 +97,7 @@ public class EntityIrukaSensei extends ElementsNarutomodMod.ModElement {
 		public IEntityLivingData onInitialSpawn(DifficultyInstance difficulty, @Nullable IEntityLivingData livingdata) {
 			this.setItemToInventory(new ItemStack(ItemKunai.block), 0);
 			this.setItemStackToSlot(EntityEquipmentSlot.CHEST, new ItemStack(ItemNinjaArmorKonoha.body, 1));
+			this.setItemStackToSlot(EntityEquipmentSlot.LEGS, new ItemStack(ItemNinjaArmorKonoha.legs, 1));
 			return super.onInitialSpawn(difficulty, livingdata);
 		}
 

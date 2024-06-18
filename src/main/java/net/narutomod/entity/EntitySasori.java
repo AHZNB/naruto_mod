@@ -111,16 +111,19 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 		private int lastSandBulletTime;
 		private int lastSandGatheringTime;
 		private int lastElementalJutsuTime;
-		private int realFightStage;
+		private Entity lastElementalJutsu;
 		private int fireImmuneTicks;
 		private final int breakingProgressEnd = 10;
 		private final int breakingEnd = 150;
 		private int breakingDirection;
 		private boolean canDie;
+		private EnumStage hundredStage;
+		private EntityPuppetHundred.EntityScroll scroll100Entity;
 
 		public EntityCustom(World world) {
 			super(world, 60, 7000d);
 			this.setSize(0.525f, 1.75f);
+			this.hundredStage = EnumStage.CANNOT_USE;
 		}
 
 		@Override
@@ -175,9 +178,11 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 				this.coreEntity = new EntityCore(this);
 				this.coreEntity.shoot(vec.x, vec.y, vec.z, 0.95f, 0.1f);
 				this.world.spawnEntity(this.coreEntity);
+				if (this.lastElementalJutsu != null && !this.lastElementalJutsu.isDead) {
+					this.lastElementalJutsu.setDead();
+				}
 			} else {
 				this.setBreakingTicks(-1);
-				this.breakingDirection = 0;
 			}
 		}
 
@@ -222,7 +227,7 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 		protected void initEntityAI() {
 			super.initEntityAI();
 			this.tasks.addTask(0, new EntityAISwimming(this));
-			this.tasks.addTask(1, new EntityNinjaMob.AIAttackRangedTactical(this, 0.5d, 30, 12.0F) {
+			this.tasks.addTask(1, new EntityNinjaMob.AIAttackRangedTactical(this, 0.4d, 30, 12.0F) {
 				@Override
 				public boolean shouldExecute() {
 					return super.shouldExecute() && EntityCustom.this.isRidingHiruko();
@@ -253,6 +258,7 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 			super.updateAITasks();
 			ItemStack offStack = this.getHeldItemOffhand();
 			ItemStack inv1Stack = this.getItemFromInventory(1);
+			boolean bowpose = this.getEntityData().getBoolean(NarutomodModVariables.forceBowPose);
 			if (this.getAttackTarget() != null) {
 				if (this.isRidingHiruko() && this.hirukoEntity.getHealth() < this.hirukoEntity.getMaxHealth() * 0.5f
 			 	 && inv1Stack.getItem() == ItemSenbonArm.block && this.rand.nextFloat() < 0.01f) {
@@ -274,6 +280,8 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 			 			this.thirdScrollUsed = true;
 			 		}
 				} else if (this.isThirdSummoned() && offStack.getItem() == ItemScroll3rdKazekage.block) {
+					this.thirdEntity.setAttackTarget(this.getAttackTarget());
+					if (!bowpose) ProcedureSync.EntityNBTTag.setAndSync(this, NarutomodModVariables.forceBowPose, true);
 					if (this.isHandActive()) {
 						if (offStack.getMaxItemUseDuration() - this.getItemInUseCount() >= 80) {
 							this.stopActiveHand();
@@ -283,11 +291,36 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 						((ItemScroll3rdKazekage.RangedItem)offStack.getItem()).executeJutsu(offStack, this, 1f);
 					}
 				} else if (this.isRobeOff()) {
-					boolean flag = this.getEntityData().getBoolean(NarutomodModVariables.forceBowPose);
-					if (this.ticksExisted - this.lastElementalJutsuTime < 200) {
-						if (!flag) ProcedureSync.EntityNBTTag.setAndSync(this, NarutomodModVariables.forceBowPose, true);
-					} else if (flag) {
+					switch (this.hundredStage) {
+					case CAN_USE:
+						this.swingArm(EnumHand.OFF_HAND);
+						this.playSound(net.minecraft.init.SoundEvents.BLOCK_CLOTH_PLACE, 1, 1f / (this.rand.nextFloat() * 0.5f + 1f) + 0.5f);
+						this.scroll100Entity = new EntityPuppetHundred.EntityScroll(this);
+						this.scroll100Entity.setLocationAndAngles(this.posX, 2.5d + this.posY, this.posZ, this.rotationYaw + 90.0f, 0.0f);
+						this.world.spawnEntity(this.scroll100Entity);
+						this.standStillFor(30);
 						ProcedureSync.EntityNBTTag.setAndSync(this, NarutomodModVariables.forceBowPose, false);
+						this.hundredStage = EnumStage.OPENING_SCROLL;
+						break;
+					case OPENING_SCROLL:
+						if (this.scroll100Entity != null && this.scroll100Entity.allPuppetsSpawned()) {
+							this.hundredStage = EnumStage.USING;
+						}
+						break;
+					case USING:
+						if (this.scroll100Entity != null && this.scroll100Entity.allPuppetsDead()) {
+							this.hundredStage = EnumStage.USED;
+						}
+						break;
+					case USED:
+						this.scroll100Entity = null;
+					case CANNOT_USE:
+						if (this.lastElementalJutsu != null && !this.lastElementalJutsu.isDead) {
+							if (!bowpose) ProcedureSync.EntityNBTTag.setAndSync(this, NarutomodModVariables.forceBowPose, true);
+						} else if (bowpose) {
+							ProcedureSync.EntityNBTTag.setAndSync(this, NarutomodModVariables.forceBowPose, false);
+						}
+						break;
 					}
 				} else if (((offStack.getItem() != ItemScroll3rdKazekage.block && inv1Stack.getItem() != ItemScroll3rdKazekage.block)
 				 || (this.thirdEntity != null && !this.thirdEntity.isEntityAlive())) && !this.isRidingHiruko()) {
@@ -299,6 +332,9 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 				}
 			} else {
 				this.takeOffRobe(false);
+				if (bowpose) {
+					ProcedureSync.EntityNBTTag.setAndSync(this, NarutomodModVariables.forceBowPose, false);
+				}
 				if (this.isRidingHiruko()) {
 					this.hirukoEntity.takeRobeOff(false);
 				} else if (this.isThirdSummoned() && offStack.getItem() == ItemScroll3rdKazekage.block) {
@@ -306,7 +342,14 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 					ItemScroll3rdKazekage.RangedItem.interactWithEntity(offStack, this, this.thirdEntity);
 					this.thirdScrollUsed = false;
 					this.thirdEntity = null;
+				} else if (this.scroll100Entity != null) {
+					this.scroll100Entity.setDead();
+					this.scroll100Entity = null;
+					this.hundredStage = EnumStage.CANNOT_USE;
 				}
+			}
+			if (this.isRidingHiruko() && this.ticksExisted > this.lastBlockTime + 20) {
+				this.hirukoEntity.blockAttack(false);
 			}
 		}
 
@@ -368,11 +411,11 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 	            if (damageAmount != 0.0F) {
 	                float f1 = this.getHealth();
 	            	if (!this.canDie && f1 - damageAmount <= 0.0F) {
-	            		if (f1 > 0.1f) {
+	            		if (f1 > 0.01f) {
 			                this.getCombatTracker().trackDamage(damageSrc, f1, damageAmount);
-			                this.setHealth(0.1F);
+			                this.setHealth(0.01F);
 	            			this.setBreaking(true);
-	            		} 
+	            		}
 	            	} else {
 		                this.getCombatTracker().trackDamage(damageSrc, f1, damageAmount);
 		                this.setHealth(f1 - damageAmount); // Forge: moved to fix MC-121048
@@ -420,16 +463,17 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 					this.setActiveHand(EnumHand.OFF_HAND);
 					this.lastSandBulletTime = this.ticksExisted;
 				}
-			} else if (this.isRobeOff() && this.ticksExisted - this.lastElementalJutsuTime > 150) {
+			} else if (this.isRobeOff() && (this.hundredStage == EnumStage.CANNOT_USE || this.hundredStage == EnumStage.USED)
+			 && this.ticksExisted - this.lastElementalJutsuTime > 150) {
 				if (this.rand.nextFloat() <= 0.5f && this.consumeChakra(this.chakra4elementals)) {
 					this.fireImmuneTicks = 300;
-					new EntityFirestream.EC.Jutsu2().createJutsu(this, 25.0f, 200);
+					this.lastElementalJutsu = new EntityFirestream.EC.Jutsu2().createJutsu(this, 25.0f, 200);
 					this.lastElementalJutsuTime = this.ticksExisted;
 				} else if (this.rand.nextFloat() <= 0.5f && this.consumeChakra(this.chakra4elementals)) {
-					new EntityWaterStream.EC.Jutsu().createJutsu(this, 25.0f, 200);
+					this.lastElementalJutsu = new EntityWaterStream.EC.Jutsu().createJutsu(this, 25.0f, 200);
 					this.lastElementalJutsuTime = this.ticksExisted;
 				} else if (this.consumeChakra(this.chakra4elementals)) {
-					new EntityFutonVacuum.EC.Jutsu().createJutsu(this, 25.0f, 200);
+					this.lastElementalJutsu = new EntityFutonVacuum.EC.Jutsu().createJutsu(this, 25.0f, 200);
 					this.lastElementalJutsuTime = this.ticksExisted;
 				}
 			}
@@ -445,7 +489,7 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		protected void collideWithNearbyEntities() {
-			if (this.getRobeOffTicks() > this.bladesOpenTime) {
+			if (this.getRobeOffTicks() > this.bladesOpenTime && !this.isBroken()) {
 				for (Entity entity : this.world.getEntitiesInAABBexcluding(this, this.getEntityBoundingBox().grow(2.4d, 0d, 2.4d),
 					Predicates.and(EntitySelectors.getTeamCollisionPredicate(this), new Predicate<Entity>() {
 						@Override
@@ -453,7 +497,7 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 							return p_apply_1_ instanceof EntityLivingBase;
 						}
 					}))) {
-					entity.attackEntityFrom(DamageSource.causeThornsDamage(this), 10f + this.rand.nextFloat() * 8f);
+					entity.attackEntityFrom(DamageSource.causeThornsDamage(this), 8f + this.rand.nextFloat() * 8f);
 				}
 			}
 			super.collideWithNearbyEntities();
@@ -519,13 +563,6 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 			this.clearActivePotions();
 			super.onUpdate();
 			if (!this.world.isRemote) {
-				if (this.isRidingHiruko() && this.ticksExisted > this.lastBlockTime + 20) {
-					this.hirukoEntity.blockAttack(false);
-				}
-				int robeOffTicks = this.getRobeOffTicks();
-				if (!this.isRidingHiruko() && robeOffTicks >= 0) {
-					this.setRobeOffTicks(++robeOffTicks);
-				}
 				int breakingTicks = this.getBreakingTicks();
 				if (breakingTicks > this.breakingEnd) {
 					this.reverseBreak();
@@ -537,6 +574,13 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 				} else if (this.isAIDisabled()) {
 					this.setNoAI(false);
 					this.setHealth(this.getMaxHealth());
+					if (this.isRobeOff() && this.hundredStage == EnumStage.CANNOT_USE) {
+						this.hundredStage = EnumStage.CAN_USE;
+					}
+				}
+				int robeOffTicks = this.getRobeOffTicks();
+				if (!this.isRidingHiruko() && robeOffTicks >= 0) {
+					this.setRobeOffTicks(++robeOffTicks);
 				}
 			}
 			this.isImmuneToFire = this.fireImmuneTicks > 0;
@@ -550,8 +594,17 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void setDead() {
 			super.setDead();
-			if (!this.world.isRemote && this.hirukoEntity != null && this.hirukoEntity.isEntityAlive()) {
-				this.hirukoEntity.setDead();
+			if (!this.world.isRemote) {
+				if (this.hirukoEntity != null && this.hirukoEntity.isEntityAlive()) {
+					this.hirukoEntity.setDead();
+				}
+				if (this.thirdEntity != null && this.thirdEntity.isEntityAlive()) {
+					ProcedureUtils.poofWithSmoke(this.thirdEntity);
+					this.thirdEntity.setDead();
+				}
+				if (this.scroll100Entity != null) {
+					this.scroll100Entity.setDead();
+				}
 			}
 		}
 
@@ -704,11 +757,26 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 						this.owner.setEntityInvulnerable(false);
 						this.owner.attackEntityFrom(source, amount);
 					}
+				} else {
+					Vec3d vec = this.getPositionVector().subtract(source.getImmediateSource().getPositionVector()).normalize().scale(0.2d);
+					this.motionX += vec.x;
+					this.motionZ += vec.z;
+					this.motionY += this.inGround ? 0.4d : 0.0d;
+					this.isAirBorne = true;
+					this.inGround = false;
 				}
 				return true;
 			}
 			return false;
 		}
+	}
+
+	public enum EnumStage {
+		CANNOT_USE,
+		CAN_USE,
+		OPENING_SCROLL,
+		USING,
+		USED;
 	}
 
 	@Override
@@ -989,6 +1057,7 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 					EntityCustom entity = (EntityCustom)entityIn;
 					float partialTicks = ageInTicks - entityIn.ticksExisted;
 					float robeOffTicks = (float)entity.getRobeOffTicks() + partialTicks;
+					int bt = entity.getBreakingTicks();
 					if (robeOffTicks >= 0) {
 						if (robeOffTicks <= entity.bladesOpenTime) {
 							float f = Math.min(robeOffTicks / entity.bladesOpenTime, 1.0F);
@@ -1001,16 +1070,14 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 							for (int i = 0; i < this.blade.length; i++) {
 								this.blade[i].rotateAngleZ = this.bladePresetZ[i][0] + (this.bladePresetZ[i][1] - this.bladePresetZ[i][0]) * f;
 							}
-						} else {
+						} else if (bt < 0) {
 							for (int i = 0; i < this.blade.length; i++) {
 								this.blade[i].rotateAngleZ = this.bladePresetZ[i][1] + ageInTicks * 2.5132F;
 							}
 						}
 					}
-					int bt = entity.getBreakingTicks();
-					float breakingTicks = (float)bt + partialTicks * entity.breakingDirection;
 					if (bt >= 0) {
-						float f = MathHelper.clamp(breakingTicks / entity.breakingProgressEnd, 0.0F, 1.0F);
+						float f = MathHelper.clamp(((float)bt + partialTicks * entity.breakingDirection) / entity.breakingProgressEnd, 0.0F, 1.0F);
 						this.bodyPartAngles(this.bipedHead, this.bipedHeadPreset, f);
 						this.bodyPartAngles(this.bipedBody, this.bipedBodyPreset, f);
 						this.bodyPartAngles(this.bipedRightArm, this.bipedRightArmPreset, f);
@@ -1045,6 +1112,11 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 			private final ModelRenderer hexadecagon_r2;
 			private final ModelRenderer hexadecagon_r3;
 			private final ModelRenderer hexadecagon_r4;
+			private final ModelRenderer hexadecagon2;
+			private final ModelRenderer hexadecagon_r5;
+			private final ModelRenderer hexadecagon_r6;
+			private final ModelRenderer hexadecagon_r7;
+			private final ModelRenderer hexadecagon_r8;
 		
 			public ModelSasoriCore() {
 				textureWidth = 64;
@@ -1052,40 +1124,75 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 		
 				hexadecagon = new ModelRenderer(this);
 				hexadecagon.setRotationPoint(0.0F, 0.0F, 0.0F);
-				hexadecagon.cubeList.add(new ModelBox(hexadecagon, 0, 27, -0.5027F, -2.5F, -4.0F, 1, 5, 8, 0.0F, false));
-				hexadecagon.cubeList.add(new ModelBox(hexadecagon, 0, 9, -2.5F, -0.5027F, -4.0F, 5, 1, 8, 0.0F, false));
-				hexadecagon.cubeList.add(new ModelBox(hexadecagon, 28, 0, -2.5F, -2.5F, -4.0F, 5, 5, 0, 0.0F, false));
+				hexadecagon.cubeList.add(new ModelBox(hexadecagon, 0, 27, -0.5027F, -2.5F, -4.0F, 1, 5, 8, 0.2F, false));
+				hexadecagon.cubeList.add(new ModelBox(hexadecagon, 0, 9, -2.5F, -0.5027F, -4.0F, 5, 1, 8, 0.2F, false));
 		
 				hexadecagon_r1 = new ModelRenderer(this);
 				hexadecagon_r1.setRotationPoint(0.0F, 0.0F, -2.0F);
 				hexadecagon.addChild(hexadecagon_r1);
 				setRotationAngle(hexadecagon_r1, 0.0F, 0.0F, 0.3927F);
-				hexadecagon_r1.cubeList.add(new ModelBox(hexadecagon_r1, 0, 0, -2.5F, -0.5027F, -2.0F, 5, 1, 8, 0.0F, false));
-				hexadecagon_r1.cubeList.add(new ModelBox(hexadecagon_r1, 18, 19, -0.5027F, -2.5F, -2.0F, 1, 5, 8, 0.0F, false));
+				hexadecagon_r1.cubeList.add(new ModelBox(hexadecagon_r1, 0, 0, -2.5F, -0.5027F, -2.0F, 5, 1, 8, 0.2F, false));
+				hexadecagon_r1.cubeList.add(new ModelBox(hexadecagon_r1, 18, 19, -0.5027F, -2.5F, -2.0F, 1, 5, 8, 0.2F, false));
 		
 				hexadecagon_r2 = new ModelRenderer(this);
 				hexadecagon_r2.setRotationPoint(0.0F, 0.0F, -2.0F);
 				hexadecagon.addChild(hexadecagon_r2);
 				setRotationAngle(hexadecagon_r2, 0.0F, 0.0F, -0.3927F);
-				hexadecagon_r2.cubeList.add(new ModelBox(hexadecagon_r2, 0, 18, -2.5F, -0.5027F, -2.0F, 5, 1, 8, 0.0F, false));
-				hexadecagon_r2.cubeList.add(new ModelBox(hexadecagon_r2, 28, 6, -0.5027F, -2.5F, -2.0F, 1, 5, 8, 0.0F, false));
+				hexadecagon_r2.cubeList.add(new ModelBox(hexadecagon_r2, 0, 18, -2.5F, -0.5027F, -2.0F, 5, 1, 8, 0.2F, false));
+				hexadecagon_r2.cubeList.add(new ModelBox(hexadecagon_r2, 28, 6, -0.5027F, -2.5F, -2.0F, 1, 5, 8, 0.2F, false));
 		
 				hexadecagon_r3 = new ModelRenderer(this);
 				hexadecagon_r3.setRotationPoint(0.0F, 0.0F, -2.0F);
 				hexadecagon.addChild(hexadecagon_r3);
 				setRotationAngle(hexadecagon_r3, 0.0F, 0.0F, 0.7854F);
-				hexadecagon_r3.cubeList.add(new ModelBox(hexadecagon_r3, 18, 1, -0.5027F, -2.5F, -2.0F, 1, 5, 8, 0.0F, false));
+				hexadecagon_r3.cubeList.add(new ModelBox(hexadecagon_r3, 18, 1, -0.5027F, -2.5F, -2.0F, 1, 5, 8, 0.2F, false));
 		
 				hexadecagon_r4 = new ModelRenderer(this);
 				hexadecagon_r4.setRotationPoint(0.0F, 0.0F, -2.0F);
 				hexadecagon.addChild(hexadecagon_r4);
 				setRotationAngle(hexadecagon_r4, 0.0F, 0.0F, -0.7854F);
-				hexadecagon_r4.cubeList.add(new ModelBox(hexadecagon_r4, 28, 24, -0.5027F, -2.5F, -2.0F, 1, 5, 8, 0.0F, false));
+				hexadecagon_r4.cubeList.add(new ModelBox(hexadecagon_r4, 28, 24, -0.5027F, -2.5F, -2.0F, 1, 5, 8, 0.2F, false));
+		
+				hexadecagon2 = new ModelRenderer(this);
+				hexadecagon2.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon2.cubeList.add(new ModelBox(hexadecagon2, 0, 40, -0.5027F, -2.5F, -4.0F, 1, 5, 8, 0.0F, false));
+				hexadecagon2.cubeList.add(new ModelBox(hexadecagon2, 20, 37, -2.5F, -0.5027F, -4.0F, 5, 1, 8, 0.0F, false));
+				hexadecagon2.cubeList.add(new ModelBox(hexadecagon2, 28, 0, -2.5F, -2.5F, -4.0F, 5, 5, 0, 0.0F, false));
+		
+				hexadecagon_r5 = new ModelRenderer(this);
+				hexadecagon_r5.setRotationPoint(0.0F, 0.0F, -2.0F);
+				hexadecagon2.addChild(hexadecagon_r5);
+				setRotationAngle(hexadecagon_r5, 0.0F, 0.0F, 0.3927F);
+				hexadecagon_r5.cubeList.add(new ModelBox(hexadecagon_r5, 38, 38, -2.5F, -0.5027F, -2.0F, 5, 1, 8, 0.0F, false));
+				hexadecagon_r5.cubeList.add(new ModelBox(hexadecagon_r5, 10, 51, -0.5027F, -2.5F, -2.0F, 1, 5, 8, 0.0F, false));
+		
+				hexadecagon_r6 = new ModelRenderer(this);
+				hexadecagon_r6.setRotationPoint(0.0F, 0.0F, -2.0F);
+				hexadecagon2.addChild(hexadecagon_r6);
+				setRotationAngle(hexadecagon_r6, 0.0F, 0.0F, -0.3927F);
+				hexadecagon_r6.cubeList.add(new ModelBox(hexadecagon_r6, 28, 55, -2.5F, -0.5027F, -2.0F, 5, 1, 8, 0.0F, false));
+				hexadecagon_r6.cubeList.add(new ModelBox(hexadecagon_r6, 38, 13, -0.5027F, -2.5F, -2.0F, 1, 5, 8, 0.0F, false));
+		
+				hexadecagon_r7 = new ModelRenderer(this);
+				hexadecagon_r7.setRotationPoint(0.0F, 0.0F, -2.0F);
+				hexadecagon2.addChild(hexadecagon_r7);
+				setRotationAngle(hexadecagon_r7, 0.0F, 0.0F, 0.7854F);
+				hexadecagon_r7.cubeList.add(new ModelBox(hexadecagon_r7, 10, 32, -0.5027F, -2.5F, -2.0F, 1, 5, 8, 0.0F, false));
+		
+				hexadecagon_r8 = new ModelRenderer(this);
+				hexadecagon_r8.setRotationPoint(0.0F, 0.0F, -2.0F);
+				hexadecagon2.addChild(hexadecagon_r8);
+				setRotationAngle(hexadecagon_r8, 0.0F, 0.0F, -0.7854F);
+				hexadecagon_r8.cubeList.add(new ModelBox(hexadecagon_r8, 38, 0, -0.5027F, -2.5F, -2.0F, 1, 5, 8, 0.0F, false));
 			}
 		
 			@Override
 			public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
+				hexadecagon2.render(f5);
+				float color = 0.65F + MathHelper.sin(f2 * 0.1F) * 0.35F;
+				GlStateManager.color(color, color, color, 1.0F);
 				hexadecagon.render(f5);
+				GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 			}
 		
 			public void setRotationAngle(ModelRenderer modelRenderer, float x, float y, float z) {

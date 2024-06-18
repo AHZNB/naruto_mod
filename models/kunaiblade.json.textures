@@ -2,7 +2,7 @@
   "mappings": {
     "default": {
       "map": {
-        "4": "kunai_blade"
+        "0": "kunai_blade"
       },
       "name": "default"
     }

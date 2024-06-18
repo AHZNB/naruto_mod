@@ -162,11 +162,12 @@ public class EntityFirestream extends ElementsNarutomodMod.ModElement {
 				return true;
 			}
 
-			public void createJutsu(EntityLivingBase entity, float power, int duration) {
+			public EC createJutsu(EntityLivingBase entity, float power, int duration) {
 				EC entity1 = new EC(entity, 1.0f, power);
 				entity1.wait = 0;
 				entity1.maxLife = duration;
 				entity.world.spawnEntity(entity1);
+				return entity1;
 			}
 
 			@Override

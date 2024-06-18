@@ -3,6 +3,10 @@ package net.narutomod.entity;
 
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.PlayerEvent;
+import net.minecraftforge.common.MinecraftForge;
 
 import net.minecraft.world.World;
 import net.minecraft.util.ResourceLocation;
@@ -14,6 +18,7 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.EnumHandSide;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Item;
 import net.minecraft.entity.SharedMonsterAttributes;
@@ -31,19 +36,20 @@ import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.client.renderer.entity.RenderLiving;
-import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.client.model.ModelBox;
-import net.minecraft.client.model.ModelBase;
-import net.minecraft.client.model.ModelRenderer;
-import net.minecraft.client.renderer.entity.layers.LayerRenderer;
+import net.minecraft.client.renderer.entity.RenderLivingBase;
 import net.minecraft.client.renderer.entity.Render;
+import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.model.ModelBox;
+import net.minecraft.client.model.ModelBase;
+import net.minecraft.client.model.ModelRenderer;
+import net.minecraft.client.model.ModelBiped;
 import net.minecraft.nbt.NBTTagCompound;
 
+import net.narutomod.item.ItemJutsu;
 import net.narutomod.item.ItemNinjutsu;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.ElementsNarutomodMod;
@@ -54,9 +60,27 @@ import javax.annotation.Nullable;
 public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 	public static final int ENTITYID = 282;
 	public static final int ENTITYID_RANGED = 283;
+	public static final String PUPPET_COUNT = "PuppetControlled";
 
 	public EntityPuppet(ElementsNarutomodMod instance) {
 		super(instance, 603);
+	}
+
+	@Override
+	public void init(FMLInitializationEvent event) {
+		MinecraftForge.EVENT_BUS.register(new PlayerHook());
+	}
+
+	public static class PlayerHook {
+		@SubscribeEvent
+		public void onLogin(PlayerEvent.PlayerLoggedInEvent event) {
+			if (!event.player.world.isRemote) {
+				ItemStack stack = ProcedureUtils.getMatchingItemStack(event.player, ItemNinjutsu.block);
+				if (stack != null) {
+					stack.getTagCompound().setInteger(PUPPET_COUNT, 0);
+				}
+			}
+		}
 	}
 
 	public abstract static class Base extends EntityCreature {
@@ -101,18 +125,39 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Nullable
-		protected EntityLivingBase getOwner() {
+		public EntityLivingBase getOwner() {
 			Entity entity = this.world.getEntityByID(((Integer)this.getDataManager().get(OWNERID)).intValue());
 			return entity instanceof EntityLivingBase ? (EntityLivingBase)entity : null;
 		}
 
 		protected void setOwner(@Nullable EntityLivingBase player) {
-			this.getDataManager().set(OWNERID, Integer.valueOf(player != null ? player.getEntityId() : -1));
-			//this.setNoAI(player == null);
+			if (!this.world.isRemote) {
+				EntityLivingBase owner = this.getOwner();
+				if (owner != player) {
+					if (owner instanceof EntityPlayer || player instanceof EntityPlayer) {
+						ItemStack stack = ProcedureUtils.getMatchingItemStack(player == null ? (EntityPlayer)owner : (EntityPlayer)player, ItemNinjutsu.block);
+						if (stack != null) {
+							if (player == null) {
+								stack.getTagCompound().setInteger(PUPPET_COUNT, stack.getTagCompound().getInteger(PUPPET_COUNT) - 1);
+							} else if (stack.getTagCompound().getInteger(PUPPET_COUNT) < (int)Math.ceil(Math.max(((ItemNinjutsu.RangedItem)stack.getItem()).getXpRatio(stack, ItemNinjutsu.PUPPET) - 0.999f, 0.0f) * 4.95f)) {
+								stack.getTagCompound().setInteger(PUPPET_COUNT, stack.getTagCompound().getInteger(PUPPET_COUNT) + 1);
+							} else {
+								return;
+							}
+						}
+					}
+					this.getDataManager().set(OWNERID, Integer.valueOf(player != null ? player.getEntityId() : -1));
+				}
+			}
 		}
 
 		protected Vec3d getOffsetToOwner() {
 			return new Vec3d(0.0d, 0.0d, 4.0d);
+		}
+
+		@Nullable
+		protected EnumHandSide chakraStringAttachesTo() {
+			return EnumHandSide.RIGHT;
 		}
 
 		@Override
@@ -130,7 +175,31 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 			this.tasks.addTask(0, new EntityAISwimming(this));
 			Vec3d vec = this.getOffsetToOwner();
 			this.tasks.addTask(4, new AIStayInOffsetOfOwner(this, vec.x, vec.y, vec.z));
-			this.targetTasks.addTask(0, new AICopyOwnerTarget(this));
+			//this.targetTasks.addTask(0, new AICopyOwnerTarget(this));
+		}
+
+		@Override
+		protected void updateAITasks() {
+	    	EntityLivingBase owner = this.getOwner();
+	    	//this.setNoGravity(owner != null);
+			if (owner != null && this.getVelocity() > 0.1d && this.ticksExisted % 2 == 0) {
+				this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:wood_click")), 
+				 0.6f, this.rand.nextFloat() * 0.6f + 0.6f);
+			}
+			if (owner == null) {
+				this.setAttackTarget(null);
+			} else {
+				double d = this.getDistanceSq(owner);
+				if (!owner.isEntityAlive() || d > 2304d) {
+					this.setOwner(null);
+				} else if (d > 1600d) {
+					Vec3d vec = owner.getPositionVector().subtract(this.getPositionVector()).normalize().scale(0.5d);
+					this.addVelocity(vec.x, vec.y, vec.z);
+				}
+	    	}
+	    	if (this.getAttackTarget() != null && !this.getAttackTarget().isEntityAlive()) {
+	    		this.setAttackTarget(null);
+	    	}
 		}
 
 		@Override
@@ -153,9 +222,17 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 	        return null;
 	    }
 
+	    @Override
+	    public boolean isOnSameTeam(Entity entityIn) {
+	    	return super.isOnSameTeam(entityIn) || entityIn.equals(this.getOwner());
+	    }
+
 		@Override
 		public boolean attackEntityFrom(DamageSource source, float amount) {
 			if (source == DamageSource.FALL) {
+				return false;
+			}
+			if (source.getTrueSource() != null && source.getTrueSource().equals(this.getOwner())) {
 				return false;
 			}
 			if (source.isProjectile()) {
@@ -164,7 +241,7 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 			return super.attackEntityFrom(source, amount);
 		}
 
-		@Override
+		/*@Override
 		protected boolean processInteract(EntityPlayer player, EnumHand hand) {
 			ItemStack stack = player.getHeldItem(hand);
 			if (!this.world.isRemote && stack.getItem() == ItemNinjutsu.block
@@ -173,7 +250,7 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 				return true;
 			}
 			return false;
-		}
+		}*/
 
 		@Override
 		public void onLivingUpdate() {
@@ -191,19 +268,14 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 	    	this.setAge(this.getAge() + 1);
 	    	this.fallDistance = 0f;
 	    	this.clearActivePotions();
-	    	
 	    	super.onUpdate();
+	    }
 
-	    	EntityLivingBase owner = this.getOwner();
-	    	//this.setNoGravity(owner != null);
-			if (owner != null && this.getVelocity() > 0.1d && this.ticksExisted % 2 == 0) {
-				this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:wood_click")), 
-				 0.6f, this.rand.nextFloat() * 0.6f + 0.6f);
-			}
-	    	if (!this.world.isRemote && owner != null && this.getDistanceSq(owner) > 1600d) {
-	    		this.setOwner(null);
-	    	}
-	    }
+		@Override
+		public void setDead() {
+			super.setDead();
+			this.setOwner(null);
+		}
 
 		@Override
 		public Vec3d getLookVec() {
@@ -212,6 +284,10 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 
 		public double getVelocity() {
 			return MathHelper.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
+		}
+
+		protected boolean isMovingForward() {
+			return Math.abs(MathHelper.wrapDegrees(ProcedureUtils.getYawFromVec(this.motionX, this.motionZ) - this.rotationYaw)) < 90.0f;
 		}
 
 		@Override
@@ -224,6 +300,22 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 		public void writeEntityToNBT(NBTTagCompound compound) {
 			super.writeEntityToNBT(compound);
 			compound.setInteger("age", this.getAge());
+		}
+
+		public static class Jutsu implements ItemJutsu.IJutsuCallback {
+			@Override
+			public boolean createJutsu(ItemStack stack, EntityLivingBase entity, float power) {
+				Entity entity1 = ProcedureUtils.objectEntityLookingAt(entity, 5d, 2d).entityHit;
+				if (entity1 instanceof Base) {
+					EntityLivingBase puppetowner = ((Base)entity1).getOwner();
+					boolean flag = puppetowner == null;
+					if (flag || entity.equals(puppetowner)) {
+						((Base)entity1).setOwner(flag ? entity : null);
+						return flag && entity == ((Base)entity1).getOwner();
+					}
+				}
+				return false;
+			}
 		}
 
 		public class FlyHelper extends EntityMoveHelper {
@@ -251,6 +343,9 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 						//this.entity.rotationYaw = this.limitAngle(this.entity.rotationYaw, f1, 10.0F);
 						this.entity.renderYawOffset = this.entity.rotationYaw = f1;
 					}
+				} else if (this.action == EntityMoveHelper.Action.STRAFE) {
+					this.entity.setNoGravity(true);
+					super.onUpdateMoveHelper();
 				} else {
 	    			this.entity.setNoGravity(false);
 				}
@@ -312,7 +407,7 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 	        }
 	    }
 
-	    public class AIChargeAttack extends EntityAIBase {
+	    /*public class AIChargeAttack extends EntityAIBase {
 	    	private Base attacker;
 
 	        public AIChargeAttack(Base attackerIn) {
@@ -345,7 +440,8 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 	        @Override
 	        public void updateTask() {
 	            EntityLivingBase entitylivingbase = this.attacker.getAttackTarget();
-	            if (this.attacker.getEntityBoundingBox().intersects(entitylivingbase.getEntityBoundingBox())) {
+	            if (this.attacker.getEntityBoundingBox().grow(2d).intersects(entitylivingbase.getEntityBoundingBox())) {
+	            	this.attacker.swingArm(EnumHand.MAIN_HAND);
 	                this.attacker.attackEntityAsMob(entitylivingbase);
 	            } else if (this.attacker.getDistanceSq(entitylivingbase) < 9.0D) {
 	                Vec3d vec3d = entitylivingbase.getPositionEyes(1.0F);
@@ -362,20 +458,27 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 	            this.attacker = creature;
 	        }
 	
+	        @Override
 	        public boolean shouldExecute() {
 	        	EntityLivingBase owner = this.attacker.getOwner();
-	        	this.target = owner instanceof EntityLiving
-	        	 ? ((EntityLiving)owner).getAttackTarget() 
-	        	 : owner != null ? owner.getRevengeTarget() != null
-	        	 ? owner.getRevengeTarget() : owner.getLastAttackedEntity() : null;
+	        	this.target = owner instanceof EntityLiving ? ((EntityLiving)owner).getAttackTarget() : owner != null
+	        	 ? owner.getLastAttackedEntity() != null && owner.ticksExisted - owner.getLastAttackedEntityTime() <= 100
+	        	 ? owner.getLastAttackedEntity() : null : null;
 	            return this.target != null && this.isSuitableTarget(this.target, false);
 	        }
+
+	        @Override
+	        public boolean shouldContinueExecuting() {
+	        	EntityLivingBase owner = this.attacker.getOwner();
+	        	return owner != null && owner.isEntityAlive() && super.shouldContinueExecuting();
+	        }
 	
+	        @Override
 	        public void startExecuting() {
 	            this.attacker.setAttackTarget(this.target);
 	            super.startExecuting();
 	        }
-	    }
+	    }*/
 	}
 
 	public static class AIRidingHurtByTarget extends EntityAITarget {
@@ -542,68 +645,83 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 	
 		@SideOnly(Side.CLIENT)
 		public abstract static class Renderer<T extends Base> extends RenderLiving<T> {
+			private static final ResourceLocation FUUIN_TEXTURE = new ResourceLocation("narutomod:textures/fuuin_beam_blue.png");
+
 			public Renderer(RenderManager renderManagerIn, ModelBase model, float shadowsize) {
 				super(renderManagerIn, model, shadowsize);
-				this.addLayer(new LayerChakraStrings(this));
 			}
-		}
-	
-		@SideOnly(Side.CLIENT)
-		public static class LayerChakraStrings implements LayerRenderer<Base> {
-			private static final ResourceLocation FUUIN_TEXTURE = new ResourceLocation("narutomod:textures/fuuin_beam_blue.png");
-			private final RenderLiving renderer;
-	
-			public LayerChakraStrings(RenderLiving rendererIn) {
-				this.renderer = rendererIn;
-			}
-	
-		 	@Override
-			public void doRenderLayer(Base entity, float _1, float _2, float pt, float _3, float _4, float _5, float _6) {
+
+			@Override
+			public void doRender(T entity, double x, double y, double z, float entityYaw, float pt) {
+				super.doRender(entity, x, y, z, entityYaw, pt);
 				EntityLivingBase owner = entity.getOwner();
 				if (owner != null) {
-					float f = ((float) entity.ticksExisted + pt) * 0.01F;
-					float offset = entity.height * 0.1F;
-					double dx = owner.lastTickPosX + (owner.posX - owner.lastTickPosX) * pt - (entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * pt); ;
-					double dy = owner.lastTickPosY + (owner.posY - owner.lastTickPosY) * pt - ((entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * pt) + offset);
-					double dz = owner.lastTickPosZ + (owner.posZ - owner.lastTickPosZ) * pt - (entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * pt);
-					double dxz = MathHelper.sqrt(dx * dx + dz * dz);
-					double max_l = MathHelper.sqrt(dx * dx + dy * dy + dz * dz);
-					float rot_y = (float) -Math.atan2(dx, dz) * 180.0F / (float) Math.PI - ProcedureUtils.interpolateRotation(entity.prevRenderYawOffset, entity.renderYawOffset, pt);
-					float rot_x = (float) -Math.atan2(dy, dxz) * 180.0F / (float) Math.PI;
-					this.renderer.bindTexture(FUUIN_TEXTURE);
-					GlStateManager.pushMatrix();
-					GlStateManager.translate(0.0F, -offset + 0.5F, 0.0F);
-					GlStateManager.rotate(-90.0F, 1.0F, 0.0F, 0.0F);
-					GlStateManager.rotate(rot_y, 0.0F, 0.0F, 1.0F);
-					GlStateManager.rotate(rot_x - 90.0F, 1.0F, 0.0F, 0.0F);
-					Tessellator tessellator = Tessellator.getInstance();
-					BufferBuilder bufferbuilder = tessellator.getBuffer();
-					RenderHelper.disableStandardItemLighting();
-					GlStateManager.enableBlend();
-					GlStateManager.disableCull();
-					GlStateManager.shadeModel(7425);
-					float f5 = 0.0F - f;
-					float f6 = (float) max_l / 32.0F - f;
-					bufferbuilder.begin(5, DefaultVertexFormats.POSITION_TEX_COLOR);
-					for (int j = 0; j <= 8; j++) {
-						float f7 = MathHelper.sin((j % 8) * ((float) Math.PI * 2F) / 8.0F) * 0.008F;
-						float f8 = MathHelper.cos((j % 8) * ((float) Math.PI * 2F) / 8.0F) * 0.008F;
-						float f9 = (j % 8) / 8.0F;
-						bufferbuilder.pos(f7, f8, 0.0D).tex(f9, f5).color(255, 255, 255, 128).endVertex();
-						bufferbuilder.pos(f7, f8, (float) max_l).tex(f9, f6).color(255, 255, 255, 128).endVertex();
-					}
-					tessellator.draw();
-					GlStateManager.enableCull();
-					GlStateManager.disableBlend();
-					GlStateManager.shadeModel(7424);
-					RenderHelper.enableStandardItemLighting();
-					GlStateManager.popMatrix();
+					this.renderLine(this.getPosVec(entity, pt).addVector(0d, 1.2d, 0d), this.transform3rdPerson(owner, entity.chakraStringAttachesTo(), pt), pt + entity.ticksExisted);
+				}
+			}
+
+			@Override
+			protected void renderModel(T entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor) {
+				if (entity.getOwner() == null && entity.onGround) {
+					this.mainModel.isRiding = true;
+					headPitch = 45.0f;
+					GlStateManager.translate(0.0f, 0.55f, 0.0f);
+				}
+				super.renderModel(entity, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scaleFactor);
+			}
+
+			private Vec3d transform3rdPerson(EntityLivingBase entity, @Nullable EnumHandSide hand, float pt) {
+				ModelBase model = ((RenderLivingBase)this.renderManager.getEntityRenderObject(entity)).getMainModel();
+				if (hand != null && model instanceof ModelBiped) {
+					ModelRenderer arm = hand == EnumHandSide.RIGHT ? ((ModelBiped)model).bipedRightArm : ((ModelBiped)model).bipedLeftArm;
+					return ProcedureUtils.rotateRoll(new Vec3d(0.0d, -0.5825d, 0.0d),
+					   (float)-arm.rotateAngleZ).rotatePitch((float)-arm.rotateAngleX).rotateYaw((float)-arm.rotateAngleY)
+					   .addVector(0.0586F * (hand == EnumHandSide.RIGHT ? -6F : 6F), 1.02F-(entity.isSneaking()?0.3f:0f), 0.0F)
+					   .rotateYaw(-ProcedureUtils.interpolateRotation(entity.prevRenderYawOffset, entity.renderYawOffset, pt) * (float)(Math.PI / 180d))
+					   .add(this.getPosVec(entity, pt)).addVector(0.0d, 0.275d, 0.0d);
+				} else {
+					return this.getPosVec(entity, pt).addVector(0d, 1.2d, 0d);
 				}
 			}
 	
-		 	@Override
-			public boolean shouldCombineTextures() {
-				return false;
+			private Vec3d getPosVec(Entity entity, float pt) {
+				Vec3d vec1 = new Vec3d(entity.lastTickPosX, entity.lastTickPosY, entity.lastTickPosZ);
+				return entity.getPositionVector().subtract(vec1).scale(pt).add(vec1);
+			}
+
+			private void renderLine(Vec3d from, Vec3d to, float ageInTicks) {
+				this.bindTexture(FUUIN_TEXTURE);
+				Vec3d vec3d = to.subtract(from);
+				float yaw = (float) (MathHelper.atan2(vec3d.x, vec3d.z) * (180d / Math.PI));
+				float pitch = (float) (-MathHelper.atan2(vec3d.y, MathHelper.sqrt(vec3d.x * vec3d.x + vec3d.z * vec3d.z)) * (180d / Math.PI));
+				GlStateManager.pushMatrix();
+				GlStateManager.translate(from.x - this.renderManager.viewerPosX, from.y - this.renderManager.viewerPosY, from.z - this.renderManager.viewerPosZ);
+				GlStateManager.rotate(yaw, 0.0F, 1.0F, 0.0F);
+				GlStateManager.rotate(pitch, 1.0F, 0.0F, 0.0F);
+				double d = vec3d.lengthVector();
+				Tessellator tessellator = Tessellator.getInstance();
+				BufferBuilder bufferbuilder = tessellator.getBuffer();
+				GlStateManager.disableLighting();
+				GlStateManager.enableBlend();
+				GlStateManager.disableCull();
+				GlStateManager.shadeModel(7425);
+				float f = ageInTicks * 0.01F;
+				float f5 = 0.0F - f;
+				float f6 = (float) d / 32.0F - f;
+				bufferbuilder.begin(5, DefaultVertexFormats.POSITION_TEX_COLOR);
+				for (int j = 0; j <= 8; j++) {
+					float f7 = MathHelper.sin((j % 8) * ((float) Math.PI * 2F) / 8.0F) * 0.008F;
+					float f8 = MathHelper.cos((j % 8) * ((float) Math.PI * 2F) / 8.0F) * 0.008F;
+					float f9 = (j % 8) / 8.0F;
+					bufferbuilder.pos(f7, f8, 0.0D).tex(f9, f5).color(255, 255, 255, 128).endVertex();
+					bufferbuilder.pos(f7, f8, d).tex(f9, f6).color(255, 255, 255, 128).endVertex();
+				}
+				tessellator.draw();
+				GlStateManager.enableCull();
+				GlStateManager.disableBlend();
+				GlStateManager.shadeModel(7424);
+				GlStateManager.enableLighting();
+				GlStateManager.popMatrix();
 			}
 		}
 	}

@@ -144,6 +144,7 @@ public class EntityMightGuy extends ElementsNarutomodMod.ModElement {
 			livingdata = super.onInitialSpawn(difficulty, livingdata);
 			this.setItemToInventory(new ItemStack(ItemEightGates.block), 0);
 			this.setItemStackToSlot(EntityEquipmentSlot.CHEST, new ItemStack(ItemNinjaArmorKonoha.body, 1));
+			this.setItemStackToSlot(EntityEquipmentSlot.LEGS, new ItemStack(ItemNinjaArmorJumpsuit.legs, 1));
 			return livingdata;
 		}
 

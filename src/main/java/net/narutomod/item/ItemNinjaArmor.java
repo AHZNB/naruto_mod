@@ -534,6 +534,8 @@ public class ItemNinjaArmor extends ElementsNarutomodMod.ModElement {
 			if (!(entity instanceof AbstractClientPlayer) && this.wearerModel != null) {
 				copyModelAngles(this.wearerModel.bipedLeftArm, this.bipedLeftArm);
 				copyModelAngles(this.wearerModel.bipedRightArm, this.bipedRightArm);
+				copyModelAngles(this.wearerModel.bipedLeftLeg, this.bipedLeftLeg);
+				copyModelAngles(this.wearerModel.bipedRightLeg, this.bipedRightLeg);
 			}
 		}
 	}

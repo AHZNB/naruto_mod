@@ -549,9 +549,9 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 					}
 					((EntityPlayer) player).sendStatusMessage(new TextComponentString(this.GATE[(int) gateOpened].name), true);
 				}
-				if (gateOpened < 8.0f) {
-					player.getEntityData().setDouble(NarutomodModVariables.InvulnerableTime, 4d);
-				}
+				//if (gateOpened < 8.0f) {
+				//	player.getEntityData().setDouble(NarutomodModVariables.InvulnerableTime, 4d);
+				//}
 				this.setGateOpened(stack, player, gateOpened + increments);
 			}
 		}
