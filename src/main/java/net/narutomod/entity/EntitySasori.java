@@ -346,6 +346,8 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 					this.scroll100Entity.setDead();
 					this.scroll100Entity = null;
 					this.hundredStage = EnumStage.CANNOT_USE;
+				} else if (this.lastElementalJutsu != null && !this.lastElementalJutsu.isDead) {
+					this.lastElementalJutsu.setDead();
 				}
 			}
 			if (this.isRidingHiruko() && this.ticksExisted > this.lastBlockTime + 20) {

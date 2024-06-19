@@ -68,7 +68,7 @@ public class EntityPoisonMist extends ElementsNarutomodMod.ModElement {
 			if (this.user != null) {
 				this.setPosition(this.user.posX, this.user.posY, this.user.posZ);
 				if (this.ticksExisted % 5 == 1) {
-					this.playSound((SoundEvent)SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:windecho")), 
+					this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:windecho")), 
 					 1f, this.power * 0.2f);
 				}
 				this.airPunch.execute(this.user, this.power, this.power * 0.25d);
@@ -112,6 +112,7 @@ public class EntityPoisonMist extends ElementsNarutomodMod.ModElement {
 			protected void attackEntityFrom(Entity player, Entity target) {
 				if (target instanceof EntityLivingBase) {
 					((EntityLivingBase)target).addPotionEffect(new PotionEffect(MobEffects.WITHER, 300, 2));
+					((EntityLivingBase)target).addPotionEffect(new PotionEffect(MobEffects.BLINDNESS, 100, 2));
 				}
 			}
 

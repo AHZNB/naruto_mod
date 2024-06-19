@@ -36,6 +36,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.nbt.NBTTagCompound;
 
 import net.narutomod.potion.PotionReach;
+import net.narutomod.entity.EntityRendererRegister;
 import net.narutomod.entity.EntityChakraFlow;
 import net.narutomod.Particles;
 import net.narutomod.Chakra;
@@ -70,14 +71,6 @@ public class ItemHiramekareiSword extends ElementsNarutomodMod.ModElement {
 	@SideOnly(Side.CLIENT)
 	public void registerModels(ModelRegistryEvent event) {
 		ModelLoader.setCustomModelResourceLocation(block, 0, new ModelResourceLocation("narutomod:hiramekarei", "inventory"));
-	}
-
-	@SideOnly(Side.CLIENT)
-	@Override
-	public void preInit(FMLPreInitializationEvent event) {
-		RenderingRegistry.registerEntityRenderingHandler(EntityEffects.class, renderManager -> {
-			return new RenderEffects(renderManager);
-		});
 	}
 
 	public static class RangedItem extends Item implements ItemOnBody.Interface {
@@ -210,21 +203,34 @@ public class ItemHiramekareiSword extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-	@SideOnly(Side.CLIENT)
-	public class RenderEffects extends EntityChakraFlow.RenderCustom<EntityEffects> {
-		public RenderEffects(RenderManager renderManagerIn) {
-			super(renderManagerIn);
+	@Override
+	public void preInit(FMLPreInitializationEvent event) {
+		new Renderer().register();
+	}
+
+	public static class Renderer extends EntityRendererRegister {
+		@SideOnly(Side.CLIENT)
+		@Override
+		public void register() {
+			RenderingRegistry.registerEntityRenderingHandler(EntityEffects.class, renderManager -> new RenderEffects(renderManager));
 		}
 
-		@Override
-		protected void spawnParticles(EntityEffects entity, Vec3d startvec, Vec3d endvec) {
-			Vec3d vec = endvec.subtract(startvec);
-			EntityLivingBase user = entity.getUser();
-			int userid = user != null ? user.getEntityId() : -1;
-			for (int i = 0; i < 50; i++) {
-				Vec3d vec1 = vec.scale(entity.getRNG().nextDouble() * 0.4d + 0.6d);
-				Particles.spawnParticle(entity.world, Particles.Types.SMOKE, startvec.x, startvec.y, startvec.z, 1,
-				 0.08d, 0.2d, 0.08d, vec1.x, vec1.y, vec1.z, 0x206AD1FF, 40, 5, 0xF0, userid);
+		@SideOnly(Side.CLIENT)
+		public class RenderEffects extends EntityChakraFlow.RenderCustom<EntityEffects> {
+			public RenderEffects(RenderManager renderManagerIn) {
+				super(renderManagerIn);
+			}
+	
+			@Override
+			protected void spawnParticles(EntityEffects entity, Vec3d startvec, Vec3d endvec) {
+				Vec3d vec = endvec.subtract(startvec);
+				EntityLivingBase user = entity.getUser();
+				int userid = user != null ? user.getEntityId() : -1;
+				for (int i = 0; i < 50; i++) {
+					Vec3d vec1 = vec.scale(entity.getRNG().nextDouble() * 0.4d + 0.6d);
+					Particles.spawnParticle(entity.world, Particles.Types.SMOKE, startvec.x, startvec.y, startvec.z, 1,
+					 0.08d, 0.2d, 0.08d, vec1.x, vec1.y, vec1.z, 0x206AD1FF, 40, 5, 0xF0, userid);
+				}
 			}
 		}
 	}

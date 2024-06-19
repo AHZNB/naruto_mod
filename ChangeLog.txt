@@ -11,6 +11,8 @@ Jutsus:
  - fixed explosion release C-1 activating without chakra
  - water bullet jutsu now shoots particles instead of a beam
  - when opening gates, user no longer invulnerable (possible random dying bug when opening gates, needs testing)
+ - poison mist also inflicts blindness for 5s
+ - reduced revolving heaven block breaking (can't break stone anymore)
 
 Items:
  - added Sakura shippuden clothing and leggings (for slim player models only)
@@ -23,6 +25,8 @@ Items:
  - puppet senbon arm canon can bounce off blocks, shoots poison senbons in all directions for 4s
  - poison bombs also inflicts blindness for 5s
  - added kunai sword and recipe
+ - fix remaining server crashes due to "NoClassDefFoundError"
+ - prevents players dropping the duplicate kiba sword 
 
 Entities:
  - re-textured kisame
@@ -39,6 +43,7 @@ Entities:
  - added Sasori mob (WIP-7: summons 100 puppets jutsu at end stage)
  - Karasu puppet shoots poison bombs as well as senbons, better AI
  - added sasori's 100 puppet
+ - increased puppets speed slightly, auto covers for summoner and takes damage if within range
  
 General:
  - fixed alpha transparency bug when using certain jutsus

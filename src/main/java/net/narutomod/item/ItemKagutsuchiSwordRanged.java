@@ -42,6 +42,7 @@ import net.narutomod.procedure.ProcedureKagutsuchiSwordToolInUseTick;
 import net.narutomod.procedure.ProcedureAoeCommand;
 import net.narutomod.procedure.ProcedureSusanoo;
 import net.narutomod.potion.PotionAmaterasuFlame;
+import net.narutomod.entity.EntityRendererRegister;
 import net.narutomod.entity.EntitySusanooWinged;
 import net.narutomod.block.BlockAmaterasuBlock;
 import net.narutomod.creativetab.TabModTab;
@@ -77,12 +78,6 @@ public class ItemKagutsuchiSwordRanged extends ElementsNarutomodMod.ModElement {
 		ModelLoader.setCustomModelResourceLocation(block, 0, new ModelResourceLocation("narutomod:kagutsuchiswordranged", "inventory"));
 	}
 
-	@SideOnly(Side.CLIENT)
-	public void preInit(FMLPreInitializationEvent event) {
-		RenderingRegistry.registerEntityRenderingHandler(EntityBlackFireball.class, renderManager -> new RenderBlackFireball(renderManager, 2.0F));
-		RenderingRegistry.registerEntityRenderingHandler(EntityBigBlackFireball.class, renderManager -> new RenderBlackFireball(renderManager, 6.0F));
-	}
-	
 	public static class RangedItem extends Item {
 		public int ticksUsed;
 		
@@ -302,48 +297,63 @@ public class ItemKagutsuchiSwordRanged extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-	public static class RenderBlackFireball extends Render<EntityFireball> {
-		protected float scale;
+	@Override
+	public void preInit(FMLPreInitializationEvent event) {
+		new Renderer().register();
+	}
 
-		public RenderBlackFireball(RenderManager renderManagerIn, float scaleIn) {
-			super(renderManagerIn);
-			this.scale = scaleIn;
+	public static class Renderer extends EntityRendererRegister {
+		@SideOnly(Side.CLIENT)
+		@Override
+		public void register() {
+			RenderingRegistry.registerEntityRenderingHandler(EntityBlackFireball.class, renderManager -> new RenderBlackFireball(renderManager, 2.0F));
+			RenderingRegistry.registerEntityRenderingHandler(EntityBigBlackFireball.class, renderManager -> new RenderBlackFireball(renderManager, 6.0F));
 		}
 
-		@Override
-		public void doRender(EntityFireball entity, double x, double y, double z, float entityYaw, float partialTicks) {
-			GlStateManager.pushMatrix();
-			this.bindEntityTexture(entity);
-			GlStateManager.translate((float) x, (float) y, (float) z);
-			GlStateManager.enableRescaleNormal();
-			GlStateManager.scale(this.scale, this.scale, this.scale);
-			Tessellator tessellator = Tessellator.getInstance();
-			BufferBuilder bufferbuilder = tessellator.getBuffer();
-			GlStateManager.rotate(180.0F - this.renderManager.playerViewY, 0.0F, 1.0F, 0.0F);
-			GlStateManager.rotate((float) (this.renderManager.options.thirdPersonView == 2 ? -1 : 1) * -this.renderManager.playerViewX, 1.0F, 0.0F,
-					0.0F);
-			if (this.renderOutlines) {
-				GlStateManager.enableColorMaterial();
-				GlStateManager.enableOutlineMode(this.getTeamColor(entity));
+		@SideOnly(Side.CLIENT)
+		public class RenderBlackFireball extends Render<EntityFireball> {
+			protected float scale;
+	
+			public RenderBlackFireball(RenderManager renderManagerIn, float scaleIn) {
+				super(renderManagerIn);
+				this.scale = scaleIn;
 			}
-			bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX_NORMAL);
-			bufferbuilder.pos(-0.5D, -0.25D, 0.0D).tex(0.0D, 1.0D).normal(0.0F, 1.0F, 0.0F).endVertex();
-			bufferbuilder.pos(0.5D, -0.25D, 0.0D).tex(1.0D, 1.0D).normal(0.0F, 1.0F, 0.0F).endVertex();
-			bufferbuilder.pos(0.5D, 0.75D, 0.0D).tex(1.0D, 0.0D).normal(0.0F, 1.0F, 0.0F).endVertex();
-			bufferbuilder.pos(-0.5D, 0.75D, 0.0D).tex(0.0D, 0.0D).normal(0.0F, 1.0F, 0.0F).endVertex();
-			tessellator.draw();
-			if (this.renderOutlines) {
-				GlStateManager.disableOutlineMode();
-				GlStateManager.disableColorMaterial();
+	
+			@Override
+			public void doRender(EntityFireball entity, double x, double y, double z, float entityYaw, float partialTicks) {
+				GlStateManager.pushMatrix();
+				this.bindEntityTexture(entity);
+				GlStateManager.translate((float) x, (float) y, (float) z);
+				GlStateManager.enableRescaleNormal();
+				GlStateManager.scale(this.scale, this.scale, this.scale);
+				Tessellator tessellator = Tessellator.getInstance();
+				BufferBuilder bufferbuilder = tessellator.getBuffer();
+				GlStateManager.rotate(180.0F - this.renderManager.playerViewY, 0.0F, 1.0F, 0.0F);
+				GlStateManager.rotate((float) (this.renderManager.options.thirdPersonView == 2 ? -1 : 1) * -this.renderManager.playerViewX, 1.0F, 0.0F,
+						0.0F);
+				if (this.renderOutlines) {
+					GlStateManager.enableColorMaterial();
+					GlStateManager.enableOutlineMode(this.getTeamColor(entity));
+				}
+				bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX_NORMAL);
+				bufferbuilder.pos(-0.5D, -0.25D, 0.0D).tex(0.0D, 1.0D).normal(0.0F, 1.0F, 0.0F).endVertex();
+				bufferbuilder.pos(0.5D, -0.25D, 0.0D).tex(1.0D, 1.0D).normal(0.0F, 1.0F, 0.0F).endVertex();
+				bufferbuilder.pos(0.5D, 0.75D, 0.0D).tex(1.0D, 0.0D).normal(0.0F, 1.0F, 0.0F).endVertex();
+				bufferbuilder.pos(-0.5D, 0.75D, 0.0D).tex(0.0D, 0.0D).normal(0.0F, 1.0F, 0.0F).endVertex();
+				tessellator.draw();
+				if (this.renderOutlines) {
+					GlStateManager.disableOutlineMode();
+					GlStateManager.disableColorMaterial();
+				}
+				GlStateManager.disableRescaleNormal();
+				GlStateManager.popMatrix();
+				super.doRender(entity, x, y, z, entityYaw, partialTicks);
 			}
-			GlStateManager.disableRescaleNormal();
-			GlStateManager.popMatrix();
-			super.doRender(entity, x, y, z, entityYaw, partialTicks);
-		}
-
-		@Override
-		protected ResourceLocation getEntityTexture(EntityFireball entity) {
-			return new ResourceLocation("narutomod:textures/black_fireball.png");
+	
+			@Override
+			protected ResourceLocation getEntityTexture(EntityFireball entity) {
+				return new ResourceLocation("narutomod:textures/black_fireball.png");
+			}
 		}
 	}
 }

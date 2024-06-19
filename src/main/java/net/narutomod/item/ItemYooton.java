@@ -40,6 +40,7 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.init.SoundEvents;
 
+import net.narutomod.entity.EntityRendererRegister;
 import net.narutomod.entity.EntityScalableProjectile;
 import net.narutomod.entity.EntityMeltingJutsu;
 import net.narutomod.entity.EntityLavaChakraMode;
@@ -78,14 +79,6 @@ public class ItemYooton extends ElementsNarutomodMod.ModElement {
 	@SideOnly(Side.CLIENT)
 	public void registerModels(ModelRegistryEvent event) {
 		ModelLoader.setCustomModelResourceLocation(block, 0, new ModelResourceLocation("narutomod:yooton", "inventory"));
-	}
-
-	@SideOnly(Side.CLIENT)
-	@Override
-	public void preInit(FMLPreInitializationEvent event) {
-		RenderingRegistry.registerEntityRenderingHandler(EntityMagmaBall.class, renderManager -> {
-			return new RenderCustom(renderManager);
-		});
 	}
 
 	@Override
@@ -230,44 +223,57 @@ public class ItemYooton extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-	@SideOnly(Side.CLIENT)
-	public class RenderCustom extends Render<EntityMagmaBall> {
-		private final ResourceLocation texture = new ResourceLocation("narutomod:textures/magmaball.png");
+	@Override
+	public void preInit(FMLPreInitializationEvent event) {
+		new Renderer().register();
+	}
 
-		public RenderCustom(RenderManager renderManager) {
-			super(renderManager);
-			this.shadowSize = 0.1f;
+	public static class Renderer extends EntityRendererRegister {
+		@SideOnly(Side.CLIENT)
+		@Override
+		public void register() {
+			RenderingRegistry.registerEntityRenderingHandler(EntityMagmaBall.class, renderManager -> new RenderCustom(renderManager));
 		}
 
-		@Override
-		public void doRender(EntityMagmaBall entity, double x, double y, double z, float entityYaw, float partialTicks) {
-			this.bindEntityTexture(entity);
-			GlStateManager.pushMatrix();
-			float scale = entity.getEntityScale();
-			GlStateManager.translate(x, y + 0.5d * scale, z);
-			GlStateManager.enableRescaleNormal();
-			GlStateManager.scale(scale, scale, scale);
-			Tessellator tessellator = Tessellator.getInstance();
-			BufferBuilder bufferbuilder = tessellator.getBuffer();
-			GlStateManager.rotate(180F - this.renderManager.playerViewY, 0.0F, 1.0F, 0.0F);
-			GlStateManager.rotate((float)(this.renderManager.options.thirdPersonView == 2 ? -1 : 1) * -this.renderManager.playerViewX, 1.0F, 0.0F, 0.0F);
-			GlStateManager.rotate(9f * entity.ticksExisted, 0.0F, 0.0F, 1.0F);
-			GlStateManager.disableLighting();
-			OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240.0F, 240.0F);
-			bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX_NORMAL);
-			bufferbuilder.pos(-0.5D, -0.5D, 0.0D).tex(0.0D, 1.0D).normal(0.0F, 1.0F, 0.0F).endVertex();
-			bufferbuilder.pos(0.5D, -0.5D, 0.0D).tex(1.0D, 1.0D).normal(0.0F, 1.0F, 0.0F).endVertex();
-			bufferbuilder.pos(0.5D, 0.5D, 0.0D).tex(1.0D, 0.0D).normal(0.0F, 1.0F, 0.0F).endVertex();
-			bufferbuilder.pos(-0.5D, 0.5D, 0.0D).tex(0.0D, 0.0D).normal(0.0F, 1.0F, 0.0F).endVertex();
-			tessellator.draw();
-			GlStateManager.enableLighting();
-			GlStateManager.disableRescaleNormal();
-			GlStateManager.popMatrix();
-		}
-
-		@Override
-		protected ResourceLocation getEntityTexture(EntityMagmaBall entity) {
-			return this.texture;
+		@SideOnly(Side.CLIENT)
+		public class RenderCustom extends Render<EntityMagmaBall> {
+			private final ResourceLocation texture = new ResourceLocation("narutomod:textures/magmaball.png");
+	
+			public RenderCustom(RenderManager renderManager) {
+				super(renderManager);
+				this.shadowSize = 0.1f;
+			}
+	
+			@Override
+			public void doRender(EntityMagmaBall entity, double x, double y, double z, float entityYaw, float partialTicks) {
+				this.bindEntityTexture(entity);
+				GlStateManager.pushMatrix();
+				float scale = entity.getEntityScale();
+				GlStateManager.translate(x, y + 0.5d * scale, z);
+				GlStateManager.enableRescaleNormal();
+				GlStateManager.scale(scale, scale, scale);
+				Tessellator tessellator = Tessellator.getInstance();
+				BufferBuilder bufferbuilder = tessellator.getBuffer();
+				GlStateManager.rotate(180F - this.renderManager.playerViewY, 0.0F, 1.0F, 0.0F);
+				GlStateManager.rotate((float)(this.renderManager.options.thirdPersonView == 2 ? -1 : 1) * -this.renderManager.playerViewX, 1.0F, 0.0F, 0.0F);
+				GlStateManager.rotate(9f * entity.ticksExisted, 0.0F, 0.0F, 1.0F);
+				GlStateManager.disableLighting();
+				OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240.0F, 240.0F);
+				bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX_NORMAL);
+				bufferbuilder.pos(-0.5D, -0.5D, 0.0D).tex(0.0D, 1.0D).normal(0.0F, 1.0F, 0.0F).endVertex();
+				bufferbuilder.pos(0.5D, -0.5D, 0.0D).tex(1.0D, 1.0D).normal(0.0F, 1.0F, 0.0F).endVertex();
+				bufferbuilder.pos(0.5D, 0.5D, 0.0D).tex(1.0D, 0.0D).normal(0.0F, 1.0F, 0.0F).endVertex();
+				bufferbuilder.pos(-0.5D, 0.5D, 0.0D).tex(0.0D, 0.0D).normal(0.0F, 1.0F, 0.0F).endVertex();
+				tessellator.draw();
+				GlStateManager.enableLighting();
+				GlStateManager.disableRescaleNormal();
+				GlStateManager.popMatrix();
+			}
+	
+			@Override
+			protected ResourceLocation getEntityTexture(EntityMagmaBall entity) {
+				return this.texture;
+			}
 		}
 	}
 }

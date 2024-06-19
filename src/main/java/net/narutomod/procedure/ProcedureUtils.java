@@ -371,6 +371,10 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 		setVelocity(target, target.motionX * mul, target.motionY * mul, target.motionZ * mul);
 	}
 
+	public static void multiplyVelocity(Entity target, Vec3d vec) {
+		multiplyVelocity(target, vec.x, vec.y, vec.z);
+	}
+
 	public static void multiplyVelocity(Entity target, double mulX, double mulY, double mulZ) {
 		setVelocity(target, target.motionX * mulX, target.motionY * mulY, target.motionZ * mulZ);
 	}
@@ -599,12 +603,13 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 		EntityItem entityToSpawn = null;
 		IBlockState blockstate = world.getBlockState(pos);
 		float blockHardness = blockstate.getBlockHardness(world, pos);
+		boolean griefing = net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(world, null);
 		if (!world.isAirBlock(pos) && blockHardness >= 0.0f && blockHardness <= hardnessLimit && RNG.nextFloat() <= breakChance) {
 			if (sound) {
 				SoundType type = blockstate.getBlock().getSoundType();
 				world.playSound(null, pos, type.getBreakSound(), SoundCategory.BLOCKS, (type.getVolume() + 1.0f) / 2.0f, type.getPitch() * 0.8f);
 			}
-			if (net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(world, null)) {
+			if (griefing) {
 				world.setBlockToAir(pos);
 				if (!world.isRemote && Math.random() <= (double) dropChance) {
 					Item item = blockstate.getBlock().getItemDropped(blockstate, RNG, 0);

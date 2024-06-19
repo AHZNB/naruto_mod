@@ -29,6 +29,7 @@ import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.item.ItemByakugan;
@@ -41,7 +42,6 @@ import net.narutomod.ElementsNarutomodMod;
 
 import java.util.List;
 import java.util.Random;
-import net.minecraft.nbt.NBTTagCompound;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityHakkeshoKeiten extends ElementsNarutomodMod.ModElement {
@@ -91,16 +91,21 @@ public class EntityHakkeshoKeiten extends ElementsNarutomodMod.ModElement {
 		}
 
 		protected void setScale(float scale) {
+			double x = this.posX;
+			double y = this.posY;
+			double z = this.posZ;
 			this.setSize(3.0F * scale, 2.0F * scale);
-			this.getDataManager().set(SCALE, Float.valueOf(scale));
+			this.setPosition(x, y, z);
+			if (!this.world.isRemote) {
+				this.getDataManager().set(SCALE, Float.valueOf(scale));
+			}
 		}
 
 		@Override
 		public void notifyDataManagerChange(DataParameter<?> key) {
 			super.notifyDataManagerChange(key);
 			if (SCALE.equals(key) && this.world.isRemote) {
-				float scale = this.getScale();
-				this.setSize(3.0F * scale, 2.0F * scale);
+				this.setScale(this.getScale());
 			}
 		}
 
@@ -164,7 +169,7 @@ public class EntityHakkeshoKeiten extends ElementsNarutomodMod.ModElement {
 				if (this.world.getBlockState(pos).getMaterial().isLiquid()) {
 					this.world.setBlockToAir(pos);
 				} else if (summoner instanceof EntityPlayer && PlayerTracker.getNinjaLevel((EntityPlayer)summoner) >= 70d) {
-					ProcedureUtils.breakBlockAndDropWithChance(this.world, pos, 5.0F, 1.0F, 0.1F);
+					ProcedureUtils.breakBlockAndDropWithChance(this.world, pos, 1.4F, 0.2F, 0.1F);
 				}
 			}
 		}
@@ -181,7 +186,7 @@ public class EntityHakkeshoKeiten extends ElementsNarutomodMod.ModElement {
 						if (!_stack.hasTagCompound()) {
 							_stack.setTagCompound(new NBTTagCompound());
 						}
-						_stack.getTagCompound().setDouble("HakkeshoKaitenCD", NarutomodModVariables.world_tick + cooldown);
+						_stack.getTagCompound().setDouble("HakkeshoKaitenCD", NarutomodModVariables.world_tick + cooldown + 40d);
 						((EntityPlayer)summoner).getFoodStats()
 						 .setFoodLevel(((EntityPlayer)summoner).getFoodStats().getFoodLevel() - (this.ticksExisted / 60 + 1));
 					}

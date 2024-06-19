@@ -57,6 +57,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.block.material.Material;
 import net.minecraft.network.play.server.SPacketCollectItem;
 
+import net.narutomod.entity.EntityRendererRegister;
 import net.narutomod.creativetab.TabModTab;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.ElementsNarutomodMod;
@@ -89,14 +90,6 @@ public class ItemScytheHidan extends ElementsNarutomodMod.ModElement {
 		ModelLoader.setCustomModelResourceLocation(block, 0, new ModelResourceLocation("narutomod:scythe_hidan", "inventory"));
 	}
 
-	@SideOnly(Side.CLIENT)
-	@Override
-	public void preInit(FMLPreInitializationEvent event) {
-		RenderingRegistry.registerEntityRenderingHandler(EntityCustom.class, renderManager -> {
-			return new RenderCustom(renderManager, Minecraft.getMinecraft().getRenderItem());
-		});
-	}
-
 	public static class RangedItem extends Item implements ItemOnBody.Interface {
 		public RangedItem() {
 			super();
@@ -325,96 +318,111 @@ public class ItemScytheHidan extends ElementsNarutomodMod.ModElement {
 	}
 	
 
-	@SideOnly(Side.CLIENT)
-	public class RenderCustom extends Render<EntityCustom> {
-		protected final Item item;
-		private final RenderItem itemRenderer;
+	@Override
+	public void preInit(FMLPreInitializationEvent event) {
+		new Renderer().register();
+	}
 
-		public RenderCustom(RenderManager renderManagerIn, RenderItem itemRendererIn) {
-			super(renderManagerIn);
-			this.item = block;
-			this.itemRenderer = itemRendererIn;
-		}
-
+	public static class Renderer extends EntityRendererRegister {
+		@SideOnly(Side.CLIENT)
 		@Override
-		public boolean shouldRender(EntityCustom entity, net.minecraft.client.renderer.culling.ICamera camera, double camX, double camY, double camZ) {
-			return true;
+		public void register() {
+			RenderingRegistry.registerEntityRenderingHandler(EntityCustom.class, renderManager -> {
+				return new RenderCustom(renderManager, Minecraft.getMinecraft().getRenderItem());
+			});
 		}
 
-		@Override
-		public void doRender(EntityCustom entity, double x, double y, double z, float entityYaw, float pt) {
-			GlStateManager.pushMatrix();
-			GlStateManager.translate((float) x, (float) y, (float) z);
-			GlStateManager.rotate(entity.prevRotationYaw + (entity.rotationYaw - entity.prevRotationYaw) * pt, 0.0F, 1.0F, 0.0F);
-			GlStateManager.rotate(-entity.prevRotationPitch - (entity.rotationPitch - entity.prevRotationPitch) * pt - 90F, 1.0F, 0.0F, 0.0F);
-			GlStateManager.enableRescaleNormal();
-			this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
-			this.itemRenderer.renderItem(this.getStackToRender(entity), ItemCameraTransforms.TransformType.GROUND);
-			GlStateManager.disableRescaleNormal();
-			GlStateManager.popMatrix();
-
-			this.renderLineToShooter(entity, pt);
-		}
-
-		private void renderLineToShooter(EntityCustom entity, float pt) {
-			EntityLivingBase shooter = entity.getShooter();
-			if (shooter != null) {
-				Vec3d vec0 = entity.getNeedleEyePos(pt);
-				ModelBiped model = (ModelBiped)((RenderLivingBase)this.renderManager.getEntityRenderObject(shooter)).getMainModel();
-				Vec3d vec1 = this.transform3rdPerson(new Vec3d(0.0d, -0.5825d, 0.0d),
-				 new Vec3d(model.bipedRightArm.rotateAngleX, model.bipedRightArm.rotateAngleY, model.bipedRightArm.rotateAngleZ),
-				 shooter, pt).addVector(0.0d, 0.275d, 0.0d);
-				this.renderLine(vec0, vec1);
+		@SideOnly(Side.CLIENT)
+		public class RenderCustom extends Render<EntityCustom> {
+			protected final Item item;
+			private final RenderItem itemRenderer;
+	
+			public RenderCustom(RenderManager renderManagerIn, RenderItem itemRendererIn) {
+				super(renderManagerIn);
+				this.item = block;
+				this.itemRenderer = itemRendererIn;
 			}
-		}
-
-		private Vec3d transform3rdPerson(Vec3d startvec, Vec3d angles, EntityLivingBase entity, float pt) {
-			return ProcedureUtils.rotateRoll(startvec, (float)-angles.z).rotatePitch((float)-angles.x).rotateYaw((float)-angles.y)
-			   .addVector(0.0586F * -6F, 1.02F-(entity.isSneaking()?0.3f:0f), 0.0F)
-			   .rotateYaw(-ProcedureUtils.interpolateRotation(entity.prevRenderYawOffset, entity.renderYawOffset, pt) * (float)(Math.PI / 180d))
-			   .add(this.getPosVec(entity, pt));
-		}
-
-		private Vec3d getPosVec(Entity entity, float pt) {
-			Vec3d vec1 = new Vec3d(entity.lastTickPosX, entity.lastTickPosY, entity.lastTickPosZ);
-			return entity.getPositionVector().subtract(vec1).scale(pt).add(vec1);
-		}
-
-		private void renderLine(Vec3d from, Vec3d to) {
-			Vec3d vec3d = to.subtract(from);
-			float yaw = (float) (MathHelper.atan2(vec3d.x, vec3d.z) * (180d / Math.PI));
-			float pitch = (float) (-MathHelper.atan2(vec3d.y, MathHelper.sqrt(vec3d.x * vec3d.x + vec3d.z * vec3d.z)) * (180d / Math.PI));
-			GlStateManager.pushMatrix();
-			GlStateManager.disableTexture2D();
-			GlStateManager.glLineWidth(5.0f);
-			GlStateManager.translate(from.x - this.renderManager.viewerPosX, from.y - this.renderManager.viewerPosY, from.z - this.renderManager.viewerPosZ);
-			GlStateManager.rotate(yaw, 0.0F, 1.0F, 0.0F);
-			GlStateManager.rotate(pitch, 1.0F, 0.0F, 0.0F);
-			double d = vec3d.lengthVector();
-			Tessellator tessellator = Tessellator.getInstance();
-			BufferBuilder bufferbuilder = tessellator.getBuffer();
-			GlStateManager.disableLighting();
-			bufferbuilder.begin(1, DefaultVertexFormats.POSITION_COLOR);
-			for (double d1 = 0.0d; d1 < d; d1 += 0.2d) {
-				bufferbuilder.pos(0.0D, 0.0D, d1).color(0.3f, 0.3f, 0.3f, 1.0f).endVertex();
-				bufferbuilder.pos(0.0D, 0.0D, d1 + 0.1d).color(0.3f, 0.3f, 0.3f, 1.0f).endVertex();
-				bufferbuilder.pos(0.0D, 0.0D, d1 + 0.1d).color(0.5f, 0.5f, 0.5f, 1.0f).endVertex();
-				bufferbuilder.pos(0.0D, 0.0D, d1 + 0.2d).color(0.5f, 0.5f, 0.5f, 1.0f).endVertex();
+	
+			@Override
+			public boolean shouldRender(EntityCustom entity, net.minecraft.client.renderer.culling.ICamera camera, double camX, double camY, double camZ) {
+				return true;
 			}
-			tessellator.draw();
-			GlStateManager.enableLighting();
-			GlStateManager.glLineWidth(1.0f);
-			GlStateManager.enableTexture2D();
-			GlStateManager.popMatrix();
-		}
-
-		private ItemStack getStackToRender(EntityCustom entityIn) {
-			return new ItemStack(this.item);
-		}
-
-		@Override
-		protected ResourceLocation getEntityTexture(EntityCustom entity) {
-			return TextureMap.LOCATION_BLOCKS_TEXTURE;
+	
+			@Override
+			public void doRender(EntityCustom entity, double x, double y, double z, float entityYaw, float pt) {
+				GlStateManager.pushMatrix();
+				GlStateManager.translate((float) x, (float) y, (float) z);
+				GlStateManager.rotate(entity.prevRotationYaw + (entity.rotationYaw - entity.prevRotationYaw) * pt, 0.0F, 1.0F, 0.0F);
+				GlStateManager.rotate(-entity.prevRotationPitch - (entity.rotationPitch - entity.prevRotationPitch) * pt - 90F, 1.0F, 0.0F, 0.0F);
+				GlStateManager.enableRescaleNormal();
+				this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+				this.itemRenderer.renderItem(this.getStackToRender(entity), ItemCameraTransforms.TransformType.GROUND);
+				GlStateManager.disableRescaleNormal();
+				GlStateManager.popMatrix();
+	
+				this.renderLineToShooter(entity, pt);
+			}
+	
+			private void renderLineToShooter(EntityCustom entity, float pt) {
+				EntityLivingBase shooter = entity.getShooter();
+				if (shooter != null) {
+					Vec3d vec0 = entity.getNeedleEyePos(pt);
+					ModelBiped model = (ModelBiped)((RenderLivingBase)this.renderManager.getEntityRenderObject(shooter)).getMainModel();
+					Vec3d vec1 = this.transform3rdPerson(new Vec3d(0.0d, -0.5825d, 0.0d),
+					 new Vec3d(model.bipedRightArm.rotateAngleX, model.bipedRightArm.rotateAngleY, model.bipedRightArm.rotateAngleZ),
+					 shooter, pt).addVector(0.0d, 0.275d, 0.0d);
+					this.renderLine(vec0, vec1);
+				}
+			}
+	
+			private Vec3d transform3rdPerson(Vec3d startvec, Vec3d angles, EntityLivingBase entity, float pt) {
+				return ProcedureUtils.rotateRoll(startvec, (float)-angles.z).rotatePitch((float)-angles.x).rotateYaw((float)-angles.y)
+				   .addVector(0.0586F * -6F, 1.02F-(entity.isSneaking()?0.3f:0f), 0.0F)
+				   .rotateYaw(-ProcedureUtils.interpolateRotation(entity.prevRenderYawOffset, entity.renderYawOffset, pt) * (float)(Math.PI / 180d))
+				   .add(this.getPosVec(entity, pt));
+			}
+	
+			private Vec3d getPosVec(Entity entity, float pt) {
+				Vec3d vec1 = new Vec3d(entity.lastTickPosX, entity.lastTickPosY, entity.lastTickPosZ);
+				return entity.getPositionVector().subtract(vec1).scale(pt).add(vec1);
+			}
+	
+			private void renderLine(Vec3d from, Vec3d to) {
+				Vec3d vec3d = to.subtract(from);
+				float yaw = (float) (MathHelper.atan2(vec3d.x, vec3d.z) * (180d / Math.PI));
+				float pitch = (float) (-MathHelper.atan2(vec3d.y, MathHelper.sqrt(vec3d.x * vec3d.x + vec3d.z * vec3d.z)) * (180d / Math.PI));
+				GlStateManager.pushMatrix();
+				GlStateManager.disableTexture2D();
+				GlStateManager.glLineWidth(5.0f);
+				GlStateManager.translate(from.x - this.renderManager.viewerPosX, from.y - this.renderManager.viewerPosY, from.z - this.renderManager.viewerPosZ);
+				GlStateManager.rotate(yaw, 0.0F, 1.0F, 0.0F);
+				GlStateManager.rotate(pitch, 1.0F, 0.0F, 0.0F);
+				double d = vec3d.lengthVector();
+				Tessellator tessellator = Tessellator.getInstance();
+				BufferBuilder bufferbuilder = tessellator.getBuffer();
+				GlStateManager.disableLighting();
+				bufferbuilder.begin(1, DefaultVertexFormats.POSITION_COLOR);
+				for (double d1 = 0.0d; d1 < d; d1 += 0.2d) {
+					bufferbuilder.pos(0.0D, 0.0D, d1).color(0.3f, 0.3f, 0.3f, 1.0f).endVertex();
+					bufferbuilder.pos(0.0D, 0.0D, d1 + 0.1d).color(0.3f, 0.3f, 0.3f, 1.0f).endVertex();
+					bufferbuilder.pos(0.0D, 0.0D, d1 + 0.1d).color(0.5f, 0.5f, 0.5f, 1.0f).endVertex();
+					bufferbuilder.pos(0.0D, 0.0D, d1 + 0.2d).color(0.5f, 0.5f, 0.5f, 1.0f).endVertex();
+				}
+				tessellator.draw();
+				GlStateManager.enableLighting();
+				GlStateManager.glLineWidth(1.0f);
+				GlStateManager.enableTexture2D();
+				GlStateManager.popMatrix();
+			}
+	
+			private ItemStack getStackToRender(EntityCustom entityIn) {
+				return new ItemStack(this.item);
+			}
+	
+			@Override
+			protected ResourceLocation getEntityTexture(EntityCustom entity) {
+				return TextureMap.LOCATION_BLOCKS_TEXTURE;
+			}
 		}
 	}
 }

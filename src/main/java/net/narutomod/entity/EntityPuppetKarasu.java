@@ -352,8 +352,8 @@ public class EntityPuppetKarasu extends ElementsNarutomodMod.ModElement {
 					jaw.rotateAngleX = flag ? 0.5236F : 0.0F;
 					double velocity = ((EntityCustom)e).getVelocity();
 					if (velocity > 0.001d && ((EntityCustom)e).isMovingForward()) {
-						float fa = MathHelper.clamp((float)velocity / 0.3F, 0.0F, 1.0F);
-						bipedBody.rotateAngleX += fa * 0.7854F;
+						float fa = MathHelper.clamp((float)velocity * 2.5F, 0.0F, 1.0F);
+						bipedBody.rotateAngleX += fa * 1.0472F;
 						if (this.swingProgress <= 0.0F && rightArmPose == ModelBiped.ArmPose.EMPTY) {
 							bipedRightArm.rotateAngleX += fa;
 						}

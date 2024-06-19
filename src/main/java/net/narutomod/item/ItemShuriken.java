@@ -70,6 +70,7 @@ public class ItemShuriken extends ElementsNarutomodMod.ModElement {
 					Minecraft.getMinecraft().getRenderItem());
 		});
 	}
+
 	public static class RangedItem extends Item implements ItemOnBody.Interface {
 		public RangedItem() {
 			super();

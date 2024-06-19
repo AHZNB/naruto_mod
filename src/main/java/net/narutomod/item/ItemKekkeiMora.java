@@ -35,6 +35,7 @@ import net.minecraft.client.renderer.OpenGlHelper;
 import net.narutomod.procedure.ProcedureAoeCommand;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.procedure.ProcedureYomotsuHirasaka;
+import net.narutomod.entity.EntityRendererRegister;
 import net.narutomod.entity.EntityScalableProjectile;
 import net.narutomod.entity.EntityTruthSeekerBall;
 import net.narutomod.creativetab.TabModTab;
@@ -70,14 +71,6 @@ public class ItemKekkeiMora extends ElementsNarutomodMod.ModElement {
 	@SideOnly(Side.CLIENT)
 	public void registerModels(ModelRegistryEvent event) {
 		ModelLoader.setCustomModelResourceLocation(block, 0, new ModelResourceLocation("narutomod:kekkei_mora", "inventory"));
-	}
-
-	@SideOnly(Side.CLIENT)
-	@Override
-	public void preInit(FMLPreInitializationEvent event) {
-		RenderingRegistry.registerEntityRenderingHandler(Entity80Gods.class, renderManager -> {
-			return new Render80Gods(renderManager);
-		});
 	}
 
 	public static class RangedItem extends ItemJutsu.Base {
@@ -250,68 +243,81 @@ public class ItemKekkeiMora extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-	@SideOnly(Side.CLIENT)
-	public class Render80Gods extends Render<Entity80Gods> {
-		private final ResourceLocation texture = new ResourceLocation("narutomod:textures/armfist.png");
-		private final ModelArmFist mainModel = new ModelArmFist();
-
-		public Render80Gods(RenderManager renderManager) {
-			super(renderManager);
-			this.shadowSize = 0.1F;
-		}
-
-		@Override
-		public void doRender(Entity80Gods entity, double x, double y, double z, float entityYaw, float pt) {
-			this.bindEntityTexture(entity);
-			GlStateManager.pushMatrix();
-			GlStateManager.disableCull();
-			float scale = entity.getEntityScale();
-			GlStateManager.translate((float) x, (float) y, (float) z);
-			GlStateManager.scale(scale, scale, scale);
-			GlStateManager.rotate(-entity.prevRotationYaw - MathHelper.wrapDegrees(entity.rotationYaw - entity.prevRotationYaw) * pt, 0.0F, 1.0F, 0.0F);
-			GlStateManager.rotate(entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * pt - 180.0F, 1.0F, 0.0F, 0.0F);
-			GlStateManager.enableBlend();
-			GlStateManager.disableLighting();
-			GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-			OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240.0F, 240.0F);
-			this.mainModel.render(entity, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
-			GlStateManager.enableLighting();
-			GlStateManager.disableBlend();
-			GlStateManager.enableCull();
-			GlStateManager.popMatrix();
-		}
-
-		@Override
-		protected ResourceLocation getEntityTexture(Entity80Gods entity) {
-			return this.texture;
-		}
+	@Override
+	public void preInit(FMLPreInitializationEvent event) {
+		new Renderer().register();
 	}
 
-	@SideOnly(Side.CLIENT)
-	public class ModelArmFist extends ModelBase {
-		private final ModelRenderer bb_main;
-	
-		public ModelArmFist() {
-			textureWidth = 32;
-			textureHeight = 32;
-	
-			bb_main = new ModelRenderer(this);
-			bb_main.setRotationPoint(0.0F, 0.0F, 0.0F);
-			bb_main.cubeList.add(new ModelBox(bb_main, 0, 12, -2.0F, -4.0F, -1.0F, 4, 4, 8, 0.0F, false));
-			bb_main.cubeList.add(new ModelBox(bb_main, 0, 12, -2.0F, -4.0F, -2.0F, 4, 4, 8, 0.1F, false));
-			bb_main.cubeList.add(new ModelBox(bb_main, 0, 12, -2.0F, -4.0F, -3.0F, 4, 4, 8, 0.2F, false));
-			bb_main.cubeList.add(new ModelBox(bb_main, 0, 0, -2.0F, -4.0F, -4.0F, 4, 4, 8, 0.3F, false));
-		}
-	
+	public static class Renderer extends EntityRendererRegister {
+		@SideOnly(Side.CLIENT)
 		@Override
-		public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
-			bb_main.render(f5);
+		public void register() {
+			RenderingRegistry.registerEntityRenderingHandler(Entity80Gods.class, renderManager -> new Render80Gods(renderManager));
+		}
+
+		@SideOnly(Side.CLIENT)
+		public class Render80Gods extends Render<Entity80Gods> {
+			private final ResourceLocation texture = new ResourceLocation("narutomod:textures/armfist.png");
+			private final ModelArmFist mainModel = new ModelArmFist();
+	
+			public Render80Gods(RenderManager renderManager) {
+				super(renderManager);
+				this.shadowSize = 0.1F;
+			}
+	
+			@Override
+			public void doRender(Entity80Gods entity, double x, double y, double z, float entityYaw, float pt) {
+				this.bindEntityTexture(entity);
+				GlStateManager.pushMatrix();
+				GlStateManager.disableCull();
+				float scale = entity.getEntityScale();
+				GlStateManager.translate((float) x, (float) y, (float) z);
+				GlStateManager.scale(scale, scale, scale);
+				GlStateManager.rotate(-entity.prevRotationYaw - MathHelper.wrapDegrees(entity.rotationYaw - entity.prevRotationYaw) * pt, 0.0F, 1.0F, 0.0F);
+				GlStateManager.rotate(entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * pt - 180.0F, 1.0F, 0.0F, 0.0F);
+				GlStateManager.enableBlend();
+				GlStateManager.disableLighting();
+				GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+				OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240.0F, 240.0F);
+				this.mainModel.render(entity, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
+				GlStateManager.enableLighting();
+				GlStateManager.disableBlend();
+				GlStateManager.enableCull();
+				GlStateManager.popMatrix();
+			}
+	
+			@Override
+			protected ResourceLocation getEntityTexture(Entity80Gods entity) {
+				return this.texture;
+			}
 		}
 	
-		public void setRotationAngle(ModelRenderer modelRenderer, float x, float y, float z) {
-			modelRenderer.rotateAngleX = x;
-			modelRenderer.rotateAngleY = y;
-			modelRenderer.rotateAngleZ = z;
+		@SideOnly(Side.CLIENT)
+		public class ModelArmFist extends ModelBase {
+			private final ModelRenderer bb_main;
+		
+			public ModelArmFist() {
+				textureWidth = 32;
+				textureHeight = 32;
+		
+				bb_main = new ModelRenderer(this);
+				bb_main.setRotationPoint(0.0F, 0.0F, 0.0F);
+				bb_main.cubeList.add(new ModelBox(bb_main, 0, 12, -2.0F, -4.0F, -1.0F, 4, 4, 8, 0.0F, false));
+				bb_main.cubeList.add(new ModelBox(bb_main, 0, 12, -2.0F, -4.0F, -2.0F, 4, 4, 8, 0.1F, false));
+				bb_main.cubeList.add(new ModelBox(bb_main, 0, 12, -2.0F, -4.0F, -3.0F, 4, 4, 8, 0.2F, false));
+				bb_main.cubeList.add(new ModelBox(bb_main, 0, 0, -2.0F, -4.0F, -4.0F, 4, 4, 8, 0.3F, false));
+			}
+		
+			@Override
+			public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
+				bb_main.render(f5);
+			}
+		
+			public void setRotationAngle(ModelRenderer modelRenderer, float x, float y, float z) {
+				modelRenderer.rotateAngleX = x;
+				modelRenderer.rotateAngleY = y;
+				modelRenderer.rotateAngleZ = z;
+			}
 		}
 	}
 }

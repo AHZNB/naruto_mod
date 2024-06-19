@@ -39,14 +39,7 @@ import net.minecraft.nbt.NBTTagCompound;
 
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.procedure.ProcedureOnLeftClickEmpty;
-import net.narutomod.entity.EntityEarthBlocks;
-import net.narutomod.entity.EntityParticle;
-import net.narutomod.entity.EntityShieldBase;
-import net.narutomod.entity.EntitySandBullet;
-import net.narutomod.entity.EntitySandBind;
-import net.narutomod.entity.EntitySandLevitation;
-import net.narutomod.entity.EntitySandGathering;
-import net.narutomod.entity.EntityBijuManager;
+import net.narutomod.entity.*;
 import net.narutomod.PlayerTracker;
 import net.narutomod.Chakra;
 import net.narutomod.Particles;
@@ -91,28 +84,35 @@ public class ItemJiton extends ElementsNarutomodMod.ModElement {
 		ModelLoader.setCustomModelResourceLocation(block, 0, new ModelResourceLocation("narutomod:jiton", "inventory"));
 	}
 
-	@SideOnly(Side.CLIENT)
-	@Override
-	public void preInit(FMLPreInitializationEvent event) {
-		RenderingRegistry.registerEntityRenderingHandler(EntitySandShield.class, renderManager -> new RenderCustom(renderManager));
-	}
-
 	@Override
 	public void init(FMLInitializationEvent event) {
 		ProcedureOnLeftClickEmpty.addQualifiedItem(block, EnumHand.MAIN_HAND);
 	}
 
-	@SideOnly(Side.CLIENT)
-	public class RenderCustom extends Render<EntitySandShield> {
-		public RenderCustom(RenderManager renderManagerIn) {
-			super(renderManagerIn);
-		}
+	@Override
+	public void preInit(FMLPreInitializationEvent event) {
+		new Renderer().register();
+	}
+
+	public static class Renderer extends EntityRendererRegister {
+		@SideOnly(Side.CLIENT)
 		@Override
-		public void doRender(EntitySandShield bullet, double d, double d1, double d2, float f, float f1) {
+		public void register() {
+			RenderingRegistry.registerEntityRenderingHandler(EntitySandShield.class, renderManager -> new RenderCustom(renderManager));
 		}
-		@Override
-		protected ResourceLocation getEntityTexture(EntitySandShield entity) {
-			return null;
+
+		@SideOnly(Side.CLIENT)
+		public class RenderCustom extends Render<EntitySandShield> {
+			public RenderCustom(RenderManager renderManagerIn) {
+				super(renderManagerIn);
+			}
+			@Override
+			public void doRender(EntitySandShield bullet, double d, double d1, double d2, float f, float f1) {
+			}
+			@Override
+			protected ResourceLocation getEntityTexture(EntitySandShield entity) {
+				return null;
+			}
 		}
 	}
 

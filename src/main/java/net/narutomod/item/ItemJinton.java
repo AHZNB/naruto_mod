@@ -48,6 +48,7 @@ import net.narutomod.ElementsNarutomodMod;
 import net.narutomod.Particles;
 import net.narutomod.Chakra;
 import net.narutomod.PlayerTracker;
+import net.narutomod.entity.EntityRendererRegister;
 import net.narutomod.entity.EntityBeamBase;
 import net.narutomod.entity.EntityScalableProjectile;
 import net.narutomod.procedure.ProcedureAirPunch;
@@ -83,17 +84,6 @@ public class ItemJinton extends ElementsNarutomodMod.ModElement {
 	@SideOnly(Side.CLIENT)
 	public void registerModels(ModelRegistryEvent event) {
 		ModelLoader.setCustomModelResourceLocation(block, 0, new ModelResourceLocation("narutomod:jinton", "inventory"));
-	}
-
-	@SideOnly(Side.CLIENT)
-	@Override
-	public void preInit(FMLPreInitializationEvent event) {
-		RenderingRegistry.registerEntityRenderingHandler(EntityBeam.class, renderManager -> {
-			return new RenderBeam(renderManager);
-		});
-		RenderingRegistry.registerEntityRenderingHandler(EntityCube.class, renderManager -> {
-			return new RenderCube(renderManager);
-		});
 	}
 
 	public static class RangedItem extends ItemJutsu.Base {
@@ -380,138 +370,152 @@ public class ItemJinton extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-	@SideOnly(Side.CLIENT)
-	public class RenderBeam extends EntityBeamBase.Renderer<EntityBeam> {
-		private final ResourceLocation texture = new ResourceLocation("narutomod:textures/longcube_white.png");
-		
-		public RenderBeam(RenderManager renderManager) {
-			super(renderManager);
+	@Override
+	public void preInit(FMLPreInitializationEvent event) {
+		new Renderer().register();
+	}
+
+	public static class Renderer extends EntityRendererRegister {
+		@SideOnly(Side.CLIENT)
+		@Override
+		public void register() {
+			RenderingRegistry.registerEntityRenderingHandler(EntityBeam.class, renderManager -> new RenderBeam(renderManager));
+			RenderingRegistry.registerEntityRenderingHandler(EntityCube.class, renderManager -> new RenderCube(renderManager));
 		}
 
-		@Override
-		public EntityBeamBase.Model getMainModel(EntityBeam entity, float pt) {
-			float f = (float)entity.ticksAlive + pt - (float)entity.wait;
-			if (f > 0f) {
-				float length = MathHelper.clamp(entity.getBeamLength() * f / 10f, 1f, entity.getBeamLength());
-				float scale = entity.getScale() * 2f * length / entity.getBeamLength();
-				ModelLongCube model = new ModelLongCube(length / scale);
-				model.scale = scale;
-				return model;
-			} else {
-				return new ModelLongCube(1);
+		@SideOnly(Side.CLIENT)
+		public class RenderBeam extends EntityBeamBase.Renderer<EntityBeam> {
+			private final ResourceLocation texture = new ResourceLocation("narutomod:textures/longcube_white.png");
+			
+			public RenderBeam(RenderManager renderManager) {
+				super(renderManager);
+			}
+	
+			@Override
+			public EntityBeamBase.Model getMainModel(EntityBeam entity, float pt) {
+				float f = (float)entity.ticksAlive + pt - (float)entity.wait;
+				if (f > 0f) {
+					float length = MathHelper.clamp(entity.getBeamLength() * f / 10f, 1f, entity.getBeamLength());
+					float scale = entity.getScale() * 2f * length / entity.getBeamLength();
+					ModelLongCube model = new ModelLongCube(length / scale);
+					model.scale = scale;
+					return model;
+				} else {
+					return new ModelLongCube(1);
+				}
+			}
+	
+			@Override
+			protected ResourceLocation getEntityTexture(EntityBeam entity) {
+				return this.texture;
 			}
 		}
-
-		@Override
-		protected ResourceLocation getEntityTexture(EntityBeam entity) {
-			return this.texture;
-		}
-	}
-
-	@SideOnly(Side.CLIENT)
-	public class RenderCube extends Render<EntityCube> {
-		private final ResourceLocation texture = new ResourceLocation("narutomod:textures/longcube_white.png");
-		private final ModelCube model = new ModelCube();
-
-		public RenderCube(RenderManager renderManager) {
-			super(renderManager);
-			this.shadowSize = 0.1F;
-		}
-
-		@Override
-		public void doRender(EntityCube entity, double x, double y, double z, float yaw, float pt) {
-			this.bindEntityTexture(entity);
-			GlStateManager.pushMatrix();
-			float scale = entity.getEntityScale();
-			GlStateManager.translate((float) x, (float) y, (float) z);
-			GlStateManager.rotate(-entity.prevRotationYaw - (entity.rotationYaw - entity.prevRotationYaw) * pt, 0.0F, 1.0F, 0.0F);
-			GlStateManager.rotate(entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * pt - 180.0F, 1.0F, 0.0F, 0.0F);
-			GlStateManager.scale(scale, scale, scale);
-			GlStateManager.enableAlpha();
-			GlStateManager.enableBlend();
-			GlStateManager.disableCull();
-			GlStateManager.disableLighting();
-			OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240.0F, 240.0F);
-			GlStateManager.color(1.0F, 1.0F, 1.0F, 0.3F);
-			this.model.render(entity, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
-			GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-			GlStateManager.enableLighting();
-			GlStateManager.enableCull();
-			//GlStateManager.disableAlpha();
-			GlStateManager.disableBlend();
-			GlStateManager.popMatrix();
-		}
-
-		@Override
-		protected ResourceLocation getEntityTexture(EntityCube entity) {
-			return this.texture;
-		}
-	}
-
-	// Made with Blockbench 3.5.4
-	// Exported for Minecraft version 1.12
-	// Paste this class into your mod and generate all required imports
-	@SideOnly(Side.CLIENT)
-	public class ModelLongCube extends EntityBeamBase.Model {
-		private final ModelRenderer bone;
-		private final ModelRenderer bone2;
-		protected float scale = 1.0F;
-
-		public ModelLongCube(float length) {
-			this.textureWidth = 32;
-			this.textureHeight = 32;
-			int len = (int)(16f * length);
-			this.bone = new ModelRenderer(this);
-			this.bone.setRotationPoint(0.0F, 0.0F, 0.0F);
-			this.bone.cubeList.add(new ModelBox(this.bone, 0, 0, -0.5F, -16.0F, -0.5F, 1, len, 1, 0.0F, false));
-			this.bone2 = new ModelRenderer(this);
-			this.bone2.setRotationPoint(0.0F, 0.0F, 0.0F);
-			this.bone2.cubeList.add(new ModelBox(this.bone2, 0, 0, -1.0F, -16.0F, -1.0F, 2, len, 2, 0.0F, false));
-			this.bone2.cubeList.add(new ModelBox(this.bone2, 0, 0, -1.5F, -16.0F, -1.5F, 3, len, 3, 0.0F, false));
-			this.bone2.cubeList.add(new ModelBox(this.bone2, 0, 0, -2.0F, -16.0F, -2.0F, 4, len, 4, 0.0F, false));
-			this.bone2.cubeList.add(new ModelBox(this.bone2, 0, 0, -4.0F, -16.0F, -4.0F, 8, len, 8, 0.0F, false));
-		}
-
-		@Override
-		public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
-			GlStateManager.pushMatrix();
-			GlStateManager.translate(0.0F, (this.scale - 1.0F) * 1.5F + 1F, 0.0F);
-			GlStateManager.scale(this.scale, this.scale, this.scale);
-			GlStateManager.color(1f, 1f, 1f, 1f);
-			this.bone.render(f5);
-			GlStateManager.color(1f, 1f, 1f, 0.3f);
-			this.bone2.render(f5);
-			GlStateManager.popMatrix();
-		}
-	}
-
-	@SideOnly(Side.CLIENT)
-	public class ModelCube extends ModelBase {
-		private final ModelRenderer bone;
-		private final ModelRenderer bone2;
 	
-		public ModelCube() {
-			this.textureWidth = 32;
-			this.textureHeight = 32;
+		@SideOnly(Side.CLIENT)
+		public class RenderCube extends Render<EntityCube> {
+			private final ResourceLocation texture = new ResourceLocation("narutomod:textures/longcube_white.png");
+			private final ModelCube model = new ModelCube();
 	
-			this.bone = new ModelRenderer(this);
-			this.bone.setRotationPoint(0.0F, 0.0F, 0.0F);
-			this.bone.cubeList.add(new ModelBox(this.bone, 0, 0, -0.5F, -4.5F, -0.5F, 1, 1, 1, 0.0F, false));
+			public RenderCube(RenderManager renderManager) {
+				super(renderManager);
+				this.shadowSize = 0.1F;
+			}
 	
-			this.bone2 = new ModelRenderer(this);
-			this.bone2.setRotationPoint(0.0F, 0.0F, 0.0F);
-			this.bone2.cubeList.add(new ModelBox(this.bone2, 0, 0, -1.0F, -5.0F, -1.0F, 2, 2, 2, 0.0F, false));
-			this.bone2.cubeList.add(new ModelBox(this.bone2, 0, 0, -1.5F, -5.5F, -1.5F, 3, 3, 3, 0.0F, false));
-			this.bone2.cubeList.add(new ModelBox(this.bone2, 0, 0, -2.0F, -6.0F, -2.0F, 4, 4, 4, 0.0F, false));
-			this.bone2.cubeList.add(new ModelBox(this.bone2, 0, 16, -4.0F, -8.0F, -4.0F, 8, 8, 8, 0.0F, false));
+			@Override
+			public void doRender(EntityCube entity, double x, double y, double z, float yaw, float pt) {
+				this.bindEntityTexture(entity);
+				GlStateManager.pushMatrix();
+				float scale = entity.getEntityScale();
+				GlStateManager.translate((float) x, (float) y, (float) z);
+				GlStateManager.rotate(-entity.prevRotationYaw - (entity.rotationYaw - entity.prevRotationYaw) * pt, 0.0F, 1.0F, 0.0F);
+				GlStateManager.rotate(entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * pt - 180.0F, 1.0F, 0.0F, 0.0F);
+				GlStateManager.scale(scale, scale, scale);
+				GlStateManager.enableAlpha();
+				GlStateManager.enableBlend();
+				GlStateManager.disableCull();
+				GlStateManager.disableLighting();
+				OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240.0F, 240.0F);
+				GlStateManager.color(1.0F, 1.0F, 1.0F, 0.3F);
+				this.model.render(entity, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
+				GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+				GlStateManager.enableLighting();
+				GlStateManager.enableCull();
+				//GlStateManager.disableAlpha();
+				GlStateManager.disableBlend();
+				GlStateManager.popMatrix();
+			}
+	
+			@Override
+			protected ResourceLocation getEntityTexture(EntityCube entity) {
+				return this.texture;
+			}
 		}
 	
-		@Override
-		public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
-			GlStateManager.color(1f, 1f, 1f, 1f);
-			this.bone.render(f5);
-			GlStateManager.color(1f, 1f, 1f, 0.3f);
-			this.bone2.render(f5);
+		// Made with Blockbench 3.5.4
+		// Exported for Minecraft version 1.12
+		// Paste this class into your mod and generate all required imports
+		@SideOnly(Side.CLIENT)
+		public class ModelLongCube extends EntityBeamBase.Model {
+			private final ModelRenderer bone;
+			private final ModelRenderer bone2;
+			protected float scale = 1.0F;
+	
+			public ModelLongCube(float length) {
+				this.textureWidth = 32;
+				this.textureHeight = 32;
+				int len = (int)(16f * length);
+				this.bone = new ModelRenderer(this);
+				this.bone.setRotationPoint(0.0F, 0.0F, 0.0F);
+				this.bone.cubeList.add(new ModelBox(this.bone, 0, 0, -0.5F, -16.0F, -0.5F, 1, len, 1, 0.0F, false));
+				this.bone2 = new ModelRenderer(this);
+				this.bone2.setRotationPoint(0.0F, 0.0F, 0.0F);
+				this.bone2.cubeList.add(new ModelBox(this.bone2, 0, 0, -1.0F, -16.0F, -1.0F, 2, len, 2, 0.0F, false));
+				this.bone2.cubeList.add(new ModelBox(this.bone2, 0, 0, -1.5F, -16.0F, -1.5F, 3, len, 3, 0.0F, false));
+				this.bone2.cubeList.add(new ModelBox(this.bone2, 0, 0, -2.0F, -16.0F, -2.0F, 4, len, 4, 0.0F, false));
+				this.bone2.cubeList.add(new ModelBox(this.bone2, 0, 0, -4.0F, -16.0F, -4.0F, 8, len, 8, 0.0F, false));
+			}
+	
+			@Override
+			public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
+				GlStateManager.pushMatrix();
+				GlStateManager.translate(0.0F, (this.scale - 1.0F) * 1.5F + 1F, 0.0F);
+				GlStateManager.scale(this.scale, this.scale, this.scale);
+				GlStateManager.color(1f, 1f, 1f, 1f);
+				this.bone.render(f5);
+				GlStateManager.color(1f, 1f, 1f, 0.3f);
+				this.bone2.render(f5);
+				GlStateManager.popMatrix();
+			}
+		}
+	
+		@SideOnly(Side.CLIENT)
+		public class ModelCube extends ModelBase {
+			private final ModelRenderer bone;
+			private final ModelRenderer bone2;
+		
+			public ModelCube() {
+				this.textureWidth = 32;
+				this.textureHeight = 32;
+		
+				this.bone = new ModelRenderer(this);
+				this.bone.setRotationPoint(0.0F, 0.0F, 0.0F);
+				this.bone.cubeList.add(new ModelBox(this.bone, 0, 0, -0.5F, -4.5F, -0.5F, 1, 1, 1, 0.0F, false));
+		
+				this.bone2 = new ModelRenderer(this);
+				this.bone2.setRotationPoint(0.0F, 0.0F, 0.0F);
+				this.bone2.cubeList.add(new ModelBox(this.bone2, 0, 0, -1.0F, -5.0F, -1.0F, 2, 2, 2, 0.0F, false));
+				this.bone2.cubeList.add(new ModelBox(this.bone2, 0, 0, -1.5F, -5.5F, -1.5F, 3, 3, 3, 0.0F, false));
+				this.bone2.cubeList.add(new ModelBox(this.bone2, 0, 0, -2.0F, -6.0F, -2.0F, 4, 4, 4, 0.0F, false));
+				this.bone2.cubeList.add(new ModelBox(this.bone2, 0, 16, -4.0F, -8.0F, -4.0F, 8, 8, 8, 0.0F, false));
+			}
+		
+			@Override
+			public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
+				GlStateManager.color(1f, 1f, 1f, 1f);
+				this.bone.render(f5);
+				GlStateManager.color(1f, 1f, 1f, 0.3f);
+				this.bone2.render(f5);
+			}
 		}
 	}
 }

@@ -409,8 +409,8 @@ public class EntityPuppet3rdKazekage extends ElementsNarutomodMod.ModElement {
 				super.setRotationAngles(0f, 0f, f2, f3, f4, f5, e);
 				double d = ((EntityCustom)e).getVelocity();
 				if (d > 0.001d && ((EntityCustom)e).isMovingForward()) {
-					float fa = MathHelper.clamp((float)d / 0.3F, 0F, 1F);
-					bipedBody.rotateAngleX += fa * 0.7854F;
+					float fa = MathHelper.clamp((float)d * 2.5F, 0F, 1F);
+					bipedBody.rotateAngleX += fa * 1.0472F;
 					collar.rotateAngleX = fa * -0.2618F;
 					if (this.swingProgress <= 0.0F && rightArmPose == ModelBiped.ArmPose.EMPTY) {
 						bipedRightArm.rotateAngleZ += fa * 1.3963F;

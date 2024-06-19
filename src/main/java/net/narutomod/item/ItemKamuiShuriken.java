@@ -43,6 +43,7 @@ import net.minecraft.client.Minecraft;
 import net.narutomod.world.WorldKamuiDimension;
 import net.narutomod.procedure.ProcedureKamuiTeleportEntity;
 import net.narutomod.procedure.ProcedureSusanoo;
+import net.narutomod.entity.EntityRendererRegister;
 import net.narutomod.entity.EntitySusanooWinged;
 import net.narutomod.PlayerTracker;
 import net.narutomod.creativetab.TabModTab;
@@ -73,14 +74,6 @@ public class ItemKamuiShuriken extends ElementsNarutomodMod.ModElement {
 		ModelLoader.setCustomModelResourceLocation(block, 0, new ModelResourceLocation("narutomod:kamuishuriken", "inventory"));
 	}
 
-	@SideOnly(Side.CLIENT)
-	@Override
-	public void preInit(FMLPreInitializationEvent event) {
-		RenderingRegistry.registerEntityRenderingHandler(EntityKamuiShuriken.class, renderManager -> {
-			return new RenderKamuiShuriken(renderManager, Minecraft.getMinecraft().getRenderItem());
-		});
-	}
-	
 	public static class RangedItem extends Item {
 		public RangedItem() {
 			super();
@@ -207,43 +200,58 @@ public class ItemKamuiShuriken extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-	@SideOnly(Side.CLIENT)
-	public class RenderKamuiShuriken extends Render<EntityKamuiShuriken> {
-		protected final Item item;
-		private final RenderItem itemRenderer;
+	@Override
+	public void preInit(FMLPreInitializationEvent event) {
+		new Renderer().register();
+	}
 
-		public RenderKamuiShuriken(RenderManager renderManagerIn, RenderItem itemRendererIn) {
-			super(renderManagerIn);
-			this.item = block;
-			this.itemRenderer = itemRendererIn;
-		}
-
+	public static class Renderer extends EntityRendererRegister {
+		@SideOnly(Side.CLIENT)
 		@Override
-		public void doRender(EntityKamuiShuriken entity, double x, double y, double z, float entityYaw, float partialTicks) {
-			GlStateManager.pushMatrix();
-			float scale = entity.getScale();
-			GlStateManager.translate((float) x, (float) y + (0.125F * scale), (float) z);
-			GlStateManager.scale(scale, scale, scale);
-			GlStateManager.enableRescaleNormal();
-			GlStateManager.rotate(-this.renderManager.playerViewY, 0.0F, 1.0F, 0.0F);
-			GlStateManager.rotate((float) (this.renderManager.options.thirdPersonView == 2 ? -1 : 1) * this.renderManager.playerViewX, 1.0F, 0.0F, 0.0F);
-			GlStateManager.rotate(180.0F, 0.0F, 1.0F, 0.0F);
-			GlStateManager.rotate(5f * ((float)entity.ticksExisted + partialTicks), 0.0F, 0.0F, 1.0F);
-			GlStateManager.rotate(-60f * ((float)entity.ticksExisted + partialTicks), 1.0F, 0.0F, 0.0F);
-			this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
-			this.itemRenderer.renderItem(this.getStackToRender(entity), ItemCameraTransforms.TransformType.GROUND);
-			GlStateManager.disableRescaleNormal();
-			GlStateManager.popMatrix();
-			super.doRender(entity, x, y, z, entityYaw, partialTicks);
+		public void register() {
+			RenderingRegistry.registerEntityRenderingHandler(EntityKamuiShuriken.class, renderManager -> {
+				return new RenderKamuiShuriken(renderManager, Minecraft.getMinecraft().getRenderItem());
+			});
 		}
 
-		public ItemStack getStackToRender(EntityKamuiShuriken entityIn) {
-			return new ItemStack(this.item);
-		}
-
-		@Override
-		protected ResourceLocation getEntityTexture(EntityKamuiShuriken entity) {
-			return TextureMap.LOCATION_BLOCKS_TEXTURE;
+		@SideOnly(Side.CLIENT)
+		public class RenderKamuiShuriken extends Render<EntityKamuiShuriken> {
+			protected final Item item;
+			private final RenderItem itemRenderer;
+	
+			public RenderKamuiShuriken(RenderManager renderManagerIn, RenderItem itemRendererIn) {
+				super(renderManagerIn);
+				this.item = block;
+				this.itemRenderer = itemRendererIn;
+			}
+	
+			@Override
+			public void doRender(EntityKamuiShuriken entity, double x, double y, double z, float entityYaw, float partialTicks) {
+				GlStateManager.pushMatrix();
+				float scale = entity.getScale();
+				GlStateManager.translate((float) x, (float) y + (0.125F * scale), (float) z);
+				GlStateManager.scale(scale, scale, scale);
+				GlStateManager.enableRescaleNormal();
+				GlStateManager.rotate(-this.renderManager.playerViewY, 0.0F, 1.0F, 0.0F);
+				GlStateManager.rotate((float) (this.renderManager.options.thirdPersonView == 2 ? -1 : 1) * this.renderManager.playerViewX, 1.0F, 0.0F, 0.0F);
+				GlStateManager.rotate(180.0F, 0.0F, 1.0F, 0.0F);
+				GlStateManager.rotate(5f * ((float)entity.ticksExisted + partialTicks), 0.0F, 0.0F, 1.0F);
+				GlStateManager.rotate(-60f * ((float)entity.ticksExisted + partialTicks), 1.0F, 0.0F, 0.0F);
+				this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+				this.itemRenderer.renderItem(this.getStackToRender(entity), ItemCameraTransforms.TransformType.GROUND);
+				GlStateManager.disableRescaleNormal();
+				GlStateManager.popMatrix();
+				super.doRender(entity, x, y, z, entityYaw, partialTicks);
+			}
+	
+			public ItemStack getStackToRender(EntityKamuiShuriken entityIn) {
+				return new ItemStack(this.item);
+			}
+	
+			@Override
+			protected ResourceLocation getEntityTexture(EntityKamuiShuriken entity) {
+				return TextureMap.LOCATION_BLOCKS_TEXTURE;
+			}
 		}
 	}
 }

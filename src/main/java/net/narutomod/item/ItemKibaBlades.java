@@ -6,7 +6,11 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
+import net.minecraftforge.event.entity.item.ItemTossEvent;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 
@@ -50,9 +54,9 @@ import net.narutomod.Particles;
 import net.narutomod.ElementsNarutomodMod;
 
 import javax.annotation.Nullable;
+import java.util.List;
 import java.util.Random;
 import com.google.common.collect.Multimap;
-import java.util.List;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class ItemKibaBlades extends ElementsNarutomodMod.ModElement {
@@ -78,6 +82,21 @@ public class ItemKibaBlades extends ElementsNarutomodMod.ModElement {
 		ModelLoader.setCustomModelResourceLocation(block, 0, new ModelResourceLocation("narutomod:kiba_blades", "inventory"));
 	}
 
+	@Override
+	public void init(FMLInitializationEvent event) {
+		MinecraftForge.EVENT_BUS.register(new PlayerHook());
+	}
+
+	public static class PlayerHook {
+		@SubscribeEvent
+		public void onToss(ItemTossEvent event) {
+			ItemStack itemstack = event.getEntityItem().getItem();
+			if (itemstack.getItem() == block && !((RangedItem)itemstack.getItem()).isMain(itemstack)) {
+				event.setCanceled(true);
+			}
+		}
+	}
+	
 	public static void setAsMain(ItemStack stack) {
 		if (stack.getItem() == block) {
 			if (!stack.hasTagCompound()) {

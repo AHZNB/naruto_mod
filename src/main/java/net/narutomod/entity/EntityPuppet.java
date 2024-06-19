@@ -6,6 +6,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
+import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.common.MinecraftForge;
 
 import net.minecraft.world.World;
@@ -54,13 +55,15 @@ import net.narutomod.item.ItemNinjutsu;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.ElementsNarutomodMod;
 
+import java.util.List;
 import javax.annotation.Nullable;
+import com.google.common.collect.Lists;
+import com.google.common.primitives.Ints;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 	public static final int ENTITYID = 282;
 	public static final int ENTITYID_RANGED = 283;
-	public static final String PUPPET_COUNT = "PuppetControlled";
 
 	public EntityPuppet(ElementsNarutomodMod instance) {
 		super(instance, 603);
@@ -77,7 +80,39 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 			if (!event.player.world.isRemote) {
 				ItemStack stack = ProcedureUtils.getMatchingItemStack(event.player, ItemNinjutsu.block);
 				if (stack != null) {
-					stack.getTagCompound().setInteger(PUPPET_COUNT, 0);
+					Base.Jutsu.updatePuppetList(stack.getTagCompound(), null, false);
+				}
+			}
+		}
+
+		@SubscribeEvent
+		public void onAttacked(LivingAttackEvent event) {
+			EntityLivingBase entity = event.getEntityLiving();
+			NBTTagCompound compound = entity.getEntityData();
+			if (entity instanceof EntityPlayer) {
+				ItemStack stack = ProcedureUtils.getMatchingItemStack((EntityPlayer)entity, ItemNinjutsu.block);
+				compound = stack != null ? stack.getTagCompound() : null;
+			}
+			if (compound != null && Base.Jutsu.puppetCount(compound) > 0) {
+				List<Base> list = Base.Jutsu.getPuppetList(compound, entity.world);
+				if (!list.isEmpty()) {
+					for (Base puppet : list) {
+						if (puppet.getDistanceSq(entity) <= 64.0d) {
+							if (event.getSource().getDamageLocation() != null) {
+								Vec3d vec = event.getSource().getDamageLocation().subtract(entity.getPositionVector());
+								Vec3d vec1 = vec.scale(event.getSource().getImmediateSource() instanceof EntityLivingBase ? 0.5d : 0.8d);
+								ProcedureUtils.Vec2f vec2 = ProcedureUtils.getYawPitchFromVec(vec1);
+								puppet.setPositionAndRotation(entity.posX + vec1.x, entity.posY + vec1.y, entity.posZ + vec1.z, vec2.x, vec2.y);
+								puppet.haltAIfor(20);
+								if (vec.lengthVector() <= entity.width * 0.5f + event.getSource().getImmediateSource().width * 0.5f + puppet.width) {
+									ProcedureUtils.multiplyVelocity(entity, vec.normalize().scale(-puppet.width));
+								}
+							}
+							event.setCanceled(true);
+							puppet.attackEntityFrom(event.getSource(), event.getAmount());
+							return;
+						}
+					}
 				}
 			}
 		}
@@ -86,6 +121,7 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 	public abstract static class Base extends EntityCreature {
 		private static final DataParameter<Integer> OWNERID = EntityDataManager.<Integer>createKey(Base.class, DataSerializers.VARINT);
 		private static final DataParameter<Integer> REAL_AGE = EntityDataManager.<Integer>createKey(Base.class, DataSerializers.VARINT);
+		private int haltAITicks;
 
 		public Base(World worldIn) {
 			super(worldIn);
@@ -130,23 +166,23 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 			return entity instanceof EntityLivingBase ? (EntityLivingBase)entity : null;
 		}
 
-		protected void setOwner(@Nullable EntityLivingBase player) {
+		protected void setOwner(@Nullable EntityLivingBase newOwner) {
 			if (!this.world.isRemote) {
-				EntityLivingBase owner = this.getOwner();
-				if (owner != player) {
-					if (owner instanceof EntityPlayer || player instanceof EntityPlayer) {
-						ItemStack stack = ProcedureUtils.getMatchingItemStack(player == null ? (EntityPlayer)owner : (EntityPlayer)player, ItemNinjutsu.block);
+				EntityLivingBase oldOwner = this.getOwner();
+				if (oldOwner != newOwner) {
+					if (oldOwner instanceof EntityPlayer || newOwner instanceof EntityPlayer) {
+						ItemStack stack = ProcedureUtils.getMatchingItemStack(newOwner == null ? (EntityPlayer)oldOwner : (EntityPlayer)newOwner, ItemNinjutsu.block);
 						if (stack != null) {
-							if (player == null) {
-								stack.getTagCompound().setInteger(PUPPET_COUNT, stack.getTagCompound().getInteger(PUPPET_COUNT) - 1);
-							} else if (stack.getTagCompound().getInteger(PUPPET_COUNT) < (int)Math.ceil(Math.max(((ItemNinjutsu.RangedItem)stack.getItem()).getXpRatio(stack, ItemNinjutsu.PUPPET) - 0.999f, 0.0f) * 4.95f)) {
-								stack.getTagCompound().setInteger(PUPPET_COUNT, stack.getTagCompound().getInteger(PUPPET_COUNT) + 1);
+							if (newOwner == null || Jutsu.puppetCount(stack.getTagCompound()) < (int)Math.ceil(Math.max(((ItemNinjutsu.RangedItem)stack.getItem()).getXpRatio(stack, ItemNinjutsu.PUPPET) - 0.999f, 0.0f) * 4.95f)) {
+								Jutsu.updatePuppetList(stack.getTagCompound(), this, newOwner != null);
 							} else {
 								return;
 							}
 						}
+					} else {
+						Jutsu.updatePuppetList(newOwner == null ? oldOwner.getEntityData() : newOwner.getEntityData(), this, newOwner != null);
 					}
-					this.getDataManager().set(OWNERID, Integer.valueOf(player != null ? player.getEntityId() : -1));
+					this.getDataManager().set(OWNERID, Integer.valueOf(newOwner != null ? newOwner.getEntityId() : -1));
 				}
 			}
 		}
@@ -166,7 +202,7 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 			this.getAttributeMap().registerAttribute(SharedMonsterAttributes.FLYING_SPEED);
 			this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(100D);
 			this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(48D);
-			this.getEntityAttribute(SharedMonsterAttributes.FLYING_SPEED).setBaseValue(0.4D);
+			this.getEntityAttribute(SharedMonsterAttributes.FLYING_SPEED).setBaseValue(0.6D);
 		}
 
 		@Override
@@ -263,12 +299,31 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 			super.onLivingUpdate();
 		}
 
+		protected void haltAIfor(int ticks) {
+			this.haltAITicks = ticks;
+		}
+
 	    @Override
 	    public void onUpdate() {
 	    	this.setAge(this.getAge() + 1);
 	    	this.fallDistance = 0f;
 	    	this.clearActivePotions();
 	    	super.onUpdate();
+	    	
+	    	if (!this.world.isRemote) {
+		    	if (this.haltAITicks > 0) {
+		    		--this.haltAITicks;
+		    		if (!this.isAIDisabled()) {
+		    			this.setNoAI(true);
+		    		}
+		    	} else if (this.isAIDisabled()) {
+		    		this.setNoAI(false);
+		    	}
+	    	} else if (this.isAIDisabled()) {
+	    		this.motionX *= 0.1d;
+	    		this.motionY *= 0.1d;
+	    		this.motionZ *= 0.1d;
+	    	}
 	    }
 
 		@Override
@@ -303,6 +358,8 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 		}
 
 		public static class Jutsu implements ItemJutsu.IJutsuCallback {
+			private static final String PUPPET_COUNT = "PuppetControlled";
+			
 			@Override
 			public boolean createJutsu(ItemStack stack, EntityLivingBase entity, float power) {
 				Entity entity1 = ProcedureUtils.objectEntityLookingAt(entity, 5d, 2d).entityHit;
@@ -315,6 +372,44 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 					}
 				}
 				return false;
+			}
+
+			private static List<Base> getPuppetList(NBTTagCompound compound, World world) {
+				List<Base> list = Lists.newArrayList();
+				int[] ids = compound.getIntArray(PUPPET_COUNT);
+				for (int i = 0; i < ids.length; i++) {
+					Entity entity1 = world.getEntityByID(ids[i]);
+					if (entity1 instanceof Base && entity1.isEntityAlive()) {
+						list.add((Base)entity1);
+					}
+				}
+				return list;
+			}
+
+			private static int updatePuppetList(NBTTagCompound compound, @Nullable Base puppet, boolean add1) {
+				List<Integer> list = Lists.newArrayList();
+				if (puppet != null) {
+					int[] ids = compound.getIntArray(PUPPET_COUNT);
+					for (int i = 0; i < ids.length; i++) {
+						Entity entity1 = puppet.world.getEntityByID(ids[i]);
+						if (entity1 instanceof Base && entity1.isEntityAlive() && (add1 || !entity1.equals(puppet))) {
+							list.add(ids[i]);
+						}
+					}
+					if (add1 && !list.contains(puppet.getEntityId())) {
+						list.add(puppet.getEntityId());
+					}
+				}
+				if (list.isEmpty()) {
+					compound.removeTag(PUPPET_COUNT);
+				} else {
+					compound.setIntArray(PUPPET_COUNT, Ints.toArray(list));
+				}
+				return list.size();
+			}
+
+			private static int puppetCount(NBTTagCompound compound) {
+				return compound.getIntArray(PUPPET_COUNT).length;
 			}
 		}
 
