@@ -110,6 +110,7 @@ public class EntityTenten extends ElementsNarutomodMod.ModElement {
 		@Override
 		public IEntityLivingData onInitialSpawn(DifficultyInstance difficulty, @Nullable IEntityLivingData livingdata) {
 			this.setItemToInventory(new ItemStack(ItemKunai.block), 0);
+			this.setItemStackToSlot(EntityEquipmentSlot.HEAD, new ItemStack(ItemNinjaArmorKonoha.helmet, 1));
 			return super.onInitialSpawn(difficulty, livingdata);
 		}
 
@@ -147,14 +148,6 @@ public class EntityTenten extends ElementsNarutomodMod.ModElement {
 			this.targetTasks.addTask(3, new EntityAINearestAttackableTarget(this, EntitySkeleton.class, false, false));
 			this.targetTasks.addTask(4, new EntityAINearestAttackableTarget(this, EntityZombie.class, false, false));
 		}
-
-		//@Override
-		//protected void updateAITasks() {
-		//	if (this.getHeldItemMainhand().isEmpty() != (this.getAttackTarget() == null)) {
-		//		this.swapWithInventory(EntityEquipmentSlot.MAINHAND);
-		//	}
-		//	super.updateAITasks();
-		//}
 
 		@Override
 		public void setSwingingArms(boolean swingingArms) {

@@ -536,7 +536,7 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 				 net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.world, this));
 				ProcedureAoeCommand.set(entityIn, 0d, 5d).exclude(this).exclude(this.getSummoningPlayer())
 				 .exclude(this.getBijuManager().getJinchurikiPlayer()).exclude(this.getControllingPassenger())
-				 .damageEntities(this, (float)ProcedureUtils.getModifiedAttackDamage(this) * (this.rand.nextFloat() * 0.5f + 0.5f));
+				 .damageEntities(this, (float)ProcedureUtils.getModifiedAttackDamage(this) * (this.rand.nextFloat() * 0.5f + 0.75f));
 				return true;
 			}
 			return false;
@@ -923,7 +923,7 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 			if (user == null) {
 				user = summonerIn;
 			}
-			if ((user instanceof Base && ((Base)user).consumeHealthAsChakra((float)chakraUsage * 0.2f))
+			if ((user instanceof Base && ((Base)user).consumeHealthAsChakra((float)chakraUsage * 0.1f))
 			 || (user != null && net.narutomod.Chakra.pathway(user).consume(chakraUsage))) {
 				return summonerIn.world.spawnEntity(new EntityTailBeastBall(summonerIn, maxscale, maxdamage));
 			}

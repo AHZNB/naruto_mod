@@ -220,7 +220,7 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 	    	//this.setNoGravity(owner != null);
 			if (owner != null && this.getVelocity() > 0.1d && this.ticksExisted % 2 == 0) {
 				this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:wood_click")), 
-				 0.6f, this.rand.nextFloat() * 0.6f + 0.6f);
+				 0.6f, this.rand.nextFloat() * 0.2f + 0.6f);
 			}
 			if (owner == null) {
 				this.setAttackTarget(null);

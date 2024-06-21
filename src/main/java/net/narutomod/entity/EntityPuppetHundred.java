@@ -60,19 +60,23 @@ public class EntityPuppetHundred extends ElementsNarutomodMod.ModElement {
 	public static class EntityCustom extends EntityPuppet.Base {
 		private static final DataParameter<Float> MODEL_SCALE = EntityDataManager.<Float>createKey(EntityCustom.class, DataSerializers.FLOAT);
 		public static final float MAXHEALTH = 50.0f;
+		public final int style;
 
 		public EntityCustom(World worldIn) {
 			super(worldIn);
 			//this.setSize(0.6f, 2.0f);
-			this.setEntityScale(this.rand.nextFloat() + 0.9f);
+			this.setEntityScale(0.9375f + (float)Math.abs(this.rand.nextGaussian()) * 0.5f);
+			this.style = this.rand.nextInt(3);
 		}
 
 		public EntityCustom(EntityLivingBase ownerIn) {
 			super(ownerIn);
-			this.setEntityScale(this.rand.nextFloat() + 0.9f);
+			//this.setEntityScale(this.rand.nextFloat() + 0.9f);
+			this.setEntityScale(0.9375f + (float)Math.abs(this.rand.nextGaussian()) * 0.5f);
 			Vec3d vec = ownerIn.getLookVec();
 			vec = ownerIn.getPositionVector().addVector(vec.x, 1d, vec.z);
 			this.setLocationAndAngles(vec.x, vec.y, vec.z, ownerIn.rotationYaw, 0f);
+			this.style = this.rand.nextInt(3);
 		}
 
 		@Override
@@ -261,7 +265,11 @@ public class EntityPuppetHundred extends ElementsNarutomodMod.ModElement {
 
 		@SideOnly(Side.CLIENT)
 		public class RenderCustom extends EntityPuppet.ClientClass.Renderer<EntityCustom> {
-			private final ResourceLocation texture = new ResourceLocation("narutomod:textures/puppet_hundred.png");
+			private final ResourceLocation[] texture = {
+			 new ResourceLocation("narutomod:textures/puppet_hundred1.png"),
+			 new ResourceLocation("narutomod:textures/puppet_hundred2.png"),
+			 new ResourceLocation("narutomod:textures/puppet_hundred3.png")
+			};
 	
 			public RenderCustom(RenderManager renderManagerIn) {
 				super(renderManagerIn, new ModelPuppetHundred(), 0.5f);
@@ -272,11 +280,15 @@ public class EntityPuppetHundred extends ElementsNarutomodMod.ModElement {
 			protected void preRenderCallback(EntityCustom entity, float partialTickTime) {
 				float f = entity.getEntityScale();
 				GlStateManager.scale(f, f, f);
+				for (int i = 0; i < ((ModelPuppetHundred)this.mainModel).hair.length; i++) {
+					((ModelPuppetHundred)this.mainModel).hair[i].showModel = false;
+				}
+				((ModelPuppetHundred)this.mainModel).hair[entity.style].showModel = true;
 			}
 			
 			@Override
 			protected ResourceLocation getEntityTexture(EntityCustom entity) {
-				return this.texture;
+				return this.texture[entity.style];
 			}
 		}
 
@@ -307,7 +319,7 @@ public class EntityPuppetHundred extends ElementsNarutomodMod.ModElement {
 			//private final ModelRenderer bipedHead;
 			private final ModelRenderer jaw;
 			//private final ModelRenderer bipedHeadwear;
-			private final ModelRenderer crazyHair;
+			private final ModelRenderer[] hair = new ModelRenderer[3];
 			private final ModelRenderer bone3;
 			private final ModelRenderer bone4;
 			private final ModelRenderer bone5;
@@ -320,6 +332,14 @@ public class EntityPuppetHundred extends ElementsNarutomodMod.ModElement {
 			private final ModelRenderer bone12;
 			private final ModelRenderer bone13;
 			private final ModelRenderer bone14;
+			//private final ModelRenderer hair2;
+			private final ModelRenderer cube_r7;
+			private final ModelRenderer cube_r8;
+			//private final ModelRenderer hair3;
+			private final ModelRenderer cube_r9;
+			private final ModelRenderer cube_r10;
+			private final ModelRenderer cube_r11;
+			private final ModelRenderer cube_r12;
 			//private final ModelRenderer bipedBody;
 			private final ModelRenderer collar;
 			private final ModelRenderer collar1;
@@ -344,6 +364,8 @@ public class EntityPuppetHundred extends ElementsNarutomodMod.ModElement {
 			//private final ModelRenderer bipedLeftLeg;
 			//private final ModelRenderer bipedRightArm;
 			//private final ModelRenderer bipedLeftArm;
+			private int style;
+			
 			public ModelPuppetHundred() {
 				textureWidth = 64;
 				textureHeight = 64;
@@ -356,69 +378,107 @@ public class EntityPuppetHundred extends ElementsNarutomodMod.ModElement {
 				jaw.cubeList.add(new ModelBox(jaw, 50, 24, -1.5F, -1.0F, -4.01F, 3, 2, 4, 0.0F, false));
 				bipedHeadwear = new ModelRenderer(this);
 				bipedHeadwear.setRotationPoint(0.0F, 0.0F, 0.0F);
-				crazyHair = new ModelRenderer(this);
-				crazyHair.setRotationPoint(0.0F, -5.5F, -5.5F);
-				bipedHeadwear.addChild(crazyHair);
+				hair[0] = new ModelRenderer(this);
+				hair[0].setRotationPoint(0.0F, -5.5F, -5.5F);
+				bipedHeadwear.addChild(hair[0]);
 				bone3 = new ModelRenderer(this);
 				bone3.setRotationPoint(-1.0F, -0.75F, -0.25F);
-				crazyHair.addChild(bone3);
+				hair[0].addChild(bone3);
 				setRotationAngle(bone3, -0.4363F, -0.0436F, -0.1745F);
 				bone3.cubeList.add(new ModelBox(bone3, 32, 11, -4.0F, -6.0F, 0.25F, 8, 6, 7, -0.5F, true));
 				bone4 = new ModelRenderer(this);
 				bone4.setRotationPoint(-1.0F, -2.0F, 1.0F);
-				crazyHair.addChild(bone4);
+				hair[0].addChild(bone4);
 				setRotationAngle(bone4, -0.7854F, -0.1309F, -0.3054F);
 				bone4.cubeList.add(new ModelBox(bone4, 32, 11, -4.0F, -6.0F, 0.25F, 8, 6, 7, -0.5F, true));
 				bone5 = new ModelRenderer(this);
 				bone5.setRotationPoint(-1.0F, -3.0F, 3.0F);
-				crazyHair.addChild(bone5);
+				hair[0].addChild(bone5);
 				setRotationAngle(bone5, -1.0472F, -0.2182F, -0.3491F);
 				bone5.cubeList.add(new ModelBox(bone5, 32, 11, -4.0F, -6.0F, 0.25F, 8, 6, 7, -0.5F, false));
 				bone6 = new ModelRenderer(this);
 				bone6.setRotationPoint(-1.25F, -3.25F, 5.0F);
-				crazyHair.addChild(bone6);
+				hair[0].addChild(bone6);
 				setRotationAngle(bone6, -1.309F, -0.1309F, -0.3054F);
 				bone6.cubeList.add(new ModelBox(bone6, 32, 11, -4.0F, -6.0F, 0.25F, 8, 6, 7, -0.5F, false));
 				bone7 = new ModelRenderer(this);
 				bone7.setRotationPoint(-1.25F, -4.25F, 9.75F);
-				crazyHair.addChild(bone7);
+				hair[0].addChild(bone7);
 				setRotationAngle(bone7, -2.618F, -0.0436F, -0.0873F);
 				bone7.cubeList.add(new ModelBox(bone7, 32, 11, -4.0F, -6.0F, 0.25F, 8, 6, 7, -0.5F, false));
 				bone8 = new ModelRenderer(this);
 				bone8.setRotationPoint(-1.25F, -2.0F, 10.5F);
-				crazyHair.addChild(bone8);
+				hair[0].addChild(bone8);
 				setRotationAngle(bone8, -2.9671F, 0.0F, -0.0436F);
 				bone8.cubeList.add(new ModelBox(bone8, 32, 11, -4.0F, -6.0F, 0.25F, 8, 6, 7, -0.5F, true));
 				bone9 = new ModelRenderer(this);
 				bone9.setRotationPoint(1.0F, -0.75F, -0.25F);
-				crazyHair.addChild(bone9);
+				hair[0].addChild(bone9);
 				setRotationAngle(bone9, -0.4363F, 0.0436F, 0.1745F);
 				bone9.cubeList.add(new ModelBox(bone9, 32, 11, -4.0F, -6.0F, 0.25F, 8, 6, 7, -0.5F, false));
 				bone10 = new ModelRenderer(this);
 				bone10.setRotationPoint(1.0F, -2.0F, 1.0F);
-				crazyHair.addChild(bone10);
+				hair[0].addChild(bone10);
 				setRotationAngle(bone10, -0.7854F, 0.1309F, 0.3054F);
 				bone10.cubeList.add(new ModelBox(bone10, 32, 11, -4.0F, -6.0F, 0.25F, 8, 6, 7, -0.5F, false));
 				bone11 = new ModelRenderer(this);
 				bone11.setRotationPoint(1.0F, -3.0F, 3.0F);
-				crazyHair.addChild(bone11);
+				hair[0].addChild(bone11);
 				setRotationAngle(bone11, -1.0472F, 0.2182F, 0.3491F);
 				bone11.cubeList.add(new ModelBox(bone11, 32, 11, -4.0F, -6.0F, 0.25F, 8, 6, 7, -0.5F, true));
 				bone12 = new ModelRenderer(this);
 				bone12.setRotationPoint(1.25F, -3.25F, 5.0F);
-				crazyHair.addChild(bone12);
+				hair[0].addChild(bone12);
 				setRotationAngle(bone12, -1.309F, 0.1309F, 0.3054F);
 				bone12.cubeList.add(new ModelBox(bone12, 32, 11, -4.0F, -6.0F, 0.25F, 8, 6, 7, -0.5F, true));
 				bone13 = new ModelRenderer(this);
 				bone13.setRotationPoint(1.25F, -4.25F, 9.75F);
-				crazyHair.addChild(bone13);
+				hair[0].addChild(bone13);
 				setRotationAngle(bone13, -2.618F, 0.0436F, 0.0873F);
 				bone13.cubeList.add(new ModelBox(bone13, 32, 11, -4.0F, -6.0F, 0.25F, 8, 6, 7, -0.5F, true));
 				bone14 = new ModelRenderer(this);
 				bone14.setRotationPoint(1.25F, -2.0F, 10.5F);
-				crazyHair.addChild(bone14);
+				hair[0].addChild(bone14);
 				setRotationAngle(bone14, -2.9671F, 0.0F, 0.0436F);
 				bone14.cubeList.add(new ModelBox(bone14, 32, 11, -4.0F, -6.0F, 0.25F, 8, 6, 7, -0.5F, false));
+				hair[1] = new ModelRenderer(this);
+				hair[1].setRotationPoint(0.0F, 0.0F, 1.75F);
+				bipedHeadwear.addChild(hair[1]);
+				setRotationAngle(hair[1], 0.5236F, 0.0F, 0.0F);
+				cube_r7 = new ModelRenderer(this);
+				cube_r7.setRotationPoint(0.0F, -5.5F, 0.75F);
+				hair[1].addChild(cube_r7);
+				setRotationAngle(cube_r7, 0.0F, 0.2618F, 0.0873F);
+				cube_r7.cubeList.add(new ModelBox(cube_r7, 32, 11, -4.0F, -4.0F, -1.0F, 8, 6, 7, 0.2F, true));
+				cube_r8 = new ModelRenderer(this);
+				cube_r8.setRotationPoint(0.0F, -6.5F, 0.75F);
+				hair[1].addChild(cube_r8);
+				setRotationAngle(cube_r8, 0.0F, -0.2618F, -0.0873F);
+				cube_r8.cubeList.add(new ModelBox(cube_r8, 32, 11, -4.0F, -3.0F, -1.0F, 8, 6, 7, 0.2F, true));
+				hair[2] = new ModelRenderer(this);
+				hair[2].setRotationPoint(0.0F, 0.0F, 0.0F);
+				bipedHeadwear.addChild(hair[2]);
+				setRotationAngle(hair[2], -0.2618F, 0.0F, 0.0F);
+				cube_r9 = new ModelRenderer(this);
+				cube_r9.setRotationPoint(1.0F, -9.75F, 1.0F);
+				hair[2].addChild(cube_r9);
+				setRotationAngle(cube_r9, -0.5236F, 0.0F, 0.5236F);
+				cube_r9.cubeList.add(new ModelBox(cube_r9, 32, 11, -4.0F, -3.0F, -3.5F, 8, 6, 7, -1.0F, false));
+				cube_r10 = new ModelRenderer(this);
+				cube_r10.setRotationPoint(1.0F, -9.75F, -0.5F);
+				hair[2].addChild(cube_r10);
+				setRotationAngle(cube_r10, 0.0F, 0.0F, 0.3491F);
+				cube_r10.cubeList.add(new ModelBox(cube_r10, 32, 11, -4.0F, -3.0F, -3.5F, 8, 6, 7, -1.0F, true));
+				cube_r11 = new ModelRenderer(this);
+				cube_r11.setRotationPoint(-1.0F, -9.75F, 1.0F);
+				hair[2].addChild(cube_r11);
+				setRotationAngle(cube_r11, -0.5236F, 0.0F, -0.5236F);
+				cube_r11.cubeList.add(new ModelBox(cube_r11, 32, 11, -4.0F, -3.0F, -3.5F, 8, 6, 7, -1.0F, false));
+				cube_r12 = new ModelRenderer(this);
+				cube_r12.setRotationPoint(-1.0F, -9.75F, -0.5F);
+				hair[2].addChild(cube_r12);
+				setRotationAngle(cube_r12, 0.0F, 0.0F, -0.3491F);
+				cube_r12.cubeList.add(new ModelBox(cube_r12, 32, 11, -4.0F, -3.0F, -3.5F, 8, 6, 7, -1.0F, false));
 				bipedBody = new ModelRenderer(this);
 				bipedBody.setRotationPoint(0.0F, 0.0F, 0.0F);
 				collar = new ModelRenderer(this);
@@ -541,11 +601,14 @@ public class EntityPuppetHundred extends ElementsNarutomodMod.ModElement {
 			@Override
 			public void render(Entity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
 				this.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale, entityIn);
+				GlStateManager.enableBlend();
+				GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 				this.bipedHead.render(scale);
 				this.bipedBody.render(scale);
 				this.bipedRightArm.render(scale);
 				this.bipedLeftArm.render(scale);
 				this.bipedHeadwear.render(scale);
+				GlStateManager.disableBlend();
 			}
 
 			@Override

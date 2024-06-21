@@ -96,6 +96,7 @@ public class EntityIrukaSensei extends ElementsNarutomodMod.ModElement {
 		@Override
 		public IEntityLivingData onInitialSpawn(DifficultyInstance difficulty, @Nullable IEntityLivingData livingdata) {
 			this.setItemToInventory(new ItemStack(ItemKunai.block), 0);
+			this.setItemStackToSlot(EntityEquipmentSlot.HEAD, new ItemStack(ItemNinjaArmorKonoha.helmet, 1));
 			this.setItemStackToSlot(EntityEquipmentSlot.CHEST, new ItemStack(ItemNinjaArmorKonoha.body, 1));
 			this.setItemStackToSlot(EntityEquipmentSlot.LEGS, new ItemStack(ItemNinjaArmorKonoha.legs, 1));
 			return super.onInitialSpawn(difficulty, livingdata);
@@ -129,12 +130,6 @@ public class EntityIrukaSensei extends ElementsNarutomodMod.ModElement {
 			return super.getCanSpawnHere() 
 			 && this.world.getEntitiesWithinAABB(EntityCustom.class, this.getEntityBoundingBox().grow(128d, 16d, 128d)).isEmpty();
 		}
-
-		//@Override
-		//public void setAttackTarget(@Nullable EntityLivingBase entityIn) {
-		//	super.setAttackTarget(entityIn);
-		//	this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, entityIn == null ? ItemStack.EMPTY : new ItemStack(ItemKunai.block, 1));
-		//}
 	}
 
 	@Override

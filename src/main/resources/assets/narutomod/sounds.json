@@ -557,15 +557,6 @@
       }
     ]
   },
-  "wood_click": {
-    "category": "master",
-    "sounds": [
-      {
-        "name": "narutomod:wood_click",
-        "stream": false
-      }
-    ]
-  },
   "kairikimuso": {
     "category": "master",
     "sounds": [
@@ -1048,6 +1039,15 @@
     "sounds": [
       {
         "name": "narutomod:waterstream",
+        "stream": false
+      }
+    ]
+  },
+  "wood_click": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "narutomod:wood_click",
         "stream": false
       }
     ]

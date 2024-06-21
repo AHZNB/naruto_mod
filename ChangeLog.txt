@@ -24,7 +24,7 @@ Items:
  - senbons now does 4 melee damage, poison senbons 5 minute poison effect
  - puppet senbon arm canon can bounce off blocks, shoots poison senbons in all directions for 4s
  - poison bombs also inflicts blindness for 5s
- - added kunai sword and recipe
+ - added kunai sword and recipe, can block attacks
  - fix remaining server crashes due to "NoClassDefFoundError"
  - prevents players dropping the duplicate kiba sword 
 
@@ -40,10 +40,11 @@ Entities:
  - 3rd kazekage puppet can use sand bullet jutsu & sand gathering jutsu (use with 3rd kazekage scroll)
  - fixed jinchuriki's biju mode visibility bug
  - fixed perfect susanoo jerky body pitch when flying
- - added Sasori mob (WIP-7: summons 100 puppets jutsu at end stage)
+ - added Sasori mob, naturally spawns, spawn weight configurable
  - Karasu puppet shoots poison bombs as well as senbons, better AI
- - added sasori's 100 puppet
+ - added sasori's 100 puppet, puppet size and appearance is random
  - increased puppets speed slightly, auto covers for summoner and takes damage if within range
+ - buffed tailed beast melee damage slightly
  
 General:
  - fixed alpha transparency bug when using certain jutsus
