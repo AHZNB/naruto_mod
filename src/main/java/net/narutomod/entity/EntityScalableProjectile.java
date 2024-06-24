@@ -81,13 +81,13 @@ public class EntityScalableProjectile extends ElementsNarutomodMod.ModElement {
 		}
 
 		public void setEntityScale(float scale) {
+			double x = this.posX;
+			double y = this.posY;
+			double z = this.posZ;
+			this.setSize(this.ogWidth * scale, this.ogHeight * scale);
+			this.setPosition(x, y, z);
 			if (!this.world.isRemote) {
 				this.getDataManager().set(MODEL_SCALE, Float.valueOf(scale));
-				double x = this.posX;
-				double y = this.posY;
-				double z = this.posZ;
-				this.setSize(this.ogWidth * scale, this.ogHeight * scale);
-				this.setPosition(x, y, z);
 			}
 		}
 
@@ -95,8 +95,7 @@ public class EntityScalableProjectile extends ElementsNarutomodMod.ModElement {
 		public void notifyDataManagerChange(DataParameter<?> key) {
 			super.notifyDataManagerChange(key);
 			if (MODEL_SCALE.equals(key) && this.world.isRemote) {
-				float scale = this.getEntityScale();
-				this.setSize(this.ogWidth * scale, this.ogHeight * scale);
+				this.setEntityScale(this.getEntityScale());
 			}
 		}
 
@@ -135,9 +134,6 @@ public class EntityScalableProjectile extends ElementsNarutomodMod.ModElement {
 		}
 
 		public void shoot(double x, double y, double z, float speed, float inaccuracy, boolean updateRotations) {
-			//this.motionX = 0.0D;
-			//this.motionY = 0.0D;
-			//this.motionZ = 0.0D;
 			x += this.rand.nextGaussian() * inaccuracy;
 			y += this.rand.nextGaussian() * inaccuracy;
 			z += this.rand.nextGaussian() * inaccuracy;

@@ -365,6 +365,7 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 
 	public static void addVelocity(Entity target, Vec3d vec) {
 		setVelocity(target, target.motionX + vec.x, target.motionY + vec.y, target.motionZ + vec.z);
+		target.isAirBorne = true;
 	}
 
 	public static void multiplyVelocity(Entity target, double mul) {

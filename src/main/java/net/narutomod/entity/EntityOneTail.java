@@ -18,6 +18,7 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.model.ModelBox;
@@ -186,6 +187,28 @@ public class EntityOneTail extends ElementsNarutomodMod.ModElement {
 				int i = this.getPassengers().indexOf(passenger);
 				Vec3d vec2 = vec[i].rotateYaw(-this.rotationYaw * 0.017453292F - ((float)Math.PI / 2F));
 				passenger.setPosition(this.posX + vec2.x, this.posY + this.getMountedYOffset() + passenger.getYOffset(), this.posZ + vec2.z);
+			}
+		}
+
+		@Override
+		protected void updateAITasks() {
+			super.updateAITasks();
+			if (this.mouthShootingJutsu != null && this.mouthShootingJutsu.isDead) {
+				this.setSwingingArms(false);
+				this.mouthShootingJutsu = null;
+			}
+		}
+
+		@Override
+		public void attackEntityWithRangedAttack(EntityLivingBase target, float distanceFactor) {
+			if (!this.isAIDisabled() && (this.mouthShootingJutsu == null || this.mouthShootingJutsu.isDead)
+			 && distanceFactor < 1.0f && distanceFactor > (float)(ProcedureUtils.getReachDistance(this) * 0.6d / this.bijudamaMinRange)) {
+				this.setSwingingArms(true);
+				this.mouthShootingJutsu = new EntityFutonVacuum.EC.Jutsu().createJutsu(this, (float)this.bijudamaMinRange, 40);
+				((EntityFutonVacuum.EC)this.mouthShootingJutsu).setDamageModifier(2.0f);
+				((EntityFutonVacuum.EC)this.mouthShootingJutsu).setBulletSize(40.0f);
+			} else {
+				super.attackEntityWithRangedAttack(target, distanceFactor);
 			}
 		}
 

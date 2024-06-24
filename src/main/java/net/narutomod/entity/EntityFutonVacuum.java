@@ -39,10 +39,11 @@ public class EntityFutonVacuum extends ElementsNarutomodMod.ModElement {
 
 	public static class EC extends Entity {
 		private final AirStream airStream = new AirStream();
-		private final float damageModifier = 0.5f;
+		private float damageModifier = 0.5f;
 		private EntityLivingBase user;
 		private float power;
 		private int maxDuration;
+		private float bulletSize;
 
 		public EC(World world) {
 			super(world);
@@ -54,11 +55,20 @@ public class EntityFutonVacuum extends ElementsNarutomodMod.ModElement {
 			this.user = userIn;
 			this.power = powerIn;
 			this.maxDuration = (int)(powerIn * 4f);
+			this.bulletSize = 1.5f;
 			this.setPosition(userIn.posX, userIn.posY, userIn.posZ);
 		}
 
 		@Override
 		protected void entityInit() {
+		}
+
+		public void setBulletSize(float size) {
+			this.bulletSize = size;
+		}
+
+		public void setDamageModifier(float dm) {
+			this.damageModifier = dm;
 		}
 
 		@Override
@@ -67,7 +77,7 @@ public class EntityFutonVacuum extends ElementsNarutomodMod.ModElement {
 				this.setPosition(this.user.posX, this.user.posY, this.user.posZ);
 				if (this.ticksExisted % 5 == 1) {
 					this.playSound(SoundEvents.BLOCK_FIRE_EXTINGUISH, 1f, this.rand.nextFloat() * 0.5f + 0.8f);
-					this.airStream.execute2(this.user, this.power, 0.5d);
+					this.airStream.execute2(this.user, this.power, this.bulletSize / 3);
 				}
 			}
 			if (!this.world.isRemote && (this.ticksExisted > this.maxDuration || this.user == null || !this.user.isEntityAlive())) {
@@ -144,12 +154,12 @@ public class EntityFutonVacuum extends ElementsNarutomodMod.ModElement {
 			@Override
 			protected void preExecuteParticles(Entity player) {
 				Vec3d vec = player.getLookVec();
-				Vec3d vec0 = vec.scale(2d).addVector(player.posX, player.posY+1.6d, player.posZ);
+				Vec3d vec0 = vec.scale(2d).add(player.getPositionEyes(1f));
 				Particles.Renderer particles = new Particles.Renderer(player.world);
-				for (int i = 1; i < 400; i++) {
+				for (int i = 1; i < 200; i++) {
 					Vec3d vec1 = vec.scale(EC.this.rand.nextDouble() * EC.this.power * 0.25d);
-					particles.spawnParticles(Particles.Types.SMOKE, vec0.x, vec0.y, vec0.z,
-					 1, 0d, 0d, 0d, vec1.x, vec1.y, vec1.z, 0x20FFFFFF, 10);
+					particles.spawnParticles(Particles.Types.SMOKE, vec0.x, vec0.y, vec0.z, 1, 0d, 0d, 0d,
+					 vec1.x, vec1.y, vec1.z, 0x20FFFFFF, (int)(EC.this.bulletSize * 10f), 8 + EC.this.rand.nextInt(33));
 				}
 				particles.send();
 			}

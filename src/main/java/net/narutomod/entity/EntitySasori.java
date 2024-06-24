@@ -187,7 +187,7 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 				this.setEntityInvulnerable(true);
 				Vec3d vec = this.getRevengeTarget() != null ? this.getPositionVector().subtract(this.getRevengeTarget().getPositionVector()) : new Vec3d(this.motionX, this.motionY, this.motionZ);
 				this.coreEntity = new EntityCore(this);
-				this.coreEntity.shoot(vec.x, vec.y, vec.z, 0.95f, 0.1f);
+				this.coreEntity.shoot(vec.x, vec.y, vec.z, 0.98f, 0.1f);
 				this.world.spawnEntity(this.coreEntity);
 				if (this.lastElementalJutsu != null && !this.lastElementalJutsu.isDead) {
 					this.lastElementalJutsu.setDead();

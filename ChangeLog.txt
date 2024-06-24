@@ -13,6 +13,10 @@ Jutsus:
  - when opening gates, user no longer invulnerable (possible random dying bug when opening gates, needs testing)
  - poison mist also inflicts blindness for 5s
  - reduced revolving heaven block breaking (can't break stone anymore)
+ - rasengan/biju ball is now more transparent in 1st person view for better visability
+ - kekkei mora projectiles are now unblockable
+ - add Water cannon ball jutsu
+ - great fireball jutsu can be guided if user jutsuXp >= 2x requirement
 
 Items:
  - added Sakura shippuden clothing and leggings (for slim player models only)
@@ -21,7 +25,7 @@ Items:
  - added Jiraiya jacket, clothing, forehead protector and robe
  - added 3rd Kazekage puppet scroll
  - attack puppet scrolls: within 50 blocks, left click entity to set as puppet attack target, left click puppet to cancel target
- - senbons now does 4 melee damage, poison senbons 5 minute poison effect
+ - senbons now does 4 melee damage, poison senbons 5 minute poison + slowness
  - puppet senbon arm canon can bounce off blocks, shoots poison senbons in all directions for 4s
  - poison bombs also inflicts blindness for 5s
  - added kunai sword and recipe, can block attacks
@@ -44,7 +48,10 @@ Entities:
  - Karasu puppet shoots poison bombs as well as senbons, better AI
  - added sasori's 100 puppet, puppet size and appearance is random
  - increased puppets speed slightly, auto covers for summoner and takes damage if within range
- - buffed tailed beast melee damage slightly
+ - buffed tailed beast melee damage slightly, better AI
+ - added melee animation for Matatabi(paw swipe) and Kokuo(head butt)
+ - Shukaku shoots air bullets, Matatabi shoots fire balls, Isobu shoots water balls, Son Goku shoots green fire,
+   Saiken shoots acid breath, Chomei emits blinding powder
  
 General:
  - fixed alpha transparency bug when using certain jutsus

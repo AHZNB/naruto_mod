@@ -98,15 +98,6 @@
       }
     ]
   },
-  "MajiNaguri": {
-    "category": "master",
-    "sounds": [
-      {
-        "name": "narutomod:majinaguri",
-        "stream": false
-      }
-    ]
-  },
   "hand_shoot": {
     "category": "master",
     "sounds": [
@@ -1048,6 +1039,33 @@
     "sounds": [
       {
         "name": "narutomod:wood_click",
+        "stream": false
+      }
+    ]
+  },
+  "matatabi_roar1": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "narutomod:matatabi_roar1",
+        "stream": false
+      }
+    ]
+  },
+  "matatabi_roar2": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "narutomod:matatabi_roar2",
+        "stream": false
+      }
+    ]
+  },
+  "waterfall": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "narutomod:waterfall",
         "stream": false
       }
     ]

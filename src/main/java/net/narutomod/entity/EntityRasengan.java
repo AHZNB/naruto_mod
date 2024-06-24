@@ -380,6 +380,7 @@ public class EntityRasengan extends ElementsNarutomodMod.ModElement {
 				this.bindEntityTexture(entity);
 				EntityLivingBase owner = entity.getOwner();
 				float scale = entity.getEntityScale();
+				float alpha = 1.0F;
 	            GlStateManager.pushMatrix();
 	            if (owner != null) {
 					Entity viewer = Minecraft.getMinecraft().getRenderViewEntity();
@@ -400,6 +401,7 @@ public class EntityRasengan extends ElementsNarutomodMod.ModElement {
 		            	rotateArmIn1stPerson(owner, partialTicks);
 			            model.postRenderArm(0.0625F * 0.9375F, EnumHandSide.RIGHT);
 			            GlStateManager.translate(-0.125F, entity.height - 0.025F, 0.0F);
+			            alpha = 0.34F;
 		            } else {
 						this.renderParticles(entity.world, ballVec.addVector(0.0d, entity.height/2, 0.0d), scale);
 						x = owner.lastTickPosX + (owner.posX - owner.lastTickPosX) * partialTicks - this.renderManager.viewerPosX;
@@ -427,8 +429,9 @@ public class EntityRasengan extends ElementsNarutomodMod.ModElement {
 				for (int i = 0; i < 10; i++) {
 					GlStateManager.rotate(rand.nextFloat() * 30f, 0f, 1f, 0f);
 					GlStateManager.rotate(rand.nextFloat() * 30f, 1f, 1f, 0f);
-					this.mainModel.render(entity, 0.0F, 0.0F, partialTicks + entity.ticksExisted, 0.0F, 0.0F, 0.0625F);
+					this.mainModel.render(entity, alpha, 0.0F, partialTicks + entity.ticksExisted, 0.0F, 0.0F, 0.0625F);
 				}
+				GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 				GlStateManager.enableLighting();
 				GlStateManager.enableCull();
 				//GlStateManager.disableAlpha();
@@ -537,10 +540,10 @@ public class EntityRasengan extends ElementsNarutomodMod.ModElement {
 			}
 	
 			@Override
-			public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
-				GlStateManager.color(1f, 1f, 1f, 0.3f);
+			public void render(Entity entity, float alpha, float f1, float f2, float f3, float f4, float f5) {
+				GlStateManager.color(1f, 1f, 1f, 0.3f * alpha);
 				core.render(f5);
-				GlStateManager.color(0.66F, 0.87F, 1.0F, 0.3F);
+				GlStateManager.color(0.66F, 0.87F, 1.0F, 0.3F * alpha);
 				shell.render(f5);
 			}
 	
@@ -548,11 +551,6 @@ public class EntityRasengan extends ElementsNarutomodMod.ModElement {
 				modelRenderer.rotateAngleX = x;
 				modelRenderer.rotateAngleY = y;
 				modelRenderer.rotateAngleZ = z;
-			}
-	
-			@Override
-			public void setRotationAngles(float f, float f1, float f2, float f3, float f4, float f5, Entity e) {
-				super.setRotationAngles(f, f1, f2, f3, f4, f5, e);
 			}
 		}
 	}

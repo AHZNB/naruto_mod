@@ -14,11 +14,13 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.entity.ai.EntityAIAttackMelee;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.client.model.ModelRenderer;
@@ -27,12 +29,17 @@ import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.init.MobEffects;
+import net.minecraft.potion.PotionEffect;
 
+import net.narutomod.procedure.ProcedureRenderView;
 import net.narutomod.procedure.ProcedureUtils;
+import net.narutomod.Particles;
 import net.narutomod.ElementsNarutomodMod;
 
 import java.util.Random;
 import javax.annotation.Nullable;
+import com.google.common.base.Predicate;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntitySevenTails extends ElementsNarutomodMod.ModElement {
@@ -163,20 +170,6 @@ public class EntitySevenTails extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
-		protected void setMeleeAttackTasks() {
-			this.tasks.addTask(1, new EntityAIAttackMelee(this, 1.2D, true) {
-				@Override
-				public boolean shouldExecute() {
-					return !EntityCustom.this.isMotionHalted() && super.shouldExecute();
-				}
-				@Override
-				protected double getAttackReachSqr(EntityLivingBase attackTarget) {
-					return ProcedureUtils.getReachDistanceSq(this.attacker) * 0.36d;
-				}
-			});
-		}
-
-		@Override
 		public EntityBijuManager getBijuManager() {
 			return tailBeastManager;
 		}
@@ -218,7 +211,39 @@ public class EntitySevenTails extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public SoundEvent getDeathSound() {
-			return SoundEvent.REGISTRY.getObject(new ResourceLocation(""));
+			return null;
+		}
+
+		@Override
+		protected void updateAITasks() {
+			super.updateAITasks();
+			EntityLivingBase target = this.getAttackTarget();
+			if (target != null) {
+				if (this.getMeleeTime() <= 0 && this.getDistance(target) < this.bijudamaMinRange) {
+					this.setMeleeTime(80);
+				}
+				Particles.Renderer particles = new Particles.Renderer(this.world);
+				for (int i = 0; i < 100; i++) {
+					particles.spawnParticles(Particles.Types.FALLING_DUST, this.posX, this.posY + 0.5d * this.height , this.posZ,
+					 1, 0.5d * this.width, 0.4d * this.height, 0.5d * this.width,
+					 (this.rand.nextDouble()-0.5d) * 8.0d, (this.rand.nextDouble()-0.5d) * 4.0d, (this.rand.nextDouble()-0.5d) * 8.0d, 0xD0FFFFFF, 240);
+				}
+				particles.send();
+				for (EntityLivingBase entity : this.world.getEntitiesWithinAABB(EntityLivingBase.class, this.getEntityBoundingBox().grow(20d), new Predicate<EntityLivingBase>() {
+					@Override
+					public boolean apply(@Nullable EntityLivingBase p_apply_1_) {
+						return p_apply_1_ != null && p_apply_1_ != EntityCustom.this && p_apply_1_ != EntityCustom.this.getBijuManager().getJinchurikiPlayer();
+					}
+				})) {
+					if (this.rand.nextFloat() < 0.005f) {
+						if (entity instanceof EntityPlayer) {
+							ProcedureRenderView.sendToPlayer(entity, 100, 100, 1.0f, 1.0f, 1.0f, 1.0f);
+						} else if (entity instanceof EntityLiving) {
+							entity.addPotionEffect(new PotionEffect(MobEffects.SLOWNESS, 100, 5));
+						}
+					}
+				}
+			}
 		}
 
 		@Override
@@ -227,19 +252,24 @@ public class EntitySevenTails extends ElementsNarutomodMod.ModElement {
 			super.onUpdate();
 			if (!this.onGround && this.ticksExisted % 10 == 0) {
 				this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:chomei_flying")),
-				 5f, this.rand.nextFloat() * 0.4f + 0.8f);
+				 4.0f, this.rand.nextFloat() * 0.4f + 0.8f);
 			}
 		}
 
 		@Override
 		public void travel(float ti, float tj, float tk) {
-			if (this.isBeingRidden()) {
+			if (this.isBeingRidden() && this.canBeSteered()) {
 				EntityLivingBase entity = (EntityLivingBase)this.getControllingPassenger();
 				if ((!this.onGround || entity.rotationPitch < 0.0F) && entity.moveForward > 0.0F) {
 					this.motionY -= entity.rotationPitch / 45.0D;
 				}
 			}
 			super.travel(ti, tj, tk);
+		}
+
+		@Override
+		public float getBlockPathWeight(BlockPos pos) {
+			return this.world.isAirBlock(pos) ? 20.0F : super.getBlockPathWeight(pos);
 		}
 	}
 

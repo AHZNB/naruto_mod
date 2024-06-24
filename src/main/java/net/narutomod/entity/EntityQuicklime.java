@@ -14,6 +14,7 @@ import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
 
 import net.minecraft.world.World;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.ResourceLocation;
@@ -76,8 +77,10 @@ public class EntityQuicklime extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public void onUpdate() {
-			this.setParticleTextureOffset(4 + this.rand.nextInt(4));
+			//this.setParticleTextureOffset(4 + this.rand.nextInt(4));
 			int age = this.getAge();
+			int maxAge = this.getMaxAge();
+			this.setParticleTextureOffset(MathHelper.clamp(7 - age * 8 / maxAge, 0, 7));
 			this.prevPosX = this.posX;
 			this.prevPosY = this.posY;
 			this.prevPosZ = this.posZ;
@@ -110,7 +113,7 @@ public class EntityQuicklime extends ElementsNarutomodMod.ModElement {
 			if (!this.world.isRemote) {
 				this.setAge(++age);
 			}
-			if (age > this.getMaxAge()) {
+			if (age > maxAge) {
 				this.onDeath();
 			}
 		}
@@ -126,29 +129,37 @@ public class EntityQuicklime extends ElementsNarutomodMod.ModElement {
 		}
 
 		public static class Jutsu implements ItemJutsu.IJutsuCallback {
-			private final float baseDamage = 20.0f;
+			private static final float BASE_DAMAGE = 20.0f;
+
 			@Override
 			public boolean createJutsu(ItemStack stack, EntityLivingBase entityIn, float power) {
 				if (stack.getItem() instanceof ItemYooton.RangedItem) {
-					Vec3d vec = entityIn.getPositionEyes(1.0f);
-					Vec3d vec1 = entityIn.getLookVec().scale(2.0d);
 					power = 1.0f / ((ItemYooton.RangedItem)stack.getItem()).getCurrentJutsuXpModifier(stack, entityIn);
-					if (entityIn.world.spawnEntity(new EC(entityIn, vec.x, vec.y, vec.z, vec1.x, vec1.y, vec1.z, power * baseDamage))) {
-						entityIn.world.playSound(null, entityIn.posX, entityIn.posY, entityIn.posZ, 
-						 net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:spitbig")),
-						 net.minecraft.util.SoundCategory.NEUTRAL, 1f, 0.8f + entityIn.getRNG().nextFloat() * 0.3f);
-						Particles.Renderer particles = new Particles.Renderer(entityIn.world);
-						for (int i = 0; i < 300; i++) {
-							double d = entityIn.getRNG().nextDouble() * 0.4d;
-							Vec3d vec2 = entityIn.getLookVec().scale(2.0d * (d + 0.6d));
-							particles.spawnParticles(Particles.Types.SPIT, vec.x, vec.y, vec.z, 1,
-							 0d, 0d, 0d, vec2.x, vec2.y, vec2.z, 0xF8B0B0B0, 5 + (int)(d * 237.5d), entityIn.getEntityId());
-						}
-						particles.send();
-						return true;
-					}
+					return this.createJutsu(entityIn, 2.0d, power) != null;
 				}
 				return false;
+			}
+
+			@Nullable
+			public static EC createJutsu(EntityLivingBase entityIn, double speed, float damageMultiplier) {
+				Vec3d vec = entityIn.getPositionEyes(1.0f);
+				Vec3d vec1 = entityIn.getLookVec().scale(speed);
+				EC entity1 = new EC(entityIn, vec.x, vec.y, vec.z, vec1.x, vec1.y, vec1.z, damageMultiplier * BASE_DAMAGE);
+				if (entityIn.world.spawnEntity(entity1)) {
+					entityIn.world.playSound(null, entityIn.posX, entityIn.posY, entityIn.posZ, 
+					 net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:spitbig")),
+					 net.minecraft.util.SoundCategory.NEUTRAL, 1f, 0.8f + entityIn.getRNG().nextFloat() * 0.3f);
+					Particles.Renderer particles = new Particles.Renderer(entityIn.world);
+					for (int i = 0; i < 300; i++) {
+						double d = entityIn.getRNG().nextDouble() * 0.4d;
+						Vec3d vec2 = entityIn.getLookVec().scale(speed * (d + 0.6d));
+						particles.spawnParticles(Particles.Types.SPIT, vec.x, vec.y, vec.z, 1,
+						 0d, 0d, 0d, vec2.x, vec2.y, vec2.z, 0xF8B0B0B0, 5 + (int)(d * 237.5d), entityIn.getEntityId());
+					}
+					particles.send();
+					return entity1;
+				}
+				return null;
 			}
 		}
 	}

@@ -17,6 +17,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.model.ModelBox;
@@ -168,6 +169,15 @@ public class EntityEightTails extends ElementsNarutomodMod.ModElement {
 				Vec3d vec2 = vec[i].rotatePitch(-this.rotationPitch * 0.017453292F)
 				 .rotateYaw(-this.rotationYaw * 0.017453292F).add(this.getPositionVector());
 				passenger.setPosition(vec2.x, vec2.y + this.getMountedYOffset() + passenger.getYOffset(), vec2.z);
+			}
+		}
+
+		@Override
+		protected void updateAITasks() {
+			super.updateAITasks();
+			EntityLivingBase target = this.getAttackTarget();
+			if (target != null && this.getMeleeTime() <= 0 && this.getDistance(target) < this.bijudamaMinRange) {
+				this.setMeleeTime(80);
 			}
 		}
 

@@ -17,6 +17,7 @@ import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Item;
 import net.minecraft.item.EnumAction;
@@ -147,10 +148,16 @@ public class ItemAshBones extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
-		protected void arrowHit(EntityLivingBase entity) {
-			super.arrowHit(entity);
-			entity.setArrowCountInEntity(entity.getArrowCountInEntity() - 1);
-			hitLivingEntity(entity);
+		protected void onHit(RayTraceResult result) {
+			if (result.entityHit != null) {
+				if (result.entityHit instanceof EntityLivingBase) {
+					hitLivingEntity(result.entityHit);
+				}
+				this.playSound(net.minecraft.init.SoundEvents.ENTITY_ARROW_HIT, 1.0F, 1.2F / (this.rand.nextFloat() * 0.2F + 0.9F));
+				this.setDead();
+			} else {
+				super.onHit(result);
+			}
 		}
 
 		@Override

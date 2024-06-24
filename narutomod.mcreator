@@ -1,7 +1,7 @@
 {
   "id_map": {
     "GUI": 64,
-    "ENTITY": 442,
+    "ENTITY": 444,
     "DIMENSION": 13
   },
   "mod_elements": [
@@ -7385,6 +7385,18 @@
       "locked_code": false,
       "ids": {},
       "registry_name": "kunai_blade_recipe"
+    },
+    {
+      "name": "WaterCanonball",
+      "type": "mob",
+      "sortid": 873,
+      "compiles": true,
+      "locked_code": true,
+      "ids": {
+        "0": 443,
+        "1": 444
+      },
+      "registry_name": "water_canonball"
     }
   ],
   "variable_elements": [
@@ -7542,13 +7554,6 @@
       "name": "HakkeKusho",
       "files": [
         "hakkekusho"
-      ],
-      "category": "master"
-    },
-    {
-      "name": "MajiNaguri",
-      "files": [
-        "majinaguri"
       ],
       "category": "master"
     },
@@ -8361,6 +8366,30 @@
       ],
       "category": "master",
       "subtitle": ""
+    },
+    {
+      "name": "matatabi_roar1",
+      "files": [
+        "matatabi_roar1"
+      ],
+      "category": "master",
+      "subtitle": ""
+    },
+    {
+      "name": "matatabi_roar2",
+      "files": [
+        "matatabi_roar2"
+      ],
+      "category": "master",
+      "subtitle": ""
+    },
+    {
+      "name": "waterfall",
+      "files": [
+        "waterfall"
+      ],
+      "category": "master",
+      "subtitle": ""
     }
   ],
   "language_map": {
@@ -8606,6 +8635,8 @@
       "item.uchihalegs.name": "Uchiha Leggings",
       "entity.swamp_pit.name": "Swamp of the Underworld",
       "entity.toad.name": "Toad",
+      "subtitles.matatabi_roar1": "",
+      "subtitles.matatabi_roar2": "",
       "entity.enhanced_strength.name": "Enhanced Strength",
       "advancements.mokuton_acquired.descr": "Wood Release is a nature transformation kekkei genkai, a combination of Earth and Water Release. It was famously used by Hashirama Senju, and in fact is not known to have naturally occurred in anyone else, leading to it being regarded as impossible to use without having his cells.",
       "subtitles.ringing": "",
@@ -8708,6 +8739,7 @@
       "item.jutsu.name": "Jutsu",
       "item.ninja_armor_jiraiyabody.name": "Jiraiya Jacket",
       "tile.light_source.name": "Light Source",
+      "entity.water_canonball.name": "Water Cannon Ball",
       "chattext.bijumanager.tooweak": "You are not strong enough to take on %s\u0027s chakra!",
       "item.scroll_big_blow.name": "Wind Release - Great Breakthrough",
       "chattext.eightgates.gate1": "1st Gate: Gate of Opening",
@@ -8801,6 +8833,7 @@
       "entity.firestream.name": "Firestream",
       "chattext.jutsu.enabled": "%s is now enabled!",
       "item.folding_fan.name": "Giant Folding Fan",
+      "subtitles.waterfall": "",
       "splash_potion.effect.feather_falling": "Splash Feather Falling",
       "tooltip.yooton.musthave": "Must have Earth \u0026 Fire release",
       "entity.ice_spike.name": "Shattering Ice Spear",

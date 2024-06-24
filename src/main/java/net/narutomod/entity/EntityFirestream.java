@@ -51,6 +51,8 @@ public class EntityFirestream extends ElementsNarutomodMod.ModElement {
 		private int maxLife = 110;
 		private EntityLivingBase shooter;
 		private double width, range;
+		private int flameColor = 0xffffcf00;
+		private float damage;
 
 		public EC(World world) {
 			super(world);
@@ -63,6 +65,7 @@ public class EntityFirestream extends ElementsNarutomodMod.ModElement {
 			this.setIdlePosition();
 			this.width = widthIn;
 			this.range = rangeIn;
+			this.damage = (float)rangeIn;
 		}
 
 		@Override
@@ -74,6 +77,14 @@ public class EntityFirestream extends ElementsNarutomodMod.ModElement {
 				Vec3d vec3d = this.shooter.getLookVec();
 				this.setPosition(this.shooter.posX + vec3d.x, this.shooter.posY + this.shooter.getEyeHeight() + vec3d.y - 0.2d, this.shooter.posZ + vec3d.z);
 			}
+		}
+
+		public void setFlameColor(int color) {
+			this.flameColor = color;
+		}
+
+		public void setDamage(float amount) {
+			this.damage = amount;
 		}
 
 		@Override
@@ -98,7 +109,7 @@ public class EntityFirestream extends ElementsNarutomodMod.ModElement {
 					}
 					if (this.ticksExisted < this.maxLife - 20 && this.ticksExisted % 10 == 1) {
 						this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:flamethrow")), 
-						 1.0f, this.rand.nextFloat() * 0.5f + 0.6f);
+						 this.range > 30.0d ? 5.0f : 1.0f, this.rand.nextFloat() * 0.5f + 0.6f);
 					}
 				}
 			}
@@ -110,15 +121,14 @@ public class EntityFirestream extends ElementsNarutomodMod.ModElement {
 				Vec3d vec3d = Vec3d.fromPitchYaw(directionPitch + (float)((this.rand.nextDouble()-0.5d) * angle * 3.0d),
 				 directionYaw + (float)((this.rand.nextDouble()-0.5d) * angle * 3.0d)).scale(range * 0.1d);
 				this.world.spawnEntity(new FlameParticle(this.shooter, this.posX, this.posY, this.posZ,
-				 vec3d.x, vec3d.y, vec3d.z, 0xffffcf00, (float)vec3d.lengthVector()*5f + this.rand.nextFloat()*2f,
-				 (float)range * (this.rand.nextFloat() * 0.5f + 0.5f)));
+				 vec3d.x, vec3d.y, vec3d.z, this.flameColor, 2.5f, this.damage * (this.rand.nextFloat() * 0.4f + 0.8f)));
 			}
 			Particles.Renderer particles = new Particles.Renderer(this.world);
 			for (int i = 0; i < (int)(range * radius * 0.8d); i++) {
 				Vec3d vec3d = Vec3d.fromPitchYaw(directionPitch + (float)((this.rand.nextDouble()-0.5d) * angle * 3.0d),
 				 directionYaw + (float)((this.rand.nextDouble()-0.5d) * angle * 3.0d)).scale(range * 0.1d);
 				particles.spawnParticles(Particles.Types.FLAME, this.posX, this.posY, this.posZ, 1, 0, 0, 0,
-				 vec3d.x, vec3d.y, vec3d.z, 0xffffcf00, (int)(vec3d.lengthVector()*50d)+this.rand.nextInt(20));
+				 vec3d.x, vec3d.y, vec3d.z, this.flameColor, (int)(vec3d.lengthVector()*50d)+this.rand.nextInt(20));
 			}
 			particles.send();
 		}
@@ -163,9 +173,14 @@ public class EntityFirestream extends ElementsNarutomodMod.ModElement {
 			}
 
 			public EC createJutsu(EntityLivingBase entity, float power, int duration) {
+				return this.createJutsu(entity, power, duration, 0xffffcf00);
+			}
+
+			public EC createJutsu(EntityLivingBase entity, float power, int duration, int color) {
 				EC entity1 = new EC(entity, 1.0f, power);
 				entity1.wait = 0;
 				entity1.maxLife = duration;
+				entity1.setFlameColor(color);
 				entity.world.spawnEntity(entity1);
 				return entity1;
 			}
@@ -228,7 +243,7 @@ public class EntityFirestream extends ElementsNarutomodMod.ModElement {
 		}
 
 		public void onImpact(RayTraceResult result) {
-			int i = this.rand.nextInt(10);
+			int i = this.rand.nextInt(8);
 			if (result.entityHit != null) {
 				result.entityHit.attackEntityFrom(ItemJutsu.causeJutsuDamage(this, this.shooter)
 				 .setDamageBypassesArmor().setFireDamage(), this.damage);

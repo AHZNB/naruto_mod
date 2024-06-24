@@ -18,6 +18,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.model.ModelBiped;
@@ -32,8 +33,7 @@ import net.narutomod.item.ItemKaton;
 import net.narutomod.item.ItemDoton;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.ElementsNarutomodMod;
-
-
+
 import java.util.Random;
 import javax.annotation.Nullable;
 
@@ -185,6 +185,27 @@ public class EntityFourTails extends ElementsNarutomodMod.ModElement {
 				int i = this.getPassengers().indexOf(passenger);
 				Vec3d vec2 = vec[i].rotateYaw(-this.rotationYaw * 0.017453292F - ((float)Math.PI / 2F));
 				passenger.setPosition(this.posX + vec2.x, this.posY + this.getMountedYOffset() + passenger.getYOffset(), this.posZ + vec2.z);
+			}
+		}
+
+		@Override
+		protected void updateAITasks() {
+			super.updateAITasks();
+			if (this.mouthShootingJutsu != null && this.mouthShootingJutsu.isDead) {
+				this.setSwingingArms(false);
+				this.mouthShootingJutsu = null;
+			}
+		}
+
+		@Override
+		public void attackEntityWithRangedAttack(EntityLivingBase target, float distanceFactor) {
+			if (!this.isAIDisabled() && (this.mouthShootingJutsu == null || this.mouthShootingJutsu.isDead)
+			 && distanceFactor < 1.0f && distanceFactor > (float)(ProcedureUtils.getReachDistance(this) * 0.6d / this.bijudamaMinRange)) {
+				this.setSwingingArms(true);
+				this.mouthShootingJutsu = new EntityFirestream.EC.Jutsu2().createJutsu(this, (float)this.bijudamaMinRange, 80, 0xff00ff80);
+				((EntityFirestream.EC)this.mouthShootingJutsu).setDamage(100.0f);
+			} else {
+				super.attackEntityWithRangedAttack(target, distanceFactor);
 			}
 		}
 

@@ -489,7 +489,10 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 
 	@SideOnly(Side.CLIENT)
 	public static class FallingDust extends ParticleSimpleAnimated {
-		public FallingDust(World world, double x, double y, double z, double xMotion, double yMotion, double zMotion, int color) {
+		final float rotSpeed;
+		int particleBrightness;
+		
+		public FallingDust(World world, double x, double y, double z, double xMotion, double yMotion, double zMotion, int color, int brightness) {
 			super(world, x, y, z, 176, 4, -0.025F);
 			this.motionX = xMotion;
 			this.motionY = yMotion;
@@ -507,15 +510,33 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 				this.particleBlue += f;
 			this.particleScale *= 0.75F;
 			this.particleMaxAge = 60 + this.rand.nextInt(12);
-			this.setBaseAirFriction(0.2F);
+			this.rotSpeed = (this.rand.nextFloat() - 0.5F) * 0.1F;
+			if (brightness != 0) {
+				this.particleBrightness = brightness;
+			}
+			this.setBaseAirFriction(0.8F);
+		}
+
+		@Override
+		public void onUpdate() {
+			super.onUpdate();
+			this.prevParticleAngle = this.particleAngle;
+			this.particleAngle += (float)Math.PI * this.rotSpeed * 2.0F;
+		}
+
+		@Override
+		public int getBrightnessForRender(float p_189214_1_) {
+			return this.particleBrightness != 0 ? ((this.particleBrightness << 16) | this.particleBrightness) 
+			  : super.getBrightnessForRender(p_189214_1_);
 		}
 
 		@SideOnly(Side.CLIENT)
 		public static class Factory implements IParticleFactory {
 			public Particle createParticle(int particleID, World worldIn, double xCoordIn, double yCoordIn, double zCoordIn, double xSpeedIn,
 					double ySpeedIn, double zSpeedIn, int... parameters) {
+				int arg1 = (parameters.length > 1) ? parameters[1] : 0;
 				int arg0 = (parameters.length > 0) ? parameters[0] : -1;
-				return new FallingDust(worldIn, xCoordIn, yCoordIn, zCoordIn, xSpeedIn, ySpeedIn, zSpeedIn, arg0);
+				return new FallingDust(worldIn, xCoordIn, yCoordIn, zCoordIn, xSpeedIn, ySpeedIn, zSpeedIn, arg0, arg1);
 			}
 		}
 	}
@@ -854,11 +875,13 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 	@SideOnly(Side.CLIENT)
 	public static class BurningAsh extends Smoke {
 		private final Entity excludeEntity;
+		private final float explodeSize;
 
 		protected BurningAsh(World worldIn, double xCoordIn, double yCoordIn, double zCoordIn, double xSpeedIn, double ySpeedIn, double zSpeedIn,
-		  int excludeEntityId) {
+		  int excludeEntityId, float explodesize) {
 			super(worldIn, xCoordIn, yCoordIn, zCoordIn, xSpeedIn, ySpeedIn, zSpeedIn, 0xFF606060, 8f + Particles.rand.nextFloat() * 5f, 100, 0, -1, 0f);
 			this.excludeEntity = worldIn.getEntityByID(excludeEntityId);
+			this.explodeSize = explodesize;
 		}
 
 		@Override
@@ -869,7 +892,7 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 				if (!list.isEmpty()) {
 					for (EntityLivingBase entity : list) {
 						if (!entity.equals(this.excludeEntity)) {
-							NarutomodMod.PACKET_HANDLER.sendToServer(new Message(entity.getEntityId(), 10));
+							NarutomodMod.PACKET_HANDLER.sendToServer(new Message(entity.getEntityId(), this.explodeSize));
 						}
 					}
 				}
@@ -880,31 +903,32 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 		public static class Factory implements IParticleFactory {
 			public Particle createParticle(int particleID, World worldIn, double xCoordIn, double yCoordIn, double zCoordIn, double xSpeedIn,
 					double ySpeedIn, double zSpeedIn, int... parameters) {
+				float arg1 = parameters.length > 1 && parameters[1] > 0 ? (float)parameters[1] : 0.0f;
 				int arg0 = (parameters.length > 0) ? parameters[0] : -1;
-				return new BurningAsh(worldIn, xCoordIn, yCoordIn, zCoordIn, xSpeedIn, ySpeedIn, zSpeedIn, arg0);
+				return new BurningAsh(worldIn, xCoordIn, yCoordIn, zCoordIn, xSpeedIn, ySpeedIn, zSpeedIn, arg0, arg1);
 			}
 		}
 
 		public static class Message implements IMessage {
 			int id;
-			int sec;
+			float size;
 			
 			public Message() {
 			}
 	
-			public Message(int entityId, int seconds) {
+			public Message(int entityId, float f) {
 				this.id = entityId;
-				this.sec = seconds;
+				this.size = f;
 			}
 	
 			public void toBytes(ByteBuf buf) {
 				buf.writeInt(this.id);
-				buf.writeInt(this.sec);
+				buf.writeFloat(this.size);
 			}
 	
 			public void fromBytes(ByteBuf buf) {
 				this.id = buf.readInt();
-				this.sec = buf.readInt();
+				this.size = buf.readFloat();
 			}
 
 			public static class Handler implements IMessageHandler<Message, IMessage> {
@@ -914,7 +938,11 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 					world.addScheduledTask(() -> {
 						Entity entity = world.getEntityByID(message.id);
 						if (entity instanceof EntityLivingBase) {
-							entity.setFire(message.sec);
+							if (message.size > 0.0f) {
+								world.newExplosion(null, entity.posX, entity.posY, entity.posZ, message.size, true, net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(world, entity));
+							} else {
+								entity.setFire(15);
+							}
 						}
 					});
 					return null;
@@ -973,17 +1001,19 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 		private static int PARTICLE_ID = -1;
 		private final int id = PARTICLE_ID--;
 		private boolean affected;
+		private int effectAmplifier;
 
 		protected AcidSpit(World worldIn, double xCoordIn, double yCoordIn, double zCoordIn, 
-		 double xSpeedIn, double ySpeedIn, double zSpeedIn, int excludeEntityId, int color) {
+		 double xSpeedIn, double ySpeedIn, double zSpeedIn, int excludeEntityId, int color, int amplifier) {
 			super(worldIn, xCoordIn, yCoordIn, zCoordIn, xSpeedIn, ySpeedIn, zSpeedIn, color, 0.5f + Particles.rand.nextFloat() * 4.5f, excludeEntityId);
+			this.effectAmplifier = amplifier;
 		}
 
 		@Override
 		public void onUpdate() {
 			super.onUpdate();
 			if (this.affectedEntity != null && !this.affected) {
-				NarutomodMod.PACKET_HANDLER.sendToServer(new Message(this.affectedEntity.getEntityId(), this.particleMaxAge - this.particleAge));
+				NarutomodMod.PACKET_HANDLER.sendToServer(new Message(this.affectedEntity.getEntityId(), this.particleMaxAge - this.particleAge, this.effectAmplifier));
 				this.affected = true;
 			}
 			BlockPos pos = ProcedureUtils.getNearestNonAirBlock(this.world, this.getBoundingBox().grow(0.01d),
@@ -997,32 +1027,37 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 		public static class Factory implements IParticleFactory {
 			public Particle createParticle(int particleID, World worldIn, double xCoordIn, double yCoordIn, double zCoordIn, double xSpeedIn,
 					double ySpeedIn, double zSpeedIn, int... parameters) {
+				int arg2 = (parameters.length > 2) ? parameters[2] : 1;
 				int arg1 = (parameters.length > 1) ? parameters[1] : 0x80ffd6ba;
 				int arg0 = (parameters.length > 0) ? parameters[0] : -1;
-				return new AcidSpit(worldIn, xCoordIn, yCoordIn, zCoordIn, xSpeedIn, ySpeedIn, zSpeedIn, arg0, arg1);
+				return new AcidSpit(worldIn, xCoordIn, yCoordIn, zCoordIn, xSpeedIn, ySpeedIn, zSpeedIn, arg0, arg1, arg2);
 			}
 		}
 
 		public static class Message implements IMessage {
 			int id;
 			int ticks;
+			int amp;
 			
 			public Message() {
 			}
 	
-			public Message(int entityId, int t) {
+			public Message(int entityId, int t, int a) {
 				this.id = entityId;
 				this.ticks = t;
+				this.amp = a;
 			}
 	
 			public void toBytes(ByteBuf buf) {
 				buf.writeInt(this.id);
 				buf.writeInt(this.ticks);
+				buf.writeInt(this.amp);
 			}
 	
 			public void fromBytes(ByteBuf buf) {
 				this.id = buf.readInt();
 				this.ticks = buf.readInt();
+				this.amp = buf.readInt();
 			}
 
 			public static class Handler implements IMessageHandler<Message, IMessage> {
@@ -1032,7 +1067,7 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 					world.addScheduledTask(() -> {
 						Entity entity = world.getEntityByID(message.id);
 						if (entity instanceof EntityLivingBase) {
-							((EntityLivingBase)entity).addPotionEffect(new PotionEffect(PotionCorrosion.potion, message.ticks, 1));
+							((EntityLivingBase)entity).addPotionEffect(new PotionEffect(PotionCorrosion.potion, message.ticks, message.amp));
 						}
 					});
 					return null;
@@ -1505,15 +1540,15 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 	public enum Types {
 		SMOKE("smoke_colored", 54678400, 6), 
 		SUSPENDED("suspended_colored", 54678401, 3), 
-		FALLING_DUST("falling_dust", 54678402, 1), 
+		FALLING_DUST("falling_dust", 54678402, 2),
 		FLAME("flame_colored", 54678403, 2),
 		MOB_APPEARANCE("mob_appearance", 54678404, 1),
-		BURNING_ASH("burning_ash", 54678405, 1),
+		BURNING_ASH("burning_ash", 54678405, 2),
 		HOMING_ORB("homing_orb", 54678406, 2),
 		EXPANDING_SPHERE("expanding_sphere", 54678407, 3),
 		PORTAL_SPIRAL("portal_spiral", 54678408, 3),
 		SEAL_FORMULA("seal_formula", 54678409, 3),
-		ACID_SPIT("acid_spit", 54678410, 2),
+		ACID_SPIT("acid_spit", 54678410, 3),
 		WHIRLPOOL("whirlpool", 54678411, 4),
 		BLOCK_DUST("block_dust", 54678412, 2),
 		SONIC_BOOM("sonic_boom", 54678413, 4),

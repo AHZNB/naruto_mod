@@ -137,18 +137,23 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 		private static final DataParameter<Boolean> FACEDOWN = EntityDataManager.<Boolean>createKey(Base.class, DataSerializers.BOOLEAN);
 		private static final DataParameter<Float> TRANSPARENCY = EntityDataManager.<Float>createKey(Base.class, DataSerializers.FLOAT);
 		private final BossInfoServer bossInfo = new BossInfoServer(this.getDisplayName(), BossInfo.Color.RED, BossInfo.Overlay.PROGRESS);
-		public static final int BIJUDAMA_CD = 200;
-		protected final double TARGET_RANGE = 108.0D;
+		public static final int ATTACK_CD_MIN = 20;
+		public static final int ATTACK_CD_MAX = 100;
+		//public static final int BIJUDAMA_CD = 100;
+		protected final double targetRange = 112.0D;
+		protected final double bijudamaMinRange = 64.0D;
 		private int deathTicks;
 		private int deathTotalTicks;
 		private EntityPlayer summoningPlayer;
-		private int tailBeastBallTime = BIJUDAMA_CD;
+		private int tailBeastBallTime = ATTACK_CD_MAX;
 		private int angerLevel;
 		private int lifeSpan = Integer.MAX_VALUE - 1;
 		private boolean motionHalted;
 		protected boolean canPassengerDismount = true;
 		protected boolean spawnedBySpawner;
 		protected final ProcedureUtils.CollisionHelper collisionData;
+		protected Entity mouthShootingJutsu;
+		private int meleeTime;
 
 		public Base(World world) {
 			super(world);
@@ -160,7 +165,6 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 			this.enablePersistence();
 			this.setHealth(this.getMaxHealth());
 			this.deathTotalTicks = 200;
-			this.setMeleeAttackTasks();
 		}
 
 		public Base(EntityPlayer player) {
@@ -262,7 +266,7 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 			super.applyEntityAttributes();
 			this.getAttributeMap().registerAttribute(ProcedureUtils.MAXHEALTH);
 			this.getAttributeMap().registerAttribute(EntityPlayer.REACH_DISTANCE);
-			this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(TARGET_RANGE);
+			this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(this.targetRange);
 			this.getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(1.0D);
 			this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(200.0D);
 		}
@@ -272,17 +276,36 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 			return super.getEntityAttribute(attribute == SharedMonsterAttributes.MAX_HEALTH ? ProcedureUtils.MAXHEALTH : attribute);
 		}
 
-		protected void setMeleeAttackTasks() {
-			this.tasks.addTask(0, new AILeapAtTarget(this, 24d, 2.0f) {
+		protected void setAttackTasks() {
+			this.tasks.addTask(0, new EntityAIAttackRanged(this, 1.2D, ATTACK_CD_MIN, ATTACK_CD_MAX, (float)this.bijudamaMinRange) {
+				@Override
+				public boolean shouldExecute() {
+					return super.shouldExecute() && !Base.this.isMotionHalted() && Base.this.meleeTime <= 0;
+				}
+				@Override
+				public boolean shouldContinueExecuting() {
+					return super.shouldContinueExecuting() && !Base.this.isMotionHalted() && Base.this.rand.nextFloat() > 0.004f;
+				}
+				@Override
+				public void resetTask() {
+					super.resetTask();
+					Base.this.meleeTime = 100;
+				}
+			});
+			this.tasks.addTask(1, new AILeapAtTarget(this, 24d, 2.0f) {
 				@Override
 				public boolean shouldExecute() {
 					return !Base.this.isMotionHalted() && super.shouldExecute();
 				}
 			});
-			this.tasks.addTask(1, new EntityAIAttackMelee(this, 1.2D, true) {
+			this.tasks.addTask(2, new EntityAIAttackMelee(this, 1.2D, true) {
 				@Override
 				public boolean shouldExecute() {
 					return !Base.this.isMotionHalted() && super.shouldExecute();
+				}
+				@Override
+				public boolean shouldContinueExecuting() {
+					return super.shouldContinueExecuting() && !Base.this.isMotionHalted() && Base.this.meleeTime > 0;
 				}
 				@Override
 				protected double getAttackReachSqr(EntityLivingBase attackTarget) {
@@ -297,7 +320,7 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 			this.targetTasks.addTask(0, new EntityAIHurtByTarget(this, false) {
 				@Override
 				protected double getTargetDistance() {
-					return TARGET_RANGE;
+					return Base.this.targetRange;
 				}
 			});
 			this.targetTasks.addTask(1, new EntityAINearestAttackableTarget(this, EntityPlayer.class, true, false) {
@@ -307,7 +330,7 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 				}
 				@Override
 				protected double getTargetDistance() {
-					return TARGET_RANGE;
+					return Base.this.targetRange;
 				}
 			});
 			this.targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, EntityLivingBase.class, true, false) {
@@ -317,22 +340,10 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 				}
 				@Override
 				protected double getTargetDistance() {
-					return TARGET_RANGE * 0.5d;
+					return Base.this.targetRange * 0.5d;
 				}
 			});
-			this.tasks.addTask(3, new EntityAIAttackRanged(this, 1.2D, BIJUDAMA_CD, (float)TARGET_RANGE + 64f) {
-				@Override
-				public boolean shouldExecute() {
-					return super.shouldExecute() && !Base.this.isMotionHalted() && Base.this.canShootBijudama()
-					 && Base.this.getDistance(Base.this.getAttackTarget()) > 32d
-					 && !Base.this.isInsideOfMaterial(Material.WATER);
-				}
-				@Override
-				public void resetTask() {
-					super.resetTask();
-					Base.this.setSwingingArms(false);
-				}
-			});
+			this.setAttackTasks();
 			this.tasks.addTask(4, new EntityAIWander(this, 1.0D) {
 				@Override
 				public boolean shouldExecute() {
@@ -348,9 +359,24 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 		@Override
 		protected void updateAITasks() {
 			super.updateAITasks();
-			if (this.getAttackTarget() != null && !this.getAttackTarget().isEntityAlive()) {
+			EntityLivingBase target = this.getAttackTarget();
+			if (target != null && !target.isEntityAlive()) {
 				this.setAttackTarget(null);
+				target = null;
 			}
+			if (this.meleeTime > 0) {
+				--this.meleeTime;
+			} else if (target != null && this.getDistance(target) <= ProcedureUtils.getReachDistance(this) * 0.6d) {
+				this.meleeTime = 80;
+			}
+		}
+
+		protected void setMeleeTime(int ticks) {
+			this.meleeTime = ticks;
+		}
+
+		protected int getMeleeTime() {
+			return this.meleeTime;
 		}
 
 		protected void haltMotion(boolean halt) {
@@ -730,18 +756,24 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
-		public void attackEntityWithRangedAttack(EntityLivingBase target, float flval) {
-			if (this.isAIDisabled() && this.tailBeastBallTime > 0) {
+		public void attackEntityWithRangedAttack(EntityLivingBase target, float distanceFactor) {
+			boolean flag = this.isAIDisabled();
+			if (flag && this.tailBeastBallTime > 0) {
 				if (target instanceof EntityPlayer) {
 					EntityPlayer player = (EntityPlayer) target;
 					player.sendStatusMessage(new TextComponentTranslation("chattext.cooldown.formatted", this.tailBeastBallTime / 20), true);
 				}
 				return;
 			}
-
-			if (EntityTailBeastBall.spawn(this, 14f, 1000f)) {
-				this.setSwingingArms(true);
-				this.tailBeastBallTime = BIJUDAMA_CD;
+			if ((this.mouthShootingJutsu == null || this.mouthShootingJutsu.isDead) && (flag || (distanceFactor >= 1.0f && this.canShootBijudama()))) {
+				this.mouthShootingJutsu = EntityTailBeastBall.spawn(this, 14f, 1000f);
+				if (this.mouthShootingJutsu != null) {
+					this.setSwingingArms(true);
+					this.tailBeastBallTime = ATTACK_CD_MAX;
+				}
+			} else if (!flag && distanceFactor <= ProcedureUtils.getReachDistance(this) * 0.6d / this.bijudamaMinRange) {
+				this.swingArm(EnumHand.MAIN_HAND);
+				this.attackEntityAsMob(target);
 			}
 		}
 
@@ -755,7 +787,12 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 		}
 
 		protected boolean canShootBijudama() {
-			return this.getHealth() >= this.getMaxHealth() * 0.4f;
+			return this.getHealth() >= this.getMaxHealth() * 0.3f;
+		}
+
+		@Override
+		public Vec3d getLookVec() {
+			return this.getVectorForRotation(this.rotationPitch, this.rotationYawHead); 
 		}
 
 		@Override
@@ -812,6 +849,7 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static class EntityTailBeastBall extends EntityScalableProjectile.Base {
+		private static final DataParameter<Integer> SHOOTER = EntityDataManager.<Integer>createKey(EntityTailBeastBall.class, DataSerializers.VARINT);
 		private final int buildupTime = 100;
 		private float maxScale;
 		private float maxDamage;
@@ -826,6 +864,7 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 
 		public EntityTailBeastBall(EntityLivingBase shooter, float maxscale, float maxdamage) {
 			super(shooter);
+			this.setShooter(shooter);
 			this.setOGSize(0.25F, 0.25F);
 			if (shooter instanceof EntityLiving) {
 				this.shooterAIDisabled = ((EntityLiving)shooter).isAIDisabled();
@@ -836,6 +875,21 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 			this.setWaterSlowdown(0.98f);
 			this.maxScale = maxscale;
 			this.maxDamage = maxdamage;
+		}
+
+		@Override
+		protected void entityInit() {
+			super.entityInit();
+			this.getDataManager().register(SHOOTER, Integer.valueOf(-1));
+		}
+
+		@Nullable
+		protected Entity getShooter() {
+			return this.world.getEntityByID(((Integer)this.getDataManager().get(SHOOTER)).intValue());
+		}
+
+		private void setShooter(@Nullable Entity player) {
+			this.getDataManager().set(SHOOTER, Integer.valueOf(player != null ? player.getEntityId() : -1));
 		}
 
 		private void setBuildupPosition() {
@@ -879,6 +933,7 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 					this.shoot(vec.x, vec.y, vec.z, 1.05F, 0.0F);
 					if (this.shootingEntity instanceof Base) {
 						((Base)this.shootingEntity).setSwingingArms(false);
+						((Base)this.shootingEntity).mouthShootingJutsu = null;
 					}
 				}
 			}
@@ -914,7 +969,8 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 		public void renderParticles() {
 		}
 
-		public static boolean spawn(EntityLivingBase summonerIn, float maxscale, float maxdamage) {
+		@Nullable
+		public static EntityTailBeastBall spawn(EntityLivingBase summonerIn, float maxscale, float maxdamage) {
 			double chakraUsage = 100d * maxscale;
 			EntityLivingBase user = null;
 			if (summonerIn instanceof Base) {
@@ -925,9 +981,11 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 			}
 			if ((user instanceof Base && ((Base)user).consumeHealthAsChakra((float)chakraUsage * 0.1f))
 			 || (user != null && net.narutomod.Chakra.pathway(user).consume(chakraUsage))) {
-				return summonerIn.world.spawnEntity(new EntityTailBeastBall(summonerIn, maxscale, maxdamage));
+				EntityTailBeastBall entity = new EntityTailBeastBall(summonerIn, maxscale, maxdamage);
+				summonerIn.world.spawnEntity(entity);
+				return entity;
 			}
-			return false;
+			return null;
 		}
 
 		protected static class CDTracker {
@@ -970,8 +1028,8 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 						 new TextComponentString(String.format("%.1f", cd.power)), true);
 					}
 				} else {
-					if (spawn(entity, cd.power, cd.power * 70f)) {
-						cd.cooldown = entity.ticksExisted + 100;
+					if (spawn(entity, cd.power, cd.power * 70f) != null) {
+						cd.cooldown = entity.ticksExisted + (int)(cd.power * 7.143f);
 					}
 					cd.power = 0f;
 				}
@@ -1451,23 +1509,30 @@ System.out.println("====== totalTicks:"+totalTicks+", lastTimeAtPathIndex:"+last
 
 			@Override
 			public void doRender(EntityTailBeastBall entity, double x, double y, double z, float entityYaw, float partialTicks) {
+				float ageInTicks = partialTicks + entity.ticksExisted;
 				this.bindEntityTexture(entity);
 				GlStateManager.pushMatrix();
 				//GlStateManager.disableCull();
 				float scale = entity.getEntityScale();
 				GlStateManager.translate(x, y + (0.125F * scale), z);
 				GlStateManager.scale(scale, scale, scale);
-				GlStateManager.rotate(entity.ticksExisted * 30.0F, 1.0F, 0.0F, 0.0F);
+				GlStateManager.rotate(ageInTicks * 30.0F, 1.0F, 0.0F, 0.0F);
 				GlStateManager.enableAlpha();
 				GlStateManager.enableBlend();
 				GlStateManager.disableLighting();
 				GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 				OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240.0F, 240.0F);
+				float alpha = 1.0F;
+				Entity shooter = entity.getShooter();
+				if (shooter instanceof EntityPlayer && shooter == this.renderManager.renderViewEntity && this.renderManager.options.thirdPersonView == 0 && entity.ticksExisted <= entity.buildupTime) {
+					alpha = 0.2F;
+				}
 				for (int i = 0; i < 6; i++) {
 					GlStateManager.rotate(entity.getRNG().nextFloat() * 30f, 0f, 1f, 0f);
 					GlStateManager.rotate(entity.getRNG().nextFloat() * 30f, 1f, 1f, 0f);
-					this.mainModel.render(entity, 0.0F, 0.0F, partialTicks + entity.ticksExisted, 0.0F, 0.0F, 0.0625F);
+					this.mainModel.render(entity, alpha, 0.0F, ageInTicks, 0.0F, 0.0F, 0.0625F);
 				}
+				GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 				GlStateManager.enableLighting();
 				//GlStateManager.disableAlpha();
 				GlStateManager.disableBlend();
@@ -1537,12 +1602,12 @@ System.out.println("====== totalTicks:"+totalTicks+", lastTimeAtPathIndex:"+last
 			}
 
 			@Override
-			public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
-				GlStateManager.color(0.0f, 0.0f, 0.0f, 1.0f);
+			public void render(Entity entity, float alpha, float f1, float f2, float f3, float f4, float f5) {
+				GlStateManager.color(0.0f, 0.0f, 0.0f, 1.0f * alpha);
 				core.render(f5);
 				//shell.rotateAngleY += 0.52359876F;
 				//shell.rotateAngleZ += 0.52359876F;
-				GlStateManager.color(1.0F, 1.0F, 1.0F, 0.15F);
+				GlStateManager.color(1.0F, 1.0F, 1.0F, 0.15F * alpha);
 				shell.render(f5);
 			}
 

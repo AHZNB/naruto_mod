@@ -318,10 +318,12 @@ public class ItemJutsu extends ElementsNarutomodMod.ModElement {
 		}
 	
 		public float getCurrentJutsuXpModifier(ItemStack stack, EntityLivingBase entity) {
-			boolean flag = !(entity instanceof EntityPlayer) || ((EntityPlayer)entity).isCreative();
-			int j = this.getCurrentJutsuRequiredXp(stack);
-			int i = flag ? j : this.getCurrentJutsuXp(stack);
-			return i != 0 ? (float)j / (float)i : 0f;
+			int required = this.getCurrentJutsuRequiredXp(stack);
+			int has = this.getCurrentJutsuXp(stack);
+			if ((!(entity instanceof EntityPlayer) || ((EntityPlayer)entity).isCreative()) && has < required) {
+				has = required;
+			}
+			return has != 0 ? (float)required / (float)has : 0f;
 		}
 
 		public boolean canUseAnyJutsu(ItemStack stack) {

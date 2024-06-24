@@ -49,6 +49,7 @@ public class ItemSuiton extends ElementsNarutomodMod.ModElement {
 	public static final ItemJutsu.JutsuEnum WATERPRISON = new ItemJutsu.JutsuEnum(3, "water_prison", 'C', 200d, new EntityWaterPrison.EC.Jutsu());
 	public static final ItemJutsu.JutsuEnum WATERSHARK = new ItemJutsu.JutsuEnum(4, "suiton_shark", 'B', 75d, new EntitySuitonShark.EC.Jutsu());
 	public static final ItemJutsu.JutsuEnum WATERSHOCK = new ItemJutsu.JutsuEnum(5, "water_shockwave", 'B', 30d, new EntityWaterShockwave.EC.Jutsu());
+	public static final ItemJutsu.JutsuEnum WATERBOMB = new ItemJutsu.JutsuEnum(6, "water_canonball", 'C', 30d, new EntityWaterCanonball.EC.Jutsu());
 
 	public ItemSuiton(ElementsNarutomodMod instance) {
 		super(instance, 368);
@@ -56,7 +57,7 @@ public class ItemSuiton extends ElementsNarutomodMod.ModElement {
 
 	@Override
 	public void initElements() {
-		elements.items.add(() -> new RangedItem(HIDINGINMIST, WATERBULLET, WATERDRAGON, WATERPRISON, WATERSHARK, WATERSHOCK));
+		elements.items.add(() -> new RangedItem(HIDINGINMIST, WATERBULLET, WATERDRAGON, WATERPRISON, WATERSHARK, WATERSHOCK, WATERBOMB));
 		elements.entities.add(() -> EntityEntryBuilder.create().entity(EntityMist.class)
 				.id(new ResourceLocation("narutomod", "suitonmist"), ENTITYID).name("suitonmist").tracker(64, 1, true).build());
 	}

@@ -15,8 +15,10 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.SoundEvent;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.model.ModelBox;
@@ -28,6 +30,8 @@ import net.minecraft.client.renderer.entity.layers.LayerRenderer;
 import net.minecraft.client.model.ModelQuadruped;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
+import net.minecraft.init.MobEffects;
+import net.minecraft.potion.PotionEffect;
 
 import net.narutomod.item.ItemKaton;
 import net.narutomod.procedure.ProcedureUtils;
@@ -189,27 +193,53 @@ public class EntityTwoTails extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
+		protected void updateAITasks() {
+			super.updateAITasks();
+			if (this.mouthShootingJutsu != null && this.mouthShootingJutsu.isDead) {
+				this.setSwingingArms(false);
+				this.mouthShootingJutsu = null;
+			}
+		}
+
+		@Override
+		public void attackEntityWithRangedAttack(EntityLivingBase target, float distanceFactor) {
+			if (!this.isAIDisabled() && (this.mouthShootingJutsu == null || this.mouthShootingJutsu.isDead)
+			 && distanceFactor < 1.0f && distanceFactor > (float)(ProcedureUtils.getReachDistance(this) * 0.6d / this.bijudamaMinRange)) {
+				this.setSwingingArms(true);
+				this.mouthShootingJutsu = new ItemKaton.EntityBigFireball(this, 10.0f, false);
+				((ItemKaton.EntityBigFireball)this.mouthShootingJutsu).shoot(target.posX - this.mouthShootingJutsu.posX, target.posY - this.mouthShootingJutsu.posY, target.posZ - this.mouthShootingJutsu.posZ, 1.2f, 0);
+				((ItemKaton.EntityBigFireball)this.mouthShootingJutsu).setDamage(300.0f);
+				this.world.spawnEntity(this.mouthShootingJutsu);
+			} else {
+				super.attackEntityWithRangedAttack(target, distanceFactor);
+			}
+		}
+
+		@Override
 		public float getFuuinBeamHeight() {
 			return this.isFaceDown() ? 8.0f * 0.0625f * MODELSCALE : super.getFuuinBeamHeight();
 		}
 
 		@Override
-		public net.minecraft.util.SoundEvent getAmbientSound() {
-			return (net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation(""));
+		public SoundEvent getAmbientSound() {
+			return SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:matatabi_roar2"));
 		}
 
 		@Override
-		public net.minecraft.util.SoundEvent getHurtSound(DamageSource ds) {
-			return (net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation(""));
+		public SoundEvent getHurtSound(DamageSource ds) {
+			return SoundEvent.REGISTRY.getObject(new ResourceLocation(""));
 		}
 
 		@Override
-		public net.minecraft.util.SoundEvent getDeathSound() {
-			return (net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation(""));
+		public SoundEvent getDeathSound() {
+			return SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:matatabi_roar1"));
 		}
 
 		@Override
 		public void onUpdate() {
+			if (this.ticksExisted % 10 == 1) {
+				this.addPotionEffect(new PotionEffect(MobEffects.MINING_FATIGUE, 12, 2, false, false));
+			}
 			super.onUpdate();
 			for (int i = 0; i < 8; i++) {
 				double d0 = this.posX + (this.rand.nextFloat() - 0.5D) * (this.width + 2.0D);
@@ -536,6 +566,18 @@ public class EntityTwoTails extends ElementsNarutomodMod.ModElement {
 			private final float tailSwayX[][] = new float[2][8];
 			private final float tailSwayY[][] = new float[2][8];
 			private final float tailSwayZ[][] = new float[2][8];
+
+			private final float[][] swingingBodyPreset1 = { { 0.0F, 3.0F, 0.0F, 0.0F, 0.0F, 0.0F }, { 0.0F, -2.0F, 0.0F, -0.2618F, 0.0F, 0.0F } };
+			private final float[][] swingingLeg1Preset1 = { { -4.75F, 1.0F, -1.0F, 0.0F, 0.0F, 0.0F }, { -4.75F, 1.0F, -1.0F, 0.0F, 0.0F, 0.7854F } };
+			private final float[][] swingingLeg1Preset2 = { { -4.75F, 1.0F, -1.0F, 0.0F, 0.0F, 0.7854F }, { -4.75F, 1.0F, -1.0F, -0.2618F, -0.7854F, -0.4363F } };
+			private final float[][] swingingLeg3Preset1 = { { -5.5F, 5.0F, 21.5F, 0.0F, 0.0F, 0.0F }, { -5.5F, 5.0F, 21.5F, 0.2618F, 0.0F, 0.0F } };
+			private final float[][] swingingLeg4Preset1 = { { 5.5F, 5.0F, 21.5F, 0.0F, 0.0F, 0.0F }, { 5.5F, 5.0F, 21.5F, 0.2618F, 0.0F, 0.0F } };
+			private final float[][] swingingFoot1Preset1 = { { -0.125F, 5.9375F, 0.4375F, 0.3491F, 0.0F, 0.0F }, { -0.125F, 5.9375F, 0.4375F, 1.0472F, 1.0472F, 0.0F } };
+			private final float[][] swingingBodyPreset3 = { { 0.0F, -2.0F, 0.0F, -0.2618F, 0.0F, 0.0F }, { 0.0F, 3.0F, 0.0F, 0.0F, 0.0F, 0.0F } };
+			private final float[][] swingingLeg1Preset3 = { { -4.75F, 1.0F, -1.0F, -0.2618F, -0.7854F, -0.4363F }, { -4.75F, 1.0F, -1.0F, 0.0F, 0.0F, 0.0F } };
+			private final float[][] swingingLeg3Preset3 = { { -5.5F, 5.0F, 21.5F, 0.2618F, 0.0F, 0.0F }, { -5.5F, 5.0F, 21.5F, 0.0F, 0.0F, 0.0F } };
+			private final float[][] swingingLeg4Preset3 = { { 5.5F, 5.0F, 21.5F, 0.0F, 0.0F, 0.0F }, { 5.5F, 5.0F, 21.5F, 0.0F, 0.0F, 0.0F } };
+			private final float[][] swingingFoot1Preset3 = { { -0.125F, 5.9375F, 0.4375F, 1.0472F, 1.0472F, 0.0F }, { -0.125F, 5.9375F, 0.4375F, 0.3491F, 0.0F, 0.0F } };
 
 			public ModelTwoTails() {
 				super(12, 0.0F);
@@ -1997,6 +2039,26 @@ public class EntityTwoTails extends ElementsNarutomodMod.ModElement {
 						tailFlamed[i][j].rotateAngleY = tail[i][j].rotateAngleY = MathHelper.sin((f2 - j) * 0.1F) * tailSwayY[i][j];
 					}
 				}
+				if (this.swingProgress > 0.0F) {
+					if (this.swingProgress < 0.3333F) {
+						float f6 = this.swingProgress / 0.3333F;
+						this.bodyPartAngles(this.body, this.swingingBodyPreset1, f6);
+						this.bodyPartAngles(this.leg1, this.swingingLeg1Preset1, f6);
+						this.bodyPartAngles(this.leg3, this.swingingLeg3Preset1, f6);
+						this.bodyPartAngles(this.leg4, this.swingingLeg4Preset1, f6);
+						this.bodyPartAngles(this.foot1, this.swingingFoot1Preset1, f6);
+					} else if (this.swingProgress < 0.6667F) {
+						float f6 = (this.swingProgress - 0.3333F) / 0.3333F;
+						this.bodyPartAngles(this.leg1, this.swingingLeg1Preset2, f6);
+					} else {
+						float f6 = (this.swingProgress - 0.6667F) / 0.3333F;
+						this.bodyPartAngles(this.body, this.swingingBodyPreset3, f6);
+						this.bodyPartAngles(this.leg1, this.swingingLeg1Preset3, f6);
+						this.bodyPartAngles(this.leg3, this.swingingLeg3Preset3, f6);
+						this.bodyPartAngles(this.leg4, this.swingingLeg4Preset3, f6);
+						this.bodyPartAngles(this.foot1, this.swingingFoot1Preset3, f6);
+					}
+				}
 				if (((EntityCustom) e).isShooting()) {
 					head.rotateAngleX += -0.1745F;
 					jaw.rotateAngleX = 0.7854F;
@@ -2029,6 +2091,15 @@ public class EntityTwoTails extends ElementsNarutomodMod.ModElement {
 				bodyFlamed.showModel = visible;
 				body.showModel = !visible;
 				highlight.showModel = !visible;
+			}
+
+			private void bodyPartAngles(ModelRenderer part, float[][] preset, float progress) {
+				part.rotationPointX = preset[0][0] + (preset[1][0] - preset[0][0]) * progress;
+				part.rotationPointY = preset[0][1] + (preset[1][1] - preset[0][1]) * progress;
+				part.rotationPointZ = preset[0][2] + (preset[1][2] - preset[0][2]) * progress;
+				part.rotateAngleX = preset[0][3] + (preset[1][3] - preset[0][3]) * progress;
+				part.rotateAngleY = preset[0][4] + (preset[1][4] - preset[0][4]) * progress;
+				part.rotateAngleZ = preset[0][5] + (preset[1][5] - preset[0][5]) * progress;
 			}
 		}
 	}

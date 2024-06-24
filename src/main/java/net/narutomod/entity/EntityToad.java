@@ -244,7 +244,9 @@ public class EntityToad extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void onLivingUpdate() {
 			super.onLivingUpdate();
-			this.addPotionEffect(new PotionEffect(MobEffects.MINING_FATIGUE, 2, 4, false, false));
+			if (this.ticksExisted % 10 == 1) {
+				this.addPotionEffect(new PotionEffect(MobEffects.MINING_FATIGUE, 12, 3, false, false));
+			}
 			if (this.isRiding()) {
 				this.jumpProgress = 0;
 			} else if (!this.onGround) {

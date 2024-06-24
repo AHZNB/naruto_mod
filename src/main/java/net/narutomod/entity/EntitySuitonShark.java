@@ -149,13 +149,13 @@ public class EntitySuitonShark extends ElementsNarutomodMod.ModElement {
 				} else {
 					if (this.target != null) {
 						Vec3d vec = this.target.getPositionEyes(1f).subtract(this.getPositionVector());
-						this.shoot(vec.x, vec.y, vec.z, this.isInWater() ? 0.85f : 0.8f, 0f);
+						this.shoot(vec.x, vec.y, vec.z, this.isInWater() ? 0.95f : 0.9f, 0f);
 					} else {
 						this.target = this.shootingEntity instanceof EntityLiving ? ((EntityLiving)this.shootingEntity).getAttackTarget()
-						 : ProcedureUtils.objectEntityLookingAt(this.shootingEntity, 50d, this).entityHit;
+						 : ProcedureUtils.objectEntityLookingAt(this.shootingEntity, 50d, 3d, this).entityHit;
 						Vec3d vec = this.target != null ? this.target.getPositionEyes(1f).subtract(this.getPositionVector())
 						 : this.shootingEntity.getLookVec();
-						this.shoot(vec.x, vec.y, vec.z, this.isInWater() ? 0.9f : 0.85f, 0f);
+						this.shoot(vec.x, vec.y, vec.z, this.isInWater() ? 0.95f : 0.9f, 0f);
 					}
 					if (this.ticksAlive <= this.wait + this.mouthOpenTime) {
 						this.setMOA((float)(this.ticksAlive - this.wait) / this.mouthOpenTime);

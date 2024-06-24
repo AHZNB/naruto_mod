@@ -331,8 +331,8 @@ public class ItemJinton extends ElementsNarutomodMod.ModElement {
 					if (this.ticksAlive < this.wait + this.growTime) {
 						this.setEntityScale(1.0F + (this.fullScale - 1f) * (this.ticksAlive - this.wait) / (float) this.growTime);
 					} else {
-						Particles.spawnParticle(this.world, Particles.Types.FALLING_DUST, this.posX, this.posY + (this.height / 2.0F), this.posZ, 
-						  (int)(this.fullScale * 6), this.width * 0.2F, this.height * 0.2F, this.width * 0.2F, 0D, 0.1D, 0D, 0xC0A0A0A0, 15, 0);
+						Particles.spawnParticle(this.world, Particles.Types.FALLING_DUST, this.posX, this.posY + 0.5d * this.height, this.posZ, 
+						  (int)(this.fullScale * 6), this.width * 0.2F, this.height * 0.2F, this.width * 0.2F, 0D, 0D, 0D, 0xC0A0A0A0);
 						if (this.ticksAlive > idle) {
 							this.destroyBlocksAndEntitiesInAABB(this.getEntityBoundingBox());
 							//this.setEntityScale(this.fullScale * (float)(idle + this.shrinkTime - this.ticksAlive) / (float)this.shrinkTime);

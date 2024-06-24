@@ -354,7 +354,7 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 					double d0 = target.posX - this.posX;
 					double d1 = target.posY - (this.posY + this.getEyeHeight());
 					double d2 = target.posZ - this.posZ;
-					new ItemKaton.EntityBigFireball.Jutsu().createJutsu(this, d0, d1, d2, 5f);
+					new ItemKaton.EntityBigFireball.Jutsu().createJutsu(this, d0, d1, d2, 5f, true);
 				} else if (!this.isRiding()) {
 					ItemKunai.EntityArrowCustom kunai = new ItemKunai.EntityArrowCustom(this.world, this);
 					Vec3d vec = target.getPositionEyes(1f).subtract(kunai.getPositionVector());

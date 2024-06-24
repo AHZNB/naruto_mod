@@ -31,6 +31,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.init.Biomes;
 
+import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.ElementsNarutomodMod;
 
 import java.util.Random;
@@ -179,6 +180,26 @@ public class EntityThreeTails extends ElementsNarutomodMod.ModElement {
 				int i = this.getPassengers().indexOf(passenger);
 				Vec3d vec2 = vec[i].rotateYaw(-this.rotationYaw * 0.017453292F - ((float)Math.PI / 2F));
 				passenger.setPosition(this.posX + vec2.x, this.posY + this.getMountedYOffset() + passenger.getYOffset(), this.posZ + vec2.z);
+			}
+		}
+
+		@Override
+		protected void updateAITasks() {
+			super.updateAITasks();
+			if (this.mouthShootingJutsu != null && this.mouthShootingJutsu.isDead) {
+				this.setSwingingArms(false);
+				this.mouthShootingJutsu = null;
+			}
+		}
+
+		@Override
+		public void attackEntityWithRangedAttack(EntityLivingBase target, float distanceFactor) {
+			if (!this.isAIDisabled() && (this.mouthShootingJutsu == null || this.mouthShootingJutsu.isDead)
+			 && distanceFactor < 1.0f && distanceFactor > (float)(ProcedureUtils.getReachDistance(this) * 0.6d / this.bijudamaMinRange)) {
+				this.setSwingingArms(true);
+				this.mouthShootingJutsu = new EntityWaterCanonball.EC.Jutsu().createJutsu(this, 10.0f);
+			} else {
+				super.attackEntityWithRangedAttack(target, distanceFactor);
 			}
 		}
 

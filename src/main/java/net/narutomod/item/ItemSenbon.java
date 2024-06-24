@@ -3,6 +3,7 @@ package net.narutomod.item;
 
 import net.narutomod.entity.EntityRendererRegister;
 import net.narutomod.entity.EntityPuppetHiruko;
+import net.narutomod.potion.PotionHeaviness;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.creativetab.TabModTab;
 import net.narutomod.ElementsNarutomodMod;
@@ -182,6 +183,7 @@ public class ItemSenbon extends ElementsNarutomodMod.ModElement {
 			entity.setArrowCountInEntity(entity.getArrowCountInEntity() - 1);
 			if (this.poisened) {
 				entity.addPotionEffect(new PotionEffect(MobEffects.POISON, 6000, 5));
+				entity.addPotionEffect(new PotionEffect(PotionHeaviness.potion, 6000, 3));
 			}
 		}
 

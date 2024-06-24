@@ -15,8 +15,10 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.SoundEvent;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.model.ModelBox;
@@ -27,6 +29,7 @@ import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.item.ItemStack;
 
 import net.narutomod.item.ItemSuiton;
+import net.narutomod.item.ItemFutton;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.ElementsNarutomodMod;
 
@@ -181,23 +184,44 @@ public class EntitySixTails extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
+		protected void updateAITasks() {
+			super.updateAITasks();
+			if (this.mouthShootingJutsu != null && this.mouthShootingJutsu.isDead) {
+				this.setSwingingArms(false);
+				this.mouthShootingJutsu = null;
+			}
+		}
+
+		@Override
+		public void attackEntityWithRangedAttack(EntityLivingBase target, float distanceFactor) {
+			if (!this.isAIDisabled() && (this.mouthShootingJutsu == null || this.mouthShootingJutsu.isDead)
+			 && distanceFactor < 1.0f && distanceFactor > (float)(ProcedureUtils.getReachDistance(this) * 0.6d / this.bijudamaMinRange)) {
+				this.setSwingingArms(true);
+				this.mouthShootingJutsu = new ItemFutton.EntityBoilingMist.Jutsu().createJutsu(this, (float)this.bijudamaMinRange + 16.0f, 6.0f);
+				((ItemFutton.EntityBoilingMist)this.mouthShootingJutsu).setDuration(80);
+			} else {
+				super.attackEntityWithRangedAttack(target, distanceFactor);
+			}
+		}
+
+		@Override
 		public float getFuuinBeamHeight() {
 			return this.isFaceDown() ? 2.0f * 0.0625f * MODELSCALE : super.getFuuinBeamHeight();
 		}
 
 		@Override
-		public net.minecraft.util.SoundEvent getAmbientSound() {
-			return (net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation(""));
+		public SoundEvent getAmbientSound() {
+			return null;
 		}
 
 		@Override
-		public net.minecraft.util.SoundEvent getHurtSound(DamageSource ds) {
-			return (net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation(""));
+		public SoundEvent getHurtSound(DamageSource ds) {
+			return null;
 		}
 
 		@Override
-		public net.minecraft.util.SoundEvent getDeathSound() {
-			return (net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation(""));
+		public SoundEvent getDeathSound() {
+			return null;
 		}
 	}
 
