@@ -30,9 +30,21 @@ import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.network.datasync.DataSerializers;
 
+import net.narutomod.procedure.ProcedureAirPunch;
+import net.narutomod.procedure.ProcedureUtils;
+import net.narutomod.Particles;
 import net.narutomod.ElementsNarutomodMod;
 
 import java.util.Random;
+import javax.annotation.Nullable;
+
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.client.renderer.culling.ICamera;
+import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.entity.Render;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityNineTails extends ElementsNarutomodMod.ModElement {
@@ -48,8 +60,11 @@ public class EntityNineTails extends ElementsNarutomodMod.ModElement {
 	@Override
 	public void initElements() {
 		elements.entities.add(() -> EntityEntryBuilder.create().entity(EntityCustom.class)
-				.id(new ResourceLocation("narutomod", "nine_tails"), ENTITYID).name("nine_tails")
-				.tracker(96, 3, true).egg(-39424, -13421773).build());
+		 .id(new ResourceLocation("narutomod", "nine_tails"), ENTITYID).name("nine_tails")
+		 .tracker(96, 3, true).egg(-39424, -13421773).build());
+		elements.entities.add(() -> EntityEntryBuilder.create().entity(EntityBeam.class)
+		 .id(new ResourceLocation("narutomod", "nine_tails_beam"), ENTITYID_RANGED)
+		 .name("nine_tails_beam").tracker(64, 1, true).build());
 	}
 
 	public static TailBeastManager getBijuManager() {
@@ -186,6 +201,26 @@ public class EntityNineTails extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
+		protected void updateAITasks() {
+			super.updateAITasks();
+			if (this.mouthShootingJutsu != null && this.mouthShootingJutsu.isDead) {
+				this.setSwingingArms(false);
+				this.mouthShootingJutsu = null;
+			}
+		}
+
+		@Override
+		public void attackEntityWithRangedAttack(EntityLivingBase target, float distanceFactor) {
+			if (!this.isAIDisabled() && (this.mouthShootingJutsu == null || this.mouthShootingJutsu.isDead)
+			 && distanceFactor < 1.0f && distanceFactor > (float)(ProcedureUtils.getReachDistance(this) * 0.6d / this.bijudamaMinRange)) {
+				this.setSwingingArms(true);
+				this.mouthShootingJutsu = EntityBeam.shoot(this);
+			} else {
+				super.attackEntityWithRangedAttack(target, distanceFactor);
+			}
+		}
+
+		@Override
 		public double getMountedYOffset() {
 			return (this.isFaceDown() ? 0.3d : 1.5625d) * MODELSCALE;
 		}
@@ -212,15 +247,6 @@ public class EntityNineTails extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
-		protected void updateAITasks() {
-			super.updateAITasks();
-			EntityLivingBase target = this.getAttackTarget();
-			if (target != null && this.getMeleeTime() <= 0 && this.getDistance(target) < this.bijudamaMinRange) {
-				this.setMeleeTime(80);
-			}
-		}
-
-		@Override
 		public SoundEvent getAmbientSound() {
 			return this.isKCM() ? null : SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:kyuubi_howl"));
 		}
@@ -242,6 +268,100 @@ public class EntityNineTails extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
+	public static class EntityBeam extends EntityBeamBase.Base {
+		private final AirPunch beam = new AirPunch();
+		private float power = 2.0f;
+		private float prevBeamLength;
+		
+		public EntityBeam(World worldIn) {
+			super(worldIn);
+		}
+
+		public EntityBeam(EntityLivingBase shooter) {
+			super(shooter);
+			this.updatePosition();
+		}
+
+		@Override
+		protected void updatePosition() {
+			EntityLivingBase shooter = this.getShooter();
+			if (shooter != null) {
+				Vec3d vec = shooter.getPositionEyes(1f).subtract(0d, 0.2d, 0d).add(shooter.getLookVec().scale(2d));
+				this.setPosition(vec.x, vec.y, vec.z);
+			}
+		}
+
+		@Override
+		public void onUpdate() {
+			super.onUpdate();
+			this.prevBeamLength = this.getBeamLength();
+			if (!this.world.isRemote) {
+				if (this.shootingEntity == null || this.ticksAlive > 80 || this.power > 100.0f) {
+					this.setDead();
+				} else {
+					if (this.ticksAlive == 1) {
+						this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:laser_short")),
+						 4.0F, this.rand.nextFloat() * 0.4f + 0.7f);
+					}
+					this.power = (this.power + 1.0f) * 1.4f;
+					this.shoot(this.power);
+					this.beam.execute(this.shootingEntity, this.getBeamLength(), 3.0d, 1.0d, 0d);
+				}
+			}
+		}
+
+		public class AirPunch extends ProcedureAirPunch {
+			public AirPunch() {
+				this.blockDropChance = -1.0F;
+				this.blockHardnessLimit = 100f;
+				this.particlesPre = null;
+				//this.particlesDuring = net.minecraft.util.EnumParticleTypes.SMOKE_LARGE;
+			}
+			
+			@Override
+			protected void attackEntityFrom(Entity player, Entity target) {
+				target.hurtResistantTime = 10;
+				target.attackEntityFrom(DamageSource.causeIndirectMagicDamage(EntityBeam.this, player), EntityBeam.this.power * 0.6f);
+			}
+
+			@Nullable
+			protected net.minecraft.entity.item.EntityItem processAffectedBlock(Entity player, BlockPos pos, EnumFacing facing) {
+				if (this.rand.nextFloat() < 0.005f) {
+					player.world.playSound(null, pos,
+					 SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:explosion")),
+					 net.minecraft.util.SoundCategory.BLOCKS, 4.0f, this.rand.nextFloat() * 0.5f + 0.75f);
+				}
+				return super.processAffectedBlock(player, pos, facing);
+			}
+
+			@Override
+			protected void breakBlockParticles(World world, BlockPos pos) {
+				Particles.spawnParticle(world, Particles.Types.SMOKE, pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D,
+				 1, 0D, 0D, 0D, 0D, 0D, 0D, 0x80000000, 60);
+			}
+
+			@Override
+			protected float getBreakChance(BlockPos pos, Entity player, double range) {
+				return 1.0F;
+			}
+		}
+
+		public static EntityBeam shoot(EntityLivingBase shooter) {
+			EntityBeam entity = new EntityBeam(shooter);
+			shooter.world.spawnEntity(entity);
+			Vec3d vec = shooter.getLookVec();
+			Particles.Renderer particles = new Particles.Renderer(shooter.world);
+			for (int i = 1, j = 50; i <= j; i++) {
+				Vec3d vec1 = vec.scale(0.2d * i);
+				particles.spawnParticles(Particles.Types.SONIC_BOOM, entity.posX, entity.posY, entity.posZ,
+				 1, 0d, 0d, 0d, vec1.x, vec1.y, vec1.z, 0x00fff000 | ((int)((1f-(float)i/j)*0x40)<<24),
+				 i * 2, (int)(5f * (1f + ((float)i/j) * 0.5f)), 240);
+			}
+			particles.send();
+			return entity;
+		}
+	}
+
 	@SideOnly(Side.CLIENT)
 	@Override
 	public void preInit(FMLPreInitializationEvent event) {
@@ -253,6 +373,7 @@ public class EntityNineTails extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void register() {
 			RenderingRegistry.registerEntityRenderingHandler(EntityCustom.class, renderManager -> new RenderCustom(renderManager));
+			RenderingRegistry.registerEntityRenderingHandler(EntityBeam.class, renderManager -> new RenderBeam(renderManager));
 		}
 
 		@SideOnly(Side.CLIENT)
@@ -267,8 +388,6 @@ public class EntityNineTails extends ElementsNarutomodMod.ModElement {
 			@Override
 			protected void renderModel(EntityCustom entity, float f0, float f1, float f2, float f3, float f4, float f5) {
 				if (entity.isKCM()) {
-					//GlStateManager.enableBlend();
-					//GlStateManager.color(1.0f, 1.0f, 1.0f, 0.8f);
 					OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240.0F, 240.0F);
 				}
 				super.renderModel(entity, f0, f1, f2, f3, f4, f5);
@@ -277,6 +396,83 @@ public class EntityNineTails extends ElementsNarutomodMod.ModElement {
 			@Override
 			protected ResourceLocation getEntityTexture(EntityCustom entity) {
 				return entity.isKCM() ? this.kcmTexture : this.mainTexture;
+			}
+		}
+
+		@SideOnly(Side.CLIENT)
+		public class RenderBeam extends Render<EntityBeam> {
+			private final ResourceLocation texture = new ResourceLocation("narutomod:textures/beam_gold.png");
+	
+			public RenderBeam(RenderManager renderManagerIn) {
+				super(renderManagerIn);
+			}
+	
+			@Override
+			public boolean shouldRender(EntityBeam livingEntity, ICamera camera, double camX, double camY, double camZ) {
+				return true;
+			}
+	
+			@Override
+			public void doRender(EntityBeam bullet, double x, double y, double z, float yaw, float pt) {
+				float age = (float)bullet.ticksExisted + pt;
+				float f = age * 0.01F;
+				double max_l = bullet.prevBeamLength + (bullet.getBeamLength() - bullet.prevBeamLength) * pt;
+				this.bindEntityTexture(bullet);
+				GlStateManager.pushMatrix();
+				GlStateManager.translate(x, y, z);
+				GlStateManager.rotate(ProcedureUtils.interpolateRotation(bullet.prevRotationYaw, bullet.rotationYaw, pt), 0.0F, 1.0F, 0.0F);
+				GlStateManager.rotate(90.0F - bullet.prevRotationPitch - (bullet.rotationPitch - bullet.prevRotationPitch) * pt, 1.0F, 0.0F, 0.0F);
+				Tessellator tessellator = Tessellator.getInstance();
+				BufferBuilder bufferbuilder = tessellator.getBuffer();
+				GlStateManager.enableBlend();
+				GlStateManager.disableCull();
+				GlStateManager.shadeModel(0x1D01);
+				GlStateManager.disableLighting();
+				OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240.0F, 240.0F);
+				GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+				float f5 = 0.0F - f;
+				float f6 = (float) max_l / 32.0F - f;
+				float f11 = 2.0F;
+				bufferbuilder.begin(5, DefaultVertexFormats.POSITION_TEX_COLOR);
+				for (int j = 0; j <= 8; j++) {
+					float f7 = MathHelper.sin((j % 8) * ((float) Math.PI * 2F) / 8.0F) * 0.5F;
+					float f8 = MathHelper.cos((j % 8) * ((float) Math.PI * 2F) / 8.0F) * 0.5F;
+					float f9 = (j % 8) / 8.0F;
+					bufferbuilder.pos(f7, 0.0F, f8).tex(f9, f5).color(1.0f, 1.0f, 1.0f, 0.7f).endVertex();
+					bufferbuilder.pos(f7 * f11, (float) max_l, f8 * f11).tex(f9, f6).color(1.0f, 1.0f, 1.0f, 0.7f).endVertex();
+				}
+				for (int j = 0; j <= 8; j++) {
+					float f7 = MathHelper.sin((j % 8) * ((float) Math.PI * 2F) / 8.0F) * 0.5F;
+					float f8 = MathHelper.cos((j % 8) * ((float) Math.PI * 2F) / 8.0F) * 0.5F;
+					float f9 = (j % 8) / 8.0F;
+					bufferbuilder.pos(f7 * f11, (float)max_l, f8 * f11).tex(f9, f6).color(1.0f, 1.0f, 1.0f, 0.7f).endVertex();
+					bufferbuilder.pos(f7 * f11 * 0.5F, (float)max_l + 1.0F, f8 * f11 * 0.5F).tex(f9, f5).color(1.0f, 1.0f, 1.0f, 0.7f).endVertex();
+				}
+				for (int j = 0; j <= 8; j++) {
+					float f7 = MathHelper.sin((j % 8) * ((float) Math.PI * 2F) / 8.0F) * 0.5F;
+					float f8 = MathHelper.cos((j % 8) * ((float) Math.PI * 2F) / 8.0F) * 0.5F;
+					float f9 = (j % 8) / 8.0F;
+					bufferbuilder.pos(f7 * f11 * 0.5F, (float)max_l + 1.0F, f8 * f11 * 0.5F).tex(f9, f6).color(1.0f, 1.0f, 1.0f, 0.7f).endVertex();
+					bufferbuilder.pos(f7 * 0.1F, (float)max_l + 2.0F, f8 * 0.1F).tex(f9, f5).color(1.0f, 1.0f, 1.0f, 0.7f).endVertex();
+				}
+				for (int j = 0; j <= 8; j++) {
+					float f7 = MathHelper.sin((j % 8) * ((float) Math.PI * 2F) / 8.0F) * 0.6F;
+					float f8 = MathHelper.cos((j % 8) * ((float) Math.PI * 2F) / 8.0F) * 0.6F;
+					float f9 = (j % 8) / 8.0F;
+					bufferbuilder.pos(f7, 0.0F, f8).tex(f9, f5).color(1.0f, 1.0f, 1.0f, 0.11f).endVertex();
+					bufferbuilder.pos(f7 * f11, (float) max_l, f8 * f11).tex(f9, f6).color(1.0f, 1.0f, 1.0f, 0.11f).endVertex();
+				}
+				tessellator.draw();
+				GlStateManager.enableLighting();
+				GlStateManager.enableCull();
+				GlStateManager.disableBlend();
+				GlStateManager.shadeModel(0x1D00);
+				GlStateManager.popMatrix();
+			}
+	
+			@Override
+			protected ResourceLocation getEntityTexture(EntityBeam entity) {
+				return this.texture;
 			}
 		}
 

@@ -899,6 +899,13 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 			this.setPosition(vec3d.x, vec3d.y, vec3d.z);
 		}
 
+		private void closeMouth() {
+			if (this.shootingEntity instanceof Base) {
+				((Base)this.shootingEntity).setSwingingArms(false);
+				((Base)this.shootingEntity).mouthShootingJutsu = null;
+			}
+		}
+
 		@Override
 		public void onUpdate() {
 			super.onUpdate();
@@ -926,15 +933,13 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 						} else {
 							this.setDead();
 						}
+						this.closeMouth();
 					}
 				} else if (!this.isLaunched()) {
 					this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:nagiharai")), 10f, 1f);
 					Vec3d vec = this.shootingEntity.getLookVec();
 					this.shoot(vec.x, vec.y, vec.z, 1.05F, 0.0F);
-					if (this.shootingEntity instanceof Base) {
-						((Base)this.shootingEntity).setSwingingArms(false);
-						((Base)this.shootingEntity).mouthShootingJutsu = null;
-					}
+					this.closeMouth();
 				}
 			}
 		}

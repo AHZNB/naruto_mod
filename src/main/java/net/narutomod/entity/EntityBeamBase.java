@@ -6,8 +6,10 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 
 import net.minecraft.world.World;
-import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.network.datasync.DataSerializers;
@@ -23,11 +25,11 @@ import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.model.ModelBox;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.renderer.culling.ICamera;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.Vec3d;
 
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.ElementsNarutomodMod;
+
+import javax.annotation.Nullable;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityBeamBase extends ElementsNarutomodMod.ModElement {
@@ -64,7 +66,7 @@ public class EntityBeamBase extends ElementsNarutomodMod.ModElement {
 		}
 
 		public Base(EntityLivingBase shooter) {
-			this(shooter.world, shooter.posX, shooter.posY + shooter.getEyeHeight() - 0.10000000149011612D, shooter.posZ);
+			this(shooter.world, shooter.posX, shooter.posY + shooter.getEyeHeight() - 0.1D, shooter.posZ);
 			this.prevRotationPitch = this.rotationPitch = shooter.rotationPitch;
 			this.prevRotationYaw = this.rotationYaw = shooter.rotationYaw;
 			this.setShooter(shooter);
@@ -73,7 +75,7 @@ public class EntityBeamBase extends ElementsNarutomodMod.ModElement {
 		@Override
 		protected void entityInit() {
 			this.getDataManager().register(SHOOTER_ID, Integer.valueOf(-1));
-			this.getDataManager().register(BEAM_LENGTH, Float.valueOf(1));
+			this.getDataManager().register(BEAM_LENGTH, Float.valueOf(0.1f));
 		}
 
 		private void setShooter(EntityLivingBase shooter) {
@@ -81,7 +83,11 @@ public class EntityBeamBase extends ElementsNarutomodMod.ModElement {
 			this.shootingEntity = shooter;
 		}
 
+		@Nullable
 		protected EntityLivingBase getShooter() {
+			if (!this.world.isRemote) {
+				return this.shootingEntity instanceof EntityLivingBase ? (EntityLivingBase)this.shootingEntity : null;
+			}
 			Entity entity = this.world.getEntityByID(((Integer)this.dataManager.get(SHOOTER_ID)).intValue());
 			return entity instanceof EntityLivingBase ? (EntityLivingBase)entity : null;
 		}

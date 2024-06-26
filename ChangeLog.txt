@@ -51,7 +51,7 @@ Entities:
  - buffed tailed beast melee damage slightly, better AI
  - added melee animation for Matatabi(paw swipe) and Kokuo(head butt)
  - Shukaku shoots air bullets, Matatabi shoots fire balls, Isobu shoots water balls, Son Goku shoots green fire,
-   Saiken shoots acid breath, Chomei emits blinding powder
+   Saiken shoots acid breath, Chomei emits blinding powder, Gyuki chain shoots small bijudamas, Kurama shoots lasers
  
 General:
  - fixed alpha transparency bug when using certain jutsus

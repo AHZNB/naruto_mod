@@ -1069,5 +1069,32 @@
         "stream": false
       }
     ]
+  },
+  "shot": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "narutomod:gal_se_decopin_shot",
+        "stream": false
+      }
+    ]
+  },
+  "gyuki_roar": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "narutomod:gyuki_roar",
+        "stream": false
+      }
+    ]
+  },
+  "gyuki_snort": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "narutomod:gyuki_snort",
+        "stream": false
+      }
+    ]
   }
 }

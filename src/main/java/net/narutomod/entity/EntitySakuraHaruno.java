@@ -14,6 +14,7 @@ import net.minecraftforge.common.MinecraftForge;
 
 import net.minecraft.init.Biomes;
 import net.minecraft.init.Items;
+import net.minecraft.init.MobEffects;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.World;
 import net.minecraft.util.ResourceLocation;
@@ -214,13 +215,6 @@ public class EntitySakuraHaruno extends ElementsNarutomodMod.ModElement {
 			}
 		}
 
-		//@Override
-		//protected void onDeathUpdate() {
-		//	super.onDeathUpdate();
-		//	this.deathTime = 0;
-		//	this.setHealth(10f);
-		//}
-
 		@Override
 		public boolean attackEntityFrom(DamageSource source, float amount) {
 			if (source != DamageSource.OUT_OF_WORLD && amount >= this.getHealth()) {
@@ -240,6 +234,7 @@ public class EntitySakuraHaruno extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public void onLivingUpdate() {
+			this.removePotionEffect(MobEffects.POISON);
 			super.onLivingUpdate();
 			if (this.ticksExisted % 20 == 0) {
 				if (this.getHealth() < this.getMaxHealth()) {

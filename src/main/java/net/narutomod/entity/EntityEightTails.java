@@ -14,6 +14,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.player.EntityPlayer;
@@ -24,9 +25,17 @@ import net.minecraft.client.model.ModelBox;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.item.ItemStack;
 
+import net.narutomod.item.ItemJutsu;
+import net.narutomod.procedure.ProcedureAoeCommand;
+import net.narutomod.procedure.ProcedureUtils;
+import net.narutomod.Particles;
 import net.narutomod.ElementsNarutomodMod;
 
 import java.util.Random;
@@ -47,6 +56,9 @@ public class EntityEightTails extends ElementsNarutomodMod.ModElement {
 		elements.entities.add(() -> EntityEntryBuilder.create().entity(EntityCustom.class)
 		 .id(new ResourceLocation("narutomod", "eight_tails"), ENTITYID)
 		 .name("eight_tails").tracker(96, 3, true).egg(-5469059, -5469059).build());
+		elements.entities.add(() -> EntityEntryBuilder.create().entity(EntitySmallBijudama.class)
+		 .id(new ResourceLocation("narutomod", "small_bijudama"), ENTITYID_RANGED)
+		 .name("small_bijudama").tracker(64, 1, true).build());
 	}
 
 	public static TailBeastManager getBijuManager() {
@@ -114,14 +126,14 @@ public class EntityEightTails extends ElementsNarutomodMod.ModElement {
 	public static class EntityCustom extends EntityTailedBeast.Base {
 		public EntityCustom(World world) {
 			super(world);
-			this.setSize(MODELSCALE * 0.6F, MODELSCALE * 2.0F);
+			this.setSize(MODELSCALE * 0.6F, MODELSCALE * 1.7F);
 			this.experienceValue = 12000;
 			this.stepHeight = this.height / 3.0F;
 		}
 
 		public EntityCustom(EntityPlayer player) {
 			super(player);
-			this.setSize(MODELSCALE * 0.6F, MODELSCALE * 2.0F);
+			this.setSize(MODELSCALE * 0.6F, MODELSCALE * 1.7F);
 			this.experienceValue = 12000;
 			this.stepHeight = this.height / 3.0F;
 		}
@@ -134,7 +146,7 @@ public class EntityEightTails extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void setFaceDown(boolean down) {
 			super.setFaceDown(down);
-			this.setSize(this.width, MODELSCALE * (down ? 1.0F : 2.0F));
+			this.setSize(this.width, MODELSCALE * (down ? 1.0F : 1.7F));
 		}
 
 		@Override
@@ -149,6 +161,32 @@ public class EntityEightTails extends ElementsNarutomodMod.ModElement {
 		@Override
 		public EntityBijuManager getBijuManager() {
 			return tailBeastManager;
+		}
+
+		@Override
+		protected void updateAITasks() {
+			super.updateAITasks();
+			if (this.mouthShootingJutsu instanceof EntitySmallBijudama) {
+				if (((EntitySmallBijudama)this.mouthShootingJutsu).order < 7) {
+					if (this.mouthShootingJutsu.ticksExisted > 4) {
+						this.mouthShootingJutsu = EntitySmallBijudama.shoot(this, ((EntitySmallBijudama)this.mouthShootingJutsu).order + 1, 1.2f, 0.025f);
+					}
+				} else {
+					this.setSwingingArms(false);
+					this.mouthShootingJutsu = null;
+				}
+			}
+		}
+
+		@Override
+		public void attackEntityWithRangedAttack(EntityLivingBase target, float distanceFactor) {
+			if (!this.isAIDisabled() && (this.mouthShootingJutsu == null || this.mouthShootingJutsu.isDead)
+			 && distanceFactor < 1.0f && distanceFactor > (float)(ProcedureUtils.getReachDistance(this) * 0.6d / this.bijudamaMinRange)) {
+				this.setSwingingArms(true);
+				this.mouthShootingJutsu = EntitySmallBijudama.shoot(this, 0, 1.2f, 0.025f);
+			} else {
+				super.attackEntityWithRangedAttack(target, distanceFactor);
+			}
 		}
 
 		@Override
@@ -173,22 +211,13 @@ public class EntityEightTails extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
-		protected void updateAITasks() {
-			super.updateAITasks();
-			EntityLivingBase target = this.getAttackTarget();
-			if (target != null && this.getMeleeTime() <= 0 && this.getDistance(target) < this.bijudamaMinRange) {
-				this.setMeleeTime(80);
-			}
-		}
-
-		@Override
 		public float getFuuinBeamHeight() {
 			return this.isFaceDown() ? 4.0f * 0.0625f * MODELSCALE : super.getFuuinBeamHeight();
 		}
 
 		@Override
 		public SoundEvent getAmbientSound() {
-			return null;
+			return SoundEvent.REGISTRY.getObject(new ResourceLocation(this.rand.nextFloat() < 0.2f ? "narutomod:gyuki_roar" : "narutomod:gyuki_snort"));
 		}
 
 		@Override
@@ -198,7 +227,101 @@ public class EntityEightTails extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public SoundEvent getDeathSound() {
-			return null;
+			return SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:gyuki_roar"));
+		}
+	}
+
+	public static class EntitySmallBijudama extends EntityScalableProjectile.Base {
+		private final float fullScale = 4.0f;
+		private int explosionSize;
+		private float damage;
+		private int order;
+		
+		public EntitySmallBijudama(World a) {
+			super(a);
+			this.setOGSize(0.8F, 0.8F);
+		}
+
+		public EntitySmallBijudama(EntityLivingBase shooter, int orderIndex) {
+			super(shooter);
+			this.order = orderIndex;
+			this.setOGSize(0.8F, 0.8F);
+			this.setEntityScale(this.fullScale);
+			this.explosionSize = Math.max((int)this.fullScale * 2, 0);
+			this.damage = this.fullScale * 50.0f;
+			Vec3d vec = shooter.getLookVec().scale(2d);
+			this.setPosition(shooter.posX + vec.x, shooter.posY + shooter.getEyeHeight() - 0.2d * this.height + vec.y, shooter.posZ + vec.z);
+		}
+
+		public void setDamage(float amount) {
+			this.damage = amount;
+		}
+
+		@Override
+		public boolean isImmuneToExplosions() {
+			return true;
+		}
+
+		@Override
+		protected void onImpact(RayTraceResult result) {
+			if (result.typeOfHit == RayTraceResult.Type.BLOCK && this.fullScale >= 2.0f && this.ticksInAir < 10) {
+				return;
+			}
+			if (!this.world.isRemote) {
+				if (result.entityHit != null && (result.entityHit.equals(this.shootingEntity) || result.entityHit instanceof EntitySmallBijudama)) {
+					return;
+				}
+				ProcedureAoeCommand.set(this, 0.0D, 2d * this.fullScale).exclude(this.shootingEntity)
+				  .damageEntities(ItemJutsu.causeJutsuDamage(this, this.shootingEntity).setDamageBypassesArmor(), this.damage);
+				boolean flag = net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.world, this.shootingEntity);
+				this.world.newExplosion(this.shootingEntity, this.posX, this.posY, this.posZ, this.explosionSize, flag, flag);
+				this.setDead();
+			}
+		}
+
+		@Override
+		public void renderParticles() {
+			//Particles.spawnParticle(this.world, Particles.Types.FLAME, this.posX, this.posY + (this.height / 2.0F), this.posZ,
+			//  (int)this.fullScale * 2, 0.3d * this.width, 0.3d * this.height, 0.3d * this.width, 0d, 0d, 0d, 
+			//  0xffff0000|((0x40+this.rand.nextInt(0x80))<<8), 30);
+		}
+
+
+		@Override
+		protected void checkOnGround() {
+		}
+
+		@Override
+		public void onUpdate() {
+			super.onUpdate();
+			if (!this.world.isRemote && this.ticksAlive > 100) {
+				this.setDead();
+			} else {
+				if (!this.world.isRemote && this.ticksAlive == 1) {
+					this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:shot")),
+					 4.0F, this.rand.nextFloat() * 0.4f + 0.7f);
+				}
+				if (this.rand.nextFloat() <= 0.2f) {
+					this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:flamethrow")),
+					 4.0F, this.rand.nextFloat() * 0.5f + 0.6f);
+				}
+			}
+		}
+
+		public static EntitySmallBijudama shoot(EntityLivingBase entity, int orderIn, float speed, float inaccuracy) {
+			Vec3d vec = entity.getLookVec();
+			EntitySmallBijudama entity1 = new EntitySmallBijudama(entity, orderIn);
+			entity.world.spawnEntity(entity1);
+			entity1.shoot(vec.x, vec.y, vec.z, speed, inaccuracy);
+			Particles.Renderer particles = new Particles.Renderer(entity.world);
+			for (int i = 1, j = 25; i <= j; i++) {
+				Vec3d vec1 = vec.scale(0.08d * i);
+				particles.spawnParticles(Particles.Types.SONIC_BOOM, entity1.posX, entity1.posY, entity1.posZ,
+				 1, 0d, 0d, 0d, vec1.x, vec1.y, vec1.z, 0x00fff000 | ((int)((1f-(float)i/j)*0x40)<<24),
+				 i * 2, (int)(5f * (1f + ((float)i/j) * 0.5f)), 240);
+			}
+			particles.send();
+			return entity1;
 		}
 	}
 
@@ -213,6 +336,7 @@ public class EntityEightTails extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void register() {
 			RenderingRegistry.registerEntityRenderingHandler(EntityCustom.class, renderManager -> new RenderCustom(renderManager));
+			RenderingRegistry.registerEntityRenderingHandler(EntitySmallBijudama.class, renderManager -> new RenderSmallBijudama(renderManager));
 		}
 
 		@SideOnly(Side.CLIENT)
@@ -225,6 +349,49 @@ public class EntityEightTails extends ElementsNarutomodMod.ModElement {
 
 			@Override
 			protected ResourceLocation getEntityTexture(EntityCustom entity) {
+				return this.texture;
+			}
+		}
+
+		@SideOnly(Side.CLIENT)
+		public class RenderSmallBijudama extends Render<EntitySmallBijudama> {
+			private final ResourceLocation texture = new ResourceLocation("narutomod:textures/bijudama.png");
+	
+			public RenderSmallBijudama(RenderManager renderManagerIn) {
+				super(renderManagerIn);
+			}
+	
+			@Override
+			public void doRender(EntitySmallBijudama entity, double x, double y, double z, float entityYaw, float partialTicks) {
+				this.bindEntityTexture(entity);
+				float scale = entity.getEntityScale();
+				GlStateManager.pushMatrix();
+				GlStateManager.translate(x, y + 0.375D * scale, z);
+				GlStateManager.enableRescaleNormal();
+				GlStateManager.scale(scale, scale, scale);
+				Tessellator tessellator = Tessellator.getInstance();
+				BufferBuilder bufferbuilder = tessellator.getBuffer();
+				GlStateManager.rotate(180F - this.renderManager.playerViewY, 0.0F, 1.0F, 0.0F);
+				GlStateManager.rotate((float) (this.renderManager.options.thirdPersonView == 2 ? -1 : 1) * -this.renderManager.playerViewX, 1.0F, 0.0F, 0.0F);
+				GlStateManager.rotate(60F * (partialTicks + entity.ticksExisted), 0.0F, 0.0F, 1.0F);
+				GlStateManager.enableBlend();
+				GlStateManager.disableLighting();
+				GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+				OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240.0F, 240.0F);
+				bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX_NORMAL);
+				bufferbuilder.pos(-0.4D, -0.4D, 0.0D).tex(0.0D, 1.0D).normal(0.0F, 1.0F, 0.0F).endVertex();
+				bufferbuilder.pos(0.4D, -0.4D, 0.0D).tex(1.0D, 1.0D).normal(0.0F, 1.0F, 0.0F).endVertex();
+				bufferbuilder.pos(0.4D, 0.4D, 0.0D).tex(1.0D, 0.0D).normal(0.0F, 1.0F, 0.0F).endVertex();
+				bufferbuilder.pos(-0.4D, 0.4D, 0.0D).tex(0.0D, 0.0D).normal(0.0F, 1.0F, 0.0F).endVertex();
+				tessellator.draw();
+				GlStateManager.enableLighting();
+				GlStateManager.disableBlend();
+				GlStateManager.disableRescaleNormal();
+				GlStateManager.popMatrix();
+			}
+	
+			@Override
+			protected ResourceLocation getEntityTexture(EntitySmallBijudama entity) {
 				return this.texture;
 			}
 		}

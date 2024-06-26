@@ -109,6 +109,11 @@ public class ItemKaton extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
+		public boolean isImmuneToExplosions() {
+			return true;
+		}
+
+		@Override
 		protected void onImpact(RayTraceResult result) {
 			if (result.typeOfHit == RayTraceResult.Type.BLOCK && this.fullScale >= 2.0f && this.ticksInAir < 15) {
 				return;
@@ -242,7 +247,8 @@ public class ItemKaton extends ElementsNarutomodMod.ModElement {
 				BufferBuilder bufferbuilder = tessellator.getBuffer();
 				GlStateManager.rotate(180F - this.renderManager.playerViewY, 0.0F, 1.0F, 0.0F);
 				GlStateManager.rotate((float) (this.renderManager.options.thirdPersonView == 2 ? -1 : 1) * -this.renderManager.playerViewX, 1.0F, 0.0F, 0.0F);
-				GlStateManager.rotate(12f * (partialTicks + entity.ticksExisted), 0.0F, 0.0F, 1.0F);
+				GlStateManager.rotate(30F * (partialTicks + entity.ticksExisted), 0.0F, 0.0F, 1.0F);
+				GlStateManager.enableBlend();
 				GlStateManager.disableLighting();
 				OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240.0F, 240.0F);
 				bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX_NORMAL);
@@ -252,6 +258,7 @@ public class ItemKaton extends ElementsNarutomodMod.ModElement {
 				bufferbuilder.pos(-0.375D, 0.375D, 0.0D).tex(0.0D, 0.0D).normal(0.0F, 1.0F, 0.0F).endVertex();
 				tessellator.draw();
 				GlStateManager.enableLighting();
+				GlStateManager.disableBlend();
 				GlStateManager.disableRescaleNormal();
 				GlStateManager.popMatrix();
 				super.doRender(entity, x, y, z, entityYaw, partialTicks);

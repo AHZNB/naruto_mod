@@ -183,7 +183,7 @@ public class ItemSenbon extends ElementsNarutomodMod.ModElement {
 			entity.setArrowCountInEntity(entity.getArrowCountInEntity() - 1);
 			if (this.poisened) {
 				entity.addPotionEffect(new PotionEffect(MobEffects.POISON, 6000, 5));
-				entity.addPotionEffect(new PotionEffect(PotionHeaviness.potion, 6000, 3));
+				entity.addPotionEffect(new PotionEffect(PotionHeaviness.potion, 6000, 1));
 			}
 		}
 

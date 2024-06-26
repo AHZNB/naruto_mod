@@ -67,6 +67,7 @@ public class EntityRasenshuriken extends ElementsNarutomodMod.ModElement {
 		private final int growTime = 20;
 		private float fullScale;
 		private Vec3d impactVec;
+		private RayTraceResult targetTrace;
 		protected float impactDamageMultiplier = 2.0f;
 		private DamageSource damageSource;
 
@@ -164,14 +165,19 @@ public class EntityRasenshuriken extends ElementsNarutomodMod.ModElement {
 				if (this.ticksAlive < this.growTime) {
 					this.setEntityScale(this.fullScale * (this.ticksAlive + 1) / this.growTime);
 					this.setPosition(this.shootingEntity.posX, this.shootingEntity.posY + this.shootingEntity.height + 0.5d, this.shootingEntity.posZ);
-				/*} else if (this.ticksAlive == this.growTime && this.shootingEntity != null) {
-					Vec3d vec3d = this.shootingEntity.getLookVec();
-					this.shoot(vec3d.x, vec3d.y, vec3d.z, 0.95f, 0f);*/
-				} else if (this.getDistance(this.shootingEntity) < 48d) {
-					RayTraceResult rt = ProcedureUtils.objectEntityLookingAt(this.shootingEntity, 50d);
-					if (!this.equals(rt.entityHit) && !this.shootingEntity.equals(rt.entityHit)) {
-						this.shoot(rt.hitVec.x - this.posX, rt.hitVec.y - this.posY, rt.hitVec.z - this.posZ, 0.95f, 0f);
+				} else if (this.targetTrace == null || this.targetTrace.entityHit == null) {
+					if (this.getDistance(this.shootingEntity) < 48d) {
+						RayTraceResult rt = ProcedureUtils.objectEntityLookingAt(this.shootingEntity, 50d, 3d);
+						if (!this.equals(rt.entityHit) && !this.shootingEntity.equals(rt.entityHit)) {
+							this.targetTrace = rt;
+						}
 					}
+				}
+				if (this.targetTrace != null) {
+					this.motionX *= 0.9d;
+					this.motionY *= 0.9d;
+					this.motionZ *= 0.9d;
+					this.shoot(this.targetTrace.hitVec.x - this.posX, this.targetTrace.hitVec.y - this.posY, this.targetTrace.hitVec.z - this.posZ, 0.99f, 0f);
 				}
 			}
 			Particles.Renderer particles = new Particles.Renderer(this.world);
