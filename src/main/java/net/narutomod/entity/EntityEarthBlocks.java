@@ -9,17 +9,24 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
+import net.minecraft.util.DamageSource;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.entity.Entity;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3i;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3i;
+import net.minecraft.entity.item.EntityFallingBlock;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.MoverType;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.renderer.texture.TextureMap;
@@ -27,33 +34,26 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.BlockRendererDispatcher;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.MoverType;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.network.datasync.DataParameter;
-import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.block.Block;
-import net.minecraft.world.WorldServer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.util.DamageSource;
-import net.minecraft.entity.item.EntityFallingBlock;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.block.state.IBlockState;
 
 import net.narutomod.ElementsNarutomodMod;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.procedure.ProcedureSync;
 
-import java.util.Map;
-import java.util.List;
-import com.google.common.collect.Maps;
-import java.util.Iterator;
-import com.google.common.base.Predicate;
-import javax.annotation.Nullable;
-import com.google.common.collect.Lists;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import javax.annotation.Nullable;
+import com.google.common.collect.Maps;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Lists;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityEarthBlocks extends ElementsNarutomodMod.ModElement {
@@ -68,14 +68,6 @@ public class EntityEarthBlocks extends ElementsNarutomodMod.ModElement {
 	public void initElements() {
 		elements.entities.add(() -> EntityEntryBuilder.create().entity(Base.class)
 		  .id(new ResourceLocation("narutomod", "earth_blocks"), ENTITYID).name("earth_blocks").tracker(64, 3, true).build());
-	}
-
-	@SideOnly(Side.CLIENT)
-	@Override
-	public void preInit(FMLPreInitializationEvent event) {
-		RenderingRegistry.registerEntityRenderingHandler(Base.class, renderManager -> {
-			return new RenderEarthBlocks(renderManager);
-		});
 	}
 
 	public static class Base extends Entity {
@@ -777,63 +769,76 @@ public class EntityEarthBlocks extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-	@SideOnly(Side.CLIENT)
-	public class RenderEarthBlocks extends Render<Base> {
-	    public RenderEarthBlocks(RenderManager renderManagerIn) {
-	        super(renderManagerIn);
-	    }
-	
-		private void renderBlock(Base entity, IBlockState iblockstate, Vec3d blockvec, double x, double y, double z) {
-			if (iblockstate.getRenderType() == EnumBlockRenderType.MODEL) {
-                GlStateManager.pushMatrix();
-                GlStateManager.disableLighting();
-                Tessellator tessellator = Tessellator.getInstance();
-                BufferBuilder bufferbuilder = tessellator.getBuffer();
-                bufferbuilder.begin(7, DefaultVertexFormats.BLOCK);
-                GlStateManager.translate(x + blockvec.x - 0.5d, y + blockvec.y, z + blockvec.z - 0.5d);
-                BlockRendererDispatcher blockrendererdispatcher = Minecraft.getMinecraft().getBlockRendererDispatcher();
-                blockrendererdispatcher.getBlockModelRenderer().renderModel(entity.world, 
-                  blockrendererdispatcher.getModelForState(iblockstate), iblockstate, BlockPos.ORIGIN, bufferbuilder, false);
-                tessellator.draw();
-                GlStateManager.enableLighting();
-                GlStateManager.popMatrix();
-	        }
+	@Override
+	public void preInit(FMLPreInitializationEvent event) {
+		new Renderer().register();
+	}
+
+	public static class Renderer extends EntityRendererRegister {
+		@SideOnly(Side.CLIENT)
+		@Override
+		public void register() {
+			RenderingRegistry.registerEntityRenderingHandler(Base.class, renderManager -> new RenderEarthBlocks(renderManager));
 		}
 
-		private boolean isFullySurrounded(Base entity, Vec3d vec, Vec3d viewer) {
-			Vec3d vec1 = vec.add(entity.getPositionVector());
-			return (viewer.y <= vec1.y || entity.blocksMap.containsKey(vec.addVector(0d, 1d, 0d))) 
-			    && (viewer.y >= vec1.y || entity.blocksMap.containsKey(vec.addVector(0d, -1d, 0d)))
-			    && (viewer.x <= vec1.x || entity.blocksMap.containsKey(vec.addVector(1d, 0d, 0d)))
-			    && (viewer.x >= vec1.x || entity.blocksMap.containsKey(vec.addVector(-1d, 0d, 0d)))
-			    && (viewer.z <= vec1.z || entity.blocksMap.containsKey(vec.addVector(0d, 0d, 1d)))
-			    && (viewer.z >= vec1.z || entity.blocksMap.containsKey(vec.addVector(0d, 0d, -1d)));
-		}
+		@SideOnly(Side.CLIENT)
+		public class RenderEarthBlocks extends Render<Base> {
+		    public RenderEarthBlocks(RenderManager renderManagerIn) {
+		        super(renderManagerIn);
+		    }
 		
-		@Override
-	    public void doRender(Base entity, double x, double y, double z, float entityYaw, float partialTicks) {
-	        if (!entity.blocksMap.isEmpty() && entity.blocksMap.size() == entity.blocksTotal) {
-		        this.shadowSize = 0.8f * entity.width;
-                this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
-                EntityPlayer viewer = Minecraft.getMinecraft().player;
-                if (viewer.getDistance(entity) < (double)entity.width + 2d) {
-		        	for (Map.Entry<Vec3d, IBlockState> entry : entity.blocksMap.entrySet()) {
-		            	this.renderBlock(entity, entry.getValue(), entry.getKey(), x, y, z);
-		        	}
-                } else {
-                	Vec3d viewereyes = viewer.getPositionEyes(1f);
-		        	for (Map.Entry<Vec3d, IBlockState> entry : entity.blocksMap.entrySet()) {
-		        		if (!this.isFullySurrounded(entity, entry.getKey(), viewereyes)) {
-		            		this.renderBlock(entity, entry.getValue(), entry.getKey(), x, y, z);
-		        		}
-		        	}
-                }
-	        }
-	    }
-
-		@Override
-	    protected ResourceLocation getEntityTexture(Base entity) {
-	        return TextureMap.LOCATION_BLOCKS_TEXTURE;
-	    }
+			private void renderBlock(Base entity, IBlockState iblockstate, Vec3d blockvec, double x, double y, double z) {
+				if (iblockstate.getRenderType() == EnumBlockRenderType.MODEL) {
+	                GlStateManager.pushMatrix();
+	                GlStateManager.disableLighting();
+	                Tessellator tessellator = Tessellator.getInstance();
+	                BufferBuilder bufferbuilder = tessellator.getBuffer();
+	                bufferbuilder.begin(7, DefaultVertexFormats.BLOCK);
+	                GlStateManager.translate(x + blockvec.x - 0.5d, y + blockvec.y, z + blockvec.z - 0.5d);
+	                BlockRendererDispatcher blockrendererdispatcher = Minecraft.getMinecraft().getBlockRendererDispatcher();
+	                blockrendererdispatcher.getBlockModelRenderer().renderModel(entity.world, 
+	                  blockrendererdispatcher.getModelForState(iblockstate), iblockstate, BlockPos.ORIGIN, bufferbuilder, false);
+	                tessellator.draw();
+	                GlStateManager.enableLighting();
+	                GlStateManager.popMatrix();
+		        }
+			}
+	
+			private boolean isFullySurrounded(Base entity, Vec3d vec, Vec3d viewer) {
+				Vec3d vec1 = vec.add(entity.getPositionVector());
+				return (viewer.y <= vec1.y || entity.blocksMap.containsKey(vec.addVector(0d, 1d, 0d))) 
+				    && (viewer.y >= vec1.y || entity.blocksMap.containsKey(vec.addVector(0d, -1d, 0d)))
+				    && (viewer.x <= vec1.x || entity.blocksMap.containsKey(vec.addVector(1d, 0d, 0d)))
+				    && (viewer.x >= vec1.x || entity.blocksMap.containsKey(vec.addVector(-1d, 0d, 0d)))
+				    && (viewer.z <= vec1.z || entity.blocksMap.containsKey(vec.addVector(0d, 0d, 1d)))
+				    && (viewer.z >= vec1.z || entity.blocksMap.containsKey(vec.addVector(0d, 0d, -1d)));
+			}
+			
+			@Override
+		    public void doRender(Base entity, double x, double y, double z, float entityYaw, float partialTicks) {
+		        if (!entity.blocksMap.isEmpty() && entity.blocksMap.size() == entity.blocksTotal) {
+			        this.shadowSize = 0.8f * entity.width;
+	                this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+	                EntityPlayer viewer = Minecraft.getMinecraft().player;
+	                if (viewer.getDistance(entity) < (double)entity.width + 2d) {
+			        	for (Map.Entry<Vec3d, IBlockState> entry : entity.blocksMap.entrySet()) {
+			            	this.renderBlock(entity, entry.getValue(), entry.getKey(), x, y, z);
+			        	}
+	                } else {
+	                	Vec3d viewereyes = viewer.getPositionEyes(1f);
+			        	for (Map.Entry<Vec3d, IBlockState> entry : entity.blocksMap.entrySet()) {
+			        		if (!this.isFullySurrounded(entity, entry.getKey(), viewereyes)) {
+			            		this.renderBlock(entity, entry.getValue(), entry.getKey(), x, y, z);
+			        		}
+			        	}
+	                }
+		        }
+		    }
+	
+			@Override
+		    protected ResourceLocation getEntityTexture(Base entity) {
+		        return TextureMap.LOCATION_BLOCKS_TEXTURE;
+		    }
+		}
 	}
 }

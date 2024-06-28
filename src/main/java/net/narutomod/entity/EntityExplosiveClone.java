@@ -47,42 +47,49 @@ public class EntityExplosiveClone extends ElementsNarutomodMod.ModElement {
 		 .id(new ResourceLocation("narutomod", "explosive_clone"), ENTITYID).name("explosive_clone").tracker(64, 3, true).build());
 	}
 
-	@SideOnly(Side.CLIENT)
 	@Override
 	public void preInit(FMLPreInitializationEvent event) {
-		RenderingRegistry.registerEntityRenderingHandler(EC.class, renderManager -> new CustomRender(renderManager));
+		new Renderer().register();
 	}
 
-	@SideOnly(Side.CLIENT)
-	public class CustomRender extends EntityClone.ClientRLM.RenderClone<EC> {
-		public CustomRender(RenderManager renderManagerIn) {
-			EntityClone.ClientRLM.getInstance().super(renderManagerIn);
+	public static class Renderer extends EntityRendererRegister {
+		@SideOnly(Side.CLIENT)
+		@Override
+		public void register() {
+			RenderingRegistry.registerEntityRenderingHandler(EC.class, renderManager -> new CustomRender(renderManager));
 		}
 
-	    @Override
-	    protected void preRenderCallback(EC entity, float partialTick) {
-	    	super.preRenderCallback(entity, partialTick);
-	    	if (entity.ignited()) {
-		        float f = entity.getIgnitionProgress(partialTick);
-		        float f1 = 1.0F + MathHelper.sin(f * 100.0F) * f * 0.01F;
-		        f = MathHelper.clamp(f, 0.0F, 1.0F);
-		        f = f * f;
-		        f = f * f;
-		        float f2 = (1.0F + f * 0.4F) * f1;
-		        float f3 = (1.0F + f * 0.1F) / f1;
-		        GlStateManager.scale(f2, f3, f2);
-	    	}
-	    }
-
-	    @Override
-	    protected int getColorMultiplier(EC entity, float lightBrightness, float partialTick) {
-	    	if (entity.ignited()) {
-		        float f = entity.getIgnitionProgress(partialTick);
-	            int i = MathHelper.clamp((int)((1f - f) * 255.0F), 1, 255);
-	            return i << 24 | 0x00FFFFFF;
-	    	}
-	    	return 0;
-	    }
+		@SideOnly(Side.CLIENT)
+		public class CustomRender extends EntityClone.ClientRLM.RenderClone<EC> {
+			public CustomRender(RenderManager renderManagerIn) {
+				EntityClone.ClientRLM.getInstance().super(renderManagerIn);
+			}
+	
+		    @Override
+		    protected void preRenderCallback(EC entity, float partialTick) {
+		    	super.preRenderCallback(entity, partialTick);
+		    	if (entity.ignited()) {
+			        float f = entity.getIgnitionProgress(partialTick);
+			        float f1 = 1.0F + MathHelper.sin(f * 100.0F) * f * 0.01F;
+			        f = MathHelper.clamp(f, 0.0F, 1.0F);
+			        f = f * f;
+			        f = f * f;
+			        float f2 = (1.0F + f * 0.4F) * f1;
+			        float f3 = (1.0F + f * 0.1F) / f1;
+			        GlStateManager.scale(f2, f3, f2);
+		    	}
+		    }
+	
+		    @Override
+		    protected int getColorMultiplier(EC entity, float lightBrightness, float partialTick) {
+		    	if (entity.ignited()) {
+			        float f = entity.getIgnitionProgress(partialTick);
+		            int i = MathHelper.clamp((int)((1f - f) * 255.0F), 1, 255);
+		            return i << 24 | 0x00FFFFFF;
+		    	}
+		    	return 0;
+		    }
+		}
 	}
 
 	public static class EC extends EntityClone.Base {

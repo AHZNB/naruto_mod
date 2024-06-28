@@ -117,7 +117,7 @@ public class ItemJutsu extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static ItemJutsu.JutsuEnum getCurrentJutsu(ItemStack stack) {
-		return ((Base)stack.getItem()).getCurrentJutsu(stack);
+		return stack.getItem() instanceof Base ? ((Base)stack.getItem()).getCurrentJutsu(stack) : null;
 	}
 
 	public static double getMaxPower(EntityLivingBase entity, double jutsuCkakraUsage) {

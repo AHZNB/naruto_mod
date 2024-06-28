@@ -46,23 +46,30 @@ public class EntitySandBind extends ElementsNarutomodMod.ModElement {
 		 .id(new ResourceLocation("narutomod", "sand_bind"), ENTITYID).name("sand_bind").tracker(64, 3, true).build());
 	}
 
-	@SideOnly(Side.CLIENT)
 	@Override
 	public void preInit(FMLPreInitializationEvent event) {
-		RenderingRegistry.registerEntityRenderingHandler(EC.class, renderManager -> new CustomRender(renderManager));
+		new Renderer().register();
 	}
 
-	@SideOnly(Side.CLIENT)
-	public class CustomRender extends Render<EC> {
-		public CustomRender(RenderManager renderManagerIn) {
-			super(renderManagerIn);
-		}
+	public static class Renderer extends EntityRendererRegister {
+		@SideOnly(Side.CLIENT)
 		@Override
-		public void doRender(EC entity, double x, double y, double z, float entityYaw, float partialTicks) {
+		public void register() {
+			RenderingRegistry.registerEntityRenderingHandler(EC.class, renderManager -> new CustomRender(renderManager));
 		}
-		@Override
-		protected ResourceLocation getEntityTexture(EC entity) {
-			return null;
+
+		@SideOnly(Side.CLIENT)
+		public class CustomRender extends Render<EC> {
+			public CustomRender(RenderManager renderManagerIn) {
+				super(renderManagerIn);
+			}
+			@Override
+			public void doRender(EC entity, double x, double y, double z, float entityYaw, float partialTicks) {
+			}
+			@Override
+			protected ResourceLocation getEntityTexture(EC entity) {
+				return null;
+			}
 		}
 	}
 

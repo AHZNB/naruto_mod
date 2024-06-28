@@ -51,12 +51,6 @@ public class EntityLaserCircus extends ElementsNarutomodMod.ModElement {
 		 .id(new ResourceLocation("narutomod", "laser_ring"), ENTITYID_RANGED).name("laser_ring").tracker(64, 3, true).build());
 	}
 
-	@SideOnly(Side.CLIENT)
-	@Override
-	public void preInit(FMLPreInitializationEvent event) {
-		RenderingRegistry.registerEntityRenderingHandler(EntityRing.class, renderManager -> new RenderRing(renderManager));
-	}
-
 	public static class EC extends Entity {
 		private EntityLivingBase summoner;
 		private int duration;
@@ -213,52 +207,65 @@ public class EntityLaserCircus extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-	@SideOnly(Side.CLIENT)
-	public class RenderRing extends Render<EntityRing> {
-		private final ResourceLocation texture = new ResourceLocation("narutomod:textures/ring_lightning.png");
+	@Override
+	public void preInit(FMLPreInitializationEvent event) {
+		new Renderer().register();
+	}
 
-		public RenderRing(RenderManager renderManager) {
-			super(renderManager);
-			shadowSize = 0.1f;
+	public static class Renderer extends EntityRendererRegister {
+		@SideOnly(Side.CLIENT)
+		@Override
+		public void register() {
+			RenderingRegistry.registerEntityRenderingHandler(EntityRing.class, renderManager -> new RenderRing(renderManager));
 		}
 
-		@Override
-		public void doRender(EntityRing entity, double x, double y, double z, float entityYaw, float partialTicks) {
-			this.bindEntityTexture(entity);
-			GlStateManager.pushMatrix();
-			float ageInTicks = (float)entity.ticksExisted + partialTicks;
-			float scale = (1f - (ageInTicks % 5f) / 5f) * 3.0F;
-			GlStateManager.translate(x, y + 0.5d, z);
-			GlStateManager.enableRescaleNormal();
-			GlStateManager.scale(scale, scale, scale);
-			Tessellator tessellator = Tessellator.getInstance();
-			BufferBuilder bufferbuilder = tessellator.getBuffer();
-			GlStateManager.rotate(-entity.rotationYaw, 0.0F, 1.0F, 0.0F);
-			//GlStateManager.rotate(user.rot, 1.0F, 0.0F, 0.0F);
-			GlStateManager.rotate(9f * ageInTicks, 0.0F, 0.0F, 1.0F);
-			GlStateManager.disableCull();
-			GlStateManager.enableAlpha();
-			GlStateManager.enableBlend();
-			GlStateManager.disableLighting();
-			int alpha = (int)(255F * Math.min(ageInTicks / 30F, 1.0F));
-			OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240.0F, 240.0F);
-			bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR_NORMAL);
-			bufferbuilder.pos(-0.5D, -0.5D, 0.0D).tex(0.0D, 1.0D).color(255, 255, 255, alpha).normal(0.0F, 1.0F, 0.0F).endVertex();
-			bufferbuilder.pos(0.5D, -0.5D, 0.0D).tex(1.0D, 1.0D).color(255, 255, 255, alpha).normal(0.0F, 1.0F, 0.0F).endVertex();
-			bufferbuilder.pos(0.5D, 0.5D, 0.0D).tex(1.0D, 0.0D).color(255, 255, 255, alpha).normal(0.0F, 1.0F, 0.0F).endVertex();
-			bufferbuilder.pos(-0.5D, 0.5D, 0.0D).tex(0.0D, 0.0D).color(255, 255, 255, alpha).normal(0.0F, 1.0F, 0.0F).endVertex();
-			tessellator.draw();
-			GlStateManager.enableLighting();
-			GlStateManager.disableBlend();
-			//GlStateManager.disableAlpha();
-			GlStateManager.enableCull();
-			GlStateManager.disableRescaleNormal();
-			GlStateManager.popMatrix();
-		}
-
-		@Override
-		protected ResourceLocation getEntityTexture(EntityRing entity) {
-			return this.texture;
+		@SideOnly(Side.CLIENT)
+		public class RenderRing extends Render<EntityRing> {
+			private final ResourceLocation texture = new ResourceLocation("narutomod:textures/ring_lightning.png");
+	
+			public RenderRing(RenderManager renderManager) {
+				super(renderManager);
+				shadowSize = 0.1f;
+			}
+	
+			@Override
+			public void doRender(EntityRing entity, double x, double y, double z, float entityYaw, float partialTicks) {
+				this.bindEntityTexture(entity);
+				GlStateManager.pushMatrix();
+				float ageInTicks = (float)entity.ticksExisted + partialTicks;
+				float scale = (1f - (ageInTicks % 5f) / 5f) * 3.0F;
+				GlStateManager.translate(x, y + 0.5d, z);
+				GlStateManager.enableRescaleNormal();
+				GlStateManager.scale(scale, scale, scale);
+				Tessellator tessellator = Tessellator.getInstance();
+				BufferBuilder bufferbuilder = tessellator.getBuffer();
+				GlStateManager.rotate(-entity.rotationYaw, 0.0F, 1.0F, 0.0F);
+				//GlStateManager.rotate(user.rot, 1.0F, 0.0F, 0.0F);
+				GlStateManager.rotate(9f * ageInTicks, 0.0F, 0.0F, 1.0F);
+				GlStateManager.disableCull();
+				GlStateManager.enableAlpha();
+				GlStateManager.enableBlend();
+				GlStateManager.disableLighting();
+				int alpha = (int)(255F * Math.min(ageInTicks / 30F, 1.0F));
+				OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240.0F, 240.0F);
+				bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR_NORMAL);
+				bufferbuilder.pos(-0.5D, -0.5D, 0.0D).tex(0.0D, 1.0D).color(255, 255, 255, alpha).normal(0.0F, 1.0F, 0.0F).endVertex();
+				bufferbuilder.pos(0.5D, -0.5D, 0.0D).tex(1.0D, 1.0D).color(255, 255, 255, alpha).normal(0.0F, 1.0F, 0.0F).endVertex();
+				bufferbuilder.pos(0.5D, 0.5D, 0.0D).tex(1.0D, 0.0D).color(255, 255, 255, alpha).normal(0.0F, 1.0F, 0.0F).endVertex();
+				bufferbuilder.pos(-0.5D, 0.5D, 0.0D).tex(0.0D, 0.0D).color(255, 255, 255, alpha).normal(0.0F, 1.0F, 0.0F).endVertex();
+				tessellator.draw();
+				GlStateManager.enableLighting();
+				GlStateManager.disableBlend();
+				//GlStateManager.disableAlpha();
+				GlStateManager.enableCull();
+				GlStateManager.disableRescaleNormal();
+				GlStateManager.popMatrix();
+			}
+	
+			@Override
+			protected ResourceLocation getEntityTexture(EntityRing entity) {
+				return this.texture;
+			}
 		}
 	}
 }

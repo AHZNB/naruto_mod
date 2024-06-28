@@ -31,6 +31,7 @@ import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.SoundEvent;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.entity.SharedMonsterAttributes;
@@ -119,13 +120,14 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 		}
 
 		private void setPose(int pose) {
-			int prevPose = this.getPose();
-			this.dataManager.set(POSE, Integer.valueOf(pose));
-			this.poseProgress = 0;
-			this.poseProgressEnd = pose == 1 ? 7 : pose == 2 ? 3 : 14;
-			if (pose != 0 && pose != prevPose) {
-				this.playSound(net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:hiruko_tail")),
+			if (pose != this.getPose()) {
+				this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:hiruko_tail")),
 				 1f, this.rand.nextFloat() * 0.4f + 0.7f);
+			}
+			this.poseProgress = 0;
+			this.poseProgressEnd = pose == 1 ? 6 : pose == 2 ? 3 : 14;
+			if (!this.world.isRemote) {
+				this.dataManager.set(POSE, Integer.valueOf(pose));
 			}
 		}
 	
@@ -155,7 +157,7 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 			if (POSE.equals(key) && this.world.isRemote) {
 				this.poseProgress = 0;
 				int pose = this.getPose();
-				this.poseProgressEnd = pose == 1 ? 7 : pose == 2 ? 3 : 14;
+				this.poseProgressEnd = pose == 1 ? 6 : pose == 2 ? 3 : 14;
 			}
 		}
 
@@ -203,6 +205,8 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 		@Override
 		protected void damageEntity(DamageSource source, float amount) {
 			if (this.shouldBlock) {
+				this.playSound(SoundEvent.REGISTRY
+				 .getObject(new ResourceLocation("narutomod:ting")), 0.6f, this.rand.nextFloat() * 0.6f + 0.8f);
 				amount *= this.rand.nextFloat() * 0.2f;
 			}
 			super.damageEntity(source, amount);
@@ -231,7 +235,7 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 			super.onUpdate();
 			boolean robeOff = this.isRobeOff();
 			if (this.isAkatsuki() && !robeOff && !this.maskOff && this.rand.nextInt(200) == 0) {
-				this.playSound(net.minecraft.util.SoundEvent.REGISTRY
+				this.playSound(SoundEvent.REGISTRY
 				 .getObject(new ResourceLocation("narutomod:dingding")), 0.8f, this.rand.nextFloat() * 0.1f + 0.95f);
 			}
 			this.setOwnerCanSteer(this.hasPuppetJutsu(this.getControllingPassenger()), robeOff ? 1.5f : 0.5f);
@@ -487,24 +491,24 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 			private final float[][][][] tailPose = { // float[2][3][30][3]
 				{ // robe on
 					{
-						{ 0f, 0f, 0f }, 
+						{ 0.7854F, 0.0F, 0.0F }, 
 						{ 0.2618F, 0.0F, 0.0F }, { 0.2618F, 0.0F, 0.0F }, { 0.2618F, 0.0F, 0.0F },
 						{ 0.2618F, 0.0F, 0.0F }, { 0.2618F, 0.0F, 0.0F }, { 0.2618F, 0.0F, 0.0F }, 
 						{ 0.2618F, 0.0F, 0.0F }, { 0.2618F, 0.0F, 0.0F }, { 0.2618F, 0.0F, 0.0F },
-						{ 0f, 0f, 0f }, { 0f, 0f, 0f }, { 0f, 0f, 0f }, 
-						{ 0f, 0f, 0f }, { 0f, 0f, 0f }, { 0f, 0f, 0f }, 
-						{ 0f, 0f, 0f }, { 0f, 0f, 0f }, { 0f, 0f, 0f }, 
-						{ 0f, 0f, 0f }, { 0f, 0f, 0f }, { 0f, 0f, 0f }, 
-						{ 0f, 0f, 0f }, { 0f, 0f, 0f }, { 0f, 0f, 0f }, 
-						{ 0f, 0f, 0f }, { 0f, 0f, 0f }, { 0f, 0f, 0f }, 
-						{ 0f, 0f, 0f }, { 0f, 0f, 0f }
+						{ 0.0F, 0.0F, 0.0F }, { 0.0F, 0.0F, 0.0F }, { 0.0F, 0.0F, 0.0F }, 
+						{ 0.0F, 0.0F, 0.0F }, { 0.0F, 0.0F, 0.0F }, { 0.0F, 0.0F, 0.0F }, 
+						{ 0.0F, 0.0F, 0.0F }, { 0.0F, 0.0F, 0.0F }, { 0.0F, 0.0F, 0.0F }, 
+						{ 0.0F, 0.0F, 0.0F }, { 0.0F, 0.0F, 0.0F }, { 0.0F, 0.0F, 0.0F }, 
+						{ 0.0F, 0.0F, 0.0F }, { 0.0F, 0.0F, 0.0F }, { 0.0F, 0.0F, 0.0F }, 
+						{ 0.0F, 0.0F, 0.0F }, { 0.0F, 0.0F, 0.0F }, { 0.0F, 0.0F, 0.0F }, 
+						{ 0.0F, 0.0F, 0.0F }, { 0.0F, 0.0F, 0.0F }
 					},
 					{
-						{ 0f, 0f, 0f }, 
+						{ 0.7854F, 0.0F, 0.0F }, 
 						{ 0.2618F, 0.0F, 0.0F }, { 0.2618F, 0.0F, 0.0F }, { 0.2618F, 0.0F, 0.0F },
 						{ 0.2618F, 0.0F, 0.0F }, { 0.2618F, 0.0F, 0.0F }, { 0.2618F, 0.0F, 0.0F }, 
-						{ 0.2618F, 0.0F, 0.0F }, { 0.1745F, 0.0F, 0.0F }, { 0.0873F, 0.0F, 0.0F },
-						{ 0.0436F, 0.0F, 0.0F }, { 0.0436F, 0.0F, 0.0F }, { 0.0436F, 0.0F, 0.0F }, 
+						{ 0.2618F, 0.0F, 0.0F }, { 0.1745F, 0.0F, 0.0F }, { 0.1745F, 0.0F, 0.0F },
+						{ 0.0873F, 0.0F, 0.0F }, { 0.0436F, 0.0F, 0.0F }, { 0.0436F, 0.0F, 0.0F }, 
 						{ 0.0436F, 0.0F, 0.0F }, { 0.0436F, 0.0F, 0.0F }, { 0.0436F, 0.0F, 0.0F }, 
 						{ 0.0436F, 0.0F, 0.0F }, { 0.0436F, 0.0F, 0.0F }, { 0.0436F, 0.0F, 0.0F }, 
 						{ 0.0436F, 0.0F, 0.0F }, { 0.0436F, 0.0F, 0.0F }, { 0.0436F, 0.0F, 0.0F }, 
@@ -513,7 +517,7 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 						{ 0.0436F, 0.0F, 0.0F }, { 0.0436F, 0.0F, 0.0F }
 					},
 					{
-						{ 0f, 0f, 0f }, 
+						{ 0.7854F, 0.0F, 0.0F }, 
 						{ 0.2618F, -0.5236F, -0.0873F }, { 0.2618F, -0.5236F, -0.0873F }, { 0.2618F, -0.5236F, -0.0873F },
 						{ 0.2618F, -0.5236F, -0.1745F }, { 0.2618F, 0.0F, -0.1745F }, { 0.2618F, 0.0F, -0.1745F }, 
 						{ 0.2618F, 0.0F, 0.0F }, { 0.2618F, 0.0F, 0.0F }, { 0.2618F, 0.0F, 0.0F }, 
@@ -521,27 +525,27 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 						{ 0.2618F, 0.0F, 0.0F }, { 0.2618F, 0.0F, 0.0F }, { 0.2618F, 0.0F, 0.0F }, 
 						{ 0.2618F, 0.0F, 0.0F }, { 0.2618F, 0.0F, 0.0F }, { 0.2618F, 0.0F, 0.0F }, 
 						{ 0.2618F, 0.0F, 0.0F }, { 0.2618F, 0.0F, 0.0F }, { 0.2618F, 0.0F, 0.0F }, 
-						{ 0.1745F, 0.0F, 0.0F }, { 0.0873F, 0.0F, 0.0F }, { 0f, 0f, 0f }, 
-						{ 0f, 0f, 0f }, { 0f, 0f, 0f }, { 0f, 0f, 0f }, 
-						{ 0f, 0f, 0f }, { 0f, 0f, 0f }
+						{ 0.1745F, 0.0F, 0.0F }, { 0.0873F, 0.0F, 0.0F }, { 0.0F, 0.0F, 0.0F }, 
+						{ 0.0F, 0.0F, 0.0F }, { 0.0F, 0.0F, 0.0F }, { 0.0F, 0.0F, 0.0F }, 
+						{ 0.0F, 0.0F, 0.0F }, { 0.0F, 0.0F, 0.0F }
 					}
 				},
 				{ // robe off
 					{
-						{ 0f, 0f, 0f }, 
+						{ 1.5708F, 0.0F, 0.0F }, 
 						{ 0.2618F, 0.0F, 0.0F }, { 0.2618F, 0.0F, 0.0F }, { 0.2618F, 0.0F, 0.0F },
 						{ 0.2618F, 0.0F, 0.0F }, { 0.1745F, 0.0F, 0.0F }, { 0.0873F, 0.0F, 0.0F }, 
 						{ 0.0436F, 0.0F, 0.0F }, { 0.0436F, 0.0F, 0.0F }, { 0.0436F, 0.0F, 0.0F },
-						{ 0f, 0f, 0f }, { 0f, 0f, 0f }, { 0f, 0f, 0f }, 
-						{ 0f, 0f, 0f }, { 0f, 0f, 0f }, { 0f, 0f, 0f }, 
-						{ 0f, 0f, 0f }, { 0f, 0f, 0f }, { 0f, 0f, 0f }, 
-						{ 0f, 0f, 0f }, { 0f, 0f, 0f }, { 0f, 0f, 0f }, 
-						{ 0f, 0f, 0f }, { 0f, 0f, 0f }, { 0f, 0f, 0f }, 
-						{ 0f, 0f, 0f }, { 0f, 0f, 0f }, { 0f, 0f, 0f }, 
-						{ 0f, 0f, 0f }, { 0f, 0f, 0f }
+						{ 0.0F, 0.0F, 0.0F }, { 0.0F, 0.0F, 0.0F }, { 0.0F, 0.0F, 0.0F }, 
+						{ 0.0F, 0.0F, 0.0F }, { 0.0F, 0.0F, 0.0F }, { 0.0F, 0.0F, 0.0F }, 
+						{ 0.0F, 0.0F, 0.0F }, { 0.0F, 0.0F, 0.0F }, { 0.0F, 0.0F, 0.0F }, 
+						{ 0.0F, 0.0F, 0.0F }, { 0.0F, 0.0F, 0.0F }, { 0.0F, 0.0F, 0.0F }, 
+						{ 0.0F, 0.0F, 0.0F }, { 0.0F, 0.0F, 0.0F }, { 0.0F, 0.0F, 0.0F }, 
+						{ 0.0F, 0.0F, 0.0F }, { 0.0F, 0.0F, 0.0F }, { 0.0F, 0.0F, 0.0F }, 
+						{ 0.0F, 0.0F, 0.0F }, { 0.0F, 0.0F, 0.0F }
 					},
 					{
-						{ 0f, 0f, 0f }, 
+						{ 1.5708F, 0.0F, 0.0F }, 
 						{ 0.2618F, 0.0F, 0.0F }, { 0.2618F, 0.0F, 0.0F }, { 0.1745F, 0.0F, 0.0F },
 						{ 0.1745F, 0.0F, 0.0F }, { 0.1745F, 0.0F, 0.0F }, { 0.0873F, 0.0F, 0.0F }, 
 						{ 0.0873F, 0.0F, 0.0F }, { 0.0436F, 0.0F, 0.0F }, { 0.0436F, 0.0F, 0.0F },
@@ -554,7 +558,7 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 						{ 0.0436F, 0.0F, 0.0F }, { 0.0436F, 0.0F, 0.0F }
 					},
 					{
-						{ 0f, 0f, 0f }, 
+						{ 1.5708F, 0.0F, 0.0F }, 
 						{ 0.2618F, -0.5236F, 0.0F }, { 0.2618F, -0.5236F, 0.0F }, { 0.2618F, -0.5236F, 0.0F },
 						{ 0.2618F, -0.2618F, 0.0F }, { 0.2618F, 0.0F, 0.0F }, { 0.3491F, 0.0F, 0.0F },
 						{ 0.3491F, 0.0F, 0.0F }, { 0.3491F, 0.0F, 0.0F }, { 0.3491F, 0.0F, 0.0F }, 
@@ -562,9 +566,9 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 						{ 0.2618F, -0.0873F, 0.0F }, { 0.2618F, -0.0873F, 0.0F }, { 0.2618F, -0.0873F, 0.0F }, 
 						{ 0.2618F, -0.0873F, 0.0F }, { 0.1745F, -0.0873F, 0.0F }, { 0.1745F, -0.0873F, 0.0F }, 
 						{ 0.2618F, -0.0873F, 0.0F }, { 0.2618F, -0.0873F, 0.0F }, { 0.2618F, -0.0873F, 0.0F }, 
-						{ 0.2618F, -0.0873F, 0.0F }, { 0.2618F, 0.0F, 0.0F }, { 0f, 0f, 0f }, 
-						{ 0f, 0f, 0f }, { 0f, 0f, 0f }, { 0f, 0f, 0f }, 
-						{ 0f, 0f, 0f }, { 0f, 0f, 0f }
+						{ 0.2618F, -0.0873F, 0.0F }, { 0.2618F, 0.0F, 0.0F }, { 0.0F, 0.0F, 0.0F }, 
+						{ 0.0F, 0.0F, 0.0F }, { 0.0F, 0.0F, 0.0F }, { 0.0F, 0.0F, 0.0F }, 
+						{ 0.0F, 0.0F, 0.0F }, { 0.0F, 0.0F, 0.0F }
 					}
 				}
 			};
@@ -995,9 +999,8 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 
 				tail[0][0] = new ModelRenderer(this);
 				tail[0][0].setRotationPoint(0.0F, 15.0F, 0.0F);
-				setRotationAngle(tail[0][0], 0.7854F, 0.0F, 0.0F);
 				tail[0][0].cubeList.add(new ModelBox(tail[0][0], 32, 56, -2.0F, -0.5F, 0.0F, 4, 1, 4, 0.0F, false));
-				tail[0][1] = new ModelRenderer(this);
+				//tail[0][1] = new ModelRenderer(this);
 				for (int i = 1; i < tail.length; i++) {
 					tail[i][0] = new ModelRenderer(this);
 					tail[i][0].setRotationPoint(0.0F, 0.0F, 4.0F);
@@ -1036,13 +1039,11 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 	
 			@Override
 			public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
-				GlStateManager.pushMatrix();
 				GlStateManager.translate(0.0f, 0.0f, 0.25f);
 				body.render(f5);
 				bipedRightLeg.render(f5);
 				bipedLeftLeg.render(f5);
 				tail[0][0].render(f5);
-				GlStateManager.popMatrix();
 			}
 	
 			public void setRotationAngle(ModelRenderer modelRenderer, float x, float y, float z) {
@@ -1068,7 +1069,6 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 					bipedLeftForeArm.rotateAngleX = -1.0472F;
 					rightThigh.rotateAngleY = 1.309F;
 					leftThigh.rotateAngleY = -1.309F;
-					tail[0][0].rotateAngleX = 1.5708F;
 				} else {
 					body.rotateAngleX = 1.0472F;
 					head.rotateAngleX = -1.0472F;
@@ -1078,8 +1078,8 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 					bipedLeftForeArm.rotateAngleX = -0.2618F;
 					rightThigh.rotateAngleY = 0.6545F;
 					leftThigh.rotateAngleY = -0.6545F;
-					tail[0][0].rotateAngleX = 0.7854F;
 				}
+				tail[0][0].rotateAngleX = tailPose[robeIdx][pose][0][0];
 				if (entity.poseProgress >= 0) {
 					switch (pose) {
 					case 0:
@@ -1093,7 +1093,8 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 					case 1:
 					case 2:
 						int segments = pose == 1 ? 19 : 13;
-						j = MathHelper.clamp((int)(((float)entity.poseProgress + pt) / (float)entity.poseProgressEnd * (float)segments), 0, segments);
+						float f9 = Math.min(((float)entity.poseProgress + pt) / (float)entity.poseProgressEnd, 1.0F);
+						j = (int)(f9 * (float)segments);
 						for (int i = 1; i < tail.length; i++) {
 							tail[i][1].showModel = false;
 						}
@@ -1101,21 +1102,12 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 						if (j < 19) {
 							tail[11+j][0].showModel = false;
 						}
-						float f9 = (float)(entity.poseProgressEnd - entity.poseProgress + 1);
 						for (int i = 10 + j; i > 0; i--) {
-							float f6 = tail[i-1][0].rotateAngleX;
-							float f7 = tail[i-1][0].rotateAngleY;
-							float f8 = tail[i-1][0].rotateAngleZ;
-							if (i == 1) {
-								f6 = 0.0F;
-								f7 = 0.0F;
-								f8 = 0.0F;
+							if (i < 25) { // temp fix to the stack overflow bug
+								tail[i][0].rotateAngleX = (tailPose[robeIdx][pose][i][0]) * f9;
+								tail[i][0].rotateAngleY = (tailPose[robeIdx][pose][i][1]) * f9;
+								tail[i][0].rotateAngleZ = (tailPose[robeIdx][pose][i][2]) * f9;
 							}
-							// the following 3 lines causes stack overflow post rendering the model if j > 13, don't know why
-							f6 += (tailPose[robeIdx][pose][i][0] - f6) / f9;
-							f7 += (tailPose[robeIdx][pose][i][1] - f7) / f9;
-							f8 += (tailPose[robeIdx][pose][i][2] - f8) / f9;
-							this.setRotationAngle(tail[i][0], f6, f7, f8);
 							tail[i][0].showModel = true;
 						}
 						break;

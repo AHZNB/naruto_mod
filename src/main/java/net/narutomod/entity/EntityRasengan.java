@@ -355,7 +355,7 @@ public class EntityRasengan extends ElementsNarutomodMod.ModElement {
 		        GlStateManager.translate(f * 5.6F, 0.0F, 0.0F);
 	    	}
 	    }
-	
+
 		@SideOnly(Side.CLIENT)
 		public class RenderRasengan extends Render<EC> {
 			private final ResourceLocation texture = new ResourceLocation("narutomod:textures/longcube_white.png");
@@ -419,7 +419,7 @@ public class EntityRasengan extends ElementsNarutomodMod.ModElement {
 				}
 				GlStateManager.translate(0f, 0.5F - 0.175F * scale, 0f);
 				GlStateManager.scale(scale, scale, scale);
-				GlStateManager.rotate(entity.ticksExisted * 30.0F, 1.0F, 1.0F, 0.0F);
+				GlStateManager.rotate((partialTicks + entity.ticksExisted) * 30.0F, 1.0F, 1.0F, 0.0F);
 				GlStateManager.enableAlpha();
 				GlStateManager.enableBlend();
 				GlStateManager.disableCull();

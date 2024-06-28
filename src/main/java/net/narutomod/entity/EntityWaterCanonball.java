@@ -99,8 +99,8 @@ public class EntityWaterCanonball extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public void renderParticles() {
-			if (this.world instanceof WorldServer) {
-				((WorldServer)this.world).spawnParticle(EnumParticleTypes.WATER_WAKE, this.posX, this.posY, this.posZ, (int)(this.fullScale * 30f), 0.0d, 0.0d, 0.0d, 0.03d * this.fullScale);
+			for (int i = 0; i < (int)(this.fullScale * 100f); i++) {
+				this.world.spawnParticle(EnumParticleTypes.WATER_WAKE, this.posX, this.posY + 0.5d * this.height, this.posZ, (this.rand.nextDouble()-0.5d) * 0.6d * this.fullScale, (this.rand.nextDouble()-0.5d) * 0.6d * this.fullScale, (this.rand.nextDouble()-0.5d) * 0.6d * this.fullScale);
 			}
 		}
 
@@ -118,12 +118,12 @@ public class EntityWaterCanonball extends ElementsNarutomodMod.ModElement {
 					float f = this.fullScale * this.ticksAlive / this.timeToFullscale;
 					this.setEntityScale(f);
 					Vec3d vec = this.shootingEntity.getPositionEyes(1f).add(this.shootingEntity.getLookVec().scale(0.3d + 0.5d * this.width));//.subtract(0d, 0.5d * this.height, 0d);
-					this.setLocationAndAngles(vec.x, vec.y, vec.z, this.shootingEntity.rotationYawHead, this.shootingEntity.rotationPitch);
+					this.setPositionAndRotation(vec.x, vec.y, vec.z, this.shootingEntity.rotationYawHead, this.shootingEntity.rotationPitch);
 				} else if (!this.isLaunched()) {
 					Vec3d vec = this.shootingEntity.getLookVec();
 					this.shoot(vec.x, vec.y, vec.z, 1.2f, 0f);
 				}
-				if (this.ticksAlive % 20 == 19) {
+				if (this.ticksAlive % 10 == 9) {
 					this.playSound(net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:waterfall")),
 					 this.fullScale >= 10.0f ? 5.0F : 1.0f, this.rand.nextFloat() * 0.5f + 0.6f);
 				}
@@ -198,7 +198,7 @@ public class EntityWaterCanonball extends ElementsNarutomodMod.ModElement {
 				GlStateManager.scale(scale, scale, scale);
 				GlStateManager.matrixMode(5890);
 				GlStateManager.loadIdentity();
-				GlStateManager.translate(0.0F, -f2 * 0.1F, 0.0F);
+				GlStateManager.translate(0.0F, -f2 * 0.2F, 0.0F);
 				GlStateManager.matrixMode(5888);
 				GlStateManager.enableBlend();
 				GlStateManager.disableLighting();

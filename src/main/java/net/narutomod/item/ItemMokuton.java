@@ -46,6 +46,7 @@ import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelBox;
 import net.minecraft.client.model.ModelRenderer;
 
+import net.narutomod.entity.EntityRendererRegister;
 import net.narutomod.entity.EntityWoodBurial;
 import net.narutomod.entity.EntityWoodPrison;
 import net.narutomod.entity.EntityWoodGolem;
@@ -57,8 +58,8 @@ import net.narutomod.ElementsNarutomodMod;
 //import net.narutomod.Chakra;
 
 import java.util.Map;
-import com.google.common.collect.Maps;
 import javax.annotation.Nullable;
+import com.google.common.collect.Maps;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class ItemMokuton extends ElementsNarutomodMod.ModElement {
@@ -338,100 +339,107 @@ public class ItemMokuton extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-	@SideOnly(Side.CLIENT)
-	public class RenderSegment extends Render<WoodSegment> {
-		private final ResourceLocation texture = new ResourceLocation("narutomod:textures/woodblock.png");
-		protected final ModelWoodSegment model;
-
-		public RenderSegment(RenderManager renderManagerIn) {
-			super(renderManagerIn);
-			this.model = new ModelWoodSegment();
-			this.shadowSize = 0.4f;
-		}
-
-		@Override
-		public void doRender(WoodSegment entity, double x, double y, double z, float entityYaw, float pt) {
-			if (entity.getParent() != null) {
-				entity.setPositionAndRotationFromParent(pt);
-				x = entity.posX - this.renderManager.viewerPosX;
-				y = entity.posY - this.renderManager.viewerPosY;
-				z = entity.posZ - this.renderManager.viewerPosZ;
-				this.bindEntityTexture(entity);
-				GlStateManager.pushMatrix();
-				GlStateManager.translate(x, y, z);
-				GlStateManager.rotate(-entity.rotationYaw, 0.0F, 1.0F, 0.0F);
-				GlStateManager.rotate(entity.rotationPitch - 180.0F, 1.0F, 0.0F, 0.0F);
-				GlStateManager.rotate(5.0F * entity.getIndex(), 0.0F, 1.0F, 0.0F);
-				GlStateManager.scale(2.0f, 2.0f, 2.0f);
-				this.model.render(entity, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
-				GlStateManager.popMatrix();
-			}
-		}
-
-		@Override
-		protected ResourceLocation getEntityTexture(WoodSegment entity) {
-			return this.texture;
-		}
-	}
-
-	// Made with Blockbench 3.9.3
-	// Exported for Minecraft version 1.7 - 1.12
-	// Paste this class into your mod and generate all required imports
-	@SideOnly(Side.CLIENT)
-	public class ModelWoodSegment extends ModelBase {
-		private final ModelRenderer[] segment = new ModelRenderer[1];
-		
-		public ModelWoodSegment() {
-			textureWidth = 16;
-			textureHeight = 16;
-			for (int i = 0; i < segment.length; i++) {
-				segment[i] = new ModelRenderer(this);
-				segment[i].setRotationPoint(0.0F, i == 0 ? 0.0F : -3.0F, 0.0F);
-				segment[i].cubeList.add(new ModelBox(segment[i], 0, 0, -2.0F, -3.0F, -2.0F, 4, 4, 4, 0.0F, false));
-				ModelRenderer bone5 = new ModelRenderer(this);
-				bone5.setRotationPoint(0.0F, 1.0F, 0.0F);
-				segment[i].addChild(bone5);
-				ModelRenderer bone = new ModelRenderer(this);
-				bone.setRotationPoint(0.0F, -4.0F, -2.0F);
-				bone5.addChild(bone);
-				setRotationAngle(bone, 0.5236F, 3.1416F, 0.0F);
-				bone.cubeList.add(new ModelBox(bone, 0, 0, -2.0F, -4.0F, 0.0F, 4, 4, 0, 0.0F, false));
-				ModelRenderer bone2 = new ModelRenderer(this);
-				bone2.setRotationPoint(0.0F, -4.0F, 2.0F);
-				bone5.addChild(bone2);
-				setRotationAngle(bone2, 0.5236F, 0.0F, 0.0F);
-				bone2.cubeList.add(new ModelBox(bone2, 0, 0, -2.0F, -4.0F, 0.0F, 4, 4, 0, 0.0F, false));
-				ModelRenderer bone3 = new ModelRenderer(this);
-				bone3.setRotationPoint(-2.0F, -4.0F, 0.0F);
-				bone5.addChild(bone3);
-				setRotationAngle(bone3, 0.0F, -1.5708F, 0.5236F);
-				bone3.cubeList.add(new ModelBox(bone3, 0, 0, -2.0F, -4.0F, 0.0F, 4, 4, 0, 0.0F, false));
-				ModelRenderer bone4 = new ModelRenderer(this);
-				bone4.setRotationPoint(2.0F, -4.0F, 0.0F);
-				bone5.addChild(bone4);
-				setRotationAngle(bone4, 0.0F, 1.5708F, -0.5236F);
-				bone4.cubeList.add(new ModelBox(bone4, 0, 0, -2.0F, -4.0F, 0.0F, 4, 4, 0, 0.0F, true));
-				if (i > 0) {
-					segment[i-1].addChild(segment[i]);
-				}
-			}
-		}
-
-		@Override
-		public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
-			segment[0].render(f5);
-		}
-
-		public void setRotationAngle(ModelRenderer modelRenderer, float x, float y, float z) {
-			modelRenderer.rotateAngleX = x;
-			modelRenderer.rotateAngleY = y;
-			modelRenderer.rotateAngleZ = z;
-		}
-	}
-
-	@SideOnly(Side.CLIENT)
 	@Override
 	public void preInit(FMLPreInitializationEvent event) {
-		RenderingRegistry.registerEntityRenderingHandler(WoodSegment.class, renderManager -> new RenderSegment(renderManager));
+		new Renderer().register();
+	}
+
+	public static class Renderer extends EntityRendererRegister {
+		@SideOnly(Side.CLIENT)
+		@Override
+		public void register() {
+			RenderingRegistry.registerEntityRenderingHandler(WoodSegment.class, renderManager -> new RenderSegment(renderManager));
+		}
+
+		@SideOnly(Side.CLIENT)
+		public class RenderSegment extends Render<WoodSegment> {
+			private final ResourceLocation texture = new ResourceLocation("narutomod:textures/woodblock.png");
+			protected final ModelWoodSegment model;
+	
+			public RenderSegment(RenderManager renderManagerIn) {
+				super(renderManagerIn);
+				this.model = new ModelWoodSegment();
+				this.shadowSize = 0.4f;
+			}
+	
+			@Override
+			public void doRender(WoodSegment entity, double x, double y, double z, float entityYaw, float pt) {
+				if (entity.getParent() != null) {
+					entity.setPositionAndRotationFromParent(pt);
+					x = entity.posX - this.renderManager.viewerPosX;
+					y = entity.posY - this.renderManager.viewerPosY;
+					z = entity.posZ - this.renderManager.viewerPosZ;
+					this.bindEntityTexture(entity);
+					GlStateManager.pushMatrix();
+					GlStateManager.translate(x, y, z);
+					GlStateManager.rotate(-entity.rotationYaw, 0.0F, 1.0F, 0.0F);
+					GlStateManager.rotate(entity.rotationPitch - 180.0F, 1.0F, 0.0F, 0.0F);
+					GlStateManager.rotate(5.0F * entity.getIndex(), 0.0F, 1.0F, 0.0F);
+					GlStateManager.scale(2.0f, 2.0f, 2.0f);
+					this.model.render(entity, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
+					GlStateManager.popMatrix();
+				}
+			}
+	
+			@Override
+			protected ResourceLocation getEntityTexture(WoodSegment entity) {
+				return this.texture;
+			}
+		}
+	
+		// Made with Blockbench 3.9.3
+		// Exported for Minecraft version 1.7 - 1.12
+		// Paste this class into your mod and generate all required imports
+		@SideOnly(Side.CLIENT)
+		public class ModelWoodSegment extends ModelBase {
+			private final ModelRenderer[] segment = new ModelRenderer[1];
+			
+			public ModelWoodSegment() {
+				textureWidth = 16;
+				textureHeight = 16;
+				for (int i = 0; i < segment.length; i++) {
+					segment[i] = new ModelRenderer(this);
+					segment[i].setRotationPoint(0.0F, i == 0 ? 0.0F : -3.0F, 0.0F);
+					segment[i].cubeList.add(new ModelBox(segment[i], 0, 0, -2.0F, -3.0F, -2.0F, 4, 4, 4, 0.0F, false));
+					ModelRenderer bone5 = new ModelRenderer(this);
+					bone5.setRotationPoint(0.0F, 1.0F, 0.0F);
+					segment[i].addChild(bone5);
+					ModelRenderer bone = new ModelRenderer(this);
+					bone.setRotationPoint(0.0F, -4.0F, -2.0F);
+					bone5.addChild(bone);
+					setRotationAngle(bone, 0.5236F, 3.1416F, 0.0F);
+					bone.cubeList.add(new ModelBox(bone, 0, 0, -2.0F, -4.0F, 0.0F, 4, 4, 0, 0.0F, false));
+					ModelRenderer bone2 = new ModelRenderer(this);
+					bone2.setRotationPoint(0.0F, -4.0F, 2.0F);
+					bone5.addChild(bone2);
+					setRotationAngle(bone2, 0.5236F, 0.0F, 0.0F);
+					bone2.cubeList.add(new ModelBox(bone2, 0, 0, -2.0F, -4.0F, 0.0F, 4, 4, 0, 0.0F, false));
+					ModelRenderer bone3 = new ModelRenderer(this);
+					bone3.setRotationPoint(-2.0F, -4.0F, 0.0F);
+					bone5.addChild(bone3);
+					setRotationAngle(bone3, 0.0F, -1.5708F, 0.5236F);
+					bone3.cubeList.add(new ModelBox(bone3, 0, 0, -2.0F, -4.0F, 0.0F, 4, 4, 0, 0.0F, false));
+					ModelRenderer bone4 = new ModelRenderer(this);
+					bone4.setRotationPoint(2.0F, -4.0F, 0.0F);
+					bone5.addChild(bone4);
+					setRotationAngle(bone4, 0.0F, 1.5708F, -0.5236F);
+					bone4.cubeList.add(new ModelBox(bone4, 0, 0, -2.0F, -4.0F, 0.0F, 4, 4, 0, 0.0F, true));
+					if (i > 0) {
+						segment[i-1].addChild(segment[i]);
+					}
+				}
+			}
+	
+			@Override
+			public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
+				segment[0].render(f5);
+			}
+	
+			public void setRotationAngle(ModelRenderer modelRenderer, float x, float y, float z) {
+				modelRenderer.rotateAngleX = x;
+				modelRenderer.rotateAngleY = y;
+				modelRenderer.rotateAngleZ = z;
+			}
+		}
 	}
 }

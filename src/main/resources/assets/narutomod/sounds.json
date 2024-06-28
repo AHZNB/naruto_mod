@@ -1096,5 +1096,23 @@
         "stream": false
       }
     ]
+  },
+  "ting": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "narutomod:ting",
+        "stream": false
+      }
+    ]
+  },
+  "shuriken1": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "narutomod:shuriken1",
+        "stream": false
+      }
+    ]
   }
 }

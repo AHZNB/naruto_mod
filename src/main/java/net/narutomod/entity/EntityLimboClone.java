@@ -57,14 +57,6 @@ public class EntityLimboClone extends ElementsNarutomodMod.ModElement {
 			.id(new ResourceLocation("narutomod", "limbo_clone"), ENTITYID).name("limbo_clone").tracker(64, 3, true).build());
 	}
 
-	@SideOnly(Side.CLIENT)
-	@Override
-	public void preInit(FMLPreInitializationEvent event) {
-		RenderingRegistry.registerEntityRenderingHandler(EC.class, renderManager -> {
-			return new RenderEC(renderManager);
-		});
-	}
-
 	@Override
 	public void init(FMLInitializationEvent event) {
 		MinecraftForge.EVENT_BUS.register(new EntityAttackedHook());
@@ -206,34 +198,47 @@ public class EntityLimboClone extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-	@SideOnly(Side.CLIENT)
-	public class RenderEC extends EntityClone.ClientRLM.RenderClone<EC> {
-		public RenderEC(RenderManager renderManager) {
-			EntityClone.ClientRLM.getInstance().super(renderManager);
-			this.shadowSize = 0.0f;
+	@Override
+	public void preInit(FMLPreInitializationEvent event) {
+		new Renderer().register();
+	}
+
+	public static class Renderer extends EntityRendererRegister {
+		@SideOnly(Side.CLIENT)
+		@Override
+		public void register() {
+			RenderingRegistry.registerEntityRenderingHandler(EC.class, renderManager -> new RenderEC(renderManager));
 		}
 
-		@Override
-		public void doRender(EC entity, double x, double y, double z, float entityYaw, float partialTicks) {
-			if (entity.canBeDetectedBy(this.renderManager.renderViewEntity)) {
-				GlStateManager.enableBlendProfile(GlStateManager.Profile.TRANSPARENT_MODEL);
-				super.doRender(entity, x, y, z, entityYaw, partialTicks);
-				GlStateManager.disableBlendProfile(GlStateManager.Profile.TRANSPARENT_MODEL);
+		@SideOnly(Side.CLIENT)
+		public class RenderEC extends EntityClone.ClientRLM.RenderClone<EC> {
+			public RenderEC(RenderManager renderManager) {
+				EntityClone.ClientRLM.getInstance().super(renderManager);
+				this.shadowSize = 0.0f;
 			}
-		}
-
-		@Override
-		protected void renderLayers(EC entity, float f0, float f1, float f2, float f3, float f4, float f5, float f6) {
-			if (entity.canBeDetectedBy(this.renderManager.renderViewEntity)) {
-				GlStateManager.enableBlendProfile(GlStateManager.Profile.TRANSPARENT_MODEL);
-				super.renderLayers(entity, f0, f1, f2, f3, f4, f5, f6);
-				GlStateManager.disableBlendProfile(GlStateManager.Profile.TRANSPARENT_MODEL);
+	
+			@Override
+			public void doRender(EC entity, double x, double y, double z, float entityYaw, float partialTicks) {
+				if (entity.canBeDetectedBy(this.renderManager.renderViewEntity)) {
+					GlStateManager.enableBlendProfile(GlStateManager.Profile.TRANSPARENT_MODEL);
+					super.doRender(entity, x, y, z, entityYaw, partialTicks);
+					GlStateManager.disableBlendProfile(GlStateManager.Profile.TRANSPARENT_MODEL);
+				}
 			}
-		}
-
-		@Override
-		protected boolean canRenderName(EC entity) {
-			return false;
+	
+			@Override
+			protected void renderLayers(EC entity, float f0, float f1, float f2, float f3, float f4, float f5, float f6) {
+				if (entity.canBeDetectedBy(this.renderManager.renderViewEntity)) {
+					GlStateManager.enableBlendProfile(GlStateManager.Profile.TRANSPARENT_MODEL);
+					super.renderLayers(entity, f0, f1, f2, f3, f4, f5, f6);
+					GlStateManager.disableBlendProfile(GlStateManager.Profile.TRANSPARENT_MODEL);
+				}
+			}
+	
+			@Override
+			protected boolean canRenderName(EC entity) {
+				return false;
+			}
 		}
 	}
 

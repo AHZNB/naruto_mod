@@ -15,7 +15,7 @@ Jutsus:
  - reduced revolving heaven block breaking (can't break stone anymore)
  - rasengan/biju ball is now more transparent in 1st person view for better visability
  - kekkei mora projectiles are now unblockable
- - add Water cannon ball jutsu
+ - add Water cannon ball jutsu and scroll
  - great fireball jutsu can be guided if user jutsuXp >= 2x requirement
 
 Items:
@@ -30,11 +30,12 @@ Items:
  - poison bombs also inflicts blindness for 5s
  - added kunai sword and recipe, can block attacks
  - fix remaining server crashes due to "NoClassDefFoundError"
- - prevents players dropping the duplicate kiba sword 
+ - prevents players dropping the duplicate kiba sword
+ - Hiramekarei now does sweeping damage
 
 Entities:
  - re-textured kisame
- - fix remaining server crashes due to "NoClassDefFoundError"
+ - fix more server crashes due to "NoClassDefFoundError"
  - all "smart" ninja NPCs can naruto run
  - Might Guy and Iruka wears konoha flak jackets and jumpsuit/pants now and has a chance to drop it
  - Sakura wears Sakura clothing and leggings now and has a chance to drop it
@@ -57,7 +58,6 @@ General:
  - fixed alpha transparency bug when using certain jutsus
  
 Bugs & Issues:
- - Hiruko puppet extending its tail to attack causes client side post render stack overflows
 
 0.3.0-beta ================================================================================
 

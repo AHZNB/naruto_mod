@@ -66,14 +66,6 @@ public class EntityChibakuTenseiBall extends ElementsNarutomodMod.ModElement {
 		 .name("chibaku_satellite").tracker(64, 3, true).build());
 	}
 
-	@SideOnly(Side.CLIENT)
-	@Override
-	public void preInit(FMLPreInitializationEvent event) {
-		RenderingRegistry.registerEntityRenderingHandler(EntityCustom.class, renderManager -> {
-			return new RenderCustom(renderManager);
-		});
-	}
-
 	public static class EntityCustom extends EntityScalableProjectile.Base {
 		private final float maxScale = 80f;
 		private final int launchTime = 100;
@@ -350,56 +342,69 @@ public class EntityChibakuTenseiBall extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-	@SideOnly(Side.CLIENT)
-	public class RenderCustom extends Render<EntityCustom> {
-		private final ResourceLocation blank_tex = new ResourceLocation("narutomod:textures/blank.png");
-		private final ResourceLocation texture = new ResourceLocation("narutomod:textures/truthhseekerball.png");
-		protected ModelBase mainModel;
-
-		public RenderCustom(RenderManager renderManagerIn) {
-			super(renderManagerIn);
-			this.mainModel = new ModelBall();
-		}
-
-		@Override
-		public void doRender(EntityCustom entity, double x, double y, double z, float entityYaw, float partialTicks) {
-			this.bindEntityTexture(entity);
-			GlStateManager.pushMatrix();
-			GlStateManager.disableCull();
-			float scale = entity.getEntityScale();
-			GlStateManager.translate(x, y + (0.125F * scale), z);
-			GlStateManager.scale(scale, scale, scale);
-			GlStateManager.rotate(entity.ticksExisted * 10.0F, 1.0F, 1.0F, 0.0F);
-			GlStateManager.disableLighting();
-			OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240.0F, 240.0F);
-			this.mainModel.render(entity, 0.0F, 0.0F, partialTicks + entity.ticksExisted, 0.0F, 0.0F, 0.0625F);
-			GlStateManager.enableLighting();
-			GlStateManager.enableCull();
-			GlStateManager.popMatrix();
-			super.doRender(entity, x, y, z, entityYaw, partialTicks);
-		}
-
-		@Override
-		protected ResourceLocation getEntityTexture(EntityCustom entity) {
-			return entity.getEntityScale() > entity.maxScale * 0.4f ? this.blank_tex : this.texture;
-		} // meteor2
+	@Override
+	public void preInit(FMLPreInitializationEvent event) {
+		new Renderer().register();
 	}
 
-	@SideOnly(Side.CLIENT)
-	public class ModelBall extends ModelBase {
-		private final ModelRenderer bb_main;
-
-		public ModelBall() {
-			this.textureWidth = 16;
-			this.textureHeight = 16;
-			this.bb_main = new ModelRenderer(this);
-			this.bb_main.setRotationPoint(0.0F, 2.0F, 0.0F);
-			this.bb_main.cubeList.add(new ModelBox(this.bb_main, 0, 0, -2.0F, -4.0F, -2.0F, 4, 4, 4, 0.0F, false));
+	public static class Renderer extends EntityRendererRegister {
+		@SideOnly(Side.CLIENT)
+		@Override
+		public void register() {
+			RenderingRegistry.registerEntityRenderingHandler(EntityCustom.class, renderManager -> new RenderCustom(renderManager));
 		}
 
-		@Override
-		public void render(Entity entityIn, float f0, float f1, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
-			this.bb_main.render(scale);
+		@SideOnly(Side.CLIENT)
+		public class RenderCustom extends Render<EntityCustom> {
+			private final ResourceLocation blank_tex = new ResourceLocation("narutomod:textures/blank.png");
+			private final ResourceLocation texture = new ResourceLocation("narutomod:textures/truthhseekerball.png");
+			protected ModelBase mainModel;
+	
+			public RenderCustom(RenderManager renderManagerIn) {
+				super(renderManagerIn);
+				this.mainModel = new ModelBall();
+			}
+	
+			@Override
+			public void doRender(EntityCustom entity, double x, double y, double z, float entityYaw, float partialTicks) {
+				this.bindEntityTexture(entity);
+				GlStateManager.pushMatrix();
+				GlStateManager.disableCull();
+				float scale = entity.getEntityScale();
+				GlStateManager.translate(x, y + (0.125F * scale), z);
+				GlStateManager.scale(scale, scale, scale);
+				GlStateManager.rotate(entity.ticksExisted * 10.0F, 1.0F, 1.0F, 0.0F);
+				GlStateManager.disableLighting();
+				OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240.0F, 240.0F);
+				this.mainModel.render(entity, 0.0F, 0.0F, partialTicks + entity.ticksExisted, 0.0F, 0.0F, 0.0625F);
+				GlStateManager.enableLighting();
+				GlStateManager.enableCull();
+				GlStateManager.popMatrix();
+				super.doRender(entity, x, y, z, entityYaw, partialTicks);
+			}
+	
+			@Override
+			protected ResourceLocation getEntityTexture(EntityCustom entity) {
+				return entity.getEntityScale() > entity.maxScale * 0.4f ? this.blank_tex : this.texture;
+			} // meteor2
+		}
+	
+		@SideOnly(Side.CLIENT)
+		public class ModelBall extends ModelBase {
+			private final ModelRenderer bb_main;
+	
+			public ModelBall() {
+				this.textureWidth = 16;
+				this.textureHeight = 16;
+				this.bb_main = new ModelRenderer(this);
+				this.bb_main.setRotationPoint(0.0F, 2.0F, 0.0F);
+				this.bb_main.cubeList.add(new ModelBox(this.bb_main, 0, 0, -2.0F, -4.0F, -2.0F, 4, 4, 4, 0.0F, false));
+			}
+	
+			@Override
+			public void render(Entity entityIn, float f0, float f1, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
+				this.bb_main.render(scale);
+			}
 		}
 	}
 }

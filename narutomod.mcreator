@@ -1,6 +1,6 @@
 {
   "id_map": {
-    "GUI": 64,
+    "GUI": 65,
     "DIMENSION": 13,
     "ENTITY": 444
   },
@@ -7397,6 +7397,26 @@
         "1": 444
       },
       "registry_name": "water_canonball"
+    },
+    {
+      "name": "ScrollWaterCannonGui",
+      "type": "gui",
+      "sortid": 874,
+      "compiles": true,
+      "locked_code": true,
+      "ids": {
+        "0": 65
+      },
+      "registry_name": "scroll_water_cannon_gui"
+    },
+    {
+      "name": "ScrollWaterCannon",
+      "type": "item",
+      "sortid": 875,
+      "compiles": true,
+      "locked_code": false,
+      "ids": {},
+      "registry_name": "scroll_water_cannon"
     }
   ],
   "variable_elements": [
@@ -8414,6 +8434,22 @@
       ],
       "category": "master",
       "subtitle": ""
+    },
+    {
+      "name": "ting",
+      "files": [
+        "ting"
+      ],
+      "category": "master",
+      "subtitle": ""
+    },
+    {
+      "name": "shuriken1",
+      "files": [
+        "shuriken1"
+      ],
+      "category": "master",
+      "subtitle": ""
     }
   ],
   "language_map": {
@@ -8431,6 +8467,7 @@
       "subtitles.sando_no_jutsu": "",
       "subtitles.laser": "",
       "item.ryo_100.name": "100 Ryo",
+      "subtitles.shuriken1": "",
       "tooltip.samehada.general": "Samehada is a sentient sword utilised by the Seven Ninja Swordsmen of the Mist and is regarded as the most terrifying out of all the Seven Swordsmen\u0027s blades.",
       "item.summoning_contract.name": "Summoning Contract",
       "item.ninja_armor_jiraiyaboots.name": "Ninja Armor Jiraiya Boots",
@@ -8739,11 +8776,11 @@
       "entity.c_1.name": "Explosive Clay ([Left click] to set target)",
       "item.byakurinnesharinganboots.name": "",
       "item.clothes_kazekageboots.name": "",
+      "subtitles.ting": "",
       "tooltip.byakurinnesharingan.jutsu2": "Yomotsu Hirasaka",
       "item.scroll_hiding_in_ash.name": "Fire Release - Hiding In Ash",
       "entity.buddha_1000.name": "Sage Art Wood Release: Shinsu Senju",
       "subtitles.shot": "",
-      "chattext.specialevent.titanjadeniscoming": "Event alert: Titan Jaden is coming!",
       "item.ninja_armor_war_1legs.name": "Ninja Armor War 1 Leggings",
       "tooltip.mokuton.rightclick2": "Four-Pillar House Technique",
       "subtitles.mindtransfer": "",
@@ -9055,7 +9092,6 @@
       "item.ninja_armor_otolegs.name": "Ninja Leggings (Otogakure)",
       "subtitles.shukaku_roar": "",
       "tooltip.kusanagi.description": "The Kusanagi sword of Japanese legend.",
-      "tooltip.jadensword.description": "The ultimate weapon wielded by the Mighty Jaden.",
       "entity.c_2.name": "C 2",
       "item.mangekyosharinganhelmet.name": "Mangekyo Sharingan - Amaterasu",
       "key.mcreator.specialjutsu1": "Jutsu 1",
@@ -9133,6 +9169,7 @@
       "chattext.cooldown.formatted": "Cooldown: %.1f",
       "key.mcreator.powerincrease": "Switch Jutsu / Increase",
       "entity.gedo_statue.name": "Demonic Statue of the Outer Path",
+      "item.scroll_water_cannon.name": "Water Release - Water Cannon Ball",
       "entity.water_shockwave.name": "Exploding Water Shockwave",
       "entity.puppet_hiruko.name": "Hiruko Puppet",
       "item.ninja_armor_kumolegs.name": "Ninja Pants (Kumogakure)",

@@ -38,6 +38,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.narutomod.potion.PotionReach;
 import net.narutomod.entity.EntityRendererRegister;
 import net.narutomod.entity.EntityChakraFlow;
+import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.Particles;
 import net.narutomod.Chakra;
 import net.narutomod.creativetab.TabModTab;
@@ -48,6 +49,12 @@ import javax.annotation.Nullable;
 import java.util.UUID;
 import java.util.Random;
 import java.util.List;
+import net.minecraft.util.math.MathHelper;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.event.entity.living.LivingAttackEvent;
+import net.minecraft.util.DamageSource;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.common.MinecraftForge;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class ItemHiramekareiSword extends ElementsNarutomodMod.ModElement {
@@ -71,6 +78,11 @@ public class ItemHiramekareiSword extends ElementsNarutomodMod.ModElement {
 	@SideOnly(Side.CLIENT)
 	public void registerModels(ModelRegistryEvent event) {
 		ModelLoader.setCustomModelResourceLocation(block, 0, new ModelResourceLocation("narutomod:hiramekarei", "inventory"));
+	}
+
+	@Override
+	public void init(FMLInitializationEvent event) {
+		MinecraftForge.EVENT_BUS.register(new RangedItem.AttackHook());
 	}
 
 	public static class RangedItem extends Item implements ItemOnBody.Interface {
@@ -172,6 +184,25 @@ public class ItemHiramekareiSword extends ElementsNarutomodMod.ModElement {
 		@SideOnly(Side.CLIENT)
 		public boolean hasEffect(ItemStack itemstack) {
 			return this.effectActive(itemstack);
+		}
+
+		public static class AttackHook {
+			@SubscribeEvent
+			public void onLivingAttack(LivingAttackEvent event) {
+				Entity attacker = event.getSource().getTrueSource();
+				if (attacker instanceof EntityLivingBase && ((EntityLivingBase)attacker).getHeldItemMainhand().getItem() == block && !event.getEntityLiving().getEntityData().getBoolean("splashDamageFromHiraMekarei")) {
+					double d = ProcedureUtils.getReachDistance((EntityLivingBase)attacker);
+					for (EntityLivingBase entity : attacker.world.getEntitiesWithinAABB(EntityLivingBase.class, attacker.getEntityBoundingBox().grow(d, 0.25D, d))) {
+						if (entity != attacker && entity != event.getEntityLiving() && !attacker.isOnSameTeam(entity) && attacker.getDistanceSq(entity) <= d * d) {
+							entity.getEntityData().setBoolean("splashDamageFromHiraMekarei", true);
+							entity.knockBack(attacker, 0.5F, MathHelper.sin(attacker.rotationYaw * 0.017453292F), -MathHelper.cos(attacker.rotationYaw * 0.017453292F));
+							entity.attackEntityFrom(DamageSource.causeMobDamage((EntityLivingBase)attacker), event.getAmount());
+							entity.getEntityData().removeTag("splashDamageFromHiraMekarei");
+						}
+					}
+					attacker.world.playSound(null, attacker.posX, attacker.posY, attacker.posZ, net.minecraft.init.SoundEvents.ENTITY_PLAYER_ATTACK_SWEEP, attacker.getSoundCategory(), 1.0F, 1.0F);
+				}
+			}
 		}
 	}
 

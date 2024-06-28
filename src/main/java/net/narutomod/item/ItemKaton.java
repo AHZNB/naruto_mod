@@ -190,6 +190,10 @@ public class ItemKaton extends ElementsNarutomodMod.ModElement {
 				return false;
 			}
 
+			public void createJutsu(EntityLivingBase entity, double x, double y, double z, float power) {
+				this.createJutsu(entity, x, y, z, power, false);
+			}
+
 			public void createJutsu(EntityLivingBase entity, double x, double y, double z, float power, boolean isGuided) {
 				EntityBigFireball entityarrow = new EntityBigFireball(entity, power, isGuided);
 				entityarrow.shoot(x, y, z, 0.99f, 0);

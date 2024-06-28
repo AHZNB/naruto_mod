@@ -2,6 +2,7 @@
 package net.narutomod.item;
 
 import net.narutomod.procedure.ProcedureUtils;
+import net.narutomod.entity.EntityRendererRegister;
 import net.narutomod.entity.EntityLightningArc;
 import net.narutomod.creativetab.TabModTab;
 import net.narutomod.ElementsNarutomodMod;
@@ -193,12 +194,6 @@ public class ItemCleaver extends ElementsNarutomodMod.ModElement {
 		ModelLoader.setCustomModelResourceLocation(block, 0, new ModelResourceLocation("narutomod:cleaver", "inventory"));
 	}
 
-	@SideOnly(Side.CLIENT)
-	@Override
-	public void preInit(FMLPreInitializationEvent event) {
-		RenderingRegistry.registerEntityRenderingHandler(EntityCustom.class, renderManager -> new RenderCustom(renderManager));
-	}
-
 	public static class EntityCustom extends Entity {
 		private static final DataParameter<Integer> OWNER_ID = EntityDataManager.<Integer>createKey(EntityCustom.class, DataSerializers.VARINT);
 		protected EntityLivingBase summoner;
@@ -266,46 +261,59 @@ public class ItemCleaver extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-	@SideOnly(Side.CLIENT)
-	public class RenderCustom extends Render<EntityCustom> {
-		public RenderCustom(RenderManager renderManagerIn) {
-			super(renderManagerIn);
-		}
+	@Override
+	public void preInit(FMLPreInitializationEvent event) {
+		new Renderer().register();
+	}
 
-		private Vec3d transform3rdPerson(Vec3d startvec, Vec3d angles, EntityLivingBase entity, EnumHandSide side) {
-			return ProcedureUtils.rotateRoll(startvec, (float)-angles.z)
-			   .rotateYaw((float)-angles.y).rotatePitch((float)-angles.x)
-			   .addVector(0.0625F * (side==EnumHandSide.RIGHT?-5:5), 1.5F-(entity.isSneaking()?0.3f:0f), -0.05F)
-			   .rotateYaw(-entity.renderYawOffset * (float)(Math.PI / 180d))
-			   .addVector(entity.posX, entity.posY, entity.posZ);
-		}
-
+	public static class Renderer extends EntityRendererRegister {
+		@SideOnly(Side.CLIENT)
 		@Override
-		public void doRender(EntityCustom entity, double x, double y, double z, float f, float partialTicks) {
-			EntityLivingBase user = entity.getOwner();
-			if (user != null) {
-				RenderLivingBase<?> renderer = (RenderLivingBase<?>)this.renderManager.getEntityRenderObject(user);
-				ModelRenderer rightarmModel = ((ModelBiped)renderer.getMainModel()).bipedRightArm;
-				Vec3d rightarmAngles = new Vec3d(rightarmModel.rotateAngleX, rightarmModel.rotateAngleY, rightarmModel.rotateAngleZ);
-				ModelRenderer leftarmModel = ((ModelBiped)renderer.getMainModel()).bipedLeftArm;
-				Vec3d leftarmAngles = new Vec3d(leftarmModel.rotateAngleX, leftarmModel.rotateAngleY, leftarmModel.rotateAngleZ);
-				EnumHandSide mainhandside = user.getPrimaryHand();
-				Vec3d mainarmAngles = mainhandside == EnumHandSide.RIGHT ? rightarmAngles : leftarmAngles;
-				Vec3d offarmAngles = mainhandside == EnumHandSide.RIGHT ? leftarmAngles : rightarmAngles;
-				boolean flag1 = entity.isHoldingWeapon(EnumHand.MAIN_HAND);
-				if (flag1 && entity.getRNG().nextFloat() < 0.01f) {
-					Vec3d vec0 = this.transform3rdPerson(new Vec3d(0d, -1.0d, 0.2d), mainarmAngles, user, mainhandside);
-					Vec3d vec1 = this.transform3rdPerson(new Vec3d(0d, -1.0d, 2.0d), mainarmAngles, user, mainhandside)
-					 .subtract(vec0).scale(0.2);
-					vec0 = vec0.add(vec1);
-					EntityLightningArc.spawnAsParticle(entity.world, vec0.x, vec0.y, vec0.z, 0.01d, vec1.x, vec1.y, vec1.z);
+		public void register() {
+			RenderingRegistry.registerEntityRenderingHandler(EntityCustom.class, renderManager -> new RenderCustom(renderManager));
+		}
+
+		@SideOnly(Side.CLIENT)
+		public class RenderCustom extends Render<EntityCustom> {
+			public RenderCustom(RenderManager renderManagerIn) {
+				super(renderManagerIn);
+			}
+	
+			private Vec3d transform3rdPerson(Vec3d startvec, Vec3d angles, EntityLivingBase entity, EnumHandSide side) {
+				return ProcedureUtils.rotateRoll(startvec, (float)-angles.z)
+				   .rotateYaw((float)-angles.y).rotatePitch((float)-angles.x)
+				   .addVector(0.0625F * (side==EnumHandSide.RIGHT?-5:5), 1.5F-(entity.isSneaking()?0.3f:0f), -0.05F)
+				   .rotateYaw(-entity.renderYawOffset * (float)(Math.PI / 180d))
+				   .addVector(entity.posX, entity.posY, entity.posZ);
+			}
+	
+			@Override
+			public void doRender(EntityCustom entity, double x, double y, double z, float f, float partialTicks) {
+				EntityLivingBase user = entity.getOwner();
+				if (user != null) {
+					RenderLivingBase<?> renderer = (RenderLivingBase<?>)this.renderManager.getEntityRenderObject(user);
+					ModelRenderer rightarmModel = ((ModelBiped)renderer.getMainModel()).bipedRightArm;
+					Vec3d rightarmAngles = new Vec3d(rightarmModel.rotateAngleX, rightarmModel.rotateAngleY, rightarmModel.rotateAngleZ);
+					ModelRenderer leftarmModel = ((ModelBiped)renderer.getMainModel()).bipedLeftArm;
+					Vec3d leftarmAngles = new Vec3d(leftarmModel.rotateAngleX, leftarmModel.rotateAngleY, leftarmModel.rotateAngleZ);
+					EnumHandSide mainhandside = user.getPrimaryHand();
+					Vec3d mainarmAngles = mainhandside == EnumHandSide.RIGHT ? rightarmAngles : leftarmAngles;
+					Vec3d offarmAngles = mainhandside == EnumHandSide.RIGHT ? leftarmAngles : rightarmAngles;
+					boolean flag1 = entity.isHoldingWeapon(EnumHand.MAIN_HAND);
+					if (flag1 && entity.getRNG().nextFloat() < 0.01f) {
+						Vec3d vec0 = this.transform3rdPerson(new Vec3d(0d, -1.0d, 0.2d), mainarmAngles, user, mainhandside);
+						Vec3d vec1 = this.transform3rdPerson(new Vec3d(0d, -1.0d, 2.0d), mainarmAngles, user, mainhandside)
+						 .subtract(vec0).scale(0.2);
+						vec0 = vec0.add(vec1);
+						EntityLightningArc.spawnAsParticle(entity.world, vec0.x, vec0.y, vec0.z, 0.01d, vec1.x, vec1.y, vec1.z);
+					}
 				}
 			}
-		}
-
-		@Override
-		protected ResourceLocation getEntityTexture(EntityCustom entity) {
-			return null;
+	
+			@Override
+			protected ResourceLocation getEntityTexture(EntityCustom entity) {
+				return null;
+			}
 		}
 	}
 }
