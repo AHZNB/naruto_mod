@@ -107,6 +107,7 @@ public class ItemFuton extends ElementsNarutomodMod.ModElement {
 
 	public static class ChakraFlow extends EntityChakraFlow.Base {
 		private int strengthModifier = 2;
+		private boolean holdingWeapon;
 
 		public ChakraFlow(World world) {
 			super(world);
@@ -130,7 +131,6 @@ public class ItemFuton extends ElementsNarutomodMod.ModElement {
 		protected void addEffects() {
 			if (!this.world.isRemote && this.ticksExisted % 10 == 0) {
 				EntityLivingBase user = this.getUser();
-				//int strAmp =  user instanceof EntityPlayer ? (int)(PlayerTracker.getNinjaLevel((EntityPlayer)user) / 20d * this.strengthModifier) : 3;
 				user.addPotionEffect(new PotionEffect(MobEffects.STRENGTH, 12, this.strengthModifier + this.ogStrength, false, false));
 				user.addPotionEffect(new PotionEffect(PotionReach.potion, 12, 0, false, false));
 			}
@@ -140,11 +140,16 @@ public class ItemFuton extends ElementsNarutomodMod.ModElement {
 		public void onUpdate() {
 			super.onUpdate();
 			if (!this.world.isRemote) {
-				EntityLivingBase user = this.getUser();
-				if (user != null && this.isUserHoldingWeapon() && this.ticksExisted % 10 == 1 
-				 && !net.narutomod.Chakra.pathway(user).consume(CHAKRAFLOW.chakraUsage * 0.1d)) {
-					this.setDead();
+				boolean flag = this.isUserHoldingWeapon();
+				if (flag) {
+					if (!this.holdingWeapon) {
+						this.playSound(net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:chakraflow")), 0.8f, 1.0f);
+					}
+					if (this.ticksExisted % 10 == 1 && !net.narutomod.Chakra.pathway(this.getUser()).consume(CHAKRAFLOW.chakraUsage * 0.1d)) {
+						this.setDead();
+					}
 				}
+				this.holdingWeapon = flag;
 			}
 		}
 
@@ -166,6 +171,9 @@ public class ItemFuton extends ElementsNarutomodMod.ModElement {
 					}
 					if (ItemRaiton.CHIDORI.jutsu.isActivated(entity)) {
 						ItemRaiton.CHIDORI.jutsu.deactivate(entity);
+					}
+					if (ItemKaton.FLAMESLICE.jutsu.isActivated(entity)) {
+						ItemKaton.FLAMESLICE.jutsu.deactivate(entity);
 					}
 					entity1 = new ChakraFlow(entity, stack);
 					entity.world.spawnEntity(entity1);
@@ -226,7 +234,7 @@ public class ItemFuton extends ElementsNarutomodMod.ModElement {
 	
 			@Override
 			protected void spawnParticles(ChakraFlow entity, Vec3d startvec, Vec3d endvec) {
-				Vec3d vec = endvec.subtract(startvec).scale(0.2);
+				Vec3d vec = endvec.subtract(startvec).scale(0.6d);
 				Particles.spawnParticle(entity.world, Particles.Types.SMOKE, startvec.x, startvec.y, startvec.z, 
 				  10, 0.05d, 0.05d, 0.05d, vec.x, vec.y, vec.z, 0x086AD1FF, 10, 5, 0xF0);
 			}

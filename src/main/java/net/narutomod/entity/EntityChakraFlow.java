@@ -145,7 +145,7 @@ public class EntityChakraFlow extends ElementsNarutomodMod.ModElement {
 				 ? new Vec3d(stack.getTagCompound().getCompoundTag("CustomChakraFlowEndVec").getDouble("x"),
 				             stack.getTagCompound().getCompoundTag("CustomChakraFlowEndVec").getDouble("y"),
 				             stack.getTagCompound().getCompoundTag("CustomChakraFlowEndVec").getDouble("z"))
-				 : new Vec3d(0d, -0.725d, 1.5d);
+				 : new Vec3d(0d, -0.85d, 0.9d);
 				RenderLivingBase<?> renderer = (RenderLivingBase<?>)this.renderManager.getEntityRenderObject(user);
 				ModelRenderer armModel = ((ModelBiped)renderer.getMainModel()).bipedRightArm;
 				Vec3d armAngles = new Vec3d(armModel.rotateAngleX, armModel.rotateAngleY, armModel.rotateAngleZ);

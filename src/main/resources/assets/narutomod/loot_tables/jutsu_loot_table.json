@@ -86,6 +86,11 @@
         },
         {
           "type": "item",
+          "name": "narutomod:scroll_flame_formation",
+          "weight": 10
+        },
+        {
+          "type": "item",
           "name": "narutomod:scroll_futon_vacuum",
           "weight": 10
         },
@@ -180,6 +185,11 @@
           "type": "item",
           "name": "narutomod:scroll_fire_stream",
           "weight": 5
+        },
+        {
+          "type": "item",
+          "name": "narutomod:scroll_flame_slice",
+          "weight": 10
         },
         {
           "type": "item",

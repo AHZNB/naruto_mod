@@ -157,7 +157,7 @@ public class OverlayByakuganView extends ElementsNarutomodMod.ModElement {
 			if (this.camEntity != null) {
 				Vec3d vec3d1 = player.getPositionEyes(1.0F)
 				 .add(player.getLookVec().scale(((110.0F - renderDistanceChunks) * Math.min((float)xp, 70f) / 10.0F + 1.0F)));
-				this.camEntity.setLocationAndAngles(vec3d1.x, vec3d1.y, vec3d1.z, player.rotationYaw, player.rotationPitch);
+				this.camEntity.setPositionAndRotation(vec3d1.x, vec3d1.y, vec3d1.z, player.rotationYaw, player.rotationPitch);
 			}
 		}
 

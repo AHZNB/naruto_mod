@@ -1,8 +1,8 @@
 {
   "id_map": {
-    "GUI": 65,
+    "GUI": 68,
     "DIMENSION": 13,
-    "ENTITY": 444
+    "ENTITY": 448
   },
   "mod_elements": [
     {
@@ -7417,6 +7417,70 @@
       "locked_code": false,
       "ids": {},
       "registry_name": "scroll_water_cannon"
+    },
+    {
+      "name": "FlameSlice",
+      "type": "mob",
+      "sortid": 876,
+      "compiles": true,
+      "locked_code": true,
+      "ids": {
+        "0": 445,
+        "1": 446
+      },
+      "registry_name": "flame_slice"
+    },
+    {
+      "name": "FlameFormation",
+      "type": "mob",
+      "sortid": 877,
+      "compiles": true,
+      "locked_code": true,
+      "ids": {
+        "0": 447,
+        "1": 448
+      },
+      "registry_name": "flame_formation"
+    },
+    {
+      "name": "ScrollFlameSliceGui",
+      "type": "gui",
+      "sortid": 878,
+      "compiles": true,
+      "locked_code": true,
+      "ids": {
+        "0": 66
+      },
+      "registry_name": "scroll_flame_slice_gui"
+    },
+    {
+      "name": "ScrollFlameSlice",
+      "type": "item",
+      "sortid": 879,
+      "compiles": true,
+      "locked_code": false,
+      "ids": {},
+      "registry_name": "scroll_flame_slice"
+    },
+    {
+      "name": "ScrollFlameFormationGui",
+      "type": "gui",
+      "sortid": 880,
+      "compiles": true,
+      "locked_code": true,
+      "ids": {
+        "0": 68
+      },
+      "registry_name": "scroll_flame_formation_gui"
+    },
+    {
+      "name": "ScrollFlameFormation",
+      "type": "item",
+      "sortid": 881,
+      "compiles": true,
+      "locked_code": false,
+      "ids": {},
+      "registry_name": "scroll_flame_formation"
     }
   ],
   "variable_elements": [
@@ -8450,6 +8514,14 @@
       ],
       "category": "master",
       "subtitle": ""
+    },
+    {
+      "name": "chakraflow",
+      "files": [
+        "chakraflow"
+      ],
+      "category": "master",
+      "subtitle": ""
     }
   ],
   "language_map": {
@@ -8767,6 +8839,7 @@
       "item.whitezetsuflesh.name": "White Zetsu Flesh",
       "item.clothes_mizukagehelmet.name": "Mizukage Hat",
       "subtitles.hiruko_tail": "",
+      "entity.flame_slice.name": "Flame Slice",
       "item.mokuton.name": "Wood Release",
       "subtitles.dojutsu": "",
       "item.ninja_armor.name": "Ninja Armor",
@@ -8795,6 +8868,7 @@
       "subtitles.gyuki_roar": "",
       "item.yagura_staff.name": "Yagura Staff",
       "item.scythe_hidan.name": "Scythe 3-blade",
+      "item.scroll_flame_slice.name": "Fire Release: Cloud Style Flame Slice",
       "subtitles.fourtails_idle2": "",
       "entity.rantoncloud.name": "Thunder Cloud Void Wave",
       "subtitles.fourtails_idle1": "",
@@ -8882,6 +8956,7 @@
       "chattext.rinnegan.path5": "Outer Path",
       "death.attack.ninjutsu_damage": "%1$s was killed by %2$s using ninjutsu",
       "item.ninja_armor_kiribody.name": "Flak Jacket (Kirigakure)",
+      "entity.flame_formation.name": "Flame Formation",
       "entity.poison_mist.name": "Poison Mist",
       "entity.spike.name": "Spike",
       "advancements.mokuton_acquired.title": "Wood Release Acquired",
@@ -9143,6 +9218,7 @@
       "tipped_arrow.effect.chakra_enhanced_strength": "Arrow of Chakra Enhanced Strength",
       "item.ninja_armor_konohahelmet.name": "Forehead Protector (Konoha)",
       "item.scroll_enhanced_strength.name": "Medical Ninjutsu - Chakra Enhanced Strength",
+      "subtitles.chakraflow": "",
       "entity.susanooskeleton.name": "Susanoo Skeleton",
       "entity.hiraishin.name": "Flying Thunder God Jutsu",
       "tooltip.jiton.musthave": "Must have Earth \u0026 Wind release",
@@ -9150,6 +9226,7 @@
       "entity.specialeffect.name": "Special Effect",
       "effect.flight": "Flight",
       "item.tenseiganbody.name": "Tenseigan Chakra",
+      "item.scroll_flame_formation.name": "Fire Release: Uchiha Flame Formation",
       "item.rinneganlegs.name": "Rinne Sharingan Leggings",
       "item.dojutsu.name": "Dojutsu",
       "entity.entityjitonshield.name": "Shield of Sand",

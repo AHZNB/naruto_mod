@@ -1114,5 +1114,14 @@
         "stream": false
       }
     ]
+  },
+  "chakraflow": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "narutomod:chakraflow",
+        "stream": false
+      }
+    ]
   }
 }

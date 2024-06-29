@@ -49,6 +49,7 @@ import net.narutomod.procedure.ProcedureRenderView;
 import net.narutomod.item.ItemJutsu;
 import net.narutomod.item.ItemRaiton;
 import net.narutomod.item.ItemFuton;
+import net.narutomod.item.ItemKaton;
 import net.narutomod.item.ItemNinjutsu;
 import net.narutomod.block.BlockLightSource;
 
@@ -270,6 +271,9 @@ public class EntityChidori extends ElementsNarutomodMod.ModElement {
 				} else if (!entity.isRiding()) {
 					if (ItemFuton.CHAKRAFLOW.jutsu.isActivated(entity)) {
 						ItemFuton.CHAKRAFLOW.jutsu.deactivate(entity);
+					}
+					if (ItemKaton.FLAMESLICE.jutsu.isActivated(entity)) {
+						ItemKaton.FLAMESLICE.jutsu.deactivate(entity);
 					}
 					entity.world.playSound(null, entity.posX, entity.posY, entity.posZ,
 					 SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:chidori")), 

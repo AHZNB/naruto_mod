@@ -199,7 +199,7 @@ public class ItemJutsu extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void onUsingTick(ItemStack stack, EntityLivingBase player, int timeLeft) {
 			if (!(player instanceof EntityPlayer) || PlayerTracker.isNinja((EntityPlayer)player)) {
-				if (player instanceof EntityPlayer && !player.world.isRemote) {
+				if (player instanceof EntityPlayer && !player.world.isRemote && this.getCurrentJutsu(stack).jutsu.getPowerupDelay() > 0.0f) {
 					((EntityPlayer)player).sendStatusMessage(
 						new TextComponentString(String.format("%.1f", this.getPower(stack, player, timeLeft))), true);
 				}
@@ -530,8 +530,8 @@ public class ItemJutsu extends ElementsNarutomodMod.ModElement {
 			public void onEquipmentChange(LivingEquipmentChangeEvent event) {
 				EntityLivingBase entity = event.getEntityLiving();
 				ItemStack stack = event.getTo();
-				if (entity instanceof EntityPlayer && !entity.world.isRemote
-				 && event.getSlot().getSlotType() == EntityEquipmentSlot.Type.HAND && stack.getItem() instanceof Base) {
+				if (entity instanceof EntityPlayer && !entity.world.isRemote && stack.getItem() instanceof Base
+				 && event.getSlot().getSlotType() == EntityEquipmentSlot.Type.HAND && stack.getItem() != event.getFrom().getItem()) {
 					if (event.getSlot() == EntityEquipmentSlot.MAINHAND || !(entity.getHeldItemMainhand().getItem() instanceof Base)) {
 						((EntityPlayer)entity).sendStatusMessage(new TextComponentString(ItemJutsu.getCurrentJutsu(stack).getName()), true);
 					}

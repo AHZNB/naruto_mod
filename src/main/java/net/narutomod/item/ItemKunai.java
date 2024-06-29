@@ -38,6 +38,7 @@ import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.Minecraft;
+import net.minecraft.nbt.NBTTagCompound;
 
 import net.narutomod.entity.EntityRendererRegister;
 import net.narutomod.creativetab.TabModTab;
@@ -139,6 +140,27 @@ public class ItemKunai extends ElementsNarutomodMod.ModElement {
 					if (!world.isRemote)
 						world.spawnEntity(entityarrow);
 				}
+			}
+		}
+
+		@Override
+		public void onUpdate(ItemStack stack, World worldIn, Entity entityIn, int itemSlot, boolean isSelected) {
+			super.onUpdate(stack, worldIn, entityIn, itemSlot, isSelected);
+			this.setCustomChakraFlowVecs(stack);
+		}
+				
+		private void setCustomChakraFlowVecs(ItemStack stack) {
+			NBTTagCompound compound = stack.getTagCompound();
+			if (compound == null) {
+				compound = new NBTTagCompound();
+				stack.setTagCompound(compound);
+			}
+			if (!compound.hasKey("CustomChakraFlowEndVec")) {
+				NBTTagCompound cmp2 = new NBTTagCompound();
+				cmp2.setDouble("x", 0d);
+				cmp2.setDouble("y", -0.725d);
+				cmp2.setDouble("z", 0.5d);
+				compound.setTag("CustomChakraFlowEndVec", cmp2);
 			}
 		}
 
