@@ -4,26 +4,35 @@ package net.narutomod.entity;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
-//import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-//import net.minecraftforge.fml.client.registry.RenderingRegistry;
 
 import net.minecraft.world.World;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.DamageSource;
-import net.minecraft.entity.Entity;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.entity.projectile.ProjectileHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.block.material.Material;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.Block;
+import net.minecraft.network.datasync.DataSerializers;
+import net.minecraft.network.datasync.DataParameter;
+import net.minecraft.network.datasync.EntityDataManager;
 
 import net.narutomod.procedure.ProcedureUtils;
-import net.narutomod.procedure.ProcedureAirPunch;
 import net.narutomod.item.ItemJutsu;
 import net.narutomod.Particles;
 import net.narutomod.ElementsNarutomodMod;
+
+import java.util.List;
+import javax.annotation.Nullable;
+import com.google.common.collect.Lists;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityFutonGreatBreakthrough extends ElementsNarutomodMod.ModElement {
@@ -38,12 +47,15 @@ public class EntityFutonGreatBreakthrough extends ElementsNarutomodMod.ModElemen
 	public void initElements() {
 		elements.entities.add(() -> EntityEntryBuilder.create().entity(EC.class)
 		 .id(new ResourceLocation("narutomod", "futon_great_breakthrough"), ENTITYID)
-		 .name("futon_great_breakthrough").tracker(64, 3, true).build());
+		 .name("futon_great_breakthrough").tracker(64, 3, true).build());
+		elements.entities.add(() -> EntityEntryBuilder.create().entity(EntityWindParticle.class)
+		 .id(new ResourceLocation("narutomod", "futon_great_breakthrough_particle"), ENTITYID_RANGED)
+		 .name("futon_great_breakthrough_particle").tracker(64, 3, true).build());
 	}
 
 	public static class EC extends Entity {
 		public static final float MAX_RANGE = 64.0f;
-		private final AirPunch airPunch = new AirPunch();
+		private final int duration = 100;
 		private EntityLivingBase user;
 		private float power;
 
@@ -71,11 +83,35 @@ public class EntityFutonGreatBreakthrough extends ElementsNarutomodMod.ModElemen
 					this.playSound(net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:wind")),
 					 1f, this.power * 0.2f);
 				}
-				this.airPunch.execute(this.user, this.power, this.power * 0.25d);
+				this.shoot(this.power, this.power * 0.25d);
 			}
-			if (!this.world.isRemote && this.ticksExisted > (int)this.power) {
+			if (!this.world.isRemote && this.ticksExisted > this.duration) {
 				this.setDead();
 			}
+		}
+
+		protected void shoot(double range, double farRadius) {
+			Vec3d vec0 = this.user.getLookVec();
+			Vec3d vec = vec0.scale(2d).addVector(this.user.posX, this.user.posY + 1.5d, this.user.posZ);
+			for (int i = 0; i < 5; i++) {
+				Vec3d vec1 = vec0.scale((this.rand.nextDouble()*0.7d+0.3d) * range * 0.2d);
+				double d = vec1.lengthVector() / range;
+				this.world.spawnEntity(new EntityWindParticle(this, vec.x, vec.y, vec.z,
+				 vec1.x + (this.rand.nextDouble()-0.5d) * farRadius * d * 2.5d,
+				 vec1.y + (this.rand.nextDouble()-0.5d) * farRadius * d * 2.5d,
+				 vec1.z + (this.rand.nextDouble()-0.5d) * farRadius * d * 2.5d, range));
+			}
+			Particles.Renderer particles = new Particles.Renderer(this.world);
+			for (int i = 1; i <= 50; i++) {
+				Vec3d vec1 = vec0.scale((this.rand.nextDouble()*0.7d+0.3d) * range * 0.2d);
+				double d = vec1.lengthVector() / range;
+				particles.spawnParticles(Particles.Types.SMOKE, vec.x, vec.y, vec.z, 1, 0d, 0d, 0d, 
+				 vec1.x + (this.rand.nextDouble()-0.5d) * farRadius * d * 2.5d,
+				 vec1.y + (this.rand.nextDouble()-0.5d) * farRadius * d * 2.5d,
+				 vec1.z + (this.rand.nextDouble()-0.5d) * farRadius * d * 2.5d,
+				 0x40FFFFFF, (int)(vec1.lengthVector() * 40d) + this.rand.nextInt(20), (int)(16.0D / (this.rand.nextDouble()*0.8D+0.2D)));
+			}
+			particles.send();
 		}
 
 		@SideOnly(Side.CLIENT)
@@ -91,44 +127,6 @@ public class EntityFutonGreatBreakthrough extends ElementsNarutomodMod.ModElemen
 
 		@Override
 		protected void writeEntityToNBT(NBTTagCompound compound) {
-		}
-
-		public class AirPunch extends ProcedureAirPunch {
-			public AirPunch() {
-				this.particlesDuring = null;
-			}
-
-			public void execute(Entity player, double range, double radius) {
-				this.blockHardnessLimit = (float)range / MAX_RANGE;
-				super.execute(player, range, radius);
-			}
-
-			@Override
-			protected void preExecuteParticles(Entity player) {
-				Vec3d vec0 = player.getLookVec();
-				Vec3d vec = vec0.scale(2d).addVector(player.posX, player.posY + 1.5d, player.posZ);
-				Particles.Renderer pRender = new Particles.Renderer(player.world);
-				for (int i = 1; i <= 50; i++) {
-					Vec3d vec1 = vec0.scale((EC.this.rand.nextDouble()*0.8d+0.2d) * this.getRange(0) * 0.1d);
-					pRender.spawnParticles(Particles.Types.SMOKE, vec.x, vec.y, vec.z, 1, 0d, 0d, 0d, 
-					 vec1.x + (EC.this.rand.nextDouble()-0.5d) * this.getFarRadius(0) * 0.15d,
-					 vec1.y + (EC.this.rand.nextDouble()-0.5d) * this.getFarRadius(0) * 0.15d,
-					 vec1.z + (EC.this.rand.nextDouble()-0.5d) * this.getFarRadius(0) * 0.15d,
-					 0x80FFFFFF, 80 + EC.this.rand.nextInt(20), (int)(16.0D / (EC.this.rand.nextDouble()*0.8D+0.2D)));
-				}
-				pRender.send();
-			}
-
-			@Override
-			protected void attackEntityFrom(Entity player, Entity target) {
-				ProcedureUtils.pushEntity(player, target, this.getRange(0) * 1.6d, 3.0F);
-			}
-
-			@Override
-			protected float getBreakChance(BlockPos pos, Entity player, double range) {
-				return (1.0F - (float) (Math.sqrt(player.getDistanceSqToCenter(pos)) / MathHelper.clamp(range, 0.0D, 30.0D))) * 0.2f;
-				//return 0.0f;
-			}
 		}
 
 		public static class Jutsu implements ItemJutsu.IJutsuCallback {
@@ -152,6 +150,107 @@ public class EntityFutonGreatBreakthrough extends ElementsNarutomodMod.ModElemen
 			public float getMaxPower() {
 				return EC.MAX_RANGE;
 			}
+		}
+	}
+
+	public static class EntityWindParticle extends EntityParticle.Base {
+		private static final DataParameter<Integer> SHOOTER = EntityDataManager.<Integer>createKey(EntityWindParticle.class, DataSerializers.VARINT);
+		private static final DataParameter<Float> RANGE = EntityDataManager.<Float>createKey(EntityWindParticle.class, DataSerializers.FLOAT);
+		private final List<Material> canRaiseDustList = Lists.newArrayList(Material.GRASS, Material.GROUND, Material.ROCK,
+		 Material.WATER, Material.LAVA, Material.LEAVES, Material.PLANTS, Material.SAND, Material.SNOW, Material.CLAY);
+		private EC ecEntity;
+		
+		public EntityWindParticle(World w) {
+			super(w);
+		}
+
+		public EntityWindParticle(EC ecIn, double x, double y, double z, double mX, double mY, double mZ, double rangeIn) {
+			super(ecIn.world, x, y, z, mX, mY, mZ, 0x40FFFFFF, 2.5f, 0);
+			this.setMaxAge((int)(16.0f / (this.rand.nextFloat()*0.8f+0.2f)));
+			this.ecEntity = ecIn;
+			this.setShooter(ecIn.user);
+			this.setRange((float)rangeIn);
+		}
+				
+		@Override
+		protected void entityInit() {
+			super.entityInit();
+			this.getDataManager().register(SHOOTER, Integer.valueOf(-1));
+			this.getDataManager().register(RANGE, Float.valueOf(0.0f));
+		}
+
+		@Nullable
+		protected EntityLivingBase getShooter() {
+			Entity entity = this.world.getEntityByID(((Integer)this.getDataManager().get(SHOOTER)).intValue());
+			return entity instanceof EntityLivingBase ? (EntityLivingBase)entity : null;
+		}
+
+		private void setShooter(@Nullable EntityLivingBase player) {
+			this.getDataManager().set(SHOOTER, Integer.valueOf(player != null ? player.getEntityId() : -1));
+		}
+
+		public float getRange() {
+			return ((Float)this.getDataManager().get(RANGE)).floatValue();
+		}
+
+		protected void setRange(float range) {
+			this.getDataManager().set(RANGE, Float.valueOf(range));
+		}
+
+		@Override
+		public void onUpdate() {
+			int age = this.getAge();
+			int maxAge = this.getMaxAge();
+			this.setParticleTextureOffset(MathHelper.clamp(7 - age * 8 / maxAge, 0, 7));
+			this.prevPosX = this.posX;
+			this.prevPosY = this.posY;
+			this.prevPosZ = this.posZ;
+			this.motionY += 0.004d;
+			EntityLivingBase shooter = this.getShooter();
+			RayTraceResult res = ProjectileHelper.forwardsRaycast(this, true, false, shooter);
+			if (res != null) {
+				if (res.entityHit != null) {
+					ProcedureUtils.pushEntity(shooter, res.entityHit, this.getRange(), 3.0F);
+				} else if (this.world.isRemote) {
+					IBlockState blockstate = this.world.getBlockState(res.getBlockPos());
+					if (this.canRaiseDustList.contains(blockstate.getMaterial())) {
+						Vec3d vec = new Vec3d(res.sideHit.getDirectionVec());
+						vec = this.multiply(vec, vec).scale(-2.0d).addVector(1.0d, 1.0d, 1.0d).scale(0.2d);
+						Vec3d vec1 = res.hitVec.subtract(shooter.getPositionEyes(1f));
+						vec1 = this.multiply(vec, vec1.normalize().scale(this.getRange() - (float)vec1.lengthVector()));
+						Particles.spawnParticle(this.world, Particles.Types.BLOCK_DUST, res.hitVec.x, res.hitVec.y, res.hitVec.z,
+						 8, 0.4d, 0.3d, 0.4d, vec1.x, vec1.y, vec1.z, Block.getIdFromBlock(blockstate.getBlock()));
+					}
+				}
+			}
+			this.move(this.motionX, this.motionY, this.motionZ);
+			this.motionX *= 0.96D;
+			this.motionY *= 0.96D;
+			this.motionZ *= 0.96D;
+			if (this.onGround) {
+				this.motionX *= 0.7D;
+				this.motionZ *= 0.7D;
+			}
+			if (!this.world.isRemote) {
+				this.setAge(++age);
+				if (age > maxAge || this.ecEntity == null || this.ecEntity.isDead) {
+					this.onDeath();
+				}
+			}
+		}
+
+		private Vec3d multiply(Vec3d vec1, Vec3d vec2) {
+			return new Vec3d(vec1.x * vec2.x, vec1.y * vec2.y, vec1.z * vec2.z);
+		}
+
+		@Override
+		protected int getTexV() {
+			return 2;
+		}
+
+		@Override
+		public boolean shouldDisableDepth() {
+			return true;
 		}
 	}
 }

@@ -9,6 +9,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.event.ModelRegistryEvent;
+import net.minecraftforge.common.util.EnumHelper;
 
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.World;
@@ -16,6 +17,7 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.EnumActionResult;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.MathHelper;
@@ -23,6 +25,7 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemSword;
 import net.minecraft.item.EnumAction;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -77,27 +80,15 @@ public class ItemKusanagiSword extends ElementsNarutomodMod.ModElement {
 		ModelLoader.setCustomModelResourceLocation(block, 0, new ModelResourceLocation("narutomod:kusanagi_sword", "inventory"));
 	}
 
-	public static class RangedItem extends Item implements ItemOnBody.Interface {
+	public static class RangedItem extends ItemSword implements ItemOnBody.Interface {
+		private static final float ATTACK_DAMAGE = 20.0F;
+
 		public RangedItem() {
-			super();
-			this.setMaxDamage(0);
+			super(EnumHelper.addToolMaterial("KUSANAGI_SWORD", 2, 0, 6.0F, ATTACK_DAMAGE - 4.0F, 0));
 			this.setFull3D();
 			this.setUnlocalizedName("kusanagi_sword");
 			this.setRegistryName("kusanagi_sword");
-			this.maxStackSize = 1;
 			this.setCreativeTab(TabModTab.tab);
-		}
-
-		@Override
-		public Multimap<String, AttributeModifier> getItemAttributeModifiers(EntityEquipmentSlot slot) {
-			Multimap<String, AttributeModifier> multimap = super.getItemAttributeModifiers(slot);
-			if (slot == EntityEquipmentSlot.MAINHAND) {
-				multimap.put(SharedMonsterAttributes.ATTACK_DAMAGE.getName(),
-						new AttributeModifier(ATTACK_DAMAGE_MODIFIER, "Ranged item modifier", (double) 19, 0));
-				multimap.put(SharedMonsterAttributes.ATTACK_SPEED.getName(),
-						new AttributeModifier(ATTACK_SPEED_MODIFIER, "Ranged item modifier", -2.4, 0));
-			}
-			return multimap;
 		}
 
 		@Override
@@ -106,9 +97,8 @@ public class ItemKusanagiSword extends ElementsNarutomodMod.ModElement {
 				EntityPlayerMP entity = (EntityPlayerMP) entityLivingBase;
 				float power = 1f;
 				EntityCustom entityarrow = new EntityCustom(entity);
-				world.playSound(null, entity.posX, entity.posY, entity.posZ, net.minecraft.util.SoundEvent.REGISTRY
-				 .getObject(new ResourceLocation("entity.arrow.shoot")), SoundCategory.NEUTRAL,
-				 1, 1f / (itemRand.nextFloat() * 0.5f + 1f) + (power / 2));
+				world.playSound(null, entity.posX, entity.posY, entity.posZ, net.minecraft.init.SoundEvents.ENTITY_ARROW_SHOOT,
+				 SoundCategory.NEUTRAL, 1, 1f / (itemRand.nextFloat() * 0.5f + 1f) + (power / 2));
 				world.spawnEntity(entityarrow);
 				itemstack.shrink(1);
 			}
@@ -147,7 +137,7 @@ public class ItemKusanagiSword extends ElementsNarutomodMod.ModElement {
 	public static class EntityCustom extends EntityScalableProjectile.Base {
 		private Entity target;
 		private int targetCD;
-		private final double maxRange = 30d;
+		private final double maxRange = 32.0d;
 		
 		public EntityCustom(World a) {
 			super(a);
@@ -172,13 +162,13 @@ public class ItemKusanagiSword extends ElementsNarutomodMod.ModElement {
 			super.onUpdate();
 			if (this.shootingEntity != null && !this.onGround) {
 				double d = this.getDistance(this.shootingEntity);
-				if (d > this.maxRange + 10) {
+				if (d > this.maxRange + 10d || this.ticksInAir > 300) {
 					this.target = this.shootingEntity;
 				} else if (d <= this.maxRange && this.target == this.shootingEntity) {
 					this.target = null;
-				}
-				if (this.ticksInAir > 200) {
-					this.target = this.shootingEntity;
+					if (this.getMotionFactor() > 0.6f) {
+						this.setMotionFactor(0.6f);
+					}
 				}
 				if (this.target != null && this.target.isEntityAlive()) {
 					if (this.target.getDistance(this.shootingEntity) <= this.maxRange) {
@@ -194,15 +184,14 @@ public class ItemKusanagiSword extends ElementsNarutomodMod.ModElement {
 				} else {
 					if (--this.targetCD <= 0) {
 						this.target = this.shootingEntity instanceof EntityLiving ? ((EntityLiving)this.shootingEntity).getAttackTarget()
-						 : ProcedureUtils.objectEntityLookingAt(this.shootingEntity, 30d, this).entityHit;
+						 : ProcedureUtils.objectEntityLookingAt(this.shootingEntity, this.maxRange, this).entityHit;
 					}
 					Vec3d vec = this.target != null ? this.target.getPositionEyes(1f).subtract(this.getPositionVector())
 					 : this.shootingEntity.getLookVec();
 					this.shoot(vec.x, vec.y, vec.z, 0.6f, 0f);
 				}
 			}
-			if (!this.world.isRemote
-			 && (this.shootingEntity == null || !this.shootingEntity.isEntityAlive())) {
+			if (!this.world.isRemote && (this.shootingEntity == null || !this.shootingEntity.isEntityAlive())) {
 				this.setNoGravity(false);
 				this.shootingEntity = null;
 			}
@@ -234,14 +223,26 @@ public class ItemKusanagiSword extends ElementsNarutomodMod.ModElement {
 			}
 			if (!this.world.isRemote) {
 				if (result.entityHit != null) {
-					result.entityHit.attackEntityFrom(DamageSource.causeIndirectDamage(this, this.shootingEntity).setDamageBypassesArmor(), 20f);
+					result.entityHit.attackEntityFrom(DamageSource.causeIndirectDamage(this, this.shootingEntity).setDamageBypassesArmor(), this.rand.nextFloat() * 6.0f + RangedItem.ATTACK_DAMAGE - 3.0f);
 					if (result.entityHit.equals(this.target)) {
 						this.target = null;
 						this.haltMotion();
 						this.targetCD = 10;
 					}
+				} else {
+					if (result.sideHit.getAxis() == EnumFacing.Axis.X) {
+						this.motionX *= -0.8d;
+					} else if (result.sideHit.getAxis() == EnumFacing.Axis.Y) {
+						this.motionY *= -0.8d;
+					} else {
+						this.motionZ *= -0.8d;
+					}
 				}
 			}
+		}
+
+		@Override
+		protected void checkOnGround() {
 		}
 	}
 

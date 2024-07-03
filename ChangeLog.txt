@@ -1,7 +1,7 @@
 0.3.1-beta ================================================================================
 
 Jutsus:
- - added 3 minute coolddown on shinsusenju
+ - added 3 minute coolddown on shinsusenju, press shift to dismount from the 1000 arms
  - tweaked susanoo transparency
  - fixed rinnegan owner giving limbo or amenotejikara to other player's ninjutsu
  - fixed tenseibyakugan losing tensei chakra mode
@@ -20,6 +20,8 @@ Jutsus:
  - add cloud style flame slice jutsu and scroll (fire chakra flow), does sweep attack
  - adjusted wind release chakra flow particles for kunai and chokuto, added sound effect
  - add Uchiha flame formation (barrier jutsu) and scroll
+ - rasenshuriken now tilts in the direction its turning
+ - updated wind release great breakthrough: flat 5 second duration, also raises block dust into the air
 
 Items:
  - added Sakura shippuden clothing and leggings (for slim player models only)
@@ -35,6 +37,7 @@ Items:
  - fix remaining server crashes due to "NoClassDefFoundError"
  - prevents players dropping the duplicate kiba sword
  - Hiramekarei now does sweeping damage
+ - Kusanagi sword won't get stuck in blocks
 
 Entities:
  - re-textured kisame

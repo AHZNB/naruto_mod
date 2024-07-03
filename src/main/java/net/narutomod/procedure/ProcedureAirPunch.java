@@ -80,9 +80,8 @@ public abstract class ProcedureAirPunch {
 				List<Entity> list = Lists.newArrayList();
 				for (RayTraceResult result : this.affectedTraceList) {
 					if (result.typeOfHit == RayTraceResult.Type.BLOCK) {
-						BlockPos pos = result.getBlockPos();
-						EntityItem entityItem = this.processAffectedBlock(player, pos, result.sideHit);
-						this.breakBlockParticles(world, pos);
+						EntityItem entityItem = this.processAffectedBlock(player, result);
+						this.breakBlockParticles(world, result.getBlockPos());
 						if (entityItem != null)
 							list.add(entityItem);
 					} else if (result.typeOfHit == RayTraceResult.Type.ENTITY) {
@@ -112,6 +111,11 @@ public abstract class ProcedureAirPunch {
 			((WorldServer)world).spawnParticle(this.particlesDuring, pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D,
 			 2, 0.2D, 0.2D, 0.2D, 0.0D);
 		}
+	}
+
+	@Nullable
+	protected EntityItem processAffectedBlock(Entity player, RayTraceResult result) {
+		return this.processAffectedBlock(player, result.getBlockPos(), result.sideHit);
 	}
 
 	@Nullable

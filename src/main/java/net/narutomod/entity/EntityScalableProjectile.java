@@ -48,6 +48,8 @@ public class EntityScalableProjectile extends ElementsNarutomodMod.ModElement {
 		protected int maxInGroundTime = 1200;
 		private float motionFactor;
 		private float waterSlowdown = 0.8f;
+		public float prevRotationRoll;
+		public float rotationRoll;
 		
 		public Base(World world) {
 			super(world);
@@ -144,6 +146,7 @@ public class EntityScalableProjectile extends ElementsNarutomodMod.ModElement {
 				if (this.motionFactor == 0.0f) {
 					this.prevRotationYaw = this.rotationYaw;
 					this.prevRotationPitch = this.rotationPitch;
+					this.prevRotationRoll = this.rotationRoll;
 				}
 			}
 			double d0 = MathHelper.sqrt(x * x + y * y + z * z);
@@ -193,6 +196,7 @@ public class EntityScalableProjectile extends ElementsNarutomodMod.ModElement {
 				this.checkOnGround();
 				if (this.onGround) {
 					this.motionFactor = 0f;
+					this.ticksInAir = 0;
 					if (++this.ticksInGround > this.maxInGroundTime) {
 						this.setDead();
 					}
@@ -235,12 +239,6 @@ public class EntityScalableProjectile extends ElementsNarutomodMod.ModElement {
 					this.renderParticles();
 					this.setPosition(this.posX, this.posY, this.posZ);
 				}
-				//if (this.world.isRemote) {
-				//	float scale = this.getEntityScale();
-				//	if (scale != 1.0F) {
-				//		this.setSize(this.ogWidth * scale, this.ogHeight * scale);
-				//	}
-				//}
 			}
 		}
 
@@ -265,20 +263,15 @@ public class EntityScalableProjectile extends ElementsNarutomodMod.ModElement {
             double d = (double)MathHelper.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
             float yaw = -(float)(MathHelper.atan2(this.motionX, this.motionZ) * (180D / Math.PI));
             float pitch = -(float)(MathHelper.atan2(this.motionY, d) * (180D / Math.PI));
-	        while (yaw - this.prevRotationYaw < -180.0F) {
-	            this.prevRotationYaw -= 360.0F;
-	        }
-	        while (yaw - this.prevRotationYaw >= 180.0F) {
-	            this.prevRotationYaw += 360.0F;
-	        }
-	        while (pitch - this.prevRotationPitch < -180.0F) {
-	            this.prevRotationPitch -= 360.0F;
-	        }
-	        while (pitch - this.prevRotationPitch >= 180.0F) {
-	            this.prevRotationPitch += 360.0F;
-	        }
+            float deltaYaw = ProcedureUtils.subtractDegreesWrap(yaw, this.prevRotationYaw);
+            float deltaPitch = ProcedureUtils.subtractDegreesWrap(pitch, this.prevRotationPitch);
+            float roll = MathHelper.wrapDegrees(deltaYaw * 1.5f);
+            this.prevRotationYaw = yaw - deltaYaw;
+            this.prevRotationPitch = pitch - deltaPitch;
+            this.prevRotationRoll = this.rotationRoll;
             this.rotationPitch = this.prevRotationPitch + (pitch - this.prevRotationPitch) * 0.2F;
             this.rotationYaw = this.prevRotationYaw + (yaw - this.prevRotationYaw) * 0.2F;
+            this.rotationRoll = this.prevRotationRoll + (roll - this.prevRotationRoll) * 0.2F;
 		}
 
 		public void renderParticles() {

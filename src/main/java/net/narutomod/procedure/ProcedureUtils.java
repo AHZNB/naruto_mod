@@ -23,6 +23,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.potion.PotionEffect;
+import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.item.ItemStack;
@@ -40,6 +41,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
+import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.block.state.IBlockState;
@@ -218,6 +220,23 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 			while (iterator.hasNext()) {
 				ItemStack itemstack = (ItemStack) iterator.next();
 				if (!itemstack.isEmpty() && ItemStack.areItemStacksEqual(itemstack, itemStackIn)) {
+					return itemstack;
+				}
+			}
+		}
+		return null;
+	}
+
+	public static ItemStack getMatchingItemstackIgnoreDurability(EntityPlayer player, ItemStack stackIn) {
+		List<NonNullList<ItemStack>> allInv = Arrays.<NonNullList<ItemStack>>asList(player.inventory.mainInventory,
+		 player.inventory.armorInventory, player.inventory.offHandInventory);
+		for (List<ItemStack> list : allInv) {
+			Iterator iterator = list.iterator();
+			while (iterator.hasNext()) {
+				ItemStack itemstack = (ItemStack) iterator.next();
+				if (!itemstack.isEmpty() && itemstack.getCount() == stackIn.getCount() && itemstack.getItem() == stackIn.getItem()
+				 && itemstack.hasTagCompound() == stackIn.hasTagCompound() && itemstack.areCapsCompatible(stackIn)
+				 && (!itemstack.hasTagCompound() || itemstack.getTagCompound().equals(stackIn.getTagCompound()))) {
 					return itemstack;
 				}
 			}
@@ -467,6 +486,69 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 			entity.getAttributeMap().removeAttributeModifiers(itemstack.getAttributeModifiers(slot));
 		}
 		entity.setItemStackToSlot(slot, itemstack);
+	}
+
+	public static void addFakeEnchantmentEffect(ItemStack stack) {
+		if (stack.isEmpty()) {
+			return;
+		}
+		if (!stack.hasTagCompound()) {
+			stack.setTagCompound(new NBTTagCompound());
+		}
+		if (!stack.getTagCompound().hasKey("ench", 9)) {
+			stack.getTagCompound().setTag("ench", new NBTTagList());
+		}
+		NBTTagList nbttaglist = stack.getTagCompound().getTagList("ench", 10);
+		boolean flag = false;
+		for (int i = 0; i < nbttaglist.tagCount(); i++) {
+			if (nbttaglist.getCompoundTagAt(i).getBoolean("FAKE")) {
+				flag = true;
+			}
+		}
+		if (!flag) {
+			NBTTagCompound compound = new NBTTagCompound();
+			compound.setShort("id", (short)100);
+			compound.setBoolean("FAKE", true);
+			nbttaglist.appendTag(compound);
+		}
+	}
+
+	public static void removeFakeEnchantmentEffect(ItemStack stack) {
+		if (stack.isEmpty()) {
+			return;
+		}
+		if (stack.hasTagCompound() && stack.getTagCompound().hasKey("ench", 9)) {
+			NBTTagList nbttaglist = stack.getTagCompound().getTagList("ench", 10);
+			Iterator<NBTBase> iter = nbttaglist.iterator();
+			while (iter.hasNext()) {
+				NBTTagCompound compound = (NBTTagCompound)iter.next();
+				if (compound.getBoolean("FAKE")) {
+					iter.remove();
+				}
+			}
+			if (nbttaglist.hasNoTags()) {
+				stack.getTagCompound().removeTag("ench");
+			}
+		}
+	}
+
+	public static void removeEnchantmentLevels(ItemStack stack, Enchantment enchantment, int levels) {
+		if (stack.isEmpty()) {
+			return;
+		}
+		if (stack.hasTagCompound() && stack.getTagCompound().hasKey("ench", 9)) {
+			NBTTagList nbttaglist = stack.getTagCompound().getTagList("ench", 10);
+			Iterator<NBTBase> iter = nbttaglist.iterator();
+			while (iter.hasNext()) {
+				NBTTagCompound compound = (NBTTagCompound)iter.next();
+				if (compound.getShort("id") == Enchantment.getEnchantmentID(enchantment) && (int)compound.getShort("lvl") == levels) {
+					iter.remove();
+				}
+			}
+			if (nbttaglist.hasNoTags()) {
+				stack.getTagCompound().removeTag("ench");
+			}
+		}
 	}
 
 	public static boolean isWearingAnySharingan(EntityLivingBase entity) {

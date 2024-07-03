@@ -11,6 +11,7 @@ import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import net.minecraftforge.event.entity.EntityMountEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.common.MinecraftForge;
 
@@ -89,6 +90,7 @@ public class EntityBuddha1000 extends ElementsNarutomodMod.ModElement {
 		private List<BlockPos> particleArea;
 		private double chakraBurn;
 		private int attackCooldown;
+		private int lastDismountTime;
 
 		public EC(World world) {
 			super(world);
@@ -120,6 +122,9 @@ public class EntityBuddha1000 extends ElementsNarutomodMod.ModElement {
 		protected void setSitting(boolean sitting) {
 			this.getDataManager().set(SITTING, Boolean.valueOf(sitting));
 			this.setOwnerCanSteer(true, sitting ? 0.4F : 1.0F);
+			if (!sitting) {
+				this.lastDismountTime = this.getTicksAlive();
+			}
 		}
 
 		private void setTicksAlive(int ticks) {
@@ -351,12 +356,13 @@ public class EntityBuddha1000 extends ElementsNarutomodMod.ModElement {
 					 ((ItemSenjutsu.RangedItem)stack.getItem()).getCurrentJutsuXpModifier(stack, entity)));
 					ItemJutsu.setCurrentJutsuCooldown(stack, 3600);
 					return true;
-				} else if (((EC)entity.getRidingEntity()).isSitting()) {
-					entity.getRidingEntity().playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:woodspawn")),
-					 5f, entity.getRNG().nextFloat() * 0.6f + 0.6f);
-					((EC)entity.getRidingEntity()).setSitting(false);
 				}
 				return false;
+			}
+
+			private static void dismountFrom1000Arms(EC entity) {
+				entity.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:woodspawn")), 5f, entity.getRNG().nextFloat() * 0.6f + 0.6f);
+				entity.setSitting(false);
 			}
 		}
 	}
@@ -430,6 +436,19 @@ public class EntityBuddha1000 extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static class PlayerHook {
+		@SubscribeEvent
+		public void onDismount(EntityMountEvent event) {
+			if (!event.getWorldObj().isRemote && event.getEntityBeingMounted() instanceof EC && event.isDismounting()) {
+				EC entity = (EC)event.getEntityBeingMounted();
+				if (entity.isSitting()) {
+					EC.Jutsu.dismountFrom1000Arms(entity);
+					event.setCanceled(true);
+				} else if (entity.getTicksAlive() <= entity.lastDismountTime + 20) {
+					event.setCanceled(true);
+				}
+			}
+		}
+
 		@SideOnly(Side.CLIENT)
 		@SubscribeEvent
 		public void onLeftClickEmpty(PlayerInteractEvent.LeftClickEmpty event) {

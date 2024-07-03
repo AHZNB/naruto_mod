@@ -3,11 +3,17 @@ package net.narutomod.entity;
 
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 import net.minecraft.world.World;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.inventory.EntityEquipmentSlot;
@@ -15,16 +21,22 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.network.datasync.DataSerializers;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.entity.RenderLivingBase;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.model.ModelBiped;
+import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.init.MobEffects;
 
-import net.narutomod.ElementsNarutomodMod;
 import net.narutomod.procedure.ProcedureUtils;
+import net.narutomod.NarutomodMod;
+import net.narutomod.ElementsNarutomodMod;
+
+import io.netty.buffer.ByteBuf;
+import java.io.IOException;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityChakraFlow extends ElementsNarutomodMod.ModElement {
@@ -35,10 +47,16 @@ public class EntityChakraFlow extends ElementsNarutomodMod.ModElement {
 		super(instance, 408);
 	}
 
+	@Override
+	public void preInit(FMLPreInitializationEvent event) {
+		this.elements.addNetworkMessage(Base.Message.Handler.class, Base.Message.class, Side.CLIENT);
+	}
+
 	public static abstract class Base extends Entity {
 		private static final DataParameter<Integer> USER_ID = EntityDataManager.<Integer>createKey(Base.class, DataSerializers.VARINT);
 		private EntityLivingBase user;
 		protected int ogStrength;
+		private ItemStack lastHeldWeapon;
 
 		public Base(World world) {
 			super(world);
@@ -79,6 +97,22 @@ public class EntityChakraFlow extends ElementsNarutomodMod.ModElement {
 
 		protected abstract void addEffects();
 
+		protected void addEnchantment(ItemStack stack) {
+			Message.send(this.user, true, stack);
+		}
+
+		protected void removeEnchantment(ItemStack stack) {
+			if (this.user instanceof EntityPlayer) {
+				ItemStack stack1 = ProcedureUtils.getMatchingItemStack((EntityPlayer)this.user, stack);
+				if (stack1 != null) {
+					stack = stack1;
+				}
+			}
+			stack = stack.copy();
+			ProcedureUtils.addFakeEnchantmentEffect(stack);
+			Message.send(this.user, false, stack);
+		}
+
 		@Override
 		public void onUpdate() {
 			if (this.user != null) {
@@ -91,8 +125,17 @@ public class EntityChakraFlow extends ElementsNarutomodMod.ModElement {
 						}
 					}
 					this.addEffects();
+					ItemStack stack = this.user.getHeldItemMainhand();
+					if (this.lastHeldWeapon == null || !ItemStack.areItemStacksEqual(stack, this.lastHeldWeapon)) {
+						this.addEnchantment(stack);
+						this.lastHeldWeapon = stack.copy();
+					}
 				} else {
 					this.ogStrength = 0;
+					if (this.lastHeldWeapon != null) {
+						this.removeEnchantment(this.lastHeldWeapon);
+						this.lastHeldWeapon = null;
+					}
 				}
 			}
 			if (!this.world.isRemote && (this.user == null || !this.user.isEntityAlive())) {
@@ -106,6 +149,70 @@ public class EntityChakraFlow extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		protected void writeEntityToNBT(NBTTagCompound compound) {
+		}
+
+		public static class Message implements IMessage {
+			int id;
+			boolean add;
+			ItemStack stack;
+	
+			public Message() {}
+	
+			public Message(EntityLivingBase entity, boolean b, ItemStack stackIn) {
+				this.id = entity.getEntityId();
+				this.add = b;
+				this.stack = stackIn;
+			}
+	
+			public static void send(EntityLivingBase entity, boolean isAdding, ItemStack stackIn) {
+				NarutomodMod.PACKET_HANDLER.sendToAllTracking(new Message(entity, isAdding, stackIn), entity);
+				if (entity instanceof EntityPlayerMP) {
+					NarutomodMod.PACKET_HANDLER.sendTo(new Message(entity, isAdding, stackIn), (EntityPlayerMP)entity);
+				}
+			}
+			
+			public static class Handler implements IMessageHandler<Message, IMessage> {
+				@SideOnly(Side.CLIENT)
+				@Override
+				public IMessage onMessage(Message message, MessageContext context) {
+					Minecraft.getMinecraft().addScheduledTask(() -> {
+						Entity entity = Minecraft.getMinecraft().world.getEntityByID(message.id);
+						if (entity instanceof EntityLivingBase) {
+							ItemStack stack = message.stack;
+							if (entity instanceof EntityPlayer) {
+								ItemStack stack1 = ProcedureUtils.getMatchingItemStack((EntityPlayer)entity, message.stack);
+								if (stack1 != null) {
+									stack = stack1;
+								}
+							}
+							if (message.add) {
+								ProcedureUtils.addFakeEnchantmentEffect(stack);
+							} else {
+								ProcedureUtils.removeFakeEnchantmentEffect(stack);
+							}
+						}
+					});
+					return null;
+				}
+			}
+	
+			public void toBytes(ByteBuf buf) {
+				PacketBuffer pbuf = new PacketBuffer(buf);
+				pbuf.writeInt(this.id);
+				pbuf.writeBoolean(this.add);
+				pbuf.writeItemStack(this.stack);
+			}
+	
+			public void fromBytes(ByteBuf buf) {
+				PacketBuffer pbuf = new PacketBuffer(buf);
+				this.id = pbuf.readInt();
+				this.add = pbuf.readBoolean();
+				try {
+					this.stack = pbuf.readItemStack();
+				} catch (Exception e) {
+					new IOException("EntityChakraFlow@Message packet: ", e);
+				}
+			}
 		}
 	}
 
@@ -134,7 +241,7 @@ public class EntityChakraFlow extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void doRender(T entity, double x, double y, double z, float entityYaw, float partialTicks) {
 			EntityLivingBase user = entity.getUser();
-			if (user != null && entity.isUserHoldingWeapon()) {
+			if (user != null && entity.isUserHoldingWeapon() && (this.renderManager.options.thirdPersonView != 0 || user != this.renderManager.renderViewEntity)) {
 				ItemStack stack = user.getHeldItemMainhand();
 				Vec3d startVec = stack.hasTagCompound() && stack.getTagCompound().hasKey("CustomChakraFlowStartVec", 10)
 				 ? new Vec3d(stack.getTagCompound().getCompoundTag("CustomChakraFlowStartVec").getDouble("x"),

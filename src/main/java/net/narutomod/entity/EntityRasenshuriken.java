@@ -153,12 +153,12 @@ public class EntityRasenshuriken extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void onUpdate() {
 			super.onUpdate();
+			this.updateInFlightRotations();
 			if (this.getImpactTicks() > 0) {
 				this.onImpactUpdate();
 				return;
 			}
 			if (!this.world.isRemote && this.ticksAlive == 1 && this.shootingEntity instanceof EntityPlayer) {
-				//PlayerRender.forceBowPose((EntityPlayer)this.shootingEntity, EnumHandSide.RIGHT, true);
 				ProcedureSync.EntityNBTTag.setAndSync(this.shootingEntity, NarutomodModVariables.forceBowPose, true);
 			}
 			if (!this.world.isRemote && this.shootingEntity != null) {
@@ -180,19 +180,11 @@ public class EntityRasenshuriken extends ElementsNarutomodMod.ModElement {
 					this.shoot(this.targetTrace.hitVec.x - this.posX, this.targetTrace.hitVec.y - this.posY, this.targetTrace.hitVec.z - this.posZ, 0.99f, 0f);
 				}
 			}
-			Particles.Renderer particles = new Particles.Renderer(this.world);
-			for (int i = 0; i < Math.min(this.ticksAlive, this.growTime) * 10; i++) {
-				particles.spawnParticles(Particles.Types.SMOKE, this.posX, this.posY+this.height*0.5, this.posZ, 1, 1d, 0d, 1d, 
-				  0.6d * this.rand.nextGaussian(), 0.1d * this.rand.nextGaussian(), 0.6d * this.rand.nextGaussian(), 0x10FFFFFF,
-				  (int)(this.fullScale * 12), 0);
-			}
-			particles.send();
 			if (this.fullScale >= 4.0f) {
 				ProcedureLightSourceSetBlock.execute(this.world, MathHelper.floor(this.posX), MathHelper.floor(this.posY), MathHelper.floor(this.posZ));
 			}
 			if (this.ticksAlive % 80 == 79) {
-				this.world.playSound(null, this.posX, this.posY, this.posZ, 
-				 SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:wind")), SoundCategory.NEUTRAL, 1, 1f);
+				this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:wind")), 1, 1f);
 			}
 			if (this.ticksInAir > 200 || (!this.world.isRemote && this.shootingEntity == null && !this.isLaunched())) {
 				this.setDead();
@@ -228,6 +220,15 @@ public class EntityRasenshuriken extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public void renderParticles() {
+			if (this.world.isRemote && this.getImpactTicks() == 0) {
+				Particles.Renderer particles = new Particles.Renderer(this.world);
+				for (int i = 0; i < this.growTime * 10; i++) {
+					particles.spawnParticles(Particles.Types.SMOKE, this.posX, this.posY+this.height*0.5, this.posZ, 1, 1d, 0d, 1d, 
+					  0.6d * this.rand.nextGaussian(), 0.1d * this.rand.nextGaussian(), 0.6d * this.rand.nextGaussian(), 0x10FFFFFF,
+					  (int)(this.getEntityScale() * 12), 0);
+				}
+				particles.send();
+			}
 		}
 
 		@Override
@@ -347,24 +348,20 @@ public class EntityRasenshuriken extends ElementsNarutomodMod.ModElement {
 				this.bindEntityTexture(entity);
 				GlStateManager.pushMatrix();
 				GlStateManager.translate(x, y + (0.25F * scale), z);
+				GlStateManager.rotate(-ProcedureUtils.interpolateRotation(entity.prevRotationYaw, entity.rotationYaw, partialTicks), 0.0F, 1.0F, 0.0F);
+				GlStateManager.rotate(entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks - 180.0F, 1.0F, 0.0F, 0.0F);
+				GlStateManager.rotate(entity.prevRotationRoll + (entity.rotationRoll - entity.prevRotationRoll) * partialTicks, 0.0F, 0.0F, 1.0F);
 				GlStateManager.scale(scale, scale, scale);
 				GlStateManager.enableAlpha();
 				GlStateManager.enableBlend();
 				GlStateManager.disableCull();
 				GlStateManager.disableLighting();
 				OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240.0F, 240.0F);
-				//for (int i = 0; i < entity.s /*/ (scale > 40f ? (int)(scale/4f) : 1)*/; i++) {
-				//GlStateManager.rotate(entity.world.rand.nextFloat() * 90f, 0f, 1f, 0f);
-				//GlStateManager.rotate(entity.world.rand.nextFloat() * 0.2f, 1f, 0f, 0f);
-				//this.mainModel.render(entity, 0.0F, 0.0F, partialTicks + entity.ticksExisted + entity.randomStartTick[i], 0.0F, 0.0F, 0.0625F);
 				this.mainModel.render(entity, 0.0F, 0.0F, f, 0.0F, 0.0F, 0.0625F);
-				//}
 				GlStateManager.enableLighting();
 				GlStateManager.enableCull();
-				//GlStateManager.disableAlpha();
 				GlStateManager.disableBlend();
 				GlStateManager.popMatrix();
-				//super.doRender(entity, x, y, z, entityYaw, partialTicks);
 			}
 
 			@Override
