@@ -51,10 +51,6 @@ import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.init.Items;
 
-import net.narutomod.item.ItemSharingan;
-import net.narutomod.item.ItemMangekyoSharinganObito;
-import net.narutomod.item.ItemMangekyoSharinganEternal;
-import net.narutomod.item.ItemMangekyoSharingan;
 import net.narutomod.item.ItemJutsu;
 import net.narutomod.PlayerTracker;
 import net.narutomod.PlayerRender;
@@ -178,10 +174,22 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 		return entity.getUniqueID().equals(getOwnerId(stack));
 	}
 
+	@Nullable
 	public static ItemStack getMatchingItemStack(EntityPlayer entity, Item item) {
 		return getItemStackIgnoreDurability(entity.inventory, new ItemStack(item));
 	}
+
+	@Nullable
+	public static ItemStack getOwnerMatchingItemstack(EntityPlayer entity, Item itemIn) {
+		ItemStack stack = getMatchingItemStack(entity, itemIn);
+		return stack == null || isOriginalOwner(entity, stack) ? stack : null;
+	}
+
+	public static boolean hasOwnerMatchingItemstack(EntityPlayer entity, Item itemIn) {
+		return getOwnerMatchingItemstack(entity, itemIn) != null;
+	}
 	
+	@Nullable
 	public static ItemStack getItemStackIgnoreDurability(InventoryPlayer inventory, ItemStack itemStackIn) {
 		List<NonNullList<ItemStack>> allInv = Arrays.<NonNullList<ItemStack>>asList(inventory.mainInventory, inventory.armorInventory,
 				inventory.offHandInventory);
@@ -212,6 +220,7 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 		return null;
 	}
 
+	@Nullable
 	public static ItemStack getMatchingItemStack(EntityPlayer player, ItemStack itemStackIn) {
 		List<NonNullList<ItemStack>> allInv = Arrays.<NonNullList<ItemStack>>asList(player.inventory.mainInventory,
 		 player.inventory.armorInventory, player.inventory.offHandInventory);
@@ -227,6 +236,7 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 		return null;
 	}
 
+	@Nullable
 	public static ItemStack getMatchingItemstackIgnoreDurability(EntityPlayer player, ItemStack stackIn) {
 		List<NonNullList<ItemStack>> allInv = Arrays.<NonNullList<ItemStack>>asList(player.inventory.mainInventory,
 		 player.inventory.armorInventory, player.inventory.offHandInventory);
@@ -549,15 +559,6 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 				stack.getTagCompound().removeTag("ench");
 			}
 		}
-	}
-
-	public static boolean isWearingAnySharingan(EntityLivingBase entity) {
-		return entity.getItemStackFromSlot(EntityEquipmentSlot.HEAD).getItem() == ItemSharingan.helmet || isWearingMangekyo(entity);
-	}
-
-	public static boolean isWearingMangekyo(EntityLivingBase entity) {
-		Item item = entity.getItemStackFromSlot(EntityEquipmentSlot.HEAD).getItem();
-		return item == ItemMangekyoSharingan.helmet || item == ItemMangekyoSharinganObito.helmet || item == ItemMangekyoSharinganEternal.helmet;
 	}
 
 	public static boolean isEntityInFOV(EntityLivingBase looker, Entity entityIn) {

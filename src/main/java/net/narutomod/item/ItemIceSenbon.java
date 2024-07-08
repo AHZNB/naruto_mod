@@ -62,7 +62,7 @@ public class ItemIceSenbon extends ElementsNarutomodMod.ModElement {
 	}
 	private static class ItemToolCustom extends Item {
 		protected ItemToolCustom() {
-			setMaxDamage(100);
+			setMaxDamage(30);
 			setMaxStackSize(1);
 		}
 
@@ -83,7 +83,7 @@ public class ItemIceSenbon extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public float getDestroySpeed(ItemStack par1ItemStack, IBlockState par2Block) {
-			return 4f;
+			return 3f;
 		}
 
 		@Override

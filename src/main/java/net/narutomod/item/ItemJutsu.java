@@ -48,8 +48,8 @@ import javax.annotation.Nullable;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class ItemJutsu extends ElementsNarutomodMod.ModElement {
-	public static final String NINJUTSU_TYPE = "ninjutsu_damage";
-	public static final String SENJUTSU_TYPE = "senjutsu_damage";
+	public static final String NINJUTSU_TYPE = "ninjutsu";
+	public static final String SENJUTSU_TYPE = "senjutsu";
 	public static final DamageSource NINJUTSU_DAMAGE = new DamageSource(NINJUTSU_TYPE);
 	public static final DamageSource SENJUTSU_DAMAGE = new DamageSource(SENJUTSU_TYPE);
 

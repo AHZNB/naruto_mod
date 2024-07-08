@@ -35,6 +35,7 @@ import net.narutomod.PlayerTracker;
 import net.narutomod.NarutomodModVariables;
 import net.narutomod.ElementsNarutomodMod;
 
+import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
@@ -62,8 +63,9 @@ public class ProcedureOnPlayerDeath extends ElementsNarutomodMod.ModElement {
 			return;
 		}
 		Entity entity = (Entity) dependencies.get("entity");
-		ItemStack stack = ItemStack.EMPTY;
 		boolean keepInventory = false;
+		ItemStack stack = ItemStack.EMPTY;
+		ItemStack stack2 = ItemStack.EMPTY;
 		if ((entity instanceof EntityPlayerMP)) {
 			keepInventory = (boolean) entity.world.getGameRules().getBoolean("keepInventory");
 			if (((entity instanceof EntityPlayer)
@@ -130,6 +132,7 @@ public class ProcedureOnPlayerDeath extends ElementsNarutomodMod.ModElement {
 				((EntityPlayer) entity).inventory.clearMatchingItems(new ItemStack(ItemAsuraPathArmor.body, (int) (1)).getItem(), -1, (int) (-1),
 						null);
 			if ((!(keepInventory))) {
+				entity.getEntityData().setBoolean((NarutomodModVariables.FirstGotNinjutsu), (false));
 				if (EntityBijuManager.isJinchuriki((EntityPlayer) entity)) {
 					EntityBijuManager.unsetPlayerAsJinchuriki((EntityPlayer) entity);
 				}
@@ -191,27 +194,38 @@ public class ProcedureOnPlayerDeath extends ElementsNarutomodMod.ModElement {
 					stack = ProcedureUtils.getMatchingItemStack((EntityPlayer) entity, ItemByakugan.helmet);
 					if (stack != null) {
 						((EntityPlayer) entity).dropItem(stack.copy(), true, true);
-						((stack)).shrink((int) 1);
 					}
 					stack = ProcedureUtils.getMatchingItemStack((EntityPlayer) entity, ItemSharingan.helmet);
 					if (stack != null) {
 						((EntityPlayer) entity).dropItem(stack.copy(), true, true);
-						((stack)).shrink((int) 1);
 					}
 					stack = ProcedureUtils.getMatchingItemStack((EntityPlayer) entity, ItemMangekyoSharingan.helmet);
 					if (stack != null) {
 						((EntityPlayer) entity).dropItem(stack.copy(), true, true);
+						stack2 = new ItemStack(ItemSharingan.helmet, (int) (1));
+						((ItemSharingan.Base) stack2.getItem()).copyOwner(stack2, stack);
+						if (entity instanceof EntityPlayer) {
+							ItemStack _setstack = (stack2);
+							_setstack.setCount(1);
+							ItemHandlerHelper.giveItemToPlayer(((EntityPlayer) entity), _setstack);
+						}
 						((stack)).shrink((int) 1);
 					}
 					stack = ProcedureUtils.getMatchingItemStack((EntityPlayer) entity, ItemMangekyoSharinganObito.helmet);
 					if (stack != null) {
 						((EntityPlayer) entity).dropItem(stack.copy(), true, true);
+						stack2 = new ItemStack(ItemSharingan.helmet, (int) (1));
+						((ItemSharingan.Base) stack2.getItem()).copyOwner(stack2, stack);
+						if (entity instanceof EntityPlayer) {
+							ItemStack _setstack = (stack2);
+							_setstack.setCount(1);
+							ItemHandlerHelper.giveItemToPlayer(((EntityPlayer) entity), _setstack);
+						}
 						((stack)).shrink((int) 1);
 					}
 				}
 			}
 			ProcedureSync.EntityNBTTag.removeAndSync(entity, NarutomodModVariables.forceBowPose);
-			entity.getEntityData().setBoolean((NarutomodModVariables.FirstGotNinjutsu), (false));
 			entity.getEntityData().setBoolean("susanoo_activated", (false));
 			entity.getEntityData().setInteger("ForceExtinguish", 5);
 			entity.setNoGravity(false);

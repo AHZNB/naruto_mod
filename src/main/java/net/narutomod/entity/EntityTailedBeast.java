@@ -43,6 +43,7 @@ import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
 import net.minecraft.entity.ai.EntityAIAttackMelee;
 import net.minecraft.entity.ai.EntityAIAttackRanged;
 import net.minecraft.entity.ai.EntityAIWander;
+import net.minecraft.entity.ai.EntityAILookIdle;
 import net.minecraft.entity.ai.EntityMoveHelper;
 import net.minecraft.entity.ai.attributes.IAttribute;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
@@ -128,27 +129,26 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static abstract class Base extends EntityMob implements IRangedAttackMob, EntityBijuManager.ITailBeast {
-		protected static final List<Material> canBreakList = Lists.newArrayList(Material.WOOD, Material.CACTUS,
-		 Material.GLASS, Material.LEAVES, Material.PLANTS, Material.SNOW, Material.VINE, Material.WEB);
 		private static final DataParameter<Integer> AGE = EntityDataManager.<Integer>createKey(Base.class, DataSerializers.VARINT);
 		private static final DataParameter<Integer> VESSEL = EntityDataManager.<Integer>createKey(Base.class, DataSerializers.VARINT);
 		private static final DataParameter<Boolean> SHOOT = EntityDataManager.<Boolean>createKey(Base.class, DataSerializers.BOOLEAN);
 		private static final DataParameter<Boolean> CANSTEER = EntityDataManager.<Boolean>createKey(Base.class, DataSerializers.BOOLEAN);
 		private static final DataParameter<Boolean> FACEDOWN = EntityDataManager.<Boolean>createKey(Base.class, DataSerializers.BOOLEAN);
 		private static final DataParameter<Float> TRANSPARENCY = EntityDataManager.<Float>createKey(Base.class, DataSerializers.FLOAT);
+		protected final List<Material> canBreakList = Lists.newArrayList(Material.WOOD, Material.CACTUS, Material.ICE,
+		 Material.GLASS, Material.LEAVES, Material.PLANTS, Material.SNOW, Material.VINE, Material.WEB, Material.CARPET);
 		private final BossInfoServer bossInfo = new BossInfoServer(this.getDisplayName(), BossInfo.Color.RED, BossInfo.Overlay.PROGRESS);
 		public static final int ATTACK_CD_MIN = 20;
 		public static final int ATTACK_CD_MAX = 100;
 		//public static final int BIJUDAMA_CD = 100;
-		protected final double targetRange = 112.0D;
-		protected final double bijudamaMinRange = 64.0D;
+		private final double targetRange = 112.0D;
+		private final double bijudamaMinRange = 64.0D;
 		private int deathTicks;
 		private int deathTotalTicks;
 		private EntityPlayer summoningPlayer;
 		private int tailBeastBallTime = ATTACK_CD_MAX;
 		private int angerLevel;
 		private int lifeSpan = Integer.MAX_VALUE - 1;
-		private boolean motionHalted;
 		protected boolean canPassengerDismount = true;
 		protected boolean spawnedBySpawner;
 		protected final ProcedureUtils.CollisionHelper collisionData;
@@ -217,7 +217,6 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 			if (!this.world.isRemote) {
 				this.getDataManager().set(FACEDOWN, Boolean.valueOf(down));
 			}
-			this.motionHalted = down;
 		}
 
 		public abstract float getModelScale();
@@ -239,13 +238,13 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 			this.getDataManager().set(TRANSPARENCY, Float.valueOf(transparency));
 		}
 
-		@Override
-		public void notifyDataManagerChange(DataParameter<?> key) {
-			super.notifyDataManagerChange(key);
-			if (FACEDOWN.equals(key) && this.world.isRemote) {
-				this.setFaceDown(this.isFaceDown());
-			}
-		}
+		//@Override
+		//public void notifyDataManagerChange(DataParameter<?> key) {
+		//	super.notifyDataManagerChange(key);
+		//	if (FACEDOWN.equals(key) && this.world.isRemote) {
+		//		this.setFaceDown(this.isFaceDown());
+		//	}
+		//}
 
 		public void setAngerLevel(int i) {
 			this.angerLevel = MathHelper.clamp(i, 0, 2);
@@ -266,7 +265,7 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 			super.applyEntityAttributes();
 			this.getAttributeMap().registerAttribute(ProcedureUtils.MAXHEALTH);
 			this.getAttributeMap().registerAttribute(EntityPlayer.REACH_DISTANCE);
-			this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(this.targetRange);
+			this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(this.getTargetRange());
 			this.getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(1.0D);
 			this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(200.0D);
 		}
@@ -276,8 +275,16 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 			return super.getEntityAttribute(attribute == SharedMonsterAttributes.MAX_HEALTH ? ProcedureUtils.MAXHEALTH : attribute);
 		}
 
+		public double getBijudamaMinRange() {
+			return this.bijudamaMinRange;
+		}
+
+		public double getTargetRange() {
+			return this.targetRange;
+		}
+
 		protected void setAttackTasks() {
-			this.tasks.addTask(0, new EntityAIAttackRanged(this, 1.2D, ATTACK_CD_MIN, ATTACK_CD_MAX, (float)this.bijudamaMinRange) {
+			this.tasks.addTask(0, new EntityAIAttackRanged(this, 1.2D, ATTACK_CD_MIN, ATTACK_CD_MAX, (float)this.getBijudamaMinRange()) {
 				@Override
 				public boolean shouldExecute() {
 					return super.shouldExecute() && !Base.this.isMotionHalted() && Base.this.meleeTime <= 0;
@@ -292,7 +299,7 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 					Base.this.meleeTime = 100;
 				}
 			});
-			this.tasks.addTask(1, new AILeapAtTarget(this, 24d, 2.0f) {
+			this.tasks.addTask(1, new AILeapAtTarget(this, 36.0d, 2.0f) {
 				@Override
 				public boolean shouldExecute() {
 					return !Base.this.isMotionHalted() && super.shouldExecute();
@@ -317,34 +324,25 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 		@Override
 		protected void initEntityAI() {
 			super.initEntityAI();
-			this.targetTasks.addTask(0, new EntityAIHurtByTarget(this, false) {
-				@Override
-				protected double getTargetDistance() {
-					return Base.this.targetRange;
-				}
-			});
-			this.targetTasks.addTask(1, new EntityAINearestAttackableTarget(this, EntityPlayer.class, true, false) {
+			this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, false));
+			this.targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, EntityPlayer.class, true, false) {
 				@Override
 				public boolean shouldExecute() {
 					return super.shouldExecute() && !Base.this.isOnSameTeam(this.targetEntity) && Base.this.angerLevel > 0;
 				}
-				@Override
-				protected double getTargetDistance() {
-					return Base.this.targetRange;
-				}
 			});
-			this.targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, EntityLivingBase.class, true, false) {
+			this.targetTasks.addTask(3, new EntityAINearestAttackableTarget(this, EntityLivingBase.class, true, false) {
 				@Override
 				public boolean shouldExecute() {
 					return super.shouldExecute() && Base.this.angerLevel > 1;
 				}
 				@Override
 				protected double getTargetDistance() {
-					return Base.this.targetRange * 0.5d;
+					return Base.this.getTargetRange() * 0.5d;
 				}
 			});
 			this.setAttackTasks();
-			this.tasks.addTask(4, new EntityAIWander(this, 1.0D) {
+			this.tasks.addTask(4, new EntityAIWander(this, 0.8D) {
 				@Override
 				public boolean shouldExecute() {
 					return !Base.this.isMotionHalted() && super.shouldExecute();
@@ -352,6 +350,12 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 				@Override @Nullable
 				protected Vec3d getPosition() {
 					return RandomPositionGenerator.findRandomTarget(this.entity, 56, 21);
+				}
+			});
+			this.tasks.addTask(5, new EntityAILookIdle(this) {
+				@Override
+				public boolean shouldExecute() {
+					return !Base.this.isMotionHalted() && super.shouldExecute();
 				}
 			});
 		}
@@ -379,12 +383,8 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 			return this.meleeTime;
 		}
 
-		protected void haltMotion(boolean halt) {
-			this.motionHalted = halt;
-		}
-
 		protected boolean isMotionHalted() {
-			return this.motionHalted;
+			return this.isFaceDown();
 		}
 
 		@Override
@@ -577,7 +577,7 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 			this.collisionData.collideWithAABBs(this.world.getCollisionBoxes(this, this.getEntityBoundingBox().expand(x, y, z)), x, y, z);
 			if (this.couldBreakBlocks()) {
 				for (BlockPos pos : this.collisionData.getHitBlocks()) {
-					if (canBreakList.contains(this.world.getBlockState(pos).getMaterial())) {
+					if (this.canBreakList.contains(this.world.getBlockState(pos).getMaterial())) {
 						this.world.destroyBlock(pos, this.rand.nextFloat() < 0.3f);
 						x *= 0.96d;
 						y *= 0.96d;
@@ -722,17 +722,16 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 				}
 				float hp = this.getHealth();
 				float maxhp = this.getMaxHealth();
-				if (hp >= maxhp * 0.1f && this.isFaceDown()) {
+				if (hp > maxhp * 0.1f && this.isFaceDown()) {
 					this.setFaceDown(false);
-				}
-				if (hp <= 150f && !this.isFaceDown()) {
+				} else if (hp <= maxhp * 0.1f && !this.isFaceDown()) {
 					this.setFaceDown(true);
 				}
 				if (this.isAIDisabled() && jinchuriki != null && jinchuriki.getHealth() <= 0.0F) {
 					this.setNoAI(false);
 				}
 				if (this.ticksExisted % 100 == 0 && hp > 0.0f && hp < maxhp) {
-					this.setHealth(hp + 100f * Math.max(hp / maxhp, 0.1f));
+					this.setHealth(hp + 0.01f * Math.max(hp, maxhp * 0.1f));
 				}
 				if (this.angerLevel > 0 && this.ticksExisted - this.getRevengeTimer() > 6000) {
 					this.setAngerLevel(0);
@@ -771,7 +770,7 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 					this.setSwingingArms(true);
 					this.tailBeastBallTime = ATTACK_CD_MAX;
 				}
-			} else if (!flag && distanceFactor <= ProcedureUtils.getReachDistance(this) * 0.6d / this.bijudamaMinRange) {
+			} else if (!flag && distanceFactor <= ProcedureUtils.getReachDistance(this) * 0.6d / this.getBijudamaMinRange()) {
 				this.swingArm(EnumHand.MAIN_HAND);
 				this.attackEntityAsMob(target);
 			}
@@ -798,6 +797,10 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 		@Override
 		public boolean isNonBoss() {
 			return false;
+		}
+
+		protected void enableBoss(boolean enable) {
+			this.bossInfo.setVisible(enable);
 		}
 
 		@Override
@@ -1062,10 +1065,10 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 	    public boolean shouldExecute() {
 			this.leapTarget = this.leaper.getAttackTarget();
 			if (this.leapTarget != null) {
-				double d0 = this.leaper.getDistanceSq(this.leapTarget);
-				double d1 = this.leaper.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).getAttributeValue();
+				double d0 = this.leaper.getDistance(this.leapTarget);
+				//double d1 = this.leaper.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).getAttributeValue();
 				//return d0 >= 64d && d0 <= d1 * d1 && this.leaper.onGround && this.leaper.getRNG().nextInt(5) == 0;
-				return (d0 > 64d || d0 > d1 * d1) && d0 <= this.leapRange * this.leapRange 
+				return d0 > 2.0d * this.leaper.width && d0 <= this.leapRange
 				 && this.leaper.onGround && this.leaper.getRNG().nextInt(5) == 0;
 			}
 			return false;
@@ -1078,23 +1081,33 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 	
 	 	@Override
 	    public void startExecuting() {
-	    	double d0 = this.leapTarget.posX - this.leaper.posX;
-	    	double d1 = this.leapTarget.posZ - this.leaper.posZ;
-	    	float f = MathHelper.sqrt(d0 * d0 + d1 * d1);
-	    	if ((double)f >= 1.0E-4D) {
-	    		this.leaper.motionX += d0 / (double)f * (double)this.leapStrength * 0.4D + this.leaper.motionX * 0.2D;
-	    		this.leaper.motionZ += d1 / (double)f * (double)this.leapStrength * 0.4D + this.leaper.motionZ * 0.2D;
-	    	}
-	    	this.leaper.motionY = (double)this.leapStrength;
-	        this.leaper.rotationYaw = (float)(MathHelper.atan2(d1, d0) * (180D / Math.PI)) - 90.0F;
+            double d0 = this.leapTarget.posX - this.leaper.posX;
+            double d1 = this.leapTarget.posZ - this.leaper.posZ;
+            double d2 = this.leapTarget.posY - this.leaper.posY;
+            double d3 = d0 * d0 + d1 * d1;
+            if (d3 + d2 * d2 > 2.5E-7D) {
+	            double d = ProcedureUtils.getFollowRange(this.leaper);
+				d3 = MathHelper.sqrt(d3);
+	            if (d3 > d) {
+	            	double d4 = d / d3;
+	            	d0 *= d4;
+	            	d1 *= d4;
+	            	d2 *= d4;
+	            	d3 = d;
+	            }
+	            this.leaper.rotationYaw = (float)(MathHelper.atan2(d1, d0) * (180D / Math.PI)) - 90.0F;
+	            this.leaper.motionX = d0 * 0.145d;
+	            this.leaper.motionZ = d1 * 0.145d;
+	            this.leaper.motionY = 0.32d + (Math.max(d2, 0.0d) + d3 * 0.6d) * 0.1d;
+            }
 	    }
 	}
 
 	public static class NavigateGround extends PathNavigateGround {
 		protected Base baseEntity; 
 		private BlockPos targetPos;
-		//private int stuckCount;
-		//private int lastTimeAtPathIndex;
+	    private int ticksAtLastPos;
+	    private Vec3d lastPosCheck = Vec3d.ZERO;
 
 		public NavigateGround(Base entityLivingIn, World worldIn) {
 			super(entityLivingIn, worldIn);
@@ -1180,6 +1193,17 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 				}
 			}
 		}
+
+	    @Override
+	    protected void checkForStuck(Vec3d positionVec3) {
+	        if (this.totalTicks - this.ticksAtLastPos > 80) {
+	            if (positionVec3.squareDistanceTo(this.lastPosCheck) < this.entity.width * this.entity.width) {
+	                this.clearPath();
+	            }
+	            this.ticksAtLastPos = this.totalTicks;
+	            this.lastPosCheck = positionVec3;
+	        }
+	    }
 
 		/*private void debugPath(String str) {
 			String s = str + "currentPath:";
@@ -1292,7 +1316,7 @@ System.out.println("====== totalTicks:"+totalTicks+", lastTimeAtPathIndex:"+last
 						this.entity.motionY += 0.1d;
 					}
 				}
-	            float f = (float)(MathHelper.atan2(d1, d0) * (180D / Math.PI)) - 90.0F;
+	            float f = (float)(MathHelper.atan2(d1, d0) * 180D / Math.PI) - 90.0F;
 	            this.entity.rotationYaw = this.limitAngle(this.entity.rotationYaw, f, 90.0F);
 	            this.entity.renderYawOffset = this.entity.rotationYaw;
 				f = (float)(-(MathHelper.atan2(d2, MathHelper.sqrt(d0 * d0 + d1 * d1)) * (180D / Math.PI)));

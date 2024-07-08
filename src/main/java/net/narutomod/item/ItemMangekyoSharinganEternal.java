@@ -7,8 +7,6 @@ import net.minecraftforge.common.util.EnumHelper;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 
-import java.util.List;
-import javax.annotation.Nullable;
 import net.minecraft.world.World;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.item.ItemStack;
@@ -23,11 +21,16 @@ import net.minecraft.init.MobEffects;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.text.translation.I18n;
 
+import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.world.WorldKamuiDimension;
 import net.narutomod.creativetab.TabModTab;
 import net.narutomod.Chakra;
 import net.narutomod.NarutomodModVariables;
 import net.narutomod.ElementsNarutomodMod;
+
+import java.util.UUID;
+import java.util.List;
+import javax.annotation.Nullable;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class ItemMangekyoSharinganEternal extends ElementsNarutomodMod.ModElement {
@@ -55,6 +58,21 @@ public class ItemMangekyoSharinganEternal extends ElementsNarutomodMod.ModElemen
 					if (entity.getEntityData().getBoolean("kamui_intangible")) {
 						Chakra.pathway(entity).consume(ItemMangekyoSharinganObito.getIntangibleChakraUsage(entity));
 						entity.getEntityData().setDouble(NarutomodModVariables.InvulnerableTime, 2.0d);
+					}
+				}
+			}
+
+			@Override
+			public void onUpdate(ItemStack itemstack, World world, Entity entity, int par4, boolean par5) {
+				super.onUpdate(itemstack, world, entity, par4, par5);
+				if (entity instanceof EntityPlayer && entity.ticksExisted % 20 == 0) {
+					for (ItemStack stack1 : ProcedureUtils.getAllItemsOfSubType((EntityPlayer)entity, ItemSharingan.Base.class)) {
+						if (stack1.getItem() != helmet) {
+							UUID uuid1 = ProcedureUtils.getOwnerId(itemstack);
+							if (uuid1 != null && uuid1.equals(ProcedureUtils.getOwnerId(stack1))) {
+								stack1.shrink(1);
+							}
+						}
 					}
 				}
 			}

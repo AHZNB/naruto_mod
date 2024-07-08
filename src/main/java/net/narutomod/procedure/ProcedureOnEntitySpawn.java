@@ -8,12 +8,9 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.ForgeHooks;
 
 import net.minecraft.world.World;
-import net.minecraft.util.text.translation.I18n;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.Entity;
 
 import java.util.Map;
@@ -72,9 +69,6 @@ public class ProcedureOnEntitySpawn extends ElementsNarutomodMod.ModElement {
 		}
 		if ((entity instanceof EntityPlayerMP)) {
 			ProcedureOnLivingUpdate.setNoClip(entity, false);
-			if (((world.provider.getDimension()) == (0))) {
-				((EntityPlayer) entity).sendStatusMessage(ForgeHooks.newChatWithLinks(I18n.translateToLocal("chattext.intro.message1")), false);
-			}
 		}
 	}
 

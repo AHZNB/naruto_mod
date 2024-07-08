@@ -10,11 +10,13 @@ import net.minecraftforge.fml.common.FMLCommonHandler;
 
 import net.minecraft.world.World;
 import net.minecraft.world.storage.MapStorage;
+import net.minecraft.util.EnumHandSide;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.entity.ai.EntityAITarget;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.EntityLivingBase;
@@ -25,10 +27,15 @@ import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.client.renderer.entity.RenderLiving;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.init.MobEffects;
-import net.minecraft.potion.PotionEffect;
 import net.minecraft.item.ItemStack;
+import net.minecraft.potion.PotionEffect;
+import net.minecraft.network.datasync.DataSerializers;
+import net.minecraft.network.datasync.DataParameter;
+import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraft.block.material.Material;
 
 import net.narutomod.item.ItemJutsu;
 import net.narutomod.item.ItemRinnegan;
@@ -37,14 +44,15 @@ import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.NarutomodMod;
 import net.narutomod.ElementsNarutomodMod;
 
+import java.util.List;
 import java.util.Random;
+import com.google.common.collect.Lists;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityTenTails extends ElementsNarutomodMod.ModElement {
 	public static final int ENTITYID = 179;
 	public static final int ENTITYID_RANGED = 180;
-	private static final float MODELSCALE = 36.0F;
-	private static final double TARGET_RANGE = 108.0D;
+	private static final float MODELSCALE = 48.0F;
 	private static final TailBeastManager BIJU_MANAGER = new TailBeastManager();
 
 	public EntityTenTails(ElementsNarutomodMod instance) {
@@ -54,7 +62,10 @@ public class EntityTenTails extends ElementsNarutomodMod.ModElement {
 	@Override
 	public void initElements() {
 		elements.entities.add(() -> EntityEntryBuilder.create().entity(EntityCustom.class)
-		  .id(new ResourceLocation("narutomod", "ten_tails"), ENTITYID).name("ten_tails").tracker(96, 3, true)
+		  .id(new ResourceLocation("narutomod", "ten_tails"), ENTITYID).name("ten_tails").tracker(128, 3, true)
+		  .egg(-13421773, -16777216).build());
+		elements.entities.add(() -> EntityEntryBuilder.create().entity(EntitySplit.class)
+		  .id(new ResourceLocation("narutomod", "ten_tails_split"), ENTITYID_RANGED).name("ten_tails_split").tracker(64, 3, true)
 		  .egg(-13421773, -16777216).build());
 	}
 
@@ -121,12 +132,15 @@ public class EntityTenTails extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static class EntityCustom extends EntityTailedBeast.Base {
+		private final List<EntitySplit> cloneList = Lists.newArrayList();
+
 		public EntityCustom(World world) {
 			super(world);
 			this.setSize(MODELSCALE * 0.2F, MODELSCALE * 0.72F);
 			this.experienceValue = 16000;
 			this.stepHeight = this.height / 3.0F;
 			this.setAngerLevel(2);
+			this.canBreakList.addAll(Lists.newArrayList(Material.IRON, Material.ANVIL, Material.TNT));
 		}
 
 		public EntityCustom(EntityPlayer player) {
@@ -148,14 +162,27 @@ public class EntityTenTails extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
+		public void setFaceDown(boolean down) {
+		}
+
+		@Override
 		protected void applyEntityAttributes() {
 			super.applyEntityAttributes();
 			this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(100.0D);
 			this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.8D);
 			this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(100000.0D);
 			this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(1000.0D);
-			//this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(24.0D);
 			this.getEntityAttribute(EntityPlayer.REACH_DISTANCE).setBaseValue(40.0D);
+		}
+
+		@Override
+		public double getBijudamaMinRange() {
+			return 80.0d;
+		}
+
+		@Override
+		public double getTargetRange() {
+			return 128.0d;
 		}
 
 		@Override
@@ -178,6 +205,33 @@ public class EntityTenTails extends ElementsNarutomodMod.ModElement {
 			return this.rand.nextFloat() * 0.4F + 0.5F;
 		}
 
+		protected SoundEvent getSpawnSound() {
+			return SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:woodspawn"));
+		}
+
+		protected float getSpawnSoundVolume() {
+			return 10.0f;
+		}
+
+		@Override
+		protected void updateAITasks() {
+			super.updateAITasks();
+			EntityLivingBase target = this.getAttackTarget();
+			if (target != null && this.getMeleeTime() <= 0 && this.getDistance(target) < this.getBijudamaMinRange()) {
+				this.setMeleeTime(80);
+			}
+			if (this.getRevengeTarget() != null && this.ticksExisted % 10 == 0 && this.cloneList.size() < 20) {
+				EntitySplit clone = new EntitySplit(this);
+				clone.setLocationAndAngles(this.posX, this.posY + this.rand.nextDouble() * 20.0d, this.posZ, this.rotationYaw, this.rotationPitch);
+				Vec3d vec = Vec3d.fromPitchYaw(0.0f, this.rotationYaw).rotateYaw((this.rand.nextFloat()-0.5f) * 1.57f).scale(this.rand.nextDouble() * 0.6d);
+				clone.motionX = vec.x;
+				clone.motionY = vec.y;
+				clone.motionZ = vec.z;
+				this.world.spawnEntity(clone);
+				this.cloneList.add(clone);
+			}
+		}
+
 		@Override
 		public void onEntityUpdate() {
 			super.onEntityUpdate();
@@ -186,9 +240,8 @@ public class EntityTenTails extends ElementsNarutomodMod.ModElement {
 			 && !ItemRinnegan.wearingRinnesharingan(jinchuriki)) {
 				this.setDead();
 			}
-			if (this.getAge() == 1) {
-				this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:woodspawn")),
-				 10f, this.rand.nextFloat() * 0.6f + 0.6f);
+			if (this.getAge() == 1 && this.getSpawnSound() != null) {
+				this.playSound(this.getSpawnSound(), this.getSpawnSoundVolume(), this.rand.nextFloat() * 0.6f + 0.6f);
 			}
 			if (!this.world.isRemote && this.isFuuinInProgress()) {
 				this.setTransparency(1.0f - this.getFuuinProgress());
@@ -197,6 +250,11 @@ public class EntityTenTails extends ElementsNarutomodMod.ModElement {
 					ProcedureUtils.addVelocity(entity, this.getPositionVector().subtract(entity.getPositionVector()).scale(0.005d));
 				}
 			}
+		}
+
+		@Override
+		public boolean isOnSameTeam(Entity entityIn) {
+			return super.isOnSameTeam(entityIn) || entityIn instanceof EntityCustom;
 		}
 
 		@Override
@@ -240,10 +298,226 @@ public class EntityTenTails extends ElementsNarutomodMod.ModElement {
 						jubi.setHealth(jubi.getMaxHealth() * 0.1f - 1000f);
 					}
 					jubi.fuuinIntoVessel(entity, 300);
+					jubi.setFaceDown(true);
 					return true;
 				}
 			}
 			return false;
+		}
+	}
+
+	public static class EntitySplit extends EntityTailedBeast.Base {
+		private static final DataParameter<Float> SCALE = EntityDataManager.<Float>createKey(EntitySplit.class, DataSerializers.FLOAT);
+		private final BijuManager bijuManager = new BijuManager();
+		private EntityCustom parent;
+		
+		public EntitySplit(World worldIn) {
+			super(worldIn);
+			this.setAngerLevel(1);
+			this.enableBoss(false);
+			this.setAlwaysRenderNameTag(false);
+			if (!worldIn.isRemote) {
+				float f = (float)this.rand.nextGaussian() * 0.6667f;
+				this.setEntityScale(f * f + 0.8f);
+			}
+		}
+
+		public EntitySplit(EntityCustom parentIn) {
+			this(parentIn.world);
+			this.parent = parentIn;
+		}
+
+		@Override
+		public float getModelScale() {
+			return this.getEntityScale();
+		}
+
+		@Override
+		public EntityBijuManager getBijuManager() {
+			return this.bijuManager;
+		}
+
+		@Override
+		protected void entityInit() {
+			super.entityInit();
+			this.getDataManager().register(SCALE, Float.valueOf(1.0F));
+		}
+
+		public float getEntityScale() {
+			return ((Float)this.getDataManager().get(SCALE)).floatValue();
+		}
+
+		private void setEntityScale(float scale) {
+			this.setSize((scale < 2.0f ? 0.66f : 1.1f) * scale, 2.625f * scale);
+			if (!this.world.isRemote) {
+				this.getDataManager().set(SCALE, Float.valueOf(scale));
+			}
+			this.fixEntityAttributes();
+		}
+
+		@Override
+		public void notifyDataManagerChange(DataParameter<?> key) {
+			super.notifyDataManagerChange(key);
+			if (SCALE.equals(key) && this.world.isRemote) {
+				this.setEntityScale(this.getEntityScale());
+			}
+		}
+
+		@Override
+		public void setFaceDown(boolean down) {
+		}
+
+		@Override
+		protected void applyEntityAttributes() {
+			super.applyEntityAttributes();
+			this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(10.0D);
+			this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.8D);
+		}
+
+		private void fixEntityAttributes() {
+			float scale = this.getEntityScale();
+			this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(30.0D * scale);
+			this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(10.0D * scale);
+			this.getEntityAttribute(EntityPlayer.REACH_DISTANCE).setBaseValue(2.5D * this.width);
+		}
+
+		@Override
+		protected void initEntityAI() {
+			super.initEntityAI();
+			this.targetTasks.addTask(0, new AIParentHurtByTarget(this));
+			this.tasks.addTask(3, new EntityClone.AIFollowSummoner(this, 0.8D, 0.5F * MODELSCALE) {
+				@Override
+				protected EntityLivingBase getFollowEntity() {
+					return EntitySplit.this.parent;
+				}
+			});
+		}
+
+		@Override
+		protected void updateAITasks() {
+			if (this.getMeleeTime() <= 0) {
+				this.setMeleeTime(80);
+			}
+			super.updateAITasks();
+			if (this.getAttackTarget() != null && !this.isShooting()) {
+				this.setSwingingArms(true);
+			} else if (this.getAttackTarget() == null && this.isShooting()) {
+				this.setSwingingArms(false);
+			}
+		}
+
+		@Override
+		public boolean attackEntityAsMob(Entity entityIn) {
+			return ProcedureUtils.attackEntityAsMob(this, entityIn);
+		}
+
+		@Override
+		public boolean attackEntityFrom(DamageSource source, float amount) {
+			if (this.parent != null && source.getTrueSource() == this.parent) {
+				return false;
+			}
+			return super.attackEntityFrom(source, amount);
+		}
+
+		@Override
+		public void setDead() {
+			super.setDead();
+			ProcedureUtils.poofWithSmoke(this);
+			if (this.parent != null && this.parent.isEntityAlive()) {
+				this.parent.cloneList.remove(this);
+			}
+		}
+
+		@Override
+		protected void onDeathUpdate() {
+			if (!this.world.isRemote) {
+				this.setDead();
+			}
+		}
+
+		@Override
+		public void onUpdate() {
+			super.onUpdate();
+			if (this.getAge() == 1 && this.parent != null && this.parent.getSpawnSound() != null) {
+				this.playSound(this.parent.getSpawnSound(), 2.0f, this.rand.nextFloat() * 0.6f + 0.6f);
+			}
+			if (!this.world.isRemote && (this.parent == null || !this.parent.isEntityAlive())) {
+				this.setDead();
+			}
+		}
+
+		@Override
+		public SoundEvent getAmbientSound() {
+			return null;
+		}
+
+		@Override
+		public boolean couldBreakBlocks() {
+			return this.getEntityScale() >= 4.0f && super.couldBreakBlocks();
+		}
+
+		@Override
+		public boolean isNonBoss() {
+			return true;
+		}
+
+		@Override
+		public boolean isOnSameTeam(Entity entityIn) {
+			if (entityIn instanceof EntitySplit) {
+				return true;
+			}
+			if (this.parent != null) {
+				return entityIn == this.parent || entityIn == this.parent.getSummoningPlayer() || entityIn == this.parent.getBijuManager().getJinchurikiPlayer();
+			}
+			return super.isOnSameTeam(entityIn);
+		}
+
+		class AIParentHurtByTarget extends EntityAITarget {
+		    EntitySplit splitClone;
+		    EntityLivingBase attacker;
+		    private int timestamp;
+		
+		    public AIParentHurtByTarget(EntitySplit theDefendingTameableIn) {
+		        super(theDefendingTameableIn, false);
+		        this.splitClone = theDefendingTameableIn;
+		        this.setMutexBits(1);
+		    }
+		
+		    @Override
+		    public boolean shouldExecute() {
+		        if (this.splitClone.parent == null) {
+		            return false;
+		        } else {
+		            EntityCustom parent = this.splitClone.parent;
+	                this.attacker = parent.getRevengeTarget();
+	                int i = parent.getRevengeTimer();
+	                return i != this.timestamp && this.isSuitableTarget(this.attacker, false);
+		        }
+		    }
+		
+		    @Override
+		    public void startExecuting() {
+		        this.splitClone.setAttackTarget(this.attacker);
+	            EntityCustom parent = this.splitClone.parent;
+		        if (parent != null) {
+		            this.timestamp = parent.getRevengeTimer();
+		        }
+		        super.startExecuting();
+		    }
+		}
+
+		class BijuManager extends EntityBijuManager<EntitySplit> {
+			public BijuManager() {
+				super(EntitySplit.class, 11);
+			}
+
+			@Override
+			public void onAddedToWorld(EntitySplit entityIn, boolean dirty) {
+			}
+	
+			@Override
+			public void markDirty() {
+			}
 		}
 	}
 
@@ -257,13 +531,13 @@ public class EntityTenTails extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void register() {
 			RenderingRegistry.registerEntityRenderingHandler(EntityCustom.class, renderManager -> new RenderTenTails(renderManager));
+			RenderingRegistry.registerEntityRenderingHandler(EntitySplit.class, renderManager -> new RenderSplit(renderManager));
 		}
 
 		@SideOnly(Side.CLIENT)
 		public class RenderTenTails extends EntityTailedBeast.ClientOnly.Renderer<EntityCustom> {
 			//private final ModelTenTails tentailsModel = new ModelTenTails();
 			//private final ModelTenTailsV1 tentailsModelV1 = new ModelTenTailsV1();
-			//private final ModelGedoMazo gedomazoModel = new ModelGedoMazo();
 			private final ResourceLocation main_texture = new ResourceLocation("narutomod:textures/tentails.png");
 			private final ResourceLocation v1_texture = new ResourceLocation("narutomod:textures/tentailsl1.png");
 	
@@ -274,6 +548,46 @@ public class EntityTenTails extends ElementsNarutomodMod.ModElement {
 		 	@Override
 			protected ResourceLocation getEntityTexture(EntityCustom entity) {
 				return this.v1_texture;
+			}
+		}
+
+		@SideOnly(Side.CLIENT)
+		public class RenderSplit extends RenderLiving<EntitySplit> {
+			private final ResourceLocation texture = new ResourceLocation("narutomod:textures/tentails_minion.png");
+
+			public RenderSplit(RenderManager renderManagerIn) {
+				super(renderManagerIn, new ModelTenTailsSplit(), 0.5F);
+			}
+
+			@Override
+			public void doRender(EntitySplit entity, double x, double y, double z, float entityYaw, float partialTicks) {
+				this.shadowSize = 0.5f * entity.getEntityScale();
+				super.doRender(entity, x, y, z, entityYaw, partialTicks);
+			}
+
+			@Override
+			protected void renderModel(EntitySplit entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor) {
+				float scale = entity.getEntityScale();
+				GlStateManager.translate(0.0F, 1.5F - 1.5F * scale, 0.0F);
+				if (scale < 2.0f) {
+					GlStateManager.scale(scale * 0.6f, scale, scale * 0.6f);
+					((ModelTenTailsSplit)this.mainModel).rightBlade.showModel = true;
+					((ModelTenTailsSplit)this.mainModel).leftBlade.showModel = true;
+					((ModelTenTailsSplit)this.mainModel).rightHammer.showModel = false;
+					((ModelTenTailsSplit)this.mainModel).leftHammer.showModel = false;
+				} else {
+					GlStateManager.scale(scale, scale, scale);
+					((ModelTenTailsSplit)this.mainModel).rightBlade.showModel = false;
+					((ModelTenTailsSplit)this.mainModel).leftBlade.showModel = false;
+					((ModelTenTailsSplit)this.mainModel).rightHammer.showModel = true;
+					((ModelTenTailsSplit)this.mainModel).leftHammer.showModel = true;
+				}
+				super.renderModel(entity, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scaleFactor);
+			}
+
+		 	@Override
+			protected ResourceLocation getEntityTexture(EntitySplit entity) {
+				return this.texture;
 			}
 		}
 	
@@ -464,22 +778,22 @@ public class EntityTenTails extends ElementsNarutomodMod.ModElement {
 				lowerTeeth.cubeList.add(new ModelBox(lowerTeeth, 44, 9, -1.5F, -1.75F, 0.0F, 3, 2, 3, 0.0F, false));
 		
 				bone = new ModelRenderer(this);
-				bone.setRotationPoint(-1.0F, -2.0F, -1.0F);
+				bone.setRotationPoint(-1.5F, -2.0F, -1.0F);
 				bipedHead.addChild(bone);
-				setRotationAngle(bone, 0.0F, -0.1745F, 0.0F);
-				bone.cubeList.add(new ModelBox(bone, 46, 25, -1.5F, -1.5F, -4.75F, 2, 3, 6, 0.0F, false));
+				setRotationAngle(bone, 0.0F, -0.2618F, 0.0F);
+				bone.cubeList.add(new ModelBox(bone, 46, 25, -1.4F, -1.5F, -4.75F, 2, 3, 6, 0.0F, false));
 		
 				bone3 = new ModelRenderer(this);
-				bone3.setRotationPoint(1.0F, -2.0F, -1.0F);
+				bone3.setRotationPoint(1.4F, -2.0F, -1.0F);
 				bipedHead.addChild(bone3);
-				setRotationAngle(bone3, 0.0F, 0.1745F, 0.0F);
+				setRotationAngle(bone3, 0.0F, 0.2618F, 0.0F);
 				bone3.cubeList.add(new ModelBox(bone3, 46, 25, -0.5F, -1.5F, -4.75F, 2, 3, 6, 0.0F, true));
 		
 				bone10 = new ModelRenderer(this);
-				bone10.setRotationPoint(1.0F, -3.4F, 0.5F);
+				bone10.setRotationPoint(1.0F, -3.15F, 0.6F);
 				bipedHead.addChild(bone10);
-				setRotationAngle(bone10, -0.5236F, 0.0F, 0.0F);
-				bone10.cubeList.add(new ModelBox(bone10, 24, 36, -3.5F, 0.134F, -0.5F, 5, 4, 3, 0.0F, false));
+				setRotationAngle(bone10, -0.4363F, 0.0F, 0.0F);
+				bone10.cubeList.add(new ModelBox(bone10, 24, 36, -3.5F, 0.134F, -0.5F, 5, 4, 3, 0.2F, false));
 		
 				bone83 = new ModelRenderer(this);
 				bone83.setRotationPoint(0.0F, -5.5F, -5.0F);
@@ -1756,6 +2070,2210 @@ public class EntityTenTails extends ElementsNarutomodMod.ModElement {
 				this.copyModelAngles(bipedBody, bipedHeadwear);
 				this.copyModelAngles(bipedHead, eyes);
 			}
+		}
+
+		@SideOnly(Side.CLIENT)
+		public class ModelTenTailsSplit extends ModelBiped {
+			//private final ModelRenderer bipedHead;
+			private final ModelRenderer head;
+			private final ModelRenderer head_r1;
+			private final ModelRenderer head_r2;
+			private final ModelRenderer jaw;
+			private final ModelRenderer head_r3;
+			//private final ModelRenderer bipedHeadwear;
+			private final ModelRenderer horn1;
+			private final ModelRenderer head_r4;
+			private final ModelRenderer spike41;
+			private final ModelRenderer body_r1;
+			private final ModelRenderer body_r2;
+			private final ModelRenderer body_r3;
+			private final ModelRenderer body_r4;
+			private final ModelRenderer spike42;
+			private final ModelRenderer body_r5;
+			private final ModelRenderer body_r6;
+			private final ModelRenderer body_r7;
+			private final ModelRenderer body_r8;
+			private final ModelRenderer spike43;
+			private final ModelRenderer body_r9;
+			private final ModelRenderer body_r10;
+			private final ModelRenderer body_r11;
+			private final ModelRenderer body_r12;
+			private final ModelRenderer body_r13;
+			private final ModelRenderer horn2;
+			private final ModelRenderer head_r5;
+			private final ModelRenderer spike44;
+			private final ModelRenderer body_r14;
+			private final ModelRenderer body_r15;
+			private final ModelRenderer body_r16;
+			private final ModelRenderer body_r17;
+			private final ModelRenderer spike45;
+			private final ModelRenderer body_r18;
+			private final ModelRenderer body_r19;
+			private final ModelRenderer body_r20;
+			private final ModelRenderer body_r21;
+			private final ModelRenderer spike46;
+			private final ModelRenderer body_r22;
+			private final ModelRenderer body_r23;
+			private final ModelRenderer body_r24;
+			private final ModelRenderer body_r25;
+			private final ModelRenderer body_r26;
+			//private final ModelRenderer bipedBody;
+			private final ModelRenderer chest;
+			private final ModelRenderer body_r27;
+			private final ModelRenderer backSpikes;
+			private final ModelRenderer spike3;
+			private final ModelRenderer body_r28;
+			private final ModelRenderer body_r29;
+			private final ModelRenderer body_r30;
+			private final ModelRenderer body_r31;
+			private final ModelRenderer spike5;
+			private final ModelRenderer body_r32;
+			private final ModelRenderer body_r33;
+			private final ModelRenderer body_r34;
+			private final ModelRenderer body_r35;
+			private final ModelRenderer spike7;
+			private final ModelRenderer body_r36;
+			private final ModelRenderer body_r37;
+			private final ModelRenderer body_r38;
+			private final ModelRenderer body_r39;
+			private final ModelRenderer body_r40;
+			private final ModelRenderer spike12;
+			private final ModelRenderer body_r41;
+			private final ModelRenderer body_r42;
+			private final ModelRenderer body_r43;
+			private final ModelRenderer body_r44;
+			private final ModelRenderer spike13;
+			private final ModelRenderer body_r45;
+			private final ModelRenderer body_r46;
+			private final ModelRenderer body_r47;
+			private final ModelRenderer body_r48;
+			private final ModelRenderer spike14;
+			private final ModelRenderer body_r49;
+			private final ModelRenderer body_r50;
+			private final ModelRenderer body_r51;
+			private final ModelRenderer body_r52;
+			private final ModelRenderer body_r53;
+			private final ModelRenderer spike27;
+			private final ModelRenderer body_r54;
+			private final ModelRenderer body_r55;
+			private final ModelRenderer body_r56;
+			private final ModelRenderer body_r57;
+			private final ModelRenderer spike28;
+			private final ModelRenderer body_r58;
+			private final ModelRenderer body_r59;
+			private final ModelRenderer body_r60;
+			private final ModelRenderer body_r61;
+			private final ModelRenderer spike29;
+			private final ModelRenderer body_r62;
+			private final ModelRenderer body_r63;
+			private final ModelRenderer body_r64;
+			private final ModelRenderer body_r65;
+			private final ModelRenderer body_r66;
+			private final ModelRenderer spike30;
+			private final ModelRenderer body_r67;
+			private final ModelRenderer body_r68;
+			private final ModelRenderer body_r69;
+			private final ModelRenderer body_r70;
+			private final ModelRenderer spike31;
+			private final ModelRenderer body_r71;
+			private final ModelRenderer body_r72;
+			private final ModelRenderer body_r73;
+			private final ModelRenderer body_r74;
+			private final ModelRenderer spike32;
+			private final ModelRenderer body_r75;
+			private final ModelRenderer body_r76;
+			private final ModelRenderer body_r77;
+			private final ModelRenderer body_r78;
+			private final ModelRenderer body_r79;
+			private final ModelRenderer spike38;
+			private final ModelRenderer body_r80;
+			private final ModelRenderer body_r81;
+			private final ModelRenderer body_r82;
+			private final ModelRenderer body_r83;
+			private final ModelRenderer spike39;
+			private final ModelRenderer body_r84;
+			private final ModelRenderer body_r85;
+			private final ModelRenderer body_r86;
+			private final ModelRenderer body_r87;
+			private final ModelRenderer spike40;
+			private final ModelRenderer body_r88;
+			private final ModelRenderer body_r89;
+			private final ModelRenderer body_r90;
+			private final ModelRenderer body_r91;
+			private final ModelRenderer body_r92;
+			private final ModelRenderer spike18;
+			private final ModelRenderer body_r93;
+			private final ModelRenderer body_r94;
+			private final ModelRenderer body_r95;
+			private final ModelRenderer body_r96;
+			private final ModelRenderer spike19;
+			private final ModelRenderer body_r97;
+			private final ModelRenderer body_r98;
+			private final ModelRenderer body_r99;
+			private final ModelRenderer body_r100;
+			private final ModelRenderer spike20;
+			private final ModelRenderer body_r101;
+			private final ModelRenderer body_r102;
+			private final ModelRenderer body_r103;
+			private final ModelRenderer body_r104;
+			private final ModelRenderer body_r105;
+			private final ModelRenderer spike9;
+			private final ModelRenderer body_r106;
+			private final ModelRenderer body_r107;
+			private final ModelRenderer body_r108;
+			private final ModelRenderer body_r109;
+			private final ModelRenderer spike10;
+			private final ModelRenderer body_r110;
+			private final ModelRenderer body_r111;
+			private final ModelRenderer body_r112;
+			private final ModelRenderer body_r113;
+			private final ModelRenderer spike11;
+			private final ModelRenderer body_r114;
+			private final ModelRenderer body_r115;
+			private final ModelRenderer body_r116;
+			private final ModelRenderer body_r117;
+			private final ModelRenderer body_r118;
+			private final ModelRenderer spike21;
+			private final ModelRenderer body_r119;
+			private final ModelRenderer body_r120;
+			private final ModelRenderer body_r121;
+			private final ModelRenderer body_r122;
+			private final ModelRenderer spike22;
+			private final ModelRenderer body_r123;
+			private final ModelRenderer body_r124;
+			private final ModelRenderer body_r125;
+			private final ModelRenderer body_r126;
+			private final ModelRenderer spike23;
+			private final ModelRenderer body_r127;
+			private final ModelRenderer body_r128;
+			private final ModelRenderer body_r129;
+			private final ModelRenderer body_r130;
+			private final ModelRenderer body_r131;
+			private final ModelRenderer spike15;
+			private final ModelRenderer body_r132;
+			private final ModelRenderer body_r133;
+			private final ModelRenderer body_r134;
+			private final ModelRenderer body_r135;
+			private final ModelRenderer spike16;
+			private final ModelRenderer body_r136;
+			private final ModelRenderer body_r137;
+			private final ModelRenderer body_r138;
+			private final ModelRenderer body_r139;
+			private final ModelRenderer spike17;
+			private final ModelRenderer body_r140;
+			private final ModelRenderer body_r141;
+			private final ModelRenderer body_r142;
+			private final ModelRenderer body_r143;
+			private final ModelRenderer body_r144;
+			private final ModelRenderer spike24;
+			private final ModelRenderer body_r145;
+			private final ModelRenderer body_r146;
+			private final ModelRenderer body_r147;
+			private final ModelRenderer body_r148;
+			private final ModelRenderer spike25;
+			private final ModelRenderer body_r149;
+			private final ModelRenderer body_r150;
+			private final ModelRenderer body_r151;
+			private final ModelRenderer body_r152;
+			private final ModelRenderer spike26;
+			private final ModelRenderer body_r153;
+			private final ModelRenderer body_r154;
+			private final ModelRenderer body_r155;
+			private final ModelRenderer body_r156;
+			private final ModelRenderer body_r157;
+			private final ModelRenderer spike4;
+			private final ModelRenderer body_r158;
+			private final ModelRenderer body_r159;
+			private final ModelRenderer body_r160;
+			private final ModelRenderer body_r161;
+			private final ModelRenderer spike6;
+			private final ModelRenderer body_r162;
+			private final ModelRenderer body_r163;
+			private final ModelRenderer body_r164;
+			private final ModelRenderer body_r165;
+			private final ModelRenderer spike8;
+			private final ModelRenderer body_r166;
+			private final ModelRenderer body_r167;
+			private final ModelRenderer body_r168;
+			private final ModelRenderer body_r169;
+			private final ModelRenderer body_r170;
+			private final ModelRenderer waist;
+			private final ModelRenderer body_r171;
+			private final ModelRenderer body_r172;
+			private final ModelRenderer body_r173;
+			//private final ModelRenderer bipedRightArm;
+			private final ModelRenderer rightArm;
+			private final ModelRenderer spike33;
+			private final ModelRenderer body_r174;
+			private final ModelRenderer body_r175;
+			private final ModelRenderer body_r176;
+			private final ModelRenderer body_r177;
+			private final ModelRenderer spike36;
+			private final ModelRenderer body_r178;
+			private final ModelRenderer body_r179;
+			private final ModelRenderer body_r180;
+			private final ModelRenderer body_r181;
+			private final ModelRenderer spike37;
+			private final ModelRenderer body_r182;
+			private final ModelRenderer body_r183;
+			private final ModelRenderer body_r184;
+			private final ModelRenderer body_r185;
+			private final ModelRenderer body_r186;
+			private final ModelRenderer right4rm;
+			private final ModelRenderer leftArm_r1;
+			private final ModelRenderer rightBlade;
+			private final ModelRenderer leftArm_r2;
+			private final ModelRenderer leftArm_r3;
+			private final ModelRenderer leftArm_r4;
+			private final ModelRenderer leftArm_r5;
+			private final ModelRenderer leftArm_r6;
+			private final ModelRenderer leftArm_r7;
+			private final ModelRenderer leftArm_r8;
+			private final ModelRenderer leftArm_r9;
+			private final ModelRenderer leftArm_r10;
+			private final ModelRenderer leftArm_r11;
+			private final ModelRenderer leftArm_r12;
+			private final ModelRenderer leftArm_r13;
+			private final ModelRenderer rightHammer;
+			private final ModelRenderer leftArm_r14;
+			//private final ModelRenderer bipedLeftArm;
+			private final ModelRenderer leftArm;
+			private final ModelRenderer spike2;
+			private final ModelRenderer body_r187;
+			private final ModelRenderer body_r188;
+			private final ModelRenderer body_r189;
+			private final ModelRenderer body_r190;
+			private final ModelRenderer spike34;
+			private final ModelRenderer body_r191;
+			private final ModelRenderer body_r192;
+			private final ModelRenderer body_r193;
+			private final ModelRenderer body_r194;
+			private final ModelRenderer spike35;
+			private final ModelRenderer body_r195;
+			private final ModelRenderer body_r196;
+			private final ModelRenderer body_r197;
+			private final ModelRenderer body_r198;
+			private final ModelRenderer body_r199;
+			private final ModelRenderer left4rm;
+			private final ModelRenderer rightArm_r1;
+			private final ModelRenderer leftBlade;
+			private final ModelRenderer rightArm_r2;
+			private final ModelRenderer rightArm_r3;
+			private final ModelRenderer rightArm_r4;
+			private final ModelRenderer rightArm_r5;
+			private final ModelRenderer rightArm_r6;
+			private final ModelRenderer rightArm_r7;
+			private final ModelRenderer rightArm_r8;
+			private final ModelRenderer rightArm_r9;
+			private final ModelRenderer rightArm_r10;
+			private final ModelRenderer rightArm_r11;
+			private final ModelRenderer rightArm_r12;
+			private final ModelRenderer rightArm_r13;
+			private final ModelRenderer leftHammer;
+			private final ModelRenderer rightArm_r14;
+			//private final ModelRenderer bipedRightLeg;
+			private final ModelRenderer rightThigh;
+			private final ModelRenderer rightLeg;
+			private final ModelRenderer rightLeg_r1;
+			private final ModelRenderer rightLeg_r2;
+			//private final ModelRenderer bipedLeftLeg;
+			private final ModelRenderer leftThigh;
+			private final ModelRenderer leftLeg;
+			private final ModelRenderer leftLeg_r1;
+			private final ModelRenderer leftLeg_r2;
+		
+			public ModelTenTailsSplit() {
+				textureWidth = 128;
+				textureHeight = 128;
+		
+				bipedHead = new ModelRenderer(this);
+				bipedHead.setRotationPoint(0.0F, -6.8F, -5.0F);
+				
+		
+				head = new ModelRenderer(this);
+				head.setRotationPoint(0.0F, 0.0F, 0.0F);
+				bipedHead.addChild(head);
+				setRotationAngle(head, 0.0873F, 0.0F, -0.0097F);
+				
+		
+				head_r1 = new ModelRenderer(this);
+				head_r1.setRotationPoint(-0.0097F, -2.1372F, -1.7749F);
+				head.addChild(head_r1);
+				setRotationAngle(head_r1, 0.5236F, 0.0F, 0.0F);
+				head_r1.cubeList.add(new ModelBox(head_r1, 61, 66, -5.0F, -2.5F, -3.5F, 10, 5, 7, 0.125F, false));
+		
+				head_r2 = new ModelRenderer(this);
+				head_r2.setRotationPoint(0.1903F, 30.0195F, -5.0822F);
+				head.addChild(head_r2);
+				setRotationAngle(head_r2, 0.0436F, 0.0F, 0.0F);
+				head_r2.cubeList.add(new ModelBox(head_r2, 0, 110, -5.2F, -40.7F, -3.6F, 10, 8, 10, 0.0F, false));
+		
+				jaw = new ModelRenderer(this);
+				jaw.setRotationPoint(0.1903F, -0.9805F, -5.0822F);
+				head.addChild(jaw);
+				setRotationAngle(jaw, 0.3054F, 0.0F, 0.0F);
+				
+		
+				head_r3 = new ModelRenderer(this);
+				head_r3.setRotationPoint(0.0F, 31.0F, 0.0F);
+				jaw.addChild(head_r3);
+				setRotationAngle(head_r3, 0.1309F, 0.0F, 0.0F);
+				head_r3.cubeList.add(new ModelBox(head_r3, 72, 11, -5.2F, -32.8F, -0.6F, 10, 4, 5, 0.1F, false));
+		
+				bipedHeadwear = new ModelRenderer(this);
+				bipedHeadwear.setRotationPoint(0.0F, -6.8F, -5.0F);
+				
+				horn1 = new ModelRenderer(this);
+				horn1.setRotationPoint(2.9903F, -5.9805F, -9.0822F);
+				bipedHeadwear.addChild(horn1);
+				setRotationAngle(horn1, 0.7453F, -0.0347F, 0.127F);
+				
+		
+				head_r4 = new ModelRenderer(this);
+				head_r4.setRotationPoint(-0.2283F, -3.5493F, 0.388F);
+				horn1.addChild(head_r4);
+				setRotationAngle(head_r4, 0.0F, -0.7854F, 0.0F);
+				head_r4.cubeList.add(new ModelBox(head_r4, 28, 61, -1.5F, -3.0F, -1.5F, 3, 6, 3, 0.0F, false));
+		
+				spike41 = new ModelRenderer(this);
+				spike41.setRotationPoint(-0.0403F, -5.9195F, 0.5822F);
+				horn1.addChild(spike41);
+				setRotationAngle(spike41, -1.212F, 0.7922F, -2.8273F);
+				
+		
+				body_r1 = new ModelRenderer(this);
+				body_r1.setRotationPoint(0.0F, -1.093F, 0.7473F);
+				spike41.addChild(body_r1);
+				setRotationAngle(body_r1, -0.1302F, 0.1718F, -0.0528F);
+				body_r1.cubeList.add(new ModelBox(body_r1, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, 0.0F, false));
+		
+				body_r2 = new ModelRenderer(this);
+				body_r2.setRotationPoint(0.5F, -1.093F, 0.7473F);
+				spike41.addChild(body_r2);
+				setRotationAngle(body_r2, -0.1294F, -0.1311F, -0.0134F);
+				body_r2.cubeList.add(new ModelBox(body_r2, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, 0.0F, false));
+		
+				body_r3 = new ModelRenderer(this);
+				body_r3.setRotationPoint(-0.1F, -0.293F, 0.7473F);
+				spike41.addChild(body_r3);
+				setRotationAngle(body_r3, 0.2185F, 0.1665F, 0.0677F);
+				body_r3.cubeList.add(new ModelBox(body_r3, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, 0.0F, false));
+		
+				body_r4 = new ModelRenderer(this);
+				body_r4.setRotationPoint(0.7F, -0.193F, 0.7473F);
+				spike41.addChild(body_r4);
+				setRotationAngle(body_r4, 0.2188F, -0.1744F, -0.0077F);
+				body_r4.cubeList.add(new ModelBox(body_r4, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, 0.0F, false));
+		
+				spike42 = new ModelRenderer(this);
+				spike42.setRotationPoint(0.2789F, -0.4551F, 2.6757F);
+				spike41.addChild(spike42);
+				setRotationAngle(spike42, 0.4136F, -0.0775F, -0.0884F);
+				
+		
+				body_r5 = new ModelRenderer(this);
+				body_r5.setRotationPoint(-0.4F, -0.9919F, -0.0215F);
+				spike42.addChild(body_r5);
+				setRotationAngle(body_r5, -0.1302F, 0.1718F, -0.0528F);
+				body_r5.cubeList.add(new ModelBox(body_r5, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.4F, false));
+		
+				body_r6 = new ModelRenderer(this);
+				body_r6.setRotationPoint(0.3F, -0.9919F, -0.0215F);
+				spike42.addChild(body_r6);
+				setRotationAngle(body_r6, -0.1302F, -0.1744F, -0.0077F);
+				body_r6.cubeList.add(new ModelBox(body_r6, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.4F, false));
+		
+				body_r7 = new ModelRenderer(this);
+				body_r7.setRotationPoint(-0.4F, -0.0919F, -0.0215F);
+				spike42.addChild(body_r7);
+				setRotationAngle(body_r7, 0.2185F, 0.1665F, 0.0677F);
+				body_r7.cubeList.add(new ModelBox(body_r7, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.4F, false));
+		
+				body_r8 = new ModelRenderer(this);
+				body_r8.setRotationPoint(0.3F, -0.0919F, -0.0215F);
+				spike42.addChild(body_r8);
+				setRotationAngle(body_r8, 0.2188F, -0.1744F, -0.0077F);
+				body_r8.cubeList.add(new ModelBox(body_r8, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.4F, false));
+		
+				spike43 = new ModelRenderer(this);
+				spike43.setRotationPoint(-0.1F, 0.0F, 1.6F);
+				spike42.addChild(spike43);
+				setRotationAngle(spike43, 0.4102F, -0.095F, -0.0483F);
+				
+		
+				body_r9 = new ModelRenderer(this);
+				body_r9.setRotationPoint(-0.2F, -0.8919F, -0.0215F);
+				spike43.addChild(body_r9);
+				setRotationAngle(body_r9, -0.1327F, 0.2583F, -0.0645F);
+				body_r9.cubeList.add(new ModelBox(body_r9, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.6F, false));
+		
+				body_r10 = new ModelRenderer(this);
+				body_r10.setRotationPoint(0.2F, -0.8919F, -0.0215F);
+				spike43.addChild(body_r10);
+				setRotationAngle(body_r10, -0.1314F, -0.2176F, -0.0019F);
+				body_r10.cubeList.add(new ModelBox(body_r10, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.6F, false));
+		
+				body_r11 = new ModelRenderer(this);
+				body_r11.setRotationPoint(0.0043F, -0.0543F, 0.6131F);
+				spike43.addChild(body_r11);
+				setRotationAngle(body_r11, 0.1809F, -0.1241F, 0.8093F);
+				body_r11.cubeList.add(new ModelBox(body_r11, 94, 122, -1.0F, -1.0F, -1.0F, 2, 2, 3, -0.8F, false));
+		
+				body_r12 = new ModelRenderer(this);
+				body_r12.setRotationPoint(-0.2F, -0.4919F, -0.0215F);
+				spike43.addChild(body_r12);
+				setRotationAngle(body_r12, 0.2226F, 0.2517F, 0.0872F);
+				body_r12.cubeList.add(new ModelBox(body_r12, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.6F, false));
+		
+				body_r13 = new ModelRenderer(this);
+				body_r13.setRotationPoint(0.2F, -0.4919F, -0.0215F);
+				spike43.addChild(body_r13);
+				setRotationAngle(body_r13, 0.2188F, -0.1744F, -0.0077F);
+				body_r13.cubeList.add(new ModelBox(body_r13, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.6F, false));
+		
+				horn2 = new ModelRenderer(this);
+				horn2.setRotationPoint(-2.9903F, -5.9805F, -9.0822F);
+				bipedHeadwear.addChild(horn2);
+				setRotationAngle(horn2, 0.7453F, 0.0347F, -0.127F);
+				
+		
+				head_r5 = new ModelRenderer(this);
+				head_r5.setRotationPoint(0.2283F, -3.5493F, 0.388F);
+				horn2.addChild(head_r5);
+				setRotationAngle(head_r5, 0.0F, 0.7854F, 0.0F);
+				head_r5.cubeList.add(new ModelBox(head_r5, 28, 61, -1.5F, -3.0F, -1.5F, 3, 6, 3, 0.0F, true));
+		
+				spike44 = new ModelRenderer(this);
+				spike44.setRotationPoint(0.0403F, -5.9195F, 0.5822F);
+				horn2.addChild(spike44);
+				setRotationAngle(spike44, -1.212F, -0.7922F, 2.8273F);
+				
+		
+				body_r14 = new ModelRenderer(this);
+				body_r14.setRotationPoint(0.0F, -1.093F, 0.7473F);
+				spike44.addChild(body_r14);
+				setRotationAngle(body_r14, -0.1302F, -0.1718F, 0.0528F);
+				body_r14.cubeList.add(new ModelBox(body_r14, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, 0.0F, true));
+		
+				body_r15 = new ModelRenderer(this);
+				body_r15.setRotationPoint(-0.5F, -1.093F, 0.7473F);
+				spike44.addChild(body_r15);
+				setRotationAngle(body_r15, -0.1294F, 0.1311F, 0.0134F);
+				body_r15.cubeList.add(new ModelBox(body_r15, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, 0.0F, true));
+		
+				body_r16 = new ModelRenderer(this);
+				body_r16.setRotationPoint(0.1F, -0.293F, 0.7473F);
+				spike44.addChild(body_r16);
+				setRotationAngle(body_r16, 0.2185F, -0.1665F, -0.0677F);
+				body_r16.cubeList.add(new ModelBox(body_r16, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, 0.0F, true));
+		
+				body_r17 = new ModelRenderer(this);
+				body_r17.setRotationPoint(-0.7F, -0.193F, 0.7473F);
+				spike44.addChild(body_r17);
+				setRotationAngle(body_r17, 0.2188F, 0.1744F, 0.0077F);
+				body_r17.cubeList.add(new ModelBox(body_r17, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, 0.0F, true));
+		
+				spike45 = new ModelRenderer(this);
+				spike45.setRotationPoint(-0.2789F, -0.4551F, 2.6757F);
+				spike44.addChild(spike45);
+				setRotationAngle(spike45, 0.4136F, 0.0775F, 0.0884F);
+				
+		
+				body_r18 = new ModelRenderer(this);
+				body_r18.setRotationPoint(0.4F, -0.9919F, -0.0215F);
+				spike45.addChild(body_r18);
+				setRotationAngle(body_r18, -0.1302F, -0.1718F, 0.0528F);
+				body_r18.cubeList.add(new ModelBox(body_r18, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.4F, true));
+		
+				body_r19 = new ModelRenderer(this);
+				body_r19.setRotationPoint(-0.3F, -0.9919F, -0.0215F);
+				spike45.addChild(body_r19);
+				setRotationAngle(body_r19, -0.1302F, 0.1744F, 0.0077F);
+				body_r19.cubeList.add(new ModelBox(body_r19, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.4F, true));
+		
+				body_r20 = new ModelRenderer(this);
+				body_r20.setRotationPoint(0.4F, -0.0919F, -0.0215F);
+				spike45.addChild(body_r20);
+				setRotationAngle(body_r20, 0.2185F, -0.1665F, -0.0677F);
+				body_r20.cubeList.add(new ModelBox(body_r20, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.4F, true));
+		
+				body_r21 = new ModelRenderer(this);
+				body_r21.setRotationPoint(-0.3F, -0.0919F, -0.0215F);
+				spike45.addChild(body_r21);
+				setRotationAngle(body_r21, 0.2188F, 0.1744F, 0.0077F);
+				body_r21.cubeList.add(new ModelBox(body_r21, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.4F, true));
+		
+				spike46 = new ModelRenderer(this);
+				spike46.setRotationPoint(0.1F, 0.0F, 1.6F);
+				spike45.addChild(spike46);
+				setRotationAngle(spike46, 0.4102F, 0.095F, 0.0483F);
+				
+		
+				body_r22 = new ModelRenderer(this);
+				body_r22.setRotationPoint(0.2F, -0.8919F, -0.0215F);
+				spike46.addChild(body_r22);
+				setRotationAngle(body_r22, -0.1327F, -0.2583F, 0.0645F);
+				body_r22.cubeList.add(new ModelBox(body_r22, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.6F, true));
+		
+				body_r23 = new ModelRenderer(this);
+				body_r23.setRotationPoint(-0.2F, -0.8919F, -0.0215F);
+				spike46.addChild(body_r23);
+				setRotationAngle(body_r23, -0.1314F, 0.2176F, 0.0019F);
+				body_r23.cubeList.add(new ModelBox(body_r23, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.6F, true));
+		
+				body_r24 = new ModelRenderer(this);
+				body_r24.setRotationPoint(-0.0043F, -0.0543F, 0.6131F);
+				spike46.addChild(body_r24);
+				setRotationAngle(body_r24, 0.1809F, 0.1241F, -0.8093F);
+				body_r24.cubeList.add(new ModelBox(body_r24, 94, 122, -1.0F, -1.0F, -1.0F, 2, 2, 3, -0.8F, true));
+		
+				body_r25 = new ModelRenderer(this);
+				body_r25.setRotationPoint(0.2F, -0.4919F, -0.0215F);
+				spike46.addChild(body_r25);
+				setRotationAngle(body_r25, 0.2226F, -0.2517F, -0.0872F);
+				body_r25.cubeList.add(new ModelBox(body_r25, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.6F, true));
+		
+				body_r26 = new ModelRenderer(this);
+				body_r26.setRotationPoint(-0.2F, -0.4919F, -0.0215F);
+				spike46.addChild(body_r26);
+				setRotationAngle(body_r26, 0.2188F, 0.1744F, 0.0077F);
+				body_r26.cubeList.add(new ModelBox(body_r26, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.6F, true));
+		
+				bipedBody = new ModelRenderer(this);
+				bipedBody.setRotationPoint(0.0F, -6.8F, -4.0F);
+				
+		
+				chest = new ModelRenderer(this);
+				chest.setRotationPoint(0.0F, 0.0F, 0.0F);
+				bipedBody.addChild(chest);
+				setRotationAngle(chest, 0.3054F, 0.0F, 0.0F);
+				
+		
+				body_r27 = new ModelRenderer(this);
+				body_r27.setRotationPoint(0.2F, 29.05F, 0.0F);
+				chest.addChild(body_r27);
+				setRotationAngle(body_r27, 0.0436F, 0.0F, 0.0F);
+				body_r27.cubeList.add(new ModelBox(body_r27, 36, 13, -7.2F, -32.4F, -3.4F, 14, 8, 8, 0.0F, false));
+		
+				backSpikes = new ModelRenderer(this);
+				backSpikes.setRotationPoint(0.2F, 28.8F, 0.0F);
+				chest.addChild(backSpikes);
+				
+		
+				spike3 = new ModelRenderer(this);
+				spike3.setRotationPoint(5.25F, -31.0F, 2.5F);
+				backSpikes.addChild(spike3);
+				setRotationAngle(spike3, 0.471F, 0.347F, 0.2527F);
+				
+		
+				body_r28 = new ModelRenderer(this);
+				body_r28.setRotationPoint(-0.2F, -1.093F, 0.7473F);
+				spike3.addChild(body_r28);
+				setRotationAngle(body_r28, -0.1302F, 0.1718F, -0.0528F);
+				body_r28.cubeList.add(new ModelBox(body_r28, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, 0.0F, false));
+		
+				body_r29 = new ModelRenderer(this);
+				body_r29.setRotationPoint(0.8F, -1.093F, 0.7473F);
+				spike3.addChild(body_r29);
+				setRotationAngle(body_r29, -0.1302F, -0.1744F, -0.0077F);
+				body_r29.cubeList.add(new ModelBox(body_r29, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, 0.0F, false));
+		
+				body_r30 = new ModelRenderer(this);
+				body_r30.setRotationPoint(-0.2F, -0.093F, 0.7473F);
+				spike3.addChild(body_r30);
+				setRotationAngle(body_r30, 0.2185F, 0.1665F, 0.0677F);
+				body_r30.cubeList.add(new ModelBox(body_r30, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, 0.0F, false));
+		
+				body_r31 = new ModelRenderer(this);
+				body_r31.setRotationPoint(0.8F, -0.093F, 0.7473F);
+				spike3.addChild(body_r31);
+				setRotationAngle(body_r31, 0.2188F, -0.1744F, -0.0077F);
+				body_r31.cubeList.add(new ModelBox(body_r31, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, 0.0F, false));
+		
+				spike5 = new ModelRenderer(this);
+				spike5.setRotationPoint(0.2789F, -0.4551F, 2.6757F);
+				spike3.addChild(spike5);
+				setRotationAngle(spike5, 0.4011F, -0.1294F, 0.0324F);
+				
+		
+				body_r32 = new ModelRenderer(this);
+				body_r32.setRotationPoint(-0.4F, -0.9919F, -0.0215F);
+				spike5.addChild(body_r32);
+				setRotationAngle(body_r32, -0.1302F, 0.1718F, -0.0528F);
+				body_r32.cubeList.add(new ModelBox(body_r32, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.4F, false));
+		
+				body_r33 = new ModelRenderer(this);
+				body_r33.setRotationPoint(0.3F, -0.9919F, -0.0215F);
+				spike5.addChild(body_r33);
+				setRotationAngle(body_r33, -0.1302F, -0.1744F, -0.0077F);
+				body_r33.cubeList.add(new ModelBox(body_r33, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.4F, false));
+		
+				body_r34 = new ModelRenderer(this);
+				body_r34.setRotationPoint(-0.4F, 0.0081F, -0.0215F);
+				spike5.addChild(body_r34);
+				setRotationAngle(body_r34, 0.2185F, 0.1665F, 0.0677F);
+				body_r34.cubeList.add(new ModelBox(body_r34, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.4F, false));
+		
+				body_r35 = new ModelRenderer(this);
+				body_r35.setRotationPoint(0.4F, 0.0081F, -0.0215F);
+				spike5.addChild(body_r35);
+				setRotationAngle(body_r35, 0.2188F, -0.1744F, -0.0077F);
+				body_r35.cubeList.add(new ModelBox(body_r35, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.4F, false));
+		
+				spike7 = new ModelRenderer(this);
+				spike7.setRotationPoint(-0.1F, 0.0F, 1.6F);
+				spike5.addChild(spike7);
+				setRotationAngle(spike7, 0.4102F, -0.095F, -0.0483F);
+				
+		
+				body_r36 = new ModelRenderer(this);
+				body_r36.setRotationPoint(-0.2F, -0.8919F, -0.0215F);
+				spike7.addChild(body_r36);
+				setRotationAngle(body_r36, -0.1327F, 0.2583F, -0.0645F);
+				body_r36.cubeList.add(new ModelBox(body_r36, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.6F, false));
+		
+				body_r37 = new ModelRenderer(this);
+				body_r37.setRotationPoint(0.2F, -0.8919F, -0.0215F);
+				spike7.addChild(body_r37);
+				setRotationAngle(body_r37, -0.1314F, -0.2176F, -0.0019F);
+				body_r37.cubeList.add(new ModelBox(body_r37, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.6F, false));
+		
+				body_r38 = new ModelRenderer(this);
+				body_r38.setRotationPoint(0.0043F, -0.0543F, 0.6131F);
+				spike7.addChild(body_r38);
+				setRotationAngle(body_r38, 0.1809F, -0.1241F, 0.8093F);
+				body_r38.cubeList.add(new ModelBox(body_r38, 94, 122, -1.0F, -1.0F, -1.0F, 2, 2, 3, -0.8F, false));
+		
+				body_r39 = new ModelRenderer(this);
+				body_r39.setRotationPoint(-0.2F, -0.4919F, -0.0215F);
+				spike7.addChild(body_r39);
+				setRotationAngle(body_r39, 0.2226F, 0.2517F, 0.0872F);
+				body_r39.cubeList.add(new ModelBox(body_r39, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.6F, false));
+		
+				body_r40 = new ModelRenderer(this);
+				body_r40.setRotationPoint(0.2F, -0.4919F, -0.0215F);
+				spike7.addChild(body_r40);
+				setRotationAngle(body_r40, 0.2188F, -0.1744F, -0.0077F);
+				body_r40.cubeList.add(new ModelBox(body_r40, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.6F, false));
+		
+				spike12 = new ModelRenderer(this);
+				spike12.setRotationPoint(2.25F, -32.0F, 2.5F);
+				backSpikes.addChild(spike12);
+				setRotationAngle(spike12, 0.7057F, 0.1119F, 0.1343F);
+				
+		
+				body_r41 = new ModelRenderer(this);
+				body_r41.setRotationPoint(-0.2F, -1.093F, 0.7473F);
+				spike12.addChild(body_r41);
+				setRotationAngle(body_r41, -0.1302F, 0.1718F, -0.0528F);
+				body_r41.cubeList.add(new ModelBox(body_r41, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, 0.0F, false));
+		
+				body_r42 = new ModelRenderer(this);
+				body_r42.setRotationPoint(0.8F, -1.093F, 0.7473F);
+				spike12.addChild(body_r42);
+				setRotationAngle(body_r42, -0.1302F, -0.1744F, -0.0077F);
+				body_r42.cubeList.add(new ModelBox(body_r42, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, 0.0F, false));
+		
+				body_r43 = new ModelRenderer(this);
+				body_r43.setRotationPoint(-0.2F, -0.093F, 0.7473F);
+				spike12.addChild(body_r43);
+				setRotationAngle(body_r43, 0.2185F, 0.1665F, 0.0677F);
+				body_r43.cubeList.add(new ModelBox(body_r43, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, 0.0F, false));
+		
+				body_r44 = new ModelRenderer(this);
+				body_r44.setRotationPoint(0.8F, -0.093F, 0.7473F);
+				spike12.addChild(body_r44);
+				setRotationAngle(body_r44, 0.2188F, -0.1744F, -0.0077F);
+				body_r44.cubeList.add(new ModelBox(body_r44, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, 0.0F, false));
+		
+				spike13 = new ModelRenderer(this);
+				spike13.setRotationPoint(0.2789F, -0.4551F, 2.6757F);
+				spike12.addChild(spike13);
+				setRotationAngle(spike13, 0.4011F, -0.1294F, 0.0324F);
+				
+		
+				body_r45 = new ModelRenderer(this);
+				body_r45.setRotationPoint(-0.4F, -0.9919F, -0.0215F);
+				spike13.addChild(body_r45);
+				setRotationAngle(body_r45, -0.1302F, 0.1718F, -0.0528F);
+				body_r45.cubeList.add(new ModelBox(body_r45, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.4F, false));
+		
+				body_r46 = new ModelRenderer(this);
+				body_r46.setRotationPoint(0.3F, -0.9919F, -0.0215F);
+				spike13.addChild(body_r46);
+				setRotationAngle(body_r46, -0.1302F, -0.1744F, -0.0077F);
+				body_r46.cubeList.add(new ModelBox(body_r46, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.4F, false));
+		
+				body_r47 = new ModelRenderer(this);
+				body_r47.setRotationPoint(-0.4F, 0.0081F, -0.0215F);
+				spike13.addChild(body_r47);
+				setRotationAngle(body_r47, 0.2185F, 0.1665F, 0.0677F);
+				body_r47.cubeList.add(new ModelBox(body_r47, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.4F, false));
+		
+				body_r48 = new ModelRenderer(this);
+				body_r48.setRotationPoint(0.4F, 0.0081F, -0.0215F);
+				spike13.addChild(body_r48);
+				setRotationAngle(body_r48, 0.2188F, -0.1744F, -0.0077F);
+				body_r48.cubeList.add(new ModelBox(body_r48, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.4F, false));
+		
+				spike14 = new ModelRenderer(this);
+				spike14.setRotationPoint(-0.1F, 0.0F, 1.6F);
+				spike13.addChild(spike14);
+				setRotationAngle(spike14, 0.4102F, -0.095F, -0.0483F);
+				
+		
+				body_r49 = new ModelRenderer(this);
+				body_r49.setRotationPoint(-0.2F, -0.8919F, -0.0215F);
+				spike14.addChild(body_r49);
+				setRotationAngle(body_r49, -0.1327F, 0.2583F, -0.0645F);
+				body_r49.cubeList.add(new ModelBox(body_r49, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.6F, false));
+		
+				body_r50 = new ModelRenderer(this);
+				body_r50.setRotationPoint(0.2F, -0.8919F, -0.0215F);
+				spike14.addChild(body_r50);
+				setRotationAngle(body_r50, -0.1314F, -0.2176F, -0.0019F);
+				body_r50.cubeList.add(new ModelBox(body_r50, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.6F, false));
+		
+				body_r51 = new ModelRenderer(this);
+				body_r51.setRotationPoint(0.0043F, -0.0543F, 0.6131F);
+				spike14.addChild(body_r51);
+				setRotationAngle(body_r51, 0.1809F, -0.1241F, 0.8093F);
+				body_r51.cubeList.add(new ModelBox(body_r51, 94, 122, -1.0F, -1.0F, -1.0F, 2, 2, 3, -0.8F, false));
+		
+				body_r52 = new ModelRenderer(this);
+				body_r52.setRotationPoint(-0.2F, -0.4919F, -0.0215F);
+				spike14.addChild(body_r52);
+				setRotationAngle(body_r52, 0.2226F, 0.2517F, 0.0872F);
+				body_r52.cubeList.add(new ModelBox(body_r52, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.6F, false));
+		
+				body_r53 = new ModelRenderer(this);
+				body_r53.setRotationPoint(0.2F, -0.4919F, -0.0215F);
+				spike14.addChild(body_r53);
+				setRotationAngle(body_r53, 0.2188F, -0.1744F, -0.0077F);
+				body_r53.cubeList.add(new ModelBox(body_r53, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.6F, false));
+		
+				spike27 = new ModelRenderer(this);
+				spike27.setRotationPoint(-0.5F, -28.5F, 3.0F);
+				backSpikes.addChild(spike27);
+				setRotationAngle(spike27, 0.3077F, 0.0119F, 0.0495F);
+				
+		
+				body_r54 = new ModelRenderer(this);
+				body_r54.setRotationPoint(-0.2F, -1.093F, 0.7473F);
+				spike27.addChild(body_r54);
+				setRotationAngle(body_r54, -0.1302F, 0.1718F, -0.0528F);
+				body_r54.cubeList.add(new ModelBox(body_r54, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, 0.0F, false));
+		
+				body_r55 = new ModelRenderer(this);
+				body_r55.setRotationPoint(0.8F, -1.093F, 0.7473F);
+				spike27.addChild(body_r55);
+				setRotationAngle(body_r55, -0.1302F, -0.1744F, -0.0077F);
+				body_r55.cubeList.add(new ModelBox(body_r55, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, 0.0F, false));
+		
+				body_r56 = new ModelRenderer(this);
+				body_r56.setRotationPoint(-0.2F, -0.093F, 0.7473F);
+				spike27.addChild(body_r56);
+				setRotationAngle(body_r56, 0.2185F, 0.1665F, 0.0677F);
+				body_r56.cubeList.add(new ModelBox(body_r56, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, 0.0F, false));
+		
+				body_r57 = new ModelRenderer(this);
+				body_r57.setRotationPoint(0.8F, -0.093F, 0.7473F);
+				spike27.addChild(body_r57);
+				setRotationAngle(body_r57, 0.2188F, -0.1744F, -0.0077F);
+				body_r57.cubeList.add(new ModelBox(body_r57, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, 0.0F, false));
+		
+				spike28 = new ModelRenderer(this);
+				spike28.setRotationPoint(0.2789F, -0.4551F, 2.6757F);
+				spike27.addChild(spike28);
+				setRotationAngle(spike28, 0.4011F, -0.1294F, 0.0324F);
+				
+		
+				body_r58 = new ModelRenderer(this);
+				body_r58.setRotationPoint(-0.4F, -0.9919F, -0.0215F);
+				spike28.addChild(body_r58);
+				setRotationAngle(body_r58, -0.1302F, 0.1718F, -0.0528F);
+				body_r58.cubeList.add(new ModelBox(body_r58, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.4F, false));
+		
+				body_r59 = new ModelRenderer(this);
+				body_r59.setRotationPoint(0.3F, -0.9919F, -0.0215F);
+				spike28.addChild(body_r59);
+				setRotationAngle(body_r59, -0.1302F, -0.1744F, -0.0077F);
+				body_r59.cubeList.add(new ModelBox(body_r59, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.4F, false));
+		
+				body_r60 = new ModelRenderer(this);
+				body_r60.setRotationPoint(-0.4F, 0.0081F, -0.0215F);
+				spike28.addChild(body_r60);
+				setRotationAngle(body_r60, 0.2185F, 0.1665F, 0.0677F);
+				body_r60.cubeList.add(new ModelBox(body_r60, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.4F, false));
+		
+				body_r61 = new ModelRenderer(this);
+				body_r61.setRotationPoint(0.4F, 0.0081F, -0.0215F);
+				spike28.addChild(body_r61);
+				setRotationAngle(body_r61, 0.2188F, -0.1744F, -0.0077F);
+				body_r61.cubeList.add(new ModelBox(body_r61, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.4F, false));
+		
+				spike29 = new ModelRenderer(this);
+				spike29.setRotationPoint(-0.1F, 0.0F, 1.6F);
+				spike28.addChild(spike29);
+				setRotationAngle(spike29, 0.4102F, -0.095F, -0.0483F);
+				
+		
+				body_r62 = new ModelRenderer(this);
+				body_r62.setRotationPoint(-0.2F, -0.8919F, -0.0215F);
+				spike29.addChild(body_r62);
+				setRotationAngle(body_r62, -0.1327F, 0.2583F, -0.0645F);
+				body_r62.cubeList.add(new ModelBox(body_r62, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.6F, false));
+		
+				body_r63 = new ModelRenderer(this);
+				body_r63.setRotationPoint(0.2F, -0.8919F, -0.0215F);
+				spike29.addChild(body_r63);
+				setRotationAngle(body_r63, -0.1314F, -0.2176F, -0.0019F);
+				body_r63.cubeList.add(new ModelBox(body_r63, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.6F, false));
+		
+				body_r64 = new ModelRenderer(this);
+				body_r64.setRotationPoint(0.0043F, -0.0543F, 0.6131F);
+				spike29.addChild(body_r64);
+				setRotationAngle(body_r64, 0.1809F, -0.1241F, 0.8093F);
+				body_r64.cubeList.add(new ModelBox(body_r64, 94, 122, -1.0F, -1.0F, -1.0F, 2, 2, 3, -0.8F, false));
+		
+				body_r65 = new ModelRenderer(this);
+				body_r65.setRotationPoint(-0.2F, -0.4919F, -0.0215F);
+				spike29.addChild(body_r65);
+				setRotationAngle(body_r65, 0.2226F, 0.2517F, 0.0872F);
+				body_r65.cubeList.add(new ModelBox(body_r65, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.6F, false));
+		
+				body_r66 = new ModelRenderer(this);
+				body_r66.setRotationPoint(0.2F, -0.4919F, -0.0215F);
+				spike29.addChild(body_r66);
+				setRotationAngle(body_r66, 0.2188F, -0.1744F, -0.0077F);
+				body_r66.cubeList.add(new ModelBox(body_r66, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.6F, false));
+		
+				spike30 = new ModelRenderer(this);
+				spike30.setRotationPoint(-0.5F, -23.5F, 5.0F);
+				backSpikes.addChild(spike30);
+				setRotationAngle(spike30, 0.2204F, 0.0119F, 0.0495F);
+				
+		
+				body_r67 = new ModelRenderer(this);
+				body_r67.setRotationPoint(-0.2F, -1.093F, 0.7473F);
+				spike30.addChild(body_r67);
+				setRotationAngle(body_r67, -0.1302F, 0.1718F, -0.0528F);
+				body_r67.cubeList.add(new ModelBox(body_r67, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, 0.0F, false));
+		
+				body_r68 = new ModelRenderer(this);
+				body_r68.setRotationPoint(0.8F, -1.093F, 0.7473F);
+				spike30.addChild(body_r68);
+				setRotationAngle(body_r68, -0.1302F, -0.1744F, -0.0077F);
+				body_r68.cubeList.add(new ModelBox(body_r68, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, 0.0F, false));
+		
+				body_r69 = new ModelRenderer(this);
+				body_r69.setRotationPoint(-0.2F, -0.093F, 0.7473F);
+				spike30.addChild(body_r69);
+				setRotationAngle(body_r69, 0.2185F, 0.1665F, 0.0677F);
+				body_r69.cubeList.add(new ModelBox(body_r69, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, 0.0F, false));
+		
+				body_r70 = new ModelRenderer(this);
+				body_r70.setRotationPoint(0.8F, -0.093F, 0.7473F);
+				spike30.addChild(body_r70);
+				setRotationAngle(body_r70, 0.2188F, -0.1744F, -0.0077F);
+				body_r70.cubeList.add(new ModelBox(body_r70, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, 0.0F, false));
+		
+				spike31 = new ModelRenderer(this);
+				spike31.setRotationPoint(0.2789F, -0.4551F, 2.6757F);
+				spike30.addChild(spike31);
+				setRotationAngle(spike31, 0.4011F, -0.1294F, 0.0324F);
+				
+		
+				body_r71 = new ModelRenderer(this);
+				body_r71.setRotationPoint(-0.4F, -0.9919F, -0.0215F);
+				spike31.addChild(body_r71);
+				setRotationAngle(body_r71, -0.1302F, 0.1718F, -0.0528F);
+				body_r71.cubeList.add(new ModelBox(body_r71, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.4F, false));
+		
+				body_r72 = new ModelRenderer(this);
+				body_r72.setRotationPoint(0.3F, -0.9919F, -0.0215F);
+				spike31.addChild(body_r72);
+				setRotationAngle(body_r72, -0.1302F, -0.1744F, -0.0077F);
+				body_r72.cubeList.add(new ModelBox(body_r72, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.4F, false));
+		
+				body_r73 = new ModelRenderer(this);
+				body_r73.setRotationPoint(-0.4F, 0.0081F, -0.0215F);
+				spike31.addChild(body_r73);
+				setRotationAngle(body_r73, 0.2185F, 0.1665F, 0.0677F);
+				body_r73.cubeList.add(new ModelBox(body_r73, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.4F, false));
+		
+				body_r74 = new ModelRenderer(this);
+				body_r74.setRotationPoint(0.4F, 0.0081F, -0.0215F);
+				spike31.addChild(body_r74);
+				setRotationAngle(body_r74, 0.2188F, -0.1744F, -0.0077F);
+				body_r74.cubeList.add(new ModelBox(body_r74, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.4F, false));
+		
+				spike32 = new ModelRenderer(this);
+				spike32.setRotationPoint(-0.1F, 0.0F, 1.6F);
+				spike31.addChild(spike32);
+				setRotationAngle(spike32, 0.4102F, -0.095F, -0.0483F);
+				
+		
+				body_r75 = new ModelRenderer(this);
+				body_r75.setRotationPoint(-0.2F, -0.8919F, -0.0215F);
+				spike32.addChild(body_r75);
+				setRotationAngle(body_r75, -0.1327F, 0.2583F, -0.0645F);
+				body_r75.cubeList.add(new ModelBox(body_r75, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.6F, false));
+		
+				body_r76 = new ModelRenderer(this);
+				body_r76.setRotationPoint(0.2F, -0.8919F, -0.0215F);
+				spike32.addChild(body_r76);
+				setRotationAngle(body_r76, -0.1314F, -0.2176F, -0.0019F);
+				body_r76.cubeList.add(new ModelBox(body_r76, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.6F, false));
+		
+				body_r77 = new ModelRenderer(this);
+				body_r77.setRotationPoint(0.0043F, -0.0543F, 0.6131F);
+				spike32.addChild(body_r77);
+				setRotationAngle(body_r77, 0.1809F, -0.1241F, 0.8093F);
+				body_r77.cubeList.add(new ModelBox(body_r77, 94, 122, -1.0F, -1.0F, -1.0F, 2, 2, 3, -0.8F, false));
+		
+				body_r78 = new ModelRenderer(this);
+				body_r78.setRotationPoint(-0.2F, -0.4919F, -0.0215F);
+				spike32.addChild(body_r78);
+				setRotationAngle(body_r78, 0.2226F, 0.2517F, 0.0872F);
+				body_r78.cubeList.add(new ModelBox(body_r78, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.6F, false));
+		
+				body_r79 = new ModelRenderer(this);
+				body_r79.setRotationPoint(0.2F, -0.4919F, -0.0215F);
+				spike32.addChild(body_r79);
+				setRotationAngle(body_r79, 0.2188F, -0.1744F, -0.0077F);
+				body_r79.cubeList.add(new ModelBox(body_r79, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.6F, false));
+		
+				spike38 = new ModelRenderer(this);
+				spike38.setRotationPoint(-0.5F, -16.5F, 5.5F);
+				backSpikes.addChild(spike38);
+				setRotationAngle(spike38, 0.0895F, 0.0119F, 0.0495F);
+				
+		
+				body_r80 = new ModelRenderer(this);
+				body_r80.setRotationPoint(-0.2F, -1.093F, 0.7473F);
+				spike38.addChild(body_r80);
+				setRotationAngle(body_r80, -0.1302F, 0.1718F, -0.0528F);
+				body_r80.cubeList.add(new ModelBox(body_r80, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, 0.0F, false));
+		
+				body_r81 = new ModelRenderer(this);
+				body_r81.setRotationPoint(0.8F, -1.093F, 0.7473F);
+				spike38.addChild(body_r81);
+				setRotationAngle(body_r81, -0.1302F, -0.1744F, -0.0077F);
+				body_r81.cubeList.add(new ModelBox(body_r81, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, 0.0F, false));
+		
+				body_r82 = new ModelRenderer(this);
+				body_r82.setRotationPoint(-0.2F, -0.093F, 0.7473F);
+				spike38.addChild(body_r82);
+				setRotationAngle(body_r82, 0.2185F, 0.1665F, 0.0677F);
+				body_r82.cubeList.add(new ModelBox(body_r82, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, 0.0F, false));
+		
+				body_r83 = new ModelRenderer(this);
+				body_r83.setRotationPoint(0.8F, -0.093F, 0.7473F);
+				spike38.addChild(body_r83);
+				setRotationAngle(body_r83, 0.2188F, -0.1744F, -0.0077F);
+				body_r83.cubeList.add(new ModelBox(body_r83, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, 0.0F, false));
+		
+				spike39 = new ModelRenderer(this);
+				spike39.setRotationPoint(0.2789F, -0.4551F, 2.6757F);
+				spike38.addChild(spike39);
+				setRotationAngle(spike39, 0.4011F, -0.1294F, 0.0324F);
+				
+		
+				body_r84 = new ModelRenderer(this);
+				body_r84.setRotationPoint(-0.4F, -0.9919F, -0.0215F);
+				spike39.addChild(body_r84);
+				setRotationAngle(body_r84, -0.1302F, 0.1718F, -0.0528F);
+				body_r84.cubeList.add(new ModelBox(body_r84, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.4F, false));
+		
+				body_r85 = new ModelRenderer(this);
+				body_r85.setRotationPoint(0.3F, -0.9919F, -0.0215F);
+				spike39.addChild(body_r85);
+				setRotationAngle(body_r85, -0.1302F, -0.1744F, -0.0077F);
+				body_r85.cubeList.add(new ModelBox(body_r85, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.4F, false));
+		
+				body_r86 = new ModelRenderer(this);
+				body_r86.setRotationPoint(-0.4F, 0.0081F, -0.0215F);
+				spike39.addChild(body_r86);
+				setRotationAngle(body_r86, 0.2185F, 0.1665F, 0.0677F);
+				body_r86.cubeList.add(new ModelBox(body_r86, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.4F, false));
+		
+				body_r87 = new ModelRenderer(this);
+				body_r87.setRotationPoint(0.4F, 0.0081F, -0.0215F);
+				spike39.addChild(body_r87);
+				setRotationAngle(body_r87, 0.2188F, -0.1744F, -0.0077F);
+				body_r87.cubeList.add(new ModelBox(body_r87, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.4F, false));
+		
+				spike40 = new ModelRenderer(this);
+				spike40.setRotationPoint(-0.1F, 0.0F, 1.6F);
+				spike39.addChild(spike40);
+				setRotationAngle(spike40, 0.4102F, -0.095F, -0.0483F);
+				
+		
+				body_r88 = new ModelRenderer(this);
+				body_r88.setRotationPoint(-0.2F, -0.8919F, -0.0215F);
+				spike40.addChild(body_r88);
+				setRotationAngle(body_r88, -0.1327F, 0.2583F, -0.0645F);
+				body_r88.cubeList.add(new ModelBox(body_r88, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.6F, false));
+		
+				body_r89 = new ModelRenderer(this);
+				body_r89.setRotationPoint(0.2F, -0.8919F, -0.0215F);
+				spike40.addChild(body_r89);
+				setRotationAngle(body_r89, -0.1314F, -0.2176F, -0.0019F);
+				body_r89.cubeList.add(new ModelBox(body_r89, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.6F, false));
+		
+				body_r90 = new ModelRenderer(this);
+				body_r90.setRotationPoint(0.0043F, -0.0543F, 0.6131F);
+				spike40.addChild(body_r90);
+				setRotationAngle(body_r90, 0.1809F, -0.1241F, 0.8093F);
+				body_r90.cubeList.add(new ModelBox(body_r90, 94, 122, -1.0F, -1.0F, -1.0F, 2, 2, 3, -0.8F, false));
+		
+				body_r91 = new ModelRenderer(this);
+				body_r91.setRotationPoint(-0.2F, -0.4919F, -0.0215F);
+				spike40.addChild(body_r91);
+				setRotationAngle(body_r91, 0.2226F, 0.2517F, 0.0872F);
+				body_r91.cubeList.add(new ModelBox(body_r91, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.6F, false));
+		
+				body_r92 = new ModelRenderer(this);
+				body_r92.setRotationPoint(0.2F, -0.4919F, -0.0215F);
+				spike40.addChild(body_r92);
+				setRotationAngle(body_r92, 0.2188F, -0.1744F, -0.0077F);
+				body_r92.cubeList.add(new ModelBox(body_r92, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.6F, false));
+		
+				spike18 = new ModelRenderer(this);
+				spike18.setRotationPoint(-2.65F, -32.0F, 2.5F);
+				backSpikes.addChild(spike18);
+				setRotationAngle(spike18, 0.7057F, -0.1119F, -0.1343F);
+				
+		
+				body_r93 = new ModelRenderer(this);
+				body_r93.setRotationPoint(0.2F, -1.093F, 0.7473F);
+				spike18.addChild(body_r93);
+				setRotationAngle(body_r93, -0.1302F, -0.1718F, 0.0528F);
+				body_r93.cubeList.add(new ModelBox(body_r93, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, 0.0F, true));
+		
+				body_r94 = new ModelRenderer(this);
+				body_r94.setRotationPoint(-0.8F, -1.093F, 0.7473F);
+				spike18.addChild(body_r94);
+				setRotationAngle(body_r94, -0.1302F, 0.1744F, 0.0077F);
+				body_r94.cubeList.add(new ModelBox(body_r94, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, 0.0F, true));
+		
+				body_r95 = new ModelRenderer(this);
+				body_r95.setRotationPoint(0.2F, -0.093F, 0.7473F);
+				spike18.addChild(body_r95);
+				setRotationAngle(body_r95, 0.2185F, -0.1665F, -0.0677F);
+				body_r95.cubeList.add(new ModelBox(body_r95, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, 0.0F, true));
+		
+				body_r96 = new ModelRenderer(this);
+				body_r96.setRotationPoint(-0.8F, -0.093F, 0.7473F);
+				spike18.addChild(body_r96);
+				setRotationAngle(body_r96, 0.2188F, 0.1744F, 0.0077F);
+				body_r96.cubeList.add(new ModelBox(body_r96, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, 0.0F, true));
+		
+				spike19 = new ModelRenderer(this);
+				spike19.setRotationPoint(-0.2789F, -0.4551F, 2.6757F);
+				spike18.addChild(spike19);
+				setRotationAngle(spike19, 0.4011F, 0.1294F, -0.0324F);
+				
+		
+				body_r97 = new ModelRenderer(this);
+				body_r97.setRotationPoint(0.4F, -0.9919F, -0.0215F);
+				spike19.addChild(body_r97);
+				setRotationAngle(body_r97, -0.1302F, -0.1718F, 0.0528F);
+				body_r97.cubeList.add(new ModelBox(body_r97, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.4F, true));
+		
+				body_r98 = new ModelRenderer(this);
+				body_r98.setRotationPoint(-0.3F, -0.9919F, -0.0215F);
+				spike19.addChild(body_r98);
+				setRotationAngle(body_r98, -0.1302F, 0.1744F, 0.0077F);
+				body_r98.cubeList.add(new ModelBox(body_r98, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.4F, true));
+		
+				body_r99 = new ModelRenderer(this);
+				body_r99.setRotationPoint(0.4F, 0.0081F, -0.0215F);
+				spike19.addChild(body_r99);
+				setRotationAngle(body_r99, 0.2185F, -0.1665F, -0.0677F);
+				body_r99.cubeList.add(new ModelBox(body_r99, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.4F, true));
+		
+				body_r100 = new ModelRenderer(this);
+				body_r100.setRotationPoint(-0.4F, 0.0081F, -0.0215F);
+				spike19.addChild(body_r100);
+				setRotationAngle(body_r100, 0.2188F, 0.1744F, 0.0077F);
+				body_r100.cubeList.add(new ModelBox(body_r100, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.4F, true));
+		
+				spike20 = new ModelRenderer(this);
+				spike20.setRotationPoint(0.1F, 0.0F, 1.6F);
+				spike19.addChild(spike20);
+				setRotationAngle(spike20, 0.4102F, 0.095F, 0.0483F);
+				
+		
+				body_r101 = new ModelRenderer(this);
+				body_r101.setRotationPoint(0.2F, -0.8919F, -0.0215F);
+				spike20.addChild(body_r101);
+				setRotationAngle(body_r101, -0.1327F, -0.2583F, 0.0645F);
+				body_r101.cubeList.add(new ModelBox(body_r101, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.6F, true));
+		
+				body_r102 = new ModelRenderer(this);
+				body_r102.setRotationPoint(-0.2F, -0.8919F, -0.0215F);
+				spike20.addChild(body_r102);
+				setRotationAngle(body_r102, -0.1314F, 0.2176F, 0.0019F);
+				body_r102.cubeList.add(new ModelBox(body_r102, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.6F, true));
+		
+				body_r103 = new ModelRenderer(this);
+				body_r103.setRotationPoint(-0.0043F, -0.0543F, 0.6131F);
+				spike20.addChild(body_r103);
+				setRotationAngle(body_r103, 0.1809F, 0.1241F, -0.8093F);
+				body_r103.cubeList.add(new ModelBox(body_r103, 94, 122, -1.0F, -1.0F, -1.0F, 2, 2, 3, -0.8F, true));
+		
+				body_r104 = new ModelRenderer(this);
+				body_r104.setRotationPoint(0.2F, -0.4919F, -0.0215F);
+				spike20.addChild(body_r104);
+				setRotationAngle(body_r104, 0.2226F, -0.2517F, -0.0872F);
+				body_r104.cubeList.add(new ModelBox(body_r104, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.6F, true));
+		
+				body_r105 = new ModelRenderer(this);
+				body_r105.setRotationPoint(-0.2F, -0.4919F, -0.0215F);
+				spike20.addChild(body_r105);
+				setRotationAngle(body_r105, 0.2188F, 0.1744F, 0.0077F);
+				body_r105.cubeList.add(new ModelBox(body_r105, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.6F, true));
+		
+				spike9 = new ModelRenderer(this);
+				spike9.setRotationPoint(4.25F, -26.0F, 4.0F);
+				backSpikes.addChild(spike9);
+				setRotationAngle(spike9, 0.2036F, 0.2616F, 0.234F);
+				
+		
+				body_r106 = new ModelRenderer(this);
+				body_r106.setRotationPoint(-0.2F, -1.093F, 0.7473F);
+				spike9.addChild(body_r106);
+				setRotationAngle(body_r106, -0.1302F, 0.1718F, -0.0528F);
+				body_r106.cubeList.add(new ModelBox(body_r106, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, 0.0F, false));
+		
+				body_r107 = new ModelRenderer(this);
+				body_r107.setRotationPoint(0.8F, -1.093F, 0.7473F);
+				spike9.addChild(body_r107);
+				setRotationAngle(body_r107, -0.1302F, -0.1744F, -0.0077F);
+				body_r107.cubeList.add(new ModelBox(body_r107, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, 0.0F, false));
+		
+				body_r108 = new ModelRenderer(this);
+				body_r108.setRotationPoint(-0.2F, -0.093F, 0.7473F);
+				spike9.addChild(body_r108);
+				setRotationAngle(body_r108, 0.2185F, 0.1665F, 0.0677F);
+				body_r108.cubeList.add(new ModelBox(body_r108, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, 0.0F, false));
+		
+				body_r109 = new ModelRenderer(this);
+				body_r109.setRotationPoint(0.8F, -0.093F, 0.7473F);
+				spike9.addChild(body_r109);
+				setRotationAngle(body_r109, 0.2188F, -0.1744F, -0.0077F);
+				body_r109.cubeList.add(new ModelBox(body_r109, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, 0.0F, false));
+		
+				spike10 = new ModelRenderer(this);
+				spike10.setRotationPoint(0.2789F, -0.4551F, 2.6757F);
+				spike9.addChild(spike10);
+				setRotationAngle(spike10, 0.4011F, -0.1294F, 0.0324F);
+				
+		
+				body_r110 = new ModelRenderer(this);
+				body_r110.setRotationPoint(-0.4F, -0.9919F, -0.0215F);
+				spike10.addChild(body_r110);
+				setRotationAngle(body_r110, -0.1302F, 0.1718F, -0.0528F);
+				body_r110.cubeList.add(new ModelBox(body_r110, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.4F, false));
+		
+				body_r111 = new ModelRenderer(this);
+				body_r111.setRotationPoint(0.3F, -0.9919F, -0.0215F);
+				spike10.addChild(body_r111);
+				setRotationAngle(body_r111, -0.1302F, -0.1744F, -0.0077F);
+				body_r111.cubeList.add(new ModelBox(body_r111, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.4F, false));
+		
+				body_r112 = new ModelRenderer(this);
+				body_r112.setRotationPoint(-0.4F, 0.0081F, -0.0215F);
+				spike10.addChild(body_r112);
+				setRotationAngle(body_r112, 0.2185F, 0.1665F, 0.0677F);
+				body_r112.cubeList.add(new ModelBox(body_r112, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.4F, false));
+		
+				body_r113 = new ModelRenderer(this);
+				body_r113.setRotationPoint(0.4F, 0.0081F, -0.0215F);
+				spike10.addChild(body_r113);
+				setRotationAngle(body_r113, 0.2188F, -0.1744F, -0.0077F);
+				body_r113.cubeList.add(new ModelBox(body_r113, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.4F, false));
+		
+				spike11 = new ModelRenderer(this);
+				spike11.setRotationPoint(-0.1F, 0.0F, 1.6F);
+				spike10.addChild(spike11);
+				setRotationAngle(spike11, 0.4102F, -0.095F, -0.0483F);
+				
+		
+				body_r114 = new ModelRenderer(this);
+				body_r114.setRotationPoint(-0.2F, -0.8919F, -0.0215F);
+				spike11.addChild(body_r114);
+				setRotationAngle(body_r114, -0.1327F, 0.2583F, -0.0645F);
+				body_r114.cubeList.add(new ModelBox(body_r114, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.6F, false));
+		
+				body_r115 = new ModelRenderer(this);
+				body_r115.setRotationPoint(0.2F, -0.8919F, -0.0215F);
+				spike11.addChild(body_r115);
+				setRotationAngle(body_r115, -0.1314F, -0.2176F, -0.0019F);
+				body_r115.cubeList.add(new ModelBox(body_r115, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.6F, false));
+		
+				body_r116 = new ModelRenderer(this);
+				body_r116.setRotationPoint(0.0043F, -0.0543F, 0.6131F);
+				spike11.addChild(body_r116);
+				setRotationAngle(body_r116, 0.1809F, -0.1241F, 0.8093F);
+				body_r116.cubeList.add(new ModelBox(body_r116, 94, 122, -1.0F, -1.0F, -1.0F, 2, 2, 3, -0.8F, false));
+		
+				body_r117 = new ModelRenderer(this);
+				body_r117.setRotationPoint(-0.2F, -0.4919F, -0.0215F);
+				spike11.addChild(body_r117);
+				setRotationAngle(body_r117, 0.2226F, 0.2517F, 0.0872F);
+				body_r117.cubeList.add(new ModelBox(body_r117, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.6F, false));
+		
+				body_r118 = new ModelRenderer(this);
+				body_r118.setRotationPoint(0.2F, -0.4919F, -0.0215F);
+				spike11.addChild(body_r118);
+				setRotationAngle(body_r118, 0.2188F, -0.1744F, -0.0077F);
+				body_r118.cubeList.add(new ModelBox(body_r118, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.6F, false));
+		
+				spike21 = new ModelRenderer(this);
+				spike21.setRotationPoint(-4.65F, -26.0F, 4.0F);
+				backSpikes.addChild(spike21);
+				setRotationAngle(spike21, 0.2036F, -0.2616F, -0.234F);
+				
+		
+				body_r119 = new ModelRenderer(this);
+				body_r119.setRotationPoint(0.2F, -1.093F, 0.7473F);
+				spike21.addChild(body_r119);
+				setRotationAngle(body_r119, -0.1302F, -0.1718F, 0.0528F);
+				body_r119.cubeList.add(new ModelBox(body_r119, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, 0.0F, true));
+		
+				body_r120 = new ModelRenderer(this);
+				body_r120.setRotationPoint(-0.8F, -1.093F, 0.7473F);
+				spike21.addChild(body_r120);
+				setRotationAngle(body_r120, -0.1302F, 0.1744F, 0.0077F);
+				body_r120.cubeList.add(new ModelBox(body_r120, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, 0.0F, true));
+		
+				body_r121 = new ModelRenderer(this);
+				body_r121.setRotationPoint(0.2F, -0.093F, 0.7473F);
+				spike21.addChild(body_r121);
+				setRotationAngle(body_r121, 0.2185F, -0.1665F, -0.0677F);
+				body_r121.cubeList.add(new ModelBox(body_r121, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, 0.0F, true));
+		
+				body_r122 = new ModelRenderer(this);
+				body_r122.setRotationPoint(-0.8F, -0.093F, 0.7473F);
+				spike21.addChild(body_r122);
+				setRotationAngle(body_r122, 0.2188F, 0.1744F, 0.0077F);
+				body_r122.cubeList.add(new ModelBox(body_r122, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, 0.0F, true));
+		
+				spike22 = new ModelRenderer(this);
+				spike22.setRotationPoint(-0.2789F, -0.4551F, 2.6757F);
+				spike21.addChild(spike22);
+				setRotationAngle(spike22, 0.4011F, 0.1294F, -0.0324F);
+				
+		
+				body_r123 = new ModelRenderer(this);
+				body_r123.setRotationPoint(0.4F, -0.9919F, -0.0215F);
+				spike22.addChild(body_r123);
+				setRotationAngle(body_r123, -0.1302F, -0.1718F, 0.0528F);
+				body_r123.cubeList.add(new ModelBox(body_r123, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.4F, true));
+		
+				body_r124 = new ModelRenderer(this);
+				body_r124.setRotationPoint(-0.3F, -0.9919F, -0.0215F);
+				spike22.addChild(body_r124);
+				setRotationAngle(body_r124, -0.1302F, 0.1744F, 0.0077F);
+				body_r124.cubeList.add(new ModelBox(body_r124, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.4F, true));
+		
+				body_r125 = new ModelRenderer(this);
+				body_r125.setRotationPoint(0.4F, 0.0081F, -0.0215F);
+				spike22.addChild(body_r125);
+				setRotationAngle(body_r125, 0.2185F, -0.1665F, -0.0677F);
+				body_r125.cubeList.add(new ModelBox(body_r125, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.4F, true));
+		
+				body_r126 = new ModelRenderer(this);
+				body_r126.setRotationPoint(-0.4F, 0.0081F, -0.0215F);
+				spike22.addChild(body_r126);
+				setRotationAngle(body_r126, 0.2188F, 0.1744F, 0.0077F);
+				body_r126.cubeList.add(new ModelBox(body_r126, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.4F, true));
+		
+				spike23 = new ModelRenderer(this);
+				spike23.setRotationPoint(0.1F, 0.0F, 1.6F);
+				spike22.addChild(spike23);
+				setRotationAngle(spike23, 0.4102F, 0.095F, 0.0483F);
+				
+		
+				body_r127 = new ModelRenderer(this);
+				body_r127.setRotationPoint(0.2F, -0.8919F, -0.0215F);
+				spike23.addChild(body_r127);
+				setRotationAngle(body_r127, -0.1327F, -0.2583F, 0.0645F);
+				body_r127.cubeList.add(new ModelBox(body_r127, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.6F, true));
+		
+				body_r128 = new ModelRenderer(this);
+				body_r128.setRotationPoint(-0.2F, -0.8919F, -0.0215F);
+				spike23.addChild(body_r128);
+				setRotationAngle(body_r128, -0.1314F, 0.2176F, 0.0019F);
+				body_r128.cubeList.add(new ModelBox(body_r128, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.6F, true));
+		
+				body_r129 = new ModelRenderer(this);
+				body_r129.setRotationPoint(-0.0043F, -0.0543F, 0.6131F);
+				spike23.addChild(body_r129);
+				setRotationAngle(body_r129, 0.1809F, 0.1241F, -0.8093F);
+				body_r129.cubeList.add(new ModelBox(body_r129, 94, 122, -1.0F, -1.0F, -1.0F, 2, 2, 3, -0.8F, true));
+		
+				body_r130 = new ModelRenderer(this);
+				body_r130.setRotationPoint(0.2F, -0.4919F, -0.0215F);
+				spike23.addChild(body_r130);
+				setRotationAngle(body_r130, 0.2226F, -0.2517F, -0.0872F);
+				body_r130.cubeList.add(new ModelBox(body_r130, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.6F, true));
+		
+				body_r131 = new ModelRenderer(this);
+				body_r131.setRotationPoint(-0.2F, -0.4919F, -0.0215F);
+				spike23.addChild(body_r131);
+				setRotationAngle(body_r131, 0.2188F, 0.1744F, 0.0077F);
+				body_r131.cubeList.add(new ModelBox(body_r131, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.6F, true));
+		
+				spike15 = new ModelRenderer(this);
+				spike15.setRotationPoint(2.25F, -21.0F, 5.5F);
+				backSpikes.addChild(spike15);
+				setRotationAngle(spike15, -0.0526F, 0.347F, 0.2527F);
+				
+		
+				body_r132 = new ModelRenderer(this);
+				body_r132.setRotationPoint(-0.2F, -1.093F, 0.7473F);
+				spike15.addChild(body_r132);
+				setRotationAngle(body_r132, -0.1302F, 0.1718F, -0.0528F);
+				body_r132.cubeList.add(new ModelBox(body_r132, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, 0.0F, false));
+		
+				body_r133 = new ModelRenderer(this);
+				body_r133.setRotationPoint(0.8F, -1.093F, 0.7473F);
+				spike15.addChild(body_r133);
+				setRotationAngle(body_r133, -0.1302F, -0.1744F, -0.0077F);
+				body_r133.cubeList.add(new ModelBox(body_r133, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, 0.0F, false));
+		
+				body_r134 = new ModelRenderer(this);
+				body_r134.setRotationPoint(-0.2F, -0.093F, 0.7473F);
+				spike15.addChild(body_r134);
+				setRotationAngle(body_r134, 0.2185F, 0.1665F, 0.0677F);
+				body_r134.cubeList.add(new ModelBox(body_r134, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, 0.0F, false));
+		
+				body_r135 = new ModelRenderer(this);
+				body_r135.setRotationPoint(0.8F, -0.093F, 0.7473F);
+				spike15.addChild(body_r135);
+				setRotationAngle(body_r135, 0.2188F, -0.1744F, -0.0077F);
+				body_r135.cubeList.add(new ModelBox(body_r135, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, 0.0F, false));
+		
+				spike16 = new ModelRenderer(this);
+				spike16.setRotationPoint(0.2789F, -0.4551F, 2.6757F);
+				spike15.addChild(spike16);
+				setRotationAngle(spike16, 0.4011F, -0.1294F, 0.0324F);
+				
+		
+				body_r136 = new ModelRenderer(this);
+				body_r136.setRotationPoint(-0.4F, -0.9919F, -0.0215F);
+				spike16.addChild(body_r136);
+				setRotationAngle(body_r136, -0.1302F, 0.1718F, -0.0528F);
+				body_r136.cubeList.add(new ModelBox(body_r136, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.4F, false));
+		
+				body_r137 = new ModelRenderer(this);
+				body_r137.setRotationPoint(0.3F, -0.9919F, -0.0215F);
+				spike16.addChild(body_r137);
+				setRotationAngle(body_r137, -0.1302F, -0.1744F, -0.0077F);
+				body_r137.cubeList.add(new ModelBox(body_r137, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.4F, false));
+		
+				body_r138 = new ModelRenderer(this);
+				body_r138.setRotationPoint(-0.4F, 0.0081F, -0.0215F);
+				spike16.addChild(body_r138);
+				setRotationAngle(body_r138, 0.2185F, 0.1665F, 0.0677F);
+				body_r138.cubeList.add(new ModelBox(body_r138, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.4F, false));
+		
+				body_r139 = new ModelRenderer(this);
+				body_r139.setRotationPoint(0.4F, 0.0081F, -0.0215F);
+				spike16.addChild(body_r139);
+				setRotationAngle(body_r139, 0.2188F, -0.1744F, -0.0077F);
+				body_r139.cubeList.add(new ModelBox(body_r139, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.4F, false));
+		
+				spike17 = new ModelRenderer(this);
+				spike17.setRotationPoint(-0.1F, 0.0F, 1.6F);
+				spike16.addChild(spike17);
+				setRotationAngle(spike17, 0.4102F, -0.095F, -0.0483F);
+				
+		
+				body_r140 = new ModelRenderer(this);
+				body_r140.setRotationPoint(-0.2F, -0.8919F, -0.0215F);
+				spike17.addChild(body_r140);
+				setRotationAngle(body_r140, -0.1327F, 0.2583F, -0.0645F);
+				body_r140.cubeList.add(new ModelBox(body_r140, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.6F, false));
+		
+				body_r141 = new ModelRenderer(this);
+				body_r141.setRotationPoint(0.2F, -0.8919F, -0.0215F);
+				spike17.addChild(body_r141);
+				setRotationAngle(body_r141, -0.1314F, -0.2176F, -0.0019F);
+				body_r141.cubeList.add(new ModelBox(body_r141, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.6F, false));
+		
+				body_r142 = new ModelRenderer(this);
+				body_r142.setRotationPoint(0.0043F, -0.0543F, 0.6131F);
+				spike17.addChild(body_r142);
+				setRotationAngle(body_r142, 0.1809F, -0.1241F, 0.8093F);
+				body_r142.cubeList.add(new ModelBox(body_r142, 94, 122, -1.0F, -1.0F, -1.0F, 2, 2, 3, -0.8F, false));
+		
+				body_r143 = new ModelRenderer(this);
+				body_r143.setRotationPoint(-0.2F, -0.4919F, -0.0215F);
+				spike17.addChild(body_r143);
+				setRotationAngle(body_r143, 0.2226F, 0.2517F, 0.0872F);
+				body_r143.cubeList.add(new ModelBox(body_r143, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.6F, false));
+		
+				body_r144 = new ModelRenderer(this);
+				body_r144.setRotationPoint(0.2F, -0.4919F, -0.0215F);
+				spike17.addChild(body_r144);
+				setRotationAngle(body_r144, 0.2188F, -0.1744F, -0.0077F);
+				body_r144.cubeList.add(new ModelBox(body_r144, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.6F, false));
+		
+				spike24 = new ModelRenderer(this);
+				spike24.setRotationPoint(-2.65F, -21.0F, 5.5F);
+				backSpikes.addChild(spike24);
+				setRotationAngle(spike24, -0.0526F, -0.347F, -0.2527F);
+				
+		
+				body_r145 = new ModelRenderer(this);
+				body_r145.setRotationPoint(0.2F, -1.093F, 0.7473F);
+				spike24.addChild(body_r145);
+				setRotationAngle(body_r145, -0.1302F, -0.1718F, 0.0528F);
+				body_r145.cubeList.add(new ModelBox(body_r145, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, 0.0F, true));
+		
+				body_r146 = new ModelRenderer(this);
+				body_r146.setRotationPoint(-0.8F, -1.093F, 0.7473F);
+				spike24.addChild(body_r146);
+				setRotationAngle(body_r146, -0.1302F, 0.1744F, 0.0077F);
+				body_r146.cubeList.add(new ModelBox(body_r146, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, 0.0F, true));
+		
+				body_r147 = new ModelRenderer(this);
+				body_r147.setRotationPoint(0.2F, -0.093F, 0.7473F);
+				spike24.addChild(body_r147);
+				setRotationAngle(body_r147, 0.2185F, -0.1665F, -0.0677F);
+				body_r147.cubeList.add(new ModelBox(body_r147, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, 0.0F, true));
+		
+				body_r148 = new ModelRenderer(this);
+				body_r148.setRotationPoint(-0.8F, -0.093F, 0.7473F);
+				spike24.addChild(body_r148);
+				setRotationAngle(body_r148, 0.2188F, 0.1744F, 0.0077F);
+				body_r148.cubeList.add(new ModelBox(body_r148, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, 0.0F, true));
+		
+				spike25 = new ModelRenderer(this);
+				spike25.setRotationPoint(-0.2789F, -0.4551F, 2.6757F);
+				spike24.addChild(spike25);
+				setRotationAngle(spike25, 0.4011F, 0.1294F, -0.0324F);
+				
+		
+				body_r149 = new ModelRenderer(this);
+				body_r149.setRotationPoint(0.4F, -0.9919F, -0.0215F);
+				spike25.addChild(body_r149);
+				setRotationAngle(body_r149, -0.1302F, -0.1718F, 0.0528F);
+				body_r149.cubeList.add(new ModelBox(body_r149, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.4F, true));
+		
+				body_r150 = new ModelRenderer(this);
+				body_r150.setRotationPoint(-0.3F, -0.9919F, -0.0215F);
+				spike25.addChild(body_r150);
+				setRotationAngle(body_r150, -0.1302F, 0.1744F, 0.0077F);
+				body_r150.cubeList.add(new ModelBox(body_r150, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.4F, true));
+		
+				body_r151 = new ModelRenderer(this);
+				body_r151.setRotationPoint(0.4F, 0.0081F, -0.0215F);
+				spike25.addChild(body_r151);
+				setRotationAngle(body_r151, 0.2185F, -0.1665F, -0.0677F);
+				body_r151.cubeList.add(new ModelBox(body_r151, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.4F, true));
+		
+				body_r152 = new ModelRenderer(this);
+				body_r152.setRotationPoint(-0.4F, 0.0081F, -0.0215F);
+				spike25.addChild(body_r152);
+				setRotationAngle(body_r152, 0.2188F, 0.1744F, 0.0077F);
+				body_r152.cubeList.add(new ModelBox(body_r152, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.4F, true));
+		
+				spike26 = new ModelRenderer(this);
+				spike26.setRotationPoint(0.1F, 0.0F, 1.6F);
+				spike25.addChild(spike26);
+				setRotationAngle(spike26, 0.4102F, 0.095F, 0.0483F);
+				
+		
+				body_r153 = new ModelRenderer(this);
+				body_r153.setRotationPoint(0.2F, -0.8919F, -0.0215F);
+				spike26.addChild(body_r153);
+				setRotationAngle(body_r153, -0.1327F, -0.2583F, 0.0645F);
+				body_r153.cubeList.add(new ModelBox(body_r153, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.6F, true));
+		
+				body_r154 = new ModelRenderer(this);
+				body_r154.setRotationPoint(-0.2F, -0.8919F, -0.0215F);
+				spike26.addChild(body_r154);
+				setRotationAngle(body_r154, -0.1314F, 0.2176F, 0.0019F);
+				body_r154.cubeList.add(new ModelBox(body_r154, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.6F, true));
+		
+				body_r155 = new ModelRenderer(this);
+				body_r155.setRotationPoint(-0.0043F, -0.0543F, 0.6131F);
+				spike26.addChild(body_r155);
+				setRotationAngle(body_r155, 0.1809F, 0.1241F, -0.8093F);
+				body_r155.cubeList.add(new ModelBox(body_r155, 94, 122, -1.0F, -1.0F, -1.0F, 2, 2, 3, -0.8F, true));
+		
+				body_r156 = new ModelRenderer(this);
+				body_r156.setRotationPoint(0.2F, -0.4919F, -0.0215F);
+				spike26.addChild(body_r156);
+				setRotationAngle(body_r156, 0.2226F, -0.2517F, -0.0872F);
+				body_r156.cubeList.add(new ModelBox(body_r156, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.6F, true));
+		
+				body_r157 = new ModelRenderer(this);
+				body_r157.setRotationPoint(-0.2F, -0.4919F, -0.0215F);
+				spike26.addChild(body_r157);
+				setRotationAngle(body_r157, 0.2188F, 0.1744F, 0.0077F);
+				body_r157.cubeList.add(new ModelBox(body_r157, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.6F, true));
+		
+				spike4 = new ModelRenderer(this);
+				spike4.setRotationPoint(-5.65F, -31.0F, 2.5F);
+				backSpikes.addChild(spike4);
+				setRotationAngle(spike4, 0.471F, -0.347F, -0.2527F);
+				
+		
+				body_r158 = new ModelRenderer(this);
+				body_r158.setRotationPoint(0.2F, -1.093F, 0.7473F);
+				spike4.addChild(body_r158);
+				setRotationAngle(body_r158, -0.1302F, -0.1718F, 0.0528F);
+				body_r158.cubeList.add(new ModelBox(body_r158, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, 0.0F, true));
+		
+				body_r159 = new ModelRenderer(this);
+				body_r159.setRotationPoint(-0.8F, -1.093F, 0.7473F);
+				spike4.addChild(body_r159);
+				setRotationAngle(body_r159, -0.1302F, 0.1744F, 0.0077F);
+				body_r159.cubeList.add(new ModelBox(body_r159, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, 0.0F, true));
+		
+				body_r160 = new ModelRenderer(this);
+				body_r160.setRotationPoint(0.2F, -0.093F, 0.7473F);
+				spike4.addChild(body_r160);
+				setRotationAngle(body_r160, 0.2185F, -0.1665F, -0.0677F);
+				body_r160.cubeList.add(new ModelBox(body_r160, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, 0.0F, true));
+		
+				body_r161 = new ModelRenderer(this);
+				body_r161.setRotationPoint(-0.8F, -0.093F, 0.7473F);
+				spike4.addChild(body_r161);
+				setRotationAngle(body_r161, 0.2188F, 0.1744F, 0.0077F);
+				body_r161.cubeList.add(new ModelBox(body_r161, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, 0.0F, true));
+		
+				spike6 = new ModelRenderer(this);
+				spike6.setRotationPoint(-0.2789F, -0.4551F, 2.6757F);
+				spike4.addChild(spike6);
+				setRotationAngle(spike6, 0.4011F, 0.1294F, -0.0324F);
+				
+		
+				body_r162 = new ModelRenderer(this);
+				body_r162.setRotationPoint(0.4F, -0.9919F, -0.0215F);
+				spike6.addChild(body_r162);
+				setRotationAngle(body_r162, -0.1302F, -0.1718F, 0.0528F);
+				body_r162.cubeList.add(new ModelBox(body_r162, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.4F, true));
+		
+				body_r163 = new ModelRenderer(this);
+				body_r163.setRotationPoint(-0.3F, -0.9919F, -0.0215F);
+				spike6.addChild(body_r163);
+				setRotationAngle(body_r163, -0.1302F, 0.1744F, 0.0077F);
+				body_r163.cubeList.add(new ModelBox(body_r163, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.4F, true));
+		
+				body_r164 = new ModelRenderer(this);
+				body_r164.setRotationPoint(0.4F, 0.0081F, -0.0215F);
+				spike6.addChild(body_r164);
+				setRotationAngle(body_r164, 0.2185F, -0.1665F, -0.0677F);
+				body_r164.cubeList.add(new ModelBox(body_r164, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.4F, true));
+		
+				body_r165 = new ModelRenderer(this);
+				body_r165.setRotationPoint(-0.4F, 0.0081F, -0.0215F);
+				spike6.addChild(body_r165);
+				setRotationAngle(body_r165, 0.2188F, 0.1744F, 0.0077F);
+				body_r165.cubeList.add(new ModelBox(body_r165, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.4F, true));
+		
+				spike8 = new ModelRenderer(this);
+				spike8.setRotationPoint(0.1F, 0.0F, 1.6F);
+				spike6.addChild(spike8);
+				setRotationAngle(spike8, 0.4102F, 0.095F, 0.0483F);
+				
+		
+				body_r166 = new ModelRenderer(this);
+				body_r166.setRotationPoint(0.2F, -0.8919F, -0.0215F);
+				spike8.addChild(body_r166);
+				setRotationAngle(body_r166, -0.1327F, -0.2583F, 0.0645F);
+				body_r166.cubeList.add(new ModelBox(body_r166, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.6F, true));
+		
+				body_r167 = new ModelRenderer(this);
+				body_r167.setRotationPoint(-0.2F, -0.8919F, -0.0215F);
+				spike8.addChild(body_r167);
+				setRotationAngle(body_r167, -0.1314F, 0.2176F, 0.0019F);
+				body_r167.cubeList.add(new ModelBox(body_r167, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.6F, true));
+		
+				body_r168 = new ModelRenderer(this);
+				body_r168.setRotationPoint(-0.0043F, -0.0543F, 0.6131F);
+				spike8.addChild(body_r168);
+				setRotationAngle(body_r168, 0.1809F, 0.1241F, -0.8093F);
+				body_r168.cubeList.add(new ModelBox(body_r168, 94, 122, -1.0F, -1.0F, -1.0F, 2, 2, 3, -0.8F, true));
+		
+				body_r169 = new ModelRenderer(this);
+				body_r169.setRotationPoint(0.2F, -0.4919F, -0.0215F);
+				spike8.addChild(body_r169);
+				setRotationAngle(body_r169, 0.2226F, -0.2517F, -0.0872F);
+				body_r169.cubeList.add(new ModelBox(body_r169, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.6F, true));
+		
+				body_r170 = new ModelRenderer(this);
+				body_r170.setRotationPoint(-0.2F, -0.4919F, -0.0215F);
+				spike8.addChild(body_r170);
+				setRotationAngle(body_r170, 0.2188F, 0.1744F, 0.0077F);
+				body_r170.cubeList.add(new ModelBox(body_r170, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.6F, true));
+		
+				waist = new ModelRenderer(this);
+				waist.setRotationPoint(0.2F, 28.8F, 0.0F);
+				chest.addChild(waist);
+				
+		
+				body_r171 = new ModelRenderer(this);
+				body_r171.setRotationPoint(0.0F, 1.0F, -2.0F);
+				waist.addChild(body_r171);
+				setRotationAngle(body_r171, 0.0175F, 0.0F, 0.0F);
+				body_r171.cubeList.add(new ModelBox(body_r171, 9, 30, -6.2F, -23.4F, -4.6F, 12, 11, 1, 0.5F, false));
+		
+				body_r172 = new ModelRenderer(this);
+				body_r172.setRotationPoint(0.0F, 0.0F, 0.0F);
+				waist.addChild(body_r172);
+				setRotationAngle(body_r172, -0.0175F, 0.0F, 0.0F);
+				body_r172.cubeList.add(new ModelBox(body_r172, 9, 30, -6.2F, -23.4F, 3.6F, 12, 11, 1, 0.5F, false));
+		
+				body_r173 = new ModelRenderer(this);
+				body_r173.setRotationPoint(0.0F, 1.0F, -1.0F);
+				waist.addChild(body_r173);
+				setRotationAngle(body_r173, -0.0175F, 0.0F, 0.0F);
+				body_r173.cubeList.add(new ModelBox(body_r173, 36, 34, -7.2F, -24.4F, -4.4F, 14, 11, 8, 1.0F, false));
+		
+				bipedRightArm = new ModelRenderer(this);
+				bipedRightArm.setRotationPoint(-7.2F, 0.4F, 0.0F);
+				bipedBody.addChild(bipedRightArm);
+				
+		
+				rightArm = new ModelRenderer(this);
+				rightArm.setRotationPoint(0.0F, -1.0F, 0.0F);
+				bipedRightArm.addChild(rightArm);
+				setRotationAngle(rightArm, -0.1745F, -0.2618F, 0.4363F);
+				rightArm.cubeList.add(new ModelBox(rightArm, 0, 61, -5.6095F, -2.0845F, -4.2F, 7, 13, 7, 0.0F, false));
+		
+				spike33 = new ModelRenderer(this);
+				spike33.setRotationPoint(-4.0F, -1.1F, 0.5F);
+				rightArm.addChild(spike33);
+				setRotationAngle(spike33, 1.3519F, -0.4689F, -0.6415F);
+				
+		
+				body_r174 = new ModelRenderer(this);
+				body_r174.setRotationPoint(0.2F, -1.093F, 0.7473F);
+				spike33.addChild(body_r174);
+				setRotationAngle(body_r174, -0.1302F, -0.1718F, 0.0528F);
+				body_r174.cubeList.add(new ModelBox(body_r174, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, 0.0F, true));
+		
+				body_r175 = new ModelRenderer(this);
+				body_r175.setRotationPoint(-0.8F, -1.093F, 0.7473F);
+				spike33.addChild(body_r175);
+				setRotationAngle(body_r175, -0.1302F, 0.1744F, 0.0077F);
+				body_r175.cubeList.add(new ModelBox(body_r175, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, 0.0F, true));
+		
+				body_r176 = new ModelRenderer(this);
+				body_r176.setRotationPoint(0.2F, -0.093F, 0.7473F);
+				spike33.addChild(body_r176);
+				setRotationAngle(body_r176, 0.2185F, -0.1665F, -0.0677F);
+				body_r176.cubeList.add(new ModelBox(body_r176, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, 0.0F, true));
+		
+				body_r177 = new ModelRenderer(this);
+				body_r177.setRotationPoint(-0.8F, -0.093F, 0.7473F);
+				spike33.addChild(body_r177);
+				setRotationAngle(body_r177, 0.2188F, 0.1744F, 0.0077F);
+				body_r177.cubeList.add(new ModelBox(body_r177, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, 0.0F, true));
+		
+				spike36 = new ModelRenderer(this);
+				spike36.setRotationPoint(-0.2789F, -0.4551F, 2.6757F);
+				spike33.addChild(spike36);
+				setRotationAngle(spike36, 0.3575F, 0.1294F, -0.0324F);
+				
+		
+				body_r178 = new ModelRenderer(this);
+				body_r178.setRotationPoint(0.4F, -0.9919F, -0.0215F);
+				spike36.addChild(body_r178);
+				setRotationAngle(body_r178, -0.1302F, -0.1718F, 0.0528F);
+				body_r178.cubeList.add(new ModelBox(body_r178, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.4F, true));
+		
+				body_r179 = new ModelRenderer(this);
+				body_r179.setRotationPoint(-0.3F, -0.9919F, -0.0215F);
+				spike36.addChild(body_r179);
+				setRotationAngle(body_r179, -0.1302F, 0.1744F, 0.0077F);
+				body_r179.cubeList.add(new ModelBox(body_r179, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.4F, true));
+		
+				body_r180 = new ModelRenderer(this);
+				body_r180.setRotationPoint(0.4F, 0.0081F, -0.0215F);
+				spike36.addChild(body_r180);
+				setRotationAngle(body_r180, 0.2185F, -0.1665F, -0.0677F);
+				body_r180.cubeList.add(new ModelBox(body_r180, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.4F, true));
+		
+				body_r181 = new ModelRenderer(this);
+				body_r181.setRotationPoint(-0.4F, 0.0081F, -0.0215F);
+				spike36.addChild(body_r181);
+				setRotationAngle(body_r181, 0.2188F, 0.1744F, 0.0077F);
+				body_r181.cubeList.add(new ModelBox(body_r181, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.4F, true));
+		
+				spike37 = new ModelRenderer(this);
+				spike37.setRotationPoint(0.1F, 0.0F, 1.6F);
+				spike36.addChild(spike37);
+				setRotationAngle(spike37, 0.2793F, 0.095F, 0.0483F);
+				
+		
+				body_r182 = new ModelRenderer(this);
+				body_r182.setRotationPoint(0.2F, -0.8919F, -0.0215F);
+				spike37.addChild(body_r182);
+				setRotationAngle(body_r182, -0.1327F, -0.2583F, 0.0645F);
+				body_r182.cubeList.add(new ModelBox(body_r182, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.6F, true));
+		
+				body_r183 = new ModelRenderer(this);
+				body_r183.setRotationPoint(-0.2F, -0.8919F, -0.0215F);
+				spike37.addChild(body_r183);
+				setRotationAngle(body_r183, -0.1314F, 0.2176F, 0.0019F);
+				body_r183.cubeList.add(new ModelBox(body_r183, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.6F, true));
+		
+				body_r184 = new ModelRenderer(this);
+				body_r184.setRotationPoint(-0.0043F, -0.0543F, 0.6131F);
+				spike37.addChild(body_r184);
+				setRotationAngle(body_r184, 0.1809F, 0.1241F, -0.8093F);
+				body_r184.cubeList.add(new ModelBox(body_r184, 94, 122, -1.0F, -1.0F, -1.0F, 2, 2, 3, -0.8F, true));
+		
+				body_r185 = new ModelRenderer(this);
+				body_r185.setRotationPoint(0.2F, -0.4919F, -0.0215F);
+				spike37.addChild(body_r185);
+				setRotationAngle(body_r185, 0.2226F, -0.2517F, -0.0872F);
+				body_r185.cubeList.add(new ModelBox(body_r185, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.6F, true));
+		
+				body_r186 = new ModelRenderer(this);
+				body_r186.setRotationPoint(-0.2F, -0.4919F, -0.0215F);
+				spike37.addChild(body_r186);
+				setRotationAngle(body_r186, 0.2188F, 0.1744F, 0.0077F);
+				body_r186.cubeList.add(new ModelBox(body_r186, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.6F, true));
+		
+				right4rm = new ModelRenderer(this);
+				right4rm.setRotationPoint(-2.3095F, 10.5252F, 0.0F);
+				rightArm.addChild(right4rm);
+				setRotationAngle(right4rm, -0.2618F, 0.0F, -0.0873F);
+				right4rm.cubeList.add(new ModelBox(right4rm, 40, 53, -3.3F, -0.1098F, -4.2F, 7, 13, 7, 0.5F, false));
+		
+				leftArm_r1 = new ModelRenderer(this);
+				leftArm_r1.setRotationPoint(10.0F, 19.0F, 0.0F);
+				right4rm.addChild(leftArm_r1);
+				setRotationAngle(leftArm_r1, 0.0F, 0.0F, -0.2182F);
+				leftArm_r1.cubeList.add(new ModelBox(leftArm_r1, 74, 0, -11.5F, -8.5098F, -4.2F, 7, 3, 7, 0.45F, false));
+		
+				rightBlade = new ModelRenderer(this);
+				rightBlade.setRotationPoint(10.5F, 19.5F, 0.0F);
+				right4rm.addChild(rightBlade);
+				
+		
+				leftArm_r2 = new ModelRenderer(this);
+				leftArm_r2.setRotationPoint(-25.104F, -21.2064F, -0.1F);
+				rightBlade.addChild(leftArm_r2);
+				setRotationAngle(leftArm_r2, 0.0F, 0.0F, 1.7453F);
+				leftArm_r2.cubeList.add(new ModelBox(leftArm_r2, 0, 0, -11.8F, 1.8902F, -0.5F, 2, 1, 0, 0.316F, false));
+				leftArm_r2.cubeList.add(new ModelBox(leftArm_r2, 0, 0, -15.5665F, 1.3612F, -0.5F, 6, 0, 0, 0.316F, false));
+		
+				leftArm_r3 = new ModelRenderer(this);
+				leftArm_r3.setRotationPoint(-24.4725F, -21.2275F, -0.4F);
+				rightBlade.addChild(leftArm_r3);
+				setRotationAngle(leftArm_r3, 0.0F, 0.0F, 2.138F);
+				leftArm_r3.cubeList.add(new ModelBox(leftArm_r3, 0, 0, -13.6F, 7.8902F, -0.2F, 5, 0, 0, 0.32F, false));
+				leftArm_r3.cubeList.add(new ModelBox(leftArm_r3, 0, 0, -12.3F, 7.3902F, -0.2F, 3, 0, 0, 0.318F, false));
+				leftArm_r3.cubeList.add(new ModelBox(leftArm_r3, 0, 0, -11.2F, 6.8902F, -0.2F, 3, 1, 0, 0.316F, false));
+		
+				leftArm_r4 = new ModelRenderer(this);
+				leftArm_r4.setRotationPoint(-24.5725F, -21.3275F, -0.4F);
+				rightBlade.addChild(leftArm_r4);
+				setRotationAngle(leftArm_r4, 0.0F, 0.0F, 1.9199F);
+				leftArm_r4.cubeList.add(new ModelBox(leftArm_r4, 0, 0, -9.6F, 4.8902F, -0.2F, 4, 1, 0, 0.322F, false));
+		
+				leftArm_r5 = new ModelRenderer(this);
+				leftArm_r5.setRotationPoint(-25.144F, -20.7533F, -0.1F);
+				rightBlade.addChild(leftArm_r5);
+				setRotationAngle(leftArm_r5, 0.0F, 0.0F, 1.7017F);
+				leftArm_r5.cubeList.add(new ModelBox(leftArm_r5, 0, 0, -10.7F, 0.8902F, -0.5F, 5, 2, 0, 0.318F, false));
+		
+				leftArm_r6 = new ModelRenderer(this);
+				leftArm_r6.setRotationPoint(-24.2813F, -21.0108F, -0.3F);
+				rightBlade.addChild(leftArm_r6);
+				setRotationAngle(leftArm_r6, 0.0F, 0.0F, 1.6581F);
+				leftArm_r6.cubeList.add(new ModelBox(leftArm_r6, 0, 0, -6.7F, 3.6902F, -0.3F, 4, 1, 0, 0.34F, false));
+		
+				leftArm_r7 = new ModelRenderer(this);
+				leftArm_r7.setRotationPoint(-25.244F, -20.6533F, -0.1F);
+				rightBlade.addChild(leftArm_r7);
+				setRotationAngle(leftArm_r7, 0.0F, 0.0F, 1.3963F);
+				leftArm_r7.cubeList.add(new ModelBox(leftArm_r7, 0, 0, -6.7F, -1.2098F, -0.5F, 4, 3, 0, 0.34F, false));
+		
+				leftArm_r8 = new ModelRenderer(this);
+				leftArm_r8.setRotationPoint(-25.244F, -20.6533F, -0.1F);
+				rightBlade.addChild(leftArm_r8);
+				setRotationAngle(leftArm_r8, 0.0F, 0.0F, 1.5272F);
+				leftArm_r8.cubeList.add(new ModelBox(leftArm_r8, 0, 0, -6.7F, -0.2098F, -0.5F, 4, 3, 0, 0.338F, false));
+		
+				leftArm_r9 = new ModelRenderer(this);
+				leftArm_r9.setRotationPoint(-25.3057F, -19.7964F, -0.65F);
+				rightBlade.addChild(leftArm_r9);
+				setRotationAngle(leftArm_r9, 0.0F, 0.0F, 1.4399F);
+				leftArm_r9.cubeList.add(new ModelBox(leftArm_r9, 12, 46, -4.7F, 2.2902F, -0.45F, 8, 1, 1, -0.1F, false));
+		
+				leftArm_r10 = new ModelRenderer(this);
+				leftArm_r10.setRotationPoint(-25.2962F, -20.5193F, -0.05F);
+				rightBlade.addChild(leftArm_r10);
+				setRotationAngle(leftArm_r10, 0.0F, 0.0F, 1.3963F);
+				leftArm_r10.cubeList.add(new ModelBox(leftArm_r10, 0, 0, -2.7F, -1.3098F, -0.55F, 6, 4, 0, 0.35F, false));
+		
+				leftArm_r11 = new ModelRenderer(this);
+				leftArm_r11.setRotationPoint(-20.1887F, -11.3593F, -0.05F);
+				rightBlade.addChild(leftArm_r11);
+				setRotationAngle(leftArm_r11, 0.0F, 0.0F, 0.9163F);
+				leftArm_r11.cubeList.add(new ModelBox(leftArm_r11, 0, 21, -8.3F, -2.1098F, -0.55F, 5, 5, 0, 0.4F, false));
+		
+				leftArm_r12 = new ModelRenderer(this);
+				leftArm_r12.setRotationPoint(-18.6583F, -10.7756F, 0.0F);
+				rightBlade.addChild(leftArm_r12);
+				setRotationAngle(leftArm_r12, 0.0F, 0.0F, 0.7418F);
+				leftArm_r12.cubeList.add(new ModelBox(leftArm_r12, 83, 84, -4.5F, -2.1098F, -0.6F, 7, 5, 0, 0.45F, false));
+		
+				leftArm_r13 = new ModelRenderer(this);
+				leftArm_r13.setRotationPoint(-11.7F, -9.0F, 0.0F);
+				rightBlade.addChild(leftArm_r13);
+				setRotationAngle(leftArm_r13, 0.0F, 0.0F, 0.0873F);
+				leftArm_r13.cubeList.add(new ModelBox(leftArm_r13, 45, 73, -6.3F, -3.1098F, -0.6F, 6, 6, 0, 0.5F, false));
+		
+				rightHammer = new ModelRenderer(this);
+				rightHammer.setRotationPoint(10.0F, 19.0F, 0.0F);
+				right4rm.addChild(rightHammer);
+				
+		
+				leftArm_r14 = new ModelRenderer(this);
+				leftArm_r14.setRotationPoint(0.0F, 0.0F, 0.0F);
+				rightHammer.addChild(leftArm_r14);
+				setRotationAngle(leftArm_r14, 0.0F, 0.0F, -0.0175F);
+				leftArm_r14.cubeList.add(new ModelBox(leftArm_r14, 0, 89, -12.3F, -12.1066F, -7.2F, 7, 7, 1, 0.5F, false));
+				leftArm_r14.cubeList.add(new ModelBox(leftArm_r14, 88, 65, -12.3F, -12.1066F, 4.8F, 7, 7, 1, 0.5F, false));
+				leftArm_r14.cubeList.add(new ModelBox(leftArm_r14, 71, 20, -11.3F, -11.1066F, -5.2F, 5, 5, 9, 0.5F, false));
+		
+				bipedLeftArm = new ModelRenderer(this);
+				bipedLeftArm.setRotationPoint(7.2F, 0.4F, 0.0F);
+				bipedBody.addChild(bipedLeftArm);
+				
+		
+				leftArm = new ModelRenderer(this);
+				leftArm.setRotationPoint(0.0F, -1.0F, 0.0F);
+				bipedLeftArm.addChild(leftArm);
+				setRotationAngle(leftArm, -0.1745F, 0.2618F, -0.4363F);
+				leftArm.cubeList.add(new ModelBox(leftArm, 0, 61, -1.3905F, -2.0845F, -4.2F, 7, 13, 7, 0.0F, true));
+		
+				spike2 = new ModelRenderer(this);
+				spike2.setRotationPoint(4.0F, -1.1F, 0.5F);
+				leftArm.addChild(spike2);
+				setRotationAngle(spike2, 1.3519F, 0.4689F, 0.6415F);
+				
+		
+				body_r187 = new ModelRenderer(this);
+				body_r187.setRotationPoint(-0.2F, -1.093F, 0.7473F);
+				spike2.addChild(body_r187);
+				setRotationAngle(body_r187, -0.1302F, 0.1718F, -0.0528F);
+				body_r187.cubeList.add(new ModelBox(body_r187, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, 0.0F, false));
+		
+				body_r188 = new ModelRenderer(this);
+				body_r188.setRotationPoint(0.8F, -1.093F, 0.7473F);
+				spike2.addChild(body_r188);
+				setRotationAngle(body_r188, -0.1302F, -0.1744F, -0.0077F);
+				body_r188.cubeList.add(new ModelBox(body_r188, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, 0.0F, false));
+		
+				body_r189 = new ModelRenderer(this);
+				body_r189.setRotationPoint(-0.2F, -0.093F, 0.7473F);
+				spike2.addChild(body_r189);
+				setRotationAngle(body_r189, 0.2185F, 0.1665F, 0.0677F);
+				body_r189.cubeList.add(new ModelBox(body_r189, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, 0.0F, false));
+		
+				body_r190 = new ModelRenderer(this);
+				body_r190.setRotationPoint(0.8F, -0.093F, 0.7473F);
+				spike2.addChild(body_r190);
+				setRotationAngle(body_r190, 0.2188F, -0.1744F, -0.0077F);
+				body_r190.cubeList.add(new ModelBox(body_r190, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, 0.0F, false));
+		
+				spike34 = new ModelRenderer(this);
+				spike34.setRotationPoint(0.2789F, -0.4551F, 2.6757F);
+				spike2.addChild(spike34);
+				setRotationAngle(spike34, 0.3575F, -0.1294F, 0.0324F);
+				
+		
+				body_r191 = new ModelRenderer(this);
+				body_r191.setRotationPoint(-0.4F, -0.9919F, -0.0215F);
+				spike34.addChild(body_r191);
+				setRotationAngle(body_r191, -0.1302F, 0.1718F, -0.0528F);
+				body_r191.cubeList.add(new ModelBox(body_r191, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.4F, false));
+		
+				body_r192 = new ModelRenderer(this);
+				body_r192.setRotationPoint(0.3F, -0.9919F, -0.0215F);
+				spike34.addChild(body_r192);
+				setRotationAngle(body_r192, -0.1302F, -0.1744F, -0.0077F);
+				body_r192.cubeList.add(new ModelBox(body_r192, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.4F, false));
+		
+				body_r193 = new ModelRenderer(this);
+				body_r193.setRotationPoint(-0.4F, 0.0081F, -0.0215F);
+				spike34.addChild(body_r193);
+				setRotationAngle(body_r193, 0.2185F, 0.1665F, 0.0677F);
+				body_r193.cubeList.add(new ModelBox(body_r193, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.4F, false));
+		
+				body_r194 = new ModelRenderer(this);
+				body_r194.setRotationPoint(0.4F, 0.0081F, -0.0215F);
+				spike34.addChild(body_r194);
+				setRotationAngle(body_r194, 0.2188F, -0.1744F, -0.0077F);
+				body_r194.cubeList.add(new ModelBox(body_r194, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.4F, false));
+		
+				spike35 = new ModelRenderer(this);
+				spike35.setRotationPoint(-0.1F, 0.0F, 1.6F);
+				spike34.addChild(spike35);
+				setRotationAngle(spike35, 0.2793F, -0.095F, -0.0483F);
+				
+		
+				body_r195 = new ModelRenderer(this);
+				body_r195.setRotationPoint(-0.2F, -0.8919F, -0.0215F);
+				spike35.addChild(body_r195);
+				setRotationAngle(body_r195, -0.1327F, 0.2583F, -0.0645F);
+				body_r195.cubeList.add(new ModelBox(body_r195, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.6F, false));
+		
+				body_r196 = new ModelRenderer(this);
+				body_r196.setRotationPoint(0.2F, -0.8919F, -0.0215F);
+				spike35.addChild(body_r196);
+				setRotationAngle(body_r196, -0.1314F, -0.2176F, -0.0019F);
+				body_r196.cubeList.add(new ModelBox(body_r196, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.6F, false));
+		
+				body_r197 = new ModelRenderer(this);
+				body_r197.setRotationPoint(0.0043F, -0.0543F, 0.6131F);
+				spike35.addChild(body_r197);
+				setRotationAngle(body_r197, 0.1809F, -0.1241F, 0.8093F);
+				body_r197.cubeList.add(new ModelBox(body_r197, 94, 122, -1.0F, -1.0F, -1.0F, 2, 2, 3, -0.8F, false));
+		
+				body_r198 = new ModelRenderer(this);
+				body_r198.setRotationPoint(-0.2F, -0.4919F, -0.0215F);
+				spike35.addChild(body_r198);
+				setRotationAngle(body_r198, 0.2226F, 0.2517F, 0.0872F);
+				body_r198.cubeList.add(new ModelBox(body_r198, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.6F, false));
+		
+				body_r199 = new ModelRenderer(this);
+				body_r199.setRotationPoint(0.2F, -0.4919F, -0.0215F);
+				spike35.addChild(body_r199);
+				setRotationAngle(body_r199, 0.2188F, -0.1744F, -0.0077F);
+				body_r199.cubeList.add(new ModelBox(body_r199, 94, 122, -1.0F, -0.5F, -1.5F, 2, 2, 3, -0.6F, false));
+		
+				left4rm = new ModelRenderer(this);
+				left4rm.setRotationPoint(2.3095F, 10.5252F, 0.0F);
+				leftArm.addChild(left4rm);
+				setRotationAngle(left4rm, -0.2618F, 0.0F, 0.0873F);
+				left4rm.cubeList.add(new ModelBox(left4rm, 40, 53, -3.7F, -0.1098F, -4.2F, 7, 13, 7, 0.5F, true));
+		
+				rightArm_r1 = new ModelRenderer(this);
+				rightArm_r1.setRotationPoint(-10.0F, 19.0F, 0.0F);
+				left4rm.addChild(rightArm_r1);
+				setRotationAngle(rightArm_r1, 0.0F, 0.0F, 0.2182F);
+				rightArm_r1.cubeList.add(new ModelBox(rightArm_r1, 74, 0, 4.5F, -8.5098F, -4.2F, 7, 3, 7, 0.45F, true));
+		
+				leftBlade = new ModelRenderer(this);
+				leftBlade.setRotationPoint(-10.5F, 19.5F, 0.0F);
+				left4rm.addChild(leftBlade);
+				
+		
+				rightArm_r2 = new ModelRenderer(this);
+				rightArm_r2.setRotationPoint(25.104F, -21.2064F, -0.1F);
+				leftBlade.addChild(rightArm_r2);
+				setRotationAngle(rightArm_r2, 0.0F, 0.0F, -1.7453F);
+				rightArm_r2.cubeList.add(new ModelBox(rightArm_r2, 0, 0, 9.8F, 1.8902F, -0.5F, 2, 1, 0, 0.316F, true));
+				rightArm_r2.cubeList.add(new ModelBox(rightArm_r2, 0, 0, 9.5665F, 1.3612F, -0.5F, 6, 0, 0, 0.316F, true));
+		
+				rightArm_r3 = new ModelRenderer(this);
+				rightArm_r3.setRotationPoint(24.4725F, -21.2275F, -0.4F);
+				leftBlade.addChild(rightArm_r3);
+				setRotationAngle(rightArm_r3, 0.0F, 0.0F, -2.138F);
+				rightArm_r3.cubeList.add(new ModelBox(rightArm_r3, 0, 0, 8.6F, 7.8902F, -0.2F, 5, 0, 0, 0.32F, true));
+				rightArm_r3.cubeList.add(new ModelBox(rightArm_r3, 0, 0, 9.3F, 7.3902F, -0.2F, 3, 0, 0, 0.318F, true));
+				rightArm_r3.cubeList.add(new ModelBox(rightArm_r3, 0, 0, 8.2F, 6.8902F, -0.2F, 3, 1, 0, 0.316F, true));
+		
+				rightArm_r4 = new ModelRenderer(this);
+				rightArm_r4.setRotationPoint(24.5725F, -21.3275F, -0.4F);
+				leftBlade.addChild(rightArm_r4);
+				setRotationAngle(rightArm_r4, 0.0F, 0.0F, -1.9199F);
+				rightArm_r4.cubeList.add(new ModelBox(rightArm_r4, 0, 0, 5.6F, 4.8902F, -0.2F, 4, 1, 0, 0.322F, true));
+		
+				rightArm_r5 = new ModelRenderer(this);
+				rightArm_r5.setRotationPoint(25.144F, -20.7533F, -0.1F);
+				leftBlade.addChild(rightArm_r5);
+				setRotationAngle(rightArm_r5, 0.0F, 0.0F, -1.7017F);
+				rightArm_r5.cubeList.add(new ModelBox(rightArm_r5, 0, 0, 5.7F, 0.8902F, -0.5F, 5, 2, 0, 0.318F, true));
+		
+				rightArm_r6 = new ModelRenderer(this);
+				rightArm_r6.setRotationPoint(24.2813F, -21.0108F, -0.3F);
+				leftBlade.addChild(rightArm_r6);
+				setRotationAngle(rightArm_r6, 0.0F, 0.0F, -1.6581F);
+				rightArm_r6.cubeList.add(new ModelBox(rightArm_r6, 0, 0, 2.7F, 3.6902F, -0.3F, 4, 1, 0, 0.34F, true));
+		
+				rightArm_r7 = new ModelRenderer(this);
+				rightArm_r7.setRotationPoint(25.244F, -20.6533F, -0.1F);
+				leftBlade.addChild(rightArm_r7);
+				setRotationAngle(rightArm_r7, 0.0F, 0.0F, -1.3963F);
+				rightArm_r7.cubeList.add(new ModelBox(rightArm_r7, 0, 0, 2.7F, -1.2098F, -0.5F, 4, 3, 0, 0.34F, true));
+		
+				rightArm_r8 = new ModelRenderer(this);
+				rightArm_r8.setRotationPoint(25.244F, -20.6533F, -0.1F);
+				leftBlade.addChild(rightArm_r8);
+				setRotationAngle(rightArm_r8, 0.0F, 0.0F, -1.5272F);
+				rightArm_r8.cubeList.add(new ModelBox(rightArm_r8, 0, 0, 2.7F, -0.2098F, -0.5F, 4, 3, 0, 0.338F, true));
+		
+				rightArm_r9 = new ModelRenderer(this);
+				rightArm_r9.setRotationPoint(25.3057F, -19.7964F, -0.65F);
+				leftBlade.addChild(rightArm_r9);
+				setRotationAngle(rightArm_r9, 0.0F, 0.0F, -1.4399F);
+				rightArm_r9.cubeList.add(new ModelBox(rightArm_r9, 12, 46, -3.3F, 2.2902F, -0.45F, 8, 1, 1, -0.1F, true));
+		
+				rightArm_r10 = new ModelRenderer(this);
+				rightArm_r10.setRotationPoint(25.2962F, -20.5193F, -0.05F);
+				leftBlade.addChild(rightArm_r10);
+				setRotationAngle(rightArm_r10, 0.0F, 0.0F, -1.3963F);
+				rightArm_r10.cubeList.add(new ModelBox(rightArm_r10, 0, 0, -3.3F, -1.3098F, -0.55F, 6, 4, 0, 0.35F, true));
+		
+				rightArm_r11 = new ModelRenderer(this);
+				rightArm_r11.setRotationPoint(20.1887F, -11.3593F, -0.05F);
+				leftBlade.addChild(rightArm_r11);
+				setRotationAngle(rightArm_r11, 0.0F, 0.0F, -0.9163F);
+				rightArm_r11.cubeList.add(new ModelBox(rightArm_r11, 0, 21, 3.3F, -2.1098F, -0.55F, 5, 5, 0, 0.4F, true));
+		
+				rightArm_r12 = new ModelRenderer(this);
+				rightArm_r12.setRotationPoint(18.6583F, -10.7756F, 0.0F);
+				leftBlade.addChild(rightArm_r12);
+				setRotationAngle(rightArm_r12, 0.0F, 0.0F, -0.7418F);
+				rightArm_r12.cubeList.add(new ModelBox(rightArm_r12, 83, 84, -2.5F, -2.1098F, -0.6F, 7, 5, 0, 0.45F, true));
+		
+				rightArm_r13 = new ModelRenderer(this);
+				rightArm_r13.setRotationPoint(11.7F, -9.0F, 0.0F);
+				leftBlade.addChild(rightArm_r13);
+				setRotationAngle(rightArm_r13, 0.0F, 0.0F, -0.0873F);
+				rightArm_r13.cubeList.add(new ModelBox(rightArm_r13, 45, 73, 0.3F, -3.1098F, -0.6F, 6, 6, 0, 0.5F, true));
+		
+				leftHammer = new ModelRenderer(this);
+				leftHammer.setRotationPoint(-10.0F, 19.0F, 0.0F);
+				left4rm.addChild(leftHammer);
+				
+		
+				rightArm_r14 = new ModelRenderer(this);
+				rightArm_r14.setRotationPoint(0.0F, 0.0F, 0.0F);
+				leftHammer.addChild(rightArm_r14);
+				setRotationAngle(rightArm_r14, 0.0F, 0.0F, 0.0175F);
+				rightArm_r14.cubeList.add(new ModelBox(rightArm_r14, 0, 89, 5.3F, -12.1066F, -7.2F, 7, 7, 1, 0.5F, true));
+				rightArm_r14.cubeList.add(new ModelBox(rightArm_r14, 88, 65, 5.3F, -12.1066F, 4.8F, 7, 7, 1, 0.5F, true));
+				rightArm_r14.cubeList.add(new ModelBox(rightArm_r14, 71, 20, 6.3F, -11.1066F, -5.2F, 5, 5, 9, 0.5F, true));
+		
+				bipedRightLeg = new ModelRenderer(this);
+				bipedRightLeg.setRotationPoint(-4.28F, 7.6F, 0.0F);
+				
+		
+				rightThigh = new ModelRenderer(this);
+				rightThigh.setRotationPoint(0.0F, 0.0F, 0.0F);
+				bipedRightLeg.addChild(rightThigh);
+				setRotationAngle(rightThigh, 0.1309F, 0.0F, 0.0F);
+				
+		
+				rightLeg = new ModelRenderer(this);
+				rightLeg.setRotationPoint(0.0F, 0.0F, 0.0F);
+				rightThigh.addChild(rightLeg);
+				setRotationAngle(rightLeg, -0.1745F, 0.2618F, 0.0F);
+				
+		
+				rightLeg_r1 = new ModelRenderer(this);
+				rightLeg_r1.setRotationPoint(-0.22F, 8.4F, 0.0F);
+				rightLeg.addChild(rightLeg_r1);
+				setRotationAngle(rightLeg_r1, 0.0436F, 0.0F, 0.0F);
+				rightLeg_r1.cubeList.add(new ModelBox(rightLeg_r1, 52, 78, -3.0F, -0.65F, -4.45F, 6, 9, 6, -0.4F, false));
+		
+				rightLeg_r2 = new ModelRenderer(this);
+				rightLeg_r2.setRotationPoint(0.28F, 1.4F, 0.0F);
+				rightLeg.addChild(rightLeg_r2);
+				setRotationAngle(rightLeg_r2, -0.2618F, 0.0F, 0.0F);
+				rightLeg_r2.cubeList.add(new ModelBox(rightLeg_r2, 27, 73, -3.5F, -1.35F, -2.4F, 6, 9, 6, 0.2F, false));
+		
+				bipedLeftLeg = new ModelRenderer(this);
+				bipedLeftLeg.setRotationPoint(4.28F, 7.6F, 0.0F);
+				
+		
+				leftThigh = new ModelRenderer(this);
+				leftThigh.setRotationPoint(0.0F, 0.0F, 0.0F);
+				bipedLeftLeg.addChild(leftThigh);
+				setRotationAngle(leftThigh, 0.1309F, 0.0F, 0.0F);
+				
+		
+				leftLeg = new ModelRenderer(this);
+				leftLeg.setRotationPoint(0.0F, 0.0F, 0.0F);
+				leftThigh.addChild(leftLeg);
+				setRotationAngle(leftLeg, -0.1745F, -0.2618F, 0.0F);
+				
+		
+				leftLeg_r1 = new ModelRenderer(this);
+				leftLeg_r1.setRotationPoint(0.22F, 8.4F, 0.0F);
+				leftLeg.addChild(leftLeg_r1);
+				setRotationAngle(leftLeg_r1, 0.0436F, 0.0F, 0.0F);
+				leftLeg_r1.cubeList.add(new ModelBox(leftLeg_r1, 52, 78, -3.0F, -0.65F, -4.45F, 6, 9, 6, -0.4F, true));
+		
+				leftLeg_r2 = new ModelRenderer(this);
+				leftLeg_r2.setRotationPoint(-0.28F, 1.4F, 0.0F);
+				leftLeg.addChild(leftLeg_r2);
+				setRotationAngle(leftLeg_r2, -0.2618F, 0.0F, 0.0F);
+				leftLeg_r2.cubeList.add(new ModelBox(leftLeg_r2, 27, 73, -2.5F, -1.35F, -2.4F, 6, 9, 6, 0.2F, true));
+			}
+		
+			@Override
+			public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
+				bipedHead.render(f5);
+				bipedHeadwear.render(f5);
+				bipedBody.render(f5);
+				bipedRightLeg.render(f5);
+				bipedLeftLeg.render(f5);
+			}
+		
+			public void setRotationAngle(ModelRenderer modelRenderer, float x, float y, float z) {
+				modelRenderer.rotateAngleX = x;
+				modelRenderer.rotateAngleY = y;
+				modelRenderer.rotateAngleZ = z;
+			}
+
+			@Override
+		    public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn) {
+		        limbSwing *= 2.0F / entityIn.height;
+		        this.bipedHead.rotateAngleY = netHeadYaw * 0.017453292F;		
+	            this.bipedHead.rotateAngleX = headPitch * 0.017453292F;		
+		        this.bipedBody.rotateAngleY = 0.0F;
+		        this.bipedRightArm.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F + (float)Math.PI) * 2.0F * limbSwingAmount * 0.5F;
+		        this.bipedLeftArm.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F) * 2.0F * limbSwingAmount * 0.5F;
+		        this.bipedRightArm.rotateAngleZ = 0.0F;
+		        this.bipedLeftArm.rotateAngleZ = 0.0F;
+		        this.bipedRightLeg.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F) * 1.4F * limbSwingAmount;
+		        this.bipedLeftLeg.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F + (float)Math.PI) * 1.4F * limbSwingAmount;
+		        this.bipedRightArm.rotateAngleY = 0.0F;
+		        this.bipedRightArm.rotateAngleZ = 0.0F;		
+		        if (this.swingProgress > 0.0F) {
+		            EnumHandSide enumhandside = this.getMainHand(entityIn);
+		            ModelRenderer modelrenderer = this.getArmForSide(enumhandside);
+		            float f1 = this.swingProgress;
+		            this.bipedBody.rotateAngleY = MathHelper.sin(MathHelper.sqrt(f1) * ((float)Math.PI * 2F)) * 0.2F;
+		            if (enumhandside == EnumHandSide.LEFT) {
+		                this.bipedBody.rotateAngleY *= -1.0F;
+		            }
+		            f1 = 1.0F - this.swingProgress;
+		            f1 = f1 * f1;
+		            f1 = f1 * f1;
+		            f1 = 1.0F - f1;
+		            float f2 = MathHelper.sin(f1 * (float)Math.PI);
+		            float f3 = MathHelper.sin(this.swingProgress * (float)Math.PI) * -(this.bipedHead.rotateAngleX - 0.7F) * 0.75F;
+		            modelrenderer.rotateAngleX = (float)((double)modelrenderer.rotateAngleX - ((double)f2 * 1.2D + (double)f3));
+		            modelrenderer.rotateAngleY += this.bipedBody.rotateAngleY;
+		            modelrenderer.rotateAngleZ += MathHelper.sin(this.swingProgress * (float)Math.PI) * -0.4F;
+		        }
+		        this.bipedRightArm.rotateAngleZ += MathHelper.cos(ageInTicks * 0.09F) * 0.05F + 0.05F;
+		        this.bipedLeftArm.rotateAngleZ -= MathHelper.cos(ageInTicks * 0.09F) * 0.05F + 0.05F;
+		        this.bipedRightArm.rotateAngleX += MathHelper.sin(ageInTicks * 0.067F) * 0.05F;
+		        this.bipedLeftArm.rotateAngleX -= MathHelper.sin(ageInTicks * 0.067F) * 0.05F;
+		        copyModelAngles(this.bipedHead, this.bipedHeadwear);
+		        this.jaw.rotateAngleX = ((EntitySplit)entityIn).isShooting() ? 0.3054F : 0.0F;
+		    }
 		}
 	}
 }

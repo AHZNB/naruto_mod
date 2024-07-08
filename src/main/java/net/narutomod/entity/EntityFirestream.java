@@ -117,7 +117,7 @@ public class EntityFirestream extends ElementsNarutomodMod.ModElement {
 
 		protected void shoot(float directionYaw, float directionPitch, double range, double radius) {
 			double angle = Math.atan(radius / range) * 180d / Math.PI;
-			for (int i = 0; i < (int)(MathHelper.sqrt(radius) * 2.5d); i++) {
+			for (int i = 0; i < (int)(MathHelper.sqrt(radius) * 3.0d); i++) {
 				Vec3d vec3d = Vec3d.fromPitchYaw(directionPitch + (float)((this.rand.nextDouble()-0.5d) * angle * 3.0d),
 				 directionYaw + (float)((this.rand.nextDouble()-0.5d) * angle * 3.0d)).scale(range * 0.1d);
 				this.world.spawnEntity(new FlameParticle(this.shooter, this.posX, this.posY, this.posZ,
@@ -160,7 +160,7 @@ public class EntityFirestream extends ElementsNarutomodMod.ModElement {
 	
 			@Override
 			public float getMaxPower() {
-				return 20.0f;
+				return 25.0f;
 			}
 		}
 

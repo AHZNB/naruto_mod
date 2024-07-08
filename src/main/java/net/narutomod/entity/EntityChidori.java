@@ -51,6 +51,7 @@ import net.narutomod.item.ItemRaiton;
 import net.narutomod.item.ItemFuton;
 import net.narutomod.item.ItemKaton;
 import net.narutomod.item.ItemNinjutsu;
+import net.narutomod.item.ItemSharingan;
 import net.narutomod.block.BlockLightSource;
 
 import javax.annotation.Nullable;
@@ -213,7 +214,7 @@ public class EntityChidori extends ElementsNarutomodMod.ModElement {
 		}
 
 		private void launchAtTarget(EntityLivingBase target) {
-			if (!ProcedureUtils.isWearingAnySharingan(this.summoner)) {
+			if (!ItemSharingan.wearingAny(this.summoner)) {
 				ProcedureRenderView.setFOV(this.summoner, 100, 10f);
 			}
 			double d0 = target.posX - this.summoner.posX;

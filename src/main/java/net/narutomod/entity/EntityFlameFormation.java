@@ -215,7 +215,7 @@ public class EntityFlameFormation extends ElementsNarutomodMod.ModElement {
 				if (!event.getWorld().isRemote) {
 					Vec3d vec = event.getExplosion().getPosition();
 					float size = (float)ReflectionHelper.getPrivateValue(Explosion.class, event.getExplosion(), 8);
-					AxisAlignedBB bb = new AxisAlignedBB(vec.subtract(size, size, size), vec.addVector(size, size, size));
+					AxisAlignedBB bb = new AxisAlignedBB(vec.x - size, vec.y - size, vec.z - size, vec.x + size, vec.y + size, vec.z + size);
 					for (EC ec : event.getWorld().getEntitiesWithinAABB(EC.class, bb)) {
 						EntityLivingBase exploder = event.getExplosion().getExplosivePlacedBy();
 						if (!ec.getEntityBoundingBox().contains(vec) && (exploder == null || !ec.isEntityInside(exploder))) {

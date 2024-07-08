@@ -219,7 +219,7 @@ public class EntitySevenTails extends ElementsNarutomodMod.ModElement {
 			super.updateAITasks();
 			EntityLivingBase target = this.getAttackTarget();
 			if (target != null) {
-				if (this.getMeleeTime() <= 0 && this.getDistance(target) < this.bijudamaMinRange) {
+				if (this.getMeleeTime() <= 0 && this.getDistance(target) < this.getBijudamaMinRange()) {
 					this.setMeleeTime(80);
 				}
 				Particles.Renderer particles = new Particles.Renderer(this.world);

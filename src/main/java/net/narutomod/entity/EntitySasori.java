@@ -397,10 +397,6 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public boolean attackEntityFrom(DamageSource source, float amount) {
-			if (this.isRidingHiruko()) {
-				this.hirukoEntity.attackEntityFrom(source, amount);
-				return false;
-			}
 			if (source == DamageSource.FALL) {
 				return false;
 			}

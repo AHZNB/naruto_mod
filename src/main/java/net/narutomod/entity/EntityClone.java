@@ -514,6 +514,7 @@ public class EntityClone extends ElementsNarutomodMod.ModElement {
 	    	return this.speedModifier;
 	    }
 
+	    @Nullable
 	    protected EntityLivingBase getFollowEntity() {
 	    	return ((_Base)this.entity).getSummoner();
 	    }

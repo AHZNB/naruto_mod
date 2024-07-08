@@ -1,6 +1,7 @@
 package net.narutomod.procedure;
 
 import net.narutomod.item.ItemSuiton;
+import net.narutomod.item.ItemSharingan;
 import net.narutomod.item.ItemRinnegan;
 import net.narutomod.item.ItemNinjutsu;
 import net.narutomod.item.ItemMokuton;
@@ -50,7 +51,7 @@ public class ProcedureWhiteZetsuFleshFoodEaten extends ElementsNarutomodMod.ModE
 		ItemStack rinneganstack = ItemStack.EMPTY;
 		boolean flag = false;
 		if ((!(world.isRemote))) {
-			if (ProcedureUtils.isWearingMangekyo((EntityLivingBase) entity)) {
+			if (ItemSharingan.isWearingMangekyo((EntityLivingBase) entity)) {
 				if (entity instanceof EntityLivingBase)
 					((EntityLivingBase) entity).addPotionEffect(new PotionEffect(MobEffects.INSTANT_HEALTH, (int) 10, (int) 4, (false), (false)));
 			} else {

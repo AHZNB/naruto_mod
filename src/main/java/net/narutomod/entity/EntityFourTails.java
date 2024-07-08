@@ -200,9 +200,9 @@ public class EntityFourTails extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void attackEntityWithRangedAttack(EntityLivingBase target, float distanceFactor) {
 			if (!this.isAIDisabled() && (this.mouthShootingJutsu == null || this.mouthShootingJutsu.isDead)
-			 && distanceFactor < 1.0f && distanceFactor > (float)(ProcedureUtils.getReachDistance(this) * 0.6d / this.bijudamaMinRange)) {
+			 && distanceFactor < 1.0f && distanceFactor > (float)(ProcedureUtils.getReachDistance(this) * 0.6d / this.getBijudamaMinRange())) {
 				this.setSwingingArms(true);
-				this.mouthShootingJutsu = new EntityFirestream.EC.Jutsu2().createJutsu(this, (float)this.bijudamaMinRange, 80, 0xff00ff80);
+				this.mouthShootingJutsu = new EntityFirestream.EC.Jutsu2().createJutsu(this, (float)this.getBijudamaMinRange(), 80, 0xff00ff80);
 				((EntityFirestream.EC)this.mouthShootingJutsu).setDamage(100.0f);
 			} else {
 				super.attackEntityWithRangedAttack(target, distanceFactor);

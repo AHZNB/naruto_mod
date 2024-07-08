@@ -44,6 +44,7 @@ import net.narutomod.ElementsNarutomodMod;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 import javax.annotation.Nullable;
 
 @ElementsNarutomodMod.ModElement.Tag
@@ -93,6 +94,21 @@ public class ItemSharingan extends ElementsNarutomodMod.ModElement {
 			 	((Base)itemstack.getItem()).canDamage = true;
 				itemstack.damageItem(this.isOwner(itemstack, entity) ? 3 : 9, entity);
 				((Base)itemstack.getItem()).canDamage = false;
+			}
+		}
+
+		@Override
+		public void onUpdate(ItemStack itemstack, World world, Entity entity, int par4, boolean par5) {
+			super.onUpdate(itemstack, world, entity, par4, par5);
+			if (entity instanceof EntityPlayer && entity.ticksExisted % 20 == 0) {
+				for (ItemStack stack1 : ProcedureUtils.getAllItemsOfSubType((EntityPlayer)entity, Base.class)) {
+					if (!ItemStack.areItemStacksEqual(itemstack, stack1) && stack1.getItem() == helmet) {
+						UUID uuid1 = ProcedureUtils.getOwnerId(itemstack);
+						if (uuid1 != null && uuid1.equals(ProcedureUtils.getOwnerId(stack1))) {
+							stack1.shrink(1);
+						}
+					}
+				}
 			}
 		}
 
@@ -152,8 +168,19 @@ public class ItemSharingan extends ElementsNarutomodMod.ModElement {
 		return ProcedureUtils.hasAnyItemOfSubtype(player, Base.class);
 	}
 
+	public static boolean hasAnyOwnedMangekyo(EntityPlayer player) {
+		return ProcedureUtils.hasOwnerMatchingItemstack(player, ItemMangekyoSharingan.helmet)
+		 || ProcedureUtils.hasOwnerMatchingItemstack(player, ItemMangekyoSharinganObito.helmet)
+		 || ProcedureUtils.hasOwnerMatchingItemstack(player, ItemMangekyoSharinganEternal.helmet);
+	}
+
 	public static boolean wearingAny(EntityLivingBase entity) {
 		return entity.getItemStackFromSlot(EntityEquipmentSlot.HEAD).getItem() instanceof Base;
+	}
+
+	public static boolean isWearingMangekyo(EntityLivingBase entity) {
+		Item item = entity.getItemStackFromSlot(EntityEquipmentSlot.HEAD).getItem();
+		return item instanceof Base && item != helmet;
 	}
 
 	public static boolean isBlinded(ItemStack stack) {

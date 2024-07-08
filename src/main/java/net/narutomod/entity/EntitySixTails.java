@@ -195,9 +195,9 @@ public class EntitySixTails extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void attackEntityWithRangedAttack(EntityLivingBase target, float distanceFactor) {
 			if (!this.isAIDisabled() && (this.mouthShootingJutsu == null || this.mouthShootingJutsu.isDead)
-			 && distanceFactor < 1.0f && distanceFactor > (float)(ProcedureUtils.getReachDistance(this) * 0.6d / this.bijudamaMinRange)) {
+			 && distanceFactor < 1.0f && distanceFactor > (float)(ProcedureUtils.getReachDistance(this) * 0.6d / this.getBijudamaMinRange())) {
 				this.setSwingingArms(true);
-				this.mouthShootingJutsu = new ItemFutton.EntityBoilingMist.Jutsu().createJutsu(this, (float)this.bijudamaMinRange + 16.0f, 6.0f);
+				this.mouthShootingJutsu = new ItemFutton.EntityBoilingMist.Jutsu().createJutsu(this, (float)this.getBijudamaMinRange() + 16.0f, 6.0f);
 				((ItemFutton.EntityBoilingMist)this.mouthShootingJutsu).setDuration(80);
 			} else {
 				super.attackEntityWithRangedAttack(target, distanceFactor);

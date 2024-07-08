@@ -191,7 +191,7 @@ public class EntityFiveTails extends ElementsNarutomodMod.ModElement {
 		protected void updateAITasks() {
 			super.updateAITasks();
 			EntityLivingBase target = this.getAttackTarget();
-			if (target != null && this.getMeleeTime() <= 0 && this.getDistance(target) < this.bijudamaMinRange) {
+			if (target != null && this.getMeleeTime() <= 0 && this.getDistance(target) < this.getBijudamaMinRange()) {
 				this.setMeleeTime(80);
 			}
 		}

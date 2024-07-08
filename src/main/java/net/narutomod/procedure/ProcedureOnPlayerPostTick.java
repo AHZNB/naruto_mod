@@ -416,7 +416,7 @@ public class ProcedureOnPlayerPostTick extends ElementsNarutomodMod.ModElement {
 		}
 		if ((((entity.ticksExisted % 20) == 0) && (!(world.isRemote)))) {
 			if (ItemDojutsu.hasAnyDojutsu((EntityPlayer) entity)) {
-				if ((!ProcedureUtils.isWearingMangekyo((EntityPlayer) entity) && (entity.getEntityData().getBoolean("susanoo_activated")))) {
+				if ((!ItemSharingan.isWearingMangekyo((EntityPlayer) entity) && (entity.getEntityData().getBoolean("susanoo_activated")))) {
 					{
 						Map<String, Object> $_dependencies = new HashMap<>();
 						$_dependencies.put("entity", entity);
@@ -523,21 +523,12 @@ public class ProcedureOnPlayerPostTick extends ElementsNarutomodMod.ModElement {
 																				.isDone()
 																		: false)))))))
 								&& (((entity instanceof EntityPlayer) ? ((EntityPlayer) entity).experienceLevel : 0) >= 10)))) {
-					if (((((EntityLivingBase) entity).getRNG().nextDouble() <= 0.001) && (((((entity instanceof EntityPlayer)
-							? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemDoton.block, (int) (1)))
-							: false)
-							|| ((entity instanceof EntityPlayer)
-									? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemFuton.block, (int) (1)))
-									: false))
-							|| (((entity instanceof EntityPlayer)
-									? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemKaton.block, (int) (1)))
-									: false)
-									|| ((entity instanceof EntityPlayer)
-											? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemSuiton.block, (int) (1)))
-											: false)))
-							|| ((entity instanceof EntityPlayer)
-									? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemRaiton.block, (int) (1)))
-									: false)))) {
+					if (((((EntityLivingBase) entity).getRNG().nextDouble() <= 0.001) && ((entity instanceof EntityPlayer)
+							&& (((ProcedureUtils.hasOwnerMatchingItemstack((EntityPlayer) entity, ItemDoton.block)
+									|| ProcedureUtils.hasOwnerMatchingItemstack((EntityPlayer) entity, ItemFuton.block))
+									|| (ProcedureUtils.hasOwnerMatchingItemstack((EntityPlayer) entity, ItemKaton.block)
+											|| ProcedureUtils.hasOwnerMatchingItemstack((EntityPlayer) entity, ItemSuiton.block)))
+									|| ProcedureUtils.hasOwnerMatchingItemstack((EntityPlayer) entity, ItemRaiton.block))))) {
 						{
 							Map<String, Object> $_dependencies = new HashMap<>();
 							$_dependencies.put("entity", entity);

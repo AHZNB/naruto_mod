@@ -190,14 +190,13 @@ public class ItemHiramekareiSword extends ElementsNarutomodMod.ModElement {
 			@SubscribeEvent
 			public void onLivingAttack(LivingAttackEvent event) {
 				Entity attacker = event.getSource().getImmediateSource();
-				if (attacker instanceof EntityLivingBase && ((EntityLivingBase)attacker).getHeldItemMainhand().getItem() == block && !event.getEntityLiving().getEntityData().getBoolean("splashDamageFromHiraMekarei")) {
+				if (!event.getSource().getDamageType().equals("splash.hiramekarei") && attacker instanceof EntityLivingBase && ((EntityLivingBase)attacker).getHeldItemMainhand().getItem() == block) {
 					double d = ProcedureUtils.getReachDistance((EntityLivingBase)attacker);
 					for (EntityLivingBase entity : attacker.world.getEntitiesWithinAABB(EntityLivingBase.class, attacker.getEntityBoundingBox().grow(d, 0.25D, d))) {
 						if (entity != attacker && entity != event.getEntityLiving() && !attacker.isOnSameTeam(entity) && attacker.getDistanceSq(entity) <= d * d) {
-							entity.getEntityData().setBoolean("splashDamageFromHiraMekarei", true);
 							entity.knockBack(attacker, 0.5F, MathHelper.sin(attacker.rotationYaw * 0.017453292F), -MathHelper.cos(attacker.rotationYaw * 0.017453292F));
-							entity.attackEntityFrom(DamageSource.causeMobDamage((EntityLivingBase)attacker), event.getAmount());
-							entity.getEntityData().removeTag("splashDamageFromHiraMekarei");
+							event.getSource().damageType = "splash.hiramekarei";
+							entity.attackEntityFrom(event.getSource(), event.getAmount());
 						}
 					}
 					attacker.world.playSound(null, attacker.posX, attacker.posY, attacker.posZ, net.minecraft.init.SoundEvents.ENTITY_PLAYER_ATTACK_SWEEP, attacker.getSoundCategory(), 1.0F, 1.0F);

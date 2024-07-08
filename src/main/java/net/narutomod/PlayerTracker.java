@@ -210,9 +210,9 @@ public class PlayerTracker extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-	public class PlayerHook {
-		private final Map<Integer, Map<String, Object>> persistentDataMap = Maps.newHashMap();
-		private final UUID hp_uuid = UUID.fromString("84d6711b-c26d-4dfa-b0c5-1ff54395f4de");
+	public static class PlayerHook {
+		private static final Map<UUID, Map<String, Object>> PERSISTENT_DATA = Maps.newHashMap();
+		private static final UUID HP_UUID = UUID.fromString("84d6711b-c26d-4dfa-b0c5-1ff54395f4de");
 		
 		@SubscribeEvent
 		public void onTick(TickEvent.PlayerTickEvent event) {
@@ -220,12 +220,12 @@ public class PlayerTracker extends ElementsNarutomodMod.ModElement {
 				double d = getBattleXp(event.player) * 0.005d;
 				if (d > 0d) {
 					IAttributeInstance maxHealthAttr = event.player.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH);
-					AttributeModifier attr = maxHealthAttr.getModifier(hp_uuid);
+					AttributeModifier attr = maxHealthAttr.getModifier(HP_UUID);
 					if (attr == null || (int)attr.getAmount() / 2 != (int)d / 2) {
 						if (attr != null) {
-							maxHealthAttr.removeModifier(hp_uuid);
+							maxHealthAttr.removeModifier(HP_UUID);
 						}
-						maxHealthAttr.applyModifier(new AttributeModifier(hp_uuid, "ninja.maxhealth", d, 0));
+						maxHealthAttr.applyModifier(new AttributeModifier(HP_UUID, "ninja.maxhealth", d, 0));
 						event.player.setHealth(event.player.getHealth() + 0.1f);
 					}
 				}
@@ -304,38 +304,47 @@ public class PlayerTracker extends ElementsNarutomodMod.ModElement {
 
 		@SubscribeEvent
 		public void onRespawn(PlayerEvent.PlayerRespawnEvent event) {
-			Integer i = Integer.valueOf(event.player.getEntityId());
-			if (this.persistentDataMap.containsKey(i)) {
-				Map<String, Object> map = this.persistentDataMap.get(i);
-				for (Map.Entry<String, Object> entry : map.entrySet()) {
-					if (entry.getValue() instanceof Boolean) {
-						event.player.getEntityData().setBoolean(entry.getKey(), ((Boolean)entry.getValue()).booleanValue());
-					} else if (entry.getValue() instanceof Integer) {
-						event.player.getEntityData().setInteger(entry.getKey(), ((Integer)entry.getValue()).intValue());
-					} else if (entry.getValue() instanceof Float) {
-						event.player.getEntityData().setFloat(entry.getKey(), ((Float)entry.getValue()).floatValue());
-					} else if (entry.getValue() instanceof Double) {
-						event.player.getEntityData().setDouble(entry.getKey(), ((Double)entry.getValue()).doubleValue());
-					}
-				}
-				this.persistentDataMap.remove(i);
-			}
+			this.reloadPersistentData(event.player);
 		}
 
 		@SubscribeEvent
 		public void onClone(net.minecraftforge.event.entity.player.PlayerEvent.Clone event) {
 			EntityPlayer oldPlayer = event.getOriginal();
-			Map<String, Object> map = Maps.newHashMap();
-			map.put(BATTLEXP, Double.valueOf(getBattleXp(oldPlayer)));
-			map.put(FORCE_SEND, Boolean.valueOf(true));
-			map.put("MedicalNinjaChecked", Boolean.valueOf(oldPlayer.getEntityData().getBoolean("MedicalNinjaChecked")));
+			addPersistentData(oldPlayer, BATTLEXP, Double.valueOf(getBattleXp(oldPlayer)));
+			addPersistentData(oldPlayer, FORCE_SEND, Boolean.valueOf(true));
+			addPersistentData(oldPlayer, "MedicalNinjaChecked", Boolean.valueOf(oldPlayer.getEntityData().getBoolean("MedicalNinjaChecked")));
+			addPersistentData(oldPlayer, NarutomodModVariables.FirstGotNinjutsu, Boolean.valueOf(oldPlayer.getEntityData().getBoolean(NarutomodModVariables.FirstGotNinjutsu)));
 			if (event.isWasDeath()) {
-				map.put("ForceExtinguish", Integer.valueOf(5));
-			} else {
-				map.put(NarutomodModVariables.FirstGotNinjutsu,
-				 Boolean.valueOf(oldPlayer.getEntityData().getBoolean(NarutomodModVariables.FirstGotNinjutsu)));
+				addPersistentData(oldPlayer, "ForceExtinguish", Integer.valueOf(5));
 			}
-			this.persistentDataMap.put(Integer.valueOf(oldPlayer.getEntityId()), map);
+		}
+
+		private void reloadPersistentData(Entity entity) {
+			UUID uuid = entity.getUniqueID();
+			if (PERSISTENT_DATA.containsKey(uuid)) {
+				Map<String, Object> map = PERSISTENT_DATA.get(uuid);
+				for (Map.Entry<String, Object> entry : map.entrySet()) {
+					if (entry.getValue() instanceof Boolean) {
+						entity.getEntityData().setBoolean(entry.getKey(), ((Boolean)entry.getValue()).booleanValue());
+					} else if (entry.getValue() instanceof Integer) {
+						entity.getEntityData().setInteger(entry.getKey(), ((Integer)entry.getValue()).intValue());
+					} else if (entry.getValue() instanceof Float) {
+						entity.getEntityData().setFloat(entry.getKey(), ((Float)entry.getValue()).floatValue());
+					} else if (entry.getValue() instanceof Double) {
+						entity.getEntityData().setDouble(entry.getKey(), ((Double)entry.getValue()).doubleValue());
+					}
+				}
+				PERSISTENT_DATA.remove(uuid);
+			}
+		}
+
+		public static void addPersistentData(Entity entityIn, String key, Object value) {
+			Map<String, Object> map = PERSISTENT_DATA.get(entityIn.getUniqueID());
+			if (map == null) {
+				map = Maps.newHashMap();
+			}
+			map.put(key, value);
+			PERSISTENT_DATA.put(entityIn.getUniqueID(), map);
 		}
 
 		@SubscribeEvent
