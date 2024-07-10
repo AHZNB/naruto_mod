@@ -13,6 +13,7 @@ import net.minecraft.world.storage.MapStorage;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.entity.SharedMonsterAttributes;
@@ -25,26 +26,23 @@ import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.client.renderer.entity.Render;
+import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.culling.ICamera;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.network.datasync.DataSerializers;
 
-import net.narutomod.procedure.ProcedureAirPunch;
+import net.narutomod.procedure.ProcedureAoeCommand;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.Particles;
 import net.narutomod.ElementsNarutomodMod;
 
 import java.util.Random;
 import javax.annotation.Nullable;
-
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.client.renderer.culling.ICamera;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.entity.Render;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityNineTails extends ElementsNarutomodMod.ModElement {
@@ -64,7 +62,7 @@ public class EntityNineTails extends ElementsNarutomodMod.ModElement {
 		 .tracker(96, 3, true).egg(-39424, -13421773).build());
 		elements.entities.add(() -> EntityEntryBuilder.create().entity(EntityBeam.class)
 		 .id(new ResourceLocation("narutomod", "nine_tails_beam"), ENTITYID_RANGED)
-		 .name("nine_tails_beam").tracker(64, 1, true).build());
+		 .name("nine_tails_beam").tracker(96, 1, true).build());
 	}
 
 	public static TailBeastManager getBijuManager() {
@@ -214,7 +212,7 @@ public class EntityNineTails extends ElementsNarutomodMod.ModElement {
 			if (!this.isAIDisabled() && (this.mouthShootingJutsu == null || this.mouthShootingJutsu.isDead)
 			 && distanceFactor < 1.0f && distanceFactor > (float)(ProcedureUtils.getReachDistance(this) * 0.6d / this.getBijudamaMinRange())) {
 				this.setSwingingArms(true);
-				this.mouthShootingJutsu = EntityBeam.shoot(this);
+				this.mouthShootingJutsu = EntityBeam.shoot(this, 0.6f);
 			} else {
 				super.attackEntityWithRangedAttack(target, distanceFactor);
 			}
@@ -269,16 +267,17 @@ public class EntityNineTails extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static class EntityBeam extends EntityBeamBase.Base {
-		private final AirPunch beam = new AirPunch();
 		private float power = 2.0f;
+		private float damageMultiplier;
 		private float prevBeamLength;
 		
 		public EntityBeam(World worldIn) {
 			super(worldIn);
 		}
 
-		public EntityBeam(EntityLivingBase shooter) {
+		public EntityBeam(EntityLivingBase shooter, float damageMultiplierIn) {
 			super(shooter);
+			this.damageMultiplier = damageMultiplierIn;
 			this.updatePosition();
 		}
 
@@ -305,54 +304,24 @@ public class EntityNineTails extends ElementsNarutomodMod.ModElement {
 					}
 					this.power = (this.power + 1.0f) * 1.4f;
 					this.shoot(this.power);
-					this.beam.execute(this.shootingEntity, this.getBeamLength(), 3.0d, 1.0d, 0d);
+					if (this.hitTrace.typeOfHit != RayTraceResult.Type.MISS) {
+						ProcedureAoeCommand.set(this.world, this.hitTrace.hitVec.x, this.hitTrace.hitVec.y, this.hitTrace.hitVec.z, 0d, 3d)
+						 .exclude(this.shootingEntity).resetHurtResistanceTime()
+						 .damageEntities(DamageSource.causeIndirectMagicDamage(this, this.shootingEntity), this.power * this.damageMultiplier);
+						this.world.newExplosion(this.shootingEntity, this.hitTrace.hitVec.x, this.hitTrace.hitVec.y, this.hitTrace.hitVec.z,
+						 5.0f + this.damageMultiplier, true, net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.world, this.shootingEntity));
+					}
 				}
 			}
 		}
 
-		public class AirPunch extends ProcedureAirPunch {
-			public AirPunch() {
-				this.blockDropChance = -1.0F;
-				this.blockHardnessLimit = 100f;
-				this.particlesPre = null;
-				//this.particlesDuring = net.minecraft.util.EnumParticleTypes.SMOKE_LARGE;
-			}
-			
-			@Override
-			protected void attackEntityFrom(Entity player, Entity target) {
-				target.hurtResistantTime = 10;
-				target.attackEntityFrom(DamageSource.causeIndirectMagicDamage(EntityBeam.this, player), EntityBeam.this.power * 0.6f);
-			}
-
-			@Nullable
-			protected net.minecraft.entity.item.EntityItem processAffectedBlock(Entity player, BlockPos pos, EnumFacing facing) {
-				if (this.rand.nextFloat() < 0.005f) {
-					player.world.playSound(null, pos,
-					 SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:explosion")),
-					 net.minecraft.util.SoundCategory.BLOCKS, 4.0f, this.rand.nextFloat() * 0.5f + 0.75f);
-				}
-				return super.processAffectedBlock(player, pos, facing);
-			}
-
-			@Override
-			protected void breakBlockParticles(World world, BlockPos pos) {
-				Particles.spawnParticle(world, Particles.Types.SMOKE, pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D,
-				 1, 0D, 0D, 0D, 0D, 0D, 0D, 0x80000000, 60);
-			}
-
-			@Override
-			protected float getBreakChance(BlockPos pos, Entity player, double range) {
-				return 1.0F;
-			}
-		}
-
-		public static EntityBeam shoot(EntityLivingBase shooter) {
-			EntityBeam entity = new EntityBeam(shooter);
+		public static EntityBeam shoot(EntityLivingBase shooter, float damageMultiplier) {
+			EntityBeam entity = new EntityBeam(shooter, damageMultiplier);
 			shooter.world.spawnEntity(entity);
 			Vec3d vec = shooter.getLookVec();
-			Particles.Renderer particles = new Particles.Renderer(shooter.world);
-			for (int i = 1, j = 50; i <= j; i++) {
-				Vec3d vec1 = vec.scale(0.2d * i);
+			Particles.Renderer particles = new Particles.Renderer(shooter.world, 96d);
+			for (int i = 1, j = 30; i <= j; i++) {
+				Vec3d vec1 = vec.scale(0.1d * i);
 				particles.spawnParticles(Particles.Types.SONIC_BOOM, entity.posX, entity.posY, entity.posZ,
 				 1, 0d, 0d, 0d, vec1.x, vec1.y, vec1.z, 0x00fff000 | ((int)((1f-(float)i/j)*0x40)<<24),
 				 i * 2, (int)(5f * (1f + ((float)i/j) * 0.5f)), 240);
@@ -446,14 +415,14 @@ public class EntityNineTails extends ElementsNarutomodMod.ModElement {
 					float f8 = MathHelper.cos((j % 8) * ((float) Math.PI * 2F) / 8.0F) * 0.5F;
 					float f9 = (j % 8) / 8.0F;
 					bufferbuilder.pos(f7 * f11, (float)max_l, f8 * f11).tex(f9, f6).color(1.0f, 1.0f, 1.0f, 0.7f).endVertex();
-					bufferbuilder.pos(f7 * f11 * 0.5F, (float)max_l + 1.0F, f8 * f11 * 0.5F).tex(f9, f5).color(1.0f, 1.0f, 1.0f, 0.7f).endVertex();
+					bufferbuilder.pos(f7 * f11 * 0.6F, (float)max_l + 1.0F, f8 * f11 * 0.6F).tex(f9, f5).color(1.0f, 1.0f, 1.0f, 0.7f).endVertex();
 				}
 				for (int j = 0; j <= 8; j++) {
 					float f7 = MathHelper.sin((j % 8) * ((float) Math.PI * 2F) / 8.0F) * 0.5F;
 					float f8 = MathHelper.cos((j % 8) * ((float) Math.PI * 2F) / 8.0F) * 0.5F;
 					float f9 = (j % 8) / 8.0F;
-					bufferbuilder.pos(f7 * f11 * 0.5F, (float)max_l + 1.0F, f8 * f11 * 0.5F).tex(f9, f6).color(1.0f, 1.0f, 1.0f, 0.7f).endVertex();
-					bufferbuilder.pos(f7 * 0.1F, (float)max_l + 2.0F, f8 * 0.1F).tex(f9, f5).color(1.0f, 1.0f, 1.0f, 0.7f).endVertex();
+					bufferbuilder.pos(f7 * f11 * 0.6F, (float)max_l + 1.0F, f8 * f11 * 0.6F).tex(f9, f6).color(1.0f, 1.0f, 1.0f, 0.7f).endVertex();
+					bufferbuilder.pos(f7 * 0.2F, (float)max_l + 2.0F, f8 * 0.2F).tex(f9, f5).color(1.0f, 1.0f, 1.0f, 0.7f).endVertex();
 				}
 				for (int j = 0; j <= 8; j++) {
 					float f7 = MathHelper.sin((j % 8) * ((float) Math.PI * 2F) / 8.0F) * 0.6F;

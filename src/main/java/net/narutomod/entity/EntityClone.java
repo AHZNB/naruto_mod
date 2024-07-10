@@ -69,10 +69,10 @@ import net.narutomod.ElementsNarutomodMod;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.Map;
-import com.google.common.collect.Maps;
-import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Map;
+import javax.annotation.Nullable;
+import com.google.common.collect.Maps;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityClone extends ElementsNarutomodMod.ModElement {
@@ -172,8 +172,18 @@ public class EntityClone extends ElementsNarutomodMod.ModElement {
 		}
 
 		protected void setScale(float scale) {
-			this.getDataManager().set(MODEL_SCALE, Float.valueOf(scale));
+			if (!this.world.isRemote) {
+				this.getDataManager().set(MODEL_SCALE, Float.valueOf(scale));
+			}
 			this.setSize(0.6f * scale, 1.8f * scale);
+		}
+
+		@Override
+		public void notifyDataManagerChange(DataParameter<?> key) {
+			super.notifyDataManagerChange(key);
+			if (MODEL_SCALE.equals(key) && this.world.isRemote) {
+				this.setScale(this.getScale());
+			}
 		}
 
 		@Override
@@ -331,9 +341,6 @@ public class EntityClone extends ElementsNarutomodMod.ModElement {
 			 && (this.summoner == null || !this.summoner.isEntityAlive() || this.summoner.isPlayerSleeping() 
 			  || ProcedureUtils.isPlayerDisconnected(this.summoner))) {
 				this.setDead();
-			}
-			if (this.world.isRemote && this.height != this.getScale() * 1.8f) {
-				this.setSize(0.6f * this.getScale(), 1.8f * this.getScale());
 			}
 			if (!this.world.isRemote && this.ticksExisted % 200 == 1) {
 				this.addPotionEffect(new PotionEffect(PotionFeatherFalling.potion, 202, 1, false, false));

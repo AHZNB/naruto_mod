@@ -1,8 +1,8 @@
 {
   "id_map": {
+    "DIMENSION": 13,
     "GUI": 68,
-    "ENTITY": 448,
-    "DIMENSION": 13
+    "ENTITY": 450
   },
   "mod_elements": [
     {
@@ -7481,6 +7481,18 @@
       "locked_code": false,
       "ids": {},
       "registry_name": "scroll_flame_formation"
+    },
+    {
+      "name": "Deidara",
+      "type": "mob",
+      "sortid": 882,
+      "compiles": true,
+      "locked_code": true,
+      "ids": {
+        "0": 449,
+        "1": 450
+      },
+      "registry_name": "deidara"
     }
   ],
   "variable_elements": [
@@ -8880,6 +8892,7 @@
       "item.ninja_armor_jiraiyabody.name": "Jiraiya Jacket",
       "tile.light_source.name": "Light Source",
       "entity.water_canonball.name": "Water Cannon Ball",
+      "entity.deidara.name": "Deidara",
       "chattext.bijumanager.tooweak": "You are not strong enough to take on %s\u0027s chakra!",
       "item.scroll_big_blow.name": "Wind Release - Great Breakthrough",
       "chattext.eightgates.gate1": "1st Gate: Gate of Opening",

@@ -215,7 +215,7 @@ public class EntityMightGuy extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public net.minecraft.util.SoundEvent getAmbientSound() {
-			return SoundEvents.ENTITY_ILLUSION_ILLAGER_AMBIENT;
+			return SoundEvents.ENTITY_EVOCATION_ILLAGER_AMBIENT;
 		}
 
 		@Override

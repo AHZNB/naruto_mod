@@ -352,6 +352,7 @@ item.jutsu.name=Jutsu
 item.ninja_armor_jiraiyabody.name=Jiraiya Jacket
 tile.light_source.name=Light Source
 entity.water_canonball.name=Water Cannon Ball
+entity.deidara.name=Deidara
 chattext.bijumanager.tooweak=You are not strong enough to take on %s's chakra!
 item.scroll_big_blow.name=Wind Release - Great Breakthrough
 chattext.eightgates.gate1=1st Gate: Gate of Opening

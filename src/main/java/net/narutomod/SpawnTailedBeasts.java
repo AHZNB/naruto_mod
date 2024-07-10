@@ -57,7 +57,7 @@ public class SpawnTailedBeasts extends ElementsNarutomodMod.ModElement {
 		this.resetSpawnPos = true;
 		
 		for (EntityBijuManager bm : EntityBijuManager.getBMList()) {
-			if (bm.isAddedToWorld() || bm.isSealed() || bm.getTails() == 10) {
+			if (bm.isAddedToWorld() || bm.isSealed() || bm.getTails() >= 10) {
 				continue;
 			}
 

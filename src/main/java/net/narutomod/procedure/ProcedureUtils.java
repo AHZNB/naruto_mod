@@ -1047,10 +1047,14 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static void poofWithSmoke(Entity entity) {
-		entity.world.playSound(null, entity.posX, entity.posY, entity.posZ,
+		poofWithSmoke(entity.world, entity.posX, entity.posY, entity.posZ, entity.width, entity.height);
+	}
+
+	public static void poofWithSmoke(World world, double x, double y, double z, float width, float height) {
+		world.playSound(null, x, y, z,
 		 SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:poof")), SoundCategory.NEUTRAL, 1f, 1f);
-		Particles.spawnParticle(entity.world, Particles.Types.SMOKE, entity.posX, entity.posY+entity.height/2, entity.posZ,
-		 300, entity.width * 0.5d, entity.height * 0.3d, entity.width * 0.5d, 0d, 0d, 0d, 0xD0FFFFFF, 30);
+		Particles.spawnParticle(world, Particles.Types.SMOKE, x, y + height * 0.5, z,
+		 300, 0.5d * width, 0.3d * height, 0.5d * width, 0d, 0d, 0d, 0xD0FFFFFF, (int)(width * 30f));
 	}
 
 	public static float subtractDegreesWrap(float cur, float prev) {

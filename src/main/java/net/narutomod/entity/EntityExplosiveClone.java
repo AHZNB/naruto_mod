@@ -105,9 +105,11 @@ public class EntityExplosiveClone extends ElementsNarutomodMod.ModElement {
 
 		public EC(EntityLivingBase user) {
 			super(user);
+			this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(10D);
+			this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(user.getMaxHealth());
+			this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(ProcedureUtils.getModifiedSpeed(user) * 4.0d);
 			this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(48d);
-			double d = ProcedureUtils.getModifiedSpeed(user) * 4.0d;
-			this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(d);
+			this.setHealth(this.getMaxHealth());
 			this.stepHeight = 16f;
 			this.moveHelper = new EntityNinjaMob.MoveHelper(this);
 		}
@@ -150,7 +152,7 @@ public class EntityExplosiveClone extends ElementsNarutomodMod.ModElement {
 				this.world.createExplosion(summoner, this.posX, this.posY, this.posZ, 8f,
 		    	 net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.world, summoner));
 		    	ProcedureAoeCommand.set(this, 0d, 8d)
-		    	 .damageEntitiesCentered(ItemJutsu.causeJutsuDamage(this, summoner), 50f);
+		    	 .damageEntitiesCentered(ItemJutsu.causeJutsuDamage(this, summoner), 45f + this.rand.nextFloat() * 10f);
 	    		this.setDead();
 	    	}
 		}

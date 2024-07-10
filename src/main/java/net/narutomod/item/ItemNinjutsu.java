@@ -144,19 +144,22 @@ public class ItemNinjutsu extends ElementsNarutomodMod.ModElement {
 			super(player);
 			Vec3d vec3d = player.getPositionVector().subtract(attacker.getPositionVector()).normalize();
 			int i = 5;
+			BlockPos.PooledMutableBlockPos pos = BlockPos.PooledMutableBlockPos.retain();
 			for (Vec3d vec1 = vec3d.scale(i); i > 1; vec1 = vec3d.scale(--i)) {
 				int j = 0;
-				BlockPos pos = new BlockPos(attacker.posX - vec1.x, attacker.posY - vec1.y, attacker.posZ - vec1.z);
-				while (j < 6 && (!player.world.getBlockState(pos.down()).isTopSolid() || !player.world.isAirBlock(pos.up()))) {
-					pos = pos.offset(EnumFacing.VALUES[j++]);
+				pos.setPos(attacker.posX - vec1.x, attacker.posY - vec1.y, attacker.posZ - vec1.z);
+				while (j < EnumFacing.VALUES.length && (!player.world.getBlockState(pos.down()).isTopSolid() || !player.world.isAirBlock(pos.up()))) {
+					pos.setPos(pos.offset(EnumFacing.VALUES[j++]));
 				}
-				if (j < 6) {
+				if (j < EnumFacing.VALUES.length) {
 					vec3d = new Vec3d(0.5d + pos.getX(), pos.getY(), 0.5d + pos.getZ());
 					player.rotationYaw = ProcedureUtils.getYawFromVec(attacker.getPositionVector().subtract(vec3d));
+					player.addPotionEffect(new PotionEffect(MobEffects.INVISIBILITY, 10, 0, false, false));
 					player.setPositionAndUpdate(vec3d.x, vec3d.y, vec3d.z);
 					break;
 				}
 			}
+			pos.release();
 		}
 		
 		@Override

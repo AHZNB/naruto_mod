@@ -22,6 +22,7 @@ Jutsus:
  - add Uchiha flame formation (barrier jutsu) and scroll
  - rasenshuriken now tilts in the direction its turning
  - updated wind release great breakthrough: flat 5 second duration, also raises block dust into the air
+ - explosion release C-1 is faster, C-2 bigger, both slightly more damage. explosive clone has more health
 
 Items:
  - added Sakura shippuden clothing and leggings (for slim player models only)
@@ -59,13 +60,16 @@ Entities:
  - added melee animation for Matatabi(paw swipe) and Kokuo(head butt)
  - Shukaku shoots air bullets, Matatabi shoots fire balls, Isobu shoots water balls, Son Goku shoots green fire,
    Saiken shoots acid breath, Chomei emits blinding powder, Gyuki chain shoots small bijudamas, Kurama shoots lasers
-   Ten-Tails is much larger, heals faster, spawns clones to defend itself
+   Ten-Tails is much larger, heals faster, spawns clones to defend itself, shoots lasers
+ - updated Sakura's texture
+ - adding Deidara (WIP-1: uses C-1 to explode targets, uses explosive clone when hit, does not naturally spawn)
  
 General:
  - fixed alpha transparency bug when using certain jutsus
  - will not get your releases back after death if keep inventory on
  - getting a kekkeigenkai depends on player having owner matched release items in inventory
  - will remove lower level sharingan if higher level mangekyo bound to the same player is in inventory
+ - NinjaXp gain rate multiplier added in config
  
 Bugs & Issues:
 

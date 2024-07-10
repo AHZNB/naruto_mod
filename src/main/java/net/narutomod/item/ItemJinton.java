@@ -98,7 +98,7 @@ public class ItemJinton extends ElementsNarutomodMod.ModElement {
 
 		private float getMaxUsablePower(EntityLivingBase entity, ItemStack stack) {
 			float max = entity instanceof EntityPlayer ? (float)(PlayerTracker.getNinjaLevel((EntityPlayer)entity)-MIN_PLAYER_XP+5)/5 : 6;
-			return MathHelper.clamp(max, 0f, this.getCurrentJutsu(stack) == BEAM ? 10f : 50f);
+			return MathHelper.clamp(max, 0f, this.getCurrentJutsu(stack).jutsu.getMaxPower());
 		}
 
 		private float getUsePercent(int timeLeft) {
@@ -234,6 +234,16 @@ public class ItemJinton extends ElementsNarutomodMod.ModElement {
 				}
 				return false;
 			}
+
+			@Override
+			public float getPowerupDelay() {
+				return 100.0f;
+			}
+
+			@Override
+			public float getMaxPower() {
+				return 10.0f;
+			}
 		}
 	}
 
@@ -366,6 +376,16 @@ public class ItemJinton extends ElementsNarutomodMod.ModElement {
 				  .getObject(new ResourceLocation("narutomod:genkaihakurinojutsu")), SoundCategory.PLAYERS, 1, 1f);
 				entity.world.spawnEntity(new EntityCube(entity, power));
 				return true;
+			}
+
+			@Override
+			public float getPowerupDelay() {
+				return 100.0f;
+			}
+
+			@Override
+			public float getMaxPower() {
+				return 50.0f;
 			}
 		}
 	}

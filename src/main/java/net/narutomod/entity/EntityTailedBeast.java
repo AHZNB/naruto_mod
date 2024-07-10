@@ -439,7 +439,7 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 
 		public Vec3d getPositionMouth() {
 			return Vec3d.fromPitchYaw(this.rotationPitch, this.rotationYawHead)
-			 .scale(this.width * 1.5).add(this.getPositionEyes(1.0f));
+			 .scale(this.width * 1.5f).add(this.getPositionEyes(1.0f));
 		}
 
 		public float getFuuinBeamHeight() {
@@ -578,7 +578,7 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 			if (this.couldBreakBlocks()) {
 				for (BlockPos pos : this.collisionData.getHitBlocks()) {
 					if (this.canBreakList.contains(this.world.getBlockState(pos).getMaterial())) {
-						this.world.destroyBlock(pos, this.rand.nextFloat() < 0.3f);
+						this.world.destroyBlock(pos, this.rand.nextFloat() < 0.2f);
 						x *= 0.96d;
 						y *= 0.96d;
 						z *= 0.96d;

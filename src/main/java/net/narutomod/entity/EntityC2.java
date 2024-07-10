@@ -48,14 +48,14 @@ public class EntityC2 extends ElementsNarutomodMod.ModElement {
 	public static class EC extends ItemBakuton.ExplosiveClay {
 		public EC(World world) {
 			super(world);
-			this.setSize(2.0f, 1.2f);
-			this.setExplosionSize(10.0f);
+			this.setSize(3.0f, 1.6f);
+			this.setExplosionSize(12.0f);
 		}
 
 		public EC(EntityLivingBase ownerIn) {
 			super(ownerIn);
-			this.setSize(2.0f, 1.2f);
-			this.setExplosionSize(10.0f);
+			this.setSize(3.0f, 1.6f);
+			this.setExplosionSize(12.0f);
 		}
 
 		@Override
@@ -88,7 +88,7 @@ public class EntityC2 extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public double getMountedYOffset() {
-			return this.height - 0.5;
+			return this.height - 0.35f;
 		}
 	
 		@Override
@@ -133,7 +133,7 @@ public class EntityC2 extends ElementsNarutomodMod.ModElement {
 	    public boolean attackEntityAsMob(Entity entityIn) {
 	    	if (super.attackEntityAsMob(entityIn)) {
 	    		entityIn.hurtResistantTime = 10;
-		    	return entityIn.attackEntityFrom(ItemJutsu.causeJutsuDamage(this, this.getOwner()), 40f + this.rand.nextFloat() * 10f);
+		    	return entityIn.attackEntityFrom(ItemJutsu.causeJutsuDamage(this, this.getOwner()), 50f + this.rand.nextFloat() * 10f);
 	    	}
 	    	return false;
 	    }
@@ -164,13 +164,13 @@ public class EntityC2 extends ElementsNarutomodMod.ModElement {
 			private final ResourceLocation texture = new ResourceLocation("narutomod:textures/phantom1.png");
 	
 			public RenderCustom(RenderManager renderManagerIn) {
-				super(renderManagerIn, new ModelPhantom(), 0.75F);
+				super(renderManagerIn, new ModelPhantom(), 2.5F);
 			}
 	
 			@Override
 			protected void preRenderCallback(EC entity, float partialTickTime) {
-				GlStateManager.scale(3.0F, 3.0F, 3.0F);
-				GlStateManager.translate(0.0D, 1.3125D, 0.1875D);
+				GlStateManager.scale(6.0F, 6.0F, 6.0F);
+				GlStateManager.translate(0.0D, 1.375D, 0.375D);
 			}
 	
 			@Override

@@ -47,6 +47,9 @@ public class ModConfig extends ElementsNarutomodMod.ModElement {
 	@Config.Comment("Amaterasu flame on block duration (reference: vanilla fire is 3)")
 	public static int AMATERASU_BLOCK_DURATION = 100;
 
+	@Config.Comment("Ninja XP gain multiplier (higher value gains NinjaXp faster. default=0.5)")
+	public static double NINJAXP_MULTIPLIER = 0.5D;
+
 	public ModConfig(ElementsNarutomodMod instance) {
 		super(instance, 837);
 	}

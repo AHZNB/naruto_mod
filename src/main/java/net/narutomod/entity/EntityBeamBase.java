@@ -121,10 +121,10 @@ public class EntityBeamBase extends ElementsNarutomodMod.ModElement {
 			this.motionY = 0.0D;
 			this.motionZ = 0.0D;
 			float f1 = MathHelper.sqrt(x * x + z * z);
-			this.rotationYaw = (float) (MathHelper.atan2(x, z) * (180d / Math.PI));
-			this.rotationPitch = (float) (MathHelper.atan2(y, f1) * (180d / Math.PI));
 			this.prevRotationYaw = this.rotationYaw;
 			this.prevRotationPitch = this.rotationPitch;
+			this.rotationYaw = (float) (MathHelper.atan2(x, z) * (180d / Math.PI));
+			this.rotationPitch = (float) (MathHelper.atan2(y, f1) * (180d / Math.PI));
 			//this.ticksAlive = 0;
 		}
 

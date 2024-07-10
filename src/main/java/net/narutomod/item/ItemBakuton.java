@@ -329,6 +329,7 @@ public class ItemBakuton extends ElementsNarutomodMod.ModElement {
 					ec = new EntityC1.EC(entity);
 				} else if (powerIn < 3f) {
 					ec = new EntityC2.EC(entity);
+					ProcedureUtils.poofWithSmoke(entity.world, vec.x, vec.y, vec.z, ec.width, ec.height);
 				} else if (powerIn < 4f) {
 					ec = new EntityC3.EC(entity);
 				} else {
@@ -386,11 +387,11 @@ public class ItemBakuton extends ElementsNarutomodMod.ModElement {
 	
 	        @Override
 	        public void updateTask() {
-	            EntityLivingBase entitylivingbase = ExplosiveClay.this.getAttackTarget();
-	            if (ExplosiveClay.this.getEntityBoundingBox().intersects(entitylivingbase.getEntityBoundingBox())) {
-	                ExplosiveClay.this.attackEntityAsMob(entitylivingbase);
+	            EntityLivingBase target = ExplosiveClay.this.getAttackTarget();
+	            if (ExplosiveClay.this.getEntityBoundingBox().intersects(target.getEntityBoundingBox().grow(target.width * 0.5f))) {
+	                ExplosiveClay.this.attackEntityAsMob(target);
 	            } else { //if (ExplosiveClay.this.getDistanceSq(entitylivingbase) < 9.0D) {
-	                Vec3d vec3d = entitylivingbase.getPositionEyes(1.0F);
+	                Vec3d vec3d = target.getPositionEyes(1.0F);
 	                ExplosiveClay.this.moveHelper.setMoveTo(vec3d.x, vec3d.y, vec3d.z, 2.0D);
 	            }
 	        }

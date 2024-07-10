@@ -147,6 +147,14 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
+		protected void applyEntityAttributes() {
+			super.applyEntityAttributes();
+			this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(100D);
+			this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.5D);
+			this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(10D);
+		}
+
+		@Override
 		protected void initEntityAI() {
 			super.initEntityAI();
 			this.tasks.addTask(0, new EntityAISwimming(this));
@@ -193,20 +201,48 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 			this.tasks.addTask(6, new EntityAILookIdle(this));
 			this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, false));
 			this.targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, EntityPlayer.class, 10, true, false,
-					new Predicate<EntityPlayer>() {
-						public boolean apply(@Nullable EntityPlayer p_apply_1_) {
-							return p_apply_1_ != null
-									&& (ItemSharingan.wearingAny(p_apply_1_) || EntityBijuManager.isJinchuriki(p_apply_1_));
-						}
-					}));
+				new Predicate<EntityPlayer>() {
+					public boolean apply(@Nullable EntityPlayer p_apply_1_) {
+						return p_apply_1_ != null && (ModConfig.AGGRESSIVE_BOSSES
+						 || ItemSharingan.wearingAny(p_apply_1_) || EntityBijuManager.isJinchuriki(p_apply_1_));
+					}
+				}));
 		}
 
 		@Override
-		protected void applyEntityAttributes() {
-			super.applyEntityAttributes();
-			this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(100D);
-			this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.5D);
-			this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(10D);
+		protected void updateAITasks() {
+			super.updateAITasks();
+			EntityLivingBase target = this.getAttackTarget();
+			if (target != null && target.isEntityAlive()) {
+				if (this.isSusanooActive()) {
+					this.susanooEntity.setAttackTarget(target);
+				}
+				if (this.lookedAtTime >= 5 && this.ticksExisted > this.lastGenjutsuTime + this.genjutsuDuration + GENJUTSU_COOLDOWN
+						&& this.consumeChakra(GENJUTSU_CHAKRA)) {
+					if (target instanceof EntityPlayerMP) {
+						ProcedureSync.MobAppearanceParticle.send((EntityPlayerMP)target, ENTITYID_RANGED);
+					}
+					this.world.playSound(null, target.posX, target.posY, target.posZ,
+					 SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:genjutsu")), SoundCategory.NEUTRAL, 1f, 1f);
+					if (!this.world.isRemote) {
+						target.addPotionEffect(new PotionEffect(PotionParalysis.potion, this.genjutsuDuration, 1, false, false));
+						target.addPotionEffect(new PotionEffect(MobEffects.NAUSEA, this.genjutsuDuration+40, 0, false, true));
+						target.addPotionEffect(new PotionEffect(MobEffects.BLINDNESS, 60, 0, false, true));
+					}
+					this.lastGenjutsuTime = this.ticksExisted;
+					this.lookedAtTime = 0;
+				}
+				if (this.equals(ProcedureUtils.objectEntityLookingAt(target, 24d).entityHit)) {
+					++this.lookedAtTime;
+				} else {
+					this.lookedAtTime = 0;
+				}
+			} else if (this.peacefulTicks > 200) {
+				this.setAttackTarget(target = null);
+			}
+			if ((this.getItemStackFromSlot(EntityEquipmentSlot.HEAD).getItem() == ItemAkatsukiRobe.helmet) != (target == null)) {
+				this.swapWithInventory(EntityEquipmentSlot.HEAD, 1);
+			}
 		}
 
 		@Override
@@ -283,53 +319,6 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
-		protected void updateAITasks() {
-			super.updateAITasks();
-			EntityLivingBase target = this.getAttackTarget();
-			if (target != null && target.isEntityAlive()) {
-				if (this.isSusanooActive()) {
-					this.susanooEntity.setAttackTarget(target);
-				}
-				if (this.lookedAtTime >= 5 && this.ticksExisted > this.lastGenjutsuTime + this.genjutsuDuration + GENJUTSU_COOLDOWN
-						&& this.consumeChakra(GENJUTSU_CHAKRA)) {
-					if (target instanceof EntityPlayerMP) {
-						ProcedureSync.MobAppearanceParticle.send((EntityPlayerMP)target, ENTITYID_RANGED);
-					}
-					this.world.playSound(null, target.posX, target.posY, target.posZ,
-					 SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:genjutsu")), SoundCategory.NEUTRAL, 1f, 1f);
-					if (!this.world.isRemote) {
-						target.addPotionEffect(new PotionEffect(PotionParalysis.potion, this.genjutsuDuration, 1, false, false));
-						target.addPotionEffect(new PotionEffect(MobEffects.NAUSEA, this.genjutsuDuration+40, 0, false, true));
-						target.addPotionEffect(new PotionEffect(MobEffects.BLINDNESS, 60, 0, false, true));
-					}
-					this.lastGenjutsuTime = this.ticksExisted;
-					this.lookedAtTime = 0;
-				}
-				if (this.equals(ProcedureUtils.objectEntityLookingAt(target, 24d).entityHit)) {
-					++this.lookedAtTime;
-				} else {
-					this.lookedAtTime = 0;
-				}
-			} else if (this.peacefulTicks > 200) {
-				this.setAttackTarget(target = null);
-			}
-			if ((this.getItemStackFromSlot(EntityEquipmentSlot.HEAD).getItem() == ItemAkatsukiRobe.helmet) != (target == null)) {
-				this.swapWithInventory(EntityEquipmentSlot.HEAD, 1);
-			}
-		}
-
-		@Override
-		public void onEntityUpdate() {
-			super.onEntityUpdate();
-			{
-				java.util.HashMap<String, Object> $_dependencies = new java.util.HashMap<>();
-				$_dependencies.put("entity", this);
-				$_dependencies.put("world", this.world);
-				ProcedureBasicNinjaSkills.executeProcedure($_dependencies);
-			}
-		}
-
-		@Override
 		public boolean getCanSpawnHere() {
 			return super.getCanSpawnHere()
 			 && this.world.getEntitiesWithinAABB(EntityCustom.class, this.getEntityBoundingBox().grow(128.0D)).isEmpty();
@@ -368,18 +357,8 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
-		public void addTrackingPlayer(EntityPlayerMP player) {
-			super.addTrackingPlayer(player);
-
-			if (ModConfig.AGGRESSIVE_BOSSES) {
-				this.setAttackTarget(player);
-			}
-		}
-
-		@Override
 		public void removeTrackingPlayer(EntityPlayerMP player) {
-			super.removeTrackingPlayer(player);
-
+			super.removeTrackingPlayer(player);
 			if (this.bossInfo.getPlayers().contains(player)) {
 				this.bossInfo.removePlayer(player);
 			}
@@ -387,9 +366,8 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 
 		private void trackAttackedPlayers() {
 			Entity entity = this.getAttackingEntity();
-
-			if (entity instanceof EntityPlayerMP || (entity = (ModConfig.AGGRESSIVE_BOSSES ? this.getLastAttackedEntity() : this.getAttackTarget())) instanceof EntityPlayerMP) {
-				this.bossInfo.addPlayer((EntityPlayerMP) entity);
+			if (entity instanceof EntityPlayerMP || (entity = this.getAttackTarget()) instanceof EntityPlayerMP) {
+				this.bossInfo.addPlayer((EntityPlayerMP)entity);
 			}
 		}
 

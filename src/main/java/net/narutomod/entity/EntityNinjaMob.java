@@ -79,7 +79,7 @@ import java.io.IOException;
 public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 	public static final List<Class <? extends Base>> TeamKonoha = Arrays.asList(EntityTenten.EntityCustom.class, EntitySakuraHaruno.EntityCustom.class, EntityIrukaSensei.EntityCustom.class, EntityMightGuy.EntityCustom.class);
 	public static final List<Class <? extends Base>> TeamZabuza = Arrays.asList(EntityZabuzaMomochi.EntityCustom.class, EntityHaku.EntityCustom.class);
-	public static final List<Class <? extends Base>> TeamAkatsuki = Arrays.asList(EntityItachi.EntityCustom.class, EntityKisameHoshigaki.EntityCustom.class, EntitySasori.EntityCustom.class);
+	public static final List<Class <? extends Base>> TeamAkatsuki = Arrays.asList(EntityItachi.EntityCustom.class, EntityKisameHoshigaki.EntityCustom.class, EntitySasori.EntityCustom.class, EntityDeidara.EntityCustom.class);
 
 	public EntityNinjaMob(ElementsNarutomodMod instance) {
 		super(instance, 404);
@@ -156,6 +156,10 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 
 		public double getChakra() {
 			return this.chakraPathway.getAmount();
+		}
+
+		public float remainingChakra() {
+			return (float)(this.getChakra() / this.chakraPathway.getMax());
 		}
 
 		public boolean consumeChakra(double amount) {
@@ -432,7 +436,7 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 				 && (this.user.getAttackingEntity() == null || !this.user.getAttackingEntity().isEntityAlive())) {
 					++this.user.peacefulTicks;
 					if (this.user.peacefulTicks % 20 == 19) {
-						this.consume(-this.getMax() * 0.04d);
+						this.consume(-0.04f);
 						if (this.user.getHealth() < this.user.getMaxHealth()) {
 							this.user.setHealth(this.user.getHealth() + 1.0f);
 						}
