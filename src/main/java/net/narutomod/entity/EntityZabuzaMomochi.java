@@ -20,6 +20,7 @@ import net.minecraft.world.DifficultyInstance;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.EntitySelectors;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.EnumHandSide;
 import net.minecraft.util.math.BlockPos;
@@ -180,14 +181,16 @@ public class EntityZabuzaMomochi extends ElementsNarutomodMod.ModElement {
 		}
 
 		public void removeTargetsTasks() {
-			//this.targetTasks.removeTask(this.aiTargetPlayer);
 			this.targetTasks.removeTask(this.aiTargetHurt);
+			this.targetTasks.removeTask(this.aiTargetPlayer);
 			this.setAttackTarget(null);
 		}
 
 		public void setAttackTargetsTasks() {
-			//this.targetTasks.addTask(1, this.aiTargetPlayer);
 			this.targetTasks.addTask(1, this.aiTargetHurt);
+			if (ModConfig.AGGRESSIVE_BOSSES) {
+				this.targetTasks.addTask(2, this.aiTargetPlayer);
+			}
 		}
 
 		@Override
@@ -316,7 +319,8 @@ public class EntityZabuzaMomochi extends ElementsNarutomodMod.ModElement {
 		@Override
 		public boolean getCanSpawnHere() {
 			return super.getCanSpawnHere()
-			 && this.world.getEntitiesWithinAABB(EntityCustom.class, this.getEntityBoundingBox().grow(128.0D)).isEmpty();
+			 && this.world.getEntities(EntityCustom.class, EntitySelectors.IS_ALIVE).isEmpty();
+			 //&& this.world.getEntitiesWithinAABB(EntityCustom.class, this.getEntityBoundingBox().grow(128.0D)).isEmpty();
 			 //&& this.rand.nextInt(5) == 0;
 		}
 
@@ -326,18 +330,8 @@ public class EntityZabuzaMomochi extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
-		public void addTrackingPlayer(EntityPlayerMP player) {
-			super.addTrackingPlayer(player);
-
-			if (ModConfig.AGGRESSIVE_BOSSES) {
-				this.setAttackTarget(player);
-			}
-		}
-
-		@Override
 		public void removeTrackingPlayer(EntityPlayerMP player) {
 			super.removeTrackingPlayer(player);
-
 			if (this.bossInfo.getPlayers().contains(player)) {
 				this.bossInfo.removePlayer(player);
 			}
@@ -345,8 +339,7 @@ public class EntityZabuzaMomochi extends ElementsNarutomodMod.ModElement {
 
 		private void trackAttackedPlayers() {
 			Entity entity = this.getAttackingEntity();
-
-			if (entity instanceof EntityPlayerMP || (entity = (ModConfig.AGGRESSIVE_BOSSES ? this.getLastAttackedEntity() : this.getAttackTarget())) instanceof EntityPlayerMP) {
+			if (entity instanceof EntityPlayerMP || (entity = this.getAttackTarget()) instanceof EntityPlayerMP) {
 				this.bossInfo.addPlayer((EntityPlayerMP) entity);
 			}
 		}

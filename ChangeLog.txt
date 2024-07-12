@@ -62,7 +62,8 @@ Entities:
    Saiken shoots acid breath, Chomei emits blinding powder, Gyuki chain shoots small bijudamas, Kurama shoots lasers
    Ten-Tails is much larger, heals faster, spawns clones to defend itself, shoots lasers
  - updated Sakura's texture
- - adding Deidara (WIP-1: uses C-1 to explode targets, uses explosive clone when hit, does not naturally spawn)
+ - adding Deidara (WIP-2: rides on C-2 phantom when hurt)
+ - Ninja mobs like Itachi can spawn during daytime, you may need to decrease spawn weight in the config
  
 General:
  - fixed alpha transparency bug when using certain jutsus

@@ -43,15 +43,17 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.client.renderer.entity.RenderBiped;
+import net.minecraft.client.model.ModelBox;
+import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.entity.RenderLivingBase;
+import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.client.entity.AbstractClientPlayer;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.model.ModelBox;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.entity.AbstractClientPlayer;
+import net.minecraft.client.Minecraft;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
@@ -546,15 +548,15 @@ public class EntityClone extends ElementsNarutomodMod.ModElement {
                     this.entity.motionX += d0 / d3 * 0.05D * f;
                     this.entity.motionY += d1 / d3 * 0.05D * f;
                     this.entity.motionZ += d2 / d3 * 0.05D * f;
-                    if (this.entity.getAttackTarget() == null) {
+                    //if (this.entity.getAttackTarget() == null) {
                         this.entity.rotationYaw = -((float)MathHelper.atan2(this.entity.motionX, this.entity.motionZ)) * (180F / (float)Math.PI);
                         this.entity.renderYawOffset = this.entity.rotationYaw;
-                    } else {
-                        double d4 = this.entity.getAttackTarget().posX - this.entity.posX;
-                        double d5 = this.entity.getAttackTarget().posZ - this.entity.posZ;
-                        this.entity.rotationYaw = -((float)MathHelper.atan2(d4, d5)) * (180F / (float)Math.PI);
-                        this.entity.renderYawOffset = this.entity.rotationYaw;
-                    }
+                    //} else {
+                    //    double d4 = this.entity.getAttackTarget().posX - this.entity.posX;
+                    //    double d5 = this.entity.getAttackTarget().posZ - this.entity.posZ;
+                    //    this.entity.rotationYaw = -((float)MathHelper.atan2(d4, d5)) * (180F / (float)Math.PI);
+                    //    this.entity.renderYawOffset = this.entity.rotationYaw;
+                    //}
                 } else {
                     this.entity.motionX *= 0.5D;
                     this.entity.motionY *= 0.5D;
@@ -655,6 +657,16 @@ public class EntityClone extends ElementsNarutomodMod.ModElement {
 
 		    @Override
 		    public void doRender(T entity, double x, double y, double z, float entityYaw, float partialTicks) {
+		    	EntityLivingBase summoner = entity.getSummoner();
+		    	if (summoner != null && !(summoner instanceof AbstractClientPlayer)) {
+		    		Render renderer = this.renderManager.getEntityRenderObject(summoner);
+		    		if (renderer instanceof RenderLivingBase) {
+		    			ModelBase model = ((RenderLivingBase)renderer).getMainModel();
+		    			if (model instanceof ModelBiped) {
+		    				this.mainModel = model;
+		    			}
+		    		}
+		    	}
 		    	this.setPose(entity);
 		    	super.doRender(entity, x, y, z, entityYaw, partialTicks);
 		    }
@@ -712,6 +724,9 @@ public class EntityClone extends ElementsNarutomodMod.ModElement {
 		        		this.mainModel = this.altModel;
 		        	}
 		        	return clientPlayer.getLocationSkin();
+		        } else if (summoner != null) {
+		        	Render renderer = this.renderManager.getEntityRenderObject(summoner);
+		        	return ProcedureUtils.invokeMethodByParameters(renderer, ResourceLocation.class, summoner);
 		        }
 		        return null;
 		    }
@@ -723,9 +738,15 @@ public class EntityClone extends ElementsNarutomodMod.ModElement {
 	
 		    @Override
 		    protected void preRenderCallback(T entity, float partialTickTime) {
-		        if (entity.getSummoner() instanceof AbstractClientPlayer) {
+		    	EntityLivingBase summoner = entity.getSummoner();
+		        if (summoner instanceof AbstractClientPlayer) {
 			        float f = 0.9375F;
 			        GlStateManager.scale(f, f, f);
+		        } else if (summoner != null) {
+		        	Render renderer = this.renderManager.getEntityRenderObject(summoner);
+		        	if (renderer instanceof RenderLivingBase) {
+		        		ProcedureUtils.invokeMethodByParameters(renderer, summoner, partialTickTime);
+		        	}
 		        }
 		        float f = entity.getScale();
 		        if (f != 1.0f) {

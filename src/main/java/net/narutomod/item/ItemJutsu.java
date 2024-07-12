@@ -81,6 +81,16 @@ public class ItemJutsu extends ElementsNarutomodMod.ModElement {
 		 && (!(targetIn instanceof EntityPlayer) || !((EntityPlayer)targetIn).isSpectator());
 	}
 
+	@Nullable
+	public static ItemStack getOwnerMatchingItemstack(EntityPlayer entity, Item itemIn) {
+		ItemStack stack = ProcedureUtils.getMatchingItemStack(entity, itemIn);
+		return stack == null || (stack.getItem() instanceof Base && ((Base)stack.getItem()).isOwner(stack, entity)) ? stack : null;
+	}
+
+	public static boolean hasOwnerMatchingItemstack(EntityPlayer entity, Item itemIn) {
+		return getOwnerMatchingItemstack(entity, itemIn) != null;
+	}
+
 	public static void setCurrentJutsuCooldown(ItemStack stack, EntityLivingBase player, long cd) {
 		if (stack.getItem() instanceof Base) {
 			((Base)stack.getItem()).setCurrentJutsuCooldown(stack, (long)((double)cd * ((Base)stack.getItem()).getModifier(stack, player)));

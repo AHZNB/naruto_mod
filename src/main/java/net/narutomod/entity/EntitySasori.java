@@ -258,7 +258,7 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 			this.targetTasks.addTask(3, new EntityAINearestAttackableTarget(this, EntityPlayer.class, 10, true, false,
 					new Predicate<EntityPlayer>() {
 						public boolean apply(@Nullable EntityPlayer p_apply_1_) {
-							return p_apply_1_ != null && EntityBijuManager.isJinchuriki(p_apply_1_);
+							return p_apply_1_ != null && (ModConfig.AGGRESSIVE_BOSSES || EntityBijuManager.isJinchuriki(p_apply_1_));
 						}
 					}));
 			//this.targetTasks.addTask(4, new EntityAINearestAttackableTarget(this, EntityMob.class, false, false));
@@ -515,16 +515,9 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 		@Override
 		public boolean getCanSpawnHere() {
 			return super.getCanSpawnHere()
-			 && this.world.getEntitiesWithinAABB(EntityCustom.class, this.getEntityBoundingBox().grow(128.0D)).isEmpty();
+			 && this.world.getEntities(EntityCustom.class, EntitySelectors.IS_ALIVE).isEmpty();
+			 //&& this.world.getEntitiesWithinAABB(EntityCustom.class, this.getEntityBoundingBox().grow(128.0D)).isEmpty();
 			 //&& this.rand.nextInt(5) == 0;
-		}
-
-		@Override
-		public void addTrackingPlayer(EntityPlayerMP player) {
-			super.addTrackingPlayer(player);
-			if (ModConfig.AGGRESSIVE_BOSSES) {
-				this.setAttackTarget(player);
-			}
 		}
 
 		@Override
@@ -537,7 +530,7 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 
 		private void trackAttackedPlayers() {
 			Entity entity = this.getAttackingEntity();
-			if (entity instanceof EntityPlayerMP || (entity = (ModConfig.AGGRESSIVE_BOSSES ? this.getLastAttackedEntity() : this.getAttackTarget())) instanceof EntityPlayerMP) {
+			if (entity instanceof EntityPlayerMP || (entity = this.getAttackTarget()) instanceof EntityPlayerMP) {
 				this.bossInfo.addPlayer((EntityPlayerMP) entity);
 			}
 		}

@@ -70,10 +70,10 @@ import net.narutomod.ElementsNarutomodMod;
 import net.narutomod.NarutomodMod;
 
 import io.netty.buffer.ByteBuf;
+import java.io.IOException;
 import java.util.List;
 import java.util.Arrays;
 import com.google.common.collect.Lists;
-import java.io.IOException;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
@@ -304,7 +304,7 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public boolean getCanSpawnHere() {
-			return super.getCanSpawnHere() && (this instanceof IMob ? this.world.getDifficulty() != EnumDifficulty.PEACEFUL && this.isValidLightLevel() : true);
+			return super.getCanSpawnHere() && (this instanceof IMob ? this.world.getDifficulty() != EnumDifficulty.PEACEFUL : true);
 		}
 
 		@Override

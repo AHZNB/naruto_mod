@@ -15,16 +15,16 @@ public class ModConfig extends ElementsNarutomodMod.ModElement {
 	public static boolean REMOVE_CHEAT_DOJUTSUS = false;
 
 	@Config.Comment("Itachi's spawn weight (0~20). 0 to stop spawning.")
-	public static int SPAWN_WEIGHT_ITACHI = 5;
+	public static int SPAWN_WEIGHT_ITACHI = 1;
 
 	@Config.Comment("Kisame's spawn weight (0~20). 0 to stop spawning.")
-	public static int SPAWN_WEIGHT_KISAME = 5;
+	public static int SPAWN_WEIGHT_KISAME = 1;
 
 	@Config.Comment("sasori's spawn weight (0~20). 0 to stop spawning.")
-	public static int SPAWN_WEIGHT_SASORI = 5;
+	public static int SPAWN_WEIGHT_SASORI = 1;
 
 	@Config.Comment("Zabuza's spawn weight (0~20). 0 to stop spawning.")
-	public static int SPAWN_WEIGHT_ZABUZA = 5;
+	public static int SPAWN_WEIGHT_ZABUZA = 1;
 
 	@Config.Comment("White zetsu's spawn weight (0~20). 0 to stop spawning.")
 	public static int SPAWN_WEIGHT_WHITEZETSU = 10;

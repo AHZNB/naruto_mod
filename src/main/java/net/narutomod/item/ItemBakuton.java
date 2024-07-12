@@ -194,12 +194,16 @@ public class ItemBakuton extends ElementsNarutomodMod.ModElement {
 		private EntityLivingBase owner;
 		private int lifeSpan = 600;
 		private float explosionSize = 3.0f;
+		private final EntityAITarget aiCopyOwnerTarget = new AICopyOwnerTarget(this);
+		private final EntityAITarget aiHurtByTarget = new EntityAIHurtByTarget(this, false, new Class[0]);
+		private boolean targetTasksEnabled;
 
 		public ExplosiveClay(World world) {
 			super(world);
 			//this.setSize(0.4F, 0.8F);
 			this.isImmuneToFire = true;
 			this.moveHelper = new EntityClone.AIFlyControl(this);
+			this.setTargetTasks();
 		}
 
 		public ExplosiveClay(EntityLivingBase ownerIn) {
@@ -222,8 +226,23 @@ public class ItemBakuton extends ElementsNarutomodMod.ModElement {
 			this.tasks.addTask(0, new EntityAISwimming(this));
 			this.tasks.addTask(1, new AIChargeAttack());
 			this.tasks.addTask(2, new EntityAIWatchClosest(this, EntityPlayer.class, 3.0F, 1.0F));
-			this.targetTasks.addTask(1, new AICopyOwnerTarget(this));
-			this.targetTasks.addTask(2, new EntityAIHurtByTarget(this, false, new Class[0]));
+		}
+
+		protected void setTargetTasks() {
+			if (!this.targetTasksEnabled) {
+				this.targetTasks.addTask(1, this.aiCopyOwnerTarget);
+				this.targetTasks.addTask(2, this.aiHurtByTarget);
+				this.targetTasksEnabled = true;
+			}
+		}
+
+		protected void clearTargetTasks() {
+			if (this.targetTasksEnabled) {
+				this.targetTasks.removeTask(this.aiCopyOwnerTarget);
+				this.targetTasks.removeTask(this.aiHurtByTarget);
+				this.setAttackTarget(null);
+				this.targetTasksEnabled = false;
+			}
 		}
 
 		@Override

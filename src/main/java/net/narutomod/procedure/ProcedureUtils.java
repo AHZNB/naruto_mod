@@ -987,7 +987,6 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static Field getFieldByIndex(Class clazz, Class matchClazz, int fieldIndex) {
-			//throws IndexOutOfBoundsException, NoSuchFieldException {
 		if (clazz == matchClazz) {
 			try {
 				Field[] fields = clazz.getDeclaredFields();
@@ -1010,16 +1009,16 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static <T extends Object> T invokeMethodByParameters(Object parent, Class<? extends T> returnType, Object... params) {
-	 //throws IndexOutOfBoundsException, NoSuchMethodException {
 		try {
 			for (Method method : parent.getClass().getDeclaredMethods()) {
 				boolean match = true;
 				Class[] clazz1 = method.getParameterTypes();
-				if (!method.getReturnType().equals(returnType) || clazz1.length != params.length) {
+				if ((method.getReturnType().isPrimitive() ? !isPrimitiveEqual(method.getReturnType(), returnType)
+				 : !method.getReturnType().equals(returnType)) || clazz1.length != params.length) {
 					match = false;
 				} else {
 					for (int i = 0; i < clazz1.length; i++) {
-						if (!clazz1[i].isAssignableFrom(params[i].getClass())) {
+						if (clazz1[i].isPrimitive() ? !isPrimitiveEqual(clazz1[i], params[i].getClass()) : !clazz1[i].equals(params[i].getClass())) {
 							match = false;
 						}
 					}
@@ -1032,7 +1031,46 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
-		throw new IllegalArgumentException(parent + " does not have methods matching parameters: " + params + ", returns: " + returnType);
+		String s = parent + " does not have methods matching parameters: ";
+		for (Object obj : params) s += ", " + obj.getClass();
+		throw new IllegalArgumentException(s + ", returns: " + returnType.getName());
+	}
+
+	public static void invokeMethodByParameters(Object parent, Object... params) {
+		try {
+			for (Method method : parent.getClass().getDeclaredMethods()) {
+				boolean match = true;
+				Class[] clazz1 = method.getParameterTypes();
+				if (!method.getReturnType().equals(void.class) || clazz1.length != params.length) {
+					match = false;
+				} else {
+					for (int i = 0; i < clazz1.length; i++) {
+						if (clazz1[i].isPrimitive() ? !isPrimitiveEqual(clazz1[i], params[i].getClass()) : !clazz1[i].equals(params[i].getClass())) {
+							match = false;
+						}
+					}
+				}
+				if (match) {
+	            	method.setAccessible(true);
+					method.invoke(parent, params);
+					return;
+				}
+			}
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+		String s = parent + " does not have methods matching parameters: ";
+		for (Object obj : params) s += ", " + obj.getClass();
+		throw new IllegalArgumentException(s);
+	}
+
+	private static boolean isPrimitiveEqual(Class<?> clazz1, Class<?> clazz2) {
+		String clazz1name = clazz1.getName();
+		return (clazz1name.equals("float") && clazz2.equals(Float.class))
+		 || (clazz1name.equals("int") && clazz2.equals(Integer.class)) || (clazz1name.equals("double") && clazz2.equals(Double.class))
+		 || (clazz1name.equals("boolean") && clazz2.equals(Boolean.class)) || (clazz1name.equals("long") && clazz2.equals(Long.class))
+		 || (clazz1name.equals("short") && clazz2.equals(Short.class)) || (clazz1name.equals("byte") && clazz2.equals(Byte.class))
+		 || (clazz1name.equals("char") && clazz2.equals(Character.class)) || (clazz1name.equals("void") && clazz2.equals(Void.class));
 	}
 
 	public static void setInvulnerableDimensionChange(EntityPlayerMP player) {

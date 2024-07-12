@@ -177,12 +177,8 @@ public class ProcedureKGDistribution extends ElementsNarutomodMod.ModElement {
 				world.playSound((EntityPlayer) null, x, y, z, (net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY
 						.getObject(new ResourceLocation("ui.toast.challenge_complete")), SoundCategory.NEUTRAL, (float) 1, (float) 1);
 			}
-		} else if (((((entity instanceof EntityPlayer)
-				? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemDoton.block, (int) (1)))
-				: false)
-				|| ((entity instanceof EntityPlayer)
-						? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemKaton.block, (int) (1)))
-						: false))
+		} else if (((ItemJutsu.hasOwnerMatchingItemstack((EntityPlayer) entity, ItemDoton.block)
+				|| ItemJutsu.hasOwnerMatchingItemstack((EntityPlayer) entity, ItemKaton.block))
 				&& (((EntityLivingBase) entity).getRNG()
 						.nextDouble() <= (((yooton_weight) / ((rngbase) - (((sharingan_weight) + (byakugan_weight)) + (shikotsumyaku_weight))))
 								/ 0.4)))) {
@@ -230,12 +226,8 @@ public class ProcedureKGDistribution extends ElementsNarutomodMod.ModElement {
 				}
 			}
 			stack = new ItemStack(ItemYooton.block, (int) (1));
-		} else if (((((entity instanceof EntityPlayer)
-				? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemFuton.block, (int) (1)))
-				: false)
-				|| ((entity instanceof EntityPlayer)
-						? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemKaton.block, (int) (1)))
-						: false))
+		} else if (((ItemJutsu.hasOwnerMatchingItemstack((EntityPlayer) entity, ItemFuton.block)
+				|| ItemJutsu.hasOwnerMatchingItemstack((EntityPlayer) entity, ItemKaton.block))
 				&& (((EntityLivingBase) entity).getRNG().nextDouble() <= (((shakuton_weight)
 						/ ((rngbase) - ((((sharingan_weight) + (byakugan_weight)) + (shikotsumyaku_weight)) + (yooton_weight)))) / 0.4)))) {
 			if ((!(((entity instanceof EntityPlayerMP) && ((entity).world instanceof WorldServer))
@@ -282,12 +274,8 @@ public class ProcedureKGDistribution extends ElementsNarutomodMod.ModElement {
 				}
 			}
 			stack = new ItemStack(ItemShakuton.block, (int) (1));
-		} else if (((((entity instanceof EntityPlayer)
-				? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemFuton.block, (int) (1)))
-				: false)
-				|| ((entity instanceof EntityPlayer)
-						? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemSuiton.block, (int) (1)))
-						: false))
+		} else if (((ItemJutsu.hasOwnerMatchingItemstack((EntityPlayer) entity, ItemFuton.block)
+				|| ItemJutsu.hasOwnerMatchingItemstack((EntityPlayer) entity, ItemSuiton.block))
 				&& (((EntityLivingBase) entity).getRNG().nextDouble() <= (((hyoton_weight)
 						/ ((rngbase) - (((((sharingan_weight) + (byakugan_weight)) + (shikotsumyaku_weight)) + (yooton_weight)) + (shakuton_weight))))
 						/ 0.4)))) {
@@ -335,12 +323,8 @@ public class ProcedureKGDistribution extends ElementsNarutomodMod.ModElement {
 				}
 			}
 			stack = new ItemStack(ItemHyoton.block, (int) (1));
-		} else if (((((entity instanceof EntityPlayer)
-				? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemFuton.block, (int) (1)))
-				: false)
-				|| ((entity instanceof EntityPlayer)
-						? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemDoton.block, (int) (1)))
-						: false))
+		} else if (((ItemJutsu.hasOwnerMatchingItemstack((EntityPlayer) entity, ItemFuton.block)
+				|| ItemJutsu.hasOwnerMatchingItemstack((EntityPlayer) entity, ItemDoton.block))
 				&& (((EntityLivingBase) entity).getRNG().nextDouble() <= (((jiton_weight)
 						/ ((rngbase) - ((((((sharingan_weight) + (byakugan_weight)) + (shikotsumyaku_weight)) + (yooton_weight)) + (shakuton_weight))
 								+ (hyoton_weight))))
@@ -389,12 +373,8 @@ public class ProcedureKGDistribution extends ElementsNarutomodMod.ModElement {
 				}
 			}
 			stack = new ItemStack(ItemJiton.block, (int) (1));
-		} else if (((((entity instanceof EntityPlayer)
-				? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemRaiton.block, (int) (1)))
-				: false)
-				|| ((entity instanceof EntityPlayer)
-						? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemDoton.block, (int) (1)))
-						: false))
+		} else if (((ItemJutsu.hasOwnerMatchingItemstack((EntityPlayer) entity, ItemRaiton.block)
+				|| ItemJutsu.hasOwnerMatchingItemstack((EntityPlayer) entity, ItemDoton.block))
 				&& (((EntityLivingBase) entity).getRNG().nextDouble() <= (((bakuton_weight)
 						/ ((rngbase) - (((((((sharingan_weight) + (byakugan_weight)) + (shikotsumyaku_weight)) + (yooton_weight)) + (shakuton_weight))
 								+ (hyoton_weight)) + (jiton_weight))))
@@ -443,12 +423,8 @@ public class ProcedureKGDistribution extends ElementsNarutomodMod.ModElement {
 				}
 			}
 			stack = new ItemStack(ItemBakuton.block, (int) (1));
-		} else if (((((entity instanceof EntityPlayer)
-				? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemRaiton.block, (int) (1)))
-				: false)
-				|| ((entity instanceof EntityPlayer)
-						? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemSuiton.block, (int) (1)))
-						: false))
+		} else if (((ItemJutsu.hasOwnerMatchingItemstack((EntityPlayer) entity, ItemRaiton.block)
+				|| ItemJutsu.hasOwnerMatchingItemstack((EntityPlayer) entity, ItemSuiton.block))
 				&& (((EntityLivingBase) entity).getRNG()
 						.nextDouble() <= (((ranton_weight) / ((rngbase)
 								- ((((((((sharingan_weight) + (byakugan_weight)) + (shikotsumyaku_weight)) + (yooton_weight)) + (shakuton_weight))
@@ -498,12 +474,8 @@ public class ProcedureKGDistribution extends ElementsNarutomodMod.ModElement {
 				}
 			}
 			stack = new ItemStack(ItemRanton.block, (int) (1));
-		} else if (((((entity instanceof EntityPlayer)
-				? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemSuiton.block, (int) (1)))
-				: false)
-				|| ((entity instanceof EntityPlayer)
-						? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemKaton.block, (int) (1)))
-						: false))
+		} else if (((ItemJutsu.hasOwnerMatchingItemstack((EntityPlayer) entity, ItemSuiton.block)
+				|| ItemJutsu.hasOwnerMatchingItemstack((EntityPlayer) entity, ItemKaton.block))
 				&& (((EntityLivingBase) entity).getRNG()
 						.nextDouble() <= (((futton_weight) / ((rngbase)
 								- (((((((((sharingan_weight) + (byakugan_weight)) + (shikotsumyaku_weight)) + (yooton_weight)) + (shakuton_weight))
@@ -553,15 +525,9 @@ public class ProcedureKGDistribution extends ElementsNarutomodMod.ModElement {
 				}
 			}
 			stack = new ItemStack(ItemFutton.block, (int) (1));
-		} else if (((((entity instanceof EntityPlayer)
-				? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemKaton.block, (int) (1)))
-				: false)
-				|| (((entity instanceof EntityPlayer)
-						? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemDoton.block, (int) (1)))
-						: false)
-						|| ((entity instanceof EntityPlayer)
-								? ((EntityPlayer) entity).inventory.hasItemStack(new ItemStack(ItemFuton.block, (int) (1)))
-								: false)))
+		} else if (((ItemJutsu.hasOwnerMatchingItemstack((EntityPlayer) entity, ItemKaton.block)
+				|| (ItemJutsu.hasOwnerMatchingItemstack((EntityPlayer) entity, ItemDoton.block)
+						|| ItemJutsu.hasOwnerMatchingItemstack((EntityPlayer) entity, ItemFuton.block)))
 				&& (((EntityLivingBase) entity).getRNG()
 						.nextDouble() <= (((kekkeitota_weight) / ((rngbase)
 								- ((((((((((sharingan_weight) + (byakugan_weight)) + (shikotsumyaku_weight)) + (yooton_weight)) + (shakuton_weight))

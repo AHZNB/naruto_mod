@@ -22,7 +22,9 @@ import net.minecraft.world.BossInfoServer;
 import net.minecraft.world.BossInfo;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.EntitySelectors;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.item.ItemStack;
@@ -68,7 +70,11 @@ public class EntityDeidara extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static class EntityCustom extends EntityNinjaMob.Base implements IMob, IRangedAttackMob {
-		private int explosiveCloneCD = 100;
+		private final int explosiveCloneCD = 100;
+		private int explosiveCloneLastUsed = -100;
+		private EntityC2.EC c2Entity;
+		private final Vec3d[] flightPath = new Vec3d[8];
+		private int currentPathPoint;
 		
 		public EntityCustom(World world) {
 			super(world, 120, 7000d);
@@ -111,11 +117,37 @@ public class EntityDeidara extends ElementsNarutomodMod.ModElement {
 		protected void updateAITasks() {
 			super.updateAITasks();
 			EntityLivingBase target = this.getAttackTarget();
+			if (target != null) {
+				if (this.isRiding() && this.getRidingEntity() == this.c2Entity) {
+					if (this.c2Entity.ticksExisted % 40 == 39) {
+						this.generateFlightPath(this.getGroundBelow(target).addVector(0d, 16d, 0d));
+					}
+					Vec3d vec = this.flightPath[this.currentPathPoint % 8];
+//System.out.println("++++++ currentPathPoint="+currentPathPoint+", motion:"+ProcedureUtils.getMotion(c2Entity));
+					if (this.c2Entity.getDistance(vec.x, vec.y, vec.z) < 1.0d) {
+						++this.currentPathPoint;
+					} else {
+						this.c2Entity.setFlyTo(vec.x, vec.y, vec.z, 2.0d);
+					}
+				} else if (this.ticksExisted - this.explosiveCloneLastUsed == 40) {
+					Vec3d vec = this.generateOriginAndFlightPath();
+//System.out.println("====== vec:"+vec);
+					if (vec != null && this.consumeChakra(ItemBakuton.CLAY.chakraUsage * 2d)) {
+						this.c2Entity = new EntityC2.EC(this);
+						this.c2Entity.setLocationAndAngles(vec.x, vec.y, vec.z, this.rotationYaw, 0f);
+						ProcedureUtils.poofWithSmoke(this.c2Entity);
+						this.world.spawnEntity(this.c2Entity);
+						this.startRiding(this.c2Entity);
+						this.c2Entity.setRemainingLife(10000);
+					}
+				} 
+			} else if (this.isRiding() && this.getRidingEntity() == this.c2Entity && this.c2Entity.getRemainingLife() > 100) {
+				Vec3d vec = this.getGroundBelow(this);
+				this.c2Entity.setFlyTo(vec.x, vec.y, vec.z, 1.0d);
+				this.c2Entity.setRemainingLife(100);
+			}
 			if ((this.getItemStackFromSlot(EntityEquipmentSlot.HEAD).getItem() == ItemAkatsukiRobe.helmet) != (target == null)) {
 				this.swapWithInventory(EntityEquipmentSlot.HEAD, 1);
-			}
-			if (this.explosiveCloneCD > 0) {
-				--this.explosiveCloneCD;
 			}
 		}
 
@@ -124,13 +156,14 @@ public class EntityDeidara extends ElementsNarutomodMod.ModElement {
 			if (source == DamageSource.FALL) {
 				return false;
 			}
-			if (source.getTrueSource() instanceof EntityLivingBase && this.explosiveCloneCD <= 0 && this.consumeChakra(ItemBakuton.CLONE.chakraUsage * 0.5d)) {
+			if (!this.world.isRemote && source.getTrueSource() instanceof EntityLivingBase && !this.isRiding()
+			 && this.ticksExisted - this.explosiveCloneLastUsed > this.explosiveCloneCD && this.consumeChakra(ItemBakuton.CLONE.chakraUsage)) {
 				EntityLivingBase attacker = (EntityLivingBase)source.getTrueSource();
 				this.setRevengeTarget(attacker);
 				EntityExplosiveClone.EC clone = new EntityExplosiveClone.EC(this);
 				this.world.spawnEntity(clone);
 				clone.attackEntityFrom(source, amount);
-				this.explosiveCloneCD = 100;
+				this.explosiveCloneLastUsed = this.ticksExisted;
 				Vec3d vec3d = this.getPositionVector().subtract(attacker.getPositionVector()).normalize();
 				int i = 16;
 				BlockPos.PooledMutableBlockPos pos = BlockPos.PooledMutableBlockPos.retain();
@@ -143,7 +176,8 @@ public class EntityDeidara extends ElementsNarutomodMod.ModElement {
 					if (j < EnumFacing.VALUES.length) {
 						vec3d = new Vec3d(0.5d + pos.getX(), pos.getY(), 0.5d + pos.getZ());
 						this.rotationYaw = ProcedureUtils.getYawFromVec(attacker.getPositionVector().subtract(vec3d));
-						this.addPotionEffect(new PotionEffect(MobEffects.INVISIBILITY, 10, 0, false, false));
+						this.addPotionEffect(new PotionEffect(MobEffects.INVISIBILITY, 5, 0, false, false));
+						this.setInvisible(true);
 						this.setPositionAndUpdate(vec3d.x, vec3d.y, vec3d.z);
 						break;
 					}
@@ -169,6 +203,83 @@ public class EntityDeidara extends ElementsNarutomodMod.ModElement {
 			}
 		}
 
+		private Vec3d getGroundBelow(Entity target) {
+			BlockPos pos = target.getPosition().down();
+			while (this.world.getBlockState(pos).getCollisionBoundingBox(this.world, pos) == null) {
+				pos = pos.down();
+			}
+			return new Vec3d(pos.up());
+		}
+
+		@Nullable
+		private Vec3d generateOriginAndFlightPath() {
+			EntityLivingBase target = this.getAttackTarget();
+			if (target != null) {
+				Vec3d vec = this.getPositionVector();
+				if (this.generateFlightPath(this.getGroundBelow(target).addVector(0d, 16d, 0d))) {
+					for (int i = 0; (int)vec.y + 1 < this.world.getHeight(); i++) {
+						if (this.isDirectPath(vec, this.flightPath[i])) {
+							this.currentPathPoint = i;
+							return vec;
+						}
+						if (i == this.flightPath.length - 1) {
+							vec = vec.addVector(0d, 1d, 0d);
+							i = 0;
+						}
+					}
+				}
+			}
+			return null;
+		}
+
+		private boolean generateFlightPath(Vec3d centerVec) {
+			for (int i = 0; i < this.flightPath.length; i++) {
+				this.flightPath[i] = new Vec3d(10d, 0d, 0d).rotateYaw(0.7854f * i).add(centerVec);
+			}
+//System.out.println(">>>>>> start flightPath:"+flightPath[0]+", "+flightPath[1]+", "+flightPath[2]+", "+flightPath[3]+", "+flightPath[4]+", "+flightPath[5]+", "+flightPath[6]+", "+flightPath[7]);
+			for (int i = 0; i < this.flightPath.length; i++) {
+				int j = i == this.flightPath.length - 1 ? 0 : (i + 1);
+				Vec3d vec1 = this.flightPath[i];
+				while ((int)(vec1.y + 1) < this.world.getHeight()) {
+					Vec3d vec2 = this.flightPath[j];
+					while ((int)(vec2.y + 1) < this.world.getHeight() && !this.isDirectPath(vec1, vec2)) {
+						vec2 = vec2.addVector(0d, 1d, 0d);
+					}
+					if (vec2.y + 1 < this.world.getHeight()) {
+						this.flightPath[i] = vec1;
+						this.flightPath[j] = vec2;
+						break;
+					}
+					vec1 = vec1.addVector(0d, 1d, 0d);
+				}
+				if (vec1.y + 1 >= this.world.getHeight()) {
+					return false;
+				}
+			}
+//System.out.println("       new flightPath:"+flightPath[0]+", "+flightPath[1]+", "+flightPath[2]+", "+flightPath[3]+", "+flightPath[4]+", "+flightPath[5]+", "+flightPath[6]+", "+flightPath[7]);
+			return true;
+		}
+
+		private boolean isDirectPath(Vec3d fromVec, Vec3d toVec) {
+			float f0 = EntityC2.EC.WIDTH * 0.5f;
+			float f1 = EntityC2.EC.HEIGHT;
+			AxisAlignedBB fromAabb = new AxisAlignedBB(fromVec.x - f0, fromVec.y, fromVec.z - f0, fromVec.x + f0, fromVec.y + f1, fromVec.z + f0);
+			AxisAlignedBB toAabb = new AxisAlignedBB(toVec.x - f0, toVec.y, toVec.z - f0, toVec.x + f0, toVec.y + f1, toVec.z + f0);
+			return this.world.rayTraceBlocks(new Vec3d(fromAabb.minX, fromAabb.minY, fromAabb.minZ), new Vec3d(toAabb.minX, toAabb.minY, toAabb.minZ), false, true, false) == null
+			 && this.world.rayTraceBlocks(new Vec3d(fromAabb.maxX, fromAabb.minY, fromAabb.minZ), new Vec3d(toAabb.maxX, toAabb.minY, toAabb.minZ), false, true, false) == null
+			 && this.world.rayTraceBlocks(new Vec3d(fromAabb.minX, fromAabb.maxY, fromAabb.minZ), new Vec3d(toAabb.minX, toAabb.maxY, toAabb.minZ), false, true, false) == null
+			 && this.world.rayTraceBlocks(new Vec3d(fromAabb.minX, fromAabb.minY, fromAabb.maxZ), new Vec3d(toAabb.minX, toAabb.minY, toAabb.maxZ), false, true, false) == null
+			 && this.world.rayTraceBlocks(new Vec3d(fromAabb.maxX, fromAabb.maxY, fromAabb.minZ), new Vec3d(toAabb.maxX, toAabb.maxY, toAabb.minZ), false, true, false) == null
+			 && this.world.rayTraceBlocks(new Vec3d(fromAabb.maxX, fromAabb.maxY, fromAabb.maxZ), new Vec3d(toAabb.maxX, toAabb.maxY, toAabb.maxZ), false, true, false) == null
+			 && this.world.rayTraceBlocks(new Vec3d(fromAabb.maxX, fromAabb.minY, fromAabb.maxZ), new Vec3d(toAabb.maxX, toAabb.minY, toAabb.maxZ), false, true, false) == null
+			 && this.world.rayTraceBlocks(new Vec3d(fromAabb.minX, fromAabb.maxY, fromAabb.maxZ), new Vec3d(toAabb.minX, toAabb.maxY, toAabb.maxZ), false, true, false) == null;
+		}
+
+		@Override
+		public double getYOffset() {
+			return -0.35D;
+		}
+
 		@Override
 		public boolean isOnSameTeam(Entity entityIn) {
 			return super.isOnSameTeam(entityIn) || EntityNinjaMob.TeamAkatsuki.contains(entityIn.getClass())
@@ -183,6 +294,14 @@ public class EntityDeidara extends ElementsNarutomodMod.ModElement {
 		@Override
 		public net.minecraft.util.SoundEvent getDeathSound() {
 			return SoundEvents.ENTITY_ILLAGER_DEATH;
+		}
+
+		@Override
+		public boolean getCanSpawnHere() {
+			return super.getCanSpawnHere() && (int)this.posY >= this.world.getSeaLevel() && this.world.canSeeSky(this.getPosition())
+			 && this.world.getEntities(EntityCustom.class, EntitySelectors.IS_ALIVE).isEmpty();
+			 //&& this.world.getEntitiesWithinAABB(EntityCustom.class, this.getEntityBoundingBox().grow(128.0D)).isEmpty();
+			 //&& this.rand.nextInt(5) == 0;
 		}
 
 		@Override
@@ -271,7 +390,7 @@ public class EntityDeidara extends ElementsNarutomodMod.ModElement {
 
 			public ModelDeidara() {
 				textureWidth = 64;
-				textureHeight = 32;
+				textureHeight = 64;
 				bipedHead = new ModelRenderer(this);
 				bipedHead.setRotationPoint(0.0F, 0.0F, 0.0F);
 				bipedHead.cubeList.add(new ModelBox(bipedHead, 0, 0, -4.0F, -8.0F, -4.0F, 8, 8, 8, 0.0F, false));
@@ -297,7 +416,7 @@ public class EntityDeidara extends ElementsNarutomodMod.ModElement {
 				bipedRightArm.cubeList.add(new ModelBox(bipedRightArm, 40, 16, -3.0F, -2.0F, -2.0F, 4, 12, 4, 0.0F, false));
 				bipedLeftArm = new ModelRenderer(this);
 				bipedLeftArm.setRotationPoint(5.0F, 2.0F, 0.0F);
-				bipedLeftArm.cubeList.add(new ModelBox(bipedLeftArm, 40, 16, -1.0F, -2.0F, -2.0F, 4, 12, 4, 0.0F, true));
+				bipedLeftArm.cubeList.add(new ModelBox(bipedLeftArm, 32, 48, -1.0F, -2.0F, -2.0F, 4, 12, 4, 0.0F, false));
 				bipedRightLeg = new ModelRenderer(this);
 				bipedRightLeg.setRotationPoint(-1.9F, 12.0F, 0.0F);
 				bipedRightLeg.cubeList.add(new ModelBox(bipedRightLeg, 0, 16, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.0F, false));
@@ -307,7 +426,7 @@ public class EntityDeidara extends ElementsNarutomodMod.ModElement {
 				rightBag.cubeList.add(new ModelBox(rightBag, 24, 0, -4.1F, 0.0F, -2.0F, 2, 4, 4, 0.0F, false));
 				bipedLeftLeg = new ModelRenderer(this);
 				bipedLeftLeg.setRotationPoint(1.9F, 12.0F, 0.0F);
-				bipedLeftLeg.cubeList.add(new ModelBox(bipedLeftLeg, 0, 16, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.0F, true));
+				bipedLeftLeg.cubeList.add(new ModelBox(bipedLeftLeg, 16, 48, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.0F, false));
 				leftBag = new ModelRenderer(this);
 				leftBag.setRotationPoint(0.0F, 0.0F, 0.0F);
 				bipedLeftLeg.addChild(leftBag);
