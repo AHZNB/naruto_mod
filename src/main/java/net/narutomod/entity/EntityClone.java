@@ -177,7 +177,11 @@ public class EntityClone extends ElementsNarutomodMod.ModElement {
 			if (!this.world.isRemote) {
 				this.getDataManager().set(MODEL_SCALE, Float.valueOf(scale));
 			}
+			double x = this.posX;
+			double y = this.posY;
+			double z = this.posZ;
 			this.setSize(0.6f * scale, 1.8f * scale);
+			this.setPosition(x, y, z);
 		}
 
 		@Override
@@ -256,7 +260,13 @@ public class EntityClone extends ElementsNarutomodMod.ModElement {
 		private void defendSummoner() {
 			if (!this.isAIDisabled() && this.shouldDefendSummoner) {
 				EntityLivingBase target = null;
-				if (this.summoner.getAttackingEntity() != null) {
+				if (this.summoner instanceof EntityLiving) {
+					 target = ((EntityLiving)this.summoner).getAttackTarget();
+				}
+				if (target == null && this.summoner.getRevengeTarget() != null) {
+					target = this.summoner.getRevengeTarget();
+				}
+				if (target == null && this.summoner.getAttackingEntity() != null) {
 					target = this.summoner.getAttackingEntity();
 				}
 				if (target == null && this.summoner.getLastAttackedEntity() != null 

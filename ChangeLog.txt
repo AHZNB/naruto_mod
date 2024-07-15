@@ -23,6 +23,8 @@ Jutsus:
  - rasenshuriken now tilts in the direction its turning
  - updated wind release great breakthrough: flat 5 second duration, also raises block dust into the air
  - explosion release C-1 is faster, C-2 bigger, both slightly more damage. explosive clone has more health
+ - add explosion release C-4
+ - explosive clone: when used while player being attacked, teleports player to behind the attacker
 
 Items:
  - added Sakura shippuden clothing and leggings (for slim player models only)
@@ -62,7 +64,7 @@ Entities:
    Saiken shoots acid breath, Chomei emits blinding powder, Gyuki chain shoots small bijudamas, Kurama shoots lasers
    Ten-Tails is much larger, heals faster, spawns clones to defend itself, shoots lasers
  - updated Sakura's texture
- - adding Deidara (WIP-2: rides on C-2 phantom when hurt)
+ - adding Deidara (WIP-3: uses C-4 one time when health or chakra gets low)
  - Ninja mobs like Itachi can spawn during daytime, you may need to decrease spawn weight in the config
  
 General:

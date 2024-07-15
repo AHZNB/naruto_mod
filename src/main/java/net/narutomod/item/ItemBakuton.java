@@ -10,41 +10,42 @@ import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 
 import net.minecraft.world.World;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.DamageSource;
+import net.minecraft.util.EnumActionResult;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvent;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Item;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.potion.PotionEffect;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.ai.EntityAITarget;
 import net.minecraft.entity.ai.EntityAISwimming;
 import net.minecraft.entity.ai.EntityAIHurtByTarget;
 import net.minecraft.entity.ai.EntityAIWatchClosest;
+import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.EntityCreature;
-import net.minecraft.util.SoundEvent;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.Entity;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Item;
+import net.minecraft.potion.PotionEffect;
 import net.minecraft.pathfinding.PathNavigate;
 import net.minecraft.pathfinding.PathNavigateFlying;
 import net.minecraft.block.Block;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.EnumActionResult;
 import net.minecraft.nbt.NBTTagCompound;
 
 import net.narutomod.entity.EntityC1;
 import net.narutomod.entity.EntityC2;
 import net.narutomod.entity.EntityC3;
+import net.narutomod.entity.EntityC4;
 import net.narutomod.entity.EntityClone;
 import net.narutomod.entity.EntityExplosiveClone;
 import net.narutomod.procedure.ProcedureUtils;
@@ -132,7 +133,7 @@ public class ItemBakuton extends ElementsNarutomodMod.ModElement {
 		@Override
 		public boolean onLeftClickEntity(ItemStack itemstack, EntityPlayer attacker, Entity target) {
 			if (attacker.equals(target)) {
-				target = ProcedureUtils.objectEntityLookingAt(attacker, 50d).entityHit;
+				target = ProcedureUtils.objectEntityLookingAt(attacker, 50d, 3d, ExplosiveClay.class).entityHit;
 			}
 			if (target instanceof EntityLivingBase) {
 				attacker.setRevengeTarget((EntityLivingBase)target);
@@ -329,6 +330,7 @@ public class ItemBakuton extends ElementsNarutomodMod.ModElement {
 	    @Override
 	    public void onUpdate() {
 	    	this.fallDistance = 0f;
+	    	this.clearActivePotions();
 	    	super.onUpdate();
 	    	this.setNoGravity(true);
 	    	if (this.ticksExisted > this.lifeSpan && !this.world.isRemote) {
@@ -351,6 +353,8 @@ public class ItemBakuton extends ElementsNarutomodMod.ModElement {
 					ProcedureUtils.poofWithSmoke(entity.world, vec.x, vec.y, vec.z, ec.width, ec.height);
 				} else if (powerIn < 4f) {
 					ec = new EntityC3.EC(entity);
+				} else if (powerIn <= this.getMaxPower()) {
+					ec = new EntityC4.EC(entity);
 				} else {
 					return false;
 				}
@@ -372,7 +376,7 @@ public class ItemBakuton extends ElementsNarutomodMod.ModElement {
 
 			@Override
 			public float getMaxPower() {
-				return 3.1f;
+				return 4.1f;
 			}
 	    }
 	

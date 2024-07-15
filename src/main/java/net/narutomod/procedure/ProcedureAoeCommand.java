@@ -258,12 +258,24 @@ public class ProcedureAoeCommand extends ElementsNarutomodMod.ModElement {
 		return this;
 	}
 
-	public ProcedureAoeCommand effect(Potion potion, int duration, int amplifier) {
+	public ProcedureAoeCommand effect(Potion potion, int duration, int amplifier, boolean showParticles) {
 		//List<EntityLivingBase> list = this.world.getEntitiesWithinAABB(EntityLivingBase.class, aabb.grow(maxRange), MIN_DISTANCE);
 		if (!entitiesList.isEmpty())
 			for (Entity entity : entitiesList) {
 				if (entity instanceof EntityLivingBase)
-					((EntityLivingBase)entity).addPotionEffect(new PotionEffect(potion, duration * 20, amplifier, false, true));
+					((EntityLivingBase)entity).addPotionEffect(new PotionEffect(potion, duration * 20, amplifier, false, showParticles));
+			}
+		return this;
+	}
+
+	public ProcedureAoeCommand effectCentered(Potion potion, int duration, int amplifier) {
+		//List<EntityLivingBase> list = this.world.getEntitiesWithinAABB(EntityLivingBase.class, aabb.grow(maxRange), MIN_DISTANCE);
+		if (!entitiesList.isEmpty())
+			for (Entity entity : entitiesList) {
+				if (entity instanceof EntityLivingBase) {
+					double d = 1.0d - entity.getDistance(centerX, centerY, centerZ) / maxRange;
+					((EntityLivingBase)entity).addPotionEffect(new PotionEffect(potion, (int)((double)duration * 20d * d), amplifier, false, true));
+				}
 			}
 		return this;
 	}

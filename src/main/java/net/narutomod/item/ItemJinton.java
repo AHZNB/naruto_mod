@@ -289,7 +289,7 @@ public class ItemJinton extends ElementsNarutomodMod.ModElement {
 			double d1 = result.entityHit != null ? result.entityHit.posY + result.entityHit.height/2 : result.hitVec.y;
 			double d2 = result.entityHit != null ? result.entityHit.posZ : result.hitVec.z;
 			this.setPosition(d0, d1, d2);
-			ProcedureAoeCommand.set(this.world, d0, d1, d2, 0d, this.fullScale/4).effect(MobEffects.SLOWNESS, 5, 5);
+			ProcedureAoeCommand.set(this.world, d0, d1, d2, 0d, this.fullScale/4).effect(MobEffects.SLOWNESS, 5, 5, false);
 		}
 
 		private void destroyBlocksAndEntitiesInAABB(AxisAlignedBB bb) {

@@ -131,8 +131,8 @@ public class EntityEightTrigrams extends ElementsNarutomodMod.ModElement {
 					}
 				}
 				if (this.ticksExisted > 3 && this.ticksExisted < 20) {
-					ProcedureAoeCommand.set(this, 0.0D, this.effectRadius).exclude(this.ownerPlayer).effect(MobEffects.SLOWNESS, 15, 4)
-					 .effect(MobEffects.WEAKNESS, 15, 255).effect(MobEffects.MINING_FATIGUE, 15, 5);
+					ProcedureAoeCommand.set(this, 0.0D, this.effectRadius).exclude(this.ownerPlayer).effect(MobEffects.SLOWNESS, 15, 4, true)
+					 .effect(MobEffects.WEAKNESS, 15, 255, true).effect(MobEffects.MINING_FATIGUE, 15, 5, true);
 				}
 				if (this.ownerPlayer instanceof EntityPlayer) {
 					((EntityPlayer)this.ownerPlayer).sendStatusMessage(new TextComponentString(I18n.translateToLocal("tooltip.byakugan.jutsu2")), true);

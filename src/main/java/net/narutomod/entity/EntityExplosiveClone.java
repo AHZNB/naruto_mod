@@ -11,26 +11,32 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.EntitySelectors;
+import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvent;
 import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.item.ItemStack;
+import net.minecraft.entity.Entity;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvent;
-import net.minecraft.util.EntitySelectors;
+import net.minecraft.init.MobEffects;
 import net.minecraft.init.SoundEvents;
-import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.item.ItemStack;
+import net.minecraft.potion.PotionEffect;
 
 import net.narutomod.item.ItemJutsu;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.procedure.ProcedureAoeCommand;
 import net.narutomod.ElementsNarutomodMod;
+
+import java.util.List;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityExplosiveClone extends ElementsNarutomodMod.ModElement {
@@ -201,16 +207,45 @@ public class EntityExplosiveClone extends ElementsNarutomodMod.ModElement {
 			@Override
 			public boolean createJutsu(ItemStack stack, EntityLivingBase entity, float power) {
 				if (!entity.isSneaking()) {
-					entity.world.playSound(null, entity.posX, entity.posY, entity.posZ, SoundEvent.REGISTRY
-					  .getObject(new ResourceLocation("narutomod:kagebunshin")), SoundCategory.NEUTRAL, 1.0F, 1.0F);
-					entity.world.spawnEntity(new EC(entity));
+					this.createJutsu(entity);
 					return true;
 				} else {
 					for (EC clone : entity.world.getEntities(EC.class, EntitySelectors.IS_ALIVE)) {
-						clone.setDead();
+						if (entity.equals(clone.getSummoner())) {
+							clone.setDead();
+						}
 					}
 					return false;
 				}
+			}
+
+			public EC createJutsu(EntityLivingBase entity) {
+				EC entity1 = new EC(entity);
+				if (entity.getRevengeTarget() != null) {
+					EntityLivingBase attacker = entity.getRevengeTarget();
+					List<BlockPos> list = ProcedureUtils.getAllAirBlocks(entity.world, attacker.getEntityBoundingBox().grow(16d, 8d, 16d));
+					list.sort(new ProcedureUtils.BlockposSorter(entity.getPosition()));
+					for (int i = list.size() - 1; i >= 0; --i) {
+						BlockPos pos = list.get(i);
+						Vec3d vec = new Vec3d(0.5d+pos.getX(), pos.getY(), 0.5d+pos.getZ());
+						if (entity.getDistance(vec.x, vec.y, vec.z) <= 16d && entity.world.getBlockState(pos.down()).isTopSolid() && entity.world.isAirBlock(pos.up())
+						 && entity.world.rayTraceBlocks(vec.addVector(0d, entity.getEyeHeight(), 0d), attacker.getPositionEyes(1f), false, true, false) == null) {
+							float angle = MathHelper.wrapDegrees(ProcedureUtils.getYawFromVec(vec.subtract(attacker.getPositionVector())) - ProcedureUtils.getYawFromVec(entity.getPositionVector().subtract(attacker.getPositionVector()))); 
+							if (angle > 135.0f || angle < -135.0f) {
+								entity.rotationYaw = ProcedureUtils.getYawFromVec(attacker.getPositionVector().subtract(vec));
+								entity.addPotionEffect(new PotionEffect(MobEffects.INVISIBILITY, 5, 0, false, false));
+								entity.setInvisible(true);
+								entity.setPositionAndUpdate(vec.x, vec.y, vec.z);
+								break;
+							}
+						}
+					}
+				} else {
+					entity.world.playSound(null, entity.posX, entity.posY, entity.posZ, SoundEvent.REGISTRY
+					  .getObject(new ResourceLocation("narutomod:kagebunshin")), SoundCategory.NEUTRAL, 1.0F, 1.0F);
+				}
+				entity.world.spawnEntity(entity1);
+				return entity1;
 			}
 		}
 	}

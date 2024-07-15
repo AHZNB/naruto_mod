@@ -73,6 +73,7 @@ public class EntityDeidara extends ElementsNarutomodMod.ModElement {
 		private final int explosiveCloneCD = 100;
 		private int explosiveCloneLastUsed = -100;
 		private EntityC2.EC c2Entity;
+		private EntityC4.EC c4Entity;
 		private final Vec3d[] flightPath = new Vec3d[8];
 		private int currentPathPoint;
 		
@@ -118,6 +119,14 @@ public class EntityDeidara extends ElementsNarutomodMod.ModElement {
 			super.updateAITasks();
 			EntityLivingBase target = this.getAttackTarget();
 			if (target != null) {
+				if (this.c4Entity == null && (this.getHealth() < this.getMaxHealth() * 0.25f || this.remainingChakra() < 0.25f)
+				 && this.consumeChakra(ItemBakuton.CLAY.chakraUsage * 4d)) {
+					Vec3d vec = this.getPositionEyes(1f).add(this.getLookVec());
+					this.c4Entity = new EntityC4.EC(this);
+					this.c4Entity.setLocationAndAngles(vec.x, vec.y, vec.z, this.rotationYaw, 0f);
+					this.c4Entity.setRotationYawHead(this.rotationYaw);
+					this.world.spawnEntity(this.c4Entity);
+				}
 				if (this.isRiding() && this.getRidingEntity() == this.c2Entity) {
 					if (this.c2Entity.ticksExisted % 40 == 39) {
 						this.generateFlightPath(this.getGroundBelow(target).addVector(0d, 16d, 0d));
@@ -129,7 +138,7 @@ public class EntityDeidara extends ElementsNarutomodMod.ModElement {
 					} else {
 						this.c2Entity.setFlyTo(vec.x, vec.y, vec.z, 2.0d);
 					}
-				} else if (this.ticksExisted - this.explosiveCloneLastUsed == 40) {
+				} else if (this.ticksExisted - this.explosiveCloneLastUsed == 40 && this.getHealth() < this.getMaxHealth()) {
 					Vec3d vec = this.generateOriginAndFlightPath();
 //System.out.println("====== vec:"+vec);
 					if (vec != null && this.consumeChakra(ItemBakuton.CLAY.chakraUsage * 2d)) {
@@ -158,31 +167,10 @@ public class EntityDeidara extends ElementsNarutomodMod.ModElement {
 			}
 			if (!this.world.isRemote && source.getTrueSource() instanceof EntityLivingBase && !this.isRiding()
 			 && this.ticksExisted - this.explosiveCloneLastUsed > this.explosiveCloneCD && this.consumeChakra(ItemBakuton.CLONE.chakraUsage)) {
-				EntityLivingBase attacker = (EntityLivingBase)source.getTrueSource();
-				this.setRevengeTarget(attacker);
-				EntityExplosiveClone.EC clone = new EntityExplosiveClone.EC(this);
-				this.world.spawnEntity(clone);
+				this.setRevengeTarget((EntityLivingBase)source.getTrueSource());
+				EntityExplosiveClone.EC clone = new EntityExplosiveClone.EC.Jutsu().createJutsu(this);
 				clone.attackEntityFrom(source, amount);
 				this.explosiveCloneLastUsed = this.ticksExisted;
-				Vec3d vec3d = this.getPositionVector().subtract(attacker.getPositionVector()).normalize();
-				int i = 16;
-				BlockPos.PooledMutableBlockPos pos = BlockPos.PooledMutableBlockPos.retain();
-				for (Vec3d vec1 = vec3d.scale(i); i > 1; vec1 = vec3d.scale(--i)) {
-					int j = 0;
-					pos.setPos(attacker.posX - vec1.x, attacker.posY - vec1.y, attacker.posZ - vec1.z);
-					while (j < EnumFacing.VALUES.length && (!this.world.getBlockState(pos.down()).isTopSolid() || !this.world.isAirBlock(pos.up()))) {
-						pos.setPos(pos.offset(EnumFacing.VALUES[j++]));
-					}
-					if (j < EnumFacing.VALUES.length) {
-						vec3d = new Vec3d(0.5d + pos.getX(), pos.getY(), 0.5d + pos.getZ());
-						this.rotationYaw = ProcedureUtils.getYawFromVec(attacker.getPositionVector().subtract(vec3d));
-						this.addPotionEffect(new PotionEffect(MobEffects.INVISIBILITY, 5, 0, false, false));
-						this.setInvisible(true);
-						this.setPositionAndUpdate(vec3d.x, vec3d.y, vec3d.z);
-						break;
-					}
-				}
-				pos.release();
 				return false;
 			}
 			return super.attackEntityFrom(source, amount);
@@ -263,8 +251,8 @@ public class EntityDeidara extends ElementsNarutomodMod.ModElement {
 		private boolean isDirectPath(Vec3d fromVec, Vec3d toVec) {
 			float f0 = EntityC2.EC.WIDTH * 0.5f;
 			float f1 = EntityC2.EC.HEIGHT;
-			AxisAlignedBB fromAabb = new AxisAlignedBB(fromVec.x - f0, fromVec.y, fromVec.z - f0, fromVec.x + f0, fromVec.y + f1, fromVec.z + f0);
-			AxisAlignedBB toAabb = new AxisAlignedBB(toVec.x - f0, toVec.y, toVec.z - f0, toVec.x + f0, toVec.y + f1, toVec.z + f0);
+			AxisAlignedBB fromAabb = new AxisAlignedBB(fromVec.x - f0, fromVec.y, fromVec.z - f0, fromVec.x + f0, fromVec.y + f1, fromVec.z + f0).grow(0.2d);
+			AxisAlignedBB toAabb = new AxisAlignedBB(toVec.x - f0, toVec.y, toVec.z - f0, toVec.x + f0, toVec.y + f1, toVec.z + f0).grow(0.2d);
 			return this.world.rayTraceBlocks(new Vec3d(fromAabb.minX, fromAabb.minY, fromAabb.minZ), new Vec3d(toAabb.minX, toAabb.minY, toAabb.minZ), false, true, false) == null
 			 && this.world.rayTraceBlocks(new Vec3d(fromAabb.maxX, fromAabb.minY, fromAabb.minZ), new Vec3d(toAabb.maxX, toAabb.minY, toAabb.minZ), false, true, false) == null
 			 && this.world.rayTraceBlocks(new Vec3d(fromAabb.minX, fromAabb.maxY, fromAabb.minZ), new Vec3d(toAabb.minX, toAabb.maxY, toAabb.minZ), false, true, false) == null

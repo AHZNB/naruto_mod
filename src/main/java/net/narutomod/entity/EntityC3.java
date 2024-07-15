@@ -221,7 +221,7 @@ public class EntityC3 extends ElementsNarutomodMod.ModElement {
 				body.cubeList.add(new ModelBox(body, 0, 22, -5.0F, 4.0F, -5.0F, 10, 10, 10, 0.0F, false));
 				body.cubeList.add(new ModelBox(body, 0, 0, -6.0F, 14.0F, -6.0F, 12, 10, 12, 0.0F, false));
 				leftWing = new ModelRenderer(this);
-				leftWing.setRotationPoint(5.0F, 8.0F, 0.0F);
+				leftWing.setRotationPoint(5.0F, 9.0F, 0.0F);
 				body.addChild(leftWing);
 				setRotationAngle(leftWing, -0.6981F, 0.0F, 0.0F);
 				leftWing.cubeList.add(new ModelBox(leftWing, 0, 42, 0.0F, -2.0F, -2.0F, 4, 6, 4, 0.4F, false));
@@ -245,7 +245,7 @@ public class EntityC3 extends ElementsNarutomodMod.ModElement {
 				setRotationAngle(bone8, 0.0F, 0.0F, 0.2618F);
 				bone8.cubeList.add(new ModelBox(bone8, 0, 54, -1.0F, -4.0F, -1.0F, 2, 8, 2, 0.4F, false));
 				rightWing = new ModelRenderer(this);
-				rightWing.setRotationPoint(-5.0F, 8.0F, 0.0F);
+				rightWing.setRotationPoint(-5.0F, 9.0F, 0.0F);
 				body.addChild(rightWing);
 				setRotationAngle(rightWing, -0.8727F, 0.0F, 0.0F);
 				rightWing.cubeList.add(new ModelBox(rightWing, 0, 42, -4.0F, -2.0F, -2.0F, 4, 6, 4, 0.4F, true));

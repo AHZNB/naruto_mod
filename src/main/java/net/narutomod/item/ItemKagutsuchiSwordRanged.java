@@ -230,7 +230,7 @@ public class ItemKagutsuchiSwordRanged extends ElementsNarutomodMod.ModElement {
 					}
 				}
 				ProcedureAoeCommand.set(this.world, this.posX, this.posY, this.posZ, 0.0D, 3.0D).effect(PotionAmaterasuFlame.potion, 1000,
-						((this.shootingEntity instanceof EntityPlayer) ? ((EntityPlayer) this.shootingEntity).experienceLevel : 0) / 30 + 1);
+				 ((this.shootingEntity instanceof EntityPlayer) ? ((EntityPlayer) this.shootingEntity).experienceLevel : 0) / 30 + 1, false);
 				this.setDead();
 			}
 		}
@@ -285,7 +285,7 @@ public class ItemKagutsuchiSwordRanged extends ElementsNarutomodMod.ModElement {
 								? (EntityPlayer) this.shootingEntity.getControllingPassenger()
 								: null;
 				ProcedureAoeCommand.set(this.world, this.posX, this.posY, this.posZ, 0.0D, 4.0D)
-						.effect(PotionAmaterasuFlame.potion, 1000, ((player != null) ? player.experienceLevel : 0) / 30 + 1)
+						.effect(PotionAmaterasuFlame.potion, 1000, ((player != null) ? player.experienceLevel : 0) / 30 + 1, false)
 						.damageEntities(this.shootingEntity, 100.0F);
 				this.setDead();
 			}
