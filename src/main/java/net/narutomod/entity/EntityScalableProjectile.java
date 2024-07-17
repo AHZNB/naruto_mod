@@ -188,6 +188,15 @@ public class EntityScalableProjectile extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void onUpdate() {
 			super.onUpdate();
+			if (this.prevRotationPitch == 0.0F && this.prevRotationYaw == 0.0F) {
+				float f = MathHelper.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
+				this.rotationYaw = (float)(MathHelper.atan2(this.motionX, this.motionZ) * (180D / Math.PI));
+				this.rotationPitch = (float)(MathHelper.atan2(this.motionY, (double)f) * (180D / Math.PI));
+				this.prevRotationYaw = this.rotationYaw;
+				this.prevRotationPitch = this.rotationPitch;
+				this.prevRotationRoll = 0.0f;
+				this.rotationRoll = 0.0f;
+			}
 			this.ticksAlive++;
 			if (!this.world.isRemote && this.shootingEntity != null && this.shootingEntity.isDead
 			 || !this.world.isBlockLoaded(new BlockPos(this))) {

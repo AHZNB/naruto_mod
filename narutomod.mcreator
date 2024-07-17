@@ -1,8 +1,8 @@
 {
   "id_map": {
-    "ENTITY": 452,
     "DIMENSION": 13,
-    "GUI": 68
+    "GUI": 69,
+    "ENTITY": 454
   },
   "mod_elements": [
     {
@@ -7551,6 +7551,38 @@
       "locked_code": false,
       "ids": {},
       "registry_name": "instant_damage"
+    },
+    {
+      "name": "WindBlade",
+      "type": "mob",
+      "sortid": 885,
+      "compiles": true,
+      "locked_code": true,
+      "ids": {
+        "0": 453,
+        "1": 454
+      },
+      "registry_name": "wind_blade"
+    },
+    {
+      "name": "ScrollWindBladeGui",
+      "type": "gui",
+      "sortid": 886,
+      "compiles": true,
+      "locked_code": true,
+      "ids": {
+        "0": 69
+      },
+      "registry_name": "scroll_wind_blade_gui"
+    },
+    {
+      "name": "ScrollWindBlade",
+      "type": "item",
+      "sortid": 887,
+      "compiles": true,
+      "locked_code": false,
+      "ids": {},
+      "registry_name": "scroll_wind_blade"
     }
   ],
   "variable_elements": [
@@ -8596,8 +8628,8 @@
   ],
   "language_map": {
     "en_us": {
-      "item.kiba_blades.name": "Kiba Blades",
       "entity.crow.name": "Crow",
+      "item.kiba_blades.name": "Kiba Blades",
       "chattext.gedomazo.cantspawn": "Can\u0027t summon Gedo Mazo, it\u0027s already in the world",
       "entity.tenten.name": "Tenten",
       "item.futton.name": "Boil Release",
@@ -8985,6 +9017,7 @@
       "subtitles.dingding": "",
       "chattext.specialevent.villagesiege": "Event alert: A siege is coming!",
       "item.scroll_earth_golem.name": "Earth Release: Golem Jutsu",
+      "entity.wind_blade.name": "Blade of Wind",
       "item.robe_jiraiyahelmet.name": "Robe Jiraiya Helmet",
       "entity.false_darkness.name": "False Darkness",
       "item.robe_jiraiyabody.name": "Jiraiya Robe",
@@ -9106,6 +9139,7 @@
       "item.mask_obito_warboots.name": "Mask Obito War Boots",
       "item.uchihabody.name": "Uchiha Body",
       "entity.c_4.name": "C-4",
+      "item.scroll_wind_blade.name": "Wind Release: Blade of Wind",
       "item.sage_staff.name": "Truth Seeking Shakujo",
       "entity.haku.name": "Haku",
       "item.ninja_armor_soundhelmet.name": "Ninja Armor Sound Helmet",

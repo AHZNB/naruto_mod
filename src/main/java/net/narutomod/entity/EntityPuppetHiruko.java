@@ -2,6 +2,7 @@
 package net.narutomod.entity;
 
 import net.narutomod.procedure.ProcedureUtils;
+import net.narutomod.item.ItemAkatsukiRobe;
 import net.narutomod.item.ItemNinjutsu;
 import net.narutomod.item.ItemScrollHiruko;
 import net.narutomod.item.ItemSenbon;
@@ -32,6 +33,7 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.entity.SharedMonsterAttributes;
@@ -149,6 +151,16 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 	
 		public boolean isAkatsuki() {
 			return ((Boolean)this.getDataManager().get(AKATSUKI)).booleanValue();
+		}
+
+		public boolean wearsAkatsukiRobe() {
+			Entity entity = this.getControllingPassenger();
+			return (entity instanceof EntityLivingBase && ((EntityLivingBase)entity).getItemStackFromSlot(EntityEquipmentSlot.CHEST).getItem() == ItemAkatsukiRobe.body) || this.isAkatsuki();
+		}
+
+		public boolean wearsHat() {
+			Entity entity = this.getControllingPassenger();
+			return (entity instanceof EntityLivingBase && ((EntityLivingBase)entity).getItemStackFromSlot(EntityEquipmentSlot.HEAD).getItem() == ItemAkatsukiRobe.helmet) || this.isAkatsuki();
 		}
 
 		@Override
@@ -364,9 +376,9 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 					this.model.robe.showModel = false;
 					this.model.robeAkatsuki.showModel = false;
 				} else {
-					boolean akatsuki = entity.isAkatsuki();
+					boolean akatsuki = entity.wearsAkatsukiRobe();
 					this.model.mask.showModel = !entity.maskOff;
-					this.model.hat.showModel = akatsuki && !entity.maskOff;
+					this.model.hat.showModel = entity.wearsHat() && !entity.maskOff;
 					this.model.hair.showModel = !this.model.hat.showModel;
 					this.model.robe.showModel = !akatsuki;
 					this.model.robeAkatsuki.showModel = akatsuki;

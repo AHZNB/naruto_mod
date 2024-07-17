@@ -132,8 +132,11 @@ public class EntityFutonGreatBreakthrough extends ElementsNarutomodMod.ModElemen
 		public static class Jutsu implements ItemJutsu.IJutsuCallback {
 			@Override
 			public boolean createJutsu(ItemStack stack, EntityLivingBase entity, float power) {
-				entity.world.spawnEntity(new EC(entity, power));
-				return true;
+				if (power >= this.getBasePower()) {
+					entity.world.spawnEntity(new EC(entity, power));
+					return true;
+				}
+				return false;
 			}
 
 			@Override
@@ -219,7 +222,7 @@ public class EntityFutonGreatBreakthrough extends ElementsNarutomodMod.ModElemen
 						Vec3d vec1 = res.hitVec.subtract(shooter.getPositionEyes(1f));
 						vec1 = this.multiply(vec, vec1.normalize().scale(this.getRange() - (float)vec1.lengthVector()));
 						Particles.spawnParticle(this.world, Particles.Types.BLOCK_DUST, res.hitVec.x, res.hitVec.y, res.hitVec.z,
-						 8, 0.4d, 0.3d, 0.4d, vec1.x, vec1.y, vec1.z, Block.getIdFromBlock(blockstate.getBlock()));
+						 6, 0.4d, 0.3d, 0.4d, vec1.x, vec1.y, vec1.z, Block.getIdFromBlock(blockstate.getBlock()), 50+this.rand.nextInt(50), 70, 10);
 					}
 				}
 			}

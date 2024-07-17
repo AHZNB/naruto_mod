@@ -7,6 +7,7 @@
 package net.narutomod;
 
 import net.narutomod.gui.GuiTeamManager;
+import net.narutomod.gui.GuiScrollWindBladeGui;
 import net.narutomod.gui.GuiScrollWaterStreamGui;
 import net.narutomod.gui.GuiScrollWaterShockwaveGui;
 import net.narutomod.gui.GuiScrollWaterSharkGui;
@@ -475,6 +476,8 @@ public class ElementsNarutomodMod implements IFuelHandler, IWorldGenerator {
 				return new GuiScrollFlameSliceGui.GuiContainerMod(world, x, y, z, player);
 			if (id == GuiScrollFlameFormationGui.GUIID)
 				return new GuiScrollFlameFormationGui.GuiContainerMod(world, x, y, z, player);
+			if (id == GuiScrollWindBladeGui.GUIID)
+				return new GuiScrollWindBladeGui.GuiContainerMod(world, x, y, z, player);
 			return null;
 		}
 
@@ -578,6 +581,8 @@ public class ElementsNarutomodMod implements IFuelHandler, IWorldGenerator {
 				return new GuiScrollFlameSliceGui.GuiWindow(world, x, y, z, player);
 			if (id == GuiScrollFlameFormationGui.GUIID)
 				return new GuiScrollFlameFormationGui.GuiWindow(world, x, y, z, player);
+			if (id == GuiScrollWindBladeGui.GUIID)
+				return new GuiScrollWindBladeGui.GuiWindow(world, x, y, z, player);
 			return null;
 		}
 	}

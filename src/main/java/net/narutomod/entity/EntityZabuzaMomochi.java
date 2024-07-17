@@ -319,7 +319,8 @@ public class EntityZabuzaMomochi extends ElementsNarutomodMod.ModElement {
 		@Override
 		public boolean getCanSpawnHere() {
 			return super.getCanSpawnHere()
-			 && this.world.getEntities(EntityCustom.class, EntitySelectors.IS_ALIVE).isEmpty();
+			 && this.world.getEntities(EntityCustom.class, EntitySelectors.IS_ALIVE).isEmpty()
+			 && !EntityNinjaMob.SpawnData.spawnedRecentlyHere(this, 36000);
 			 //&& this.world.getEntitiesWithinAABB(EntityCustom.class, this.getEntityBoundingBox().grow(128.0D)).isEmpty();
 			 //&& this.rand.nextInt(5) == 0;
 		}

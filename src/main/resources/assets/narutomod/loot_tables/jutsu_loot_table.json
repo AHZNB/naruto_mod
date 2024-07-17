@@ -41,6 +41,11 @@
         },
         {
           "type": "item",
+          "name": "narutomod:scroll_wind_blade",
+          "weight": 20
+        },
+        {
+          "type": "item",
           "name": "narutomod:scroll_swamp_pit",
           "weight": 20
         },

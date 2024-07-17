@@ -19,6 +19,7 @@ import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.block.material.Material;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.BlockPos;
@@ -71,9 +72,12 @@ import net.narutomod.NarutomodMod;
 
 import io.netty.buffer.ByteBuf;
 import java.io.IOException;
-import java.util.List;
 import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
@@ -83,6 +87,46 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 
 	public EntityNinjaMob(ElementsNarutomodMod instance) {
 		super(instance, 404);
+	}
+
+	protected static class SpawnData {
+		protected static final Map<Class<? extends Base>, List<SpawnData>> map = Maps.newHashMap();
+		protected World world;
+		protected AxisAlignedBB area;
+		protected long time;
+
+		SpawnData(Base entity) {
+			this.world = entity.world;
+			this.area = entity.getEntityBoundingBox().grow(512.0d, 64.0d, 512.0d);
+			this.time = entity.world.getTotalWorldTime();
+		}
+
+		protected static void addSpawnData(Base entity) {
+			List<SpawnData> spawndatalist = map.get(entity.getClass());
+			if (spawndatalist == null) {
+				spawndatalist = Lists.newArrayList();
+			}
+			spawndatalist.add(new SpawnData(entity));
+			map.put(entity.getClass(), spawndatalist);
+		}
+
+		protected static boolean spawnedRecentlyHere(Base entity, long interval) {
+			List<SpawnData> spawndatalist = map.get(entity.getClass());
+			if (spawndatalist != null) {
+				Iterator<SpawnData> iter = spawndatalist.iterator();
+				while (iter.hasNext()) {
+					SpawnData spawndata = iter.next();
+					if (entity.world == spawndata.world && spawndata.area.contains(entity.getPositionVector())) {
+						if (spawndata.world.getTotalWorldTime() - spawndata.time <= interval) {
+							return true;
+						} else {
+							iter.remove();
+						}
+					}
+				}
+			}
+			return false;
+		}
 	}
 
 	public static abstract class Base extends EntityCreature {
@@ -305,6 +349,14 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 		@Override
 		public boolean getCanSpawnHere() {
 			return super.getCanSpawnHere() && (this instanceof IMob ? this.world.getDifficulty() != EnumDifficulty.PEACEFUL : true);
+		}
+
+		@Override
+		public void onRemovedFromWorld() {
+			super.onRemovedFromWorld();
+			if (!this.world.isRemote) {
+				SpawnData.addSpawnData(this);
+			}
 		}
 
 		@Override

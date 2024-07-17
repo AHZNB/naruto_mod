@@ -592,6 +592,10 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 		return objectEntityLookingAt(entity, range, bbgrow, false, false, excludeEntity);
 	}
 
+	public static RayTraceResult objectEntityLookingAt(Entity entity, double range, Class <? extends Entity> excludeClazz) {
+		return objectEntityLookingAt(entity, range, 0.0d, false, false, excludeClazz);
+	}
+
 	public static RayTraceResult objectEntityLookingAt(Entity entity, double range, double bbgrow, Class <? extends Entity> excludeClazz) {
 		return objectEntityLookingAt(entity, range, bbgrow, false, false, excludeClazz);
 	}

@@ -18,14 +18,15 @@ import net.minecraft.world.WorldServer;
 import net.minecraft.world.BossInfoServer;
 import net.minecraft.world.BossInfo;
 import net.minecraft.world.DifficultyInstance;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundEvent;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.EntityDamageSource;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.EntityDamageSource;
+import net.minecraft.util.EntitySelectors;
 import net.minecraft.util.EnumHandSide;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.SoundEvent;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.entity.IEntityLivingData;
@@ -196,7 +197,7 @@ public class EntityKisameHoshigaki extends ElementsNarutomodMod.ModElement {
 			this.targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, EntityPlayer.class, 10, true, false,
 					new Predicate<EntityPlayer>() {
 						public boolean apply(@Nullable EntityPlayer p_apply_1_) {
-							return p_apply_1_ != null && EntityBijuManager.isJinchuriki(p_apply_1_);
+							return p_apply_1_ != null && (ModConfig.AGGRESSIVE_BOSSES || EntityBijuManager.isJinchuriki(p_apply_1_));
 						}
 					}));
 			this.tasks.addTask(0, new EntityAISwimming(this) {
@@ -392,7 +393,9 @@ public class EntityKisameHoshigaki extends ElementsNarutomodMod.ModElement {
 		@Override
 		public boolean getCanSpawnHere() {
 			return super.getCanSpawnHere()
-			 && this.world.getEntitiesWithinAABB(EntityCustom.class, this.getEntityBoundingBox().grow(128.0D)).isEmpty();
+			 && this.world.getEntities(EntityCustom.class, EntitySelectors.IS_ALIVE).isEmpty()
+			 && !EntityNinjaMob.SpawnData.spawnedRecentlyHere(this, 36000);
+			 //&& this.world.getEntitiesWithinAABB(EntityCustom.class, this.getEntityBoundingBox().grow(128.0D)).isEmpty();
 			 //&& this.rand.nextInt(5) == 0;
 		}
 
@@ -402,18 +405,8 @@ public class EntityKisameHoshigaki extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
-		public void addTrackingPlayer(EntityPlayerMP player) {
-			super.addTrackingPlayer(player);
-
-			if (ModConfig.AGGRESSIVE_BOSSES) {
-				this.setAttackTarget(player);
-			}
-		}
-
-		@Override
 		public void removeTrackingPlayer(EntityPlayerMP player) {
-			super.removeTrackingPlayer(player);
-
+			super.removeTrackingPlayer(player);
 			if (this.bossInfo.getPlayers().contains(player)) {
 				this.bossInfo.removePlayer(player);
 			}
@@ -421,8 +414,7 @@ public class EntityKisameHoshigaki extends ElementsNarutomodMod.ModElement {
 
 		private void trackAttackedPlayers() {
 			Entity entity = this.getAttackingEntity();
-
-			if (entity instanceof EntityPlayerMP || (entity = (ModConfig.AGGRESSIVE_BOSSES ? this.getLastAttackedEntity() : this.getAttackTarget())) instanceof EntityPlayerMP) {
+			if (entity instanceof EntityPlayerMP || (entity = this.getAttackTarget()) instanceof EntityPlayerMP) {
 				this.bossInfo.addPlayer((EntityPlayerMP) entity);
 			}
 		}

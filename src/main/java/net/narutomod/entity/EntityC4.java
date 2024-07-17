@@ -46,7 +46,7 @@ public class EntityC4 extends ElementsNarutomodMod.ModElement {
 	@Override
 	public void initElements() {
 		elements.entities.add(() -> EntityEntryBuilder.create().entity(EC.class).id(new ResourceLocation("narutomod", "c_4"), ENTITYID)
-				.name("c_4").tracker(64, 3, true).build());
+				.name("c_4").tracker(88, 3, true).build());
 	}
 
 	public static class EC extends EntityClone.Base {
@@ -149,11 +149,18 @@ public class EntityC4 extends ElementsNarutomodMod.ModElement {
 					 SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:katsu")), SoundCategory.NEUTRAL, 1f, 1f);
 				}
 		    	ProcedureAoeCommand.set(this, 0d, this.blastRadius).exclude(summoner).effect(PotionInstantDamage.potion, 5, 0, false);
-				Particles.spawnParticle(this.world, Particles.Types.FALLING_DUST, this.posX, this.posY + 0.5d * this.height, this.posZ,
-				 300, 0.5d * this.width, 0.3d * this.height, 0.5d * this.width, 0d, 0d, 0d, 0xFEE0E0E0, 0, 40 + this.rand.nextInt(60));
 				Particles.spawnParticle(this.world, Particles.Types.EXPANDING_SPHERE, this.posX, this.posY, this.posZ, 1,
 				 0d, 0d, 0d, 0d, 0d, 0d, (int)(this.blastRadius * 10f), 10, 0x3080ffff);
 	    		this.setDead();
+			}
+		}
+
+		@Override
+		public void setDead() {
+			super.setDead();
+			if (this.world.isRemote) {
+				Particles.spawnParticle(this.world, Particles.Types.FALLING_DUST, this.posX, this.posY + 0.5d * this.height, this.posZ,
+				 300, 0.5d * this.width, 0.3d * this.height, 0.5d * this.width, 0d, 0d, 0d, 0xFEE0E0E0, 0, 40 + this.rand.nextInt(60));
 			}
 		}
 

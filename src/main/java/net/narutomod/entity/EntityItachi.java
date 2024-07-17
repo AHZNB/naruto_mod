@@ -26,6 +26,7 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.EntitySelectors;
 import net.minecraft.util.EnumHand;
 import net.minecraft.item.ItemStack;
 import net.minecraft.inventory.EntityEquipmentSlot;
@@ -321,7 +322,9 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 		@Override
 		public boolean getCanSpawnHere() {
 			return super.getCanSpawnHere()
-			 && this.world.getEntitiesWithinAABB(EntityCustom.class, this.getEntityBoundingBox().grow(128.0D)).isEmpty();
+			 && this.world.getEntities(EntityCustom.class, EntitySelectors.IS_ALIVE).isEmpty()
+			 && !EntityNinjaMob.SpawnData.spawnedRecentlyHere(this, 36000);
+			 //&& this.world.getEntitiesWithinAABB(EntityCustom.class, this.getEntityBoundingBox().grow(128.0D)).isEmpty();
 			 //&& this.rand.nextInt(5) == 0;
 		}
 

@@ -13,7 +13,9 @@ import net.narutomod.ElementsNarutomodMod;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
+import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 
 import net.minecraft.world.World;
@@ -26,6 +28,7 @@ import net.minecraft.util.EntitySelectors;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.item.ItemStack;
 import net.minecraft.entity.IEntityLivingData;
@@ -40,6 +43,7 @@ import net.minecraft.entity.IRangedAttackMob;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.client.model.ModelRenderer;
@@ -47,6 +51,7 @@ import net.minecraft.client.model.ModelBox;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.init.Biomes;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.init.MobEffects;
 import net.minecraft.potion.PotionEffect;
@@ -69,12 +74,25 @@ public class EntityDeidara extends ElementsNarutomodMod.ModElement {
 				.name("deidara").tracker(64, 3, true).egg(-16777216, -6750157).build());
 	}
 
+	@Override
+	public void init(FMLInitializationEvent event) {
+		int i = MathHelper.clamp(ModConfig.SPAWN_WEIGHT_DEIDARA, 0, 20);
+		if (i > 0) {
+			EntityRegistry.addSpawn(EntityCustom.class, i, 1, 1, EnumCreatureType.MONSTER,
+					Biomes.BEACH, Biomes.DESERT, Biomes.DESERT_HILLS, Biomes.MESA, Biomes.MESA_ROCK,
+					Biomes.ICE_PLAINS, Biomes.PLAINS, Biomes.SAVANNA, Biomes.SAVANNA_PLATEAU, Biomes.STONE_BEACH,
+					Biomes.MUTATED_DESERT, Biomes.MUTATED_MESA, Biomes.MUTATED_MESA_ROCK, Biomes.MUTATED_PLAINS,
+					Biomes.MUTATED_SAVANNA, Biomes.MUTATED_SAVANNA_ROCK, Biomes.COLD_BEACH);
+		}
+	}
+
 	public static class EntityCustom extends EntityNinjaMob.Base implements IMob, IRangedAttackMob {
 		private final int explosiveCloneCD = 100;
 		private int explosiveCloneLastUsed = -100;
 		private EntityC2.EC c2Entity;
 		private EntityC4.EC c4Entity;
 		private final Vec3d[] flightPath = new Vec3d[8];
+		private final float flyHeightOffGround = 16.0f;
 		private int currentPathPoint;
 		
 		public EntityCustom(World world) {
@@ -129,7 +147,7 @@ public class EntityDeidara extends ElementsNarutomodMod.ModElement {
 				}
 				if (this.isRiding() && this.getRidingEntity() == this.c2Entity) {
 					if (this.c2Entity.ticksExisted % 40 == 39) {
-						this.generateFlightPath(this.getGroundBelow(target).addVector(0d, 16d, 0d));
+						this.generateFlightPath(this.getGroundBelow(target).addVector(0d, this.flyHeightOffGround, 0d));
 					}
 					Vec3d vec = this.flightPath[this.currentPathPoint % 8];
 //System.out.println("++++++ currentPathPoint="+currentPathPoint+", motion:"+ProcedureUtils.getMotion(c2Entity));
@@ -150,10 +168,15 @@ public class EntityDeidara extends ElementsNarutomodMod.ModElement {
 						this.c2Entity.setRemainingLife(10000);
 					}
 				} 
-			} else if (this.isRiding() && this.getRidingEntity() == this.c2Entity && this.c2Entity.getRemainingLife() > 100) {
-				Vec3d vec = this.getGroundBelow(this);
-				this.c2Entity.setFlyTo(vec.x, vec.y, vec.z, 1.0d);
-				this.c2Entity.setRemainingLife(100);
+			} else {
+				if (this.c4Entity != null && this.c4Entity.isEntityAlive()) {
+					this.c4Entity.setDead();
+				}
+				if (this.isRiding() && this.getRidingEntity() == this.c2Entity && this.c2Entity.getRemainingLife() > 100) {
+					Vec3d vec = this.getGroundBelow(this);
+					this.c2Entity.setFlyTo(vec.x, vec.y, vec.z, 1.0d);
+					this.c2Entity.setRemainingLife(100);
+				}
 			}
 			if ((this.getItemStackFromSlot(EntityEquipmentSlot.HEAD).getItem() == ItemAkatsukiRobe.helmet) != (target == null)) {
 				this.swapWithInventory(EntityEquipmentSlot.HEAD, 1);
@@ -204,7 +227,7 @@ public class EntityDeidara extends ElementsNarutomodMod.ModElement {
 			EntityLivingBase target = this.getAttackTarget();
 			if (target != null) {
 				Vec3d vec = this.getPositionVector();
-				if (this.generateFlightPath(this.getGroundBelow(target).addVector(0d, 16d, 0d))) {
+				if (this.generateFlightPath(this.getGroundBelow(target).addVector(0d, this.flyHeightOffGround, 0d))) {
 					for (int i = 0; (int)vec.y + 1 < this.world.getHeight(); i++) {
 						if (this.isDirectPath(vec, this.flightPath[i])) {
 							this.currentPathPoint = i;
@@ -287,7 +310,8 @@ public class EntityDeidara extends ElementsNarutomodMod.ModElement {
 		@Override
 		public boolean getCanSpawnHere() {
 			return super.getCanSpawnHere() && (int)this.posY >= this.world.getSeaLevel() && this.world.canSeeSky(this.getPosition())
-			 && this.world.getEntities(EntityCustom.class, EntitySelectors.IS_ALIVE).isEmpty();
+			 && this.world.getEntities(EntityCustom.class, EntitySelectors.IS_ALIVE).isEmpty()
+			 && !EntityNinjaMob.SpawnData.spawnedRecentlyHere(this, 36000);
 			 //&& this.world.getEntitiesWithinAABB(EntityCustom.class, this.getEntityBoundingBox().grow(128.0D)).isEmpty();
 			 //&& this.rand.nextInt(5) == 0;
 		}

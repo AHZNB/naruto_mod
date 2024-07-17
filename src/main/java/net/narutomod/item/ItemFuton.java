@@ -35,6 +35,7 @@ import net.narutomod.entity.EntityFutonGreatBreakthrough;
 import net.narutomod.entity.EntityFutonVacuum;
 import net.narutomod.entity.EntityScalableProjectile;
 import net.narutomod.entity.EntityChakraFlow;
+import net.narutomod.entity.EntityWindBlade;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.potion.PotionReach;
 
@@ -52,6 +53,7 @@ public class ItemFuton extends ElementsNarutomodMod.ModElement {
 	public static final ItemJutsu.JutsuEnum RASENSHURIKEN = new ItemJutsu.JutsuEnum(1, "rasenshuriken", 'S', 1000d, new EntityRasenshuriken.EC.Jutsu());
 	public static final ItemJutsu.JutsuEnum VACUUMS = new ItemJutsu.JutsuEnum(2, "futon_vacuum", 'B', 20d, new EntityFutonVacuum.EC.Jutsu());
 	public static final ItemJutsu.JutsuEnum BIGBLOW = new ItemJutsu.JutsuEnum(3, "futon_great_breakthrough", 'C', 20d, new EntityFutonGreatBreakthrough.EC.Jutsu());
+	public static final ItemJutsu.JutsuEnum WINDBLADE = new ItemJutsu.JutsuEnum(4, "wind_blade", 'A', 40d, new EntityWindBlade.EC.Jutsu());
 
 	public ItemFuton(ElementsNarutomodMod instance) {
 		super(instance, 376);
@@ -59,7 +61,7 @@ public class ItemFuton extends ElementsNarutomodMod.ModElement {
 
 	@Override
 	public void initElements() {
-		elements.items.add(() -> new RangedItem(CHAKRAFLOW, RASENSHURIKEN, VACUUMS, BIGBLOW));
+		elements.items.add(() -> new RangedItem(CHAKRAFLOW, RASENSHURIKEN, VACUUMS, BIGBLOW, WINDBLADE));
 		elements.entities.add(() -> EntityEntryBuilder.create().entity(ChakraFlow.class)
 		  .id(new ResourceLocation("narutomod", "futonchakraflow"), ENTITYID).name("futonchakraflow").tracker(64, 1, true).build());
 	}

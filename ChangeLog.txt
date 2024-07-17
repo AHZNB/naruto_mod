@@ -25,6 +25,7 @@ Jutsus:
  - explosion release C-1 is faster, C-2 bigger, both slightly more damage. explosive clone has more health
  - add explosion release C-4
  - explosive clone: when used while player being attacked, teleports player to behind the attacker
+ - add wind release: blade of wind jutsu and A-rank scroll, blades are guided
 
 Items:
  - added Sakura shippuden clothing and leggings (for slim player models only)
@@ -64,8 +65,9 @@ Entities:
    Saiken shoots acid breath, Chomei emits blinding powder, Gyuki chain shoots small bijudamas, Kurama shoots lasers
    Ten-Tails is much larger, heals faster, spawns clones to defend itself, shoots lasers
  - updated Sakura's texture
- - adding Deidara (WIP-3: uses C-4 one time when health or chakra gets low)
+ - added Deidara mob, naturally spawns, spawn weight configurable
  - Ninja mobs like Itachi can spawn during daytime, you may need to decrease spawn weight in the config
+    will not spawn in the same 1024 block area within 30 mins
  
 General:
  - fixed alpha transparency bug when using certain jutsus
