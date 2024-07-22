@@ -7,15 +7,16 @@ import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
 
 import net.minecraft.world.World;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.item.ItemStack;
 import net.minecraft.init.SoundEvents;
-import net.minecraft.util.SoundCategory;
 
 import net.narutomod.procedure.ProcedureAirPunch;
 import net.narutomod.item.ItemJutsu;
@@ -76,7 +77,7 @@ public class EntityFutonVacuum extends ElementsNarutomodMod.ModElement {
 			if (this.user != null) {
 				this.setPosition(this.user.posX, this.user.posY, this.user.posZ);
 				if (this.ticksExisted % 5 == 1) {
-					this.playSound(SoundEvents.BLOCK_FIRE_EXTINGUISH, 1f, this.rand.nextFloat() * 0.5f + 0.8f);
+					this.playSound(SoundEvents.BLOCK_FIRE_EXTINGUISH, MathHelper.sqrt(this.bulletSize) * 0.81f , this.rand.nextFloat() * 0.5f + 0.8f);
 					this.airStream.execute2(this.user, this.power, this.bulletSize / 3);
 				}
 			}

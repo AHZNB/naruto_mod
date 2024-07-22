@@ -1339,7 +1339,7 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 				GlStateManager.enableAlpha();
 				GlStateManager.enableBlend();
 				GlStateManager.disableLighting();
-				GlStateManager.color(1.0F, 1.0F, 1.0F, 0.7F);
+				GlStateManager.color(1.0F, 1.0F, 1.0F, 0.8F);
 				//GlStateManager.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE);
 				GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 				OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240.0F, 240.0F);

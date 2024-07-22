@@ -165,6 +165,9 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 			this.enablePersistence();
 			this.setHealth(this.getMaxHealth());
 			this.deathTotalTicks = 200;
+			if (!this.world.isRemote && this.getBijuManager().hasSpawnPos()) {
+				this.setHomePosAndDistance(this.getBijuManager().getSpawnPos(), 128);
+			}
 		}
 
 		public Base(EntityPlayer player) {
@@ -324,17 +327,26 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 		@Override
 		protected void initEntityAI() {
 			super.initEntityAI();
-			this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, false));
+			this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, false) {
+				@Override
+				protected boolean isSuitableTarget(@Nullable EntityLivingBase target, boolean includeInvincibles) {
+					return super.isSuitableTarget(target, includeInvincibles) && Base.this.canTargetEntity(target);
+				}
+			});
 			this.targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, EntityPlayer.class, true, false) {
 				@Override
 				public boolean shouldExecute() {
-					return super.shouldExecute() && !Base.this.isOnSameTeam(this.targetEntity) && Base.this.angerLevel > 0;
+					return super.shouldExecute() && Base.this.canTargetEntity(this.targetEntity) && Base.this.angerLevel > 0;
 				}
 			});
 			this.targetTasks.addTask(3, new EntityAINearestAttackableTarget(this, EntityLivingBase.class, true, false) {
 				@Override
 				public boolean shouldExecute() {
-					return super.shouldExecute() && Base.this.angerLevel > 1;
+					return super.shouldExecute() && Base.this.angerLevel > 1 && Base.this.canTargetEntity(this.targetEntity);
+				}
+				@Override
+				public boolean shouldContinueExecuting() {
+					return super.shouldContinueExecuting() && Base.this.canTargetEntity(this.targetEntity);
 				}
 				@Override
 				protected double getTargetDistance() {
@@ -345,11 +357,17 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 			this.tasks.addTask(4, new EntityAIWander(this, 0.8D) {
 				@Override
 				public boolean shouldExecute() {
-					return !Base.this.isMotionHalted() && super.shouldExecute();
+					if (Base.this.isMotionHalted()) {
+						return false;
+					}
+					if (Base.this.isInWater() && Base.this.hatesWater()) {
+						this.makeUpdate();
+					}
+					return super.shouldExecute();
 				}
 				@Override @Nullable
 				protected Vec3d getPosition() {
-					return RandomPositionGenerator.findRandomTarget(this.entity, 56, 21);
+					return Base.this.hatesWater() ? RandomPositionGenerator.getLandPos(this.entity, 56, 35) : RandomPositionGenerator.findRandomTarget(this.entity, 56, 35);
 				}
 			});
 			this.tasks.addTask(5, new EntityAILookIdle(this) {
@@ -387,6 +405,19 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 			return this.isFaceDown();
 		}
 
+		protected boolean hatesWater() {
+			return true;
+		}
+
+		@Override
+		protected float getWaterSlowDown() {
+			return 0.9F;
+		}
+
+		protected boolean canTargetEntity(Entity target) {
+			return !this.isMotionHalted() && !this.isOnSameTeam(target) && (!this.hatesWater() || !target.isInWater() || !this.isInWater());
+		}
+
 		@Override
 		protected boolean canDespawn() {
 			return false;
@@ -405,6 +436,11 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 		@Override
 		protected float getSoundVolume() {
 			return 50.0F;
+		}
+
+		@Override
+		public int getTalkInterval() {
+			return 320 - this.angerLevel * 120;
 		}
 
 		@Override
@@ -544,7 +580,7 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 			float hp = this.getHealth();
 			if (source.getTrueSource() instanceof EntityLivingBase) {
 				float maxhp = this.getMaxHealth();
-				this.setAngerLevel(hp < 0.5f * maxhp ? 2 : hp < maxhp - 500f ? 1 : 0);
+				this.setAngerLevel(Math.max(source.getTrueSource() instanceof EntityPlayer ? 1 : hp < 0.5f * maxhp ? 2 : hp < maxhp - 500f ? 1 : 0, this.angerLevel));
 			}
 			//return super.attackEntityFrom(source, amount);
 			boolean flag = super.attackEntityFrom(source, amount);
@@ -1196,7 +1232,7 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 
 	    @Override
 	    protected void checkForStuck(Vec3d positionVec3) {
-	        if (this.totalTicks - this.ticksAtLastPos > 80) {
+	        if (this.totalTicks - this.ticksAtLastPos > 60) {
 	            if (positionVec3.squareDistanceTo(this.lastPosCheck) < this.entity.width * this.entity.width) {
 	                this.clearPath();
 	            }
@@ -1557,8 +1593,8 @@ System.out.println("====== totalTicks:"+totalTicks+", lastTimeAtPathIndex:"+last
 					alpha = 0.2F;
 				}
 				for (int i = 0; i < 6; i++) {
-					GlStateManager.rotate(entity.getRNG().nextFloat() * 30f, 0f, 1f, 0f);
-					GlStateManager.rotate(entity.getRNG().nextFloat() * 30f, 1f, 1f, 0f);
+					GlStateManager.rotate(entity.rand().nextFloat() * 30f, 0f, 1f, 0f);
+					GlStateManager.rotate(entity.rand().nextFloat() * 30f, 1f, 1f, 0f);
 					this.mainModel.render(entity, alpha, 0.0F, ageInTicks, 0.0F, 0.0F, 0.0625F);
 				}
 				GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);

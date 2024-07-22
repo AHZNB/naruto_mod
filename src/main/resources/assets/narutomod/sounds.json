@@ -1123,5 +1123,14 @@
         "stream": false
       }
     ]
+  },
+  "windblast": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "narutomod:windblast",
+        "stream": false
+      }
+    ]
   }
 }

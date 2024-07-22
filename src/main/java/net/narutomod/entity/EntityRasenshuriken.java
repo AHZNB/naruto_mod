@@ -111,42 +111,11 @@ public class EntityRasenshuriken extends ElementsNarutomodMod.ModElement {
 			this.getDataManager().set(BALL_COLOR, Integer.valueOf(color));
 		}
 
-		protected void doImpactDamage() {
-			ProcedureAoeCommand.set(this.world, this.impactVec.x, this.impactVec.y, this.impactVec.z, 0d, this.width/2)
-			  .exclude(this.shootingEntity).resetHurtResistanceTime()
-			  .damageEntities(this.damageSource, this.fullScale * this.impactDamageMultiplier)
-			  .motion(0d, 0d, 0d);
-		}
-
-		private void onImpactUpdate() {
-			int impactTicks = this.getImpactTicks() + 1;
-			this.setImpactTicks(impactTicks);
-			if (impactTicks <= 3) {
-				this.setOGSize(0.5f, 0.5f);
-			}
-			if (!this.world.isRemote) {
-				if (impactTicks % 4 == 0) {
-					this.world.playSound(null, this.posX, this.posY, this.posZ, SoundEvent.REGISTRY
-					  .getObject(new ResourceLocation("narutomod:rasenshuriken_explode")), SoundCategory.NEUTRAL, 5, 1f);
-				}
-				float scale = this.getEntityScale() * (impactTicks <= 20 ? 1.15f : 1.001f);
-				double d = (this.height * scale / this.getEntityScale() - this.height) / 2;
-				this.setEntityScale(scale);
-				this.setPosition(this.impactVec.x, this.posY - d, this.impactVec.z);
-				this.doImpactDamage();
-				new EventSphericalExplosion(this.world, null, (int)Math.floor(this.impactVec.x), (int)this.impactVec.y, 
-				  (int)Math.floor(this.impactVec.z), (int) Math.ceil(this.width/2) + 1, 0, 0f, false, false);
-				Particles.Renderer particles = new Particles.Renderer(this.world);
-				for (int i = 0; i < 300; i++) {
-					particles.spawnParticles(Particles.Types.SMOKE, this.posX, this.posY+this.height*0.5, this.posZ,
-					  1, 1d, 0d, 1d, (this.rand.nextDouble()-0.5d) * this.fullScale * 4.0d,
-					  0.5d * this.rand.nextGaussian(), 4.0d * (this.rand.nextDouble()-0.5d) * this.fullScale,
-					  0x10FFFFFF, (int)(scale * 16f), 20);
-				}
-				particles.send();
-				if (impactTicks >= 200) {
-					this.setDead();
-				}
+		@Override
+		public void setDead() {
+			super.setDead();
+			if (!this.world.isRemote && this.shootingEntity != null) {
+				ProcedureSync.EntityNBTTag.removeAndSync(this.shootingEntity, NarutomodModVariables.forceBowPose);
 			}
 		}
 
@@ -188,9 +157,6 @@ public class EntityRasenshuriken extends ElementsNarutomodMod.ModElement {
 			}
 			if (this.ticksInAir > 200 || (!this.world.isRemote && this.shootingEntity == null && !this.isLaunched())) {
 				this.setDead();
-				if (this.shootingEntity != null) {
-					ProcedureSync.EntityNBTTag.removeAndSync(this.shootingEntity, NarutomodModVariables.forceBowPose);
-				}
 			}
 		}
 
@@ -212,6 +178,45 @@ public class EntityRasenshuriken extends ElementsNarutomodMod.ModElement {
 
 		protected Vec3d getImpactVec() {
 			return this.impactVec;
+		}
+
+		protected void doImpactDamage() {
+			ProcedureAoeCommand.set(this.world, this.impactVec.x, this.impactVec.y, this.impactVec.z, 0d, this.width/2)
+			  .exclude(this.shootingEntity).exclude(EntityTruthSeekerBall.EntityCustom.class).resetHurtResistanceTime()
+			  .damageEntities(this.damageSource, this.fullScale * this.impactDamageMultiplier)
+			  .motion(0d, 0d, 0d);
+		}
+
+		private void onImpactUpdate() {
+			int impactTicks = this.getImpactTicks() + 1;
+			this.setImpactTicks(impactTicks);
+			if (impactTicks <= 3) {
+				this.setOGSize(0.5f, 0.5f);
+			}
+			if (!this.world.isRemote) {
+				if (impactTicks % 4 == 0) {
+					this.world.playSound(null, this.posX, this.posY, this.posZ, SoundEvent.REGISTRY
+					  .getObject(new ResourceLocation("narutomod:rasenshuriken_explode")), SoundCategory.NEUTRAL, 5, 1f);
+				}
+				float scale = this.getEntityScale() * (impactTicks <= 20 ? 1.15f : 1.001f);
+				double d = (this.height * scale / this.getEntityScale() - this.height) / 2;
+				this.setEntityScale(scale);
+				this.setPosition(this.impactVec.x, this.posY - d, this.impactVec.z);
+				this.doImpactDamage();
+				new EventSphericalExplosion(this.world, null, (int)Math.floor(this.impactVec.x), (int)this.impactVec.y, 
+				  (int)Math.floor(this.impactVec.z), (int) Math.ceil(this.width/2) + 1, 0, 0f, false, false);
+				Particles.Renderer particles = new Particles.Renderer(this.world);
+				for (int i = 0; i < 300; i++) {
+					particles.spawnParticles(Particles.Types.SMOKE, this.posX, this.posY+this.height*0.5, this.posZ,
+					  1, 1d, 0d, 1d, (this.rand.nextDouble()-0.5d) * this.fullScale * 4.0d,
+					  0.5d * this.rand.nextGaussian(), 4.0d * (this.rand.nextDouble()-0.5d) * this.fullScale,
+					  0x10FFFFFF, (int)(scale * 16f), 20);
+				}
+				particles.send();
+				if (impactTicks >= 200) {
+					this.setDead();
+				}
+			}
 		}
 
 		@Override
@@ -260,7 +265,9 @@ public class EntityRasenshuriken extends ElementsNarutomodMod.ModElement {
 				  SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:rasenshuriken")),
 				  SoundCategory.PLAYERS, 5, 1f);
 			EC entity1 = new EC(entity, power);
-			entity1.damageSource = ItemJutsu.causeSenjutsuDamage(entity1, entity).setDamageBypassesArmor();
+			if (isSenjutsu) {
+				entity1.damageSource = ItemJutsu.causeSenjutsuDamage(entity1, entity).setDamageBypassesArmor();
+			}
 			entity.world.spawnEntity(entity1);
 			return entity1;
 		}
@@ -309,11 +316,12 @@ public class EntityRasenshuriken extends ElementsNarutomodMod.ModElement {
 		}
 
 		public static class TSBVariant implements ItemJutsu.IJutsuCallback {
+			private static final float multiplier = 8.0f;
 			@Override
 			public boolean createJutsu(ItemStack stack, EntityLivingBase entity, float power) {
 				EC entity1 = EC.create(entity, 4.0f, true);
 				entity1.setBallColor(0xE0101010);
-				entity1.impactDamageMultiplier = 8.0f;
+				entity1.impactDamageMultiplier = this.multiplier;
 				return true;
 			}
 		}

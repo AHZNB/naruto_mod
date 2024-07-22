@@ -80,17 +80,14 @@ public class EntityWindBlade extends ElementsNarutomodMod.ModElement {
 					}
 				}
 				if (this.targetTrace.entityHit != null) {
-					this.motionX *= 0.1d;
-					this.motionY *= 0.1d;
-					this.motionZ *= 0.1d;
 					Vec3d vec = this.targetTrace.entityHit.getPositionVector().addVector(0d, this.targetTrace.entityHit.height * 0.5f, 0d).subtract(this.getPositionVector());
-					this.shoot(vec.x, vec.y, vec.z, 9.5f, 0f);
+					this.shootPrecise(vec.x, vec.y, vec.z, 0.96f);
 				} else {
 					Vec3d vec = this.targetTrace.hitVec.subtract(this.getPositionVector());
 					this.shoot(vec.x, vec.y, vec.z, 0.6f, 0f);
 				}
-				if (this.ticksAlive % 10 == 1) {
-					this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:windecho")), 0.1f, this.rand.nextFloat() * 0.3f + 0.9f);
+				if (this.ticksAlive % 8 == 1) {
+					this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:windecho")), 0.1f, this.rand.nextFloat() * 0.4f + 1.8f);
 				}
 			}
 		}
@@ -140,7 +137,7 @@ public class EntityWindBlade extends ElementsNarutomodMod.ModElement {
 	
 			@Override
 			public float getPowerupDelay() {
-				return 200.0f;
+				return 100.0f;
 			}
 	
 			@Override
@@ -178,7 +175,8 @@ public class EntityWindBlade extends ElementsNarutomodMod.ModElement {
 				float f = (float)entity.ticksExisted + partialTicks;
 				this.bindEntityTexture(entity);
 				GlStateManager.pushMatrix();
-				GlStateManager.translate(x, y + (0.05F * scale), z);
+				y += entity.height * 0.5F;
+				GlStateManager.translate(x, y, z);
 				float f1 = ProcedureUtils.interpolateRotation(entity.prevRotationYaw, entity.rotationYaw, partialTicks);
 				float f2 = entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks;
 				float f3 = entity.prevRotationRoll + (entity.rotationRoll - entity.prevRotationRoll) * partialTicks;
@@ -199,12 +197,14 @@ public class EntityWindBlade extends ElementsNarutomodMod.ModElement {
 				GlStateManager.disableBlend();
 				GlStateManager.alphaFunc(0x204, 0.1f);
 				GlStateManager.popMatrix();
-				this.renderParticles(entity.world, new Vec3d(x + this.renderManager.viewerPosX, y + this.renderManager.viewerPosY + entity.height * 0.5f, z + this.renderManager.viewerPosZ), f1, f2, f3, scale, f);
+				this.renderParticles(entity.world, new Vec3d(x + this.renderManager.viewerPosX, y + this.renderManager.viewerPosY, z + this.renderManager.viewerPosZ), f1, f2, f3, scale, f);
 			}
 
 			private void renderParticles(World worldIn, Vec3d vec, float yaw, float pitch, float roll, float size, float ageInTicks) {
+				Vec3d vec3 = new Vec3d(0.3d * size, 0d, 0d);
+				ProcedureUtils.RotationMatrix rotationMatrix = new ProcedureUtils.RotationMatrix().rotateYaw(-yaw).rotatePitch(pitch).rotateRoll(-roll).rotateY(ageInTicks);
 				for (int i = 0; i < 4; i++) {
-					Vec3d vec1 = new Vec3d(0.3d * size, 0d, 0d).rotateYaw(1.5708f * i).rotateYaw(ageInTicks).add(vec);
+					Vec3d vec1 = rotationMatrix.rotateYaw(90f).transform(vec3).add(vec);
 					Vec3d vec2 = vec1.subtract(vec).scale(0.5d);
 					Particles.spawnParticle(worldIn, Particles.Types.SMOKE, vec1.x, vec1.y, vec1.z,
 					 1, 0d, 0d, 0d, vec2.x, vec2.y, vec2.z, 0x10FFFFFF, (int)(size * 5), 0);

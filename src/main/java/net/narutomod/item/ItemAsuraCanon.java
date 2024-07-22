@@ -130,9 +130,10 @@ public class ItemAsuraCanon extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void onUpdate() {
 			super.onUpdate();
+			this.updateInFlightRotations();
 			if (this.target != null) {
 				Vec3d vec = this.target.getPositionEyes(1f).subtract(this.getPositionVector());
-				this.shoot(vec.x, vec.y, vec.z, this.isInWater() ? 0.85f : 0.95f, 0f, true);
+				this.shootPrecise(vec.x, vec.y, vec.z, this.isInWater() ? 0.85f : 0.95f);
 			} else if (this.shootingEntity instanceof EntityLiving) {
 				this.target = ((EntityLiving)this.shootingEntity).getAttackTarget();
 			} else if (this.shootingEntity != null) {

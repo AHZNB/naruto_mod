@@ -41,7 +41,6 @@ import net.narutomod.NarutomodModVariables;
 import net.narutomod.ElementsNarutomodMod;
 
 import java.util.List;
-import java.util.Random;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityHakkeshoKeiten extends ElementsNarutomodMod.ModElement {
@@ -72,7 +71,7 @@ public class EntityHakkeshoKeiten extends ElementsNarutomodMod.ModElement {
 		public EntityCustom(EntityPlayer player) {
 			super(player);
 			double d = PlayerTracker.getNinjaLevel(player);
-			this.maxScale = MathHelper.clamp((float)d / 40f, 1f, 10f);
+			this.maxScale = MathHelper.clamp((float)d * 0.02f, 1f, 6f);
 			this.setScale(0.1f);
 			this.setOwnerCanSteer(true, 0.5F);
 			this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH)
@@ -135,12 +134,14 @@ public class EntityHakkeshoKeiten extends ElementsNarutomodMod.ModElement {
 				} else {
 					float maturity = this.getMaturity();
 					float scale = maturity * this.maxScale;
-					this.setScale(scale);
+					if (this.getScale() < scale) {
+						this.setScale(scale);
+					}
 					Particles.Renderer particles = new Particles.Renderer(this.world);
 					for (int i = 0; i < (int)(scale * maturity * 30f); i++) {
-						particles.spawnParticles(Particles.Types.SMOKE, summoner.posX, summoner.posY, summoner.posZ,
-						 1, 1d, 0d, 1d, (this.rand.nextDouble()-0.5d) * scale * 2.0d, 0.4d,
-						 (this.rand.nextDouble()-0.5d) * scale * 2.0d, 0x10FFFFFF, 30 + (int)(scale * 5), 0);
+						particles.spawnParticles(Particles.Types.SMOKE, this.posX, this.posY, this.posZ, 1, 1d, 0d, 1d,
+						 (this.rand.nextDouble()-0.5d) * scale * 2.0d, 0.4d, (this.rand.nextDouble()-0.5d) * scale * 2.0d,
+						 0x10FFFFFF, 50 + (int)(scale * 10), (int)(8.0D / (this.rand.nextDouble() * 0.8D + 0.2D)));
 					}
 					particles.send();
 					if (maturity >= 0.9f) {
@@ -223,20 +224,22 @@ public class EntityHakkeshoKeiten extends ElementsNarutomodMod.ModElement {
 				this.bindEntityTexture(entity);
 				GlStateManager.pushMatrix();
 				GlStateManager.translate((float)x, (float)y, (float)z);
-				//GlStateManager.color(1f, 1f, 1f, 0.f);
 				GlStateManager.scale(scale, scale, scale);
 				GlStateManager.rotate(f2 * 30.0F, 0.0F, 1.0F, 0.0F);
-				GlStateManager.enableAlpha();
 				GlStateManager.enableBlend();
 				GlStateManager.disableCull();
 				GlStateManager.disableLighting();
+				//if (this.renderManager.options.thirdPersonView == 0 && this.renderManager.renderViewEntity == entity.getControllingPassenger()) {
+				//	GlStateManager.color(1.0F, 1.0F, 1.0F, 0.2F);
+				//}
+				GlStateManager.depthMask(false);
 				GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 				this.model.render(entity, 0f, 0f, f2, 0f, 0f, 0.0625f);
+				GlStateManager.depthMask(true);
+				//GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 				GlStateManager.enableLighting();
 				GlStateManager.enableCull();
-				//GlStateManager.disableAlpha();
 				GlStateManager.disableBlend();
-				//GlStateManager.color(1f, 1f, 1f, 1f);
 				GlStateManager.popMatrix();
 			}
 	
@@ -263,8 +266,6 @@ public class EntityHakkeshoKeiten extends ElementsNarutomodMod.ModElement {
 			private final ModelRenderer hexadecagon_r10;
 			private final ModelRenderer hexadecagon_r11;
 			private final ModelRenderer hexadecagon_r12;
-			private final ModelRenderer hexadecagon_r13;
-			private final ModelRenderer hexadecagon_r14;
 			private final ModelRenderer hexadecagon3;
 			private final ModelRenderer hexadecagon_r15;
 			private final ModelRenderer hexadecagon_r16;
@@ -279,8 +280,6 @@ public class EntityHakkeshoKeiten extends ElementsNarutomodMod.ModElement {
 			private final ModelRenderer hexadecagon_r24;
 			private final ModelRenderer hexadecagon_r25;
 			private final ModelRenderer hexadecagon_r26;
-			private final ModelRenderer hexadecagon_r27;
-			private final ModelRenderer hexadecagon_r28;
 			private final ModelRenderer hexadecagon5;
 			private final ModelRenderer hexadecagon_r29;
 			private final ModelRenderer hexadecagon_r30;
@@ -295,8 +294,6 @@ public class EntityHakkeshoKeiten extends ElementsNarutomodMod.ModElement {
 			private final ModelRenderer hexadecagon_r38;
 			private final ModelRenderer hexadecagon_r39;
 			private final ModelRenderer hexadecagon_r40;
-			private final ModelRenderer hexadecagon_r41;
-			private final ModelRenderer hexadecagon_r42;
 			private final ModelRenderer hexadecagon7;
 			private final ModelRenderer hexadecagon_r43;
 			private final ModelRenderer hexadecagon_r44;
@@ -311,8 +308,6 @@ public class EntityHakkeshoKeiten extends ElementsNarutomodMod.ModElement {
 			private final ModelRenderer hexadecagon_r52;
 			private final ModelRenderer hexadecagon_r53;
 			private final ModelRenderer hexadecagon_r54;
-			private final ModelRenderer hexadecagon_r55;
-			private final ModelRenderer hexadecagon_r56;
 		
 			public ModelKaiten() {
 				textureWidth = 24;
@@ -321,9 +316,11 @@ public class EntityHakkeshoKeiten extends ElementsNarutomodMod.ModElement {
 				ball = new ModelRenderer(this);
 				ball.setRotationPoint(0.0F, 0.0F, 0.0F);
 				
+		
 				hexadecagon = new ModelRenderer(this);
 				hexadecagon.setRotationPoint(0.0F, 0.0F, 0.0F);
 				ball.addChild(hexadecagon);
+				
 		
 				hexadecagon_r1 = new ModelRenderer(this);
 				hexadecagon_r1.setRotationPoint(0.0F, 0.0F, 0.0F);
@@ -402,18 +399,6 @@ public class EntityHakkeshoKeiten extends ElementsNarutomodMod.ModElement {
 				hexadecagon2.addChild(hexadecagon_r12);
 				setRotationAngle(hexadecagon_r12, -0.7854F, 0.0F, 0.0F);
 				hexadecagon_r12.cubeList.add(new ModelBox(hexadecagon_r12, 0, 0, -2.0F, -10.0F, -2.0F, 4, 20, 4, 0.0F, false));
-		
-				hexadecagon_r13 = new ModelRenderer(this);
-				hexadecagon_r13.setRotationPoint(0.0F, 0.0F, 0.0F);
-				hexadecagon2.addChild(hexadecagon_r13);
-				setRotationAngle(hexadecagon_r13, -0.3927F, 0.0F, 0.0F);
-				hexadecagon_r13.cubeList.add(new ModelBox(hexadecagon_r13, 0, 0, -2.0F, -10.0F, -2.0F, 4, 20, 4, 0.0F, false));
-		
-				hexadecagon_r14 = new ModelRenderer(this);
-				hexadecagon_r14.setRotationPoint(0.0F, 0.0F, 0.0F);
-				hexadecagon2.addChild(hexadecagon_r14);
-				setRotationAngle(hexadecagon_r14, 0.3927F, 0.0F, 0.0F);
-				hexadecagon_r14.cubeList.add(new ModelBox(hexadecagon_r14, 0, 0, -2.0F, -10.0F, -2.0F, 4, 20, 4, 0.0F, false));
 		
 				hexadecagon3 = new ModelRenderer(this);
 				hexadecagon3.setRotationPoint(0.0F, 0.0F, 0.0F);
@@ -499,18 +484,6 @@ public class EntityHakkeshoKeiten extends ElementsNarutomodMod.ModElement {
 				setRotationAngle(hexadecagon_r26, -0.7854F, 0.0F, 0.0F);
 				hexadecagon_r26.cubeList.add(new ModelBox(hexadecagon_r26, 0, 0, -2.0F, -10.0F, -2.0F, 4, 20, 4, 0.0F, false));
 		
-				hexadecagon_r27 = new ModelRenderer(this);
-				hexadecagon_r27.setRotationPoint(0.0F, 0.0F, 0.0F);
-				hexadecagon4.addChild(hexadecagon_r27);
-				setRotationAngle(hexadecagon_r27, -0.3927F, 0.0F, 0.0F);
-				hexadecagon_r27.cubeList.add(new ModelBox(hexadecagon_r27, 0, 0, -2.0F, -10.0F, -2.0F, 4, 20, 4, 0.0F, false));
-		
-				hexadecagon_r28 = new ModelRenderer(this);
-				hexadecagon_r28.setRotationPoint(0.0F, 0.0F, 0.0F);
-				hexadecagon4.addChild(hexadecagon_r28);
-				setRotationAngle(hexadecagon_r28, 0.3927F, 0.0F, 0.0F);
-				hexadecagon_r28.cubeList.add(new ModelBox(hexadecagon_r28, 0, 0, -2.0F, -10.0F, -2.0F, 4, 20, 4, 0.0F, false));
-		
 				hexadecagon5 = new ModelRenderer(this);
 				hexadecagon5.setRotationPoint(0.0F, 0.0F, 0.0F);
 				ball.addChild(hexadecagon5);
@@ -595,18 +568,6 @@ public class EntityHakkeshoKeiten extends ElementsNarutomodMod.ModElement {
 				setRotationAngle(hexadecagon_r40, -0.7854F, 0.0F, 0.0F);
 				hexadecagon_r40.cubeList.add(new ModelBox(hexadecagon_r40, 0, 0, -2.0F, -10.0F, -2.0F, 4, 20, 4, 0.0F, false));
 		
-				hexadecagon_r41 = new ModelRenderer(this);
-				hexadecagon_r41.setRotationPoint(0.0F, 0.0F, 0.0F);
-				hexadecagon6.addChild(hexadecagon_r41);
-				setRotationAngle(hexadecagon_r41, -0.3927F, 0.0F, 0.0F);
-				hexadecagon_r41.cubeList.add(new ModelBox(hexadecagon_r41, 0, 0, -2.0F, -10.0F, -2.0F, 4, 20, 4, 0.0F, false));
-		
-				hexadecagon_r42 = new ModelRenderer(this);
-				hexadecagon_r42.setRotationPoint(0.0F, 0.0F, 0.0F);
-				hexadecagon6.addChild(hexadecagon_r42);
-				setRotationAngle(hexadecagon_r42, 0.3927F, 0.0F, 0.0F);
-				hexadecagon_r42.cubeList.add(new ModelBox(hexadecagon_r42, 0, 0, -2.0F, -10.0F, -2.0F, 4, 20, 4, 0.0F, false));
-		
 				hexadecagon7 = new ModelRenderer(this);
 				hexadecagon7.setRotationPoint(0.0F, 0.0F, 0.0F);
 				ball.addChild(hexadecagon7);
@@ -690,18 +651,6 @@ public class EntityHakkeshoKeiten extends ElementsNarutomodMod.ModElement {
 				hexadecagon8.addChild(hexadecagon_r54);
 				setRotationAngle(hexadecagon_r54, -0.7854F, 0.0F, 0.0F);
 				hexadecagon_r54.cubeList.add(new ModelBox(hexadecagon_r54, 0, 0, -2.0F, -10.0F, -2.0F, 4, 20, 4, 0.0F, false));
-		
-				hexadecagon_r55 = new ModelRenderer(this);
-				hexadecagon_r55.setRotationPoint(0.0F, 0.0F, 0.0F);
-				hexadecagon8.addChild(hexadecagon_r55);
-				setRotationAngle(hexadecagon_r55, -0.3927F, 0.0F, 0.0F);
-				hexadecagon_r55.cubeList.add(new ModelBox(hexadecagon_r55, 0, 0, -2.0F, -10.0F, -2.0F, 4, 20, 4, 0.0F, false));
-		
-				hexadecagon_r56 = new ModelRenderer(this);
-				hexadecagon_r56.setRotationPoint(0.0F, 0.0F, 0.0F);
-				hexadecagon8.addChild(hexadecagon_r56);
-				setRotationAngle(hexadecagon_r56, 0.3927F, 0.0F, 0.0F);
-				hexadecagon_r56.cubeList.add(new ModelBox(hexadecagon_r56, 0, 0, -2.0F, -10.0F, -2.0F, 4, 20, 4, 0.0F, false));
 			}
 		
 			@Override

@@ -162,6 +162,16 @@ public class EntityScalableProjectile extends ElementsNarutomodMod.ModElement {
 			this.motionFactor = speed;
 		}
 
+		public void shootPrecise(double x, double y, double z, float speed) {
+			double d0 = MathHelper.sqrt(x * x + y * y + z * z);
+			this.accelerationX = x / d0 * 0.1D;
+			this.accelerationY = y / d0 * 0.1D;
+			this.accelerationZ = z / d0 * 0.1D;
+			this.motionX = x / d0 * speed;
+			this.motionY = y / d0 * speed;
+			this.motionZ = z / d0 * speed;
+		}
+
 		public double getAcceleration() {
 			return MathHelper.sqrt(this.accelerationX * this.accelerationX + this.accelerationY * this.accelerationY + this.accelerationZ * this.accelerationZ) * this.motionFactor;
 		}
@@ -188,15 +198,6 @@ public class EntityScalableProjectile extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void onUpdate() {
 			super.onUpdate();
-			if (this.prevRotationPitch == 0.0F && this.prevRotationYaw == 0.0F) {
-				float f = MathHelper.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
-				this.rotationYaw = (float)(MathHelper.atan2(this.motionX, this.motionZ) * (180D / Math.PI));
-				this.rotationPitch = (float)(MathHelper.atan2(this.motionY, (double)f) * (180D / Math.PI));
-				this.prevRotationYaw = this.rotationYaw;
-				this.prevRotationPitch = this.rotationPitch;
-				this.prevRotationRoll = 0.0f;
-				this.rotationRoll = 0.0f;
-			}
 			this.ticksAlive++;
 			if (!this.world.isRemote && this.shootingEntity != null && this.shootingEntity.isDead
 			 || !this.world.isBlockLoaded(new BlockPos(this))) {
@@ -258,7 +259,7 @@ public class EntityScalableProjectile extends ElementsNarutomodMod.ModElement {
 			 && ((Base)res.entityHit).shootingEntity.equals(this.shootingEntity) ? null : res;
 		}
 
-		public Random getRNG() {
+		public Random rand() {
 			return this.rand;
 		}
 

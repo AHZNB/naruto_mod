@@ -748,7 +748,7 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public boolean attackEntityFrom(DamageSource source, float amount) {
-			if (!this.world.isRemote && source.getImmediateSource() instanceof EntityLivingBase) {
+			if (!this.world.isRemote && this.ticksExisted > 10) {
 				this.health -= amount;
 				this.world.setEntityState(this, (byte)18);
 				if (this.health <= 0.0f) {
@@ -760,8 +760,8 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 						this.owner.setEntityInvulnerable(false);
 						this.owner.attackEntityFrom(source, amount);
 					}
-				} else {
-					Vec3d vec = this.getPositionVector().subtract(source.getImmediateSource().getPositionVector()).normalize().scale(0.2d);
+				} else if (source.getTrueSource() instanceof EntityLivingBase) {
+					Vec3d vec = this.getPositionVector().subtract(source.getTrueSource().getPositionVector()).normalize().scale(0.2d);
 					this.motionX += vec.x;
 					this.motionZ += vec.z;
 					this.motionY += this.inGround ? 0.4d : 0.0d;

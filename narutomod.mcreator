@@ -1,8 +1,8 @@
 {
   "id_map": {
-    "DIMENSION": 13,
-    "GUI": 69,
-    "ENTITY": 454
+    "GUI": 70,
+    "ENTITY": 456,
+    "DIMENSION": 13
   },
   "mod_elements": [
     {
@@ -7583,6 +7583,38 @@
       "locked_code": false,
       "ids": {},
       "registry_name": "scroll_wind_blade"
+    },
+    {
+      "name": "VacuumWave",
+      "type": "mob",
+      "sortid": 888,
+      "compiles": true,
+      "locked_code": true,
+      "ids": {
+        "0": 455,
+        "1": 456
+      },
+      "registry_name": "vacuum_wave"
+    },
+    {
+      "name": "ScrollVacuumWaveGui",
+      "type": "gui",
+      "sortid": 889,
+      "compiles": true,
+      "locked_code": true,
+      "ids": {
+        "0": 70
+      },
+      "registry_name": "scroll_vacuum_wave_gui"
+    },
+    {
+      "name": "ScrollVacuumWave",
+      "type": "item",
+      "sortid": 890,
+      "compiles": true,
+      "locked_code": false,
+      "ids": {},
+      "registry_name": "scroll_vacuum_wave"
     }
   ],
   "variable_elements": [
@@ -8624,6 +8656,14 @@
       ],
       "category": "master",
       "subtitle": ""
+    },
+    {
+      "name": "windblast",
+      "files": [
+        "windblast"
+      ],
+      "category": "master",
+      "subtitle": ""
     }
   ],
   "language_map": {
@@ -8691,6 +8731,7 @@
       "tile.amaterasublock.name": "Amaterasu Flame",
       "entity.iruka_sensei.name": "Iruka Sensei",
       "effect.corrosion": "Corrosion",
+      "item.scroll_vacuum_wave.name": "Wind Release: Vacuum Wave",
       "tooltip.nuibari.general": "The Nuibari is one of the swords of the Seven Swordsmen of the Mist. The blade itself assumes the form of a narrow \"longsword\" that greatly resembles a large needle. This sword is said to possess the ability to pierce all and stitch them together.",
       "item.tenseiganhelmet.name": "Tenseigan",
       "entity.kingofhell.name": "King Of Hell",
@@ -8849,7 +8890,7 @@
       "tooltip.byakugan.jutsu1": "Activate, [Switch Jutsu] zoom-in, [SHIFT] 8-Trigrams Vacuum Palm",
       "tooltip.byakugan.jutsu2": "8-Trigrams 64 Palms",
       "item.rinneganhelmet.name": "Rinnegan ",
-      "entity.futon_vacuum.name": "Vacuum Wave",
+      "entity.futon_vacuum.name": "Air Bullets",
       "entity.ninja_kumo.name": "Ninja Kumo",
       "item.clothes_kazekagelegs.name": "",
       "entity.adamantine_prison.name": "Adamantine Prison",
@@ -9267,11 +9308,12 @@
       "subtitles.laser_short": "",
       "subtitles.katon_gokamekeku": "",
       "subtitles.lightning_shoot": "",
-      "item.scroll_futon_vacuum.name": "Wind Release - Vacuum Sphere",
+      "item.scroll_futon_vacuum.name": "Wind Release - Air Bullets",
       "item.kagutsuchiswordranged.name": "Kagutsuchi Sword",
       "subtitles.opengate": "",
       "item.scroll_hiding_in_rock.name": "Earth Release - Hiding In Rock scroll",
       "entity.replacementclone.name": "Body Replacement Jutsu",
+      "subtitles.windblast": "",
       "item.sharinganhelmet.name": "Sharingan",
       "item.adamantine_nyoi.name": "Adamantine Nyoi",
       "item.samurai_armorbody.name": "Samurai Armor",
@@ -9299,6 +9341,7 @@
       "item.ninja_armor_anbuhelmet.name": "Ninja Armor Anbu Helmet",
       "item.ninja_armor_naruto_shelmet.name": "Ninja Armor Naruto S Helmet",
       "subtitles.gyuki_snort": "",
+      "entity.vacuum_wave.name": "Vacuum Wave",
       "item.ninja_armor_iwalegs.name": "Ninja Pants (Iwagakure)",
       "item.ninja_armor_obito_warlegs.name": "Ninja Armor Obito War Leggings",
       "item.kamuidimension.name": "Kamui Dimension Portal Igniter",

@@ -102,16 +102,20 @@ public class EntityBeamBase extends ElementsNarutomodMod.ModElement {
 
 		public void shoot(double range) {
 			if (this.shootingEntity != null) {
-				this.hitTrace = ProcedureUtils.objectEntityLookingAt(this.shootingEntity, range);
-				this.shoot(this.hitTrace.hitVec.x - this.posX, this.hitTrace.hitVec.y - this.posY, this.hitTrace.hitVec.z - this.posZ);
+				this.shoot(ProcedureUtils.objectEntityLookingAt(this.shootingEntity, range));
 			}
 		}
 
 		public void shoot(double x, double y, double z) {
-			if (this.hitTrace == null) {
-				this.hitTrace = new RayTraceResult(new Vec3d(this.posX + x, this.posY + y, this.posZ + z),
-				 EnumFacing.getFacingFromVector((float)x, (float)y, (float)z).getOpposite());
-			}
+			this.shoot(new RayTraceResult(new Vec3d(this.posX + x, this.posY + y, this.posZ + z),
+			 EnumFacing.getFacingFromVector((float)x, (float)y, (float)z).getOpposite()));
+		}
+
+		public void shoot(RayTraceResult rayTrace) {
+			this.hitTrace = rayTrace;
+			double x = rayTrace.hitVec.x - this.posX;
+			double y = rayTrace.hitVec.y - this.posY;
+			double z = rayTrace.hitVec.z - this.posZ;
 			float f = MathHelper.sqrt(x * x + y * y + z * z);
 			this.setBeamLength(f + 0.1f);
 			x /= f;

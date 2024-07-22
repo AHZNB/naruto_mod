@@ -74,6 +74,10 @@ public class ItemJutsu extends ElementsNarutomodMod.ModElement {
 		return source.getDamageType().equals(NINJUTSU_TYPE);
 	}
 
+	public static boolean isDamageSourceSenjutsu(DamageSource source) {
+		return source.getDamageType().equals(SENJUTSU_TYPE);
+	}
+
 	public static boolean canTarget(@Nullable Entity targetIn) {
 		return targetIn != null && targetIn.isEntityAlive() 
 		 //&& !targetIn.getEntityData().getBoolean("kamui_intangible")

@@ -216,6 +216,16 @@ public class EntityEightTails extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
+		protected boolean hatesWater() {
+			return false;
+		}
+
+		@Override
+		protected float getWaterSlowDown() {
+			return 0.96F;
+		}
+
+		@Override
 		public SoundEvent getAmbientSound() {
 			return SoundEvent.REGISTRY.getObject(new ResourceLocation(this.rand.nextFloat() < 0.2f ? "narutomod:gyuki_roar" : "narutomod:gyuki_snort"));
 		}

@@ -101,6 +101,11 @@
         },
         {
           "type": "item",
+          "name": "narutomod:scroll_vacuum_wave",
+          "weight": 10
+        },
+        {
+          "type": "item",
           "name": "narutomod:scroll_genjutsu",
           "weight": 5
         },

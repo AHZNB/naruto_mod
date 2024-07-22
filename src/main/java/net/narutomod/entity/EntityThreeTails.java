@@ -221,6 +221,11 @@ public class EntityThreeTails extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
+		protected boolean hatesWater() {
+			return false;
+		}
+
+		@Override
 		public boolean isPushedByWater() {
 			return false;
 		}

@@ -242,6 +242,38 @@ public class EntityC4 extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
+		public boolean canBePushed() {
+			return false;
+		}
+
+		@Override
+		protected void collideWithEntity(Entity entityIn) {
+			this.applyEntityCollision(entityIn);
+		}
+
+		@Override
+		public void applyEntityCollision(Entity entity) {
+			if (entity.height >= this.height * 0.9f && entity.width >= this.width * 0.9f) {
+				super.applyEntityCollision(entity);
+			} else if (!this.isRidingSameEntity(entity) && !entity.noClip && !entity.isBeingRidden()) {
+				double d2 = entity.posX - this.posX;
+				double d3 = entity.posZ - this.posZ;
+				double d4 = MathHelper.absMax(d2, d3);
+				if (d4 >= 0.01D) {
+					d4 = (double)MathHelper.sqrt(d4);
+					d2 /= d4;
+					d3 /= d4;
+					double d5 = d4 >= 1.0D ? 1.0D / d4 : 1.0D;
+					d2 *= d5 * 0.05d;
+					d3 *= d5 * 0.05d;
+					entity.motionX = d2;
+					entity.motionZ = d3;
+					entity.isAirBorne = true;
+				}
+			}
+		}
+
+		@Override
 		public void readEntityFromNBT(NBTTagCompound compound) {
 			super.readEntityFromNBT(compound);
 			this.setTicksAlive(compound.getInteger("ticksAlive"));

@@ -334,7 +334,7 @@ public class EntitySummonAnimal extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public void applyEntityCollision(Entity entity) {
-			if (this.getScale() < 4.0f) {
+			if (this.getScale() < 4.0f || (entity.height >= this.height * 0.9f && entity.width >= this.width * 0.9f)) {
 				super.applyEntityCollision(entity);
 			} else if (!this.isRidingSameEntity(entity) && !entity.noClip && !entity.isBeingRidden()) {
 				double d2 = entity.posX - this.posX;

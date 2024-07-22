@@ -12,10 +12,17 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerCapabilities;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.OpenGlHelper;
@@ -23,18 +30,11 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.model.ModelBox;
 import net.minecraft.client.model.ModelBase;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.init.MobEffects;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.PlayerCapabilities;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.network.datasync.DataSerializers;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.item.ItemStack;
 
 import net.narutomod.item.ItemJutsu;
@@ -77,7 +77,7 @@ public class EntityTruthSeekerBall extends ElementsNarutomodMod.ModElement {
 		protected boolean follow = true;
 		private float shieldProgress;
 		private int shieldToggleInProgressDirection;
-		private float shieldSize = 8f;
+		private final float shieldSize = 8f;
 		private boolean shieldOn;
 		private ItemStack heldItem;
 		private float hp;
@@ -86,12 +86,13 @@ public class EntityTruthSeekerBall extends ElementsNarutomodMod.ModElement {
 		private int targetTime = -1;
 		private final float inititalScale = 0.8f;
 		private float maxScale = inititalScale;
+		private final int growTicks = 20;
 
 		public EntityCustom(World world) {
 			super(world);
 			this.isImmuneToFire = true;
 			this.setOGSize(0.25F, 0.25F);
-			this.setEntityScale(this.inititalScale);
+			this.setEntityScale(0.01f);
 			this.setNoGravity(true);
 		}
 
@@ -100,7 +101,7 @@ public class EntityTruthSeekerBall extends ElementsNarutomodMod.ModElement {
 			this.isImmuneToFire = true;
 			this.heldItem = helditem;
 			this.setOGSize(0.25F, 0.25F);
-			this.setEntityScale(this.inititalScale);
+			this.setEntityScale(0.01f);
 			this.idleVec = VEC[posIndex % VEC.length];
 			Vec3d vec = this.getIdlePosition();
 			this.setLocationAndAngles(vec.x, vec.y, vec.z, 0.0f, 0.0f);
@@ -264,8 +265,11 @@ public class EntityTruthSeekerBall extends ElementsNarutomodMod.ModElement {
 			}
 			this.updateShieldProgress();
 			if (!this.isDead && this.follow && this.shootingEntity != null) {
+				if (!this.world.isRemote && this.ticksAlive <= this.growTicks) {
+					this.setEntityScale(0.01f + (this.inititalScale - 0.01f) * (float)this.ticksAlive / (float)this.growTicks);
+				}
 				if (!this.isLaunched()) {
-					if (this.maxScale != this.getEntityScale()) {
+					if (this.maxScale > this.inititalScale) {
 						this.moveGrowAndShoot();
 					} else if (this.target != null && this.targetTime > 0) {
 						if (this.target.isEntityAlive()) {
@@ -337,7 +341,7 @@ public class EntityTruthSeekerBall extends ElementsNarutomodMod.ModElement {
 				}
 				float f = 1f + this.shieldProgress * this.shieldSize;
 				this.setEntityScale(f);
-				this.maxScale = f;
+				//this.maxScale = f;
 			}
 		}
 
@@ -468,18 +472,328 @@ public class EntityTruthSeekerBall extends ElementsNarutomodMod.ModElement {
 		@SideOnly(Side.CLIENT)
 		public class ModelTruthSeekerBall extends ModelBase {
 			private final ModelRenderer bb_main;
+			private final ModelRenderer hexadecagon;
+			private final ModelRenderer hexadecagon_r1;
+			private final ModelRenderer hexadecagon_r2;
+			private final ModelRenderer hexadecagon_r3;
+			private final ModelRenderer hexadecagon_r4;
+			private final ModelRenderer hexadecagon6;
+			private final ModelRenderer hexadecagon_r5;
+			private final ModelRenderer hexadecagon_r6;
+			private final ModelRenderer hexadecagon_r7;
+			private final ModelRenderer hexadecagon_r8;
+			private final ModelRenderer hexadecagon7;
+			private final ModelRenderer hexadecagon_r9;
+			private final ModelRenderer hexadecagon_r10;
+			private final ModelRenderer hexadecagon_r11;
+			private final ModelRenderer hexadecagon_r12;
+			private final ModelRenderer hexadecagon8;
+			private final ModelRenderer hexadecagon_r13;
+			private final ModelRenderer hexadecagon_r14;
+			private final ModelRenderer hexadecagon_r15;
+			private final ModelRenderer hexadecagon_r16;
+			private final ModelRenderer hexadecagon2;
+			private final ModelRenderer hexadecagon_r17;
+			private final ModelRenderer hexadecagon_r18;
+			private final ModelRenderer hexadecagon_r19;
+			private final ModelRenderer hexadecagon_r20;
+			private final ModelRenderer hexadecagon3;
+			private final ModelRenderer hexadecagon_r21;
+			private final ModelRenderer hexadecagon_r22;
+			private final ModelRenderer hexadecagon_r23;
+			private final ModelRenderer hexadecagon_r24;
+			private final ModelRenderer hexadecagon4;
+			private final ModelRenderer hexadecagon_r25;
+			private final ModelRenderer hexadecagon_r26;
+			private final ModelRenderer hexadecagon_r27;
+			private final ModelRenderer hexadecagon_r28;
+			private final ModelRenderer hexadecagon5;
+			private final ModelRenderer hexadecagon_r29;
+			private final ModelRenderer hexadecagon_r30;
+			private final ModelRenderer hexadecagon_r31;
+			private final ModelRenderer hexadecagon_r32;
 	
 			public ModelTruthSeekerBall() {
 				this.textureWidth = 16;
 				this.textureHeight = 16;
-				this.bb_main = new ModelRenderer(this);
-				this.bb_main.setRotationPoint(0.0F, 2.0F, 0.0F);
-				this.bb_main.cubeList.add(new ModelBox(this.bb_main, 0, 0, -2.0F, -4.0F, -2.0F, 4, 4, 4, 0.0F, false));
+				
+				bb_main = new ModelRenderer(this);
+				bb_main.setRotationPoint(0.0F, 0.0F, 0.0F);
+				
+		
+				hexadecagon = new ModelRenderer(this);
+				hexadecagon.setRotationPoint(0.0F, 0.0F, 0.0F);
+				bb_main.addChild(hexadecagon);
+				hexadecagon.cubeList.add(new ModelBox(hexadecagon, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+				hexadecagon.cubeList.add(new ModelBox(hexadecagon, 4, 0, -2.5F, -0.5027F, -0.5F, 5, 1, 1, 0.0F, false));
+		
+				hexadecagon_r1 = new ModelRenderer(this);
+				hexadecagon_r1.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon.addChild(hexadecagon_r1);
+				setRotationAngle(hexadecagon_r1, 0.0F, 0.0F, 0.3927F);
+				hexadecagon_r1.cubeList.add(new ModelBox(hexadecagon_r1, 4, 0, -2.5F, -0.5027F, -0.5F, 5, 1, 1, 0.0F, false));
+				hexadecagon_r1.cubeList.add(new ModelBox(hexadecagon_r1, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+		
+				hexadecagon_r2 = new ModelRenderer(this);
+				hexadecagon_r2.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon.addChild(hexadecagon_r2);
+				setRotationAngle(hexadecagon_r2, 0.0F, 0.0F, -0.3927F);
+				hexadecagon_r2.cubeList.add(new ModelBox(hexadecagon_r2, 4, 0, -2.5F, -0.5027F, -0.5F, 5, 1, 1, 0.0F, false));
+				hexadecagon_r2.cubeList.add(new ModelBox(hexadecagon_r2, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+		
+				hexadecagon_r3 = new ModelRenderer(this);
+				hexadecagon_r3.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon.addChild(hexadecagon_r3);
+				setRotationAngle(hexadecagon_r3, 0.0F, 0.0F, 0.7854F);
+				hexadecagon_r3.cubeList.add(new ModelBox(hexadecagon_r3, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+		
+				hexadecagon_r4 = new ModelRenderer(this);
+				hexadecagon_r4.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon.addChild(hexadecagon_r4);
+				setRotationAngle(hexadecagon_r4, 0.0F, 0.0F, -0.7854F);
+				hexadecagon_r4.cubeList.add(new ModelBox(hexadecagon_r4, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+		
+				hexadecagon6 = new ModelRenderer(this);
+				hexadecagon6.setRotationPoint(0.0F, 0.0F, 0.0F);
+				bb_main.addChild(hexadecagon6);
+				setRotationAngle(hexadecagon6, 0.0F, 0.3927F, 0.0F);
+				hexadecagon6.cubeList.add(new ModelBox(hexadecagon6, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+				hexadecagon6.cubeList.add(new ModelBox(hexadecagon6, 4, 0, -2.5F, -0.5027F, -0.5F, 5, 1, 1, 0.0F, false));
+		
+				hexadecagon_r5 = new ModelRenderer(this);
+				hexadecagon_r5.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon6.addChild(hexadecagon_r5);
+				setRotationAngle(hexadecagon_r5, 0.0F, 0.0F, 0.3927F);
+				hexadecagon_r5.cubeList.add(new ModelBox(hexadecagon_r5, 4, 0, -2.5F, -0.5027F, -0.5F, 5, 1, 1, 0.0F, false));
+				hexadecagon_r5.cubeList.add(new ModelBox(hexadecagon_r5, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+		
+				hexadecagon_r6 = new ModelRenderer(this);
+				hexadecagon_r6.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon6.addChild(hexadecagon_r6);
+				setRotationAngle(hexadecagon_r6, 0.0F, 0.0F, -0.3927F);
+				hexadecagon_r6.cubeList.add(new ModelBox(hexadecagon_r6, 4, 0, -2.5F, -0.5027F, -0.5F, 5, 1, 1, 0.0F, false));
+				hexadecagon_r6.cubeList.add(new ModelBox(hexadecagon_r6, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+		
+				hexadecagon_r7 = new ModelRenderer(this);
+				hexadecagon_r7.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon6.addChild(hexadecagon_r7);
+				setRotationAngle(hexadecagon_r7, 0.0F, 0.0F, 0.7854F);
+				hexadecagon_r7.cubeList.add(new ModelBox(hexadecagon_r7, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+		
+				hexadecagon_r8 = new ModelRenderer(this);
+				hexadecagon_r8.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon6.addChild(hexadecagon_r8);
+				setRotationAngle(hexadecagon_r8, 0.0F, 0.0F, -0.7854F);
+				hexadecagon_r8.cubeList.add(new ModelBox(hexadecagon_r8, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+		
+				hexadecagon7 = new ModelRenderer(this);
+				hexadecagon7.setRotationPoint(0.0F, 0.0F, 0.0F);
+				bb_main.addChild(hexadecagon7);
+				setRotationAngle(hexadecagon7, 0.0F, 0.7854F, 0.0F);
+				hexadecagon7.cubeList.add(new ModelBox(hexadecagon7, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+				hexadecagon7.cubeList.add(new ModelBox(hexadecagon7, 4, 0, -2.5F, -0.5027F, -0.5F, 5, 1, 1, 0.0F, false));
+		
+				hexadecagon_r9 = new ModelRenderer(this);
+				hexadecagon_r9.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon7.addChild(hexadecagon_r9);
+				setRotationAngle(hexadecagon_r9, 0.0F, 0.0F, 0.3927F);
+				hexadecagon_r9.cubeList.add(new ModelBox(hexadecagon_r9, 4, 0, -2.5F, -0.5027F, -0.5F, 5, 1, 1, 0.0F, false));
+				hexadecagon_r9.cubeList.add(new ModelBox(hexadecagon_r9, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+		
+				hexadecagon_r10 = new ModelRenderer(this);
+				hexadecagon_r10.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon7.addChild(hexadecagon_r10);
+				setRotationAngle(hexadecagon_r10, 0.0F, 0.0F, -0.3927F);
+				hexadecagon_r10.cubeList.add(new ModelBox(hexadecagon_r10, 4, 0, -2.5F, -0.5027F, -0.5F, 5, 1, 1, 0.0F, false));
+				hexadecagon_r10.cubeList.add(new ModelBox(hexadecagon_r10, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+		
+				hexadecagon_r11 = new ModelRenderer(this);
+				hexadecagon_r11.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon7.addChild(hexadecagon_r11);
+				setRotationAngle(hexadecagon_r11, 0.0F, 0.0F, 0.7854F);
+				hexadecagon_r11.cubeList.add(new ModelBox(hexadecagon_r11, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+		
+				hexadecagon_r12 = new ModelRenderer(this);
+				hexadecagon_r12.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon7.addChild(hexadecagon_r12);
+				setRotationAngle(hexadecagon_r12, 0.0F, 0.0F, -0.7854F);
+				hexadecagon_r12.cubeList.add(new ModelBox(hexadecagon_r12, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+		
+				hexadecagon8 = new ModelRenderer(this);
+				hexadecagon8.setRotationPoint(0.0F, 0.0F, 0.0F);
+				bb_main.addChild(hexadecagon8);
+				setRotationAngle(hexadecagon8, 0.0F, 1.1781F, 0.0F);
+				hexadecagon8.cubeList.add(new ModelBox(hexadecagon8, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+				hexadecagon8.cubeList.add(new ModelBox(hexadecagon8, 4, 0, -2.5F, -0.5027F, -0.5F, 5, 1, 1, 0.0F, false));
+		
+				hexadecagon_r13 = new ModelRenderer(this);
+				hexadecagon_r13.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon8.addChild(hexadecagon_r13);
+				setRotationAngle(hexadecagon_r13, 0.0F, 0.0F, 0.3927F);
+				hexadecagon_r13.cubeList.add(new ModelBox(hexadecagon_r13, 4, 0, -2.5F, -0.5027F, -0.5F, 5, 1, 1, 0.0F, false));
+				hexadecagon_r13.cubeList.add(new ModelBox(hexadecagon_r13, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+		
+				hexadecagon_r14 = new ModelRenderer(this);
+				hexadecagon_r14.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon8.addChild(hexadecagon_r14);
+				setRotationAngle(hexadecagon_r14, 0.0F, 0.0F, -0.3927F);
+				hexadecagon_r14.cubeList.add(new ModelBox(hexadecagon_r14, 4, 0, -2.5F, -0.5027F, -0.5F, 5, 1, 1, 0.0F, false));
+				hexadecagon_r14.cubeList.add(new ModelBox(hexadecagon_r14, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+		
+				hexadecagon_r15 = new ModelRenderer(this);
+				hexadecagon_r15.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon8.addChild(hexadecagon_r15);
+				setRotationAngle(hexadecagon_r15, 0.0F, 0.0F, 0.7854F);
+				hexadecagon_r15.cubeList.add(new ModelBox(hexadecagon_r15, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+		
+				hexadecagon_r16 = new ModelRenderer(this);
+				hexadecagon_r16.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon8.addChild(hexadecagon_r16);
+				setRotationAngle(hexadecagon_r16, 0.0F, 0.0F, -0.7854F);
+				hexadecagon_r16.cubeList.add(new ModelBox(hexadecagon_r16, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+		
+				hexadecagon2 = new ModelRenderer(this);
+				hexadecagon2.setRotationPoint(0.0F, 0.0F, 0.0F);
+				bb_main.addChild(hexadecagon2);
+				setRotationAngle(hexadecagon2, 0.0F, -0.3927F, 0.0F);
+				hexadecagon2.cubeList.add(new ModelBox(hexadecagon2, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+				hexadecagon2.cubeList.add(new ModelBox(hexadecagon2, 4, 0, -2.5F, -0.5027F, -0.5F, 5, 1, 1, 0.0F, false));
+		
+				hexadecagon_r17 = new ModelRenderer(this);
+				hexadecagon_r17.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon2.addChild(hexadecagon_r17);
+				setRotationAngle(hexadecagon_r17, 0.0F, 0.0F, 0.3927F);
+				hexadecagon_r17.cubeList.add(new ModelBox(hexadecagon_r17, 4, 0, -2.5F, -0.5027F, -0.5F, 5, 1, 1, 0.0F, false));
+				hexadecagon_r17.cubeList.add(new ModelBox(hexadecagon_r17, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+		
+				hexadecagon_r18 = new ModelRenderer(this);
+				hexadecagon_r18.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon2.addChild(hexadecagon_r18);
+				setRotationAngle(hexadecagon_r18, 0.0F, 0.0F, -0.3927F);
+				hexadecagon_r18.cubeList.add(new ModelBox(hexadecagon_r18, 4, 0, -2.5F, -0.5027F, -0.5F, 5, 1, 1, 0.0F, false));
+				hexadecagon_r18.cubeList.add(new ModelBox(hexadecagon_r18, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+		
+				hexadecagon_r19 = new ModelRenderer(this);
+				hexadecagon_r19.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon2.addChild(hexadecagon_r19);
+				setRotationAngle(hexadecagon_r19, 0.0F, 0.0F, 0.7854F);
+				hexadecagon_r19.cubeList.add(new ModelBox(hexadecagon_r19, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+		
+				hexadecagon_r20 = new ModelRenderer(this);
+				hexadecagon_r20.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon2.addChild(hexadecagon_r20);
+				setRotationAngle(hexadecagon_r20, 0.0F, 0.0F, -0.7854F);
+				hexadecagon_r20.cubeList.add(new ModelBox(hexadecagon_r20, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+		
+				hexadecagon3 = new ModelRenderer(this);
+				hexadecagon3.setRotationPoint(0.0F, 0.0F, 0.0F);
+				bb_main.addChild(hexadecagon3);
+				setRotationAngle(hexadecagon3, 0.0F, -0.7854F, 0.0F);
+				hexadecagon3.cubeList.add(new ModelBox(hexadecagon3, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+				hexadecagon3.cubeList.add(new ModelBox(hexadecagon3, 4, 0, -2.5F, -0.5027F, -0.5F, 5, 1, 1, 0.0F, false));
+		
+				hexadecagon_r21 = new ModelRenderer(this);
+				hexadecagon_r21.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon3.addChild(hexadecagon_r21);
+				setRotationAngle(hexadecagon_r21, 0.0F, 0.0F, 0.3927F);
+				hexadecagon_r21.cubeList.add(new ModelBox(hexadecagon_r21, 4, 0, -2.5F, -0.5027F, -0.5F, 5, 1, 1, 0.0F, false));
+				hexadecagon_r21.cubeList.add(new ModelBox(hexadecagon_r21, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+		
+				hexadecagon_r22 = new ModelRenderer(this);
+				hexadecagon_r22.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon3.addChild(hexadecagon_r22);
+				setRotationAngle(hexadecagon_r22, 0.0F, 0.0F, -0.3927F);
+				hexadecagon_r22.cubeList.add(new ModelBox(hexadecagon_r22, 4, 0, -2.5F, -0.5027F, -0.5F, 5, 1, 1, 0.0F, false));
+				hexadecagon_r22.cubeList.add(new ModelBox(hexadecagon_r22, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+		
+				hexadecagon_r23 = new ModelRenderer(this);
+				hexadecagon_r23.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon3.addChild(hexadecagon_r23);
+				setRotationAngle(hexadecagon_r23, 0.0F, 0.0F, 0.7854F);
+				hexadecagon_r23.cubeList.add(new ModelBox(hexadecagon_r23, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+		
+				hexadecagon_r24 = new ModelRenderer(this);
+				hexadecagon_r24.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon3.addChild(hexadecagon_r24);
+				setRotationAngle(hexadecagon_r24, 0.0F, 0.0F, -0.7854F);
+				hexadecagon_r24.cubeList.add(new ModelBox(hexadecagon_r24, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+		
+				hexadecagon4 = new ModelRenderer(this);
+				hexadecagon4.setRotationPoint(0.0F, 0.0F, 0.0F);
+				bb_main.addChild(hexadecagon4);
+				setRotationAngle(hexadecagon4, 0.0F, -1.1781F, 0.0F);
+				hexadecagon4.cubeList.add(new ModelBox(hexadecagon4, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+				hexadecagon4.cubeList.add(new ModelBox(hexadecagon4, 4, 0, -2.5F, -0.5027F, -0.5F, 5, 1, 1, 0.0F, false));
+		
+				hexadecagon_r25 = new ModelRenderer(this);
+				hexadecagon_r25.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon4.addChild(hexadecagon_r25);
+				setRotationAngle(hexadecagon_r25, 0.0F, 0.0F, 0.3927F);
+				hexadecagon_r25.cubeList.add(new ModelBox(hexadecagon_r25, 4, 0, -2.5F, -0.5027F, -0.5F, 5, 1, 1, 0.0F, false));
+				hexadecagon_r25.cubeList.add(new ModelBox(hexadecagon_r25, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+		
+				hexadecagon_r26 = new ModelRenderer(this);
+				hexadecagon_r26.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon4.addChild(hexadecagon_r26);
+				setRotationAngle(hexadecagon_r26, 0.0F, 0.0F, -0.3927F);
+				hexadecagon_r26.cubeList.add(new ModelBox(hexadecagon_r26, 4, 0, -2.5F, -0.5027F, -0.5F, 5, 1, 1, 0.0F, false));
+				hexadecagon_r26.cubeList.add(new ModelBox(hexadecagon_r26, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+		
+				hexadecagon_r27 = new ModelRenderer(this);
+				hexadecagon_r27.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon4.addChild(hexadecagon_r27);
+				setRotationAngle(hexadecagon_r27, 0.0F, 0.0F, 0.7854F);
+				hexadecagon_r27.cubeList.add(new ModelBox(hexadecagon_r27, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+		
+				hexadecagon_r28 = new ModelRenderer(this);
+				hexadecagon_r28.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon4.addChild(hexadecagon_r28);
+				setRotationAngle(hexadecagon_r28, 0.0F, 0.0F, -0.7854F);
+				hexadecagon_r28.cubeList.add(new ModelBox(hexadecagon_r28, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+		
+				hexadecagon5 = new ModelRenderer(this);
+				hexadecagon5.setRotationPoint(0.0F, 0.0F, 0.0F);
+				bb_main.addChild(hexadecagon5);
+				setRotationAngle(hexadecagon5, 0.0F, -1.5708F, 0.0F);
+				hexadecagon5.cubeList.add(new ModelBox(hexadecagon5, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+				hexadecagon5.cubeList.add(new ModelBox(hexadecagon5, 4, 0, -2.5F, -0.5027F, -0.5F, 5, 1, 1, 0.0F, false));
+		
+				hexadecagon_r29 = new ModelRenderer(this);
+				hexadecagon_r29.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon5.addChild(hexadecagon_r29);
+				setRotationAngle(hexadecagon_r29, 0.0F, 0.0F, 0.3927F);
+				hexadecagon_r29.cubeList.add(new ModelBox(hexadecagon_r29, 4, 0, -2.5F, -0.5027F, -0.5F, 5, 1, 1, 0.0F, false));
+				hexadecagon_r29.cubeList.add(new ModelBox(hexadecagon_r29, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+		
+				hexadecagon_r30 = new ModelRenderer(this);
+				hexadecagon_r30.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon5.addChild(hexadecagon_r30);
+				setRotationAngle(hexadecagon_r30, 0.0F, 0.0F, -0.3927F);
+				hexadecagon_r30.cubeList.add(new ModelBox(hexadecagon_r30, 4, 0, -2.5F, -0.5027F, -0.5F, 5, 1, 1, 0.0F, false));
+				hexadecagon_r30.cubeList.add(new ModelBox(hexadecagon_r30, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+		
+				hexadecagon_r31 = new ModelRenderer(this);
+				hexadecagon_r31.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon5.addChild(hexadecagon_r31);
+				setRotationAngle(hexadecagon_r31, 0.0F, 0.0F, 0.7854F);
+				hexadecagon_r31.cubeList.add(new ModelBox(hexadecagon_r31, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+		
+				hexadecagon_r32 = new ModelRenderer(this);
+				hexadecagon_r32.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon5.addChild(hexadecagon_r32);
+				setRotationAngle(hexadecagon_r32, 0.0F, 0.0F, -0.7854F);
+				hexadecagon_r32.cubeList.add(new ModelBox(hexadecagon_r32, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
 			}
-	
+		
 			@Override
-			public void render(Entity entityIn, float f0, float f1, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
-				this.bb_main.render(scale);
+			public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
+				bb_main.render(f5);
+			}
+		
+			public void setRotationAngle(ModelRenderer modelRenderer, float x, float y, float z) {
+				modelRenderer.rotateAngleX = x;
+				modelRenderer.rotateAngleY = y;
+				modelRenderer.rotateAngleZ = z;
 			}
 		}
 	}

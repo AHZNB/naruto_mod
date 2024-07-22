@@ -33,6 +33,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.item.ItemStack;
 import net.minecraft.entity.IEntityLivingData;
 import net.minecraft.entity.monster.IMob;
+import net.minecraft.entity.ai.EntityAITarget;
 import net.minecraft.entity.ai.EntityAISwimming;
 import net.minecraft.entity.ai.EntityAIWatchClosest2;
 import net.minecraft.entity.ai.EntityAIHurtByTarget;
@@ -189,7 +190,9 @@ public class EntityDeidara extends ElementsNarutomodMod.ModElement {
 				return false;
 			}
 			if (!this.world.isRemote && source.getTrueSource() instanceof EntityLivingBase && !this.isRiding()
-			 && this.ticksExisted - this.explosiveCloneLastUsed > this.explosiveCloneCD && this.consumeChakra(ItemBakuton.CLONE.chakraUsage)) {
+			 && this.ticksExisted - this.explosiveCloneLastUsed > this.explosiveCloneCD
+			 && EntityAITarget.isSuitableTarget(this, (EntityLivingBase)source.getTrueSource(), false, false)
+			 && this.consumeChakra(ItemBakuton.CLONE.chakraUsage)) {
 				this.setRevengeTarget((EntityLivingBase)source.getTrueSource());
 				EntityExplosiveClone.EC clone = new EntityExplosiveClone.EC.Jutsu().createJutsu(this);
 				clone.attackEntityFrom(source, amount);

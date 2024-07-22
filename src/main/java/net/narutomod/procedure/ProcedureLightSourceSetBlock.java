@@ -41,25 +41,16 @@ public class ProcedureLightSourceSetBlock extends ElementsNarutomodMod.ModElemen
 	}
 
 	public static void execute(World world, int x, int y, int z) {
-		if (!world.isRemote) {
-			if (((new Object() {
-				public double getValue(BlockPos pos, String tag) {
-					TileEntity tileEntity = world.getTileEntity(pos);
-					if (tileEntity != null)
-						return tileEntity.getTileData().getDouble(tag);
-					return -1;
-				}
-			}.getValue(new BlockPos((int) x, (int) y, (int) z), "lightsourceAge")) <= 0)) {
-				world.setBlockState(new BlockPos((int) x, (int) y, (int) z), BlockLightSource.block.getDefaultState(), 3);
+		BlockPos blockpos = new BlockPos(x, y, z);
+		IBlockState blockstate = world.getBlockState(blockpos);
+		if (!world.isRemote && (blockstate.getBlock().isAir(blockstate, world, blockpos) || blockstate.getBlock() == BlockLightSource.block)) {
+			TileEntity tileEntity = world.getTileEntity(blockpos);
+			double lightsourceAge = tileEntity != null ? tileEntity.getTileData().getDouble("lightsourceAge") : -1;
+			if (lightsourceAge <= 0) {
+				world.setBlockState(blockpos, BlockLightSource.block.getDefaultState(), 3);
 			} else {
-				if (!world.isRemote) {
-					BlockPos _bp = new BlockPos((int) x, (int) y, (int) z);
-					TileEntity _tileEntity = world.getTileEntity(_bp);
-					IBlockState _bs = world.getBlockState(_bp);
-					if (_tileEntity != null)
-						_tileEntity.getTileData().setDouble("lightsourceAge", 1);
-					world.notifyBlockUpdate(_bp, _bs, _bs, 3);
-				}
+				tileEntity.getTileData().setDouble("lightsourceAge", 1);
+				world.notifyBlockUpdate(blockpos, blockstate, blockstate, 3);
 			}
 		}
 	}

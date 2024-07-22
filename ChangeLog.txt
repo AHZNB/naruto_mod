@@ -26,6 +26,10 @@ Jutsus:
  - add explosion release C-4
  - explosive clone: when used while player being attacked, teleports player to behind the attacker
  - add wind release: blade of wind jutsu and A-rank scroll, blades are guided
+ - truth seeker balls are actually balls now
+ - fixed rasenshurken sometimes breaking blocks when mobGriefing=false
+ - 8-trigrams revolving heaven: smaller sphere, better texture
+ - add wind release: vacuum wave (WIP) and B-rank scroll
 
 Items:
  - added Sakura shippuden clothing and leggings (for slim player models only)
@@ -64,6 +68,8 @@ Entities:
  - Shukaku shoots air bullets, Matatabi shoots fire balls, Isobu shoots water balls, Son Goku shoots green fire,
    Saiken shoots acid breath, Chomei emits blinding powder, Gyuki chain shoots small bijudamas, Kurama shoots lasers
    Ten-Tails is much larger, heals faster, spawns clones to defend itself, shoots lasers
+ - Tailed-beasts other than Isobu and Gyuki will try to avoid or get out of water
+    naturally spawned tailed-beasts will stay within the vicinity of its spawn point
  - updated Sakura's texture
  - added Deidara mob, naturally spawns, spawn weight configurable
  - Ninja mobs like Itachi can spawn during daytime, you may need to decrease spawn weight in the config

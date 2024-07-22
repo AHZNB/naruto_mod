@@ -5,7 +5,7 @@
     "renderType": 1,
     "texture": "scroll_c",
     "customModelName": "scrollb:default",
-    "name": "Wind Release - Air Bullets",
+    "name": "Wind Release: Vacuum Wave",
     "rarity": "COMMON",
     "creativeTab": {
       "value": "CUSTOM:ModTab"
@@ -28,7 +28,7 @@
       "B-rank jutsu scroll"
     ],
     "hasGlow": false,
-    "guiBoundTo": "ScrollFutonVacuumGui",
+    "guiBoundTo": "ScrollVacuumWaveGui",
     "inventorySize": 0,
     "inventoryStackSize": 64
   }

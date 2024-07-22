@@ -75,6 +75,8 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 	private static final Random RNG = new Random();
 	public static final DamageSource AMATERASU = new DamageSource(ItemJutsu.NINJUTSU_TYPE).setFireDamage();
 	public static final DamageSource SPECIAL_DAMAGE = new DamageSource("wither").setDamageBypassesArmor().setDamageIsAbsolute();
+	public static final float DEG2RAD = (float)Math.PI / 180.0F;
+	public static final float RAD2DEG = 180.0F / (float)Math.PI;
 	
 	public ProcedureUtils(ElementsNarutomodMod instance) {
 		super(instance, 177);
@@ -633,11 +635,17 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static RayTraceResult objectEntityLookingAt(Entity entity, double range, double bbGrow, boolean trackall, boolean stopOnLiquid, @Nullable Predicate<Entity> filter) {
-		double d0 = range;
-		double d1 = d0;
 		Vec3d vec3d = entity.getPositionEyes(1f);
-		Vec3d vec3d1 = entity.getLookVec().scale(d0);
-		Vec3d vec3d2 = vec3d.add(vec3d1);
+		Vec3d vec3d1 = entity.getLookVec().scale(range).add(vec3d);
+		return rayTrace(entity, vec3d, vec3d1, bbGrow, trackall, stopOnLiquid, filter);
+	}
+
+	public static RayTraceResult rayTrace(Entity entity, Vec3d fromVec, Vec3d toVec, double bbGrow, boolean trackall, boolean stopOnLiquid, @Nullable Predicate<Entity> filter) {
+		Vec3d vec3d1 = toVec.subtract(fromVec);
+		double d0 = vec3d1.lengthVector();
+		double d1 = d0;
+		Vec3d vec3d = fromVec;
+		Vec3d vec3d2 = toVec;
 		RayTraceResult objectMouseOver = entity.world.rayTraceBlocks(vec3d, vec3d2, stopOnLiquid, false, true);
 		if (objectMouseOver != null) {
 			d1 = objectMouseOver.hitVec.distanceTo(vec3d);
@@ -1588,7 +1596,7 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 	    }
 
 	    public Vec2f rad2Deg() {
-	    	return this.scale(180.0f / (float)Math.PI);
+	    	return this.scale(RAD2DEG);
 	    }
 
 	    public static float wrapDegrees(float f0) {
@@ -1606,4 +1614,83 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 	    	return "("+this.x+", "+this.y+")";
 	    }
     }
+
+	public static class RotationMatrix {
+	    private float[][] matrix = {
+	    	{ 1.0f, 0.0f, 0.0f },
+	    	{ 0.0f, 1.0f, 0.0f },
+	    	{ 0.0f, 0.0f, 1.0f }
+	    };
+
+	    public RotationMatrix() {
+	    }
+	
+	    public RotationMatrix rotateYaw(float angle) {
+	    	return this.rotateY(angle * DEG2RAD);
+	    }
+	
+	    public RotationMatrix rotateY(float rad) {
+	        float cos = MathHelper.cos(rad);
+	        float sin = MathHelper.sin(rad);
+	        float[][] rotation = {
+	            { cos, 0.0f, sin },
+	            { 0.0f, 1.0f, 0.0f },
+	            { -sin, 0.0f, cos }
+	        };
+	        multiply(rotation);
+	        return this;
+	    }
+
+	    public RotationMatrix rotatePitch(float angle) {
+	    	return this.rotateX(angle * DEG2RAD);
+	    }
+	
+	    public RotationMatrix rotateX(float rad) {
+	        float cos = MathHelper.cos(rad);
+	        float sin = MathHelper.sin(rad);
+	        float[][] rotation = {
+	            { 1.0f, 0.0f, 0.0f },
+	            { 0.0f, cos, -sin },
+	            { 0.0f, sin, cos }
+	        };
+	        multiply(rotation);
+	        return this;
+	    }
+
+	    public RotationMatrix rotateRoll(float angle) {
+	    	return this.rotateZ(angle * DEG2RAD);
+	    }
+	
+	    public RotationMatrix rotateZ(float rad) {
+	        float cos = MathHelper.cos(rad);
+	        float sin = MathHelper.sin(rad);
+	        float[][] rotation = {
+	            { cos, -sin, 0.0f },
+	            { sin, cos, 0.0f },
+	            { 0.0f, 0.0f, 1.0f }
+	        };
+	        multiply(rotation);
+	        return this;
+	    }
+	
+	    private void multiply(float[][] rotation) {
+	        float[][] result = new float[3][3];
+	        for (int i = 0; i < 3; i++) {
+	            for (int j = 0; j < 3; j++) {
+	                result[i][j] = 0.0f;
+	                for (int k = 0; k < 3; k++) {
+	                    result[i][j] += matrix[i][k] * rotation[k][j];
+	                }
+	            }
+	        }
+	        matrix = result;
+	    }
+	
+	    public Vec3d transform(Vec3d vec) {
+	        double x = vec.x * matrix[0][0] + vec.y * matrix[0][1] + vec.z * matrix[0][2];
+	        double y = vec.x * matrix[1][0] + vec.y * matrix[1][1] + vec.z * matrix[1][2];
+	        double z = vec.x * matrix[2][0] + vec.y * matrix[2][1] + vec.z * matrix[2][2];
+	        return new Vec3d(x, y, z);
+	    }
+	}
 }
