@@ -21,7 +21,7 @@ Jutsus:
  - adjusted wind release chakra flow particles for kunai and chokuto, added sound effect
  - add Uchiha flame formation (barrier jutsu) and scroll
  - rasenshuriken now tilts in the direction its turning
- - updated wind release great breakthrough: flat 5 second duration, also raises block dust into the air
+ - updated wind release great breakthrough: 5 second duration, raises block dust into the air, propels user in the opposite direction if in air
  - explosion release C-1 is faster, C-2 bigger, both slightly more damage. explosive clone has more health
  - add explosion release C-4
  - explosive clone: when used while player being attacked, teleports player to behind the attacker
@@ -29,7 +29,8 @@ Jutsus:
  - truth seeker balls are actually balls now
  - fixed rasenshurken sometimes breaking blocks when mobGriefing=false
  - 8-trigrams revolving heaven: smaller sphere, better texture
- - add wind release: vacuum wave (WIP) and B-rank scroll
+ - add wind release: vacuum wave and B-rank scroll
+ - add water release: acid scattering jutsu
 
 Items:
  - added Sakura shippuden clothing and leggings (for slim player models only)
@@ -71,9 +72,10 @@ Entities:
  - Tailed-beasts other than Isobu and Gyuki will try to avoid or get out of water
     naturally spawned tailed-beasts will stay within the vicinity of its spawn point
  - updated Sakura's texture
- - added Deidara mob, naturally spawns, spawn weight configurable
+ - added Deidara mob, naturally spawns, spawn weight configurable, follows Sasori if he's in the area
  - Ninja mobs like Itachi can spawn during daytime, you may need to decrease spawn weight in the config
     will not spawn in the same 1024 block area within 30 mins
+ - add Toad Sage Fukasaku & Shima (WIP)
  
 General:
  - fixed alpha transparency bug when using certain jutsus

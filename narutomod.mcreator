@@ -1,8 +1,8 @@
 {
   "id_map": {
+    "DIMENSION": 13,
     "GUI": 70,
-    "ENTITY": 456,
-    "DIMENSION": 13
+    "ENTITY": 462
   },
   "mod_elements": [
     {
@@ -2619,30 +2619,9 @@
       "type": "potion",
       "sortid": 436,
       "compiles": true,
-      "locked_code": false,
+      "locked_code": true,
       "ids": {},
       "registry_name": "heaviness"
-    },
-    {
-      "name": "HeavinessOnPotionActiveTick",
-      "type": "procedure",
-      "sortid": 437,
-      "compiles": true,
-      "locked_code": false,
-      "ids": {},
-      "registry_name": "heaviness_on_potion_active_tick",
-      "metadata": {
-        "dependencies": [
-          {
-            "name": "entity",
-            "type": "entity"
-          },
-          {
-            "name": "amplifier",
-            "type": "number"
-          }
-        ]
-      }
     },
     {
       "name": "IrukaSensei",
@@ -7615,6 +7594,42 @@
       "locked_code": false,
       "ids": {},
       "registry_name": "scroll_vacuum_wave"
+    },
+    {
+      "name": "AcidScattering",
+      "type": "mob",
+      "sortid": 891,
+      "compiles": true,
+      "locked_code": true,
+      "ids": {
+        "0": 457,
+        "1": 458
+      },
+      "registry_name": "acid_scattering"
+    },
+    {
+      "name": "ToadFukasaku",
+      "type": "mob",
+      "sortid": 892,
+      "compiles": true,
+      "locked_code": true,
+      "ids": {
+        "0": 459,
+        "1": 460
+      },
+      "registry_name": "toad_fukasaku"
+    },
+    {
+      "name": "ToadShima",
+      "type": "mob",
+      "sortid": 893,
+      "compiles": true,
+      "locked_code": true,
+      "ids": {
+        "0": 461,
+        "1": 462
+      },
+      "registry_name": "toad_shima"
     }
   ],
   "variable_elements": [
@@ -8736,6 +8751,7 @@
       "item.tenseiganhelmet.name": "Tenseigan",
       "entity.kingofhell.name": "King Of Hell",
       "item.ninja_armor_jiraiyalegs.name": "Jiraiya Clothes",
+      "entity.toad_shima.name": "Shima",
       "item.scroll_earth_spears.name": "Earth Release - Earth Flow Spears",
       "entity.mind_transfer.name": "Mind Body Transfer",
       "entity.jintonbeam.name": "Dust Release: Boundary Dismantling Jutsu - Beam",
@@ -9334,6 +9350,7 @@
       "entity.entityngdragon.name": "Yagai (Night Guy)",
       "item.ninja_armor_obito_warbody.name": "Obito Suit (4th Ninja War)",
       "item.scroll_fire_stream.name": "Fire Release - Great Flame",
+      "entity.acid_scattering.name": "Acid Scattering",
       "item.ninja_armor_kumobody.name": "Flak Jacket (Kumogakure)",
       "entity.futonchakraflow.name": "Chakra Flow",
       "entity.giant_dog_2h.name": "Giant Dog",
@@ -9418,6 +9435,7 @@
       "entity.lava_chakra_mode.name": "Lava Chakra Mode",
       "item.tailed_beast_map.name": "Tailed Beast Map",
       "overlay.no_biju_available": "No tailed beasts are available at the moment",
+      "entity.toad_fukasaku.name": "Fukasaku",
       "lingering_potion.effect.flight": "Lingering Flight",
       "item.kamuishuriken.name": "Kamui Shuriken",
       "item.kunai_3prong.name": "3-prong Kunai",

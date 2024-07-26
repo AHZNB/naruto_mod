@@ -29,7 +29,6 @@ import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.item.ItemStack;
 
 import net.narutomod.item.ItemSuiton;
-import net.narutomod.item.ItemFutton;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.ElementsNarutomodMod;
 
@@ -197,8 +196,8 @@ public class EntitySixTails extends ElementsNarutomodMod.ModElement {
 			if (!this.isAIDisabled() && (this.mouthShootingJutsu == null || this.mouthShootingJutsu.isDead)
 			 && distanceFactor < 1.0f && distanceFactor > (float)(ProcedureUtils.getReachDistance(this) * 0.6d / this.getBijudamaMinRange())) {
 				this.setSwingingArms(true);
-				this.mouthShootingJutsu = new ItemFutton.EntityBoilingMist.Jutsu().createJutsu(this, (float)this.getBijudamaMinRange() + 16.0f, 6.0f);
-				((ItemFutton.EntityBoilingMist)this.mouthShootingJutsu).setDuration(80);
+				this.mouthShootingJutsu = EntityAcidScattering.EC.Jutsu.createJutsu(this, (float)this.getDistance(target));
+				((EntityAcidScattering.EC)this.mouthShootingJutsu).setPotionAmplifier(30);
 			} else {
 				super.attackEntityWithRangedAttack(target, distanceFactor);
 			}
@@ -207,6 +206,16 @@ public class EntitySixTails extends ElementsNarutomodMod.ModElement {
 		@Override
 		public float getFuuinBeamHeight() {
 			return this.isFaceDown() ? 2.0f * 0.0625f * MODELSCALE : super.getFuuinBeamHeight();
+		}
+
+		@Override
+		protected boolean hatesWater() {
+			return false;
+		}
+
+		@Override
+		protected float getWaterSlowDown() {
+			return 0.96F;
 		}
 
 		@Override

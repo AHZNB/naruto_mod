@@ -237,7 +237,7 @@ public class EntityTenTails extends ElementsNarutomodMod.ModElement {
 			if (!this.isAIDisabled() && (this.mouthShootingJutsu == null || this.mouthShootingJutsu.isDead)
 			 && distanceFactor < 1.0f && distanceFactor > (float)(ProcedureUtils.getReachDistance(this) * 0.6d / this.getBijudamaMinRange())) {
 				this.setSwingingArms(true);
-				this.mouthShootingJutsu = EntityNineTails.EntityBeam.shoot(this, 2.0f);
+				this.mouthShootingJutsu = EntityNineTails.EntityBeam.shoot(this, 2.0f, 1.4f);
 			} else {
 				super.attackEntityWithRangedAttack(target, distanceFactor);
 			}
@@ -265,7 +265,7 @@ public class EntityTenTails extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public boolean isOnSameTeam(Entity entityIn) {
-			return super.isOnSameTeam(entityIn) || entityIn instanceof EntityCustom;
+			return super.isOnSameTeam(entityIn) || entityIn instanceof EntitySplit;
 		}
 
 		@Override
@@ -319,7 +319,7 @@ public class EntityTenTails extends ElementsNarutomodMod.ModElement {
 
 	public static class EntitySplit extends EntityTailedBeast.Base {
 		private static final DataParameter<Float> SCALE = EntityDataManager.<Float>createKey(EntitySplit.class, DataSerializers.FLOAT);
-		private final BijuManager bijuManager = new BijuManager();
+		private static final BijuManager bijuManager = new BijuManager();
 		private EntityCustom parent;
 		
 		public EntitySplit(World worldIn) {
@@ -517,7 +517,7 @@ public class EntityTenTails extends ElementsNarutomodMod.ModElement {
 		    }
 		}
 
-		class BijuManager extends EntityBijuManager<EntitySplit> {
+		static class BijuManager extends EntityBijuManager<EntitySplit> {
 			public BijuManager() {
 				super(EntitySplit.class, 11);
 			}

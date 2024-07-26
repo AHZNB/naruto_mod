@@ -128,9 +128,17 @@ public class EntityDeidara extends ElementsNarutomodMod.ModElement {
 				}));
 			this.tasks.addTask(0, new EntityAISwimming(this));
 			this.tasks.addTask(1, new EntityNinjaMob.AIAttackRangedTactical(this, 1.0D, 50, 40.0F));
-			this.tasks.addTask(2, new EntityAIWatchClosest2(this, EntityPlayer.class, 32.0F, 1.0F));
-			this.tasks.addTask(3, new EntityAIWander(this, 0.5d));
-			this.tasks.addTask(4, new EntityAILookIdle(this));
+			this.tasks.addTask(2, new EntityClone.AIFollowSummoner(this, 0.6d, 4f) {
+				@Override @Nullable
+				protected EntityLivingBase getFollowEntity() {
+					double d = EntityCustom.this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).getAttributeValue();
+					Entity sasori = EntityCustom.this.world.findNearestEntityWithinAABB(EntitySasori.EntityCustom.class, EntityCustom.this.getEntityBoundingBox().grow(d, 8d, d), EntityCustom.this);
+					return sasori instanceof EntityLivingBase ? (EntityLivingBase)sasori : null;
+				}
+			});
+			this.tasks.addTask(3, new EntityAIWatchClosest2(this, EntityPlayer.class, 32.0F, 1.0F));
+			this.tasks.addTask(4, new EntityAIWander(this, 0.5d));
+			this.tasks.addTask(5, new EntityAILookIdle(this));
 		}
 
 		@Override

@@ -91,7 +91,6 @@ import net.minecraft.block.material.Material;
 import net.narutomod.item.ItemJutsu;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.procedure.ProcedureAoeCommand;
-import net.narutomod.procedure.ProcedureCameraShake;
 import net.narutomod.event.EventSphericalExplosion;
 import net.narutomod.Particles;
 import net.narutomod.SaveData;

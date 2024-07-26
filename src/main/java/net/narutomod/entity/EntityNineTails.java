@@ -213,7 +213,7 @@ public class EntityNineTails extends ElementsNarutomodMod.ModElement {
 			if (!this.isAIDisabled() && (this.mouthShootingJutsu == null || this.mouthShootingJutsu.isDead)
 			 && distanceFactor < 1.0f && distanceFactor > (float)(ProcedureUtils.getReachDistance(this) * 0.6d / this.getBijudamaMinRange())) {
 				this.setSwingingArms(true);
-				this.mouthShootingJutsu = EntityBeam.shoot(this, 0.6f);
+				this.mouthShootingJutsu = EntityBeam.shoot(this, 0.6f, 0.8f);
 			} else {
 				super.attackEntityWithRangedAttack(target, distanceFactor);
 			}
@@ -268,6 +268,7 @@ public class EntityNineTails extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static class EntityBeam extends EntityBeamBase.Base {
+		private static final DataParameter<Float> BEAM_WIDTH = EntityDataManager.<Float>createKey(EntityBeam.class, DataSerializers.FLOAT);
 		private float power = 2.0f;
 		private float damageMultiplier;
 		private float prevBeamLength;
@@ -280,6 +281,20 @@ public class EntityNineTails extends ElementsNarutomodMod.ModElement {
 			super(shooter);
 			this.damageMultiplier = damageMultiplierIn;
 			this.updatePosition();
+		}
+
+		@Override
+		protected void entityInit() {
+			super.entityInit();
+			this.getDataManager().register(BEAM_WIDTH, Float.valueOf(0.8f));
+		}
+
+		public float getBeamWidth() {
+			return ((Float)this.getDataManager().get(BEAM_WIDTH)).floatValue();
+		}
+
+		protected void setBeamWidth(float width) {
+			this.getDataManager().set(BEAM_WIDTH, Float.valueOf(width));
 		}
 
 		@Override
@@ -328,8 +343,9 @@ public class EntityNineTails extends ElementsNarutomodMod.ModElement {
 			}
 		}
 
-		public static EntityBeam shoot(EntityLivingBase shooter, float damageMultiplier) {
+		public static EntityBeam shoot(EntityLivingBase shooter, float damageMultiplier, float beamWidth) {
 			EntityBeam entity = new EntityBeam(shooter, damageMultiplier);
+			entity.setBeamWidth(beamWidth);
 			shooter.world.spawnEntity(entity);
 			Vec3d vec = shooter.getLookVec();
 			Particles.Renderer particles = new Particles.Renderer(shooter.world, 96d);
@@ -396,6 +412,7 @@ public class EntityNineTails extends ElementsNarutomodMod.ModElement {
 	
 			@Override
 			public void doRender(EntityBeam bullet, double x, double y, double z, float yaw, float pt) {
+				float beamRadius = bullet.getBeamWidth();
 				float age = (float)bullet.ticksExisted + pt;
 				float f = age * 0.01F;
 				double max_l = bullet.prevBeamLength + (bullet.getBeamLength() - bullet.prevBeamLength) * pt;
@@ -417,29 +434,29 @@ public class EntityNineTails extends ElementsNarutomodMod.ModElement {
 				float f11 = 2.0F;
 				bufferbuilder.begin(5, DefaultVertexFormats.POSITION_TEX_COLOR);
 				for (int j = 0; j <= 8; j++) {
-					float f7 = MathHelper.sin((j % 8) * ((float) Math.PI * 2F) / 8.0F) * 0.5F;
-					float f8 = MathHelper.cos((j % 8) * ((float) Math.PI * 2F) / 8.0F) * 0.5F;
+					float f7 = MathHelper.sin((j % 8) * ((float) Math.PI * 2F) / 8.0F) * beamRadius;
+					float f8 = MathHelper.cos((j % 8) * ((float) Math.PI * 2F) / 8.0F) * beamRadius;
 					float f9 = (j % 8) / 8.0F;
 					bufferbuilder.pos(f7, 0.0F, f8).tex(f9, f5).color(1.0f, 1.0f, 1.0f, 0.7f).endVertex();
 					bufferbuilder.pos(f7 * f11, (float) max_l, f8 * f11).tex(f9, f6).color(1.0f, 1.0f, 1.0f, 0.7f).endVertex();
 				}
 				for (int j = 0; j <= 8; j++) {
-					float f7 = MathHelper.sin((j % 8) * ((float) Math.PI * 2F) / 8.0F) * 0.5F;
-					float f8 = MathHelper.cos((j % 8) * ((float) Math.PI * 2F) / 8.0F) * 0.5F;
+					float f7 = MathHelper.sin((j % 8) * ((float) Math.PI * 2F) / 8.0F) * beamRadius;
+					float f8 = MathHelper.cos((j % 8) * ((float) Math.PI * 2F) / 8.0F) * beamRadius;
 					float f9 = (j % 8) / 8.0F;
 					bufferbuilder.pos(f7 * f11, (float)max_l, f8 * f11).tex(f9, f6).color(1.0f, 1.0f, 1.0f, 0.7f).endVertex();
 					bufferbuilder.pos(f7 * f11 * 0.6F, (float)max_l + 1.0F, f8 * f11 * 0.6F).tex(f9, f5).color(1.0f, 1.0f, 1.0f, 0.7f).endVertex();
 				}
 				for (int j = 0; j <= 8; j++) {
-					float f7 = MathHelper.sin((j % 8) * ((float) Math.PI * 2F) / 8.0F) * 0.5F;
-					float f8 = MathHelper.cos((j % 8) * ((float) Math.PI * 2F) / 8.0F) * 0.5F;
+					float f7 = MathHelper.sin((j % 8) * ((float) Math.PI * 2F) / 8.0F) * beamRadius;
+					float f8 = MathHelper.cos((j % 8) * ((float) Math.PI * 2F) / 8.0F) * beamRadius;
 					float f9 = (j % 8) / 8.0F;
 					bufferbuilder.pos(f7 * f11 * 0.6F, (float)max_l + 1.0F, f8 * f11 * 0.6F).tex(f9, f6).color(1.0f, 1.0f, 1.0f, 0.7f).endVertex();
 					bufferbuilder.pos(f7 * 0.2F, (float)max_l + 2.0F, f8 * 0.2F).tex(f9, f5).color(1.0f, 1.0f, 1.0f, 0.7f).endVertex();
 				}
 				for (int j = 0; j <= 8; j++) {
-					float f7 = MathHelper.sin((j % 8) * ((float) Math.PI * 2F) / 8.0F) * 0.6F;
-					float f8 = MathHelper.cos((j % 8) * ((float) Math.PI * 2F) / 8.0F) * 0.6F;
+					float f7 = MathHelper.sin((j % 8) * ((float) Math.PI * 2F) / 8.0F) * (beamRadius + 0.1F);
+					float f8 = MathHelper.cos((j % 8) * ((float) Math.PI * 2F) / 8.0F) * (beamRadius + 0.1F);
 					float f9 = (j % 8) / 8.0F;
 					bufferbuilder.pos(f7, 0.0F, f8).tex(f9, f5).color(1.0f, 1.0f, 1.0f, 0.11f).endVertex();
 					bufferbuilder.pos(f7 * f11, (float) max_l, f8 * f11).tex(f9, f6).color(1.0f, 1.0f, 1.0f, 0.11f).endVertex();

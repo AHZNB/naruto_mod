@@ -79,13 +79,8 @@ public class ItemSummoningContract extends ElementsNarutomodMod.ModElement {
 	@Override
 	public void preInit(FMLPreInitializationEvent event) {
 		RenderingRegistry.registerEntityRenderingHandler(EntityGenericToad.class, renderManager -> {
-			return new EntityToad.RenderCustom<EntityGenericToad>(renderManager) {
+			return new EntityToad.RenderCustom<EntityGenericToad>(renderManager, new EntityToad.ModelToad()) {
 				private final ResourceLocation texture = new ResourceLocation("narutomod:textures/toad1.png");
-				@Override
-				protected void renderModel(EntityGenericToad entity, float f1, float f2, float f3, float f4, float f5, float f6) {
-					((EntityToad.ModelToad)this.mainModel).showPipe(false);
-					super.renderModel(entity, f1, f2, f3, f4, f5, f6);
-				}
 				@Override
 				protected ResourceLocation getEntityTexture(EntityGenericToad entity) {
 					return this.texture;
@@ -200,7 +195,7 @@ public class ItemSummoningContract extends ElementsNarutomodMod.ModElement {
 					Particles.spawnParticle(entity.world, Particles.Types.SMOKE,
 					 entity.posX, entity.posY + 0.015d, entity.posZ, 1, 0d, 0d, 0d,
 					 (entity.getRNG().nextDouble()-0.5d) * 0.8d, entity.getRNG().nextDouble() * 0.6d + 0.2d, (entity.getRNG().nextDouble()-0.5d) * 0.8d,
-					 0xD0FFFFFF, (int)(power * 30));
+					 0xD0FFFFFF, (int)(power * 30), (int)(16.0d / (entity.getRNG().nextDouble() * 0.8d + 0.2d)));
 				}
 				entity.world.playSound(null, entity.posX, entity.posY, entity.posZ,
 				  net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:kuchiyosenojutsu")),
@@ -220,6 +215,11 @@ public class ItemSummoningContract extends ElementsNarutomodMod.ModElement {
 			@Override
 			public float getPowerupDelay() {
 				return 80.0f;
+			}
+
+			@Override
+			public float getMaxPower() {
+				return 16.1f;
 			}
 		}
 	}
@@ -253,7 +253,7 @@ public class ItemSummoningContract extends ElementsNarutomodMod.ModElement {
 					Particles.spawnParticle(entity.world, Particles.Types.SMOKE,
 					 entity.posX, entity.posY + 0.015d, entity.posZ, 1, 0d, 0d, 0d,
 					 (entity.getRNG().nextDouble()-0.5d) * 0.8d, entity.getRNG().nextDouble() * 0.6d + 0.2d, (entity.getRNG().nextDouble()-0.5d) * 0.8d,
-					 0xD0FFFFFF, (int)(power * 30));
+					 0xD0FFFFFF, (int)(power * 30), (int)(16.0d / (entity.getRNG().nextDouble() * 0.8d + 0.2d)));
 				}
 				entity.world.playSound(null, entity.posX, entity.posY, entity.posZ,
 				  net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation(("narutomod:kuchiyosenojutsu"))),
@@ -272,7 +272,12 @@ public class ItemSummoningContract extends ElementsNarutomodMod.ModElement {
 	
 			@Override
 			public float getPowerupDelay() {
-				return 80.0f;
+				return 75.0f;
+			}
+
+			@Override
+			public float getMaxPower() {
+				return 18.1f;
 			}
 		}
 	}

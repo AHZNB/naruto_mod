@@ -27,6 +27,8 @@ import net.minecraft.network.datasync.EntityDataManager;
 
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.item.ItemJutsu;
+import net.narutomod.item.ItemFuton;
+import net.narutomod.Chakra;
 import net.narutomod.Particles;
 import net.narutomod.ElementsNarutomodMod;
 
@@ -55,7 +57,7 @@ public class EntityFutonGreatBreakthrough extends ElementsNarutomodMod.ModElemen
 
 	public static class EC extends Entity {
 		public static final float MAX_RANGE = 64.0f;
-		private final int duration = 100;
+		private int duration = 100;
 		private EntityLivingBase user;
 		private float power;
 
@@ -83,33 +85,47 @@ public class EntityFutonGreatBreakthrough extends ElementsNarutomodMod.ModElemen
 					this.playSound(net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:wind")),
 					 1f, this.power * 0.2f);
 				}
-				this.shoot(this.power, this.power * 0.25d);
+				boolean canfly = this.user instanceof EntityPlayer && !this.user.onGround;
+				this.shoot(this.power, this.power * 0.25d, canfly);
+				if (canfly && Chakra.pathway(this.user).consume(ItemFuton.BIGBLOW.chakraUsage * this.power * 0.0025d)) {
+					++this.duration;
+					ProcedureUtils.addVelocity(this.user, Vec3d.fromPitchYaw(this.user.rotationPitch, this.user.rotationYawHead).scale(-this.power * 0.003f));
+				}
 			}
 			if (!this.world.isRemote && this.ticksExisted > this.duration) {
 				this.setDead();
 			}
 		}
 
-		protected void shoot(double range, double farRadius) {
+		protected void shoot(double range, double farRadius, boolean inAir) {
 			Vec3d vec0 = this.user.getLookVec();
 			Vec3d vec = vec0.scale(2d).addVector(this.user.posX, this.user.posY + 1.5d, this.user.posZ);
-			for (int i = 0; i < 5; i++) {
-				Vec3d vec1 = vec0.scale((this.rand.nextDouble()*0.7d+0.3d) * range * 0.2d);
-				double d = vec1.lengthVector() / range;
-				this.world.spawnEntity(new EntityWindParticle(this, vec.x, vec.y, vec.z,
-				 vec1.x + (this.rand.nextDouble()-0.5d) * farRadius * d * 2.5d,
-				 vec1.y + (this.rand.nextDouble()-0.5d) * farRadius * d * 2.5d,
-				 vec1.z + (this.rand.nextDouble()-0.5d) * farRadius * d * 2.5d, range));
+			int particleMaxAge = 16;
+			int particleColor = 0x40FFFFFF;
+			if (!inAir) {
+				for (int i = 0; i < 5; i++) {
+					Vec3d vec1 = vec0.scale((this.rand.nextDouble()*0.7d+0.3d) * range * 0.2d);
+					double d = vec1.lengthVector() / range;
+					this.world.spawnEntity(new EntityWindParticle(this, vec.x, vec.y, vec.z,
+					 vec1.x + (this.rand.nextDouble()-0.5d) * farRadius * d * 2.5d,
+					 vec1.y + (this.rand.nextDouble()-0.5d) * farRadius * d * 2.5d,
+					 vec1.z + (this.rand.nextDouble()-0.5d) * farRadius * d * 2.5d, range));
+				}
+			} else {
+				farRadius = 0.8d;
+				particleMaxAge = 6;
+				particleColor = 0x10FFFFFF;
 			}
 			Particles.Renderer particles = new Particles.Renderer(this.world);
 			for (int i = 1; i <= 50; i++) {
+				particleMaxAge = (int)((double)particleMaxAge / (this.rand.nextDouble()*0.8D+0.2D));
 				Vec3d vec1 = vec0.scale((this.rand.nextDouble()*0.7d+0.3d) * range * 0.2d);
 				double d = vec1.lengthVector() / range;
 				particles.spawnParticles(Particles.Types.SMOKE, vec.x, vec.y, vec.z, 1, 0d, 0d, 0d, 
 				 vec1.x + (this.rand.nextDouble()-0.5d) * farRadius * d * 2.5d,
 				 vec1.y + (this.rand.nextDouble()-0.5d) * farRadius * d * 2.5d,
 				 vec1.z + (this.rand.nextDouble()-0.5d) * farRadius * d * 2.5d,
-				 0x40FFFFFF, (int)(vec1.lengthVector() * 40d) + this.rand.nextInt(20), (int)(16.0D / (this.rand.nextDouble()*0.8D+0.2D)));
+				 particleColor, (int)(vec1.lengthVector() * (inAir ? 10d : 40d)) + this.rand.nextInt(20), particleMaxAge);
 			}
 			particles.send();
 		}

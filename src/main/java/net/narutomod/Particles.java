@@ -964,10 +964,17 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 		private double heightOffset;
 
 		protected Spit(World worldIn, double xCoordIn, double yCoordIn, double zCoordIn, 
-		 double xSpeedIn, double ySpeedIn, double zSpeedIn, int color, float scale, int excludedEntityId) {
-			super(worldIn, xCoordIn, yCoordIn, zCoordIn, xSpeedIn, ySpeedIn, zSpeedIn, color, scale, 0, 0, -1, -0.05f);
+		 double xSpeedIn, double ySpeedIn, double zSpeedIn, int color, float scale, int excludedEntityId, int maxAge) {
+			super(worldIn, xCoordIn, yCoordIn, zCoordIn, xSpeedIn, ySpeedIn, zSpeedIn, color, scale, maxAge, 0, -1, -0.05f);
 			this.excludedEntity = worldIn.getEntityByID(excludedEntityId);
-			this.setSize(this.width * this.particleScale, this.height * this.particleScale);
+			//this.setSize(this.width * this.particleScale, this.height * this.particleScale);
+		}
+
+		@Override
+		public void renderParticle(BufferBuilder buffer, Entity entityIn, float partialTicks, float rotationX, float rotationZ, float rotationYZ, float rotationXY, float rotationXZ) {
+			float f = ((float)this.particleAge + partialTicks) / (float)this.particleMaxAge;
+			this.particleScale = this.smokeParticleScale * MathHelper.clamp(f * 4.0F, 0.0F, 1.0F);
+			this.renderBuffer(buffer, entityIn, partialTicks, rotationX, rotationZ, rotationYZ, rotationXY, rotationXZ);
 		}
 
 		@Override
@@ -994,10 +1001,11 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 		public static class Factory implements IParticleFactory {
 			public Particle createParticle(int particleID, World worldIn, double xCoordIn, double yCoordIn, double zCoordIn, double xSpeedIn,
 					double ySpeedIn, double zSpeedIn, int... parameters) {
+				int arg3 = (parameters.length > 3) ? parameters[3] : 0;
 				int arg2 = (parameters.length > 2) ? parameters[2] : -1;
 				float arg1 = (parameters.length > 1) ? (float)parameters[1] / 10.0f : 1.0f;
 				int arg0 = (parameters.length > 0) ? parameters[0] : 0x80000000;
-				return new Spit(worldIn, xCoordIn, yCoordIn, zCoordIn, xSpeedIn, ySpeedIn, zSpeedIn, arg0, arg1, arg2);
+				return new Spit(worldIn, xCoordIn, yCoordIn, zCoordIn, xSpeedIn, ySpeedIn, zSpeedIn, arg0, arg1, arg2, arg3);
 			}
 		}
 	}
@@ -1012,7 +1020,7 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 		 double xSpeedIn, double ySpeedIn, double zSpeedIn, int color, float scale, int entityId) {
 			super(worldIn, xCoordIn, yCoordIn, zCoordIn, xSpeedIn, ySpeedIn, zSpeedIn, color, scale, 50 + RAND.nextInt(20), 0, -1, -0.08f);
 			this.entity = worldIn.getEntityByID(entityId);
-			this.setSize(this.width * this.particleScale, this.height * this.particleScale);
+			//this.setSize(this.width * this.particleScale, this.height * this.particleScale);
 		}
 
 		@Override
@@ -1067,7 +1075,7 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 
 		protected AcidSpit(World worldIn, double xCoordIn, double yCoordIn, double zCoordIn, 
 		 double xSpeedIn, double ySpeedIn, double zSpeedIn, int excludeEntityId, int color, int amplifier) {
-			super(worldIn, xCoordIn, yCoordIn, zCoordIn, xSpeedIn, ySpeedIn, zSpeedIn, color, 0.5f + RAND.nextFloat() * 4.5f, excludeEntityId);
+			super(worldIn, xCoordIn, yCoordIn, zCoordIn, xSpeedIn, ySpeedIn, zSpeedIn, color, 0.5f + RAND.nextFloat() * 4.5f, excludeEntityId, 0);
 			this.effectAmplifier = amplifier;
 		}
 
@@ -1728,7 +1736,7 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 		SONIC_BOOM("sonic_boom", 54678413, 4),
 		SAND("sand_colored", 54678414, 4),
 		WATER_SPLASH("water_splash", 54678415, 1),
-		SPIT("spit", 54678416, 3),
+		SPIT("spit", 54678416, 4),
 		CLAY_SPIT("clay_spit", 54678417, 3),
 		CONCENTRIC_SPHERES("concentric_spheres", 54678418, 3);
 		

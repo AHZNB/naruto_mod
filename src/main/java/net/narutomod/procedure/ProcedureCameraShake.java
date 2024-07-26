@@ -13,11 +13,13 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.entity.player.EntityPlayerMP;
 
 import net.narutomod.NarutomodMod;
 import net.narutomod.ElementsNarutomodMod;
 
 import io.netty.buffer.ByteBuf;
+import java.util.List;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class ProcedureCameraShake extends ElementsNarutomodMod.ModElement {
@@ -56,9 +58,16 @@ public class ProcedureCameraShake extends ElementsNarutomodMod.ModElement {
 		NarutomodMod.PACKET_HANDLER.sendToAllAround(new Message(duration, scale), new NetworkRegistry.TargetPoint(dimid, x, y, z, range));
 	}
 
+	public static void sendToClients(List<EntityPlayerMP> playerList, int duration, float scale) {
+		for (EntityPlayerMP player : playerList) {
+			NarutomodMod.PACKET_HANDLER.sendTo(new Message(duration, scale), player);
+		}
+	}
+
 	public static class Message implements IMessage {
 		int duration;
 		float scale;
+
 		public Message() {
 		}
 

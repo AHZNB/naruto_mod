@@ -61,6 +61,8 @@ public class EntitySlug extends ElementsNarutomodMod.ModElement {
 	public void initElements() {
 		elements.entities.add(() -> EntityEntryBuilder.create().entity(EntityCustom.class)
 		 .id(new ResourceLocation("narutomod", "slug"), ENTITYID).name("slug").tracker(128, 3, true).egg(-1, 0xFF3C7593).build());
+		elements.entities.add(() -> EntityEntryBuilder.create().entity(EntityCustom.AcidJutsu.class)
+		 .id(new ResourceLocation("narutomod", "slug_acid"), ENTITYID_RANGED).name("slug_acid").tracker(64, 3, true).build());
 	}
 
 	public static class EntityCustom extends EntitySummonAnimal.Base implements IRangedAttackMob {
@@ -207,7 +209,7 @@ public class EntitySlug extends ElementsNarutomodMod.ModElement {
 
 	    @Override
 	    public boolean isOnSameTeam(Entity entityIn) {
-	    	return entityIn instanceof EntityCustom || super.isOnSameTeam(entityIn);
+	    	return entityIn instanceof EntityCustom || entityIn instanceof EntitySakuraHaruno.EntityCustom || super.isOnSameTeam(entityIn);
 	    }
 
 		@Override
@@ -215,18 +217,29 @@ public class EntitySlug extends ElementsNarutomodMod.ModElement {
 			super.damageEntity(damageSrc, damageAmount * 0.1f);
 		}
 
+		public static class AcidJutsu extends EntityAcidScattering.EC {
+			public AcidJutsu(World worldIn) {
+				super(worldIn);
+			}
+			public AcidJutsu(EntityLivingBase shooterIn, float widthIn, float rangeIn) {
+				super(shooterIn, widthIn, rangeIn);
+			}
+			@Override
+			protected void setIdlePosition() {
+				if (this.getShooter() instanceof EntityCustom) {
+					Vec3d vec2 = this.getShooter().getLookVec().scale(((EntityCustom)this.getShooter()).getScale()).add(this.getShooter().getPositionEyes(1f));
+					this.setPosition(vec2.x, vec2.y, vec2.z);
+				}
+			}
+		}
+
 		@Override
 		public void attackEntityWithRangedAttack(EntityLivingBase target, float distanceFactor) {
-			Vec3d vec = this.getPositionEyes(1.0f);
-			Vec3d vec1 = target.getPositionEyes(1.0f).subtract(vec);
+			Vec3d vec1 = target.getPositionEyes(1.0f).subtract(this.getPositionEyes(1.0f));
 			double dist = vec1.lengthVector();
-			vec1 = vec1.normalize();
-			vec = vec.add(this.getLookVec().scale(this.getScale()));
-			for (int i = 0; i < 300; i++) {
-				Vec3d vec2 = vec1.scale(dist * 0.2d * (this.rand.nextDouble() * 0.8d + 0.2d));
-				Particles.spawnParticle(this.world, Particles.Types.ACID_SPIT, vec.x, vec.y, vec.z, 1,
-				 0d, 0d, 0d, vec2.x, vec2.y, vec2.z, this.getEntityId());
-			}
+			AcidJutsu jutsu = new AcidJutsu(this, (float)dist * 0.24f, (float)dist * 1.2f);
+			jutsu.setPotionAmplifier((int)(this.getScale() * 0.5f));
+			this.world.spawnEntity(jutsu);
 		}
 
 		@Override
@@ -284,7 +297,7 @@ public class EntitySlug extends ElementsNarutomodMod.ModElement {
 				Particles.spawnParticle(entity.world, Particles.Types.SMOKE,
 				 entity.posX, entity.posY + 0.015d, entity.posZ, 1, 0d, 0d, 0d,
 				 (entity.getRNG().nextDouble()-0.5d) * 0.8d, entity.getRNG().nextDouble() * 0.6d + 0.2d, (entity.getRNG().nextDouble()-0.5d) * 0.8d,
-				 0xD0FFFFFF, (int)(power * 30));
+				 0xD0FFFFFF, (int)(power * 30), (int)(16.0d / (entity.getRNG().nextDouble() * 0.8d + 0.2d)));
 			}
 			entity.world.playSound(null, entity.posX, entity.posY, entity.posZ,
 			  SoundEvent.REGISTRY.getObject(new ResourceLocation(("narutomod:kuchiyosenojutsu"))),
