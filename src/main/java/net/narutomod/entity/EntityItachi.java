@@ -179,23 +179,6 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 					return super.shouldExecute() && !EntityCustom.this.isRiding()
 							&& EntityCustom.this.getAttackTarget().getDistance(EntityCustom.this) <= 4d;
 				}
-				/*@Override
-				protected double getAttackReachSqr(EntityLivingBase attackTarget) {
-					return EntityCustom.this.isSusanooActive() ? ProcedureUtils.getReachDistanceSq(EntityCustom.this.susanooEntity)
-							: super.getAttackReachSqr(attackTarget);
-				}
-				@Override
-				protected void checkAndPerformAttack(EntityLivingBase p_190102_1_, double p_190102_2_) {
-					if (EntityCustom.this.isSusanooActive()) {
-						if (p_190102_2_ <= this.getAttackReachSqr(p_190102_1_) && this.attackTick <= 0) {
-							this.attackTick = 20;
-							EntityCustom.this.susanooEntity.swingArm(EnumHand.MAIN_HAND);
-							EntityCustom.this.susanooEntity.attackEntityAsMob(p_190102_1_);
-						}
-					} else {
-						super.checkAndPerformAttack(p_190102_1_, p_190102_2_);
-					}
-				}*/
 			});
 			this.tasks.addTask(4, new EntityAIWatchClosest2(this, EntityPlayer.class, 15.0F, 1.0F));
 			this.tasks.addTask(5, new EntityAIWander(this, 0.3));
@@ -280,7 +263,7 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 			if (source == DamageSource.FALL) {
 				return false;
 			}
-			if (!this.world.isRemote) {
+			if (!this.world.isRemote && !this.isAIDisabled()) {
 				boolean ret = true;
 				Entity entity1 = source.getTrueSource();
 				if (this.rand.nextInt(3) <= 1) {

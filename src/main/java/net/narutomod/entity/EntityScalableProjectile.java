@@ -167,9 +167,11 @@ public class EntityScalableProjectile extends ElementsNarutomodMod.ModElement {
 			this.accelerationX = x / d0 * 0.1D;
 			this.accelerationY = y / d0 * 0.1D;
 			this.accelerationZ = z / d0 * 0.1D;
-			this.motionX = x / d0 * speed;
-			this.motionY = y / d0 * speed;
-			this.motionZ = z / d0 * speed;
+			double d1 = MathHelper.sqrt(this.motionX * this.motionX + this.motionY * this.motionY + this.motionZ * this.motionZ);
+			this.motionX = x / d0 * d1;
+			this.motionY = y / d0 * d1;
+			this.motionZ = z / d0 * d1;
+			this.motionFactor = speed;
 		}
 
 		public double getAcceleration() {
@@ -354,18 +356,18 @@ public class EntityScalableProjectile extends ElementsNarutomodMod.ModElement {
 
 	public static RayTraceResult forwardsRaycast(Entity projectile, Vec3d motion, boolean scaleBlocks, boolean includeEntities, boolean ignoreExcludedEntity, @Nullable Entity excludedEntity) {
 		World world = projectile.world;
-		Vec3d vec3d = new Vec3d(projectile.posX, projectile.posY + (projectile.height / 2.0F), projectile.posZ);
+		Vec3d vec3d = new Vec3d(projectile.posX, projectile.posY + projectile.height * 0.5f, projectile.posZ);
 		Vec3d vec3d2 = vec3d.add(motion);
-		AxisAlignedBB bigAABB = projectile.getEntityBoundingBox().expand(motion.x, motion.y, motion.z).grow(1.0D);
+		AxisAlignedBB bigAABB = projectile.getEntityBoundingBox().expand(motion.x, motion.y, motion.z).grow(1.0d);
 		RayTraceResult raytraceresult = null;
 		double d0 = 0.0D;
 		if (scaleBlocks) {
 			BlockPos.PooledMutableBlockPos blockpos = BlockPos.PooledMutableBlockPos.retain();
 			EnumFacing facing = null;
 			for (AxisAlignedBB aabb : world.getCollisionBoxes(null, bigAABB)) {
-				RayTraceResult result = aabb.grow(projectile.width / 2, projectile.height / 2, projectile.width / 2).calculateIntercept(vec3d, vec3d2);
+				RayTraceResult result = aabb.grow(projectile.width * 0.5f, projectile.height * 0.5f, projectile.width * 0.5f).calculateIntercept(vec3d, vec3d2);
 				if (result != null) {
-	 				double d = projectile.getDistanceSq((aabb.minX + aabb.maxX) / 2, (aabb.minY + aabb.maxY) / 2, (aabb.minZ + aabb.maxZ) / 2);
+	 				double d = projectile.getDistanceSq((aabb.minX + aabb.maxX) * 0.5d, (aabb.minY + aabb.maxY) * 0.5d, (aabb.minZ + aabb.maxZ) * 0.5d);
 					if (d < d0 || d0 == 0.0D) {
 						blockpos.setPos(aabb.minX, aabb.minY, aabb.minZ);
 						facing = result.sideHit;
@@ -386,7 +388,7 @@ public class EntityScalableProjectile extends ElementsNarutomodMod.ModElement {
 			Vec3d hitvec = null;
 			for (Entity entity1 : world.getEntitiesWithinAABBExcludingEntity(projectile, bigAABB)) {
 				if (entity1.canBeCollidedWith() && (ignoreExcludedEntity || !entity1.equals(excludedEntity)) && !entity1.noClip) {
-					AxisAlignedBB aabb = entity1.getEntityBoundingBox().grow(projectile.width / 2, projectile.height / 2, projectile.width / 2);
+					AxisAlignedBB aabb = entity1.getEntityBoundingBox().grow(projectile.width * 0.5f, projectile.height * 0.5f, projectile.width * 0.5f);
 					RayTraceResult result = aabb.calculateIntercept(vec3d, vec3d2);
 					if (result != null) {
 						double d = vec3d.distanceTo(result.hitVec);

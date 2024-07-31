@@ -14,17 +14,17 @@ import net.minecraftforge.client.event.EntityViewRenderEvent;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.EntityPlayer;
 
 import net.narutomod.NarutomodMod;
 import net.narutomod.ElementsNarutomodMod;
 
 import io.netty.buffer.ByteBuf;
-import java.util.List;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class ProcedureCameraShake extends ElementsNarutomodMod.ModElement {
 	private static ProcedureCameraShake instance;
-	private int shakeDuration;
+	private long shakeDuration;
 	private float shakeScale;
 	
 	public ProcedureCameraShake(ElementsNarutomodMod instanceIn) {
@@ -35,11 +35,10 @@ public class ProcedureCameraShake extends ElementsNarutomodMod.ModElement {
 	@SideOnly(Side.CLIENT)
 	@SubscribeEvent
 	public void onShake(EntityViewRenderEvent.CameraSetup event) {
-		if (shakeDuration > 0) {
+		if (this.shakeDuration > Minecraft.getMinecraft().world.getTotalWorldTime()) {
 			event.setYaw(((float) Math.random() - 0.5F) * instance.shakeScale + event.getYaw());
 			event.setPitch(((float) Math.random() - 0.5F) * instance.shakeScale + event.getPitch());
 			event.setRoll(((float) Math.random() - 0.5F) * instance.shakeScale + event.getRoll());
-			instance.shakeDuration--;
 		}
 	}
 
@@ -58,9 +57,12 @@ public class ProcedureCameraShake extends ElementsNarutomodMod.ModElement {
 		NarutomodMod.PACKET_HANDLER.sendToAllAround(new Message(duration, scale), new NetworkRegistry.TargetPoint(dimid, x, y, z, range));
 	}
 
-	public static void sendToClients(List<EntityPlayerMP> playerList, int duration, float scale) {
-		for (EntityPlayerMP player : playerList) {
-			NarutomodMod.PACKET_HANDLER.sendTo(new Message(duration, scale), player);
+	public static void sendToClient(EntityPlayer player, int duration, float scale) {
+		if (player instanceof EntityPlayerMP) {
+			NarutomodMod.PACKET_HANDLER.sendTo(new Message(duration, scale), (EntityPlayerMP)player);
+		} else if (player.world.isRemote) {
+			instance.shakeDuration = player.world.getTotalWorldTime() + duration;
+			instance.shakeScale = scale;
 		}
 	}
 
@@ -80,9 +82,9 @@ public class ProcedureCameraShake extends ElementsNarutomodMod.ModElement {
 			@SideOnly(Side.CLIENT)
 			@Override
 			public IMessage onMessage(Message message, MessageContext context) {
-				Minecraft.getMinecraft().addScheduledTask(() -> {
-					instance.shakeDuration = message.duration;
-					instance.shakeScale = message.scale;
+				Minecraft mc = Minecraft.getMinecraft();
+				mc.addScheduledTask(() -> {
+					sendToClient(mc.player, message.duration, message.scale);
 				});
 				return null;
 			}

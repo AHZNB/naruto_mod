@@ -158,14 +158,18 @@ public class EntitySusanooClothed extends ElementsNarutomodMod.ModElement {
 
 		@Override
 	    public void setShowSword(boolean show) {
-	    	if (show) {
-				this.getEntityAttribute(EntityPlayer.REACH_DISTANCE).applyModifier(SWORD_REACH);
-				this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).applyModifier(SWORD_ATTACK);
-	    	} else {
-	    		this.getEntityAttribute(EntityPlayer.REACH_DISTANCE).removeModifier(SWORD_REACH);
-	    		this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).removeModifier(SWORD_ATTACK);
+	    	if (show != this.shouldShowSword()) {
+		    	if (show) {
+					this.getEntityAttribute(EntityPlayer.REACH_DISTANCE).applyModifier(SWORD_REACH);
+					this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).applyModifier(SWORD_ATTACK);
+					this.chakraUsage += 15.0d;
+		    	} else {
+		    		this.getEntityAttribute(EntityPlayer.REACH_DISTANCE).removeModifier(SWORD_REACH);
+		    		this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).removeModifier(SWORD_ATTACK);
+		    		this.chakraUsage -= 15.0d;
+		    	}
+		    	this.getDataManager().set(SHOW_SWORD, Boolean.valueOf(show));
 	    	}
-	    	this.getDataManager().set(SHOW_SWORD, Boolean.valueOf(show));
 	    }
 	    
 	    protected void setOwnerPlayer(EntityPlayer entity) {
@@ -193,7 +197,7 @@ public class EntitySusanooClothed extends ElementsNarutomodMod.ModElement {
 				if (ownerheldstack.getItem() == ItemTotsukaSword.block) {
 				 	if (thisHeldstack.getItem() != ItemTotsukaSword.block) {
 						this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, ownerheldstack.copy());
-						this.setShowSword(false);
+						//this.setShowSword(false);
 				 	}
 				} else if (thisHeldstack.getItem() == ItemTotsukaSword.block) {
 					this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, ItemStack.EMPTY);

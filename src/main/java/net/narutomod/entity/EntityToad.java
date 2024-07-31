@@ -587,7 +587,7 @@ public class EntityToad extends ElementsNarutomodMod.ModElement {
 		public ModelRenderer legLowerLeft;
 		public ModelRenderer footLeft;
 		protected float jumpProgress;
-		private float scale = 1.0f;
+		protected float scale = 1.0f;
 
 		public ModelToad() {
 			textureWidth = 64;

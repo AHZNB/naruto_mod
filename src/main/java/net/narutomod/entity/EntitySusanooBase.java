@@ -386,10 +386,7 @@ public abstract class EntitySusanooBase extends EntityCreature implements IRange
     protected void showHeldWeapons() {
 		EntityLivingBase owner = this.getOwnerPlayer();
 		if (!this.world.isRemote && owner != null) {
-			boolean flag = owner.getHeldItemMainhand().getItem() == ItemChokuto.block;
-			if (this.shouldShowSword() != flag) {
-				this.setShowSword(flag);
-			}
+			this.setShowSword(owner.getHeldItemMainhand().getItem() == ItemChokuto.block);
 			if (owner.getHeldItemMainhand().getItem() == ItemShuriken.block) {
 				this.createBullet((float)this.getEntityData().getDouble("entityModelScale") * 0.5f);
 			} else {

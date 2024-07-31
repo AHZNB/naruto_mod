@@ -1,6 +1,7 @@
 
 package net.narutomod.entity;
 
+import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.ElementsNarutomodMod;
 
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -72,9 +73,13 @@ public class EntityToadShima extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void onUpdate() {
 			super.onUpdate();
+			int age = this.getAge();
 			EntityLivingBase summoner = this.getSummoner();
-			if (summoner != null && this.getAge() == 1) {
+			if (summoner != null && age == 1) {
 				this.startRiding(summoner);
+			}
+			if (age == 3) {
+				ProcedureUtils.poofWithSmoke(this);
 			}
 		}
 	}
@@ -131,6 +136,10 @@ public class EntityToadShima extends ElementsNarutomodMod.ModElement {
 		@SideOnly(Side.CLIENT)
 		public class ModelToadSkinny extends EntityToad.ModelToad {
 			private final ModelRenderer hairShima;
+			private final ModelRenderer bone12;
+			private final ModelRenderer bone9;
+			private final ModelRenderer bone15;
+			private final ModelRenderer bone16;
 
 			public ModelToadSkinny() {
 				textureWidth = 64;
@@ -227,20 +236,19 @@ public class EntityToadShima extends ElementsNarutomodMod.ModElement {
 				setRotationAngle(armRight, -0.2182F, 0.0F, 0.2618F);
 				armRight.cubeList.add(new ModelBox(armRight, 56, 0, -1.076F, -1.7778F, -0.9648F, 2, 8, 2, 0.2F, false));
 				forearmRight = new ModelRenderer(this);
-				forearmRight.setRotationPoint(-0.66F, 6.898F, -0.1F);
+				forearmRight.setRotationPoint(-1.11F, 6.298F, -0.1F);
 				armRight.addChild(forearmRight);
-				setRotationAngle(forearmRight, 0.0F, 0.0F, -0.5236F);
-				forearmRight.cubeList.add(new ModelBox(forearmRight, 0, 0, -0.212F, -0.9138F, -0.8328F, 2, 6, 2, 0.1F, false));
+				forearmRight.cubeList.add(new ModelBox(forearmRight, 0, 0, 0.038F, 0.0862F, -0.8328F, 2, 6, 2, 0.1F, false));
 				handRight = new ModelRenderer(this);
-				handRight.setRotationPoint(1.01F, 5.478F, 0.152F);
+				handRight.setRotationPoint(1.26F, 6.478F, 0.152F);
 				forearmRight.addChild(handRight);
 				setRotationAngle(handRight, 0.5236F, 0.2618F, 0.0F);
-				ModelRenderer bone12 = new ModelRenderer(this);
+				bone12 = new ModelRenderer(this);
 				bone12.setRotationPoint(-0.8537F, -0.2173F, 0.496F);
 				handRight.addChild(bone12);
 				setRotationAngle(bone12, 0.0F, 0.2618F, 0.0F);
 				bone12.cubeList.add(new ModelBox(bone12, 39, 45, -1.0F, -1.0F, -3.75F, 2, 2, 4, -0.4F, false));
-				ModelRenderer bone9 = new ModelRenderer(this);
+				bone9 = new ModelRenderer(this);
 				bone9.setRotationPoint(-0.1037F, -0.2173F, 0.496F);
 				handRight.addChild(bone9);
 				bone9.cubeList.add(new ModelBox(bone9, 39, 45, -1.0F, -1.0F, -3.75F, 2, 2, 4, -0.4F, false));
@@ -255,20 +263,19 @@ public class EntityToadShima extends ElementsNarutomodMod.ModElement {
 				setRotationAngle(armLeft, -0.2182F, 0.0F, -0.2618F);
 				armLeft.cubeList.add(new ModelBox(armLeft, 56, 0, -0.924F, -1.7778F, -0.9648F, 2, 8, 2, 0.2F, true));
 				forearmLeft = new ModelRenderer(this);
-				forearmLeft.setRotationPoint(0.66F, 6.898F, -0.1F);
+				forearmLeft.setRotationPoint(1.11F, 6.298F, -0.1F);
 				armLeft.addChild(forearmLeft);
-				setRotationAngle(forearmLeft, 0.0F, 0.0F, 0.5236F);
-				forearmLeft.cubeList.add(new ModelBox(forearmLeft, 0, 0, -1.788F, -0.9138F, -0.8328F, 2, 6, 2, 0.1F, true));
+				forearmLeft.cubeList.add(new ModelBox(forearmLeft, 0, 0, -2.038F, 0.0862F, -0.8328F, 2, 6, 2, 0.1F, true));
 				handLeft = new ModelRenderer(this);
-				handLeft.setRotationPoint(-1.01F, 5.478F, 0.152F);
+				handLeft.setRotationPoint(-1.26F, 6.478F, 0.152F);
 				forearmLeft.addChild(handLeft);
 				setRotationAngle(handLeft, 0.5236F, -0.2618F, 0.0F);
-				ModelRenderer bone15 = new ModelRenderer(this);
+				bone15 = new ModelRenderer(this);
 				bone15.setRotationPoint(0.8537F, -0.2173F, 0.496F);
 				handLeft.addChild(bone15);
 				setRotationAngle(bone15, 0.0F, -0.2618F, 0.0F);
 				bone15.cubeList.add(new ModelBox(bone15, 39, 45, -1.0F, -1.0F, -3.75F, 2, 2, 4, -0.4F, true));
-				ModelRenderer bone16 = new ModelRenderer(this);
+				bone16 = new ModelRenderer(this);
 				bone16.setRotationPoint(0.1037F, -0.2173F, 0.496F);
 				handLeft.addChild(bone16);
 				bone16.cubeList.add(new ModelBox(bone16, 39, 45, -1.0F, -1.0F, -3.75F, 2, 2, 4, -0.4F, true));
@@ -382,7 +389,31 @@ public class EntityToadShima extends ElementsNarutomodMod.ModElement {
 			@Override
 			public void setRotationAngles(float f, float f1, float f2, float f3, float f4, float f5, Entity e) {
 				super.setRotationAngles(f, f1, f2, f3, f4, f5, e);
-				if (this.swingProgress > 0.0F) {
+				boolean mouthOpen = ((EntityCustom)e).getMouthOpen();
+				if (mouthOpen) {
+					setRotationAngle(armRight, -1.0472F, 0.0F, 0.2618F);
+					setRotationAngle(forearmRight, 0.0F, 0.0F, -1.3963F);
+					setRotationAngle(handRight, 0.0F, 0.2618F, -0.3491F);
+					setRotationAngle(bone12, 0.5236F, 0.2618F, 0.0F);
+					setRotationAngle(bone9, 0.5236F, 0.0F, 0.0F);
+					setRotationAngle(armLeft, -1.0472F, 0.0F, -0.2618F);
+					setRotationAngle(forearmLeft, 0.0F, 0.0F, 1.3963F);
+					setRotationAngle(handLeft, 0.0F, -0.2618F, 0.3491F);
+					setRotationAngle(bone15, 0.5236F, -0.2618F, 0.0F);
+					setRotationAngle(bone16, 0.5236F, 0.0F, 0.0F);
+				} else {
+					setRotationAngle(armRight, -0.2182F, 0.0F, 0.2618F);
+					setRotationAngle(forearmRight, 0.0F, 0.0F, -0.5236F);
+					setRotationAngle(handRight, 0.5236F, 0.2618F, 0.0F);
+					setRotationAngle(bone12, 0.0F, 0.2618F, 0.0F);
+					setRotationAngle(bone9, 0.0F, 0.0F, 0.0F);
+					setRotationAngle(armLeft, -0.2182F, 0.0F, -0.2618F);
+					setRotationAngle(forearmLeft, 0.0F, 0.0F, 0.5236F);
+					setRotationAngle(handLeft, 0.5236F, -0.2618F, 0.0F);
+					setRotationAngle(bone15, 0.0F, -0.2618F, 0.0F);
+					setRotationAngle(bone16, 0.0F, 0.0F, 0.0F);
+				}
+				if (this.swingProgress > 0.0F || mouthOpen) {
 					this.armRight.showModel = true;
 					this.armLeft.showModel = true;
 				} else {

@@ -118,14 +118,14 @@ public class EntityFutonGreatBreakthrough extends ElementsNarutomodMod.ModElemen
 			}
 			Particles.Renderer particles = new Particles.Renderer(this.world);
 			for (int i = 1; i <= 50; i++) {
-				particleMaxAge = (int)((double)particleMaxAge / (this.rand.nextDouble()*0.8D+0.2D));
+				int maxage = (int)((double)particleMaxAge / (this.rand.nextDouble()*0.8D+0.2D));
 				Vec3d vec1 = vec0.scale((this.rand.nextDouble()*0.7d+0.3d) * range * 0.2d);
 				double d = vec1.lengthVector() / range;
 				particles.spawnParticles(Particles.Types.SMOKE, vec.x, vec.y, vec.z, 1, 0d, 0d, 0d, 
 				 vec1.x + (this.rand.nextDouble()-0.5d) * farRadius * d * 2.5d,
 				 vec1.y + (this.rand.nextDouble()-0.5d) * farRadius * d * 2.5d,
 				 vec1.z + (this.rand.nextDouble()-0.5d) * farRadius * d * 2.5d,
-				 particleColor, (int)(vec1.lengthVector() * (inAir ? 10d : 40d)) + this.rand.nextInt(20), particleMaxAge);
+				 particleColor, (int)(vec1.lengthVector() * (inAir ? 10d : 40d)) + this.rand.nextInt(20), maxage);
 			}
 			particles.send();
 		}

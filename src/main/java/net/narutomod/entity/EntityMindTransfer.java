@@ -98,10 +98,6 @@ public class EntityMindTransfer extends ElementsNarutomodMod.ModElement {
 			if (!this.world.isRemote) {
 				if (this.user != null) {
 					this.user.getEntityData().removeTag(Jutsu.ECENTITYID);
-					if (this.clone != null) {
-						this.user.rotationYaw = this.clone.rotationYaw;
-						this.user.setPositionAndUpdate(this.clone.posX, this.clone.posY, this.clone.posZ);
-					}
 					if (this.user instanceof EntityPlayer) {
 						PlayerRender.setSkinCloneTarget((EntityPlayer)this.user, null);
 						PlayerInput.Hook.copyInputFrom((EntityPlayerMP)this.user, this, false);
@@ -123,9 +119,6 @@ public class EntityMindTransfer extends ElementsNarutomodMod.ModElement {
 					PlayerInput.Hook.haltTargetInput(this.target, false);
 				}
 				if (this.clone != null) {
-					if (this.user != null) {
-						this.user.setHealth(this.clone.getHealth());
-					}
 					this.clone.setDead();
 				}
 			}
@@ -135,14 +128,15 @@ public class EntityMindTransfer extends ElementsNarutomodMod.ModElement {
 		public void onUpdate() {
 			if (this.user instanceof EntityPlayer && this.user.isEntityAlive() 
 			 && this.target != null && this.target.isEntityAlive()
+			 && !this.user.getEntityData().getBoolean(NarutomodModVariables.JutsuKey2Pressed)
 			 && Chakra.pathway(this.user).consume(this.chakraBurn)) {
 				this.setPosition(this.user.posX, this.user.posY, this.user.posZ);
 				if (this.ticksExisted == 1) {
 					this.clone = new EntityDuplicate(this.user);
 					this.world.spawnEntity(this.clone);
-					this.playSound((SoundEvent)SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:mindtransfer")), 1f, 1f);
+					this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:mindtransfer")), 1f, 1f);
 				}
-				if (this.clone != null && this.clone.getHealth() < this.clone.getMaxHealth() * 0.2F) {
+				if (this.clone != null && this.clone.getHealth() < Math.max(this.clone.getMaxHealth() * 0.1F, 5f)) {
 					this.setDead();
 				}
 				if (this.ticksExisted <= this.move2TargetTime) {
@@ -229,6 +223,7 @@ public class EntityMindTransfer extends ElementsNarutomodMod.ModElement {
 				if (entity1 instanceof EC) {
 					entity1.setDead();
 				} else {
+					entity.getEntityData().removeTag(ECENTITYID);
 					RayTraceResult res = ProcedureUtils.objectEntityLookingAt(entity, 30d);
 					if (res != null && (res.entityHit instanceof EntityLiving || res.entityHit instanceof EntityPlayer)) {
 						double d = 1.0d;
@@ -286,8 +281,16 @@ public class EntityMindTransfer extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
-		public void onUpdate() {
-			super.onUpdate();
+		public void setDead() {
+			super.setDead();
+			if (!this.world.isRemote && this.getSummoner() != null) {
+				EntityLivingBase summoner = this.getSummoner();
+				summoner.addPotionEffect(new PotionEffect(MobEffects.INVISIBILITY, 1, 0, false, false));
+				summoner.setInvisible(true);
+				summoner.rotationYaw = this.rotationYaw;
+				summoner.setPositionAndUpdate(this.posX, this.posY, this.posZ);
+				summoner.setHealth(this.getHealth());
+			}
 		}
 	}
 

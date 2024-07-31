@@ -31,6 +31,9 @@ Jutsus:
  - 8-trigrams revolving heaven: smaller sphere, better texture
  - add wind release: vacuum wave and B-rank scroll
  - add water release: acid scattering jutsu
+ - holding chokuto while in susanoo now consumes slightly more chakra
+ - adding Sage Mode: Demonic Illusion: Toad Confrontation Chant (WIP)
+ - Mind Transfer jutsu: cancel the jutsu by pressing Jutsu key 2
 
 Items:
  - added Sakura shippuden clothing and leggings (for slim player models only)

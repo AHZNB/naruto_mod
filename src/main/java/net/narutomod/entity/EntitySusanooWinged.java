@@ -147,14 +147,16 @@ public class EntitySusanooWinged extends ElementsNarutomodMod.ModElement {
 
 		@Override
 	    public void setShowSword(boolean show) {
-	    	if (this.getHeldItemMainhand().isEmpty()) {
+	    	if (show != this.shouldShowSword()) {
 		    	if (show) {
-	    			this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, ItemStack.EMPTY);
+	    			//this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, ItemStack.EMPTY);
 					this.getEntityAttribute(EntityPlayer.REACH_DISTANCE).applyModifier(SWORD_REACH);
 					this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).applyModifier(SWORD_ATTACK);
+					this.chakraUsage += 15.0d;
 		    	} else {
 		    		this.getEntityAttribute(EntityPlayer.REACH_DISTANCE).removeModifier(SWORD_REACH);
 		    		this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).removeModifier(SWORD_ATTACK);
+		    		this.chakraUsage -= 15.0d;
 		    	}
 		    	this.getDataManager().set(SHOW_SWORD, Boolean.valueOf(show));
 	    	}
@@ -234,13 +236,13 @@ public class EntitySusanooWinged extends ElementsNarutomodMod.ModElement {
 				 	if (thisHeldstack.getItem() != ItemTotsukaSword.block) {
 				 		thisHeldstack = ownerheldstack.copy();
 						this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, thisHeldstack);
-						this.setShowSword(false);
+						//this.setShowSword(false);
 				 	}
 				} else if (ownerheldstack.getItem() == kagutsuchi.getItem()) {
 					if (thisHeldstack.getItem() != kagutsuchi.getItem()) {
 						this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, kagutsuchi);
 						thisHeldstack = kagutsuchi;
-						this.setShowSword(false);
+						//this.setShowSword(false);
 					}
 				} else if (!thisHeldstack.isEmpty()) {
 					this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, ItemStack.EMPTY);

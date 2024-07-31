@@ -158,7 +158,7 @@ public class EntityClone extends ElementsNarutomodMod.ModElement {
 
 		@Nullable
 		public EntityLivingBase getSummoner() {
-			if (!this.world.isRemote)
+			if (this.summoner != null)
 				return this.summoner;
 	    	Entity e = this.world.getEntityByID(((Integer)this.getDataManager().get(SUMMONER_ID)).intValue());
 	    	return e instanceof EntityLivingBase ? (EntityLivingBase)e : null;

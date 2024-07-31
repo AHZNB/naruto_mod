@@ -14,10 +14,11 @@ import net.minecraftforge.client.event.EntityViewRenderEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.Entity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.entity.player.EntityPlayerMP;
 
 import net.narutomod.NarutomodMod;
 import net.narutomod.ElementsNarutomodMod;
@@ -151,6 +152,17 @@ public class ProcedureRenderView extends ElementsNarutomodMod.ModElement {
 	public static void sendToPlayer(Entity entity, int cticks, int dticks, float r, float g, float b, float den) {
 		if (entity instanceof EntityPlayerMP) {
 			NarutomodMod.PACKET_HANDLER.sendTo(new Message(cticks, dticks, -1, r, g, b, den, 0f), (EntityPlayerMP)entity);
+		} else if (entity instanceof EntityPlayer && entity.world.isRemote) {
+			if (cticks >= 0) {
+				instance.shouldChangeColor = entity.world.getTotalWorldTime() + cticks;
+				instance.newRed = r;
+				instance.newGreen = g;
+				instance.newBlue = b;
+			}
+			if (dticks >= 0) {
+				instance.shouldChangeDensity = entity.world.getTotalWorldTime() + dticks;
+				instance.newDensity = den;
+			}
 		}
 	}
 
@@ -192,16 +204,7 @@ public class ProcedureRenderView extends ElementsNarutomodMod.ModElement {
 			public IMessage onMessage(Message message, MessageContext context) {
 				Minecraft mc = Minecraft.getMinecraft();
 				mc.addScheduledTask(() -> {
-					if (message.fogColor >= 0) {
-						instance.shouldChangeColor = mc.world.getTotalWorldTime() + message.fogColor;
-						instance.newRed = message.red;
-						instance.newGreen = message.green;
-						instance.newBlue = message.blue;
-					}
-					if (message.fogDensity >= 0) {
-						instance.shouldChangeDensity = mc.world.getTotalWorldTime() + message.fogDensity;
-						instance.newDensity = message.density;
-					}
+					sendToPlayer(mc.player, message.fogColor, message.fogDensity, message.red, message.green, message.blue, message.density);
 					if (message.fovTicks >= 0) {
 						instance.changeFOV = mc.world.getTotalWorldTime() + message.fovTicks;
 						instance.newFOV = message.fov;

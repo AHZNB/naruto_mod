@@ -139,6 +139,7 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 		private int standStillTicks;
 		private float haltedYaw;
 		private float haltedYawHead;
+		private float haltedRenderYawOffset;
 		private float haltedPitch;
 
 		public Base(World worldIn, int level, double chakraAmountIn) {
@@ -261,6 +262,7 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 				vertical = forward = strafe = 0.0f;
 				this.rotationYaw = this.haltedYaw;
 				this.rotationYawHead = this.haltedYawHead;
+				this.renderYawOffset = this.haltedRenderYawOffset;
 				this.rotationPitch = this.haltedPitch;
 				--this.standStillTicks;
 			}
@@ -269,9 +271,12 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 
 		protected void standStillFor(int ticks) {
 			this.standStillTicks = ticks;
-			this.haltedYaw = this.rotationYaw;
-			this.haltedYawHead = this.rotationYawHead;
-			this.haltedPitch = this.rotationPitch;
+			if (ticks > 0) {
+				this.haltedYaw = this.rotationYaw;
+				this.haltedYawHead = this.rotationYawHead;
+				this.haltedRenderYawOffset = this.renderYawOffset;
+				this.haltedPitch = this.rotationPitch;
+			}
 			if (!this.world.isRemote) {
 				StandStillMessage.sendToTracking(this);
 			}
@@ -546,7 +551,8 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 	public static class AIAttackRangedTactical<T extends EntityCreature & IRangedAttackMob> extends EntityAIBase {
 	    protected final T entity;
 	    private final double moveSpeedAmp;
-	    private int attackCooldown;
+	    private int attackCooldownMin;
+	    private int attackCooldownMax;
 	    private final float attackRadius;
 	    private final float maxAttackDistance;
 	    private int attackTime = -1;
@@ -556,9 +562,14 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 	    private int strafingTime = -1;
 	
 	    public AIAttackRangedTactical(T entityIn, double moveSpeed, int cooldown, float maxDistance) {
+	    	this(entityIn, moveSpeed, 0, cooldown, maxDistance);
+	    }
+
+	    public AIAttackRangedTactical(T entityIn, double moveSpeed, int cooldownMin, int cooldownMax, float maxDistance) {
 	        this.entity = entityIn;
 	        this.moveSpeedAmp = moveSpeed;
-	        this.attackCooldown = cooldown;
+	        this.attackCooldownMin = cooldownMin;
+	        this.attackCooldownMax = cooldownMax;
 	        this.attackRadius = maxDistance;
 	        this.maxAttackDistance = maxDistance * maxDistance;
 	        this.setMutexBits(3);
@@ -634,10 +645,10 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 		            float f = MathHelper.sqrt(d0) / this.attackRadius;
 		            float lvt_5_1_ = MathHelper.clamp(f, 0.1F, 1.0F);
 		            this.entity.attackEntityWithRangedAttack(entitylivingbase, lvt_5_1_);
-		            this.attackTime = MathHelper.floor(f * (float)(this.attackCooldown));
+		            this.attackTime = MathHelper.floor(f * (float)(this.attackCooldownMax - this.attackCooldownMin) + this.attackCooldownMin);
 		        } else if (this.attackTime < 0) {
 		            float f = MathHelper.sqrt(d0) / this.attackRadius;
-		            this.attackTime = MathHelper.floor(f * (float)(this.attackCooldown));
+		            this.attackTime = MathHelper.floor(f * (float)(this.attackCooldownMax - this.attackCooldownMin) + this.attackCooldownMin);
 		        }
 	        } else {
 	        	this.entity.getNavigator().clearPath();

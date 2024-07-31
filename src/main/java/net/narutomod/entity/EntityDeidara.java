@@ -127,12 +127,11 @@ public class EntityDeidara extends ElementsNarutomodMod.ModElement {
 					}
 				}));
 			this.tasks.addTask(0, new EntityAISwimming(this));
-			this.tasks.addTask(1, new EntityNinjaMob.AIAttackRangedTactical(this, 1.0D, 50, 40.0F));
+			this.tasks.addTask(1, new EntityNinjaMob.AIAttackRangedTactical(this, 1.0D, 30, 50, 40.0F));
 			this.tasks.addTask(2, new EntityClone.AIFollowSummoner(this, 0.6d, 4f) {
 				@Override @Nullable
 				protected EntityLivingBase getFollowEntity() {
-					double d = EntityCustom.this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).getAttributeValue();
-					Entity sasori = EntityCustom.this.world.findNearestEntityWithinAABB(EntitySasori.EntityCustom.class, EntityCustom.this.getEntityBoundingBox().grow(d, 8d, d), EntityCustom.this);
+					Entity sasori = EntityCustom.this.world.findNearestEntityWithinAABB(EntitySasori.EntityCustom.class, EntityCustom.this.getEntityBoundingBox().grow(256d, 16d, 256d), EntityCustom.this);
 					return sasori instanceof EntityLivingBase ? (EntityLivingBase)sasori : null;
 				}
 			});
@@ -197,8 +196,8 @@ public class EntityDeidara extends ElementsNarutomodMod.ModElement {
 			if (source == DamageSource.FALL) {
 				return false;
 			}
-			if (!this.world.isRemote && source.getTrueSource() instanceof EntityLivingBase && !this.isRiding()
-			 && this.ticksExisted - this.explosiveCloneLastUsed > this.explosiveCloneCD
+			if (!this.world.isRemote && !this.isAIDisabled() && source.getTrueSource() instanceof EntityLivingBase
+			 && !this.isRiding() && this.ticksExisted - this.explosiveCloneLastUsed > this.explosiveCloneCD
 			 && EntityAITarget.isSuitableTarget(this, (EntityLivingBase)source.getTrueSource(), false, false)
 			 && this.consumeChakra(ItemBakuton.CLONE.chakraUsage)) {
 				this.setRevengeTarget((EntityLivingBase)source.getTrueSource());

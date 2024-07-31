@@ -53,6 +53,7 @@ public class ProcedureSync extends ElementsNarutomodMod.ModElement {
 		this.elements.addNetworkMessage(EntityPositionAndRotation.ClientHandler.class, EntityPositionAndRotation.class, Side.CLIENT);
 		this.elements.addNetworkMessage(EntityPositionAndRotation.ServerHandler.class, EntityPositionAndRotation.class, Side.SERVER);
 		this.elements.addNetworkMessage(EntityState.Handler.class, EntityState.class, Side.CLIENT);
+		this.elements.addNetworkMessage(EntityDead.Handler.class, EntityDead.class, Side.SERVER);
 		this.elements.addNetworkMessage(EntityNBTTag.ServerHandler.class, EntityNBTTag.class, Side.SERVER);
 		this.elements.addNetworkMessage(EntityNBTTag.ClientHandler.class, EntityNBTTag.class, Side.CLIENT);
 		this.elements.addNetworkMessage(CPacketEarthBlocks.Handler.class, CPacketEarthBlocks.class, Side.SERVER);
@@ -518,6 +519,42 @@ public class ProcedureSync extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
+	public static class EntityDead implements IMessage {
+		int id;
+
+		public EntityDead() { }
+
+		public EntityDead(Entity entity) {
+			this.id = entity.getEntityId();
+		}
+
+		public static void sendToServer(Entity entity) {
+			NarutomodMod.PACKET_HANDLER.sendToServer(new EntityDead(entity));
+		}
+
+		public static class Handler implements IMessageHandler<EntityDead, IMessage> {
+			@Override
+			public IMessage onMessage(EntityDead message, MessageContext context) {
+				WorldServer world = context.getServerHandler().player.getServerWorld();
+				world.addScheduledTask(() -> {
+					Entity entity = world.getEntityByID(message.id);
+					if (!(entity instanceof EntityPlayerMP)) {
+						entity.setDead();
+					}
+				});
+				return null;
+			}
+		}
+
+		public void toBytes(ByteBuf buf) {
+			buf.writeInt(this.id);
+		}
+
+		public void fromBytes(ByteBuf buf) {
+			this.id = buf.readInt();
+		}
+	}
+
 	public static class EntityNBTTag implements IMessage {
 		int id;
 		int dataType; // 0:remove, 1:integer, 2:double, 3:boolean
@@ -556,7 +593,11 @@ public class ProcedureSync extends ElementsNarutomodMod.ModElement {
 
 		public static void removeAndSync(Entity entity, String tagName) {
 			entity.getEntityData().removeTag(tagName);
-			EntityNBTTag.sendToTracking(entity, tagName);
+			if (entity.world.isRemote) {
+				EntityNBTTag.sendToServer(entity, tagName);
+			} else {
+				EntityNBTTag.sendToTracking(entity, tagName);
+			}
 		}
 
 		public static void setAndSync(Entity entity, String tagName, int i) {
@@ -616,6 +657,10 @@ public class ProcedureSync extends ElementsNarutomodMod.ModElement {
 				EntityNBTTag.sendToSelf((EntityPlayerMP)entity, tagName, b);
 			}
 			NarutomodMod.PACKET_HANDLER.sendToAllTracking(new EntityNBTTag(entity, tagName, b), entity);
+		}
+
+		public static void sendToServer(Entity entity, String tagName) {
+			NarutomodMod.PACKET_HANDLER.sendToServer(new EntityNBTTag(entity, tagName));
 		}
 
 		public static void sendToServer(Entity entity, String tagName, int i) {

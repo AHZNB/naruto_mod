@@ -1132,5 +1132,14 @@
         "stream": false
       }
     ]
+  },
+  "toadchant": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "narutomod:toadchant",
+        "stream": false
+      }
+    ]
   }
 }

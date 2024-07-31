@@ -33,7 +33,6 @@ import net.narutomod.ElementsNarutomodMod;
 @ElementsNarutomodMod.ModElement.Tag
 public class EntitySusanooSkeleton extends ElementsNarutomodMod.ModElement {
 	public static final int ENTITYID = 32;
-	//public static final int ENTITYID_RANGED = 33;
 	
 	public EntitySusanooSkeleton(ElementsNarutomodMod instance) {
 		super(instance, 217);

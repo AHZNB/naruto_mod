@@ -51,6 +51,7 @@ import net.narutomod.entity.EntityRasengan;
 import net.narutomod.entity.EntityRasenshuriken;
 import net.narutomod.entity.EntityBuddha1000;
 import net.narutomod.entity.EntitySnake8Heads;
+import net.narutomod.entity.EntityGamarinsho;
 import net.narutomod.procedure.ProcedureOnLeftClickEmpty;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.creativetab.TabModTab;
@@ -64,6 +65,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.List;
 import java.util.UUID;
+import javax.annotation.Nullable;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class ItemSenjutsu extends ElementsNarutomodMod.ModElement {
@@ -77,6 +79,7 @@ public class ItemSenjutsu extends ElementsNarutomodMod.ModElement {
 	public static final ItemJutsu.JutsuEnum RASENSHURIKEN = new ItemJutsu.JutsuEnum(2, "tooltip.senjutsu.rasenshuriken", 'S', ItemFuton.RASENSHURIKEN.chakraUsage, new EntityRasenshuriken.EC.SageModeVairant());
 	public static final ItemJutsu.JutsuEnum WOODBUDDHA = new ItemJutsu.JutsuEnum(3, "buddha_1000", 'S', 5000d, new EntityBuddha1000.EC.Jutsu());
 	public static final ItemJutsu.JutsuEnum SNAKE8H = new ItemJutsu.JutsuEnum(4, "snake_8_heads", 'S', 3000d, new EntitySnake8Heads.EC.Jutsu());
+	public static final ItemJutsu.JutsuEnum GAMARINSHO = new ItemJutsu.JutsuEnum(5, "gamarinsho", 'S', 3000d, new EntityGamarinsho.EC.Jutsu());
 	private static final Random RAND = new Random();
 
 	public ItemSenjutsu(ElementsNarutomodMod instance) {
@@ -85,7 +88,7 @@ public class ItemSenjutsu extends ElementsNarutomodMod.ModElement {
 
 	@Override
 	public void initElements() {
-		elements.items.add(() -> new RangedItem(SAGEMODE, RASENGAN, RASENSHURIKEN, WOODBUDDHA, SNAKE8H));
+		elements.items.add(() -> new RangedItem(SAGEMODE, RASENGAN, RASENSHURIKEN, WOODBUDDHA, SNAKE8H, GAMARINSHO));
 		elements.entities.add(() -> EntityEntryBuilder.create().entity(EntitySitPlatform.class)
 		 .id(new ResourceLocation("narutomod", "entitybulletsenjutsu"), ENTITYID).name("entitybulletsenjutsu").tracker(64, 1, true).build());
 	}
@@ -134,30 +137,6 @@ public class ItemSenjutsu extends ElementsNarutomodMod.ModElement {
 			return stack.hasTagCompound() ? Type.getTypeFromId(stack.getTagCompound().getInteger(TYPEKEY)) : Type.NONE;
 		}
 
-/*		@Override
-		protected float getMaxPower(ItemStack stack, EntityLivingBase entity) {
-			ItemJutsu.JutsuEnum jutsu = this.getCurrentJutsu(stack);
-			float f = super.getMaxPower(stack, entity);
-			if (jutsu == RASENGAN) {
-				return Math.min(f, 6.0f);
-			} else if (jutsu == RASENSHURIKEN) {
-				return Math.min(f, 6.0f);
-			}
-			return Math.min(f, 100.0f);
-		}
-
-		@Override
-		protected float getPower(ItemStack stack, EntityLivingBase entity, int timeLeft) {
-			ItemJutsu.JutsuEnum jutsu = this.getCurrentJutsu(stack);
-			if (jutsu == RASENGAN) {
-				return this.getPower(stack, entity, timeLeft, 2.9f, 200f);
-			} else if (jutsu == RASENSHURIKEN) {
-				return this.getPower(stack, entity, timeLeft, 1.9f, 300f);
-			} else {
-				return super.getPower(stack, entity, timeLeft);
-			}
-		}
-*/
 		@Override
 		public void onUpdate(ItemStack itemstack, World world, Entity entity, int par4, boolean par5) {
 			super.onUpdate(itemstack, world, entity, par4, par5);
@@ -219,6 +198,7 @@ public class ItemSenjutsu extends ElementsNarutomodMod.ModElement {
 					this.enableJutsu(itemstack, WOODBUDDHA,
 					 stack1 != null && ((ItemMokuton.ItemCustom)stack1.getItem()).canUseJutsu(stack1, ItemMokuton.GOLEM, living));
 					this.enableJutsu(itemstack, SNAKE8H, sageType == Type.SNAKE);
+					this.enableJutsu(itemstack, GAMARINSHO, sageType == Type.TOAD);
 				}
 			}
 		}
@@ -237,12 +217,12 @@ public class ItemSenjutsu extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public void onUsingTick(ItemStack stack, EntityLivingBase player, int timeLeft) {
-			if (!player.world.isRemote && this.getCurrentJutsu(stack) == SAGEMODE
-			 && !(player.getRidingEntity() instanceof EntitySitPlatform)) {
+			ItemJutsu.JutsuEnum jutsu = this.getCurrentJutsu(stack);
+			if (!player.world.isRemote && jutsu == SAGEMODE && !(player.getRidingEntity() instanceof EntitySitPlatform)) {
 				player.resetActiveHand();
-			} else {
-				super.onUsingTick(stack, player, timeLeft);
+				return;
 			}
+			super.onUsingTick(stack, player, timeLeft);
 		}
 
 		@Override
@@ -440,8 +420,18 @@ public class ItemSenjutsu extends ElementsNarutomodMod.ModElement {
 			return -0.25d;
 		}
 
+		@Override @Nullable
+		public Entity getControllingPassenger() {
+			return this.getPassengers().isEmpty() ? null : (Entity)this.getPassengers().get(0);
+		}
+
 		@Override
 		public void onUpdate() {
+			Entity rider = this.getControllingPassenger();
+			if (rider instanceof EntityLivingBase) {
+				rider.setRenderYawOffset(rider.getRotationYawHead() + 10.0F);
+				rider.prevRotationPitch = rider.rotationPitch = 30.0F;
+			}
 			this.move(MoverType.SELF, 0.0d, this.motionY, 0.0d);
 			this.motionY = this.onGround ? 0.0D : this.motionY - 0.08D;
 			this.motionY *= 0.98D;
