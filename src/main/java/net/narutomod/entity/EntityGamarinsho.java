@@ -80,6 +80,7 @@ public class EntityGamarinsho extends ElementsNarutomodMod.ModElement {
 	public static class EC extends Entity {
 		private static final DataParameter<Integer> CASTER = EntityDataManager.<Integer>createKey(EC.class, DataSerializers.VARINT);
 		private final List<EntityLivingBase> trappedList = Lists.newArrayList();
+		private final double jutsuRadius = 80.0d;
 		private final int prepareTime = 300;
 		private final int genjutsuDuration = 400;
 		private EntityToadFukasaku.EntityCustom toadPa;
@@ -184,7 +185,7 @@ public class EntityGamarinsho extends ElementsNarutomodMod.ModElement {
 							ProcedureUtils.swapItemToSlot((EntityPlayer)caster, EntityEquipmentSlot.MAINHAND, new ItemStack(ItemIshiken.block));
 						}
 					}
-					for (EntityPlayer player : this.world.getEntitiesWithinAABB(EntityPlayer.class, this.getEntityBoundingBox().grow(80d, 36d, 80d))) {
+					for (EntityPlayer player : this.world.getEntitiesWithinAABB(EntityPlayer.class, this.getEntityBoundingBox().grow(this.jutsuRadius, 36d, this.jutsuRadius))) {
 						if (player != caster) {
 							if (player instanceof EntityPlayerMP) {
 								Genjutsu.Message.sendTo((EntityPlayerMP)player, this.posX, this.posY + 256d, this.posZ, this.genjutsuDuration);
@@ -192,10 +193,10 @@ public class EntityGamarinsho extends ElementsNarutomodMod.ModElement {
 							this.trappedList.add(player);
 						}
 					}
-					for (EntityNinjaMob.Base entity : this.world.getEntitiesWithinAABB(EntityNinjaMob.Base.class, this.getEntityBoundingBox().grow(64d, 16d, 64d))) {
+					for (EntityNinjaMob.Base entity : this.world.getEntitiesWithinAABB(EntityNinjaMob.Base.class, this.getEntityBoundingBox().grow(this.jutsuRadius, 36d, this.jutsuRadius))) {
 						if (entity != caster) {
 							this.trappedList.add(entity);
-							entity.setNoAI(true);
+							entity.haltAIfor(this.genjutsuDuration);
 						}
 					}
 				}

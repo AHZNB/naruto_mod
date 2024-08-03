@@ -355,6 +355,8 @@ public class ItemBakuton extends ElementsNarutomodMod.ModElement {
 					ec = new EntityC3.EC(entity);
 				} else if (powerIn <= this.getMaxPower()) {
 					ec = new EntityC4.EC(entity);
+					float f = ((RangedItem)stack.getItem()).getXpRatio(stack, CLAY);
+					((EntityC4.EC)ec).setExplosionDamage(100, (int)(2.0f * f));
 				} else {
 					return false;
 				}

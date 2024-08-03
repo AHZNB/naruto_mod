@@ -136,6 +136,7 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 		private final int inventorySize = 2;
 		private final NonNullList<ItemStack> inventory = NonNullList.<ItemStack>withSize(inventorySize, ItemStack.EMPTY);
 		public int peacefulTicks;
+		private int haltAITicks;
 		private int standStillTicks;
 		private float haltedYaw;
 		private float haltedYawHead;
@@ -246,6 +247,14 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 				this.onGround = true;
 			}
 			if (!this.world.isRemote && this.isEntityAlive()) {
+		    	if (this.haltAITicks > 0) {
+		    		--this.haltAITicks;
+		    		if (!this.isAIDisabled()) {
+		    			this.setNoAI(true);
+		    		}
+		    	} else if (this.isAIDisabled()) {
+		    		this.setNoAI(false);
+		    	}
 				if (this.ticksExisted % 200 == 1) {
 					this.addPotionEffect(new PotionEffect(PotionFeatherFalling.potion, 201, 1, false, false));
 				}
@@ -254,6 +263,10 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 					this.setDead();
 				}
 			}
+		}
+
+		protected void haltAIfor(int ticks) {
+			this.haltAITicks = ticks;
 		}
 
 		@Override

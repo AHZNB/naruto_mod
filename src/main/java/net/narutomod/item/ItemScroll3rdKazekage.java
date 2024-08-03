@@ -197,7 +197,7 @@ public class ItemScroll3rdKazekage extends ElementsNarutomodMod.ModElement {
 		@Override
 		public EnumActionResult canActivateJutsu(ItemStack stack, ItemJutsu.JutsuEnum jutsuIn, EntityPlayer entity) {
 			EnumActionResult res = super.canActivateJutsu(stack, jutsuIn, entity);
-			if (res == EnumActionResult.SUCCESS) {
+			if (res == EnumActionResult.SUCCESS && EntityPuppet.Base.canPlayerUseJutsu(entity)) {
 				EntityPuppet3rdKazekage.EntityCustom puppet = this.getPuppetEntity(stack, entity.world);
 				return puppet != null && puppet.isEntityAlive() ? EnumActionResult.SUCCESS : EnumActionResult.FAIL;
 			}

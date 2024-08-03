@@ -170,21 +170,36 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 			if (!this.world.isRemote) {
 				EntityLivingBase oldOwner = this.getOwner();
 				if (oldOwner != newOwner) {
-					if (oldOwner instanceof EntityPlayer || newOwner instanceof EntityPlayer) {
-						ItemStack stack = ProcedureUtils.getMatchingItemStack(newOwner == null ? (EntityPlayer)oldOwner : (EntityPlayer)newOwner, ItemNinjutsu.block);
-						if (stack != null) {
-							if (newOwner == null || Jutsu.puppetCount(stack.getTagCompound()) < (int)Math.ceil(Math.max(((ItemNinjutsu.RangedItem)stack.getItem()).getXpRatio(stack, ItemNinjutsu.PUPPET) - 0.999f, 0.0f) * 4.95f)) {
-								Jutsu.updatePuppetList(stack.getTagCompound(), this, newOwner != null);
-							} else {
-								return;
-							}
+					boolean addedNew = false;
+					if (newOwner instanceof EntityPlayer) {
+						ItemStack stack = ProcedureUtils.getMatchingItemStack((EntityPlayer)newOwner, ItemNinjutsu.block);
+						if (stack != null && ((ItemNinjutsu.RangedItem)stack.getItem()).canActivateJutsu(stack, ItemNinjutsu.PUPPET, (EntityPlayer)newOwner) == EnumActionResult.SUCCESS
+						 && Jutsu.puppetCount(stack.getTagCompound()) < (int)Math.ceil(Math.max(((ItemNinjutsu.RangedItem)stack.getItem()).getXpRatio(stack, ItemNinjutsu.PUPPET) - 0.999f, 0.0f) * 4.95f)) {
+							Jutsu.updatePuppetList(stack.getTagCompound(), this, true);
+						 	addedNew = true;
 						}
-					} else {
-						Jutsu.updatePuppetList(newOwner == null ? oldOwner.getEntityData() : newOwner.getEntityData(), this, newOwner != null);
+					} else if (newOwner != null) {
+						Jutsu.updatePuppetList(newOwner.getEntityData(), this, true);
+						addedNew = true;
 					}
-					this.getDataManager().set(OWNERID, Integer.valueOf(newOwner != null ? newOwner.getEntityId() : -1));
+					if (newOwner == null || addedNew) {
+						if (oldOwner instanceof EntityPlayer) {
+							ItemStack stack = ProcedureUtils.getMatchingItemStack((EntityPlayer)oldOwner, ItemNinjutsu.block);
+							if (stack != null) {
+								Jutsu.updatePuppetList(stack.getTagCompound(), this, false);
+							}
+						} else if (oldOwner != null) {
+							Jutsu.updatePuppetList(oldOwner.getEntityData(), this, false);
+						}
+					}
+					this.getDataManager().set(OWNERID, Integer.valueOf(newOwner != null && addedNew ? newOwner.getEntityId() : -1));
 				}
 			}
+		}
+
+		public static boolean canPlayerUseJutsu(EntityPlayer player) {
+			ItemStack stack = ProcedureUtils.getMatchingItemStack(player, ItemNinjutsu.block);
+			return stack != null && ((ItemNinjutsu.RangedItem)stack.getItem()).canActivateJutsu(stack, ItemNinjutsu.PUPPET, player) == EnumActionResult.SUCCESS;
 		}
 
 		protected Vec3d getOffsetToOwner() {

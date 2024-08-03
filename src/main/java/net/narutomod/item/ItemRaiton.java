@@ -77,20 +77,19 @@ public class ItemRaiton extends ElementsNarutomodMod.ModElement {
 			this.setUnlocalizedName("raiton");
 			this.setRegistryName("raiton");
 			this.setCreativeTab(TabModTab.tab);
-			//this.defaultCooldownMap[CHIDORI.index] = 0;
 		}
 
-		@Override
+		/*@Override
 		public void onUpdate(ItemStack itemstack, World world, Entity entity, int par4, boolean par5) {
 			super.onUpdate(itemstack, world, entity, par4, par5);
 			if (!world.isRemote && entity instanceof EntityPlayer && entity.ticksExisted % 10 == 3) {
-				if (((RangedItem)itemstack.getItem()).canUseJutsu(itemstack, CHIDORI, (EntityPlayer)entity)
-				 && ((RangedItem)itemstack.getItem()).getXpRatio(itemstack, CHIDORI) >= 1.0f && !this.isJutsuEnabled(itemstack, KIRIN)) {
+				if (((RangedItem)itemstack.getItem()).canActivateJutsu(itemstack, CHIDORI, (EntityPlayer)entity) == EnumActionResult.SUCCESS
+				 && !this.isJutsuEnabled(itemstack, KIRIN)) {
 					this.enableJutsu(itemstack, KIRIN, true);
 					((EntityPlayer)entity).sendStatusMessage(new TextComponentTranslation("chattext.jutsu.enabled", KIRIN.getName()), false);
 				}
 			}
-		}
+		}*/
 
 		@Override
 		public void onUsingTick(ItemStack stack, EntityLivingBase player, int timeLeft) {

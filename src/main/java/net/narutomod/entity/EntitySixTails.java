@@ -215,7 +215,7 @@ public class EntitySixTails extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		protected float getWaterSlowDown() {
-			return 0.96F;
+			return 0.98F;
 		}
 
 		@Override

@@ -37,6 +37,7 @@ import net.narutomod.entity.EntityFirestream;
 import net.narutomod.entity.EntityFlameSlice;
 import net.narutomod.entity.EntityFlameFormation;
 import net.narutomod.creativetab.TabModTab;
+import net.narutomod.procedure.ProcedureAoeCommand;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.NarutomodModVariables;
 import net.narutomod.Particles;
@@ -126,12 +127,12 @@ public class ItemKaton extends ElementsNarutomodMod.ModElement {
 				if (this.shootingEntity != null) {
 					this.shootingEntity.getEntityData().setDouble(NarutomodModVariables.InvulnerableTime, 40d);
 				}
-				if (result.entityHit != null) {
-					if (result.entityHit.equals(this.shootingEntity) || result.entityHit instanceof EntityBigFireball)
-						return;
-					result.entityHit.attackEntityFrom(ItemJutsu.causeJutsuDamage(this, this.shootingEntity).setFireDamage(), this.damage);
-					result.entityHit.setFire(15);
+				if (result.entityHit != null && (result.entityHit.equals(this.shootingEntity)
+				 || (result.entityHit instanceof EntityBigFireball && ((EntityBigFireball)result.entityHit).shootingEntity == this.shootingEntity))) {
+					return;
 				}
+				ProcedureAoeCommand.set(this, 0d, this.fullScale * 0.4f).exclude(this.shootingEntity)
+				 .damageEntities(ItemJutsu.causeJutsuDamage(this, this.shootingEntity).setFireDamage(), this.damage).setFire(15);
 				boolean flag = ForgeEventFactory.getMobGriefingEvent(this.world, this.shootingEntity);
 				this.world.newExplosion(this.shootingEntity, this.posX, this.posY, this.posZ, this.explosionSize, flag, false);
 				this.setDead();
@@ -141,7 +142,7 @@ public class ItemKaton extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void renderParticles() {
 			Particles.spawnParticle(this.world, Particles.Types.FLAME, this.posX, this.posY + (this.height / 2.0F), this.posZ,
-			  (int)this.fullScale * 2, 0.3d * this.width, 0.3d * this.height, 0.3d * this.width, 0d, 0d, 0d, 
+			  (int)this.fullScale * 2, 0.3d * this.width, 0.3d * this.height, 0.3d * this.width, 0d, 0d, 0d,
 			  0xffff0000|((0x40+this.rand.nextInt(0x80))<<8), 30);
 		}
 

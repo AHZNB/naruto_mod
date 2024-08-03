@@ -107,19 +107,14 @@ public class EntityToadShima extends ElementsNarutomodMod.ModElement {
 			}
 
 			@Override
-			public void doRender(EntityCustom entity, double x, double y, double z, float entityYaw, float partialTicks) {
-				super.doRender(entity, x, y, z, entityYaw, partialTicks);
+			protected void renderLayers(EntityCustom entity, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scaleIn) {
 				float scale = entity.getScale();
 				this.bindTexture(this.cloak_texture);
 				GlStateManager.pushMatrix();
-				this.renderLivingAt(entity, x, y, z);
-				float f8 = this.handleRotationFloat(entity, partialTicks);
-				this.applyRotations(entity, f8, this.interpolateRotation(entity.prevRenderYawOffset, entity.renderYawOffset, partialTicks), partialTicks);
-				this.prepareScale(entity, partialTicks);
 				GlStateManager.translate(0.0F, 1.5F - 1.5F * scale, 0.0F);
 				GlStateManager.scale(scale, scale, scale);
 				GlStateManager.disableCull();
-				this.modelCloak.render(entity, 0.0F, 0.0F, f8, 0.0F, 0.0F, 0.0625F);
+				this.modelCloak.render(entity, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scaleIn);
 				GlStateManager.enableCull();
 				GlStateManager.popMatrix();
 			}

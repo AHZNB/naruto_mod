@@ -56,7 +56,9 @@ public class EntityC4 extends ElementsNarutomodMod.ModElement {
 		private final float finalSize = 6.0f;
 		private final int growTicks = 60;
 		private final int fuse = 50;
-		private final float blastRadius = 48.0f;
+		private final float blastRadius = 56.0f;
+		private int damageTicks = 100;
+		private int damagePerTick = 2;
 		private int ignitionTime;
 		private float nextStepDistance = this.finalSize;
 		private int deathTicks;
@@ -106,6 +108,11 @@ public class EntityC4 extends ElementsNarutomodMod.ModElement {
 			return ((Boolean)this.dataManager.get(IGNITED)).booleanValue();
 		}
 
+		public void setExplosionDamage(int ticks, int damage) {
+			this.damageTicks = ticks;
+			this.damagePerTick = damage;
+		}
+
 		@Override
 		protected void applyEntityAttributes() {
 			super.applyEntityAttributes();
@@ -148,7 +155,7 @@ public class EntityC4 extends ElementsNarutomodMod.ModElement {
 					this.world.playSound(null, summoner.posX, summoner.posY, summoner.posZ, 
 					 SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:katsu")), SoundCategory.NEUTRAL, 1f, 1f);
 				}
-		    	ProcedureAoeCommand.set(this, 0d, this.blastRadius).exclude(summoner).effect(PotionInstantDamage.potion, 5, 0, false);
+		    	ProcedureAoeCommand.set(this, 0d, this.blastRadius).exclude(summoner).effect(PotionInstantDamage.potion, this.damageTicks / 20, this.damagePerTick - 1, false);
 				Particles.spawnParticle(this.world, Particles.Types.EXPANDING_SPHERE, this.posX, this.posY, this.posZ, 1,
 				 0d, 0d, 0d, 0d, 0d, 0d, (int)(this.blastRadius * 10f), 10, 0x3080ffff);
 	    		this.setDead();

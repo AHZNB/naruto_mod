@@ -151,6 +151,7 @@ public class EntityDeidara extends ElementsNarutomodMod.ModElement {
 					this.c4Entity = new EntityC4.EC(this);
 					this.c4Entity.setLocationAndAngles(vec.x, vec.y, vec.z, this.rotationYaw, 0f);
 					this.c4Entity.setRotationYawHead(this.rotationYaw);
+					this.c4Entity.setExplosionDamage(100, 2);
 					this.world.spawnEntity(this.c4Entity);
 				}
 				if (this.isRiding() && this.getRidingEntity() == this.c2Entity) {
