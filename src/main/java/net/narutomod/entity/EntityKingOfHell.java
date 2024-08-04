@@ -50,7 +50,6 @@ import java.util.HashMap;
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityKingOfHell extends ElementsNarutomodMod.ModElement {
 	public static final int ENTITYID = 38;
-	public static final int ENTITYID_RANGED = 39;
 	
 	public EntityKingOfHell(ElementsNarutomodMod instance) {
 		super(instance, 221);

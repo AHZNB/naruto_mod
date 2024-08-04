@@ -20,7 +20,8 @@ public class ProcedureOnLivingJump extends ElementsNarutomodMod.ModElement {
 
 	public static void lunge(EntityPlayer entity) {
 		double speed = ProcedureUtils.getModifiedSpeed(entity);
-		if (entity.isPotionActive(MobEffects.JUMP_BOOST) && speed >= 0.14d && entity.isSneaking()) {
+		if (entity.isPotionActive(MobEffects.JUMP_BOOST) && speed >= 0.14d
+		 && entity.isSneaking() && entity.getFoodStats().getFoodLevel() > 8.0f) {
 			double motionY = 0.42d + (double) (entity.getActivePotionEffect(MobEffects.JUMP_BOOST).getAmplifier() + 1) * 0.1d;
 			if (speed > 0.4d && motionY > 0.8d) {
 				RayTraceResult t = ProcedureUtils.objectEntityLookingAt(entity, 50d, 1.0d);
@@ -42,6 +43,7 @@ public class ProcedureOnLivingJump extends ElementsNarutomodMod.ModElement {
 				entity.motionZ += Math.cos(yaw) * d0 * speed * 2.5d;
 				entity.motionY = Math.max(motionY * Math.sin(pitch) * 2.0d, 0.42d);
 			}
+			entity.addExhaustion(1.0f);
 		}
 	}
 

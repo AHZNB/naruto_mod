@@ -15,6 +15,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.item.ItemStack;
@@ -177,19 +178,19 @@ public class ItemRaiton extends ElementsNarutomodMod.ModElement {
 				Particles.spawnParticle(world, Particles.Types.SMOKE, this.posX, this.posY, this.posZ,
 				  20, 0.3d, 0.0d, 0.3d, 0d, 0.5d, 0d, 0x2080D0FF, 50, 5, 0xF0, this.summoner.getEntityId());
 				if (this.summoner.swingProgressInt == 1 && this.summoner instanceof EntityPlayer) {
-					Entity target = ProcedureUtils.objectEntityLookingAt(this.summoner, 3d, this).entityHit;
-					if (target == null) {
-						target = ProcedureUtils.objectEntityLookingAt(this.summoner, 12d, 3d, this).entityHit;
-						if (target instanceof EntityLivingBase) {
-							Vec3d vec = target.getPositionEyes(1f).subtract(this.summoner.getPositionEyes(1f)).normalize();
+					RayTraceResult result = ProcedureUtils.objectEntityLookingAt(this.summoner, 3d, this);
+					if (result == null || result.entityHit == null) {
+						result = ProcedureUtils.objectEntityLookingAt(this.summoner, 12d, 3d, this);
+						if (result != null && result.entityHit instanceof EntityLivingBase) {
+							Vec3d vec = result.entityHit.getPositionEyes(1f).subtract(this.summoner.getPositionEyes(1f)).normalize();
 							this.summoner.rotationYaw = ProcedureUtils.getYawFromVec(vec);
 							this.summoner.rotationPitch = ProcedureUtils.getPitchFromVec(vec);
-							this.summoner.setPositionAndUpdate(target.posX - vec.x, target.posY - vec.y + 0.5d, target.posZ - vec.z);
-							((EntityPlayer)this.summoner).attackTargetEntityWithCurrentItem(target);
+							this.summoner.setPositionAndUpdate(result.entityHit.posX - vec.x, result.entityHit.posY - vec.y + 0.5d, result.entityHit.posZ - vec.z);
+							((EntityPlayer)this.summoner).attackTargetEntityWithCurrentItem(result.entityHit);
 						}
 					}
-					if (target instanceof EntityLivingBase) {
-						ProcedureUtils.pushEntity(this.summoner, target, 12d, 1.5f);
+					if (result != null && result.entityHit instanceof EntityLivingBase) {
+						ProcedureUtils.pushEntity(this.summoner, result.entityHit, 12d, 1.5f);
 					}
 				}
 			} else if (!this.world.isRemote) {
@@ -222,7 +223,7 @@ public class ItemRaiton extends ElementsNarutomodMod.ModElement {
 			@Override
 			public boolean createJutsu(ItemStack stack, EntityLivingBase entity, float power) {
 				Entity entity1 = entity.world.getEntityByID(stack.getTagCompound().getInteger(ID_KEY));
-				if (entity1 instanceof EntityChakraMode) {
+				if (entity1 instanceof EntityChakraMode && entity instanceof EntityPlayer) {
 					entity1.setDead();
 					stack.getTagCompound().removeTag(ID_KEY);
 					return false;

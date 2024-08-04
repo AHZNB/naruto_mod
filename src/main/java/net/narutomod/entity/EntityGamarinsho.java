@@ -5,9 +5,9 @@ import net.narutomod.item.ItemIshiken;
 import net.narutomod.item.ItemJutsu;
 import net.narutomod.item.ItemSenjutsu;
 import net.narutomod.procedure.ProcedureCameraShake;
-import net.narutomod.procedure.ProcedureRenderView;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.NarutomodMod;
+import net.narutomod.NarutomodModVariables;
 import net.narutomod.ElementsNarutomodMod;
 
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -24,41 +24,41 @@ import net.minecraftforge.common.MinecraftForge;
 
 import net.minecraft.world.World;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.entity.MoverType;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.client.model.ModelRenderer;
+import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelBox;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.GLAllocation;
+import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.init.MobEffects;
+import net.minecraft.network.datasync.DataParameter;
+import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraft.network.datasync.DataSerializers;
 
 import io.netty.buffer.ByteBuf;
 import org.lwjgl.util.glu.Sphere;
 import org.lwjgl.util.glu.GLU;
-import net.minecraft.client.renderer.OpenGlHelper;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.network.datasync.DataParameter;
-import net.minecraft.network.datasync.EntityDataManager;
-import net.minecraft.network.datasync.DataSerializers;
 import java.util.List;
-import com.google.common.collect.Lists;
 import javax.annotation.Nullable;
-import net.minecraft.inventory.EntityEquipmentSlot;
-import net.minecraft.client.model.ModelBase;
+import com.google.common.collect.Lists;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityGamarinsho extends ElementsNarutomodMod.ModElement {
-	public static final int ENTITY1ID = 33;
+	public static final int ENTITY1ID = 39;
 	public static final int ENTITY2ID = 463;
 	public static final int ENTITY3ID = 464;
 	private static final float TOAD_SCALE = 10.0F;
@@ -177,28 +177,26 @@ public class EntityGamarinsho extends ElementsNarutomodMod.ModElement {
 					this.playSound(net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:toadchant")), (float)this.ticksExisted / 60f, this.rand.nextFloat() * 0.3F + 0.8F);
 				}
 				if (this.ticksExisted == this.prepareTime) {
+					for (EntityLivingBase entity : this.world.getEntitiesWithinAABB(EntityLivingBase.class, this.getEntityBoundingBox().grow(this.jutsuRadius, 36d, this.jutsuRadius))) {
+						if (entity != caster && (entity instanceof EntityPlayer || entity instanceof EntityNinjaMob.Base)) {
+							this.trappedList.add(entity);
+						}
+					}
 					if (!this.world.isRemote) {
 						this.setCooldown(caster);
 						this.toadPa.setSwingingArms(false);
 						this.toadMa.setSwingingArms(false);
-						if (caster instanceof EntityPlayer) {
-							ProcedureUtils.swapItemToSlot((EntityPlayer)caster, EntityEquipmentSlot.MAINHAND, new ItemStack(ItemIshiken.block));
-						}
-					}
-					for (EntityPlayer player : this.world.getEntitiesWithinAABB(EntityPlayer.class, this.getEntityBoundingBox().grow(this.jutsuRadius, 36d, this.jutsuRadius))) {
-						if (player != caster) {
-							if (player instanceof EntityPlayerMP) {
-								Genjutsu.Message.sendTo((EntityPlayerMP)player, this.posX, this.posY + 256d, this.posZ, this.genjutsuDuration);
+						for (EntityLivingBase entity : this.trappedList) {
+							if (entity instanceof EntityPlayerMP) {
+								Genjutsu.activate((EntityPlayerMP)entity, this);
+							} else if (entity instanceof EntityNinjaMob.Base) {
+								((EntityNinjaMob.Base)entity).haltAIfor(this.genjutsuDuration);
 							}
-							this.trappedList.add(player);
 						}
 					}
-					for (EntityNinjaMob.Base entity : this.world.getEntitiesWithinAABB(EntityNinjaMob.Base.class, this.getEntityBoundingBox().grow(this.jutsuRadius, 36d, this.jutsuRadius))) {
-						if (entity != caster) {
-							this.trappedList.add(entity);
-							entity.haltAIfor(this.genjutsuDuration);
-						}
-					}
+				} else if (this.ticksExisted == this.prepareTime + 1 && caster instanceof EntityPlayerMP) {
+					ProcedureUtils.swapItemToSlot((EntityPlayer)caster, EntityEquipmentSlot.MAINHAND, new ItemStack(ItemIshiken.block));
+					Genjutsu.activate((EntityPlayerMP)caster, this);
 				}
 			}
 		}
@@ -225,22 +223,15 @@ public class EntityGamarinsho extends ElementsNarutomodMod.ModElement {
 					entity1 = new EC(entity);
 					entity.world.spawnEntity(entity1);
 					entity.getEntityData().setInteger(ID_KEY, entity1.getEntityId());
-					return true;
 				} else {
 					entity1.setDead();
 				}
-				//ItemJutsu.setCurrentJutsuCooldown(stack, (EntityPlayer)entity, 1200);
 				return false;
 			}
 
 			public static EC getEntity(EntityLivingBase user) {
 				Entity entity = user.world.getEntityByID(user.getEntityData().getInteger(ID_KEY));
-				if (entity instanceof EC) {
-					return (EC)entity;
-				} else {
-					deActivateCleanup(user);
-					return null;
-				}
+				return entity instanceof EC ? (EC)entity : null;
 			}
 
 			private static void deActivateCleanup(EntityLivingBase entity) {
@@ -269,16 +260,10 @@ public class EntityGamarinsho extends ElementsNarutomodMod.ModElement {
 	public static class EntityDuplicate extends EntityClone.Base {
 		public EntityDuplicate(World world) {
 			super(world);
-			this.setNoAI(true);
 		}
 
 		public EntityDuplicate(EntityLivingBase user) {
 			super(user);
-			this.setNoAI(true);
-			this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(user.getMaxHealth());
-			this.getEntityAttribute(SharedMonsterAttributes.ARMOR)
-			 .setBaseValue(user.getEntityAttribute(SharedMonsterAttributes.ARMOR).getAttributeValue());
-			this.setHealth(user.getHealth());
 		}
 
 		@Override
@@ -294,29 +279,43 @@ public class EntityGamarinsho extends ElementsNarutomodMod.ModElement {
 				this.renderYawOffset = summoner.renderYawOffset;
 				this.rotationPitch = summoner.rotationPitch;
 			}
+			for (Entity entity : this.world.getEntitiesWithinAABBExcludingEntity(this, this.getEntityBoundingBox())) {
+				entity.applyEntityCollision(this);
+			}
+			this.move(MoverType.SELF, this.motionX, this.motionY, this.motionZ);
+			this.motionX *= 0.8d;
+			this.motionY *= 0.8d;
+			this.motionZ *= 0.8d;
 		}
 	}
 
-	public static class Genjutsu {	
+	public static class Genjutsu {
+		public static void activate(EntityPlayerMP player, EC entity) {
+			Message.sendTo(player, entity);
+		}
+		
 	    @SideOnly(Side.CLIENT)
-	    public static void activate(double x, double y, double z, int duration) {
-	        MinecraftForge.EVENT_BUS.register(new GenjutsuOverlayHandler(x, y, z, duration));
+	    private static void activate(EC entity) {
+	        MinecraftForge.EVENT_BUS.register(new GenjutsuOverlayHandler(entity));
 	    }
 	
 	    @SideOnly(Side.CLIENT)
 	    private static class GenjutsuOverlayHandler {
 			private final ResourceLocation texture = new ResourceLocation("narutomod:textures/brainmatterog.png");
 			private final EntityDuplicate playerDup;
+			private final List<EntityDuplicate> trappedEntity = Lists.newArrayList();
 			private final EntityToadSamurai toadEntity;
 			private final EC cubeEntity;
+			private final EC jutsuEntity;
 			public final int sphereId;
 			private final long startTime;
 	        private final long endTime;
 	        private final double posX;
 	        private final double posY;
 	        private final double posZ;
+	        private final boolean isCaster;
 	
-	        public GenjutsuOverlayHandler(double x, double y, double z, int durationIn) {
+	        public GenjutsuOverlayHandler(EC entity) {
 				this.sphereId = GLAllocation.generateDisplayLists(1);
 				GlStateManager.glNewList(this.sphereId, 0x1300);
 	        	Sphere sphere = new Sphere();
@@ -328,30 +327,45 @@ public class EntityGamarinsho extends ElementsNarutomodMod.ModElement {
 				GlStateManager.glEndList();
 
 	        	Minecraft mc = Minecraft.getMinecraft();
-	        	this.playerDup = new EntityDuplicate(mc.player);
-	        	this.playerDup.setLocationAndAngles(x, y, z, mc.player.rotationYaw, mc.player.rotationPitch);
-	        	this.playerDup.setNoGravity(true);
-	        	mc.world.spawnEntity(this.playerDup);
-				mc.player.addPotionEffect(new PotionEffect(MobEffects.BLINDNESS, 80, 0, false, false));
-				ProcedureCameraShake.sendToClient(mc.player, 80, 40.0f);
-
 				this.toadEntity = new EntityToadSamurai(mc.world);
 				this.cubeEntity = new EC(mc.world, true);
 				this.startTime = mc.world.getTotalWorldTime();
-	            this.endTime = this.startTime + durationIn;
-	            this.posX = x;
-	            this.posY = y;
-	            this.posZ = z;
+	            this.endTime = this.startTime + entity.genjutsuDuration;
+	            this.posX = entity.posX;
+	            this.posY = entity.posY + 256.0d;
+	            this.posZ = entity.posZ;
+	            this.jutsuEntity = entity;
+	            this.isCaster = entity.getCaster() == mc.player;
+	        	this.playerDup = new EntityDuplicate(mc.player);
+	        	if (this.isCaster) {
+	        		this.playerDup.setLocationAndAngles(this.posX + 3.0d, this.posY - 2.0d, this.posZ + 3.0d, mc.player.rotationYaw, mc.player.rotationPitch);
+	        		for (EntityLivingBase trapped : this.jutsuEntity.getTrappedEntities()) {
+	        			EntityDuplicate dup = new EntityDuplicate(trapped);
+	        			dup.setLocationAndAngles(this.posX + (dup.getRNG().nextFloat()-0.5f), this.posY, this.posZ + (dup.getRNG().nextFloat()-0.5f), trapped.rotationYaw, trapped.rotationPitch);
+	        			dup.setNoGravity(true);
+	        			mc.world.spawnEntity(dup);
+	        			this.trappedEntity.add(dup);
+	        		}
+	        	} else {
+	        		this.playerDup.setLocationAndAngles(this.posX, this.posY, this.posZ, mc.player.rotationYaw, mc.player.rotationPitch);
+					mc.player.addPotionEffect(new PotionEffect(MobEffects.BLINDNESS, 80, 0));
+					ProcedureCameraShake.sendToClient(mc.player, 80, 40.0f);
+	        	}
+	        	this.playerDup.setNoGravity(true);
+	        	mc.world.spawnEntity(this.playerDup);
 	        }
 	
 	        @SubscribeEvent
 	        public void renderGenjutsu(RenderWorldLastEvent event) {
 	        	Minecraft mc = Minecraft.getMinecraft();
 	        	long worldTime = mc.world.getTotalWorldTime();
-                if (worldTime > this.endTime) { // Duration of genjutsu effect
+                if (worldTime > this.endTime) {
                     MinecraftForge.EVENT_BUS.unregister(this);
-                    this.playerDup.setDead();
                     mc.setRenderViewEntity(mc.player);
+                    this.playerDup.setDead();
+                    for (EntityDuplicate dup : this.trappedEntity) {
+                    	dup.setDead();
+                    }
                 } else {
 				    double x = this.posX - mc.getRenderManager().viewerPosX;
 				    double y = this.posY - mc.getRenderManager().viewerPosY;
@@ -373,19 +387,17 @@ public class EntityGamarinsho extends ElementsNarutomodMod.ModElement {
 					GlStateManager.popMatrix();
 					
 		            long ticksElapsed = worldTime - this.startTime;
-		            this.renderToad(mc, event.getPartialTicks(), EnumFacing.NORTH, 12.0D); // North
-		            this.renderToad(mc, event.getPartialTicks(), EnumFacing.SOUTH, 12.0D); // South
-		            this.renderToad(mc, event.getPartialTicks(), EnumFacing.EAST, 12.0D); // East
-		            this.renderToad(mc, event.getPartialTicks(), EnumFacing.WEST, 12.0D); // West	
+		            this.renderToad(mc, event.getPartialTicks(), EnumFacing.NORTH, 12.0D);
+		            this.renderToad(mc, event.getPartialTicks(), EnumFacing.SOUTH, 12.0D);
+		            this.renderToad(mc, event.getPartialTicks(), EnumFacing.EAST, 12.0D);
+		            this.renderToad(mc, event.getPartialTicks(), EnumFacing.WEST, 12.0D);
 		            this.renderCube(mc, x, y - 0.2D, z, (int)ticksElapsed, event.getPartialTicks());
 
-		            //Vec3d vec = new Vec3d(this.posX, this.posY, this.posZ).subtract(this.playerDup.getPositionVector()).scale(0.01d);
-		            //ProcedureUtils.addVelocity(this.playerDup, vec);
 		            //mc.player.getEntityData().setInteger("FearEffect", 5);
-	        		if (ticksElapsed < 60 && ticksElapsed % ((80-ticksElapsed) / 10) != 0) {
-	        			mc.setRenderViewEntity(mc.player);
-	        		} else {
-	        			mc.setRenderViewEntity(this.playerDup);
+		            if (this.isCaster) {
+	            		mc.setRenderViewEntity(mc.player.getEntityData().getBoolean(NarutomodModVariables.JutsuKey2Pressed) ? this.playerDup : mc.player);
+		            } else {
+	        			mc.setRenderViewEntity(ticksElapsed < 60 && ticksElapsed % ((80-ticksElapsed) / 10) != 0 ? mc.player : this.playerDup);
 	        		}
                 }
 	        }
@@ -405,21 +417,17 @@ public class EntityGamarinsho extends ElementsNarutomodMod.ModElement {
 	    }
 
 		public static class Message implements IMessage {
-			double x, y, z;
-			int ticks;
+			int id;
 
 			public Message() {
 			}
 	
-			public Message(double d0, double d1, double d2, int i) {
-				this.x = d0;
-				this.y = d1;
-				this.z = d2;
-				this.ticks = i;
+			public Message(EC entity) {
+				this.id = entity.getEntityId();
 			}
 
-			public static void sendTo(EntityPlayerMP target, double x, double y, double z, int duration) {
-				NarutomodMod.PACKET_HANDLER.sendTo(new Message(x, y, z, duration), target);
+			public static void sendTo(EntityPlayerMP target, EC entity) {
+				NarutomodMod.PACKET_HANDLER.sendTo(new Message(entity), target);
 			}
 	
 			public static class Handler implements IMessageHandler<Message, IMessage> {
@@ -428,24 +436,21 @@ public class EntityGamarinsho extends ElementsNarutomodMod.ModElement {
 				public IMessage onMessage(Message message, MessageContext context) {
 					Minecraft mc = Minecraft.getMinecraft();
 					mc.addScheduledTask(() -> {
-						Genjutsu.activate(message.x, message.y, message.z, message.ticks);
+						Entity entity = mc.world.getEntityByID(message.id);
+						if (entity instanceof EC) {
+							Genjutsu.activate((EC)entity);
+						}
 					});
 					return null;
 				}
 			}
 	
 			public void toBytes(ByteBuf buf) {
-				buf.writeDouble(this.x);
-				buf.writeDouble(this.y);
-				buf.writeDouble(this.z);
-				buf.writeInt(this.ticks);
+				buf.writeInt(this.id);
 			}
 	
 			public void fromBytes(ByteBuf buf) {
-				this.x = buf.readDouble();
-				this.y = buf.readDouble();
-				this.z = buf.readDouble();
-				this.ticks = buf.readInt();
+				this.id = buf.readInt();
 			}
 		}
 	}

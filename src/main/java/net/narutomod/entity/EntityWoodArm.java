@@ -86,7 +86,7 @@ public class EntityWoodArm extends ElementsNarutomodMod.ModElement {
 						}
 						if (this.targetDistance == 0d && this.reachedCount >= MathHelper.ceil(this.target.width * 4f / this.width)) {
 							vec = this.target.getPositionVector().subtract(parent.getPositionVector());
-							this.targetDistance = vec.lengthVector();
+							this.targetDistance = MathHelper.sqrt(vec.x * vec.x + vec.z * vec.z);
 							this.targetYOffset = vec.y;
 							this.targetYawOffset = MathHelper.wrapDegrees(ProcedureUtils.getYawFromVec(vec.x, vec.z) - parent.rotationYaw);
 						}

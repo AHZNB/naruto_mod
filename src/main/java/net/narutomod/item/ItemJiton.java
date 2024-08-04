@@ -381,9 +381,9 @@ public class ItemJiton extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-	public static class SandParticle extends EntityParticle.Base {
-		private int idleTime;
+	public static class SandParticle extends EntityParticle.Base implements ISwarmEntity {
 		private int deathTicks;
+		private int lastUpdateTime;
 
 		public SandParticle(World w) {
 			super(w);
@@ -405,7 +405,6 @@ public class ItemJiton extends ElementsNarutomodMod.ModElement {
 		public void onUpdate() {
 			super.onUpdate();
 			double d = this.getVelocity();
-			this.idleTime = d < 0.001d ? this.idleTime + 1 : 0;
 			if (this.world.isRemote) {
 				this.setParticleTextureOffset(this.texU + (d > 0.01d ? 1 : 0) % 8);
 				for (int i = 0; i < 10; i++) {
@@ -416,11 +415,16 @@ public class ItemJiton extends ElementsNarutomodMod.ModElement {
 					 this.motionX * (this.rand.nextDouble() * 0.2d + 0.9d),
 					 this.motionY * (this.rand.nextDouble() * 0.2d + 0.9d),
 					 this.motionZ * (this.rand.nextDouble() * 0.2d + 0.9d),
-					 this.getColorInt(), (int)(this.getScale(0f) * 8), 5);
+					 this.getColorInt(), (int)(this.getScale(0f) * 8), 3);
 				}
-			} else if (this.idleTime > 100) {
+			} else if (this.getAge() > this.lastUpdateTime + 40) {
 				this.fallAndDie();
 			}
+		}
+
+		@Override
+		public void setLastUpdateTime() {
+			this.lastUpdateTime = this.getAge();
 		}
 
 		protected void fallAndDie() {
@@ -433,7 +437,11 @@ public class ItemJiton extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-	public static class SwarmTarget {
+	public static interface ISwarmEntity {
+		void setLastUpdateTime();
+	}
+
+	public static class SwarmTarget<T extends Entity & ISwarmEntity> {
 		private World world;
 		private int total;
 		private Vec3d startPos;
@@ -441,7 +449,7 @@ public class ItemJiton extends ElementsNarutomodMod.ModElement {
 		private AxisAlignedBB targetBB;
 		private float speed;
 		private float inaccuracy;
-		private List<Entity> particles;
+		private List<T> particles;
 		private int spawned;
 		private int ticks;
 		private Random rand;
@@ -519,14 +527,14 @@ public class ItemJiton extends ElementsNarutomodMod.ModElement {
 			this.border = this.particles.get(0).getEntityBoundingBox();
 		}
 
-		protected Entity createParticle(double x, double y, double z, double mx, double my, double mz, int c, float sc, int life) {
-			return new SandParticle(this.world, x, y, z, mx, my, mz, c, sc, life);
+		protected T createParticle(double x, double y, double z, double mx, double my, double mz, int c, float sc, int life) {
+			return (T)new SandParticle(this.world, x, y, z, mx, my, mz, c, sc, life);
 		}
 
 		private void spawnNewParticles() {
 			for (int i = 0; this.spawned < this.total && i < 5; i++, this.spawned++) {
 				Vec3d vec = this.startPos != null ? this.startPos : this.randomPosInBB(this.startBB);
-				Entity p = this.createParticle(vec.x, vec.y, vec.z,
+				T p = this.createParticle(vec.x, vec.y, vec.z,
 				 (this.rand.nextDouble()-0.5d) * 2d * this.spawnMotion.x, this.spawnMotion.y,
 				 (this.rand.nextDouble()-0.5d) * 2d * this.spawnMotion.z, this.color,
 				 this.scale + (this.rand.nextFloat()-0.5f) * this.scale * 0.2f, 3600);
@@ -566,10 +574,10 @@ public class ItemJiton extends ElementsNarutomodMod.ModElement {
 
 		public void onUpdate() {
 			if (!this.particles.isEmpty()) {
-				Entity ep = this.particles.get(0);
+				T ep = this.particles.get(0);
 				this.playFlyingSound(ep.posX, ep.posY, ep.posZ, this.particles.size() * this.speed * 0.0025f, this.rand.nextFloat() * 0.4f + 0.8f);
 				this.border = ep.getEntityBoundingBox();
-				Iterator<Entity> iter = this.particles.iterator();
+				Iterator<T> iter = this.particles.iterator();
 				while (iter.hasNext()) {
 					ep = iter.next();
 					if (ep.isEntityAlive()) {
@@ -583,6 +591,7 @@ public class ItemJiton extends ElementsNarutomodMod.ModElement {
 							ep.motionZ += vec.z + this.rand.nextGaussian() * this.inaccuracy;
 							this.updateBorderWith(ep);
 						}
+						ep.setLastUpdateTime();
 					} else {
 						iter.remove();
 					}
@@ -597,9 +606,9 @@ public class ItemJiton extends ElementsNarutomodMod.ModElement {
 		}
 
 		public void forceRemove() {
-			Iterator<Entity> iter = this.particles.iterator();
+			Iterator<T> iter = this.particles.iterator();
 			while (iter.hasNext()) {
-				Entity ep = iter.next();
+				T ep = iter.next();
 				if (ep.isEntityAlive()) {
 					ep.setDead();
 				}

@@ -32,7 +32,7 @@ Jutsus:
  - add wind release: vacuum wave and B-rank scroll
  - add water release: acid scattering jutsu
  - holding chokuto while in susanoo now consumes slightly more chakra
- - adding Sage Mode: Demonic Illusion: Toad Confrontation Chant (WIP-1: prepare time 15s, genjutsu duration 20s, every ninja mob and player within 80 blocks will be affected)
+ - adding Sage Mode: Demonic Illusion: Toad Confrontation Chant (WIP-2: prepare time 15s, genjutsu duration 20s, every ninja mob and player within 80 blocks will be affected, caster press jutsu key 2 to enter genjutsu realm, cooldown 3 minutes)
  - Mind Transfer jutsu: cancel the jutsu by pressing Jutsu key 2
  - the number of puppets you can control depends on your jutsuXP in your puppet jutsu, max 10 puppets
  - Kirin is now a stand alone jutsu, learning chidori won't auto give you kirin anymore
@@ -88,6 +88,7 @@ General:
  - getting a kekkeigenkai depends on player having owner matched release items in inventory
  - will remove lower level sharingan if higher level mangekyo bound to the same player is in inventory
  - NinjaXp gain rate multiplier added in config
+ - SHIFT+jump exhausts food levels, can't use if food level < 8
  
 Bugs & Issues:
 

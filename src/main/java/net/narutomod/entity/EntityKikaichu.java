@@ -71,10 +71,10 @@ public class EntityKikaichu extends ElementsNarutomodMod.ModElement {
 			this.target = targetIn;
 			Vec3d vec = this.getUserVector();
 			this.setPosition(vec.x, vec.y, vec.z);
-			this.bugsTarget = new ItemJiton.SwarmTarget(this.world, (int)(power * 50), vec,
+			this.bugsTarget = new ItemJiton.SwarmTarget<EntityCustom>(this.world, (int)(power * 50), vec,
 			 this.getTargetVector(), new Vec3d(0.4d, 0.4d, 0.4d), 0.6f, 0.05f, false, 1f, -1) {
 				@Override
-				protected Entity createParticle(double x, double y, double z, double mx, double my, double mz, int c, float sc, int life) {
+				protected EntityCustom createParticle(double x, double y, double z, double mx, double my, double mz, int c, float sc, int life) {
 					return new EntityCustom(userIn, x, y, z, mx, my, mz, c, sc, life);
 				}
 				@Override
@@ -187,14 +187,14 @@ public class EntityKikaichu extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-	public static class EntityCustom extends Entity {
+	public static class EntityCustom extends Entity implements ItemJiton.ISwarmEntity {
 		private EntityLivingBase host;
-		private int idleTime;
 		private int maxAge;
 	    public float prevLimbSwingAmount;
 	    public float limbSwingAmount;
 	    public float limbSwing;
 	    private double chakra;
+		private int lastUpdateTime;
 
 		public EntityCustom(World worldIn) {
 			super(worldIn);
@@ -283,10 +283,14 @@ public class EntityKikaichu extends ElementsNarutomodMod.ModElement {
 					}
 				}
 			}
-			this.idleTime = this.getVelocity() < 0.001d ? this.idleTime + 1 : 0;
-			if (!this.world.isRemote && (this.ticksExisted > this.maxAge || this.idleTime > 1000)) {
+			if (!this.world.isRemote && (this.ticksExisted > this.maxAge || this.ticksExisted > this.lastUpdateTime + 100)) {
 				this.setDead();
 			}
+		}
+
+		@Override
+		public void setLastUpdateTime() {
+			this.lastUpdateTime = this.ticksExisted;
 		}
 
 		@Override

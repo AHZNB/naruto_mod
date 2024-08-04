@@ -245,7 +245,7 @@ public class EntityTwoTails extends ElementsNarutomodMod.ModElement {
 				double d0 = this.posX + (this.rand.nextFloat() - 0.5D) * (this.width + 4.0D);
 				double d1 = this.posY + this.height * (0.5f + this.rand.nextFloat() * 0.7f);
 				double d2 = this.posZ + (this.rand.nextFloat() - 0.5D) * (this.width + 4.0D);
-				this.world.spawnAlwaysVisibleParticle(Particles.Types.FLAME.getID(), d0, d1, d2, 0.0D, 0.0D, 0.0D, 0x601e61b5, (int)(this.width * 10f));
+				this.world.spawnAlwaysVisibleParticle(Particles.Types.FLAME.getID(), d0, d1, d2, 0.0D, 0.0D, 0.0D, 0x301e61b5, (int)(this.width * 10f));
 			}
 		}
 	}

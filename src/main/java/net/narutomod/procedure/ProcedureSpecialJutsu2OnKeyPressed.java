@@ -65,10 +65,10 @@ public class ProcedureSpecialJutsu2OnKeyPressed extends ElementsNarutomodMod.Mod
 		if (((EntityPlayer) entity).isSpectator()) {
 			return;
 		}
+		entity.getEntityData().setBoolean((NarutomodModVariables.JutsuKey2Pressed), (is_pressed));
 		if ((world.isRemote)) {
 			return;
 		}
-		entity.getEntityData().setBoolean((NarutomodModVariables.JutsuKey2Pressed), (is_pressed));
 		stack = ((entity instanceof EntityLivingBase) ? ((EntityLivingBase) entity).getHeldItemMainhand() : ItemStack.EMPTY);
 		helmet = ((entity instanceof EntityPlayer) ? ((EntityPlayer) entity).inventory.armorInventory.get(3) : ItemStack.EMPTY);
 		if ((((helmet).getItem() == new ItemStack(ItemRinnegan.helmet, (int) (1)).getItem())
@@ -110,12 +110,13 @@ public class ProcedureSpecialJutsu2OnKeyPressed extends ElementsNarutomodMod.Mod
 					} else {
 						{
 							Map<String, Object> $_dependencies = new HashMap<>();
+							$_dependencies.put("is_pressed", is_pressed);
 							$_dependencies.put("entity", entity);
 							$_dependencies.put("world", world);
 							$_dependencies.put("x", x);
 							$_dependencies.put("y", y);
 							$_dependencies.put("z", z);
-							ProcedureChibakuTenseiOnKeyPressed.executeProcedure($_dependencies);
+							ProcedureShinraTenseiOnKeyPressed.executeProcedure($_dependencies);
 						}
 					}
 				} else if (((which_path) == 4)) {

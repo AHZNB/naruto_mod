@@ -96,7 +96,7 @@ public class EntitySandBind extends ElementsNarutomodMod.ModElement {
 			Vec3d vec = this.getGourdMouthPos();
 			this.setPosition(vec.x, vec.y, vec.z);
 			this.sandTarget = new ItemJiton.SwarmTarget(this.world, 100, vec, 
-			 this.getTargetVector(), new Vec3d(0.1d, 0.4d, 0.1d), 0.95f, 0.03f, false, 2f, sandType.getColor());
+			 this.getTargetVector(), new Vec3d(0.1d, 0.4d, 0.1d), 0.95f, 0.03f, false, 3f, sandType.getColor());
 		}
 
 		@Override
@@ -124,7 +124,7 @@ public class EntitySandBind extends ElementsNarutomodMod.ModElement {
 			if (!flag && this.getEntityBoundingBox().intersects(this.targetEntity.getEntityBoundingBox())) {
 				AxisAlignedBB bb = this.getEntityBoundingBox().intersect(this.targetEntity.getEntityBoundingBox());
 				flag = bb.equals(this.targetEntity.getEntityBoundingBox())
-				 && this.getEntityBoundingBox().getAverageEdgeLength() < this.targetEntity.getEntityBoundingBox().getAverageEdgeLength() * 2.0d;
+				 && this.getEntityBoundingBox().getAverageEdgeLength() < this.targetEntity.getEntityBoundingBox().getAverageEdgeLength() * 2.5d;
 			}
 			if (flag && this.capturedVec == null) {
 				this.capturedVec = this.targetEntity.getPositionVector();
