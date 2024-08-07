@@ -235,20 +235,27 @@ public class EntityWoodGolem extends ElementsNarutomodMod.ModElement {
 		@SideOnly(Side.CLIENT)
 		public class ModelWoodGolem extends ModelBiped {
 			//private final ModelRenderer bipedHead;
-			private final ModelRenderer HatLayer_r1;
 			private final ModelRenderer bone9;
+			private final ModelRenderer bone2;
+			private final ModelRenderer bone3;
+			private final ModelRenderer bone4;
+			private final ModelRenderer bone5;
+			private final ModelRenderer bone6;
+			private final ModelRenderer bone7;
 			private final ModelRenderer bone45;
-			private final ModelRenderer HatLayer_r2;
-			private final ModelRenderer bone47;
-			private final ModelRenderer HatLayer_r3;
-			private final ModelRenderer bone48;
-			private final ModelRenderer HatLayer_r4;
+			private final ModelRenderer HatLayer_r1;
 			private final ModelRenderer bone46;
-			private final ModelRenderer HatLayer_r5;
+			private final ModelRenderer HatLayer_r2;
 			private final ModelRenderer bone44;
-			private final ModelRenderer HatLayer_r6;
+			private final ModelRenderer HatLayer_r3;
+			private final ModelRenderer HatLayer_r4;
 			private final ModelRenderer bone43;
-			private final ModelRenderer HatLayer_r7;
+			private final ModelRenderer HatLayer_r5;
+			private final ModelRenderer HatLayer_r6;
+			private final ModelRenderer bone;
+			private final ModelRenderer bone8;
+			private final ModelRenderer bone47;
+			private final ModelRenderer bone48;
 			//private final ModelRenderer bipedHeadwear;
 			//private final ModelRenderer bipedBody;
 			//private final ModelRenderer bipedRightArm;
@@ -311,17 +318,47 @@ public class EntityWoodGolem extends ElementsNarutomodMod.ModElement {
 				bipedHead.setRotationPoint(0.0F, 0.0F, 0.0F);
 				bipedHead.cubeList.add(new ModelBox(bipedHead, 0, 16, -4.0F, -8.5F, -4.0F, 8, 8, 8, 0.0F, false));
 		
-				HatLayer_r1 = new ModelRenderer(this);
-				HatLayer_r1.setRotationPoint(0.0F, -5.0119F, 5.1599F);
-				bipedHead.addChild(HatLayer_r1);
-				setRotationAngle(HatLayer_r1, 1.0036F, 3.1416F, 0.0F);
-				HatLayer_r1.cubeList.add(new ModelBox(HatLayer_r1, 46, 32, -4.0F, -1.25F, -1.625F, 8, 5, 0, 0.0F, false));
-		
 				bone9 = new ModelRenderer(this);
 				bone9.setRotationPoint(0.0F, -8.5F, -4.0F);
 				bipedHead.addChild(bone9);
 				setRotationAngle(bone9, -0.5236F, 0.0F, 0.0F);
 				bone9.cubeList.add(new ModelBox(bone9, 46, 32, -4.0F, -5.0F, 0.0F, 8, 5, 0, 0.0F, false));
+		
+				bone2 = new ModelRenderer(this);
+				bone2.setRotationPoint(0.0F, -8.5F, -1.5F);
+				bipedHead.addChild(bone2);
+				setRotationAngle(bone2, -0.6109F, 0.0F, 0.0F);
+				bone2.cubeList.add(new ModelBox(bone2, 46, 32, -4.0F, -5.0F, 0.0F, 8, 5, 0, 0.0F, true));
+		
+				bone3 = new ModelRenderer(this);
+				bone3.setRotationPoint(0.0F, -7.5F, 0.5F);
+				bipedHead.addChild(bone3);
+				setRotationAngle(bone3, -0.6981F, 0.0F, 0.0F);
+				bone3.cubeList.add(new ModelBox(bone3, 46, 32, -4.0F, -5.0F, 0.0F, 8, 5, 0, 0.0F, false));
+		
+				bone4 = new ModelRenderer(this);
+				bone4.setRotationPoint(0.0F, -6.5F, 2.0F);
+				bipedHead.addChild(bone4);
+				setRotationAngle(bone4, -0.7854F, 0.0F, 0.0F);
+				bone4.cubeList.add(new ModelBox(bone4, 46, 32, -4.0F, -5.0F, 0.0F, 8, 5, 0, 0.0F, true));
+		
+				bone5 = new ModelRenderer(this);
+				bone5.setRotationPoint(0.0F, -4.5F, 2.0F);
+				bipedHead.addChild(bone5);
+				setRotationAngle(bone5, -0.8727F, 0.0F, 0.0F);
+				bone5.cubeList.add(new ModelBox(bone5, 46, 32, -4.0F, -5.0F, 0.0F, 8, 5, 0, 0.0F, false));
+		
+				bone6 = new ModelRenderer(this);
+				bone6.setRotationPoint(0.0F, -2.75F, 2.0F);
+				bipedHead.addChild(bone6);
+				setRotationAngle(bone6, -0.9599F, 0.0F, 0.0F);
+				bone6.cubeList.add(new ModelBox(bone6, 46, 32, -4.0F, -5.0F, 0.0F, 8, 5, 0, 0.0F, true));
+		
+				bone7 = new ModelRenderer(this);
+				bone7.setRotationPoint(0.0F, -1.0F, 2.0F);
+				bipedHead.addChild(bone7);
+				setRotationAngle(bone7, -1.0472F, 0.0F, 0.0F);
+				bone7.cubeList.add(new ModelBox(bone7, 46, 32, -4.0F, -5.0F, 0.0F, 8, 5, 0, 0.0F, false));
 		
 				bone45 = new ModelRenderer(this);
 				bone45.setRotationPoint(-3.7F, -10.7815F, -3.0149F);
@@ -329,35 +366,11 @@ public class EntityWoodGolem extends ElementsNarutomodMod.ModElement {
 				setRotationAngle(bone45, -1.0036F, 0.7854F, -1.1781F);
 				
 		
-				HatLayer_r2 = new ModelRenderer(this);
-				HatLayer_r2.setRotationPoint(-1.4091F, 0.2641F, -0.1594F);
-				bone45.addChild(HatLayer_r2);
-				setRotationAngle(HatLayer_r2, 0.1309F, -0.5236F, 0.0F);
-				HatLayer_r2.cubeList.add(new ModelBox(HatLayer_r2, 59, 44, -0.725F, -1.775F, -0.625F, 2, 5, 0, 0.0F, false));
-		
-				bone47 = new ModelRenderer(this);
-				bone47.setRotationPoint(-3.7F, -10.7815F, -3.0149F);
-				bipedHead.addChild(bone47);
-				setRotationAngle(bone47, -1.0036F, 0.7854F, -1.1781F);
-				
-		
-				HatLayer_r3 = new ModelRenderer(this);
-				HatLayer_r3.setRotationPoint(-9.8033F, 0.1704F, 2.2299F);
-				bone47.addChild(HatLayer_r3);
-				setRotationAngle(HatLayer_r3, 0.2618F, 1.1345F, 0.0F);
-				HatLayer_r3.cubeList.add(new ModelBox(HatLayer_r3, 59, 44, -0.9F, -1.45F, -0.8F, 2, 5, 0, 0.0F, false));
-		
-				bone48 = new ModelRenderer(this);
-				bone48.setRotationPoint(3.7F, -10.7815F, -3.0149F);
-				bipedHead.addChild(bone48);
-				setRotationAngle(bone48, -1.0036F, -0.7854F, 1.1781F);
-				
-		
-				HatLayer_r4 = new ModelRenderer(this);
-				HatLayer_r4.setRotationPoint(9.8033F, 0.1704F, 2.2299F);
-				bone48.addChild(HatLayer_r4);
-				setRotationAngle(HatLayer_r4, 0.2618F, -1.1345F, 0.0F);
-				HatLayer_r4.cubeList.add(new ModelBox(HatLayer_r4, 59, 44, -1.25F, -1.45F, -1.175F, 2, 5, 0, 0.0F, true));
+				HatLayer_r1 = new ModelRenderer(this);
+				HatLayer_r1.setRotationPoint(-1.4091F, 0.2641F, -0.1594F);
+				bone45.addChild(HatLayer_r1);
+				setRotationAngle(HatLayer_r1, 0.1309F, -0.5236F, 0.0F);
+				HatLayer_r1.cubeList.add(new ModelBox(HatLayer_r1, 59, 44, -0.725F, -1.775F, -0.625F, 2, 5, 0, 0.0F, false));
 		
 				bone46 = new ModelRenderer(this);
 				bone46.setRotationPoint(3.7F, -10.7815F, -3.0149F);
@@ -365,11 +378,11 @@ public class EntityWoodGolem extends ElementsNarutomodMod.ModElement {
 				setRotationAngle(bone46, -1.0036F, -0.7854F, 1.1781F);
 				
 		
-				HatLayer_r5 = new ModelRenderer(this);
-				HatLayer_r5.setRotationPoint(1.4091F, 0.2641F, -0.1594F);
-				bone46.addChild(HatLayer_r5);
-				setRotationAngle(HatLayer_r5, 0.1309F, 0.5236F, 0.0F);
-				HatLayer_r5.cubeList.add(new ModelBox(HatLayer_r5, 59, 44, -1.275F, -1.775F, -0.625F, 2, 5, 0, 0.0F, true));
+				HatLayer_r2 = new ModelRenderer(this);
+				HatLayer_r2.setRotationPoint(1.4091F, 0.2641F, -0.1594F);
+				bone46.addChild(HatLayer_r2);
+				setRotationAngle(HatLayer_r2, 0.1309F, 0.5236F, 0.0F);
+				HatLayer_r2.cubeList.add(new ModelBox(HatLayer_r2, 59, 44, -1.275F, -1.775F, -0.625F, 2, 5, 0, 0.0F, true));
 		
 				bone44 = new ModelRenderer(this);
 				bone44.setRotationPoint(-4.6479F, -9.2565F, 0.5796F);
@@ -377,11 +390,17 @@ public class EntityWoodGolem extends ElementsNarutomodMod.ModElement {
 				setRotationAngle(bone44, 0.7418F, 1.309F, 0.0F);
 				
 		
-				HatLayer_r6 = new ModelRenderer(this);
-				HatLayer_r6.setRotationPoint(0.0F, 0.0F, 0.0F);
-				bone44.addChild(HatLayer_r6);
-				setRotationAngle(HatLayer_r6, -0.3054F, -0.3491F, -0.7854F);
-				HatLayer_r6.cubeList.add(new ModelBox(HatLayer_r6, 13, 0, -6.425F, -1.225F, -0.8F, 9, 5, 0, 0.0F, true));
+				HatLayer_r3 = new ModelRenderer(this);
+				HatLayer_r3.setRotationPoint(-0.3121F, 3.6916F, -1.7356F);
+				bone44.addChild(HatLayer_r3);
+				setRotationAngle(HatLayer_r3, -0.3927F, -0.3491F, -0.7854F);
+				HatLayer_r3.cubeList.add(new ModelBox(HatLayer_r3, 13, 0, -4.5F, -4.5F, 0.0F, 9, 5, 0, 0.0F, false));
+		
+				HatLayer_r4 = new ModelRenderer(this);
+				HatLayer_r4.setRotationPoint(0.0F, 0.0F, 0.0F);
+				bone44.addChild(HatLayer_r4);
+				setRotationAngle(HatLayer_r4, -0.3054F, -0.3491F, -0.7854F);
+				HatLayer_r4.cubeList.add(new ModelBox(HatLayer_r4, 13, 0, -6.425F, -1.225F, -0.8F, 9, 5, 0, 0.0F, true));
 		
 				bone43 = new ModelRenderer(this);
 				bone43.setRotationPoint(4.6479F, -9.2565F, 0.5796F);
@@ -389,11 +408,41 @@ public class EntityWoodGolem extends ElementsNarutomodMod.ModElement {
 				setRotationAngle(bone43, 0.7418F, -1.309F, 0.0F);
 				
 		
-				HatLayer_r7 = new ModelRenderer(this);
-				HatLayer_r7.setRotationPoint(0.0F, 0.0F, 0.0F);
-				bone43.addChild(HatLayer_r7);
-				setRotationAngle(HatLayer_r7, -0.3054F, 0.3491F, 0.7854F);
-				HatLayer_r7.cubeList.add(new ModelBox(HatLayer_r7, 13, 0, -2.575F, -1.225F, -0.8F, 9, 5, 0, 0.0F, false));
+				HatLayer_r5 = new ModelRenderer(this);
+				HatLayer_r5.setRotationPoint(0.3121F, 3.6916F, -1.7356F);
+				bone43.addChild(HatLayer_r5);
+				setRotationAngle(HatLayer_r5, -0.3927F, 0.3491F, 0.7854F);
+				HatLayer_r5.cubeList.add(new ModelBox(HatLayer_r5, 13, 0, -4.5F, -4.5F, 0.0F, 9, 5, 0, 0.0F, true));
+		
+				HatLayer_r6 = new ModelRenderer(this);
+				HatLayer_r6.setRotationPoint(0.0F, 0.0F, 0.0F);
+				bone43.addChild(HatLayer_r6);
+				setRotationAngle(HatLayer_r6, -0.3054F, 0.3491F, 0.7854F);
+				HatLayer_r6.cubeList.add(new ModelBox(HatLayer_r6, 13, 0, -2.575F, -1.225F, -0.8F, 9, 5, 0, 0.0F, false));
+		
+				bone = new ModelRenderer(this);
+				bone.setRotationPoint(-1.9F, -2.2F, -4.0F);
+				bipedHead.addChild(bone);
+				setRotationAngle(bone, 0.2618F, 0.0F, 0.0F);
+				bone.cubeList.add(new ModelBox(bone, 0, 21, -1.0F, -2.0F, 0.0F, 2, 2, 0, 0.0F, false));
+		
+				bone8 = new ModelRenderer(this);
+				bone8.setRotationPoint(1.9F, -2.2F, -4.0F);
+				bipedHead.addChild(bone8);
+				setRotationAngle(bone8, 0.2618F, 0.0F, 0.0F);
+				bone8.cubeList.add(new ModelBox(bone8, 0, 21, -1.0F, -2.0F, 0.0F, 2, 2, 0, 0.0F, true));
+		
+				bone47 = new ModelRenderer(this);
+				bone47.setRotationPoint(-1.65F, -6.35F, -4.0F);
+				bipedHead.addChild(bone47);
+				setRotationAngle(bone47, 0.1745F, 0.0F, 0.0F);
+				bone47.cubeList.add(new ModelBox(bone47, 0, 18, -2.0F, -2.0F, 0.0F, 4, 3, 0, 0.0F, false));
+		
+				bone48 = new ModelRenderer(this);
+				bone48.setRotationPoint(1.65F, -6.35F, -4.0F);
+				bipedHead.addChild(bone48);
+				setRotationAngle(bone48, 0.1745F, 0.0F, 0.0F);
+				bone48.cubeList.add(new ModelBox(bone48, 0, 18, -2.0F, -2.0F, 0.0F, 4, 3, 0, 0.0F, true));
 		
 				bipedHeadwear = new ModelRenderer(this);
 				bipedHeadwear.setRotationPoint(0.0F, 0.0F, 0.0F);

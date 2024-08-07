@@ -367,9 +367,11 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 				@Override @Nullable
 				protected Vec3d getPosition() {
 					if (Base.this.hatesWater()) {
-						Vec3d vec = RandomPositionGenerator.getLandPos(this.entity, 56, 35);
-						if (vec != null) {
-							return vec;
+						for (int i = 0; i < Base.this.getTargetRange() - 56; i += 16) {
+							Vec3d vec = RandomPositionGenerator.getLandPos(this.entity, 56 + i, 35);
+							if (vec != null) {
+								return vec;
+							}
 						}
 					}
 					return RandomPositionGenerator.findRandomTarget(this.entity, 56, 35);
@@ -1215,6 +1217,16 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 				 new PathPoint(pos.getX(), pos.getY(), pos.getZ()) };
 				return new Path(pathpoints);
 			}
+		}
+
+		@Override
+		public boolean setPath(@Nullable Path pathentityIn, double speedIn) {
+			if (super.setPath(pathentityIn, speedIn)) {
+				this.ticksAtLastPos = this.totalTicks;
+				this.lastPosCheck = this.getEntityPosition();
+				return true;
+			}
+			return false;
 		}
 
 		@Override

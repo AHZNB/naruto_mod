@@ -14,16 +14,19 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.Item;
 import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.entity.ai.attributes.AttributeModifier;
+import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
-import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.util.text.translation.I18n;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.entity.ai.attributes.AttributeModifier;
-import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.client.model.ModelBiped;
+import net.minecraft.client.util.ITooltipFlag;
 
+import net.narutomod.entity.EntityEightTrigrams;
+import net.narutomod.entity.EntityHakkeshoKeiten;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.procedure.ProcedureByakuganHelmetTickEvent;
 import net.narutomod.creativetab.TabModTab;
@@ -33,8 +36,8 @@ import net.narutomod.NarutomodModVariables;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.HashMap;
-import com.google.common.collect.Multimap;
 import java.util.UUID;
+import com.google.common.collect.Multimap;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class ItemByakugan extends ElementsNarutomodMod.ModElement {
@@ -81,6 +84,17 @@ public class ItemByakugan extends ElementsNarutomodMod.ModElement {
 		ItemArmor.ArmorMaterial enuma = EnumHelper.addArmorMaterial("BYAKUGAN", "narutomod:byakugan_", 25, new int[]{2, 5, 6, 15}, 0, null, 0.0F);
 		
 		this.elements.items.add(() -> new ItemDojutsu.Base(enuma) {
+			@SideOnly(Side.CLIENT)
+			@Override
+			public ModelBiped getArmorModel(EntityLivingBase living, ItemStack stack, EntityEquipmentSlot slot, ModelBiped defaultModel) {
+				ItemDojutsu.ClientModel.ModelHelmetSnug armorModel = (ItemDojutsu.ClientModel.ModelHelmetSnug)super.getArmorModel(living, stack, slot, defaultModel);
+				armorModel.headwearHide = true;
+				armorModel.onface.showModel = living.getEntityData().getBoolean("byakugan_activated") || EntityEightTrigrams.EntityCustom.isActivated(living)
+				 || living.getRidingEntity() instanceof EntityHakkeshoKeiten.EntityCustom;
+				armorModel.highlightHide = !armorModel.onface.showModel;
+				return armorModel;
+			}
+
 			@Override
 			public String getArmorTexture(ItemStack stack, Entity entity, EntityEquipmentSlot slot, String type) {
 				return isRinnesharinganActivated(stack) 

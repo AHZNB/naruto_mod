@@ -175,7 +175,6 @@ public class ItemJutsu extends ElementsNarutomodMod.ModElement {
 				return false;
 			}
 			if (jutsuEnum.jutsu.createJutsu(stack, entity, power)) {
-				//this.addCurrentJutsuXp(stack, (int)power);
 				pw.consume(d);
 				return true;
 			}
@@ -239,6 +238,9 @@ public class ItemJutsu extends ElementsNarutomodMod.ModElement {
 				float power = this.getPower(itemstack, entity, timeLeft);
 				if (this.executeJutsu(itemstack, entity, power)) {
 					this.addCurrentJutsuXp(itemstack, 1);
+					if (entity instanceof EntityPlayer) {
+						((EntityPlayer)entity).addExhaustion(0.4f);
+					}
 				}
 			}
 		}

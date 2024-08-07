@@ -60,7 +60,6 @@ public class ItemDojutsu extends ElementsNarutomodMod.ModElement {
 			if (this.armorModel == null) {
 				this.armorModel = new ClientModel().new ModelHelmetSnug();
 			}
-
 			this.armorModel.isSneak = living.isSneaking();
 			this.armorModel.isRiding = living.isRiding();
 			this.armorModel.isChild = living.isChild();
@@ -119,6 +118,7 @@ public class ItemDojutsu extends ElementsNarutomodMod.ModElement {
 	public static class ClientModel {
 		@SideOnly(Side.CLIENT)
 		public class ModelHelmetSnug extends ModelBiped {
+			protected final ModelRenderer onface;
 			protected final ModelRenderer hornRight;
 			private final ModelRenderer bone2;
 			private final ModelRenderer bone3;
@@ -148,6 +148,11 @@ public class ItemDojutsu extends ElementsNarutomodMod.ModElement {
 				bipedHead = new ModelRenderer(this);
 				bipedHead.setRotationPoint(0.0F, 0.0F, 0.0F);
 				bipedHead.cubeList.add(new ModelBox(this.bipedHead, 0, 0, -4.0F, -8.0F, -4.0F, 8, 8, 8, 0.05F, false));
+
+				onface = new ModelRenderer(this);
+				onface.setRotationPoint(0.0F, 0.0F, 0.0F);
+				bipedHead.addChild(onface);
+				onface.cubeList.add(new ModelBox(onface, 32, 0, -4.0F, -8.0F, -4.0F, 8, 8, 8, 0.15F, false));
 
 				hornRight = new ModelRenderer(this);
 				hornRight.setRotationPoint(-2.5F, -6.0F, -4.0F);

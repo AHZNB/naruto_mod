@@ -7,7 +7,6 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.common.MinecraftForge;
 
-import net.minecraft.entity.Entity;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.client.Minecraft;
 
@@ -22,10 +21,15 @@ public class ProcedureOnKeyEvent extends ElementsNarutomodMod.ModElement {
 	@SubscribeEvent
 	@SideOnly(Side.CLIENT)
 	public void onKey(InputEvent.KeyInputEvent event) {
-		if (Minecraft.getMinecraft().currentScreen == null) {
-			Entity entity = Minecraft.getMinecraft().player;
-			if (entity.getEntityData().getInteger("FearEffect") > 0) {
+		Minecraft mc = Minecraft.getMinecraft();
+		if (mc.currentScreen == null) {
+			if (mc.player.getEntityData().getInteger("FearEffect") > 0) {
+				boolean flag = mc.gameSettings.keyBindTogglePerspective.isKeyDown();
 				KeyBinding.unPressAllKeys();
+				if (flag) {
+					KeyBinding.setKeyBindState(mc.gameSettings.keyBindTogglePerspective.getKeyCode(), true);
+					KeyBinding.onTick(mc.gameSettings.keyBindTogglePerspective.getKeyCode());
+				}
 			}
 		}
 	}

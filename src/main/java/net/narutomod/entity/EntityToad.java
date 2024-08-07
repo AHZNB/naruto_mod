@@ -854,7 +854,12 @@ public class EntityToad extends ElementsNarutomodMod.ModElement {
 			super.setRotationAngles(f, f1, f2, f3, f4, f5, e);
 			this.head.rotateAngleY = f3 / (180F / (float) Math.PI);
 			this.head.rotateAngleX = f4 / (180F / (float) Math.PI);
-			this.jaw.rotateAngleX = ((EntityCustom)e).getMouthOpen() ? 0.5236F : 0.0873F;
+			if (((EntityCustom)e).getMouthOpen()) {
+				this.head.rotateAngleX -= 0.2618F;
+				this.jaw.rotateAngleX = 0.5236F;
+			} else {
+				this.jaw.rotateAngleX = 0.0873F;
+			}
 			this.body.rotateAngleY = 0.0F;
 			this.armRight.rotateAngleX = -0.5236F;
 			this.armRight.rotateAngleZ = 0.3491F;

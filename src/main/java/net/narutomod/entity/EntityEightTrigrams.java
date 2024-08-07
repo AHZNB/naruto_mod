@@ -70,6 +70,10 @@ public class EntityEightTrigrams extends ElementsNarutomodMod.ModElement {
 		private final Map<EntityPlayer, Integer> pMap = Maps.newHashMap();
 		public final double effectRadius;
 		public final int effectDuration;
+
+		public static boolean isActivated(Entity entity) {
+			return entity.getEntityData().getBoolean(JUTSUACTIVEKEY);
+		}
 		
 		public EntityCustom(World world) {
 			super(world);
@@ -99,7 +103,8 @@ public class EntityEightTrigrams extends ElementsNarutomodMod.ModElement {
 
 		public void setOwnerPlayer(EntityLivingBase player) {
 			this.ownerPlayer = player;
-			player.getEntityData().setBoolean(JUTSUACTIVEKEY, true);
+			ProcedureSync.EntityNBTTag.setAndSync(player, JUTSUACTIVEKEY, true);
+			//player.getEntityData().setBoolean(JUTSUACTIVEKEY, true);
 		}
 
 		@Override
@@ -111,7 +116,8 @@ public class EntityEightTrigrams extends ElementsNarutomodMod.ModElement {
 		public void setDead() {
 			if (this.canDie) {
 				if (this.ownerPlayer != null) {
-					this.ownerPlayer.getEntityData().removeTag(JUTSUACTIVEKEY);
+					ProcedureSync.EntityNBTTag.removeAndSync(this.ownerPlayer, JUTSUACTIVEKEY);
+					//this.ownerPlayer.getEntityData().removeTag(JUTSUACTIVEKEY);
 				}
 				super.setDead();
 			}
@@ -180,7 +186,7 @@ public class EntityEightTrigrams extends ElementsNarutomodMod.ModElement {
 			@SubscribeEvent
 			public void onAttacked(LivingHurtEvent event) {
 				Entity source = event.getSource().getImmediateSource();
-				if (source != null && source.getEntityData().getBoolean(JUTSUACTIVEKEY)) {
+				if (source != null && EntityCustom.isActivated(source)) {
 					Chakra.pathway(event.getEntityLiving()).consume(0.125f);
 					event.getEntityLiving().getEntityData().setBoolean("TempData_disableKnockback", true);
 				}

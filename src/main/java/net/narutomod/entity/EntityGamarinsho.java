@@ -223,6 +223,7 @@ public class EntityGamarinsho extends ElementsNarutomodMod.ModElement {
 					entity1 = new EC(entity);
 					entity.world.spawnEntity(entity1);
 					entity.getEntityData().setInteger(ID_KEY, entity1.getEntityId());
+					return true;
 				} else {
 					entity1.setDead();
 				}
@@ -283,9 +284,9 @@ public class EntityGamarinsho extends ElementsNarutomodMod.ModElement {
 				entity.applyEntityCollision(this);
 			}
 			this.move(MoverType.SELF, this.motionX, this.motionY, this.motionZ);
-			this.motionX *= 0.8d;
-			this.motionY *= 0.8d;
-			this.motionZ *= 0.8d;
+			this.motionX *= 0.6d;
+			this.motionY *= 0.6d;
+			this.motionZ *= 0.6d;
 		}
 	}
 
@@ -393,10 +394,10 @@ public class EntityGamarinsho extends ElementsNarutomodMod.ModElement {
 		            this.renderToad(mc, event.getPartialTicks(), EnumFacing.WEST, 12.0D);
 		            this.renderCube(mc, x, y - 0.2D, z, (int)ticksElapsed, event.getPartialTicks());
 
-		            //mc.player.getEntityData().setInteger("FearEffect", 5);
 		            if (this.isCaster) {
 	            		mc.setRenderViewEntity(mc.player.getEntityData().getBoolean(NarutomodModVariables.JutsuKey2Pressed) ? this.playerDup : mc.player);
 		            } else {
+		            	mc.player.getEntityData().setInteger("FearEffect", 5);
 	        			mc.setRenderViewEntity(ticksElapsed < 60 && ticksElapsed % ((80-ticksElapsed) / 10) != 0 ? mc.player : this.playerDup);
 	        		}
                 }
