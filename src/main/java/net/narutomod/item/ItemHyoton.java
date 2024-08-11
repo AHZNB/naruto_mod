@@ -250,7 +250,7 @@ public class ItemHyoton extends ElementsNarutomodMod.ModElement {
 		}
 
 		@SideOnly(Side.CLIENT)
-		public class CustomRender extends EntitySpike.Renderer<EntityIceSpike> {
+		public class CustomRender extends EntitySpike.ClientSide.Renderer<EntityIceSpike> {
 			private final ResourceLocation texture = new ResourceLocation("narutomod:textures/spike_ice.png");
 	
 			public CustomRender(RenderManager renderManagerIn) {

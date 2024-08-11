@@ -1023,7 +1023,7 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 	}
 
 	@SideOnly(Side.CLIENT)
-	public static class ModelNinja extends ModelBiped {
+	public abstract static class ModelNinja extends ModelBiped {
 		public ModelNinja() {
 			this.textureWidth = 64;
 			this.textureHeight = 64;

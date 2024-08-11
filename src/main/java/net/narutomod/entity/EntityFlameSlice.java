@@ -13,12 +13,8 @@ import net.narutomod.ElementsNarutomodMod;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
-import net.minecraftforge.event.entity.living.LivingAttackEvent;
-import net.minecraftforge.common.MinecraftForge;
 
 import net.minecraft.world.World;
 import net.minecraft.util.DamageSource;
@@ -34,14 +30,15 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.init.MobEffects;
+import net.minecraft.init.SoundEvents;
 
 import javax.annotation.Nullable;
-import java.util.Random;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityFlameSlice extends ElementsNarutomodMod.ModElement {
 	public static final int ENTITYID = 445;
 	public static final int ENTITYID_RANGED = 446;
+	private static final int FLAME_COLOR = 0xffffcf00;
 
 	public EntityFlameSlice(ElementsNarutomodMod instance) {
 		super(instance, 876);
@@ -50,17 +47,16 @@ public class EntityFlameSlice extends ElementsNarutomodMod.ModElement {
 	@Override
 	public void initElements() {
 		elements.entities.add(() -> EntityEntryBuilder.create().entity(EC.class)
-				.id(new ResourceLocation("narutomod", "flame_slice"), ENTITYID).name("flame_slice").tracker(64, 3, true).build());
-	}
-
-	@Override
-	public void init(FMLInitializationEvent event) {
-		MinecraftForge.EVENT_BUS.register(new EC.AttackHook());
+		 .id(new ResourceLocation("narutomod", "flame_slice"), ENTITYID).name("flame_slice").tracker(64, 3, true).build());
+		elements.entities.add(() -> EntityEntryBuilder.create().entity(EntitySweepParticle.class)
+		 .id(new ResourceLocation("narutomod", "flame_slice_particle"), ENTITYID_RANGED).name("flame_slice_particle")
+		 .tracker(64, 3, true).build());
 	}
 
 	public static class EC extends EntityChakraFlow.Base {
 		private int strengthModifier = 2;
 		private boolean holdingWeapon;
+		private int ticksSinceLastSwing;
 
 		public EC(World world) {
 			super(world);
@@ -71,11 +67,7 @@ public class EntityFlameSlice extends ElementsNarutomodMod.ModElement {
 			if (itemstack.getItem() == ItemKaton.block) {
 				float f = ((ItemKaton.RangedItem)itemstack.getItem()).getCurrentJutsuXpModifier(itemstack, user);
 				if (f > 0.0f) {
-					f = 1.0f / f;
-					if (user instanceof EntityPlayer) {
-						f *= PlayerTracker.getNinjaLevel((EntityPlayer)user) / 40d;
-					}
-					this.strengthModifier = (int)f;
+					this.strengthModifier = (int)(1.0f / f);
 				}
 			}
 		}
@@ -94,8 +86,26 @@ public class EntityFlameSlice extends ElementsNarutomodMod.ModElement {
 			if (!this.world.isRemote) {
 				boolean flag = this.isUserHoldingWeapon();
 				if (flag) {
+					EntityLivingBase user = this.getUser();
+					if (user instanceof EntityPlayer && user.swingProgressInt == 1) {
+						this.world.spawnEntity(new EntitySweepParticle(user, 8.0f));
+						double d = ProcedureUtils.getReachDistance(user);
+						float damage = (float)ProcedureUtils.getModifiedAttackDamage(user) * this.getCooledAttackStrength(user, 0.5f);
+						this.ticksSinceLastSwing = 0;
+						Entity directTarget = ProcedureUtils.objectEntityLookingAt(user, 4d, this).entityHit;
+						for (EntityLivingBase entity : this.world.getEntitiesWithinAABB(EntityLivingBase.class, user.getEntityBoundingBox().grow(d, 0.25D, d))) {
+							if (entity != user && entity != directTarget && !user.isOnSameTeam(entity) && user.getDistanceSq(entity) <= d * d) {
+								entity.knockBack(user, 0.5F, MathHelper.sin(user.rotationYaw * 0.017453292F), -MathHelper.cos(user.rotationYaw * 0.017453292F));
+								entity.attackEntityFrom(DamageSource.causePlayerDamage((EntityPlayer)user), damage);
+								entity.setFire(15);
+							}
+						}
+						this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:flamethrow")), 1.0F, this.rand.nextFloat() * 0.4f + 0.9f);
+					}
 					if (!this.holdingWeapon) {
 						this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:flamethrow")), 0.8F, this.rand.nextFloat() * 0.5f + 0.6f);
+					} else if (this.rand.nextFloat() < 0.05f) {
+						this.playSound(SoundEvents.BLOCK_FIRE_AMBIENT, 0.4f, this.rand.nextFloat() * 0.4f + 0.7f);
 					}
 					if (this.ticksExisted % 10 == 1 && !net.narutomod.Chakra.pathway(this.getUser()).consume(ItemKaton.FLAMESLICE.chakraUsage * 0.1d)) {
 						this.setDead();
@@ -103,11 +113,14 @@ public class EntityFlameSlice extends ElementsNarutomodMod.ModElement {
 				}
 				this.holdingWeapon = flag;
 			}
+			++this.ticksSinceLastSwing;
 		}
 
-		public Random rng() {
-			return this.rand;
-		}
+	    public float getCooledAttackStrength(EntityLivingBase entity, float adjustTicks) {
+	    	float f = (float)(1.0D / ProcedureUtils.getAttackSpeed(entity) * 20.0D);
+	        float f2 = MathHelper.clamp(((float)this.ticksSinceLastSwing + adjustTicks) / f, 0.0F, 1.0F);
+	        return 0.2F + f2 * f2 * 0.8F;
+	    }
 
 		public static class Jutsu implements ItemJutsu.IJutsuCallback {
 			private static final String ID_KEY = "FlameSliceEntityIdKey";
@@ -168,26 +181,19 @@ public class EntityFlameSlice extends ElementsNarutomodMod.ModElement {
 				return null;
 			}
 		}
+	}
 
-		public static class AttackHook {
-			@SubscribeEvent
-			public void onLivingAttack(LivingAttackEvent event) {
-				Entity attacker = event.getSource().getImmediateSource();
-				if (!event.getSource().getDamageType().equals("splash.flameslice") && attacker instanceof EntityLivingBase && ItemKaton.FLAMESLICE.jutsu.isActivated((EntityLivingBase)attacker)) {
-					double d = ProcedureUtils.getReachDistance((EntityLivingBase)attacker);
-					for (EntityLivingBase entity : attacker.world.getEntitiesWithinAABB(EntityLivingBase.class, attacker.getEntityBoundingBox().grow(d, 0.25D, d))) {
-						if (entity != attacker && entity != event.getEntityLiving() && !attacker.isOnSameTeam(entity) && attacker.getDistanceSq(entity) <= d * d) {
-							entity.knockBack(attacker, 0.5F, MathHelper.sin(attacker.rotationYaw * 0.017453292F), -MathHelper.cos(attacker.rotationYaw * 0.017453292F));
-							event.getSource().damageType = "splash.flameslice";
-							entity.attackEntityFrom(event.getSource(), event.getAmount());
-							entity.setFire(15);
-						}
-					}
-					attacker.world.playSound(null, attacker.posX, attacker.posY, attacker.posZ,
-					 SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:flamethrow")),
-					 attacker.getSoundCategory(), 1.0F, ((EntityLivingBase)attacker).getRNG().nextFloat() * 0.5f + 0.6f);
-				}
-			}
+	public static class EntitySweepParticle extends EntitySweep.Base {
+		public EntitySweepParticle(World world) {
+			super(world);
+			this.maxAge = 6;
+		}
+
+		public EntitySweepParticle(EntityLivingBase shooter, float scale) {
+			super(shooter, FLAME_COLOR, scale);
+			Vec3d vec = shooter.getPositionEyes(1f);
+			this.setLocationAndAngles(vec.x, vec.y, vec.z, shooter.rotationYaw, 0.0f);
+			this.maxAge = 6;
 		}
 	}
 
@@ -201,6 +207,7 @@ public class EntityFlameSlice extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void register() {
 			RenderingRegistry.registerEntityRenderingHandler(EC.class, renderManager -> new RenderCustom(renderManager));
+			RenderingRegistry.registerEntityRenderingHandler(EntitySweepParticle.class, renderManager -> new RenderSweep(renderManager));
 		}
 
 		@SideOnly(Side.CLIENT)
@@ -210,14 +217,31 @@ public class EntityFlameSlice extends ElementsNarutomodMod.ModElement {
 			}
 	
 			@Override
-			protected void spawnParticles(EC entity, Vec3d startvec, Vec3d endvec) {
-				Vec3d vec = endvec.subtract(startvec);
-				Vec3d vec2 = vec.scale(0.04d);
-				for (int i = 0; i < 5; i++) {
-					Vec3d vec1 = startvec.add(vec.scale(entity.rng().nextDouble() * 0.9d + 0.1d));
-					Particles.spawnParticle(entity.world, Particles.Types.FLAME, vec1.x, vec1.y, vec1.z,
-					  1, 0.025d, 0.025d, 0.025d, vec2.x, vec2.y, vec2.z, 0xffffcf00);
+			protected void spawnParticles(EntityLivingBase entity, Vec3d startvec, Vec3d endvec, float partialTicks) {
+				if (entity.getSwingProgress(partialTicks) == 0.0f) {
+					Vec3d vec = endvec.subtract(startvec);
+					Vec3d vec2 = vec.scale(0.04d);
+					for (int i = 0; i < 3; i++) {
+						Vec3d vec1 = startvec.add(vec.scale(entity.getRNG().nextDouble() * 0.9d + 0.1d));
+						Particles.spawnParticle(entity.world, Particles.Types.FLAME, vec1.x, vec1.y, vec1.z,
+						  1, 0.025d, 0.025d, 0.025d, vec2.x, vec2.y, vec2.z, FLAME_COLOR);
+					}
 				}
+			}
+		}
+
+		@SideOnly(Side.CLIENT)
+		public class RenderSweep extends EntitySweep.Renderer.RenderCustom {
+			public RenderSweep(RenderManager renderManagerIn) {
+				super(renderManagerIn);
+			}
+
+			@Override
+			protected void renderParticles(EntitySweep.Base entity, Vec3d entityVec, Vec3d relVec, int color, float scale) {
+				Vec3d vec1 = entityVec.add(relVec);
+				Vec3d vec2 = relVec.scale(0.05d);
+				Particles.spawnParticle(entity.world, Particles.Types.FLAME, vec1.x, vec1.y, vec1.z,
+				 1, 0d, 0d, 0d, vec2.x, vec2.y, vec2.z, FLAME_COLOR, (int)(scale * (entity.rand().nextFloat() * 3.0f + 1.0f)));
 			}
 		}
 	}

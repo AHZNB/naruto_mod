@@ -278,7 +278,7 @@ public class ItemSenjutsu extends ElementsNarutomodMod.ModElement {
 		public ModelBiped getArmorModel(EntityLivingBase living, ItemStack stack, EntityEquipmentSlot slot, ModelBiped defaultModel) {
 			if (isSageModeActivated(stack)) {
 				if (this.armorModel == null) {
-					this.armorModel = new Renderer().new ModelHelmetSnug();
+					this.armorModel = Renderer.instance.new ModelHelmetSnug();
 				}
 				this.armorModel.isSneak = living.isSneaking();
 				this.armorModel.isRiding = living.isRiding();
@@ -499,6 +499,12 @@ public class ItemSenjutsu extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static class Renderer extends EntityRendererRegister {
+		private static Renderer instance;
+
+		public Renderer() {
+			instance = this;
+		}
+
 		@SideOnly(Side.CLIENT)
 		@Override
 		public void register() {

@@ -221,44 +221,44 @@ public class EntityChakraFlow extends ElementsNarutomodMod.ModElement {
 	}
 
 	@SideOnly(Side.CLIENT)
-	public static class RenderCustom<T extends Base> extends Render<T> {
+	public static abstract class RenderCustom<T extends Base> extends Render<T> {
 		public RenderCustom(RenderManager renderManagerIn) {
 			super(renderManagerIn);
 		}
 
 		private Vec3d transform3rdPerson(Vec3d startvec, Vec3d angles, EntityLivingBase entity, float pt) {
-			return ProcedureUtils.rotateRoll(startvec, (float)-angles.z)
-			   .rotateYaw((float)-angles.y).rotatePitch((float)-angles.x)
-			   .addVector(0.0625F * -5, 1.5F-(entity.isSneaking()?0.3f:0f), -0.05F)
-			   .rotateYaw((-entity.prevRenderYawOffset - (entity.renderYawOffset - entity.prevRenderYawOffset) * pt) * (float)(Math.PI / 180d))
-			   //.addVector(entity.posX, entity.posY, entity.posZ);
-			   .addVector(entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * pt, entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * pt, entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * pt);
+			return new ProcedureUtils.RotationMatrix().rotateZ((float)-angles.z).rotateY((float)-angles.y).rotateX((float)angles.x)
+			 .transform(startvec).addVector(0.0625F * -5, 1.5F-(entity.isSneaking()?0.3f:0f), -0.05F)
+			 .rotateYaw((-entity.prevRenderYawOffset - (entity.renderYawOffset - entity.prevRenderYawOffset) * pt) * (float)(Math.PI / 180d))
+			 .addVector(entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * pt, entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * pt, entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * pt);
 		}
 
-		protected void spawnParticles(T entity, Vec3d startvec, Vec3d endvec) {
+		protected void spawnParticles(EntityLivingBase user, Vec3d startvec, Vec3d endvec, float partialTicks) {
 		}
 
 		@Override
 		public void doRender(T entity, double x, double y, double z, float entityYaw, float partialTicks) {
 			EntityLivingBase user = entity.getUser();
 			if (user != null && entity.isUserHoldingWeapon() && (this.renderManager.options.thirdPersonView != 0 || user != this.renderManager.renderViewEntity)) {
-				ItemStack stack = user.getHeldItemMainhand();
-				Vec3d startVec = stack.hasTagCompound() && stack.getTagCompound().hasKey("CustomChakraFlowStartVec", 10)
-				 ? new Vec3d(stack.getTagCompound().getCompoundTag("CustomChakraFlowStartVec").getDouble("x"),
-				             stack.getTagCompound().getCompoundTag("CustomChakraFlowStartVec").getDouble("y"),
-				             stack.getTagCompound().getCompoundTag("CustomChakraFlowStartVec").getDouble("z"))
-				 : new Vec3d(0d, -0.725d, 0.1d);
-				Vec3d endVec = stack.hasTagCompound() && stack.getTagCompound().hasKey("CustomChakraFlowEndVec", 10)
-				 ? new Vec3d(stack.getTagCompound().getCompoundTag("CustomChakraFlowEndVec").getDouble("x"),
-				             stack.getTagCompound().getCompoundTag("CustomChakraFlowEndVec").getDouble("y"),
-				             stack.getTagCompound().getCompoundTag("CustomChakraFlowEndVec").getDouble("z"))
-				 : new Vec3d(0d, -0.85d, 0.9d);
-				RenderLivingBase<?> renderer = (RenderLivingBase<?>)this.renderManager.getEntityRenderObject(user);
-				ModelRenderer armModel = ((ModelBiped)renderer.getMainModel()).bipedRightArm;
-				Vec3d armAngles = new Vec3d(armModel.rotateAngleX, armModel.rotateAngleY, armModel.rotateAngleZ);
-				Vec3d vec0 = this.transform3rdPerson(startVec, armAngles, user, partialTicks);
-				Vec3d vec1 = this.transform3rdPerson(endVec, armAngles, user, partialTicks);
-				this.spawnParticles(entity, vec0, vec1);
+				Render renderer = this.renderManager.getEntityRenderObject(user);
+				if (renderer instanceof RenderLivingBase && ((RenderLivingBase)renderer).getMainModel() instanceof ModelBiped) {
+					ModelRenderer armModel = ((ModelBiped)((RenderLivingBase)renderer).getMainModel()).bipedRightArm;
+					ItemStack stack = user.getHeldItemMainhand();
+					Vec3d startVec = stack.hasTagCompound() && stack.getTagCompound().hasKey("CustomChakraFlowStartVec", 10)
+					 ? new Vec3d(stack.getTagCompound().getCompoundTag("CustomChakraFlowStartVec").getDouble("x"),
+					             stack.getTagCompound().getCompoundTag("CustomChakraFlowStartVec").getDouble("y"),
+					             stack.getTagCompound().getCompoundTag("CustomChakraFlowStartVec").getDouble("z"))
+					 : new Vec3d(0d, -0.725d, 0.1d);
+					Vec3d endVec = stack.hasTagCompound() && stack.getTagCompound().hasKey("CustomChakraFlowEndVec", 10)
+					 ? new Vec3d(stack.getTagCompound().getCompoundTag("CustomChakraFlowEndVec").getDouble("x"),
+					             stack.getTagCompound().getCompoundTag("CustomChakraFlowEndVec").getDouble("y"),
+					             stack.getTagCompound().getCompoundTag("CustomChakraFlowEndVec").getDouble("z"))
+					 : new Vec3d(0d, -0.85d, 0.9d);
+					Vec3d armAngles = new Vec3d(armModel.rotateAngleX, armModel.rotateAngleY, armModel.rotateAngleZ);
+					Vec3d vec0 = this.transform3rdPerson(startVec, armAngles, user, partialTicks);
+					Vec3d vec1 = this.transform3rdPerson(endVec, armAngles, user, partialTicks);
+					this.spawnParticles(user, vec0, vec1, partialTicks);
+				}
 			}
 		}
 

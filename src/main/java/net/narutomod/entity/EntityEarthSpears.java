@@ -8,19 +8,20 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.WorldServer;
-import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
+import net.minecraft.client.renderer.entity.RenderManager;
 
 import net.narutomod.item.ItemJutsu;
 import net.narutomod.ElementsNarutomodMod;
@@ -43,15 +44,19 @@ public class EntityEarthSpears extends ElementsNarutomodMod.ModElement {
 	@SideOnly(Side.CLIENT)
 	@Override
 	public void preInit(FMLPreInitializationEvent event) {
-		RenderingRegistry.registerEntityRenderingHandler(EC.class, renderManager -> {
-			return new EntitySpike.Renderer<EC>(renderManager) {
-				private final ResourceLocation texture = new ResourceLocation("narutomod:textures/spike_stone.png");
-				@Override
-				protected ResourceLocation getEntityTexture(EC entity) {
-					return this.texture;
-				}
-			};
-		});
+		class CustomRender extends EntitySpike.ClientSide.Renderer<EC> {
+			private final ResourceLocation texture = new ResourceLocation("narutomod:textures/spike_stone.png");
+	
+			public CustomRender(RenderManager renderManagerIn) {
+				super(renderManagerIn);
+			}
+		
+			@Override
+			protected ResourceLocation getEntityTexture(EC entity) {
+				return this.texture;
+			}
+		}
+		RenderingRegistry.registerEntityRenderingHandler(EC.class, renderManager -> new CustomRender(renderManager));
 	}
 
 	public static class EC extends EntitySpike.Base {

@@ -533,12 +533,10 @@ public class EntityHiraishin extends ElementsNarutomodMod.ModElement {
 			if (mc.player != null && PlayerTracker.isNinja(mc.player) && !clientMarkerList.isEmpty()) {
 				RenderManager renderManager = mc.getRenderManager();
 				if (renderManager != null && renderManager.options != null && renderManager.options.thirdPersonView == 0) {
-					//ICamera camera = new Frustum();
-					//camera.setPosition(renderManager.viewerPosX, renderManager.viewerPosY, renderManager.viewerPosZ);
 					for (Vector4d vec : clientMarkerList.values()) {
 						Vec3d vec1 = new Vec3d(vec.x, vec.y, vec.z).subtract(renderManager.viewerPosX, renderManager.viewerPosY, renderManager.viewerPosZ);
-						AxisAlignedBB aabb = new AxisAlignedBB(vec.x-0.5d, vec.y, vec.z-0.5d, vec.x+0.5d, vec.y+1.0d, vec.z+0.5d);
-						if ((int)vec.w == mc.world.provider.getDimension()) {// && camera.isBoundingBoxInFrustum(aabb.grow(vec1.lengthVector()/20d))) {
+						float f = MathHelper.abs(MathHelper.wrapDegrees(ProcedureUtils.getYawFromVec(vec1) - mc.player.rotationYawHead));
+						if ((int)vec.w == mc.world.provider.getDimension() && f < 90.0f) {
 							this.renderCustom.renderMarker(vec1.x, vec1.y, vec1.z, (float)mc.world.getTotalWorldTime() + event.getPartialTicks());
 						}
 					}
@@ -549,16 +547,17 @@ public class EntityHiraishin extends ElementsNarutomodMod.ModElement {
 		@SideOnly(Side.CLIENT)
 		@SubscribeEvent
 		public void onLeftClickEmpty(PlayerInteractEvent.LeftClickEmpty event) {
+			Minecraft mc = Minecraft.getMinecraft();
 			EntityPlayer player = event.getEntityPlayer();
-			if (PlayerTracker.isNinja(player) && !clientMarkerList.isEmpty() && canUseJutsu(player)) {
+			if (PlayerTracker.isNinja(player) && !clientMarkerList.isEmpty() && mc.gameSettings.thirdPersonView == 0 && canUseJutsu(player)) {
 				Vec3d vec1 = player.getPositionEyes(1f);
 				for (Vector4d vec4d : clientMarkerList.values()) {
-					if ((int)vec4d.w == Minecraft.getMinecraft().world.provider.getDimension()) {
+					if ((int)vec4d.w == mc.world.provider.getDimension()) {
 						Vec3d vec = new Vec3d(vec4d.x, vec4d.y, vec4d.z);
 						double d = vec.subtract(vec1).lengthVector();
 						Vec3d vec2 = vec1.add(player.getLookVec().scale(d + 10d));
 						AxisAlignedBB aabb = new AxisAlignedBB(vec.x-0.5d, vec.y, vec.z-0.5d, vec.x+0.5d, vec.y+1.0d, vec.z+0.5d);
-						if (aabb.grow(d/20d).calculateIntercept(vec1, vec2) != null) {
+						if (aabb.grow(d * 0.05d).calculateIntercept(vec1, vec2) != null) {
 							Chakra.Pathway chakra = Chakra.pathway(player);
 							double chakraUsage = MathHelper.sqrt(d) * 10d;
 							if (chakra.getAmount() > chakraUsage) {

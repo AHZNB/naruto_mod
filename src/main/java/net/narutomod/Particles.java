@@ -595,6 +595,11 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 			this.particleScale = this.flameScale * f8;
 	        float f0 = (float)this.particleTextureIndexX / 8.0F;
 	        float f1 = f0 + 0.124875F;
+	        if (this.rand.nextBoolean()) {
+	        	float f12 = f0;
+	        	f0 = f1;
+	        	f1 = f12;
+	        }
 	        float f2 = (float)this.particleTextureIndexY / 8.0F;
 	        float f3 = f2 + 0.124875F;
 	        float f4 = 0.1F * this.particleScale;
@@ -1358,7 +1363,7 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 			float f3 = this.particleScale * (f2 * 0.6f + 0.7f);
 			float f4 = this.particleAlpha * (1.0F - (f2 - 0.1F) * (f2 - 0.1F));
 			if (f2 <= 0.1F) {
-				f4 = f2 / 0.1F;
+				f4 = f2 * 10.0F;
 			}
 			this.renderBuffer(buffer, entityIn, partialTicks, this.rotateX, this.rotateY, this.rotateZ - 30.0F * f1, f3, f4);
 		}
@@ -1498,6 +1503,16 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 			this.rotateX = ProcedureUtils.getPitchFromVec(this.motionX, this.motionY, this.motionZ);
 			this.rotateY = ProcedureUtils.getYawFromVec(this.motionX, this.motionZ);
 			this.rotateZ = this.rand.nextFloat() * 360.0F;
+		}
+
+		@Override
+		public void renderParticle(BufferBuilder buffer, Entity entityIn, float partialTicks, float rotationX, float rotationZ,
+		 float rotationYZ, float rotationXY, float rotationXZ) {
+			float f1 = (float)this.particleAge + partialTicks;
+			float f2 = f1 / (float)this.particleMaxAge;
+			float f3 = this.particleScale * (f2 * 0.6f + 0.7f);
+			float f4 = this.particleAlpha * (1.0F - f2);
+			this.renderBuffer(buffer, entityIn, partialTicks, this.rotateX, this.rotateY, this.rotateZ - 30.0F * f1, f3, f4);
 		}
 
 		@Override

@@ -9,8 +9,14 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.event.ModelRegistryEvent;
+import net.minecraftforge.items.ItemHandlerHelper;
 
 import net.minecraft.world.World;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.ResourceLocation;
@@ -19,13 +25,9 @@ import net.minecraft.item.Item;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
+import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.inventory.EntityEquipmentSlot;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.BlockPos;
 
 import net.narutomod.entity.EntitySpike;
 import net.narutomod.entity.EntityFingerBone;
@@ -33,7 +35,6 @@ import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.item.ItemJutsu;
 import net.narutomod.creativetab.TabModTab;
 import net.narutomod.ElementsNarutomodMod;
-import net.minecraftforge.items.ItemHandlerHelper;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class ItemShikotsumyaku extends ElementsNarutomodMod.ModElement {
@@ -68,14 +69,19 @@ public class ItemShikotsumyaku extends ElementsNarutomodMod.ModElement {
 	@SideOnly(Side.CLIENT)
 	@Override
 	public void preInit(FMLPreInitializationEvent event) {
-		RenderingRegistry.registerEntityRenderingHandler(EntityBrackenDance.class, renderManager -> {
-			return new EntitySpike.Renderer<EntityBrackenDance>(renderManager) {
-				@Override
-				protected ResourceLocation getEntityTexture(EntityBrackenDance entity) {
-					return new ResourceLocation("narutomod:textures/spike_bone.png");
-				}
-			};
-		});
+		class CustomRender extends EntitySpike.ClientSide.Renderer<EntityBrackenDance> {
+			private final ResourceLocation texture = new ResourceLocation("narutomod:textures/spike_bone.png");
+		
+			public CustomRender(RenderManager renderManagerIn) {
+				super(renderManagerIn);
+			}
+		
+			@Override
+			protected ResourceLocation getEntityTexture(EntityBrackenDance entity) {
+				return this.texture;
+			}
+		}
+		RenderingRegistry.registerEntityRenderingHandler(EntityBrackenDance.class, renderManager -> new CustomRender(renderManager));
 	}
 
 	public static class RangedItem extends ItemJutsu.Base {

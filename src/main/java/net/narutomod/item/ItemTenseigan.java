@@ -75,6 +75,7 @@ public class ItemTenseigan extends ElementsNarutomodMod.ModElement {
 				Item item = living.getHeldItemMainhand().getItem();
 				armorModel.headwearHide = item != ItemTenseiganChakraMode.block || ((ItemTenseiganChakraMode.RangedItem)item).isOnCooldown(living);
 				armorModel.headHide = !armorModel.headwearHide;
+				armorModel.onface.showModel = false;
 				armorModel.hornRight.showModel = armorModel.hornLeft.showModel = false;
 				return armorModel;
 			}

@@ -3,9 +3,6 @@ package net.narutomod.entity;
 
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.client.registry.RenderingRegistry;
 
 import net.minecraft.world.World;
 import net.minecraft.util.ResourceLocation;
@@ -40,31 +37,7 @@ public class EntitySpike extends ElementsNarutomodMod.ModElement {
 		super(instance, 533);
 	}
 
-	@Override
-	public void initElements() {
-		elements.entities.add(() -> EntityEntryBuilder.create().entity(Base.class)
-		 .id(new ResourceLocation("narutomod", "spike"), ENTITYID).name("spike").tracker(64, 3, true).build());
-	}
-
-	@SideOnly(Side.CLIENT)
-	@Override
-	public void preInit(FMLPreInitializationEvent event) {
-		RenderingRegistry.registerEntityRenderingHandler(Base.class, renderManager -> new Renderer(renderManager));
-	}
-
-	@Nullable
-	public static Base spawnSpike(World worldIn, int color) {
-		Base entity = new Base(worldIn, color);
-		return worldIn.spawnEntity(entity) ? entity : null;
-	}
-
-	@Nullable
-	public static Base spawnSpike(EntityLivingBase entityIn, int color) {
-		Base entity = new Base(entityIn, color);
-		return entityIn.world.spawnEntity(entity) ? entity : null;
-	}
-
-	public static class Base extends EntityScalableProjectile.Base {
+	public static abstract class Base extends EntityScalableProjectile.Base {
 		private static final DataParameter<Integer> COLOR = EntityDataManager.<Integer>createKey(Base.class, DataSerializers.VARINT);
 		private Vec3d tipOffset = Vec3d.ZERO;
 
@@ -176,110 +149,107 @@ public class EntitySpike extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-	@SideOnly(Side.CLIENT)
-	public static class Renderer<T extends Base> extends Render<T> {
-		private static final ResourceLocation TEXTURE = new ResourceLocation("narutomod:textures/spike.png");
-		protected final ModelSpike model;
-
-		public Renderer(RenderManager renderManagerIn) {
-			super(renderManagerIn);
-			this.model = new ModelSpike();
-			this.shadowSize = 0.1f;
-		}
-
-		@Override
-		public void doRender(T entity, double x, double y, double z, float entityYaw, float pt) {
-			GlStateManager.pushMatrix();
-			this.bindEntityTexture(entity);
-			float scale = entity.getEntityScale();
-			GlStateManager.translate(x, y, z);
-			GlStateManager.rotate(-entity.prevRotationYaw - (entity.rotationYaw - entity.prevRotationYaw) * pt, 0.0F, 1.0F, 0.0F);
-			GlStateManager.rotate(entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * pt - 180.0F, 1.0F, 0.0F, 0.0F);
-			GlStateManager.scale(scale, scale, scale);
-			int color = entity.getColor();
-			float alpha = (color >> 24 & 0xFF) / 255.0F;
-			float red = (color >> 16 & 0xFF) / 255.0F;
-			float green = (color >> 8 & 0xFF) / 255.0F;
-			float blue = (color & 0xFF) / 255.0F;
-			if (alpha < 1.0f) {
-				GlStateManager.disableCull();
-				GlStateManager.enableAlpha();
-				GlStateManager.enableBlend();
-				GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-				GlStateManager.disableLighting();
+	public static class ClientSide {
+		@SideOnly(Side.CLIENT)
+		public static abstract class Renderer<T extends Base> extends Render<T> {
+			//private static final ResourceLocation TEXTURE = new ResourceLocation("narutomod:textures/spike.png");
+			protected final ModelSpike model;
+	
+			public Renderer(RenderManager renderManagerIn) {
+				super(renderManagerIn);
+				this.model = new ModelSpike();
+				this.shadowSize = 0.1f;
 			}
-			//GlStateManager.color(0.616f, 0.882f, 1.0f, 0.5f);
-			GlStateManager.color(red, green, blue, alpha);
-			//OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240.0F, 240.0F);
-			this.model.render(entity, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
-			GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
-			if (alpha < 1.0f) {
-				GlStateManager.enableLighting();
-				GlStateManager.disableBlend();
-				//GlStateManager.disableAlpha();
-				GlStateManager.enableCull();
+	
+			@Override
+			public void doRender(T entity, double x, double y, double z, float entityYaw, float pt) {
+				GlStateManager.pushMatrix();
+				this.bindEntityTexture(entity);
+				float scale = entity.getEntityScale();
+				GlStateManager.translate(x, y, z);
+				GlStateManager.rotate(-entity.prevRotationYaw - (entity.rotationYaw - entity.prevRotationYaw) * pt, 0.0F, 1.0F, 0.0F);
+				GlStateManager.rotate(entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * pt - 180.0F, 1.0F, 0.0F, 0.0F);
+				GlStateManager.scale(scale, scale, scale);
+				int color = entity.getColor();
+				float alpha = (color >> 24 & 0xFF) / 255.0F;
+				float red = (color >> 16 & 0xFF) / 255.0F;
+				float green = (color >> 8 & 0xFF) / 255.0F;
+				float blue = (color & 0xFF) / 255.0F;
+				if (alpha < 1.0f) {
+					GlStateManager.disableCull();
+					GlStateManager.enableAlpha();
+					GlStateManager.enableBlend();
+					GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+					GlStateManager.disableLighting();
+				}
+				//GlStateManager.color(0.616f, 0.882f, 1.0f, 0.5f);
+				GlStateManager.color(red, green, blue, alpha);
+				//OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240.0F, 240.0F);
+				this.model.render(entity, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
+				GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
+				if (alpha < 1.0f) {
+					GlStateManager.enableLighting();
+					GlStateManager.disableBlend();
+					//GlStateManager.disableAlpha();
+					GlStateManager.enableCull();
+				}
+				GlStateManager.popMatrix();
 			}
-			GlStateManager.popMatrix();
 		}
-
-		@Override
-		protected ResourceLocation getEntityTexture(T entity) {
-			return TEXTURE;
-		}
+	
+		// Made with Blockbench 3.8.3
+		// Exported for Minecraft version 1.7 - 1.12
+		// Paste this class into your mod and generate all required imports
+		@SideOnly(Side.CLIENT)
+		static class ModelSpike extends ModelBase {
+			private final ModelRenderer bone;
+			private final ModelRenderer bone2;
+			private final ModelRenderer bone3;
+			private final ModelRenderer bone4;
+			private final ModelRenderer bone5;
+			private final ModelRenderer bone6;
+			public ModelSpike() {
+				textureWidth = 32;
+				textureHeight = 32;
+				bone = new ModelRenderer(this);
+				bone.setRotationPoint(0.0F, 0.0F, 0.0F);
+				bone2 = new ModelRenderer(this);
+				bone2.setRotationPoint(0.0F, 0.0F, 4.0F);
+				bone.addChild(bone2);
+				setRotationAngle(bone2, 0.1309F, 0.0F, 0.0F);
+				bone2.cubeList.add(new ModelBox(bone2, 0, 0, -4.0F, -32.0F, 0.0F, 8, 32, 0, 0.0F, false));
+				bone3 = new ModelRenderer(this);
+				bone3.setRotationPoint(0.0F, 0.0F, -4.0F);
+				bone.addChild(bone3);
+				setRotationAngle(bone3, -0.1309F, 0.0F, 0.0F);
+				bone3.cubeList.add(new ModelBox(bone3, 8, 0, -4.0F, -32.0F, 0.0F, 8, 32, 0, 0.0F, false));
+				bone4 = new ModelRenderer(this);
+				bone4.setRotationPoint(4.0F, 0.0F, 0.0F);
+				bone.addChild(bone4);
+				setRotationAngle(bone4, -0.1309F, -1.5708F, 0.0F);
+				bone4.cubeList.add(new ModelBox(bone4, 8, 0, -4.0F, -32.0F, 0.0F, 8, 32, 0, 0.0F, false));
+				bone5 = new ModelRenderer(this);
+				bone5.setRotationPoint(-4.0F, 0.0F, 0.0F);
+				bone.addChild(bone5);
+				setRotationAngle(bone5, 0.1309F, -1.5708F, 0.0F);
+				bone5.cubeList.add(new ModelBox(bone5, 0, 0, -4.0F, -32.0F, 0.0F, 8, 32, 0, 0.0F, false));
+				bone6 = new ModelRenderer(this);
+				bone6.setRotationPoint(0.0F, 0.0F, 0.0F);
+				bone.addChild(bone6);
+				setRotationAngle(bone6, -1.5708F, 0.0F, 0.0F);
+				bone6.cubeList.add(new ModelBox(bone6, 16, 24, -4.0F, -4.0F, 0.0F, 8, 8, 0, 0.0F, false));
+			}
+	
+			@Override
+			public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
+				bone.render(f5);
+			}
+	
+			public void setRotationAngle(ModelRenderer modelRenderer, float x, float y, float z) {
+				modelRenderer.rotateAngleX = x;
+				modelRenderer.rotateAngleY = y;
+				modelRenderer.rotateAngleZ = z;
+			}
+		}
 	}
-
-	// Made with Blockbench 3.8.3
-	// Exported for Minecraft version 1.7 - 1.12
-	// Paste this class into your mod and generate all required imports
-	@SideOnly(Side.CLIENT)
-	public static class ModelSpike extends ModelBase {
-		private final ModelRenderer bone;
-		private final ModelRenderer bone2;
-		private final ModelRenderer bone3;
-		private final ModelRenderer bone4;
-		private final ModelRenderer bone5;
-		private final ModelRenderer bone6;
-		public ModelSpike() {
-			textureWidth = 32;
-			textureHeight = 32;
-			bone = new ModelRenderer(this);
-			bone.setRotationPoint(0.0F, 0.0F, 0.0F);
-			bone2 = new ModelRenderer(this);
-			bone2.setRotationPoint(0.0F, 0.0F, 4.0F);
-			bone.addChild(bone2);
-			setRotationAngle(bone2, 0.1309F, 0.0F, 0.0F);
-			bone2.cubeList.add(new ModelBox(bone2, 0, 0, -4.0F, -32.0F, 0.0F, 8, 32, 0, 0.0F, false));
-			bone3 = new ModelRenderer(this);
-			bone3.setRotationPoint(0.0F, 0.0F, -4.0F);
-			bone.addChild(bone3);
-			setRotationAngle(bone3, -0.1309F, 0.0F, 0.0F);
-			bone3.cubeList.add(new ModelBox(bone3, 8, 0, -4.0F, -32.0F, 0.0F, 8, 32, 0, 0.0F, false));
-			bone4 = new ModelRenderer(this);
-			bone4.setRotationPoint(4.0F, 0.0F, 0.0F);
-			bone.addChild(bone4);
-			setRotationAngle(bone4, -0.1309F, -1.5708F, 0.0F);
-			bone4.cubeList.add(new ModelBox(bone4, 8, 0, -4.0F, -32.0F, 0.0F, 8, 32, 0, 0.0F, false));
-			bone5 = new ModelRenderer(this);
-			bone5.setRotationPoint(-4.0F, 0.0F, 0.0F);
-			bone.addChild(bone5);
-			setRotationAngle(bone5, 0.1309F, -1.5708F, 0.0F);
-			bone5.cubeList.add(new ModelBox(bone5, 0, 0, -4.0F, -32.0F, 0.0F, 8, 32, 0, 0.0F, false));
-			bone6 = new ModelRenderer(this);
-			bone6.setRotationPoint(0.0F, 0.0F, 0.0F);
-			bone.addChild(bone6);
-			setRotationAngle(bone6, -1.5708F, 0.0F, 0.0F);
-			bone6.cubeList.add(new ModelBox(bone6, 16, 24, -4.0F, -4.0F, 0.0F, 8, 8, 0, 0.0F, false));
-		}
-
-		@Override
-		public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
-			bone.render(f5);
-		}
-
-		public void setRotationAngle(ModelRenderer modelRenderer, float x, float y, float z) {
-			modelRenderer.rotateAngleX = x;
-			modelRenderer.rotateAngleY = y;
-			modelRenderer.rotateAngleZ = z;
-		}
-	}
 }

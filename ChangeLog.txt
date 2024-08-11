@@ -17,7 +17,7 @@ Jutsus:
  - kekkei mora projectiles are now unblockable
  - add Water cannon ball jutsu and scroll
  - great fireball jutsu can be guided if user jutsuXp >= 2x requirement
- - add cloud style flame slice jutsu and scroll (fire chakra flow), does sweep attack
+ - add cloud style flame slice jutsu and scroll (fire chakra flow), attack is AOE, added sweeping effects
  - adjusted wind release chakra flow particles for kunai and chokuto, added sound effect
  - add Uchiha flame formation (barrier jutsu) and scroll
  - rasenshuriken now tilts in the direction its turning

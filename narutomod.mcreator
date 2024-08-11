@@ -2,7 +2,7 @@
   "id_map": {
     "GUI": 70,
     "DIMENSION": 13,
-    "ENTITY": 464
+    "ENTITY": 466
   },
   "mod_elements": [
     {
@@ -7642,6 +7642,18 @@
         "1": 464
       },
       "registry_name": "gamarinsho"
+    },
+    {
+      "name": "Sweep",
+      "type": "mob",
+      "sortid": 895,
+      "compiles": true,
+      "locked_code": true,
+      "ids": {
+        "0": 465,
+        "1": 466
+      },
+      "registry_name": "sweep"
     }
   ],
   "variable_elements": [
@@ -8885,6 +8897,7 @@
       "splash_potion.effect.heaviness": "Splash Heaviness",
       "item.military_rations_pill.name": "Military Rations Pill",
       "subtitles.dragon_roar": "",
+      "entity.sweep.name": "Sweep",
       "entity.scalable_projectile.name": "Scalable Projectile",
       "entity.ninja_kiri.name": "Ninja Kiri",
       "item.scroll_earth_sandwich.name": "Earth Release - Mountain sandwich",

@@ -398,8 +398,14 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 		@SideOnly(Side.CLIENT)
 		@Override
 		public void register() {
-			RenderingRegistry.registerEntityRenderingHandler(EntityCustom.class, renderManager ->
-					new RenderCustom(renderManager, new EntityNinjaMob.ModelNinja(0.0f)));
+			RenderingRegistry.registerEntityRenderingHandler(EntityCustom.class, renderManager -> {
+				class ModelItachi extends EntityNinjaMob.ModelNinja {
+					ModelItachi() {
+						super(0.0F);
+					}
+				}
+				return new RenderCustom(renderManager, new ModelItachi());
+			});
 		}
 
 		@SideOnly(Side.CLIENT)

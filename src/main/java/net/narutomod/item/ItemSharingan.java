@@ -202,6 +202,10 @@ public class ItemSharingan extends ElementsNarutomodMod.ModElement {
 	}
 
 	public class PlayerHook {
+		private static final String shouldTargetLockOnEntity = "shouldTargetLockOnEntity";
+		private static final String targetLockOnEntityId = "targetLockOnEntityId";
+		private static final String targetLockOnEntityTicksRemaining = "targetLockOnEntityTicksRemaining";
+
 		@SubscribeEvent
 		public void onAttacked(LivingAttackEvent event) {
 			EntityLivingBase entity = event.getEntityLiving();
@@ -239,7 +243,7 @@ public class ItemSharingan extends ElementsNarutomodMod.ModElement {
 					if (entity.world.isRemote) {
 						ProcedureOnLivingUpdate.setGlowingFor(target, 3);
 					}
-					if (entity.getEntityData().getBoolean("shouldTargetLockOnEntity")) {
+					if (entity.getEntityData().getBoolean(shouldTargetLockOnEntity)) {
 						Vec3d vec2 = target.getPositionEyes(1f).subtract(entity.getPositionEyes(1f));
 						entity.rotationYaw = ProcedureUtils.getYawFromVec(vec2);
 						entity.rotationPitch = ProcedureUtils.getPitchFromVec(vec2);
@@ -259,8 +263,8 @@ public class ItemSharingan extends ElementsNarutomodMod.ModElement {
 			if (event.getButton() == 1 && this.hasTargetLockOnEntity(player)) {
 				//boolean flag = player.getEntityData().getBoolean("shouldTargetLockOnEntity");
 				boolean flag = !event.isButtonstate();
-				player.getEntityData().setBoolean("shouldTargetLockOnEntity", !flag);
-				ProcedureSync.EntityNBTTag.sendToServer(player, "shouldTargetLockOnEntity", !flag);
+				player.getEntityData().setBoolean(shouldTargetLockOnEntity, !flag);
+				ProcedureSync.EntityNBTTag.sendToServer(player, shouldTargetLockOnEntity, !flag);
 			}
 		}
 
@@ -273,38 +277,38 @@ public class ItemSharingan extends ElementsNarutomodMod.ModElement {
 
 		private void lockOnTarget(EntityLivingBase entity, EntityLivingBase target, int ticks) {
 			if (!entity.world.isRemote) {
-				entity.getEntityData().setInteger("targetLockOnEntityId", target.getEntityId());
-				entity.getEntityData().setInteger("targetLockOnEntityTicksRemaining", ticks);
+				entity.getEntityData().setInteger(targetLockOnEntityId, target.getEntityId());
+				entity.getEntityData().setInteger(targetLockOnEntityTicksRemaining, ticks);
 				if (entity instanceof EntityPlayerMP) {
-					ProcedureSync.EntityNBTTag.sendToSelf((EntityPlayerMP)entity, "targetLockOnEntityId", target.getEntityId());
+					ProcedureSync.EntityNBTTag.sendToSelf((EntityPlayerMP)entity, targetLockOnEntityId, target.getEntityId());
 				}
 			}
 		}
 	
 		private void unlockOnTarget(EntityLivingBase entity) {
 			if (!entity.world.isRemote) {
-				entity.getEntityData().removeTag("targetLockOnEntityId");
-				entity.getEntityData().removeTag("targetLockOnEntityTicksRemaining");
-				entity.getEntityData().removeTag("shouldTargetLockOnEntity");
+				entity.getEntityData().removeTag(targetLockOnEntityId);
+				entity.getEntityData().removeTag(targetLockOnEntityTicksRemaining);
+				entity.getEntityData().removeTag(shouldTargetLockOnEntity);
 				if (entity instanceof EntityPlayerMP) {
-					ProcedureSync.EntityNBTTag.sendToSelf((EntityPlayerMP)entity, "targetLockOnEntityId");
-					ProcedureSync.EntityNBTTag.sendToSelf((EntityPlayerMP)entity, "shouldTargetLockOnEntity");
+					ProcedureSync.EntityNBTTag.sendToSelf((EntityPlayerMP)entity, targetLockOnEntityId);
+					ProcedureSync.EntityNBTTag.sendToSelf((EntityPlayerMP)entity, shouldTargetLockOnEntity);
 				}
 			}
 		}
 	
 		private boolean hasTargetLockOnEntity(EntityLivingBase entity) {
-			return entity.getEntityData().hasKey("targetLockOnEntityId");
+			return entity.getEntityData().hasKey(targetLockOnEntityId);
 		}
 	
 		@Nullable
 		private EntityLivingBase getLockedTarget(EntityLivingBase entity) {
-			Entity target = entity.world.getEntityByID(entity.getEntityData().getInteger("targetLockOnEntityId"));
+			Entity target = entity.world.getEntityByID(entity.getEntityData().getInteger(targetLockOnEntityId));
 			return target instanceof EntityLivingBase ? (EntityLivingBase)target : null;
 		}
 	
 		private int targetLockTicksRemaining(EntityLivingBase entity) {
-			return entity.getEntityData().getInteger("targetLockOnEntityTicksRemaining");
+			return entity.getEntityData().getInteger(targetLockOnEntityTicksRemaining);
 		}
 	}
 

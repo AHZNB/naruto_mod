@@ -252,14 +252,12 @@ public class ItemHiramekareiSword extends ElementsNarutomodMod.ModElement {
 			}
 	
 			@Override
-			protected void spawnParticles(EntityEffects entity, Vec3d startvec, Vec3d endvec) {
+			protected void spawnParticles(EntityLivingBase user, Vec3d startvec, Vec3d endvec, float partialTicks) {
 				Vec3d vec = endvec.subtract(startvec);
-				EntityLivingBase user = entity.getUser();
-				int userid = user != null ? user.getEntityId() : -1;
 				for (int i = 0; i < 50; i++) {
-					Vec3d vec1 = vec.scale(entity.getRNG().nextDouble() * 0.6667d + 1.0d);
-					Particles.spawnParticle(entity.world, Particles.Types.SMOKE, startvec.x, startvec.y, startvec.z, 1,
-					 0.08d, 0.2d, 0.08d, vec1.x, vec1.y, vec1.z, 0x206AD1FF, 40, 5, 0xF0, userid);
+					Vec3d vec1 = vec.scale(user.getRNG().nextDouble() * 0.6667d + 1.0d);
+					Particles.spawnParticle(user.world, Particles.Types.SMOKE, startvec.x, startvec.y, startvec.z, 1,
+					 0.08d, 0.2d, 0.08d, vec1.x, vec1.y, vec1.z, 0x206AD1FF, 40, 5, 0xF0, user.getEntityId());
 				}
 			}
 		}

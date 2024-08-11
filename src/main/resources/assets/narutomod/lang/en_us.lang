@@ -180,6 +180,7 @@ tooltip.ninjutsu.puppetjutsu=Puppet Jutsu
 splash_potion.effect.heaviness=Splash Heaviness
 item.military_rations_pill.name=Military Rations Pill
 subtitles.dragon_roar=
+entity.sweep.name=Sweep
 entity.scalable_projectile.name=Scalable Projectile
 entity.ninja_kiri.name=Ninja Kiri
 item.scroll_earth_sandwich.name=Earth Release - Mountain sandwich

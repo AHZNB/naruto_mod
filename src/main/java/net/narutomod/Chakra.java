@@ -109,6 +109,9 @@ public class Chakra extends ElementsNarutomodMod.ModElement {
 			return this;
 		}
 
+		protected void resetMax() {
+		}
+
 		protected void set(double amountIn) {
 			this.amount = amountIn;
 		}
@@ -181,7 +184,7 @@ public class Chakra extends ElementsNarutomodMod.ModElement {
 
 		protected PathwayPlayer(EntityPlayer playerIn) {
 			super(playerIn);
-			this.setMax(PlayerTracker.getBattleXp(playerIn) * 0.5d);
+			this.resetMax();
 			this.set(playerIn.getEntityData().getDouble(DATAKEY));
 			if (this.getAmount() < 0d) {
 				this.set(this.getMax());
@@ -203,6 +206,11 @@ public class Chakra extends ElementsNarutomodMod.ModElement {
 			if (this.user instanceof EntityPlayerMP) {
 				ServerMessage.sendToSelf((EntityPlayerMP)this.user, this.getAmount(), this.getMax());
 			}
+		}
+
+		@Override
+		protected void resetMax() {
+			this.setMax(PlayerTracker.getBattleXp(this.user) * 0.5d);
 		}
 
 		@Override

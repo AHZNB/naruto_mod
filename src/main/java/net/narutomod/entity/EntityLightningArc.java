@@ -110,7 +110,8 @@ public class EntityLightningArc extends ElementsNarutomodMod.ModElement {
 		private static final DataParameter<Float> THICKNESS = EntityDataManager.<Float>createKey(Base.class, DataSerializers.FLOAT);
 		private static final DataParameter<Integer> MAX_RECURSIVE_DEPTH = EntityDataManager.<Integer>createKey(Base.class, DataSerializers.VARINT);
 		private static final DataParameter<Boolean> IS_STATIC = EntityDataManager.<Boolean>createKey(Base.class, DataSerializers.BOOLEAN);
-		private static final DataParameter<Integer> LIFE = EntityDataManager.<Integer>createKey(Base.class, DataSerializers.VARINT);		private Vec3d ogEndVec;
+		private static final DataParameter<Integer> LIFE = EntityDataManager.<Integer>createKey(Base.class, DataSerializers.VARINT);
+		private Vec3d ogEndVec;
 		private float inaccuracy;
 		private DamageSource damageSource;
 		private EntityLivingBase excludeEntity;
