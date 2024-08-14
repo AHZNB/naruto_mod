@@ -341,7 +341,11 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 	}
 
 	public boolean canSpawnInBiome(Biome biome) {
-		return this.tails >= 1 && this.tails <= 9 ? this.spawns.get(this.tails - 1).contains(biome) : true;
+		return this.tails < 1 || this.tails > 9 || spawns.get(this.tails - 1).contains(biome);
+	}
+
+	public @Nullable String getSpawnStructure() {
+		return null;
 	}
 
 	public void onAddedToWorld(T entityIn) {

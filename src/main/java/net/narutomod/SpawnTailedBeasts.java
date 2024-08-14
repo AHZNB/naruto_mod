@@ -56,7 +56,7 @@ public class SpawnTailedBeasts extends ElementsNarutomodMod.ModElement {
 
 		this.resetSpawnPos = true;
 		
-		for (EntityBijuManager bm : EntityBijuManager.getBMList()) {
+		for (EntityBijuManager<?> bm : EntityBijuManager.getBMList()) {
 			if (bm.isAddedToWorld() || bm.isSealed() || bm.getTails() >= 10) {
 				continue;
 			}
@@ -79,8 +79,7 @@ public class SpawnTailedBeasts extends ElementsNarutomodMod.ModElement {
 
 			if (bm.hasSpawnPos()) {
 				spawnPos = bm.getSpawnPos();
-			}
-			else {
+			} else {
 				final int x = (world.rand.nextInt(SPAWN_MAX_RADIUS - SPAWN_MIN_RADIUS) + SPAWN_MIN_RADIUS) + world.getSpawnPoint().getX();
 				final int z = (world.rand.nextInt(SPAWN_MAX_RADIUS - SPAWN_MIN_RADIUS) + SPAWN_MIN_RADIUS) + world.getSpawnPoint().getZ();
 
@@ -89,6 +88,12 @@ public class SpawnTailedBeasts extends ElementsNarutomodMod.ModElement {
 
 				if (!bm.canSpawnInBiome(biome)) {
 					continue;
+				}
+
+				String structure = bm.getSpawnStructure();
+
+				if (structure != null) {
+					spawnPos = world.findNearestStructure(structure, spawnPos, true);
 				}
 
 				// Find the highest non-air block

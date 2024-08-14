@@ -30,11 +30,13 @@ import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.init.Biomes;
-import net.minecraft.block.material.Material;
+
+import net.minecraft.block.material.Material;
 
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.ElementsNarutomodMod;
 
+import javax.annotation.Nullable;
 import java.util.Random;
 
 @ElementsNarutomodMod.ModElement.Tag
@@ -62,6 +64,12 @@ public class EntityThreeTails extends ElementsNarutomodMod.ModElement {
 	public static class TailBeastManager extends EntityBijuManager<EntityCustom> {
 		public TailBeastManager() {
 			super(EntityCustom.class, 3);
+		}
+
+		@Nullable
+		@Override
+		public String getSpawnStructure() {
+			return "Monument";
 		}
 
 		@Override
