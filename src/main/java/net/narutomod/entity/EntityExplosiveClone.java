@@ -8,17 +8,16 @@ import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 
 import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntitySelectors;
-import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.datasync.DataSerializers;
@@ -32,8 +31,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionEffect;
 
 import net.narutomod.item.ItemJutsu;
+import net.narutomod.potion.PotionHeaviness;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.procedure.ProcedureAoeCommand;
+import net.narutomod.Particles;
 import net.narutomod.ElementsNarutomodMod;
 
 import java.util.List;
@@ -102,6 +103,7 @@ public class EntityExplosiveClone extends ElementsNarutomodMod.ModElement {
 		private static final DataParameter<Boolean> IGNITED = EntityDataManager.<Boolean>createKey(EC.class, DataSerializers.BOOLEAN);
 		private final int fuse = 30;
 		private int ignitionTime;
+		private boolean exploded;
 
 		public EC(World world) {
 			super(world);
@@ -142,18 +144,26 @@ public class EntityExplosiveClone extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public boolean attackEntityFrom(DamageSource source, float amount) {
+			if (source.getImmediateSource() instanceof EntityPlayer && source.getImmediateSource() == this.getSummoner()) {
+				this.setDead();
+				return false;
+			}
 			return this.ignited() ? false : super.attackEntityFrom(source, amount);
 		}
 
 		@Override
 		public boolean attackEntityAsMob(Entity entityIn) {
 			this.ignite();
+			if (entityIn instanceof EntityLivingBase) {
+				((EntityLivingBase)entityIn).addPotionEffect(new PotionEffect(PotionHeaviness.potion, this.fuse, 3, false, false));
+			}
 			return super.attackEntityAsMob(entityIn);
 		}
 
 		private void explode() {
 	    	if (!this.world.isRemote) {
 		    	this.dead = true;
+		    	this.exploded = true;
 		    	EntityLivingBase summoner = this.getSummoner();
 				this.world.createExplosion(summoner, this.posX, this.posY, this.posZ, 8f,
 		    	 net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.world, summoner));
@@ -166,7 +176,7 @@ public class EntityExplosiveClone extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void setDead() {
 			super.setDead();
-			if (!this.world.isRemote) {
+			if (!this.world.isRemote && !this.exploded) {
 				this.poof();
 			}
 		}
@@ -198,9 +208,17 @@ public class EntityExplosiveClone extends ElementsNarutomodMod.ModElement {
 		}
 
 		private void poof() {
-			this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:poof")), 1.0F, 1.0F);
-			((WorldServer)this.world).spawnParticle(EnumParticleTypes.EXPLOSION_NORMAL, this.posX, this.posY+this.height/2, 
-			  this.posZ, 200, this.width * 0.5d, this.height * 0.3d, this.width * 0.5d, 0.02d);
+			//this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:poof")), 1.0F, 1.0F);
+			this.playSound(SoundEvents.ENTITY_SLIME_SQUISH, 0.6F, 0.7F);
+			Particles.Renderer particles = new Particles.Renderer(this.world);
+			for (int i = 0; i < 200; i++) {
+				float scale = 3.0f + this.rand.nextFloat() * 3.0f;
+				particles.spawnParticles(Particles.Types.SMOKE, this.posX + (this.rand.nextFloat()-0.5f) * 0.6f,
+				 this.posY + this.rand.nextFloat() * 1.8f, this.posZ + (this.rand.nextFloat()-0.5f) * 0.6f,
+				 1, 0d, 0d, 0d, 0d, 0d, 0d, -1, (int)(scale * 10f), 0, 0, -1, -6 - this.rand.nextInt(8));
+				 //(int) (8.0f / (this.rand.nextFloat() * 0.8f + 0.2f) * scale));
+			}
+			particles.send();
 		}
 
 		public static class Jutsu implements ItemJutsu.IJutsuCallback {

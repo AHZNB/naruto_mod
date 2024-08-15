@@ -66,11 +66,12 @@ public class EntityWaterCanonball extends ElementsNarutomodMod.ModElement {
 		public EC(EntityLivingBase shooter, float power) {
 			super(shooter);
 			this.setOGSize(0.3125F, 0.3125F);
+			this.setEntityScale(0.1f);
 			this.fullScale = power * 3.2f;
 			this.explosionSize = (int)(power * 2f);
 			this.damage = power * 30.0f;
-			Vec3d vec3d = shooter.getLookVec();
-			this.setPosition(shooter.posX + vec3d.x, shooter.posY + shooter.getEyeHeight() - 0.2d * fullScale + vec3d.y, shooter.posZ + vec3d.z);
+			Vec3d vec = shooter.getPositionEyes(1f).add(shooter.getLookVec().scale(shooter.width * 0.5f)).subtract(0d, 0.2d, 0d);
+			this.setLocationAndAngles(vec.x, vec.y, vec.z, shooter.rotationYawHead, shooter.rotationPitch);
 		}
 
 		public void setDamage(float amount) {
@@ -117,7 +118,7 @@ public class EntityWaterCanonball extends ElementsNarutomodMod.ModElement {
 				if (this.ticksAlive <= this.timeToFullscale) {
 					float f = this.fullScale * this.ticksAlive / this.timeToFullscale;
 					this.setEntityScale(f);
-					Vec3d vec = this.shootingEntity.getPositionEyes(1f).add(this.shootingEntity.getLookVec().scale(0.3d + 0.5d * this.width));//.subtract(0d, 0.5d * this.height, 0d);
+					Vec3d vec = this.shootingEntity.getPositionEyes(1f).add(this.shootingEntity.getLookVec().scale((this.shootingEntity.width + this.width) * 0.5f)).subtract(0d, 0.5d * this.height + 0.2d, 0d);
 					this.setPositionAndRotation(vec.x, vec.y, vec.z, this.shootingEntity.rotationYawHead, this.shootingEntity.rotationPitch);
 				} else if (!this.isLaunched()) {
 					Vec3d vec = this.shootingEntity.getLookVec();

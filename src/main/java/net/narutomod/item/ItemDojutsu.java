@@ -51,7 +51,9 @@ public class ItemDojutsu extends ElementsNarutomodMod.ModElement {
 					entity.getEntityData().setUniqueId("lastWornForeignDojutsu", uuid);
 				}
 			}
-			entity.getEntityData().setLong(NarutomodModVariables.MostRecentWornDojutsuTime, world.getTotalWorldTime());
+			if (entity.ticksExisted % 20 == 1) {
+				entity.getEntityData().setLong(NarutomodModVariables.MostRecentWornDojutsuTime, world.getTotalWorldTime());
+			}
 		}
 
 		@SideOnly(Side.CLIENT)

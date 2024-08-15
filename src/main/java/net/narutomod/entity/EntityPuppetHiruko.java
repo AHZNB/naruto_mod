@@ -88,7 +88,7 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 		private static final DataParameter<Integer> POSE = EntityDataManager.<Integer>createKey(EntityCustom.class, DataSerializers.VARINT);
 		private static final DataParameter<Boolean> ROBE_OFF = EntityDataManager.<Boolean>createKey(EntityCustom.class, DataSerializers.BOOLEAN);
 		private static final DataParameter<Boolean> AKATSUKI = EntityDataManager.<Boolean>createKey(EntityCustom.class, DataSerializers.BOOLEAN);
-		public static final float MAXHEALTH = 160.0f;
+		public static final float MAXHEALTH = 240.0f;
 		private int poseProgressEnd = 14;
 		private int poseProgress = -1;
 		private Object model;

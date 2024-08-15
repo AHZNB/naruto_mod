@@ -60,6 +60,7 @@ public class EntityPuppetHundred extends ElementsNarutomodMod.ModElement {
 	public static class EntityCustom extends EntityPuppet.Base {
 		private static final DataParameter<Float> MODEL_SCALE = EntityDataManager.<Float>createKey(EntityCustom.class, DataSerializers.FLOAT);
 		public static final float MAXHEALTH = 50.0f;
+		private final Vec3d offsetToOwner = new Vec3d(0.0d, 3.0d, 2.0d);
 		public final int style;
 
 		public EntityCustom(World worldIn) {
@@ -122,7 +123,7 @@ public class EntityPuppetHundred extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		protected Vec3d getOffsetToOwner() {
-			return new Vec3d(0.0d, 3.0d, 2.0d);
+			return this.offsetToOwner;
 		}
 
 		@Override

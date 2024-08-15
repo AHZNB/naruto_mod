@@ -127,6 +127,11 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 			}
 			return false;
 		}
+
+		@Override
+		public String toString() {
+			return "{world:"+this.world.provider.getDimension()+", area:"+area+", time:"+time+"}";
+		}
 	}
 
 	public static abstract class Base extends EntityCreature {

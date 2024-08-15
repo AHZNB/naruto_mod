@@ -22,6 +22,7 @@ import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.client.renderer.culling.ICamera;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.entity.RenderLivingBase;
@@ -128,6 +129,9 @@ public class EntityChakraFlow extends ElementsNarutomodMod.ModElement {
 					ItemStack stack = this.user.getHeldItemMainhand();
 					if (this.lastHeldWeapon == null || !ItemStack.areItemStacksEqual(stack, this.lastHeldWeapon)) {
 						this.addEnchantment(stack);
+						if (this.lastHeldWeapon != null) {
+							this.removeEnchantment(this.lastHeldWeapon);
+						}
 						this.lastHeldWeapon = stack.copy();
 					}
 				} else {
@@ -226,6 +230,11 @@ public class EntityChakraFlow extends ElementsNarutomodMod.ModElement {
 			super(renderManagerIn);
 		}
 
+		@Override
+		public boolean shouldRender(T livingEntity, ICamera camera, double camX, double camY, double camZ) {
+			return true;
+		}
+
 		private Vec3d transform3rdPerson(Vec3d startvec, Vec3d angles, EntityLivingBase entity, float pt) {
 			return new ProcedureUtils.RotationMatrix().rotateZ((float)-angles.z).rotateY((float)-angles.y).rotateX((float)angles.x)
 			 .transform(startvec).addVector(0.0625F * -5, 1.5F-(entity.isSneaking()?0.3f:0f), -0.05F)
@@ -233,8 +242,7 @@ public class EntityChakraFlow extends ElementsNarutomodMod.ModElement {
 			 .addVector(entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * pt, entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * pt, entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * pt);
 		}
 
-		protected void spawnParticles(EntityLivingBase user, Vec3d startvec, Vec3d endvec, float partialTicks) {
-		}
+		protected abstract void spawnParticles(EntityLivingBase user, Vec3d startvec, Vec3d endvec, float partialTicks);
 
 		@Override
 		public void doRender(T entity, double x, double y, double z, float entityYaw, float partialTicks) {

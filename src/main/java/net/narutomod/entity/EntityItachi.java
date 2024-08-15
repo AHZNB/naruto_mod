@@ -270,25 +270,22 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 					this.setPositionAndUpdate(this.posX + (this.rand.nextDouble() - 0.5) * 2, this.posY, this.posZ + (this.rand.nextDouble() - 0.5) * 2);
 					ret = false;
 				} else if (this.isReal && this.getHealth() > 0 && this.getHealth() - amount <= this.getMaxHealth() / 3
-						&& !this.isRiding() && this.ticksExisted > this.lastSusanooTime + 600 && this.getChakra() >= SUSANOO_CHAKRA) {
+				 && !this.isRiding() && this.ticksExisted > this.lastSusanooTime + 600 && this.consumeChakra(SUSANOO_CHAKRA)) {
 					this.susanooEntity = new EntitySusanooClothed.EntityCustom(this, false);
 					this.susanooEntity.setLifeSpan(600);
 					this.world.spawnEntity(this.susanooEntity);
 					this.startRiding(this.susanooEntity);
-					this.consumeChakra(SUSANOO_CHAKRA);
 					this.lastSusanooTime = this.ticksExisted;
 					this.susanooEntity.attackEntityFrom(source, amount);
 					ret = false;
-				} else if (this.ticksExisted > this.lastInvisTime + 200 && this.getChakra() >= INVIS_CHAKRA) {
+				} else if (this.ticksExisted > this.lastInvisTime + 200 && this.consumeChakra(INVIS_CHAKRA)) {
 					this.addPotionEffect(new PotionEffect(MobEffects.INVISIBILITY, 200, 1, false, false));
 					for (int i = 0; i < 100; i++) {
 						Entity entityToSpawn = new EntityCrow.EntityCustom(this.world);
 						entityToSpawn.setLocationAndAngles(this.posX, this.posY + 1.4, this.posZ, this.rand.nextFloat() * 360F, 0.0F);
 						this.world.spawnEntity(entityToSpawn);
 					}
-					this.setPositionAndUpdate(this.posX + (this.rand.nextDouble() - 0.5) * 6, this.posY + 1,
-							this.posZ + (this.rand.nextDouble() - 0.5) * 6);
-					this.consumeChakra(INVIS_CHAKRA);
+					this.setPositionAndUpdate(this.posX + (this.rand.nextDouble() - 0.5) * 6, this.posY + 1, this.posZ + (this.rand.nextDouble() - 0.5) * 6);
 					this.lastInvisTime = this.ticksExisted;
 					ret = false;
 				}

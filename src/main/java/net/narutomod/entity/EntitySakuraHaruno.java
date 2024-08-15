@@ -235,12 +235,13 @@ public class EntitySakuraHaruno extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void onLivingUpdate() {
 			this.removePotionEffect(MobEffects.POISON);
+			this.removePotionEffect(MobEffects.WITHER);
 			super.onLivingUpdate();
 			if (this.ticksExisted % 20 == 0) {
 				if (this.getHealth() < this.getMaxHealth()) {
 					this.heal(10f);
 				}
-				this.addPotionEffect(new PotionEffect(PotionChakraEnhancedStrength.potion, 21, 15, false, false));
+				this.addPotionEffect(new PotionEffect(PotionChakraEnhancedStrength.potion, 21, 19, false, false));
 			}
 		}
 

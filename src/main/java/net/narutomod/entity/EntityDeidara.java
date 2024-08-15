@@ -88,8 +88,8 @@ public class EntityDeidara extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static class EntityCustom extends EntityNinjaMob.Base implements IMob, IRangedAttackMob {
-		private final int explosiveCloneCD = 100;
-		private int explosiveCloneLastUsed = -100;
+		private final int explosiveCloneCD = 120;
+		private int explosiveCloneLastUsed = -120;
 		private EntityC2.EC c2Entity;
 		private EntityC4.EC c4Entity;
 		private final Vec3d[] flightPath = new Vec3d[8];
@@ -159,7 +159,6 @@ public class EntityDeidara extends ElementsNarutomodMod.ModElement {
 						this.generateFlightPath(this.getGroundBelow(target).addVector(0d, this.flyHeightOffGround, 0d));
 					}
 					Vec3d vec = this.flightPath[this.currentPathPoint % 8];
-//System.out.println("++++++ currentPathPoint="+currentPathPoint+", motion:"+ProcedureUtils.getMotion(c2Entity));
 					if (this.c2Entity.getDistance(vec.x, vec.y, vec.z) < 1.0d) {
 						++this.currentPathPoint;
 					} else {
@@ -167,7 +166,6 @@ public class EntityDeidara extends ElementsNarutomodMod.ModElement {
 					}
 				} else if (this.ticksExisted - this.explosiveCloneLastUsed == 40 && this.getHealth() < this.getMaxHealth()) {
 					Vec3d vec = this.generateOriginAndFlightPath();
-//System.out.println("====== vec:"+vec);
 					if (vec != null && this.consumeChakra(ItemBakuton.CLAY.chakraUsage * 2d)) {
 						this.c2Entity = new EntityC2.EC(this);
 						this.c2Entity.setLocationAndAngles(vec.x, vec.y, vec.z, this.rotationYaw, 0f);
@@ -258,7 +256,6 @@ public class EntityDeidara extends ElementsNarutomodMod.ModElement {
 			for (int i = 0; i < this.flightPath.length; i++) {
 				this.flightPath[i] = new Vec3d(10d, 0d, 0d).rotateYaw(0.7854f * i).add(centerVec);
 			}
-//System.out.println(">>>>>> start flightPath:"+flightPath[0]+", "+flightPath[1]+", "+flightPath[2]+", "+flightPath[3]+", "+flightPath[4]+", "+flightPath[5]+", "+flightPath[6]+", "+flightPath[7]);
 			for (int i = 0; i < this.flightPath.length; i++) {
 				int j = i == this.flightPath.length - 1 ? 0 : (i + 1);
 				Vec3d vec1 = this.flightPath[i];
@@ -278,7 +275,6 @@ public class EntityDeidara extends ElementsNarutomodMod.ModElement {
 					return false;
 				}
 			}
-//System.out.println("       new flightPath:"+flightPath[0]+", "+flightPath[1]+", "+flightPath[2]+", "+flightPath[3]+", "+flightPath[4]+", "+flightPath[5]+", "+flightPath[6]+", "+flightPath[7]);
 			return true;
 		}
 

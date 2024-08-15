@@ -67,7 +67,7 @@ public class EntityC1 extends ElementsNarutomodMod.ModElement {
 	    public boolean attackEntityAsMob(Entity entityIn) {
 	    	if (super.attackEntityAsMob(entityIn)) {
 		    	entityIn.hurtResistantTime = 10;
-		    	return entityIn.attackEntityFrom(ItemJutsu.causeJutsuDamage(this, this.getOwner()), 12f + this.rand.nextFloat() * 4f);
+		    	return entityIn.attackEntityFrom(ItemJutsu.causeJutsuDamage(this, this.getOwner()), 8f + this.rand.nextFloat() * 4f);
 	    	}
 	    	return false;
 	    }

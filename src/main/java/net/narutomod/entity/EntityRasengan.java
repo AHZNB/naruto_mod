@@ -82,7 +82,7 @@ public class EntityRasengan extends ElementsNarutomodMod.ModElement {
 			this.damageSource = ItemJutsu.NINJUTSU_DAMAGE;
 		}
 
-		public EC(EntityLivingBase shooter, float scale, ItemStack stack) {
+		public EC(EntityLivingBase shooter, float scale, @Nullable ItemStack stack) {
 			super(shooter);
 			this.setOGSize(0.35F, 0.35F);
 			this.setEntityScale(0.1f);
@@ -123,7 +123,7 @@ public class EntityRasengan extends ElementsNarutomodMod.ModElement {
 						stack = ProcedureUtils.getMatchingItemStack((EntityPlayer)this.shootingEntity, stack.getItem());
 					}
 					if (stack != null && stack.hasTagCompound()) {
-						stack.getTagCompound().removeTag("RasenganSize");
+						stack.getTagCompound().removeTag(Jutsu.SIZE_KEY);
 						stack.getTagCompound().removeTag(Jutsu.ID_KEY);
 					}
 				}
@@ -247,6 +247,7 @@ public class EntityRasengan extends ElementsNarutomodMod.ModElement {
 
 		public static class Jutsu implements ItemJutsu.IJutsuCallback {
 			private static final String ID_KEY = "RasenganEntityId";
+			private static final String SIZE_KEY = "RasenganSize";
 			
 			@Override
 			public boolean createJutsu(ItemStack stack, EntityLivingBase entity, float power) {
@@ -255,18 +256,23 @@ public class EntityRasengan extends ElementsNarutomodMod.ModElement {
 					entity1.setDead();
 				} else if ((stack.getItem() == ItemNinjutsu.block && power >= 0.5f)
 				 || (stack.getItem() == ItemSenjutsu.block && power >= 3.0f)) {
-					entity.world.playSound(null, entity.posX, entity.posY, entity.posZ, SoundEvent.REGISTRY
-					  .getObject(new ResourceLocation("narutomod:rasengan_start")), SoundCategory.NEUTRAL, 1.0F, 1.0F);
-					EC entity2 = new EC(entity, power, stack);
+					EC entity2 = this.createJutsu(entity, power, stack);
 					if (stack.getItem() == ItemSenjutsu.block) {
 						entity2.damageSource = ItemJutsu.causeSenjutsuDamage(entity2, entity);
 					}
-					entity.world.spawnEntity(entity2);
 					stack.getTagCompound().setInteger(ID_KEY, entity2.getEntityId());
-					stack.getTagCompound().setFloat("RasenganSize", power);
+					stack.getTagCompound().setFloat(SIZE_KEY, power);
 					return true;
 				}
 				return false;
+			}
+
+			public static EC createJutsu(EntityLivingBase entity, float power, @Nullable ItemStack stack) {
+				entity.world.playSound(null, entity.posX, entity.posY, entity.posZ, SoundEvent.REGISTRY
+				  .getObject(new ResourceLocation("narutomod:rasengan_start")), SoundCategory.NEUTRAL, 1.0F, 1.0F);
+				EC entity2 = new EC(entity, power, stack);
+				entity.world.spawnEntity(entity2);
+				return entity2;
 			}
 
 			@Override
@@ -276,7 +282,7 @@ public class EntityRasengan extends ElementsNarutomodMod.ModElement {
 
 			@Override
 			public float getPower(ItemStack stack) {
-				return stack.hasTagCompound() ? stack.getTagCompound().getFloat("RasenganSize") : 0.0f;
+				return stack.hasTagCompound() ? stack.getTagCompound().getFloat(SIZE_KEY) : 0.0f;
 			}
 
 			@Override

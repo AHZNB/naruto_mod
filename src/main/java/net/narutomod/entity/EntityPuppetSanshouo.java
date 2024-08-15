@@ -52,7 +52,7 @@ public class EntityPuppetSanshouo extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static class EntityCustom extends EntityShieldBase {
-		public static final float MAXHEALTH = 200.0f;
+		public static final float MAXHEALTH = 280.0f;
 		private static final DataParameter<Integer> REAL_AGE = EntityDataManager.<Integer>createKey(EntityCustom.class, DataSerializers.VARINT);
 		private final float driveSpeed = 5.0F;
 

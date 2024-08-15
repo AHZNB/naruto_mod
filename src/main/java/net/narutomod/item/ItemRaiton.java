@@ -35,6 +35,7 @@ import net.narutomod.entity.EntityChidori;
 import net.narutomod.entity.EntityFalseDarkness;
 import net.narutomod.entity.EntityKirin;
 import net.narutomod.procedure.ProcedureUtils;
+import net.narutomod.procedure.ProcedureWhenPlayerAttcked;
 import net.narutomod.creativetab.TabModTab;
 import net.narutomod.Particles;
 import net.narutomod.Chakra;
@@ -124,6 +125,7 @@ public class ItemRaiton extends ElementsNarutomodMod.ModElement {
 		private EntityLivingBase summoner;
 		private ItemStack usingItemstack;
 		private int strengthAmplifier = 9;
+		private float modifier;
 
 		public EntityChakraMode(World a) {
 			super(a);
@@ -134,8 +136,9 @@ public class ItemRaiton extends ElementsNarutomodMod.ModElement {
 			this(summonerIn.world);
 			this.summoner = summonerIn;
 			this.setPosition(summonerIn.posX, summonerIn.posY, summonerIn.posZ);
-			if (stack.getItem() instanceof ItemJutsu.Base) {
+			if (stack.getItem() == block) {
 				this.usingItemstack = stack;
+				this.modifier = ((RangedItem)stack.getItem()).getModifier(stack, summonerIn);
 			}
 			if (summonerIn.isPotionActive(MobEffects.STRENGTH)) {
 				this.strengthAmplifier += summonerIn.getActivePotionEffect(MobEffects.STRENGTH).getAmplifier() + 1;
@@ -156,6 +159,7 @@ public class ItemRaiton extends ElementsNarutomodMod.ModElement {
 		public void onUpdate() {
 			super.onUpdate();
 			if (this.summoner != null && this.summoner.isEntityAlive()) {
+				this.setPosition(this.summoner.posX, this.summoner.posY, this.summoner.posZ);
 				if (this.ticksExisted % 20 == 2) {
 					Chakra.Pathway chakra = Chakra.pathway(this.summoner);
 					if (!chakra.consume(this.CHAKRA_BURN)) {
@@ -167,7 +171,19 @@ public class ItemRaiton extends ElementsNarutomodMod.ModElement {
 					this.summoner.addPotionEffect(new PotionEffect(MobEffects.STRENGTH, 22, this.strengthAmplifier + i, false, false));
 					this.summoner.addPotionEffect(new PotionEffect(MobEffects.JUMP_BOOST, 22, 5, false, false));
 				}
-				this.setPosition(this.summoner.posX, this.summoner.posY, this.summoner.posZ);
+				if (this.modifier > 0.0f) {
+					ProcedureWhenPlayerAttcked.setExtraDamageReduction(this.summoner, 1.0f - this.modifier);
+				}
+				if (this.summoner instanceof EntityPlayer) {
+					if (!this.summoner.isSprinting()) {
+						double d0 = this.posX - this.prevPosX;
+						double d1 = this.posZ - this.prevPosZ;
+						((EntityPlayer)this.summoner).addExhaustion(0.2f * (float)MathHelper.sqrt(d0 * d0 + d1 * d1) * this.modifier);
+					}
+					if (((EntityPlayer)this.summoner).getFoodStats().getFoodLevel() < 1.0f) {
+						this.setDead();
+					}
+				}
 				if (this.rand.nextInt(8) == 0) {
 					this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:electricity")),
 					 0.1f, this.rand.nextFloat() * 0.6f + 0.3f);
@@ -180,7 +196,7 @@ public class ItemRaiton extends ElementsNarutomodMod.ModElement {
 				if (this.summoner.swingProgressInt == 1 && this.summoner instanceof EntityPlayer) {
 					RayTraceResult result = ProcedureUtils.objectEntityLookingAt(this.summoner, 3d, this);
 					if (result == null || result.entityHit == null) {
-						result = ProcedureUtils.objectEntityLookingAt(this.summoner, 12d, 3d, this);
+						result = ProcedureUtils.objectEntityLookingAt(this.summoner, 15d, 3d, this);
 						if (result != null && result.entityHit instanceof EntityLivingBase) {
 							Vec3d vec = result.entityHit.getPositionEyes(1f).subtract(this.summoner.getPositionEyes(1f)).normalize();
 							this.summoner.rotationYaw = ProcedureUtils.getYawFromVec(vec);

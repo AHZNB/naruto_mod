@@ -37,7 +37,6 @@ import net.minecraft.block.Block;
 
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.procedure.ProcedureAirPunch;
-//import net.narutomod.item.ItemIryoJutsu;
 import net.narutomod.Chakra;
 import net.narutomod.Particles;
 import net.narutomod.ElementsNarutomodMod;
@@ -122,10 +121,6 @@ public class PotionChakraEnhancedStrength extends ElementsNarutomodMod.ModElemen
 				Vec3d vec2 = vec.scale(this.getRange(0));
 				double d = MathHelper.atan2(this.getFarRadius(0), this.getRange(0));
 				for (int i = 0; i < (int)(this.getRange(0) * 50); i++) {
-					//Vec3d vec3 = vec2.scale((this.rand.nextDouble() * 0.17d) + 0.03d)
-					 //.addVector((this.rand.nextDouble() - 0.5d) * this.getFarRadius(0) * 0.15d,
-					 //(this.rand.nextDouble() - 0.5d) * this.getFarRadius(0) * 0.15d, 
-					 //(this.rand.nextDouble() - 0.5d) * this.getFarRadius(0) * 0.15d);
 					Vec3d vec3 = vec2.scale((this.rand.nextDouble() * 0.05d) + 0.2d)
 					 .rotatePitch((float)(this.rand.nextGaussian() * d))
 					 .rotateYaw((float)(this.rand.nextGaussian() * d));
@@ -154,7 +149,6 @@ public class PotionChakraEnhancedStrength extends ElementsNarutomodMod.ModElemen
 			@Override
 			protected float getBreakChance(BlockPos pos, Entity player, double range) {
 				return player instanceof EntityLivingBase && ((EntityLivingBase)player).getActivePotionEffect(potion).getIsAmbient()
-				//return player instanceof EntityPlayer 
 				 ? 1.0F - (float)((Math.sqrt(player.getDistanceSqToCenter(pos)) - 4.0D) / range)
 				 : 0.0F;
 			}
@@ -172,7 +166,6 @@ public class PotionChakraEnhancedStrength extends ElementsNarutomodMod.ModElemen
 						target.world.playSound(null, target.posX, target.posY, target.posZ, SoundEvents.ENTITY_GENERIC_EXPLODE,
 						  SoundCategory.BLOCKS, 1.0F, (1.0F + (target.getRNG().nextFloat() - target.getRNG().nextFloat()) * 0.2F) * 0.7F);
 						new Punch(attacker.world).execute(attacker, (double)amplifier * 0.4d, 0.1d * amplifier);
-						//ProcedureUtils.pushEntity(attacker, target, 10d, 0.1f * amplifier);
 						event.setAmount(event.getAmount() + amplifier);
 					}
 				}

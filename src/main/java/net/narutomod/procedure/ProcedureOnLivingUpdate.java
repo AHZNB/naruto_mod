@@ -200,6 +200,10 @@ public class ProcedureOnLivingUpdate extends ElementsNarutomodMod.ModElement {
 				entity.getEntityData().removeTag("UntargetableTicks");
 			}
 		}
+		float f = ProcedureWhenPlayerAttcked.getExtraDamageReduction(entity);
+		if (f > 0.0f) {
+			ProcedureWhenPlayerAttcked.setExtraDamageReduction(entity, f - 0.01f);
+		}
 		if (world.isRemote && entity.getEntityData().hasKey("GlowingTicks")) {
 			int i = entity.getEntityData().getInteger("GlowingTicks");
 			entity.setGlowing(i > 0);

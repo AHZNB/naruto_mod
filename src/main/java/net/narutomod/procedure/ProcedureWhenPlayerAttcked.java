@@ -108,12 +108,28 @@ public class ProcedureWhenPlayerAttcked extends ElementsNarutomodMod.ModElement 
 		}
 	}
 
+	public static void setExtraDamageReduction(Entity entity, float reduction) {
+		if (reduction <= 0.0f) {
+			entity.getEntityData().removeTag("ExtraDamageReduction");
+		} else {
+			entity.getEntityData().setFloat("ExtraDamageReduction", Math.min(reduction, 1.0f));
+		}
+	}
+
+	public static float getExtraDamageReduction(Entity entity) {
+		return entity.getEntityData().getFloat("ExtraDamageReduction");
+	}
+
 	@SubscribeEvent
 	public void onLivingDamaged(LivingDamageEvent event) {
 		EntityLivingBase target = event.getEntityLiving();
-		if (target instanceof EntityPlayer && ItemRinnegan.hasRinnesharingan((EntityPlayer)target)) {
-			event.setAmount(event.getAmount() * 0.1f);
+		float f = getExtraDamageReduction(target);
+		if (f > 0.0f) {
+			event.setAmount(event.getAmount() * (1.0f - f));
 		}
+		//if (target instanceof EntityPlayer && ItemRinnegan.hasRinnesharingan((EntityPlayer)target)) {
+		//	event.setAmount(event.getAmount() * 0.1f);
+		//}
 	}
 
 	@Override

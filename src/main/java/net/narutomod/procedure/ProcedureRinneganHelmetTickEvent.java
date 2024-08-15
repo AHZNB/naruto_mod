@@ -68,6 +68,7 @@ public class ProcedureRinneganHelmetTickEvent extends ElementsNarutomodMod.ModEl
 			if (((isRinnesharingan) && (!(((entity instanceof EntityLivingBase) ? ((EntityLivingBase) entity).getHeldItemMainhand() : ItemStack.EMPTY)
 					.getItem() == new ItemStack(ItemTenseiganChakraMode.block, (int) (1)).getItem())))) {
 				ProcedureUtils.purgeHarmfulEffects((EntityLivingBase) entity);
+				ProcedureWhenPlayerAttcked.setExtraDamageReduction(entity, 0.9f);
 				if (((entity.ticksExisted % 20) == 2)) {
 					if (entity instanceof EntityLivingBase)
 						((EntityLivingBase) entity).addPotionEffect(new PotionEffect(PotionFlight.potion, (int) 22, (int) 1, (false), (false)));

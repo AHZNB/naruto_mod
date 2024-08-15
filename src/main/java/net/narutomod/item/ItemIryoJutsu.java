@@ -4,11 +4,11 @@ package net.narutomod.item;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.event.ModelRegistryEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.common.MinecraftForge;
 
 import net.minecraft.world.World;
@@ -27,12 +27,10 @@ import net.minecraft.entity.Entity;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.init.MobEffects;
-import net.minecraft.nbt.NBTTagCompound;
 
 import net.narutomod.entity.EntityPoisonMist;
 import net.narutomod.entity.EntityCellularActivation;
 import net.narutomod.entity.EntityEnhancedStrength;
-import net.narutomod.potion.PotionChakraEnhancedStrength;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.Particles;
 import net.narutomod.Chakra;
@@ -47,7 +45,7 @@ public class ItemIryoJutsu extends ElementsNarutomodMod.ModElement {
 	public static final ItemJutsu.JutsuEnum HEALING = new ItemJutsu.JutsuEnum(0, "healingjutsu", 'A', 0.25d, new HealingJutsu());
 	public static final ItemJutsu.JutsuEnum POISONMIST = new ItemJutsu.JutsuEnum(1, "poison_mist", 'B', 20d, new EntityPoisonMist.EC.Jutsu());
 	public static final ItemJutsu.JutsuEnum MEDMODE = new ItemJutsu.JutsuEnum(2, "cellular_activation", 'A', 20d, new EntityCellularActivation.EC.Jutsu());
-	public static final ItemJutsu.JutsuEnum POWERMODE = new ItemJutsu.JutsuEnum(3, "enhanced_strength", 'A', 30d, new ChakraEnhancedStrength());
+	public static final ItemJutsu.JutsuEnum POWERMODE = new ItemJutsu.JutsuEnum(3, "enhanced_strength", 'A', 30d, new EntityEnhancedStrength.EC.Jutsu());
 
 	public ItemIryoJutsu(ElementsNarutomodMod instance) {
 		super(instance, 523);
@@ -100,16 +98,6 @@ public class ItemIryoJutsu extends ElementsNarutomodMod.ModElement {
 			}
 			super.onUsingTick(stack, player, count);
 		}
-
-		@Override
-		public void onUpdate(ItemStack itemstack, World world, Entity entity, int par4, boolean par5) {
-			super.onUpdate(itemstack, world, entity, par4, par5);
-			if (!world.isRemote && entity instanceof EntityPlayer && POWERMODE.jutsu.isActivated(itemstack)
-			 && entity.ticksExisted % 10 == 2) {
-				((EntityPlayer)entity).addPotionEffect(new PotionEffect(PotionChakraEnhancedStrength.potion,
-				 12, (int)Chakra.getLevel((EntityPlayer)entity) / 2, true, false));
-			}
-		}
 	}
 
 	public static class HealingJutsu implements ItemJutsu.IJutsuCallback {
@@ -135,7 +123,7 @@ public class ItemIryoJutsu extends ElementsNarutomodMod.ModElement {
 		public void createJutsu(EntityLivingBase entity, EntityLivingBase target, float power) {
 			if (entity.ticksExisted % 3 == 0) {
 				entity.world.playSound(null, target.posX, target.posY, target.posZ, 
-				 (SoundEvent)SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:windecho")),
+				 SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:windecho")),
 				 SoundCategory.NEUTRAL, 0.5f, MathHelper.sin((float)entity.ticksExisted * 0.1f) * 0.8f + 1.5f);
 			}
 			Particles.spawnParticle(entity.world, Particles.Types.SMOKE, target.posX, target.posY+target.height/2,
@@ -155,24 +143,6 @@ public class ItemIryoJutsu extends ElementsNarutomodMod.ModElement {
 					event.setCancellationResult(EnumActionResult.PASS);
 				}
 			}
-		}
-	}
-
-	public static class ChakraEnhancedStrength implements ItemJutsu.IJutsuCallback {
-		//private boolean activated = false;
-		@Override
-		public boolean createJutsu(ItemStack stack, EntityLivingBase entity, float power) {
-			if (!stack.hasTagCompound()) {
-				stack.setTagCompound(new NBTTagCompound());
-			}
-			boolean flag = !entity.isPotionActive(PotionChakraEnhancedStrength.potion);
-			stack.getTagCompound().setBoolean("isChakraEnhancedStrengthActive", flag);
-			return flag;
-		}
-
-		@Override
-		public boolean isActivated(ItemStack stack) {
-			return stack.hasTagCompound() ? stack.getTagCompound().getBoolean("isChakraEnhancedStrengthActive") : false;
 		}
 	}
 

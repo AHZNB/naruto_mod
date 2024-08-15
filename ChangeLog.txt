@@ -12,7 +12,7 @@ Jutsus:
  - water bullet jutsu now shoots particles instead of a beam
  - when opening gates, user no longer invulnerable (possible random dying bug when opening gates, needs testing)
  - poison mist also inflicts blindness for 5s
- - reduced revolving heaven block breaking (can't break stone anymore)
+ - reduced 8-trigrams revolving heaven block breaking (can't break stone anymore), smaller sphere, better texture
  - rasengan/biju ball is now more transparent in 1st person view for better visability
  - kekkei mora projectiles are now unblockable
  - add Water cannon ball jutsu and scroll
@@ -28,7 +28,6 @@ Jutsus:
  - add wind release: blade of wind jutsu and A-rank scroll, blades are guided
  - truth seeker balls are actually balls now
  - fixed rasenshurken sometimes breaking blocks when mobGriefing=false
- - 8-trigrams revolving heaven: smaller sphere, better texture
  - add wind release: vacuum wave and B-rank scroll
  - add water release: acid scattering jutsu
  - holding chokuto while in susanoo now consumes slightly more chakra
@@ -36,6 +35,8 @@ Jutsus:
  - Mind Transfer jutsu: cancel the jutsu by pressing Jutsu key 2
  - the number of puppets you can control depends on your jutsuXP in your puppet jutsu, max 10 puppets
  - Kirin is now a stand alone jutsu, learning chidori won't auto give you kirin anymore
+ - add chakra effects on player's arm when Chakra enhanced strength active
+ - Lightning chakra mode: slightly more reach, hunger & resistance scaled to jutsuXP and max chakra, shuts down if food < 1
 
 Items:
  - added Sakura shippuden clothing and leggings (for slim player models only)
@@ -62,14 +63,13 @@ Entities:
  - Sakura wears Sakura clothing and leggings now and has a chance to drop it
  - Kisame wears Akatsuki robe now and has a chance to drop it
  - improved Hirudora model
- - slightly buffed puppets health
  - 3rd kazekage puppet can use sand bullet jutsu & sand gathering jutsu (use with 3rd kazekage scroll)
  - fixed jinchuriki's biju mode visibility bug
  - fixed perfect susanoo jerky body pitch when flying
  - added Sasori mob, naturally spawns, spawn weight configurable
  - Karasu puppet shoots poison bombs as well as senbons, better AI
  - added sasori's 100 puppet, puppet size and appearance is random
- - increased puppets speed slightly, auto covers for summoner and takes damage if within range
+ - slightly buffed puppets health, increased speed slightly, auto covers for summoner and takes damage if within range
  - buffed tailed beast melee damage slightly, better AI
  - added melee animation for Matatabi(paw swipe) and Kokuo(head butt)
  - Shukaku shoots air bullets, Matatabi shoots fire balls, Isobu shoots water balls, Son Goku shoots green fire,
@@ -82,6 +82,7 @@ Entities:
  - Ninja mobs like Itachi can spawn during daytime, you may need to decrease spawn weight in the config
     will not spawn in the same 1024 block area within 30 mins
  - add Toad Sage Fukasaku & Shima (WIP)
+ - hitting your own Explosion release: explosive clone despawns it
  
 General:
  - fixed alpha transparency bug when using certain jutsus

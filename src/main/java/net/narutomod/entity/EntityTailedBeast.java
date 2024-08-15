@@ -482,7 +482,7 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 
 		public Vec3d getPositionMouth() {
 			return Vec3d.fromPitchYaw(this.rotationPitch, this.rotationYawHead)
-			 .scale(this.width * 1.5f).add(this.getPositionEyes(1.0f));
+			 .scale(this.width * 1.5f).addVector(this.posX, this.posY + this.getEyeHeight(), this.posZ);
 		}
 
 		public float getFuuinBeamHeight() {

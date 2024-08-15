@@ -403,7 +403,7 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 						}
 					case 7:
 						if (attacker.equals(target)) {
-							target = ProcedureUtils.objectEntityLookingAt(attacker, 15d + 5d * (gateOpened - 7), 2d).entityHit;
+							target = ProcedureUtils.objectEntityLookingAt(attacker, 18d + 5d * (gateOpened - 7), 3d).entityHit;
 							if (target instanceof EntityLivingBase) {
 								Vec3d vec = target.getPositionVector().subtract(attacker.getPositionVector()).normalize();
 								attacker.rotationYaw = ProcedureUtils.getYawFromVec(vec);
