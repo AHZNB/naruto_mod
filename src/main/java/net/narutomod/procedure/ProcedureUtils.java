@@ -1637,7 +1637,7 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 	            { 0.0f, 1.0f, 0.0f },
 	            { -sin, 0.0f, cos }
 	        };
-	        multiply(rotation);
+	        this.multiply(rotation);
 	        return this;
 	    }
 
@@ -1650,10 +1650,10 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 	        float sin = MathHelper.sin(rad);
 	        float[][] rotation = {
 	            { 1.0f, 0.0f, 0.0f },
-	            { 0.0f, cos, -sin },
-	            { 0.0f, sin, cos }
+	            { 0.0f, cos, sin },
+	            { 0.0f, -sin, cos }
 	        };
-	        multiply(rotation);
+	        this.multiply(rotation);
 	        return this;
 	    }
 
@@ -1669,7 +1669,7 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 	            { sin, cos, 0.0f },
 	            { 0.0f, 0.0f, 1.0f }
 	        };
-	        multiply(rotation);
+	        this.multiply(rotation);
 	        return this;
 	    }
 	
@@ -1679,17 +1679,17 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 	            for (int j = 0; j < 3; j++) {
 	                result[i][j] = 0.0f;
 	                for (int k = 0; k < 3; k++) {
-	                    result[i][j] += matrix[i][k] * rotation[k][j];
+	                    result[i][j] += this.matrix[i][k] * rotation[k][j];
 	                }
 	            }
 	        }
-	        matrix = result;
+	        this.matrix = result;
 	    }
 	
 	    public Vec3d transform(Vec3d vec) {
-	        double x = vec.x * matrix[0][0] + vec.y * matrix[0][1] + vec.z * matrix[0][2];
-	        double y = vec.x * matrix[1][0] + vec.y * matrix[1][1] + vec.z * matrix[1][2];
-	        double z = vec.x * matrix[2][0] + vec.y * matrix[2][1] + vec.z * matrix[2][2];
+	        double x = vec.x * this.matrix[0][0] + vec.y * this.matrix[0][1] + vec.z * this.matrix[0][2];
+	        double y = vec.x * this.matrix[1][0] + vec.y * this.matrix[1][1] + vec.z * this.matrix[1][2];
+	        double z = vec.x * this.matrix[2][0] + vec.y * this.matrix[2][1] + vec.z * this.matrix[2][2];
 	        return new Vec3d(x, y, z);
 	    }
 	}

@@ -25,6 +25,8 @@ import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.item.ItemStack;
 import net.minecraft.init.SoundEvents;
+import net.minecraft.init.MobEffects;
+import net.minecraft.potion.PotionEffect;
 
 import net.narutomod.item.ItemTotsukaSword;
 import net.narutomod.item.ItemChokuto;
@@ -48,11 +50,10 @@ public abstract class EntitySusanooBase extends EntityCreature implements IRange
 	public static final double BXP_REQUIRED_L1 = 5000.0d;
 	public static final double BXP_REQUIRED_L2 = 10000.0d;
 	public static final double BXP_REQUIRED_L3 = 20000.0d;
-	public static final double BXP_REQUIRED_L4 = 36000.0d;
+	public static final double BXP_REQUIRED_L4 = 40000.0d;
 	protected double chakraUsage = 30d; // per second
 	protected double chakraUsageModifier = 2d;
 	protected double playerXp;
-	//private EntityLivingBase ownerPlayer = null;
 	
 	public EntitySusanooBase(World world) {
 		super(world);
@@ -332,14 +333,19 @@ public abstract class EntitySusanooBase extends EntityCreature implements IRange
 		 (!flag && !this.isBeingRidden()))) {
 			this.setDead();
 		}
-		if (flag && !((EntityPlayer)ownerPlayer).isCreative()) {
-			if (this.isBeingRidden()) {
-				ownerPlayer.setSneaking(false);
-			} else if (!this.world.isRemote) {
-				ProcedureSusanoo.execute((EntityPlayer)ownerPlayer);
+		if (flag) {
+			if (!((EntityPlayer)ownerPlayer).isCreative()) {
+				if (this.isBeingRidden()) {
+					ownerPlayer.setSneaking(false);
+				} else if (!this.world.isRemote) {
+					ProcedureSusanoo.execute((EntityPlayer)ownerPlayer);
+				}
+				if (!this.world.isRemote) {
+					this.consumeChakra();
+				}
 			}
-			if (!this.world.isRemote) {
-				this.consumeChakra();
+			if (this.ticksExisted % 20 == 1) {
+				ownerPlayer.addPotionEffect(new PotionEffect(MobEffects.MINING_FATIGUE, 22, 6, false, false));
 			}
 		}
 
@@ -349,7 +355,7 @@ public abstract class EntitySusanooBase extends EntityCreature implements IRange
 		this.clampMotion(0.05D);
 
 		if (this.ticksExisted % 30 == 0) {
-			this.playSound((net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY
+			this.playSound(net.minecraft.util.SoundEvent.REGISTRY
 			 .getObject(new ResourceLocation("block.fire.ambient")), 1.0F, this.rand.nextFloat() * 0.7F + 0.3F);
 		}
 		for (int i = 0; i < (int) this.height; i++) {

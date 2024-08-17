@@ -156,7 +156,7 @@ public class EntitySweep extends ElementsNarutomodMod.ModElement {
 				Vec3d vec = new Vec3d(x + this.renderManager.viewerPosX, y + this.renderManager.viewerPosY, z + this.renderManager.viewerPosZ);
 				for (int j = (int)(f * 17.0F) + 1, i = Math.max(0, j - 4); i < Math.min(j, this.model.segment.length); i++) {
 					this.model.segment[i].showModel = true;
-					ProcedureUtils.RotationMatrix rotmat = new ProcedureUtils.RotationMatrix().rotateYaw(-f1).rotatePitch(f2).rotateRoll(-entity.rotationRoll).rotateYaw(11.25F * i);
+					ProcedureUtils.RotationMatrix rotmat = new ProcedureUtils.RotationMatrix().rotateYaw(-f1).rotatePitch(-f2).rotateRoll(-entity.rotationRoll).rotateYaw(11.25F * i);
 					Vec3d vec3 = new Vec3d(-0.5d * scale, 0d, 0d);
 					for (int k = 0; k < 5; k++, rotmat.rotateYaw(2.25f)) {
 						this.renderParticles(entity, vec, rotmat.transform(vec3), color, scale);

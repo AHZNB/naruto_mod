@@ -8,8 +8,10 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 
 import net.minecraft.world.World;
+import net.minecraft.world.DifficultyInstance;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.DamageSource;
+import net.minecraft.entity.IEntityLivingData;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.IRangedAttackMob;
 import net.minecraft.entity.monster.IMob;
@@ -32,6 +34,7 @@ import net.minecraft.item.ItemStack;
 
 import net.narutomod.item.ItemIceSenbon;
 import net.narutomod.item.ItemHyoton;
+import net.narutomod.item.ItemMaskAnbu2;
 import net.narutomod.ElementsNarutomodMod;
 
 import java.util.Iterator;
@@ -72,6 +75,13 @@ public class EntityHaku extends ElementsNarutomodMod.ModElement {
 			super(worldIn, 80, 4000d);
 			this.setSize(0.525f, 1.75f);
 			this.isImmuneToFire = true;
+		}
+
+		@Override
+		public IEntityLivingData onInitialSpawn(DifficultyInstance difficulty, @Nullable IEntityLivingData livingdata) {
+			livingdata = super.onInitialSpawn(difficulty, livingdata);
+			this.setItemStackToSlot(EntityEquipmentSlot.HEAD, new ItemStack(ItemMaskAnbu2.helmet));
+			return livingdata;
 		}
 
 		@Override
@@ -263,7 +273,7 @@ public class EntityHaku extends ElementsNarutomodMod.ModElement {
 				this.bipedHead.cubeList.add(new ModelBox(this.bipedHead, 0, 0, -4.0F, -8.0F, -4.0F, 8, 8, 8, 0.0F, false));
 				this.bipedHeadwear = new ModelRenderer(this);
 				this.bipedHeadwear.setRotationPoint(0.0F, 0.0F, 0.0F);
-				this.bipedHeadwear.cubeList.add(new ModelBox(this.bipedHeadwear, 32, 0, -4.0F, -8.0F, -4.0F, 8, 8, 8, 0.3F, false));
+				this.bipedHeadwear.cubeList.add(new ModelBox(this.bipedHeadwear, 32, 0, -4.0F, -8.0F, -4.0F, 8, 8, 8, 0.4F, false));
 				this.bipedBody = new ModelRenderer(this);
 				this.bipedBody.setRotationPoint(0.0F, 0.0F, 0.0F);
 				this.bipedBody.cubeList.add(new ModelBox(this.bipedBody, 16, 16, -4.0F, 0.0F, -2.0F, 8, 12, 4, 0.0F, false));

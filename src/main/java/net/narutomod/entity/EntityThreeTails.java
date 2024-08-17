@@ -126,7 +126,6 @@ public class EntityThreeTails extends ElementsNarutomodMod.ModElement {
 			this.setSize(MODELSCALE * 0.5F, MODELSCALE * 0.7F);
 			this.experienceValue = 12000;
 			this.stepHeight = this.height / 3.0F;
-			//this.setAngerLevel(2);
 		}
 
 		public EntityCustom(EntityPlayer player) {
@@ -134,7 +133,6 @@ public class EntityThreeTails extends ElementsNarutomodMod.ModElement {
 			this.setSize(MODELSCALE * 0.5F, MODELSCALE * 0.7F);
 			this.experienceValue = 12000;
 			this.stepHeight = this.height / 3.0F;
-			//this.setAngerLevel(2);
 		}
 
 		@Override

@@ -209,7 +209,7 @@ public class EntityWindBlade extends ElementsNarutomodMod.ModElement {
 
 			private void renderParticles(World worldIn, Vec3d vec, float yaw, float pitch, float roll, float size, float ageInTicks) {
 				Vec3d vec3 = new Vec3d(0.3d * size, 0d, 0d);
-				ProcedureUtils.RotationMatrix rotationMatrix = new ProcedureUtils.RotationMatrix().rotateYaw(-yaw).rotatePitch(pitch).rotateRoll(-roll).rotateY(ageInTicks);
+				ProcedureUtils.RotationMatrix rotationMatrix = new ProcedureUtils.RotationMatrix().rotateYaw(-yaw).rotatePitch(-pitch).rotateRoll(-roll).rotateY(ageInTicks);
 				for (int i = 0; i < 4; i++) {
 					Vec3d vec1 = rotationMatrix.rotateYaw(90f).transform(vec3).add(vec);
 					Vec3d vec2 = vec1.subtract(vec).scale(0.5d);

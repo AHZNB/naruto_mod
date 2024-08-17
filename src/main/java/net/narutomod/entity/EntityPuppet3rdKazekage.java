@@ -54,7 +54,7 @@ public class EntityPuppet3rdKazekage extends ElementsNarutomodMod.ModElement {
 	public static class EntityCustom extends EntityPuppet.Base {
 		private static final DataParameter<Boolean> MOUTH_OPEN = EntityDataManager.<Boolean>createKey(EntityCustom.class, DataSerializers.BOOLEAN);
 		public static final float MAXHEALTH = 120.0f;
-		private final Vec3d offsetToOwner = new Vec3d(-1.4d, 0.5d, 3.0d);
+		private static final Vec3d offsetToOwner = new Vec3d(-1.4d, 0.5d, 3.0d);
 
 		public EntityCustom(World worldIn) {
 			super(worldIn);

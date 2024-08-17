@@ -191,7 +191,7 @@ public class EntityEnhancedStrength extends ElementsNarutomodMod.ModElement {
 			}
 	
 			private Vec3d transform3rdPerson(Vec3d startvec, Vec3d angles, EntityLivingBase entity, float pt) {
-				return new ProcedureUtils.RotationMatrix().rotateZ((float)-angles.z).rotateY((float)-angles.y).rotateX((float)angles.x)
+				return new ProcedureUtils.RotationMatrix().rotateZ((float)-angles.z).rotateY((float)-angles.y).rotateX((float)-angles.x)
 				 .transform(startvec).addVector(0.0625F * -5F, 1.375F-(entity.isSneaking()?0.2f:0f), 0.0F)
 				 .rotateYaw((-entity.prevRenderYawOffset - (entity.renderYawOffset - entity.prevRenderYawOffset) * pt) * (float)(Math.PI / 180d))
 				 .addVector(entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * pt, entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * pt, entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * pt);
@@ -218,9 +218,9 @@ public class EntityEnhancedStrength extends ElementsNarutomodMod.ModElement {
 			}
 
 			protected void spawnParticles(EntityLivingBase user, Vec3d startvec, Vec3d endvec, float partialTicks) {
-				Vec3d vec = endvec.subtract(startvec).scale(0.6d);
+				Vec3d vec = endvec.subtract(startvec).scale(0.8d);
 				Particles.spawnParticle(user.world, Particles.Types.SMOKE, startvec.x, startvec.y, startvec.z, 
-				  10, 0.075d, 0.05d, 0.075d, vec.x, vec.y, vec.z, 0x106AD1FF, 10, 5, 0xF0);
+				  10, 0.075d, 0.05d, 0.075d, vec.x, vec.y, vec.z, 0x106AD1FF, 10, 3, 0xF0);
 			}
 		}
 	}

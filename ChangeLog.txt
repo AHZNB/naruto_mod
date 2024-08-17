@@ -2,7 +2,8 @@
 
 Jutsus:
  - added 3 minute coolddown on shinsusenju, press shift to dismount from the 1000 arms
- - tweaked susanoo transparency
+ - tweaked susanoo transparency, increase min nxp requirement for perfect susanoo to 40000
+ - holding chokuto while in susanoo now consumes slightly more chakra
  - fixed rinnegan owner giving limbo or amenotejikara to other player's ninjutsu
  - fixed tenseibyakugan losing tensei chakra mode
  - fixed 80 gods vacuum fist usable without any jutsuXP
@@ -30,7 +31,6 @@ Jutsus:
  - fixed rasenshurken sometimes breaking blocks when mobGriefing=false
  - add wind release: vacuum wave and B-rank scroll
  - add water release: acid scattering jutsu
- - holding chokuto while in susanoo now consumes slightly more chakra
  - add Sage Mode: Demonic Illusion: Toad Confrontation Chant (AOE genjutsu)
  - Mind Transfer jutsu: cancel the jutsu by pressing Jutsu key 2
  - the number of puppets you can control depends on your jutsuXP in your puppet jutsu, max 10 puppets
@@ -56,12 +56,13 @@ Items:
  - byakugan veins won't appear unless byakugan jutsus are used
 
 Entities:
- - re-textured kisame
+ - re-textured Kisame, Sakura, Zabuza
  - fix more server crashes due to "NoClassDefFoundError"
  - all "smart" ninja NPCs can naruto run
  - Might Guy and Iruka wears konoha flak jackets and jumpsuit/pants now and has a chance to drop it
  - Sakura wears Sakura clothing and leggings now and has a chance to drop it
  - Kisame wears Akatsuki robe now and has a chance to drop it
+ - Haku wears anbu mask and has a chance to drop it
  - improved Hirudora model
  - 3rd kazekage puppet can use sand bullet jutsu & sand gathering jutsu (use with 3rd kazekage scroll)
  - fixed jinchuriki's biju mode visibility bug
@@ -77,7 +78,6 @@ Entities:
    Ten-Tails is much larger, heals faster, spawns clones to defend itself, shoots lasers
  - Tailed-beasts other than Isobu and Gyuki will try to avoid or get out of water
     naturally spawned tailed-beasts will stay within the vicinity of its spawn point
- - updated Sakura's texture
  - added Deidara mob, naturally spawns, spawn weight configurable, follows Sasori if he's in the area
  - Ninja mobs like Itachi can spawn during daytime, you may need to decrease spawn weight in the config
     will not spawn in the same 1024 block area within 30 mins
