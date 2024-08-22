@@ -28,7 +28,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.EnumAction;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.entity.projectile.EntityArrow;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.SharedMonsterAttributes;
@@ -65,6 +64,7 @@ import net.narutomod.ElementsNarutomodMod;
 //import java.util.List;
 import com.google.common.collect.Multimap;
 import javax.annotation.Nullable;
+import net.minecraft.entity.EntityLiving;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class ItemScytheHidan extends ElementsNarutomodMod.ModElement {
@@ -120,13 +120,17 @@ public class ItemScytheHidan extends ElementsNarutomodMod.ModElement {
 		}*/
 
 		@Override
-		public void onPlayerStoppedUsing(ItemStack itemstack, World world, EntityLivingBase entityLivingBase, int timeLeft) {
-			if (!world.isRemote && entityLivingBase instanceof EntityPlayerMP) {
-				EntityPlayerMP entity = (EntityPlayerMP) entityLivingBase;
-				int slotID = getSlotId(entity);
+		public void onPlayerStoppedUsing(ItemStack itemstack, World world, EntityLivingBase entity, int timeLeft) {
+			if (!world.isRemote) {
 				float f = net.minecraft.item.ItemBow.getArrowVelocity(this.getMaxItemUseDuration(itemstack) - timeLeft);
 				EntityCustom entityarrow = new EntityCustom(world, entity);
-				entityarrow.shoot(entity.getLookVec().x, entity.getLookVec().y, entity.getLookVec().z, f * 2.0f, 0);
+				Vec3d vec = entity.getLookVec();
+				if (entity instanceof EntityLiving && ((EntityLiving)entity).getAttackTarget() != null) {
+					vec = ((EntityLiving)entity).getAttackTarget().getPositionEyes(1f)
+					 .subtract(entity.posX, entity.posY + entity.getEyeHeight() - 0.1f, entity.posZ)
+					 .addVector(0d, MathHelper.sqrt(vec.x * vec.x + vec.z * vec.z) * 0.2d, 0d);
+				}
+				entityarrow.shoot(vec.x, vec.y, vec.z, f * 2.0f, 0);
 				//entityarrow.setSilent(true);
 				entityarrow.setDamage(12d);
 				//entityarrow.setKnockbackStrength(0);
@@ -135,7 +139,13 @@ public class ItemScytheHidan extends ElementsNarutomodMod.ModElement {
 				world.spawnEntity(entityarrow);
 				ItemStack newstack = new ItemStack(ItemScytheHidanThrown.block);
 				((ItemScytheHidanThrown.RangedItem)newstack.getItem()).setEntity(newstack, entityarrow);
-				entity.replaceItemInInventory(slotID, newstack);
+				if (entity instanceof EntityPlayer) {
+					((EntityPlayer)entity).replaceItemInInventory(getSlotId((EntityPlayer)entity), newstack);
+				} else if (entity.getHeldItemMainhand().getItem() == block) {
+					entity.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, newstack);
+				} else if (entity.getHeldItemOffhand().getItem() == block) {
+					entity.setItemStackToSlot(EntityEquipmentSlot.OFFHAND, newstack);
+				}
 			}
 		}
 
@@ -172,6 +182,7 @@ public class ItemScytheHidan extends ElementsNarutomodMod.ModElement {
 	public static class EntityCustom extends EntityArrow {
 		private static final DataParameter<Integer> SHOOTERID = EntityDataManager.<Integer>createKey(EntityCustom.class, DataSerializers.VARINT);
 		private double damage;
+		private EntityLivingBase hitTarget;
 
 		public EntityCustom(World a) {
 			super(a);
@@ -205,14 +216,24 @@ public class ItemScytheHidan extends ElementsNarutomodMod.ModElement {
 			return entity instanceof EntityLivingBase ? (EntityLivingBase)entity : null;
 		}
 
+		@Nullable
+		public EntityLivingBase getHitTarget() {
+			return this.hitTarget;
+		}
+
+		public boolean inGround() {
+			return this.inGround;
+		}
+
 		@Override
 		protected void onHit(RayTraceResult raytraceResultIn) {
 			Entity entity = raytraceResultIn.entityHit;
 			if (entity != null) {
-				if (!entity.equals(this.shootingEntity)) {
+				if (!entity.equals(this.shootingEntity) && this.isTargetable(entity)) {
 					float f = MathHelper.sqrt(this.getVelocitySq()) * (float)this.getDamage();
 					if (entity.attackEntityFrom(DamageSource.causeThrownDamage(this, this.shootingEntity), f)) {
 						if (entity instanceof EntityLivingBase) {
+							this.hitTarget = (EntityLivingBase)entity;
 							this.playSound(SoundEvents.ENTITY_ARROW_HIT, 1.0F, 1.2F / (this.rand.nextFloat() * 0.2F + 0.9F));
 							this.motionX *= 0.85d;
 							this.motionY *= 0.85d;
@@ -227,7 +248,7 @@ public class ItemScytheHidan extends ElementsNarutomodMod.ModElement {
 						ReflectionHelper.setPrivateValue(EntityArrow.class, this, 0, 13); //this.ticksInAir = 0;
 					}
 				}
-			} else {
+			} else if (this.arrowShake <= 0) {
 				BlockPos blockpos = raytraceResultIn.getBlockPos();
 				ReflectionHelper.setPrivateValue(EntityArrow.class, this, blockpos.getX(), 2); //this.xTile = blockpos.getX();
 				ReflectionHelper.setPrivateValue(EntityArrow.class, this, blockpos.getY(), 3); // this.yTile = blockpos.getY();
@@ -259,12 +280,24 @@ public class ItemScytheHidan extends ElementsNarutomodMod.ModElement {
 			Vec3d vec0 = new Vec3d(this.lastTickPosX + (this.posX - this.lastTickPosX) * pt, this.lastTickPosY + (this.posY - this.lastTickPosY) * pt, this.lastTickPosZ + (this.posZ - this.lastTickPosZ) * pt);
 			float f0 = this.prevRotationYaw + (this.rotationYaw - this.prevRotationYaw) * pt;
 			float f1 = -this.prevRotationPitch - (this.rotationPitch - this.prevRotationPitch) * pt - 90F;
-			return new Vec3d(0d, 2.5d, 0d).rotatePitch(-f1 * (float)Math.PI / 180F).rotateYaw(f0 * (float)Math.PI / 180F).add(vec0);
+			return new Vec3d(0d, 2.6d, 0d).rotatePitch(-f1 * (float)Math.PI / 180F).rotateYaw(f0 * (float)Math.PI / 180F).add(vec0);
 		}
 
-		public void retrieve(double x, double y, double z, float speed) {
+		protected void retrieve(double x, double y, double z, float speed) {
+			this.arrowShake = 7;
 			this.inGround = false;
+			ReflectionHelper.setPrivateValue(EntityArrow.class, this, 0, 2); //this.xTile = blockpos.getX();
+			ReflectionHelper.setPrivateValue(EntityArrow.class, this, 0, 3); // this.yTile = blockpos.getY();
+			ReflectionHelper.setPrivateValue(EntityArrow.class, this, 0, 4); // this.zTile = blockpos.getZ();
 			this.shoot(x, y, z, speed, 0f);
+		}
+
+		public void retrieve(Entity entity) {
+	        double d0 = entity.posX - this.posX;
+	        double d1 = entity.getEntityBoundingBox().minY + (double)entity.height * 0.333d - this.posY;
+	        double d2 = entity.posZ - this.posZ;
+	        double d3 = (double)MathHelper.sqrt(d0 * d0 + d2 * d2);
+	        this.retrieve(d0, d1 + d3 * 0.3D, d2, (float)MathHelper.sqrt(d3) * 0.3F);
 		}
 
 		@Override
@@ -278,7 +311,7 @@ public class ItemScytheHidan extends ElementsNarutomodMod.ModElement {
 				if ((int)ReflectionHelper.getPrivateValue(EntityArrow.class, this, 12) > 1198) { // this.ticksInGround
 					ReflectionHelper.setPrivateValue(EntityArrow.class, this, 1000, 12);
 				}
-			} else if (this.shootingEntity != null && this.getDistance(this.shootingEntity) > 50d) {
+			} else if (this.shootingEntity != null && this.getDistance(this.shootingEntity) > 32d) {
 				this.motionX *= -0.4d;
 				this.motionZ *= -0.4d;
 			}
@@ -376,8 +409,9 @@ public class ItemScytheHidan extends ElementsNarutomodMod.ModElement {
 			}
 	
 			private Vec3d transform3rdPerson(Vec3d startvec, Vec3d angles, EntityLivingBase entity, float pt) {
-				return ProcedureUtils.rotateRoll(startvec, (float)-angles.z).rotatePitch((float)-angles.x).rotateYaw((float)-angles.y)
-				   .addVector(0.0586F * -6F, 1.02F-(entity.isSneaking()?0.3f:0f), 0.0F)
+				//return ProcedureUtils.rotateRoll(startvec, (float)-angles.z).rotatePitch((float)-angles.x).rotateYaw((float)-angles.y)
+				return new ProcedureUtils.RotationMatrix().rotateZ((float)-angles.z).rotateY((float)-angles.y).rotateX((float)-angles.x)
+				   .transform(startvec).addVector(0.0586F * -6F, 1.02F-(entity.isSneaking()?0.3f:0f), 0.0F)
 				   .rotateYaw(-ProcedureUtils.interpolateRotation(entity.prevRenderYawOffset, entity.renderYawOffset, pt) * (float)(Math.PI / 180d))
 				   .add(this.getPosVec(entity, pt));
 			}
@@ -393,7 +427,7 @@ public class ItemScytheHidan extends ElementsNarutomodMod.ModElement {
 				float pitch = (float) (-MathHelper.atan2(vec3d.y, MathHelper.sqrt(vec3d.x * vec3d.x + vec3d.z * vec3d.z)) * (180d / Math.PI));
 				GlStateManager.pushMatrix();
 				GlStateManager.disableTexture2D();
-				GlStateManager.glLineWidth(5.0f);
+				GlStateManager.glLineWidth(8.0f);
 				GlStateManager.translate(from.x - this.renderManager.viewerPosX, from.y - this.renderManager.viewerPosY, from.z - this.renderManager.viewerPosZ);
 				GlStateManager.rotate(yaw, 0.0F, 1.0F, 0.0F);
 				GlStateManager.rotate(pitch, 1.0F, 0.0F, 0.0F);
@@ -403,10 +437,10 @@ public class ItemScytheHidan extends ElementsNarutomodMod.ModElement {
 				GlStateManager.disableLighting();
 				bufferbuilder.begin(1, DefaultVertexFormats.POSITION_COLOR);
 				for (double d1 = 0.0d; d1 < d; d1 += 0.2d) {
-					bufferbuilder.pos(0.0D, 0.0D, d1).color(0.3f, 0.3f, 0.3f, 1.0f).endVertex();
-					bufferbuilder.pos(0.0D, 0.0D, d1 + 0.1d).color(0.3f, 0.3f, 0.3f, 1.0f).endVertex();
-					bufferbuilder.pos(0.0D, 0.0D, d1 + 0.1d).color(0.5f, 0.5f, 0.5f, 1.0f).endVertex();
-					bufferbuilder.pos(0.0D, 0.0D, d1 + 0.2d).color(0.5f, 0.5f, 0.5f, 1.0f).endVertex();
+					bufferbuilder.pos(0.0D, 0.0D, d1).color(0.1f, 0.1f, 0.1f, 1.0f).endVertex();
+					bufferbuilder.pos(0.0D, 0.0D, d1 + 0.025d).color(0.1f, 0.1f, 0.1f, 1.0f).endVertex();
+					bufferbuilder.pos(0.0D, 0.0D, d1 + 0.025d).color(0.3f, 0.3f, 0.3f, 1.0f).endVertex();
+					bufferbuilder.pos(0.0D, 0.0D, d1 + 0.2d).color(0.3f, 0.3f, 0.3f, 1.0f).endVertex();
 				}
 				tessellator.draw();
 				GlStateManager.enableLighting();

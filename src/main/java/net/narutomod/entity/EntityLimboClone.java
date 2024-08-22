@@ -109,10 +109,10 @@ public class EntityLimboClone extends ElementsNarutomodMod.ModElement {
 		@Override
 		public boolean attackEntityFrom(DamageSource source, float amount) {
 			Entity attacker = source.getTrueSource();
-			if (attacker instanceof EntityLivingBase && this.canBeDetectedBy((EntityLivingBase)attacker)) {
-				return super.attackEntityFrom(source, amount);
-			}
-			if (attacker instanceof EntityLivingBase) {
+			if (attacker instanceof EntityLivingBase && !attacker.equals(this.getSummoner())) {
+				if (this.canBeDetectedBy((EntityLivingBase)attacker)) {
+					return super.attackEntityFrom(source, amount);
+				}
 				this.setRevengeTarget((EntityLivingBase)attacker);
 			}
 			return false;

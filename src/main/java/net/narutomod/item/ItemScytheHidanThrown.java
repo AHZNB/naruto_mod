@@ -20,7 +20,6 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Item;
 import net.minecraft.item.EnumAction;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
@@ -84,16 +83,11 @@ public class ItemScytheHidanThrown extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
-		public void onPlayerStoppedUsing(ItemStack itemstack, World world, EntityLivingBase entityLivingBase, int timeLeft) {
-			if (!world.isRemote && entityLivingBase instanceof EntityPlayerMP) {
-				EntityPlayerMP entity = (EntityPlayerMP) entityLivingBase;
+		public void onPlayerStoppedUsing(ItemStack itemstack, World world, EntityLivingBase entity, int timeLeft) {
+			if (!world.isRemote) {
 				ItemScytheHidan.EntityCustom itemEntity = this.getEntity(world, itemstack);
 				if (itemEntity != null && entity.equals(itemEntity.getShooter())) {
-			        double d0 = entity.posX - itemEntity.posX;
-			        double d1 = entity.getEntityBoundingBox().minY + (double)entity.height / 3d - itemEntity.posY;
-			        double d2 = entity.posZ - itemEntity.posZ;
-			        double d3 = (double)MathHelper.sqrt(d0 * d0 + d2 * d2);
-			        itemEntity.retrieve(d0, d1 + d3 * 0.3D, d2, (float)MathHelper.sqrt(d3) * 0.3F);
+			        itemEntity.retrieve(entity);
 				}
 			}
 		}

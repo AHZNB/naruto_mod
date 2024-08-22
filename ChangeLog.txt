@@ -83,6 +83,7 @@ Entities:
     will not spawn in the same 1024 block area within 30 mins
  - add Toad Sage Fukasaku & Shima (WIP)
  - hitting your own Explosion release: explosive clone despawns it
+ - adding Hidan (WIP-1, throws his scythe)
  
 General:
  - fixed alpha transparency bug when using certain jutsus
@@ -91,6 +92,7 @@ General:
  - will remove lower level sharingan if higher level mangekyo bound to the same player is in inventory
  - NinjaXp gain rate multiplier added in config
  - SHIFT+jump exhausts food levels, can't use if food level < 8
+ - attacking your own limbo clones won't gain ninjaXp anymore
  
 Bugs & Issues:
 

@@ -706,6 +706,7 @@ item.samurai_armorlegs.name=Samurai Leggings
 entity.sand_levitation.name=Sand Levitation
 subtitles.tenseiblastcharge=
 item.clothes_tsuchikagehelmet.name=Tsuchikage Hat
+entity.hidan.name=Hidan
 tooltip.mrp.goldtip=Restores 500 chakra. Regenerates 5% chakra every second for 30 seconds.
 tipped_arrow.effect.chakra_enhanced_strength=Arrow of Chakra Enhanced Strength
 item.ninja_armor_konohahelmet.name=Forehead Protector (Konoha)

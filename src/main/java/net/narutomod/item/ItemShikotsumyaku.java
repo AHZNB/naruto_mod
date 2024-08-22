@@ -45,7 +45,7 @@ public class ItemShikotsumyaku extends ElementsNarutomodMod.ModElement {
 	public static final ItemJutsu.JutsuEnum WILLOW = new ItemJutsu.JutsuEnum(1, "tooltip.shikotsumyaku.dancewillow", 'S', 150, 100d, new WillowDance());
 	public static final ItemJutsu.JutsuEnum CAMELLIA = new ItemJutsu.JutsuEnum(2, "tooltip.shikotsumyaku.dancecamellia", 'S', 150, 100d, new CamelliaDance());
 	public static final ItemJutsu.JutsuEnum BULLETS = new ItemJutsu.JutsuEnum(3, "finger_bone", 'S', 150, 5d, new EntityFingerBone.EC.Jutsu());
-	public static final ItemJutsu.JutsuEnum CFLOWER = new ItemJutsu.JutsuEnum(4, "tooltip.shikotsumyaku.danceclementisflower", 'S', 400, 500d, new ClementisFlower());
+	public static final ItemJutsu.JutsuEnum CFLOWER = new ItemJutsu.JutsuEnum(4, "tooltip.shikotsumyaku.danceclementisflower", 'S', 500, 500d, new ClementisFlower());
 	public static final ItemJutsu.JutsuEnum BRACKEN = new ItemJutsu.JutsuEnum(5, "entitybrackendance", 'S', 400, 20d, new EntityBrackenDance.Jutsu());
 
 	public ItemShikotsumyaku(ElementsNarutomodMod instance) {

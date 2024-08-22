@@ -502,12 +502,6 @@ public class EntityZabuzaMomochi extends ElementsNarutomodMod.ModElement {
 				this.bipedLeftLeg.cubeList.add(new ModelBox(this.bipedLeftLeg, 16, 48, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.0F, true));
 				this.bipedLeftLeg.cubeList.add(new ModelBox(this.bipedLeftLeg, 0, 48, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.25F, true));
 			}
-				
-			public void setRotationAngle(ModelRenderer modelRenderer, float x, float y, float z) {
-				modelRenderer.rotateAngleX = x;
-				modelRenderer.rotateAngleY = y;
-				modelRenderer.rotateAngleZ = z;
-			}
 		}
 	}
 }

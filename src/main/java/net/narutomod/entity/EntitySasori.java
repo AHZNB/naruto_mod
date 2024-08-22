@@ -1050,12 +1050,6 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 				bipedLeftLeg.addChild(robeLeftLeg);
 				robeLeftLeg.cubeList.add(new ModelBox(robeLeftLeg, 0, 48, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.5F, false));
 			}
-	
-			public void setRotationAngle(ModelRenderer modelRenderer, float x, float y, float z) {
-				modelRenderer.rotateAngleX = x;
-				modelRenderer.rotateAngleY = y;
-				modelRenderer.rotateAngleZ = z;
-			}
 
 			@Override
 			public void render(Entity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale) {

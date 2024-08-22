@@ -79,7 +79,12 @@ public class ItemAkatsukiRobe extends ElementsNarutomodMod.ModElement {
 			}
 
 			@Override
+			@SideOnly(Side.CLIENT)
 			public String getArmorTexture(ItemStack stack, Entity entity, EntityEquipmentSlot slot, String type) {
+				if (stack.hasTagCompound() && stack.getTagCompound().getBoolean("halfOff")) {
+					this.armorModel.bipedRightArm.showModel = false;
+					return "narutomod:textures/robe_akatsuki_half.png";
+				}
 				return "narutomod:textures/robe_akatsuki.png";
 			}
 		}.setUnlocalizedName("akatsuki_robebody").setRegistryName("akatsuki_robebody").setCreativeTab(TabModTab.tab));

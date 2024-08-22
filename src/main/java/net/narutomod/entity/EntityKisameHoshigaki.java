@@ -607,12 +607,6 @@ public class EntityKisameHoshigaki extends ElementsNarutomodMod.ModElement {
 				bipedLeftLeg.cubeList.add(new ModelBox(bipedLeftLeg, 16, 48, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.0F, false));
 				bipedLeftLeg.cubeList.add(new ModelBox(bipedLeftLeg, 0, 48, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.25F, false));
 			}
-				
-			public void setRotationAngle(ModelRenderer modelRenderer, float x, float y, float z) {
-				modelRenderer.rotateAngleX = x;
-				modelRenderer.rotateAngleY = y;
-				modelRenderer.rotateAngleZ = z;
-			}
 		}
 	}
 }

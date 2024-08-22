@@ -1,6 +1,6 @@
 {
   "id_map": {
-    "ENTITY": 466,
+    "ENTITY": 468,
     "DIMENSION": 13,
     "GUI": 70
   },
@@ -7654,6 +7654,18 @@
         "1": 466
       },
       "registry_name": "sweep"
+    },
+    {
+      "name": "Hidan",
+      "type": "mob",
+      "sortid": 896,
+      "compiles": true,
+      "locked_code": true,
+      "ids": {
+        "0": 467,
+        "1": 468
+      },
+      "registry_name": "hidan"
     }
   ],
   "variable_elements": [
@@ -9423,6 +9435,7 @@
       "entity.sand_levitation.name": "Sand Levitation",
       "subtitles.tenseiblastcharge": "",
       "item.clothes_tsuchikagehelmet.name": "Tsuchikage Hat",
+      "entity.hidan.name": "Hidan",
       "tooltip.mrp.goldtip": "Restores 500 chakra. Regenerates 5% chakra every second for 30 seconds.",
       "tipped_arrow.effect.chakra_enhanced_strength": "Arrow of Chakra Enhanced Strength",
       "item.ninja_armor_konohahelmet.name": "Forehead Protector (Konoha)",
