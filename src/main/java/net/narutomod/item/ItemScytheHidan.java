@@ -127,8 +127,8 @@ public class ItemScytheHidan extends ElementsNarutomodMod.ModElement {
 				Vec3d vec = entity.getLookVec();
 				if (entity instanceof EntityLiving && ((EntityLiving)entity).getAttackTarget() != null) {
 					vec = ((EntityLiving)entity).getAttackTarget().getPositionEyes(1f)
-					 .subtract(entity.posX, entity.posY + entity.getEyeHeight() - 0.1f, entity.posZ)
-					 .addVector(0d, MathHelper.sqrt(vec.x * vec.x + vec.z * vec.z) * 0.2d, 0d);
+					 .subtract(entity.posX, entity.posY + entity.getEyeHeight() - 0.1f, entity.posZ);
+					vec = vec.addVector(0d, MathHelper.sqrt(vec.x * vec.x + vec.z * vec.z) * 0.1d, 0d);
 				}
 				entityarrow.shoot(vec.x, vec.y, vec.z, f * 2.0f, 0);
 				//entityarrow.setSilent(true);
@@ -311,9 +311,8 @@ public class ItemScytheHidan extends ElementsNarutomodMod.ModElement {
 				if ((int)ReflectionHelper.getPrivateValue(EntityArrow.class, this, 12) > 1198) { // this.ticksInGround
 					ReflectionHelper.setPrivateValue(EntityArrow.class, this, 1000, 12);
 				}
-			} else if (this.shootingEntity != null && this.getDistance(this.shootingEntity) > 32d) {
-				this.motionX *= -0.4d;
-				this.motionZ *= -0.4d;
+			} else if (this.shootingEntity != null && this.getDistance(this.shootingEntity) > 32d && this.arrowShake <= 0) {
+				this.retrieve(this.shootingEntity);
 			}
 		}
 

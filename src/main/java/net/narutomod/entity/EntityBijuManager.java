@@ -237,8 +237,11 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 
 	public static List<String> listJinchuriki() {
 		List<String> list = Lists.newArrayList();
-		for (EntityBijuManager bm : mapByClass.values()) {
-			list.add(bm.toString());
+		for (int j = 1; j <= 10; j++) {
+			EntityBijuManager bm = mapByTailnum.get(j);
+			if (bm != null) {
+				list.add(bm.toString());
+			}
 		}
 		return list;
 	}

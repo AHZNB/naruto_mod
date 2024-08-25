@@ -148,7 +148,7 @@ public class EntityIceDome extends ElementsNarutomodMod.ModElement {
 					}
 				}
 			}
-			if (!this.world.isRemote && this.shootSpearsTime > 0) {
+			if (!this.world.isRemote && this.shootSpearsTime > 0 && summoner != null) {
 				for (EntityLivingBase entity : this.entitiesInside) {
 					if (entity.isEntityAlive() && !summoner.isOnSameTeam(entity)) {
 						double d0 = (this.rand.nextDouble()-0.5d) * this.width;

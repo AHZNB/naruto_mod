@@ -1232,12 +1232,10 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void onUpdateNavigation() {
 			++this.totalTicks;
-//debugPath("++++++ 1: ");
 			if (!this.noPath()) {
 				this.checkForStuck(this.getEntityPosition());
-//debugPath("++++++ 2: ");
 				if (!this.noPath()) {
-					Vec3d vec3d2 = this.currentPath.getPosition(this.entity);
+					Vec3d vec3d2 = this.currentPath.getCurrentPos();
 					if (this.distanceTo(vec3d2.x, vec3d2.y, vec3d2.z) < 0.5d * (this.entity.width + 1.0d)) {
 						this.currentPath.incrementPathIndex();
 					} else {
@@ -1258,8 +1256,9 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 	        }
 	    }
 
-		/*private void debugPath(String str) {
-			String s = str + "currentPath:";
+		@Override
+		public String toString() {
+			String s = "currentPath:";
 			if (currentPath != null) {
 				for (int i = 0; i < currentPath.getCurrentPathLength(); i++) {
 					s = s+" ("+currentPath.getPathPointFromIndex(i)+")";
@@ -1268,36 +1267,8 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 			} else {
 				s += "nul";
 			}
-			System.out.println(s);
+			return s;
 		}
-
-		@Override
-		public boolean setPath(@Nullable Path pathentityIn, double speedIn) {
-			if (super.setPath(pathentityIn, speedIn)) {
-this.debugPath(">>>>>> pos:"+this.entity.getPosition()+", ");
-				//this.lastTimeAtPathIndex = this.totalTicks;
-				//this.stuckCount = 0;
-				return true;
-			} else {
-				System.out.println(">>>>>> nul");
-			}
-			return false;
-		}
-
-		@Override
-		protected void checkForStuck(Vec3d positionVec3) {
-			super.checkForStuck(positionVec3);
-			if (this.noPath()) {
-				this.stuckCount++;
-			} else {
-				Vec3d vec = this.currentPath.getPosition(this.entity);
-System.out.println("====== totalTicks:"+totalTicks+", lastTimeAtPathIndex:"+lastTimeAtPathIndex+", distanceTo:"+this.distanceTo(vec.x, vec.y, vec.z));
-				if (this.totalTicks - this.lastTimeAtPathIndex > (int)this.distanceTo(vec.x, vec.y, vec.z) * 5) {
-					this.stuckCount++;
-					this.clearPath();
-				}
-			}
-		}*/
 
 		@Override
 		protected void removeSunnyPath() {

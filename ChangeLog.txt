@@ -61,7 +61,7 @@ Entities:
  - all "smart" ninja NPCs can naruto run
  - Might Guy and Iruka wears konoha flak jackets and jumpsuit/pants now and has a chance to drop it
  - Sakura wears Sakura clothing and leggings now and has a chance to drop it
- - Kisame wears Akatsuki robe now and has a chance to drop it
+ - Kisame wears Akatsuki robe now and has a chance to drop it. follows Itachi if he's in the area
  - Haku wears anbu mask and has a chance to drop it
  - improved Hirudora model
  - 3rd kazekage puppet can use sand bullet jutsu & sand gathering jutsu (use with 3rd kazekage scroll)
@@ -83,7 +83,7 @@ Entities:
     will not spawn in the same 1024 block area within 30 mins
  - add Toad Sage Fukasaku & Shima (WIP)
  - hitting your own Explosion release: explosive clone despawns it
- - adding Hidan (WIP-1, throws his scythe)
+ - adding Hidan (WIP-2: throws his scythe, activates jashin mode)
  
 General:
  - fixed alpha transparency bug when using certain jutsus

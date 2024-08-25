@@ -27,6 +27,8 @@ import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.item.ItemStack;
+import net.minecraft.potion.PotionEffect;
+import net.minecraft.init.MobEffects;
 
 import net.narutomod.item.ItemYooton;
 import net.narutomod.item.ItemKaton;
@@ -210,6 +212,14 @@ public class EntityFourTails extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
+		public void onUpdate() {
+			if (this.ticksExisted % 10 == 1) {
+				this.addPotionEffect(new PotionEffect(MobEffects.MINING_FATIGUE, 12, 5, false, false));
+			}
+			super.onUpdate();
+		}
+
+		@Override
 		public float getFuuinBeamHeight() {
 			return this.isFaceDown() ? 2.0f * 0.0625f * MODELSCALE : super.getFuuinBeamHeight();
 		}
@@ -348,7 +358,12 @@ public class EntityFourTails extends ElementsNarutomodMod.ModElement {
 			private final float tailSwayY[][] = new float[4][6];
 			private final float tailSwayZ[][] = new float[4][6];
 			private final Random rand = new Random();
-	
+			private final float[][] swingingRightArmPreset = { {0.0F, 0.0F, 0.0F}, {-2.0944F, 0.0F, 0.0F}, {-0.7854F, -0.2618F, 0.0F} };
+			private final float[][] swingingLeftArmPreset = { {0.0F, 0.0F, 0.0F}, {-2.0944F, 0.0F, 0.0F}, {-0.7854F, 0.2618F, 0.0F} };
+			private final float[][] swingingBipedBodyPreset = { {0.0F, 0.0F, 0.0F}, {0.0F, 0.0F, 0.0F}, {0.2618F, 0.0F, 0.0F} };
+			private final float[][] swingingRightLegPreset = { {0.0873F, -0.48F, -0.3054F}, {0.0873F, -0.48F, -0.3054F}, {-0.1745F, -0.48F, -0.1745F} };
+			private final float[][] swingingLeftLegPreset = { {0.0873F, 0.48F, 0.3054F}, {0.0873F, 0.48F, 0.3054F}, {-0.1745F, 0.48F, 0.1745F} };
+
 			public ModelFourTails() {
 				textureWidth = 64;
 				textureHeight = 64;
@@ -613,13 +628,13 @@ public class EntityFourTails extends ElementsNarutomodMod.ModElement {
 				cube_r32 = new ModelRenderer(this);
 				cube_r32.setRotationPoint(0.0F, -0.5F, -0.8F);
 				beard.addChild(cube_r32);
-				setRotationAngle(cube_r32, 0.0155F, -0.0081F, 0.4799F);
+				setRotationAngle(cube_r32, 0.0158F, -0.0074F, 0.4363F);
 				cube_r32.cubeList.add(new ModelBox(cube_r32, 0, 0, 0.1F, -0.2F, -0.4F, 2, 4, 1, 0.0F, true));
 		
 				cube_r33 = new ModelRenderer(this);
 				cube_r33.setRotationPoint(0.0F, -0.5F, -0.8F);
 				beard.addChild(cube_r33);
-				setRotationAngle(cube_r33, 0.0155F, 0.0081F, -0.4799F);
+				setRotationAngle(cube_r33, 0.0158F, 0.0074F, -0.4363F);
 				cube_r33.cubeList.add(new ModelBox(cube_r33, 0, 0, -2.1F, -0.2F, -0.4F, 2, 4, 1, 0.0F, false));
 		
 				bone = new ModelRenderer(this);
@@ -630,19 +645,18 @@ public class EntityFourTails extends ElementsNarutomodMod.ModElement {
 				cube_r56 = new ModelRenderer(this);
 				cube_r56.setRotationPoint(0.0F, -0.5F, -0.8F);
 				bone.addChild(cube_r56);
-				setRotationAngle(cube_r56, 0.0155F, -0.0081F, 0.4799F);
+				setRotationAngle(cube_r56, 0.0158F, -0.0074F, 0.4363F);
 				cube_r56.cubeList.add(new ModelBox(cube_r56, 0, 0, 0.1F, -0.2F, -0.4F, 2, 4, 1, 0.0F, true));
 		
 				cube_r57 = new ModelRenderer(this);
 				cube_r57.setRotationPoint(0.0F, -0.5F, -0.8F);
 				bone.addChild(cube_r57);
-				setRotationAngle(cube_r57, 0.0155F, 0.0081F, -0.4799F);
+				setRotationAngle(cube_r57, 0.0158F, 0.0074F, -0.4363F);
 				cube_r57.cubeList.add(new ModelBox(cube_r57, 0, 0, -2.1F, -0.2F, -0.4F, 2, 4, 1, 0.0F, false));
 
 				bipedRightArm = new ModelRenderer(this);
 				bipedRightArm.setRotationPoint(-5.25F, -9.25F, -6.25F);
 				bipedBody.addChild(bipedRightArm);
-				
 		
 				cube_r34 = new ModelRenderer(this);
 				cube_r34.setRotationPoint(0.25F, 0.45F, 0.5F);
@@ -685,7 +699,6 @@ public class EntityFourTails extends ElementsNarutomodMod.ModElement {
 				bipedLeftArm = new ModelRenderer(this);
 				bipedLeftArm.setRotationPoint(5.25F, -9.25F, -6.25F);
 				bipedBody.addChild(bipedLeftArm);
-				
 		
 				cube_r39 = new ModelRenderer(this);
 				cube_r39.setRotationPoint(-0.25F, 0.45F, 0.5F);
@@ -1057,23 +1070,6 @@ public class EntityFourTails extends ElementsNarutomodMod.ModElement {
 						//Tail[i][j].rotateAngleY = MathHelper.sin((f2 - j) * 0.1F) * tailSwayY[i][j];
 					}
 				}
-				if (!e.onGround) {
-					setRotationAngle(rightLeg, 0.383F, -0.3089F, -1.0426F);
-					rightCalf.rotateAngleZ = 0.2618F;
-					setRotationAngle(leftLeg, 0.383F, 0.3089F, 1.0426F);
-					leftCalf.rotateAngleZ = -0.2618F;
-				} else {
-					setRotationAngle(rightLeg, 0.0873F, -0.48F, -0.3054F);
-					rightCalf.rotateAngleZ = 0.0F;
-					setRotationAngle(leftLeg, 0.0873F, 0.48F, 0.3054F);
-					leftCalf.rotateAngleZ = 0.0F;
-				}
-				if (((EntityCustom)e).isShooting()) {
-					bipedHead.rotateAngleX += -0.5236F;
-					jaw.rotateAngleX = 0.7418F;
-				} else {
-					jaw.rotateAngleX = 0.3491F;
-				}
 				if (((EntityCustom)e).isFaceDown()) {
 					bipedBody.rotationPointZ = 10.0F;
 					bipedBody.rotateAngleX = 0.7854F;
@@ -1087,9 +1083,58 @@ public class EntityFourTails extends ElementsNarutomodMod.ModElement {
 					bipedBody.rotationPointZ = 6.75F;
 					bipedBody.rotateAngleX = 0.0F;
 					tails.rotateAngleX = 0.0F;
+					if (this.swingProgress > 0.0F) {
+						if (this.swingProgress < 0.4F) {
+							float f6 = this.swingProgress / 0.4F;
+							this.bodyPartAngles(bipedBody, this.swingingBipedBodyPreset, 0, f6);
+							this.bodyPartAngles(bipedRightArm, this.swingingRightArmPreset, 0, f6);
+							this.bodyPartAngles(bipedLeftArm, this.swingingLeftArmPreset, 0, f6);
+						} else if (this.swingProgress < 0.6F) {
+							float f6 = (this.swingProgress - 0.4F) / 0.2F;
+							this.bodyPartAngles(bipedBody, this.swingingBipedBodyPreset, 1, f6);
+							this.bodyPartAngles(bipedRightArm, this.swingingRightArmPreset, 1, f6);
+							this.bodyPartAngles(bipedLeftArm, this.swingingLeftArmPreset, 1, f6);
+							this.bodyPartAngles(rightLeg, this.swingingRightLegPreset, 1, f6);
+							this.bodyPartAngles(leftLeg, this.swingingLeftLegPreset, 1, f6);
+						} else {
+							float f6 = (this.swingProgress - 0.6F) / 0.4F;
+							this.bodyPartAngles(bipedBody, this.swingingBipedBodyPreset, 2, f6);
+							this.bodyPartAngles(bipedRightArm, this.swingingRightArmPreset, 2, f6);
+							this.bodyPartAngles(bipedLeftArm, this.swingingLeftArmPreset, 2, f6);
+							this.bodyPartAngles(rightLeg, this.swingingRightLegPreset, 2, f6);
+							this.bodyPartAngles(leftLeg, this.swingingLeftLegPreset, 2, f6);
+						}
+					}
+					if (!e.onGround) {
+						setRotationAngle(rightLeg, 0.383F, -0.3089F, -1.0426F);
+						rightCalf.rotateAngleZ = 0.2618F;
+						setRotationAngle(leftLeg, 0.383F, 0.3089F, 1.0426F);
+						leftCalf.rotateAngleZ = -0.2618F;
+					} else {
+						setRotationAngle(rightLeg, 0.0873F, -0.48F, -0.3054F);
+						rightCalf.rotateAngleZ = 0.0F;
+						setRotationAngle(leftLeg, 0.0873F, 0.48F, 0.3054F);
+						leftCalf.rotateAngleZ = 0.0F;
+					}
+					if (((EntityCustom)e).isShooting()) {
+						bipedHead.rotateAngleX += -0.5236F;
+						jaw.rotateAngleX = 0.7418F;
+					} else {
+						jaw.rotateAngleX = 0.3491F;
+					}
 				}
 				this.copyModelAngles(bipedBody, bipedHeadwear);
 				this.copyModelAngles(bipedHead, eyes);
+			}
+
+			private void bodyPartAngles(ModelRenderer part, float[][] preset, int seg, float progress) {
+				if (seg < 0 || seg >= preset.length) {
+					return;
+				}
+				int to = seg == preset.length - 1 ? 0 : (seg + 1);
+				part.rotateAngleX = preset[seg][0] + (preset[to][0] - preset[seg][0]) * progress;
+				part.rotateAngleY = preset[seg][1] + (preset[to][1] - preset[seg][1]) * progress;
+				part.rotateAngleZ = preset[seg][2] + (preset[to][2] - preset[seg][2]) * progress;
 			}
 		}
 	}

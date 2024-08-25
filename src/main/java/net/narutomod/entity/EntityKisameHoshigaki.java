@@ -214,9 +214,16 @@ public class EntityKisameHoshigaki extends ElementsNarutomodMod.ModElement {
 					return 5.3d + attackTarget.width;
 				}
 			});
-			this.tasks.addTask(4, new EntityAIWatchClosest2(this, EntityPlayer.class, 15.0F, 1.0F));
-			this.tasks.addTask(5, new EntityAIWander(this, 0.5));
-			this.tasks.addTask(6, new EntityAIWatchClosest(this, EntityMob.class, 8.0F));
+			this.tasks.addTask(4, new EntityClone.AIFollowSummoner(this, 0.6d, 4f) {
+				@Override @Nullable
+				protected EntityLivingBase getFollowEntity() {
+					Entity itachi = EntityCustom.this.world.findNearestEntityWithinAABB(EntityItachi.EntityCustom.class, EntityCustom.this.getEntityBoundingBox().grow(256d, 16d, 256d), EntityCustom.this);
+					return itachi instanceof EntityLivingBase ? (EntityLivingBase)itachi : null;
+				}
+			});
+			this.tasks.addTask(5, new EntityAIWatchClosest2(this, EntityPlayer.class, 15.0F, 1.0F));
+			this.tasks.addTask(6, new EntityAIWander(this, 0.5));
+			this.tasks.addTask(7, new EntityAIWatchClosest(this, EntityMob.class, 8.0F));
 		}
 
 		public boolean isClone() {

@@ -414,13 +414,6 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 			}
 
 			@Override
-			protected void renderLayers(EntityCustom entity, float f0, float f1, float f2, float f3, float f4, float f5, float f6) {
-				if (!entity.isInvisible()) {
-					super.renderLayers(entity, f0, f1, f2, f3, f4, f5, f6);
-				}
-			}
-
-			@Override
 			protected void preRenderCallback(EntityCustom entity, float partialTickTime) {
 				GlStateManager.scale(0.9375F, 0.9375F, 0.9375F);
 			}

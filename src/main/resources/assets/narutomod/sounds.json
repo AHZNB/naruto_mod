@@ -1141,5 +1141,14 @@
         "stream": false
       }
     ]
+  },
+  "hidan": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "narutomod:hidan",
+        "stream": false
+      }
+    ]
   }
 }

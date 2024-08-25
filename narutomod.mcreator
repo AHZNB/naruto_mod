@@ -1,8 +1,8 @@
 {
   "id_map": {
-    "ENTITY": 468,
     "DIMENSION": 13,
-    "GUI": 70
+    "GUI": 70,
+    "ENTITY": 468
   },
   "mod_elements": [
     {
@@ -8723,6 +8723,14 @@
       ],
       "category": "master",
       "subtitle": ""
+    },
+    {
+      "name": "hidan",
+      "files": [
+        "hidan"
+      ],
+      "category": "master",
+      "subtitle": ""
     }
   ],
   "language_map": {
@@ -8860,6 +8868,7 @@
       "item.ninja_armor_iwahelmet.name": "Forehead Protector (Iwagakure)",
       "item.byakuganhelmet.name": "Byakugan",
       "tooltip.rinnegan.jutsu2": "Tendo (Chibakutensei / [SHIFT] Tengaishinsei),  Preta (Shield), Animal (Summoning), Naraka (King of Hell),  Outer (Gedomazo NXP:8100)",
+      "subtitles.hidan": "",
       "tooltip.rinnegan.jutsu3": "Universal Pull ([SHIFT] to dislodge blocks)",
       "entity.wood_burial.name": "Wood Burial",
       "entity.hakkeshokeiten.name": "8-Trigrams Revolving Heaven",
