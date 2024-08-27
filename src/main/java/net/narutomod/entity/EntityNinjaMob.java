@@ -318,9 +318,11 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 
 		protected void decrementAnimations() {
 			this.updateArmSwingProgress();
-			for (ItemStack stack : this.getHeldEquipment()) {
-				if (!stack.isEmpty())
-					stack.updateAnimation(this.world, this, 0, false);
+			for (EntityEquipmentSlot slot : EntityEquipmentSlot.values()) {
+				ItemStack stack = this.getItemStackFromSlot(slot);
+				if (!stack.isEmpty()) {
+					stack.updateAnimation(this.world, this, 0, slot == EntityEquipmentSlot.MAINHAND);
+				}
 			}
 			for (ItemStack stack : this.inventory) {
 				if (!stack.isEmpty())

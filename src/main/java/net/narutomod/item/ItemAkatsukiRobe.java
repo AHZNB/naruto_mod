@@ -52,11 +52,14 @@ public class ItemAkatsukiRobe extends ElementsNarutomodMod.ModElement {
 			}
 
 			@Override
-			public void onArmorTick(World world, EntityPlayer player, ItemStack itemStack) {
-				if (player.getRNG().nextInt(200) == 0) {
-					world.playSound(null, player.posX, player.posY, player.posZ,
-					 net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:dingding")),
-					 net.minecraft.util.SoundCategory.PLAYERS, 0.8f, player.getRNG().nextFloat() * 0.1f + 0.95f);
+			public void onUpdate(ItemStack stack, World world, Entity entity, int itemSlot, boolean isSelected) {
+				if (entity instanceof EntityLivingBase) {
+					EntityLivingBase player = (EntityLivingBase)entity;
+					if (player.getRNG().nextInt(200) == 0 && stack.equals(player.getItemStackFromSlot(EntityEquipmentSlot.HEAD))) {
+						world.playSound(null, player.posX, player.posY, player.posZ,
+						 net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:dingding")),
+						 net.minecraft.util.SoundCategory.AMBIENT, 0.8f, player.getRNG().nextFloat() * 0.1f + 0.95f);
+					}
 				}
 			}
 

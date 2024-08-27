@@ -141,7 +141,7 @@ public class EntitySealing extends ElementsNarutomodMod.ModElement {
 			this.parts[3].setLocationAndAngles(this.posX, this.posY + 0.005d, this.posZ - 5d, 0f, 0f);
 			if (this.bijuEntity == null) {
 				for (EntityLivingBase entity : this.world.getEntitiesWithinAABB(EntityLivingBase.class, this.getEntityBoundingBox())) {
-					if (entity instanceof EntityTailedBeast.Base && !((EntityTailedBeast.Base)entity).getBijuManager().isSealed()) {
+					if (entity instanceof EntityTailedBeast.Base && ((EntityTailedBeast.Base)entity).canBeSealed()) {
 						this.bijuEntity = (EntityTailedBeast.Base)entity;
 					}
 				}

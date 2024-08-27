@@ -32,6 +32,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -64,7 +65,6 @@ import net.narutomod.ElementsNarutomodMod;
 //import java.util.List;
 import com.google.common.collect.Multimap;
 import javax.annotation.Nullable;
-import net.minecraft.entity.EntityLiving;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class ItemScytheHidan extends ElementsNarutomodMod.ModElement {

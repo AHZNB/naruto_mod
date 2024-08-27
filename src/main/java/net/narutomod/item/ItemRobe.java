@@ -38,9 +38,9 @@ public class ItemRobe extends ElementsNarutomodMod.ModElement {
 		//private final ModelRenderer bipedBody;
 		private final ModelRenderer bone;
 		private final ModelRenderer bone8;
-		protected final ModelRenderer collar;
+		private final ModelRenderer collar;
 		private final ModelRenderer bone6;
-		protected final ModelRenderer collar2;
+		private final ModelRenderer collar2;
 		private final ModelRenderer bone2;
 		//private final ModelRenderer bipedRightArm;
 		//private final ModelRenderer bipedLeftArm;
@@ -74,12 +74,12 @@ public class ItemRobe extends ElementsNarutomodMod.ModElement {
 			collar2.setRotationPoint(0.0F, 0.0F, -1.8F);
 			bipedBody.addChild(collar2);
 			setRotationAngle(collar2, -0.2182F, 0.0F, 0.0F);
-			collar2.cubeList.add(new ModelBox(collar2, 20, 21, -4.0F, -4.0F, 0.0F, 8, 4, 4, 1.4F, false));
+			collar2.cubeList.add(new ModelBox(collar2, 0, 24, -4.0F, -4.0F, 0.0F, 8, 4, 4, 1.4F, false));
 			bone2 = new ModelRenderer(this);
 			bone2.setRotationPoint(0.0F, 0.35F, 3.25F);
 			collar2.addChild(bone2);
 			setRotationAngle(bone2, -0.6109F, 0.0F, 0.0F);
-			bone2.cubeList.add(new ModelBox(bone2, 0, 22, -4.0F, -6.0F, -1.0F, 8, 5, 2, 1.4F, false));
+			bone2.cubeList.add(new ModelBox(bone2, 0, 57, -4.0F, -6.0F, -1.0F, 8, 5, 2, 1.4F, false));
 			bipedRightArm = new ModelRenderer(this);
 			bipedRightArm.setRotationPoint(-5.0F, 2.0F, 0.0F);
 			bipedRightArm.cubeList.add(new ModelBox(bipedRightArm, 0, 32, -3.0F, -2.0F, -2.0F, 4, 12, 4, 0.5F, false));

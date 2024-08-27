@@ -4,6 +4,7 @@ package net.narutomod.entity;
 import net.narutomod.item.ItemAkatsukiRobe;
 import net.narutomod.item.ItemScytheHidan;
 import net.narutomod.item.ItemScytheHidanThrown;
+import net.narutomod.item.ItemSpearRetractable;
 import net.narutomod.potion.PotionHeaviness;
 import net.narutomod.ModConfig;
 import net.narutomod.ElementsNarutomodMod;
@@ -11,7 +12,9 @@ import net.narutomod.ElementsNarutomodMod;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
+import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 
 import net.minecraft.world.World;
@@ -23,6 +26,7 @@ import net.minecraft.util.EntitySelectors;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.ai.EntityAIAttackMelee;
@@ -34,6 +38,7 @@ import net.minecraft.entity.ai.EntityAIWatchClosest2;
 import net.minecraft.entity.ai.EntityAIWander;
 import net.minecraft.entity.ai.EntityAILookIdle;
 import net.minecraft.entity.ai.EntityAISwimming;
+import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.entity.IEntityLivingData;
 import net.minecraft.entity.IRangedAttackMob;
 import net.minecraft.entity.monster.IMob;
@@ -53,6 +58,7 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraft.init.Biomes;
 import net.minecraft.init.MobEffects;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
@@ -79,13 +85,26 @@ public class EntityHidan extends ElementsNarutomodMod.ModElement {
 		 .id(new ResourceLocation("narutomod", "hidan_symbol"), ENTITYID_RANGED).name("hidan_symbol").tracker(64, 3, true).build());
 	}
 
+	@Override
+	public void init(FMLInitializationEvent event) {
+		int i = MathHelper.clamp(ModConfig.SPAWN_WEIGHT_HIDAN, 0, 20);
+		if (i > 0) {
+			EntityRegistry.addSpawn(EntityCustom.class, i, 1, 1, EnumCreatureType.MONSTER,
+					Biomes.BEACH, Biomes.DESERT, Biomes.DESERT_HILLS, Biomes.MESA, Biomes.MESA_ROCK,
+					Biomes.EXTREME_HILLS, Biomes.MUSHROOM_ISLAND, Biomes.MUTATED_DESERT, Biomes.MUTATED_EXTREME_HILLS,
+					Biomes.MUTATED_MESA, Biomes.MUTATED_MESA_ROCK, Biomes.MUTATED_PLAINS, Biomes.MUTATED_SWAMPLAND,
+					Biomes.PLAINS, Biomes.RIVER, Biomes.SWAMPLAND, Biomes.SAVANNA, Biomes.MUTATED_SAVANNA);
+		}
+	}
+
 	public static class EntityCustom extends EntityNinjaMob.Base implements IMob, IRangedAttackMob {
 		private static final DataParameter<Integer> JASHIN_TICKS = EntityDataManager.<Integer>createKey(EntityCustom.class, DataSerializers.VARINT);
 		private final int transitionTime = 60;
-		private int transitionDirection;
-		private EntityLivingBase hitTarget;
+		private int jashinTransitionDirection;
+		private EntityLivingBase curseTarget;
 		private boolean scytheOnRetrieval;
 		private EntityJashinSymbol jashinSymbol;
+		private int lastJashinTime;
 
 		public EntityCustom(World world) {
 			super(world, 120, 7000d);
@@ -94,6 +113,7 @@ public class EntityHidan extends ElementsNarutomodMod.ModElement {
 		@Override
 		public IEntityLivingData onInitialSpawn(DifficultyInstance difficulty, @Nullable IEntityLivingData livingdata) {
 			this.setItemToInventory(new ItemStack(ItemScytheHidan.block), 0);
+			this.setItemToInventory(new ItemStack(ItemSpearRetractable.block), 1);
 			this.setItemStackToSlot(EntityEquipmentSlot.CHEST, new ItemStack(ItemAkatsukiRobe.body));
 			return super.onInitialSpawn(difficulty, livingdata);
 		}
@@ -113,9 +133,11 @@ public class EntityHidan extends ElementsNarutomodMod.ModElement {
 		}
 
 		public void setJashinTransitionDirection(int i) {
-			this.transitionDirection = i;
+			this.jashinTransitionDirection = i;
 			if (i < 0) {
-				this.setJashinTicks(this.transitionTime);
+				if (this.getJashinTicks() > this.transitionTime) {
+					this.setJashinTicks(this.transitionTime);
+				}
 			} else if (i > 0) {
 				this.setJashinTicks(1);
 				ItemStack stack = this.getItemStackFromSlot(EntityEquipmentSlot.CHEST);
@@ -148,18 +170,18 @@ public class EntityHidan extends ElementsNarutomodMod.ModElement {
 					}
 				}));
 			this.tasks.addTask(0, new EntityAISwimming(this));
-			this.tasks.addTask(1, new AIMoveTowardsSymbol(this, 2.0d, 48.0f));
+			this.tasks.addTask(1, new AIMoveTowardsSymbol(this, 1.5d));
 			this.tasks.addTask(2, new EntityNinjaMob.AILeapAtTarget(this, 1.0F) {
 				@Override
 				public boolean shouldExecute() {
-					return super.shouldExecute() && EntityCustom.this.transitionDirection < 1
+					return super.shouldExecute() && EntityCustom.this.jashinTransitionDirection == 0
 							&& EntityCustom.this.getAttackTarget().posY - EntityCustom.this.posY > 3d;
 				}
 			});
 			this.tasks.addTask(3, new EntityAIAttackRanged(this, 1.0D, 10, 16.0F) {
 				@Override
 				public boolean shouldExecute() {
-					return EntityCustom.this.transitionDirection < 1 && super.shouldExecute()
+					return EntityCustom.this.jashinTransitionDirection == 0 && super.shouldExecute()
 					 && EntityCustom.this.getDistance(EntityCustom.this.getAttackTarget()) > 6.0d
 					 && EntityCustom.this.getHeldItemMainhand().getItem() == ItemScytheHidan.block;
 				}
@@ -167,7 +189,7 @@ public class EntityHidan extends ElementsNarutomodMod.ModElement {
 			this.tasks.addTask(4, new EntityAIAttackMelee(this, 1.0d, true) {
 				@Override
 				public boolean shouldExecute() {
-					return EntityCustom.this.transitionDirection < 1 && super.shouldExecute();
+					return EntityCustom.this.jashinTransitionDirection == 0 && super.shouldExecute();
 				}
 				@Override
 				protected double getAttackReachSqr(EntityLivingBase attackTarget) {
@@ -177,8 +199,9 @@ public class EntityHidan extends ElementsNarutomodMod.ModElement {
 			this.tasks.addTask(5, new EntityAIWatchClosest(this, null, 48.0F, 1.0F) {
 				@Override
 				public boolean shouldExecute() {
-					if (EntityCustom.this.transitionDirection > 0 && EntityCustom.this.hitTarget != null) {
-						this.closestEntity = EntityCustom.this.hitTarget;
+					if (EntityCustom.this.jashinTransitionDirection > 0
+					 && EntityCustom.this.curseTarget != null && EntityCustom.this.curseTarget.isEntityAlive()) {
+						this.closestEntity = EntityCustom.this.curseTarget;
 						return true;
 					}
 					return false;
@@ -192,38 +215,55 @@ public class EntityHidan extends ElementsNarutomodMod.ModElement {
 		@Override
 		protected void updateAITasks() {
 			ItemStack stack = this.getHeldItemMainhand();
-			if (stack.getItem() != ItemScytheHidanThrown.block) {
-				if (this.hitTarget != null && this.hitTarget.isEntityAlive()) {
-					if (this.jashinSymbol == null || this.jashinSymbol.isDead) {
-						this.jashinSymbol = new EntityJashinSymbol(this.world);
-						this.jashinSymbol.setLocationAndAngles(this.posX, this.posY, this.posZ, this.rotationYaw, 0.0f);
-						this.world.spawnEntity(this.jashinSymbol);
-						this.playSound(net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:hidan")), 1f, 1f);
-					} else {
-						AxisAlignedBB bb1 = this.getEntityBoundingBox();
-						AxisAlignedBB bb2 = this.jashinSymbol.getEntityBoundingBox();
-						if (this.transitionDirection >= 0 && (bb1.minX > bb2.maxX || bb1.maxX < bb2.minX || bb1.minZ > bb2.maxZ || bb1.maxZ < bb2.minZ)) {
-							this.setJashinTransitionDirection(-1);
-							this.getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(0.0D);
-						} else if (this.transitionDirection <= 0 && bb1.minX <= bb2.maxX && bb1.maxX >= bb2.minX && bb1.minZ <= bb2.maxZ && bb1.maxZ >= bb2.minZ) {
-							this.setJashinTransitionDirection(1);
-							this.getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(1.0D);
-							this.hitTarget.addPotionEffect(new PotionEffect(PotionHeaviness.potion, 200, 4));
-						}
-					}
-				} else if (this.transitionDirection > 0) {
-					this.setJashinTransitionDirection(-1);
-					this.getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(0.0D);
-				}
-				super.updateAITasks();
-			} else {
+			if (stack.getItem() == ItemScytheHidanThrown.block) {
 				ItemScytheHidan.EntityCustom entity = ((ItemScytheHidanThrown.RangedItem)stack.getItem()).getEntity(this.world, stack);
-				this.hitTarget = entity.getHitTarget();
+				this.curseTarget = entity.getHitTarget();
 				if (entity.inGround()) {
 					this.standStillFor(30);
 					stack.onPlayerStoppedUsing(this.world, this, 0);
 					this.scytheOnRetrieval = true;
 				}
+			} else {
+				if (this.curseTarget != null && this.curseTarget.isEntityAlive()) {
+					if (this.jashinSymbol == null || this.jashinSymbol.isDead) {
+						if (this.onGround) {
+							this.jashinSymbol = new EntityJashinSymbol(this.world);
+							this.jashinSymbol.setLocationAndAngles(this.posX, this.posY, this.posZ, this.rotationYaw, 0.0f);
+							this.world.spawnEntity(this.jashinSymbol);
+							this.lastJashinTime = this.ticksExisted;
+							this.playSound(net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:hidan")), 2f, 1f);
+							if (stack.getItem() != ItemSpearRetractable.block && this.getItemFromInventory(1).getItem() == ItemSpearRetractable.block) {
+								this.swapWithInventory(EntityEquipmentSlot.MAINHAND, 0);
+								this.swapWithInventory(EntityEquipmentSlot.MAINHAND, 1);
+							}
+						}
+					} else {
+						AxisAlignedBB bb1 = this.getEntityBoundingBox();
+						AxisAlignedBB bb2 = this.jashinSymbol.getEntityBoundingBox();
+						if (this.jashinTransitionDirection >= 0 && (bb1.minX > bb2.maxX || bb1.maxX < bb2.minX || bb1.minZ > bb2.maxZ || bb1.maxZ < bb2.minZ)) {
+							this.setJashinTransitionDirection(-1);
+							this.getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(0.5D);
+							this.setAttackTarget(this.curseTarget);
+						} else if (this.jashinTransitionDirection <= 0 && bb1.minX <= bb2.maxX && bb1.maxX >= bb2.minX && bb1.minZ <= bb2.maxZ && bb1.maxZ >= bb2.minZ) {
+							this.setJashinTransitionDirection(1);
+							this.getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(1.0D);
+							this.curseTarget.addPotionEffect(new PotionEffect(PotionHeaviness.potion, 60, 4));
+						} else if (this.jashinTransitionDirection >= 0 && stack.getItem() == ItemSpearRetractable.block
+						 && this.ticksExisted > this.lastJashinTime + 40 && this.ticksExisted % 40 == 2) {
+						 	ItemSpearRetractable.setHurtSelf(stack);
+							this.swingArm(EnumHand.MAIN_HAND);
+							this.attackEntityFrom(DamageSource.causeMobDamage(this), 100.0f * this.rand.nextFloat() * Math.min((float)(this.ticksExisted - this.lastJashinTime) / 160f, 1.0f));
+							this.curseTarget.addPotionEffect(new PotionEffect(PotionHeaviness.potion, 60, this.rand.nextInt(5)));
+						}
+					}
+				} else if (this.jashinTransitionDirection > 0) {
+					this.setJashinTransitionDirection(-1);
+					this.getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(0.0D);
+					if (stack.getItem() == ItemSpearRetractable.block) {
+						this.swapWithInventory(EntityEquipmentSlot.MAINHAND, 1);
+					}
+				}
+				super.updateAITasks();
 			}
 		}
 
@@ -242,8 +282,8 @@ public class EntityHidan extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public boolean attackEntityFrom(DamageSource source, float amount) {
-			if (this.hitTarget != null && this.hitTarget.isEntityAlive() && this.transitionDirection > 0) {
-				this.hitTarget.attackEntityFrom(source, amount);
+			if (this.curseTarget != null && this.curseTarget.isEntityAlive() && this.jashinTransitionDirection > 0) {
+				this.curseTarget.attackEntityFrom(source, amount);
 			}
 			return super.attackEntityFrom(source, amount * 0.05f);
 		}
@@ -311,25 +351,25 @@ public class EntityHidan extends ElementsNarutomodMod.ModElement {
 		public void onUpdate() {
 			super.onUpdate();
 			
-			this.trackAttackedPlayers();
-			this.bossInfo.setPercent(this.getHealth() / this.getMaxHealth());
-
-			/*if (!this.world.isRemote) {
-				if (this.ticksExisted == 80) {
-					this.setJashinTransitionDirection(1);
-				} else if (this.ticksExisted == 240) {
-					this.setJashinTransitionDirection(-1);
+			if (!this.world.isRemote) {
+				if (this.ticksExisted % 20 == 2) {
+					float health = this.getHealth();
+					if (health > 0.0f && health < this.getMaxHealth()) {
+						this.setHealth(health + 1.0f);
+					}
 				}
-			}*/
-			
-			if (!this.world.isRemote && this.transitionDirection != 0) {
-				int jashinTicks = this.getJashinTicks();
-				if (jashinTicks > 0) {
-					this.setJashinTicks(jashinTicks + this.transitionDirection);
-				} else {
-					this.transitionDirection = 0;
+				if (this.jashinTransitionDirection != 0) {
+					int jashinTicks = this.getJashinTicks();
+					if (jashinTicks > 0) {
+						this.setJashinTicks(jashinTicks + this.jashinTransitionDirection);
+					} else {
+						this.jashinTransitionDirection = 0;
+					}
 				}
 			}
+
+			this.trackAttackedPlayers();
+			this.bossInfo.setPercent(this.getHealth() / this.getMaxHealth());
 		}
 
 		public class AIMoveTowardsSymbol extends EntityAIBase {
@@ -338,10 +378,10 @@ public class EntityHidan extends ElementsNarutomodMod.ModElement {
 		    private final double speed;
 		    private final float maxTargetDistance;
 		
-		    public AIMoveTowardsSymbol(EntityCustom entityIn, double speedIn, float targetMaxDistance) {
+		    public AIMoveTowardsSymbol(EntityCustom entityIn, double speedIn) {
 		        this.entity = entityIn;
 		        this.speed = speedIn;
-		        this.maxTargetDistance = targetMaxDistance;
+		        this.maxTargetDistance = (float)entityIn.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).getAttributeValue();
 		        this.setMutexBits(1);
 		    }
 		
@@ -350,7 +390,7 @@ public class EntityHidan extends ElementsNarutomodMod.ModElement {
 		        this.targetEntity = this.entity.jashinSymbol;
 		        if (this.targetEntity == null || this.targetEntity.isDead) {
 		            return false;
-		        } else if (this.entity.hitTarget == null || !this.entity.hitTarget.isEntityAlive()) {
+		        } else if (this.entity.curseTarget == null || !this.entity.curseTarget.isEntityAlive()) {
 		        	return false;
 		        } else {
 		        	double d = this.targetEntity.getDistanceSq(this.entity);
@@ -365,8 +405,8 @@ public class EntityHidan extends ElementsNarutomodMod.ModElement {
 		    @Override
 		    public boolean shouldContinueExecuting() {
 		    	double d = this.targetEntity.getDistanceSq(this.entity);
-		        return !this.entity.getNavigator().noPath() && this.targetEntity.isEntityAlive()
-		         && d < (double)(this.maxTargetDistance * this.maxTargetDistance) && d > 1.0d && this.entity.hitTarget.isEntityAlive();
+		        return !this.entity.getNavigator().noPath() && !this.targetEntity.isDead
+		         && d < (double)(this.maxTargetDistance * this.maxTargetDistance) && d > 1.0d && this.entity.curseTarget.isEntityAlive();
 		    }
 		
 		    @Override
@@ -376,7 +416,8 @@ public class EntityHidan extends ElementsNarutomodMod.ModElement {
 		
 		    @Override
 		    public void startExecuting() {
-		        this.entity.getNavigator().tryMoveToEntityLiving(this.targetEntity, this.speed);
+		    	double d = this.entity.getDistanceSq(this.targetEntity);
+		        this.entity.getNavigator().tryMoveToEntityLiving(this.targetEntity, this.speed * Math.min(d, 16.0d) / 16.0d);
 		    }
 		}
 	}

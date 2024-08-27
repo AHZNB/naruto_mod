@@ -233,7 +233,7 @@ public class ItemRinnegan extends ElementsNarutomodMod.ModElement {
 				if (this.armorModel == null) {
 					this.armorModel = new ModelSizPathRobe();
 				}
-				boolean show = living instanceof EntityPlayer ? PlayerTracker.getNinjaLevel((EntityPlayer)living) >= 180d : false;
+				boolean show = living instanceof EntityPlayer ? PlayerTracker.getNinjaLevel((EntityPlayer)living) >= 200d : false;
 				this.armorModel.robe.showModel = show;
 				this.armorModel.robeRightArm.showModel = show;
 				this.armorModel.robeLeftArm.showModel = show;

@@ -33,13 +33,15 @@ import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
-import net.minecraft.client.renderer.entity.RenderSnowball;
+import net.minecraft.client.renderer.block.model.ModelBakery;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.client.renderer.ItemMeshDefinition;
+import net.minecraft.client.renderer.entity.RenderSnowball;
 import net.minecraft.client.Minecraft;
+import net.minecraft.nbt.NBTTagCompound;
 
 import java.util.Map;
-import java.util.HashMap;
-
+import java.util.HashMap;
 import com.google.common.collect.Multimap;
 
 @ElementsNarutomodMod.ModElement.Tag
@@ -47,6 +49,8 @@ public class ItemFoldingFan extends ElementsNarutomodMod.ModElement {
 	@GameRegistry.ObjectHolder("narutomod:folding_fan")
 	public static final Item block = null;
 	public static final int ENTITYID = 352;
+	private static final String CUSTOM_MODEL_KEY = "CustomRenderedModel";
+
 	public ItemFoldingFan(ElementsNarutomodMod instance) {
 		super(instance, 706);
 	}
@@ -62,7 +66,19 @@ public class ItemFoldingFan extends ElementsNarutomodMod.ModElement {
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void registerModels(ModelRegistryEvent event) {
-		ModelLoader.setCustomModelResourceLocation(block, 0, new ModelResourceLocation("narutomod:folding_fan", "inventory"));
+   	    ModelBakery.registerItemVariants(block,
+   	     new ModelResourceLocation("narutomod:folding_fan_0", "inventory"),
+   	     new ModelResourceLocation("narutomod:folding_fan_1", "inventory"));
+
+	    ModelLoader.setCustomMeshDefinition(block, new ItemMeshDefinition() {
+	        @Override
+	        public ModelResourceLocation getModelLocation(ItemStack stack) {
+	            if (stack.hasTagCompound() && stack.getTagCompound().getBoolean(CUSTOM_MODEL_KEY)) {
+	                return new ModelResourceLocation("narutomod:folding_fan_1", "inventory");
+	            }
+	            return new ModelResourceLocation("narutomod:folding_fan_0", "inventory");
+	        }
+	    });
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -72,7 +88,8 @@ public class ItemFoldingFan extends ElementsNarutomodMod.ModElement {
 			return new RenderSnowball(renderManager, new ItemStack(Blocks.AIR, (int) (1)).getItem(), Minecraft.getMinecraft().getRenderItem());
 		});
 	}
-	public static class RangedItem extends Item {
+	
+	public static class RangedItem extends Item implements ItemOnBody.Interface {
 		public RangedItem() {
 			super();
 			setMaxDamage(500);
@@ -93,6 +110,20 @@ public class ItemFoldingFan extends ElementsNarutomodMod.ModElement {
 						new AttributeModifier(ATTACK_SPEED_MODIFIER, "Ranged item modifier", -2.4, 0));
 			}
 			return multimap;
+		}
+
+		@Override
+		public void onUpdate(ItemStack stack, World worldIn, Entity entityIn, int itemSlot, boolean isSelected) {
+			if (!stack.hasTagCompound()) {
+				stack.setTagCompound(new NBTTagCompound());
+			}
+			if (isSelected) {
+				if (worldIn.isRemote && !stack.getTagCompound().getBoolean(CUSTOM_MODEL_KEY)) {
+					stack.getTagCompound().setBoolean(CUSTOM_MODEL_KEY, true);
+				}
+			} else if (stack.getTagCompound().hasKey(CUSTOM_MODEL_KEY)) {
+				stack.getTagCompound().removeTag(CUSTOM_MODEL_KEY);
+			}
 		}
 
 		@Override

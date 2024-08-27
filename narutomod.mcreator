@@ -1,8 +1,8 @@
 {
   "id_map": {
-    "DIMENSION": 13,
     "GUI": 70,
-    "ENTITY": 468
+    "ENTITY": 468,
+    "DIMENSION": 13
   },
   "mod_elements": [
     {
@@ -5365,7 +5365,7 @@
       "type": "gun",
       "sortid": 706,
       "compiles": true,
-      "locked_code": false,
+      "locked_code": true,
       "ids": {
         "0": 352
       },
@@ -7666,6 +7666,24 @@
         "1": 468
       },
       "registry_name": "hidan"
+    },
+    {
+      "name": "SpearRetractable",
+      "type": "tool",
+      "sortid": 897,
+      "compiles": true,
+      "locked_code": true,
+      "ids": {},
+      "registry_name": "spear_retractable"
+    },
+    {
+      "name": "SpearRetractableRecipe",
+      "type": "recipe",
+      "sortid": 898,
+      "compiles": true,
+      "locked_code": false,
+      "ids": {},
+      "registry_name": "spear_retractable_recipe"
     }
   ],
   "variable_elements": [
@@ -9474,6 +9492,7 @@
       "entity.seven_tails.name": "Chomei",
       "item.scroll_great_fireball.name": "Fire Release - Great Fireball jutsu",
       "entity.puppet_karasu.name": "Karasu",
+      "item.spear_retractable.name": "Retractable Spear",
       "tooltip.kibablades.general": "Kiba (literally meaning: Fangs) is one of the mystical swords of the Seven Swordsmen of the Mist. The swords have been imbued with lightning, granting enhanced cutting power resulted in these \"thunderswords\" being claimed as the sharpest swords in existence.",
       "chattext.cooldown.formatted": "Cooldown: %.1f",
       "key.mcreator.powerincrease": "Switch Jutsu / Increase",

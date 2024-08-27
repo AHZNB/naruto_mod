@@ -273,8 +273,10 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 		this.entityClass = clazz;
 		this.tails = tailnum;
 		this.setCloakXPs(ZERO);
-		mapByClass.put(clazz, this);
-		mapByTailnum.put(tailnum, this);
+		if (tailnum > 0 && tailnum <= 10) {
+			mapByClass.put(clazz, this);
+			mapByTailnum.put(tailnum, this);
+		}
 	}
 
 	public void reset() {

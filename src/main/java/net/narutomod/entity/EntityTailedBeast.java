@@ -655,9 +655,13 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 			}
 		}
 
+		public boolean canBeSealed() {
+			return !this.getBijuManager().isSealed();
+		}
+
 		@Override
 		public void fuuinIntoVessel(Entity vessel, int fuuinTime) {
-			if (!this.getBijuManager().isSealed() && this.getHealth() < this.getMaxHealth() * 0.1f
+			if (this.canBeSealed() && this.getHealth() < this.getMaxHealth() * 0.1f
 			 && (!(vessel instanceof EntityPlayer) || !EntityBijuManager.isJinchuriki((EntityPlayer)vessel))) {
 				if (!vessel.equals(this.getTargetVessel())) {
 					this.deathTicks = 0;

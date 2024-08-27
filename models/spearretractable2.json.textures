@@ -1,0 +1,10 @@
+{
+  "mappings": {
+    "default": {
+      "map": {
+        "0": "black_stick"
+      },
+      "name": "default"
+    }
+  }
+}

@@ -1,5 +1,5 @@
 {
-  "parent": "narutomod:custom/foldingfan",
+  "parent": "narutomod:custom/foldingfan0",
   "textures": {
     "0": "narutomod:blocks/foldingfan"
   }

@@ -54,6 +54,8 @@ Items:
  - Hiramekarei now does sweeping damage
  - Kusanagi sword won't get stuck in blocks
  - byakugan veins won't appear unless byakugan jutsus are used
+ - add retractable spear and recipe
+ - folding fan opens when in main hand, closes when worn on back
 
 Entities:
  - re-textured Kisame, Sakura, Zabuza
@@ -83,7 +85,7 @@ Entities:
     will not spawn in the same 1024 block area within 30 mins
  - add Toad Sage Fukasaku & Shima (WIP)
  - hitting your own Explosion release: explosive clone despawns it
- - adding Hidan (WIP-2: throws his scythe, activates jashin mode)
+ - adding Hidan (WIP-3: throws his scythe, activates jashin mode, pokes himself with retractable spear, naturally spawns)
  
 General:
  - fixed alpha transparency bug when using certain jutsus

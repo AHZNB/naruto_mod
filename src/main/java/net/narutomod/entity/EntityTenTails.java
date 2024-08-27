@@ -133,6 +133,7 @@ public class EntityTenTails extends ElementsNarutomodMod.ModElement {
 
 	public static class EntityCustom extends EntityTailedBeast.Base {
 		private final List<EntitySplit> cloneList = Lists.newArrayList();
+		private boolean canSeal;
 
 		public EntityCustom(World world) {
 			super(world);
@@ -264,6 +265,11 @@ public class EntityTenTails extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
+		public boolean canBeSealed() {
+			return this.canSeal && !this.getBijuManager().isSealed();
+		}
+
+		@Override
 		public boolean isOnSameTeam(Entity entityIn) {
 			return super.isOnSameTeam(entityIn) || entityIn instanceof EntitySplit;
 		}
@@ -308,6 +314,7 @@ public class EntityTenTails extends ElementsNarutomodMod.ModElement {
 					if (jubi.getHealth() >= jubi.getMaxHealth() * 0.1f) {
 						jubi.setHealth(jubi.getMaxHealth() * 0.1f - 1000f);
 					}
+					jubi.canSeal = true;
 					jubi.fuuinIntoVessel(entity, 300);
 					jubi.setFaceDown(true);
 					return true;
@@ -465,6 +472,11 @@ public class EntityTenTails extends ElementsNarutomodMod.ModElement {
 		@Override
 		public boolean couldBreakBlocks() {
 			return this.getEntityScale() >= 4.0f && super.couldBreakBlocks();
+		}
+
+		@Override
+		public boolean canBeSealed() {
+			return false;
 		}
 
 		@Override

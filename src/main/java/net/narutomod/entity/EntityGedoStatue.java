@@ -119,9 +119,9 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 		@Override
 		public boolean createJutsu(ItemStack stack, EntityLivingBase entity, float power) {
 			RayTraceResult res = ProcedureUtils.objectEntityLookingAt(entity, 20d);
-			if (res != null && ((res.entityHit instanceof EntityTailedBeast.Base && !(res.entityHit instanceof EntityTenTails.EntityCustom))
+			if (res != null && (res.entityHit instanceof EntityTailedBeast.Base && ((EntityTailedBeast.Base)res.entityHit).canBeSealed())
 			 || (res.entityHit instanceof EntityPlayer && EntityBijuManager.isJinchuriki((EntityPlayer)res.entityHit)
-			  && !EntityBijuManager.isJinchurikiOf((EntityPlayer)res.entityHit, EntityTenTails.EntityCustom.class)))) {
+			  && !EntityBijuManager.isJinchurikiOf((EntityPlayer)res.entityHit, EntityTenTails.EntityCustom.class))) {
 				if (entity.world.spawnEntity(new EntityGedoStatue.EntityCustom(entity, (EntityLivingBase)res.entityHit))) {
 					return true;
 				} else if (entity instanceof EntityPlayer) {

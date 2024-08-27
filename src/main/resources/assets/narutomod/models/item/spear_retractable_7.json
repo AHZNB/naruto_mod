@@ -1,0 +1,6 @@
+{
+  "parent": "narutomod:custom/spearretractable7",
+  "textures": {
+    "0": "narutomod:blocks/black_stick"
+  }
+}
