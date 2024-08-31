@@ -72,14 +72,14 @@
 			"scale": [2.5, 2.5, 2.5]
 		},
 		"gui": {
-			"rotation": [-38, 105, -14],
-			"translation": [-0.5, -5, 0],
-			"scale": [1.2, 1.2, 1.2]
+			"rotation": [-20, -15, -142],
+			"translation": [-4.75, -3, 0],
+			"scale": [1.25, 1.25, 1.25]
 		},
 		"head": {
-			"rotation": [90, 30, 0],
-			"translation": [11.25, -13.75, 5],
-			"scale": [2.5, 2.5, 2.5]
+			"rotation": [90, 38, 0],
+			"translation": [15, -12, 4.5],
+			"scale": [3, 3, 3.2]
 		},
 		"fixed": {
 			"rotation": [-180, -45, 64],

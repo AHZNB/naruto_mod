@@ -1,6 +1,7 @@
 
 package net.narutomod.entity;
 
+import net.narutomod.potion.PotionHeaviness;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.item.ItemClaw;
 import net.narutomod.ElementsNarutomodMod;
@@ -32,6 +33,8 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraft.potion.PotionEffect;
+import net.minecraft.init.MobEffects;
 
 import javax.annotation.Nullable;
 
@@ -111,7 +114,14 @@ public class EntityPuppet3rdKazekage extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public boolean attackEntityAsMob(Entity entityIn) {
-			return ProcedureUtils.attackEntityAsMob(this, entityIn);
+			if (ProcedureUtils.attackEntityAsMob(this, entityIn)) {
+				if (entityIn instanceof EntityLivingBase) {
+					((EntityLivingBase)entityIn).addPotionEffect(new PotionEffect(MobEffects.POISON, 6000, 5));
+					((EntityLivingBase)entityIn).addPotionEffect(new PotionEffect(PotionHeaviness.potion, 6000, 2));
+				}
+				return true;
+			}
+			return false;
 		}
 	}
 

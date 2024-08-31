@@ -13,7 +13,7 @@
         9.7
       ],
       "rotation": {
-        "angle": 0,
+        "angle": -22.5,
         "axis": "y",
         "origin": [
           8,
@@ -90,7 +90,7 @@
         9.7
       ],
       "rotation": {
-        "angle": 45,
+        "angle": 22.5,
         "axis": "y",
         "origin": [
           8,
@@ -167,7 +167,7 @@
         8.7
       ],
       "rotation": {
-        "angle": 0,
+        "angle": -22.5,
         "axis": "y",
         "origin": [
           8,
@@ -246,7 +246,7 @@
         8.7
       ],
       "rotation": {
-        "angle": 45,
+        "angle": 22.5,
         "axis": "y",
         "origin": [
           8,
@@ -325,7 +325,7 @@
         8.5
       ],
       "rotation": {
-        "angle": 0,
+        "angle": -22.5,
         "axis": "y",
         "origin": [
           8,
@@ -402,7 +402,7 @@
         8.5
       ],
       "rotation": {
-        "angle": 0,
+        "angle": -22.5,
         "axis": "y",
         "origin": [
           8,
@@ -470,11 +470,6 @@
   ],
   "display": {
     "thirdperson_righthand": {
-      "rotation": [
-        0,
-        -25,
-        0
-      ],
       "translation": [
         0,
         -2,
@@ -487,11 +482,6 @@
       ]
     },
     "thirdperson_lefthand": {
-      "rotation": [
-        0,
-        25,
-        0
-      ],
       "translation": [
         0,
         -2,
@@ -556,7 +546,7 @@
     },
     "gui": {
       "rotation": [
-        -30,
+        -15,
         -180,
         45
       ],
@@ -568,7 +558,7 @@
     },
     "head": {
       "rotation": [
-        -160,
+        -180,
         0,
         90
       ],
@@ -578,15 +568,15 @@
         6
       ],
       "scale": [
-        2.2,
-        2.5,
-        2.2
+        2.4,
+        3,
+        2.4
       ]
     },
     "fixed": {
       "rotation": [
-        15,
-        -15,
+        0,
+        0,
         45
       ],
       "translation": [
@@ -600,5 +590,24 @@
         2
       ]
     }
-  }
+  },
+  "groups": [
+    {
+      "name": "group",
+      "origin": [
+        8,
+        8,
+        8
+      ],
+      "color": 0,
+      "children": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    }
+  ]
 }

@@ -199,7 +199,11 @@ public class EntityFiveTails extends ElementsNarutomodMod.ModElement {
 		@Override
 		public boolean attackEntityAsMob(Entity entityIn) {
 			ProcedureUtils.addVelocity(this, entityIn.getPositionVector().subtract(this.getPositionVector()).normalize().scale(3d));
-			return super.attackEntityAsMob(entityIn);
+			boolean ret = super.attackEntityAsMob(entityIn);
+			for (EntityLivingBase entity : this.world.getEntitiesWithinAABB(EntityLivingBase.class, entityIn.getEntityBoundingBox().grow(6d))) {
+				ProcedureUtils.pushEntity(this, entity, 30d, 1.8f);
+			}
+			return ret;
 		}
 
 		@Override
@@ -337,45 +341,16 @@ public class EntityFiveTails extends ElementsNarutomodMod.ModElement {
 			private final float tailSwayZ[][] = new float[5][8];
 			private final Random rand = new Random();
 
-			private final float[][] swingingBodyPreset1 = { { 0.0F, 13.75F, 0.0F, 0.0F, 0.0F, 0.0F }, { 0.0F, 16.75F, 0.0F, 0.2618F, 0.0F, 0.0F } };
-			private final float[][] swingingHeadPreset1 = { { 0.0F, 0.0F, -4.0F, 0.0F, 0.0F, 0.0F }, { 0.0F, 0.0F, -4.0F, 0.2618F, 0.0F, 0.0F } };
-			private final float[][] swingingLeg1_1Preset1 = { { -0.3946F, -0.5729F, 0.0539F, -0.3927F, 0.0F, 0.2618F }, { -0.3946F, -0.5729F, 0.0539F, 0.3927F, 0.0F, 0.2618F } };
-			private final float[][] swingingLeg1_2Preset1 = { { -0.2777F, 2.536F, 0.101F, 0.8727F, 0.0F, -0.0436F }, { -0.2777F, 2.536F, 0.101F, 0.5236F, 0.0F, -0.0436F } };
-			private final float[][] swingingLeg1_3Preset1 = { { 0.0354F, 3.663F, 1.1241F, -0.8727F, -0.0436F, -0.1745F }, { 0.0354F, 3.663F, 1.1241F, -1.5708F, -0.0436F, -0.1745F } };
-			private final float[][] swingingLeg2_1Preset1 = { { 0.3946F, -0.5729F, 0.0539F, -0.3927F, 0.0F, -0.2618F }, { 0.3946F, -0.5729F, 0.0539F, 0.3927F, 0.0F, -0.2618F } };
-			private final float[][] swingingLeg2_2Preset1 = { { 0.2777F, 2.536F, 0.101F, 0.8727F, 0.0F, 0.0436F }, { 0.2777F, 2.536F, 0.101F, 0.5236F, 0.0F, 0.0436F } };
-			private final float[][] swingingLeg2_3Preset1 = { { -0.0354F, 3.663F, 1.1241F, -0.8727F, 0.0436F, 0.1745F }, { -0.0354F, 3.663F, 1.1241F, -1.5708F, 0.0436F, 0.1745F } };
-			private final float[][] swingingLeg3_1Preset1 = { { 0.0F, 0.0F, 0.0F, -0.2618F, 0.0F, 0.0873F }, { 0.0F, 0.0F, 0.0F, -0.5236F, 0.0F, 0.0873F } };
-			private final float[][] swingingLeg3_2Preset1 = { { -0.0989F, 3.1067F, -0.35F, 0.6981F, 0.0F, 0.0F }, { -0.0989F, 3.1067F, -0.35F, 0.8727F, 0.0F, 0.0F } };
-			private final float[][] swingingLeg3_3Preset1 = { { 0.0F, 2.3F, 2.45F, -0.6981F, 0.0F, 0.0F }, { 0.0F, 2.3F, 2.45F, -0.8727F, 0.0F, 0.0F } };
-			private final float[][] swingingLeg4_1Preset1 = { { 0.0F, 0.0F, 0.0F, -0.2618F, 0.0F, -0.0873F }, { 0.0F, 0.0F, 0.0F, -0.5236F, 0.0F, -0.0873F } };
-			private final float[][] swingingLeg4_2Preset1 = { { 0.0989F, 3.1067F, -0.35F, 0.6981F, 0.0F, 0.0F }, { 0.0989F, 3.1067F, -0.35F, 0.8727F, 0.0F, 0.0F } };
-			private final float[][] swingingLeg4_3Preset1 = { { 0.0F, 2.3F, 2.45F, -0.6981F, 0.0F, 0.0F }, { 0.0F, 2.3F, 2.45F, -0.8727F, 0.0F, 0.0F } };
-			private final float[][] swingingFoot1Preset1 = { { -0.0629F, 4.1779F, -1.0035F, 0.3927F, 0.0F, 0.0436F }, { -0.0629F, 4.1779F, -1.0035F, 0.3927F, 0.0F, 0.0436F } };
-			private final float[][] swingingFoot2Preset1 = { { 0.0629F, 4.1779F, -1.0035F, 0.3927F, 0.0F, -0.0436F }, { 0.0629F, 4.1779F, -1.0035F, 0.3927F, 0.0F, -0.0436F } };
-			private final float[][] swingingFoot3Preset1 = { { 0.0827F, 2.5369F, -1.7875F, 0.2618F, 0.0F, 0.0F }, { 0.0827F, 2.5369F, -1.7875F, 0.2618F, 0.0F, 0.0F } };
-			private final float[][] swingingFoot4Preset1 = { { -0.0827F, 2.5369F, -1.7875F, 0.2618F, 0.0F, 0.0F }, { -0.0827F, 2.5369F, -1.7875F, 0.2618F, 0.0F, 0.0F } };
-
-			private final float[][] swingingBodyPreset2 = { { 0.0F, 16.75F, 0.0F, 0.2618F, 0.0F, 0.0F }, { 0.0F, 13.75F, 0.0F, 0.0F, 0.0F, 0.0F } };
-			private final float[][] swingingHeadPreset2 = { { 0.0F, 0.0F, -4.0F, 0.2618F, 0.0F, 0.0F }, { 0.0F, 0.0F, -4.0F, -0.6981F, 0.0F, 0.0F } };
-			private final float[][] swingingLeg1_1Preset2 = { { -0.3946F, -0.5729F, 0.0539F, 0.3927F, 0.0F, 0.2618F }, { -0.3946F, -0.5729F, 0.0539F, -0.3927F, 0.0F, 0.2618F } };
-			private final float[][] swingingLeg1_2Preset2 = { { -0.2777F, 2.536F, 0.101F, 0.5236F, 0.0F, -0.0436F }, { -0.2777F, 2.536F, 0.101F, 0.8727F, 0.0F, -0.0436F } };
-			private final float[][] swingingLeg1_3Preset2 = { { 0.0354F, 3.663F, 1.1241F, -1.5708F, -0.0436F, -0.1745F }, { 0.0354F, 3.663F, 1.1241F, -0.8727F, -0.0436F, -0.1745F } };
-			private final float[][] swingingLeg2_1Preset2 = { { 0.3946F, -0.5729F, 0.0539F, 0.3927F, 0.0F, -0.2618F }, { 0.3946F, -0.5729F, 0.0539F, -0.3927F, 0.0F, -0.2618F } };
-			private final float[][] swingingLeg2_2Preset2 = { { 0.2777F, 2.536F, 0.101F, 0.5236F, 0.0F, 0.0436F }, { 0.2777F, 2.536F, 0.101F, 0.8727F, 0.0F, 0.0436F } };
-			private final float[][] swingingLeg2_3Preset2 = { { -0.0354F, 3.663F, 1.1241F, -1.5708F, 0.0436F, 0.1745F }, { -0.0354F, 3.663F, 1.1241F, -0.8727F, 0.0436F, 0.1745F } };
-			private final float[][] swingingLeg3_1Preset2 = { { 0.0F, 0.0F, 0.0F, -0.5236F, 0.0F, 0.0873F }, { 0.0F, 0.0F, 0.0F, -0.2618F, 0.0F, 0.0873F } };
-			private final float[][] swingingLeg3_2Preset2 = { { -0.0989F, 3.1067F, -0.35F, 0.8727F, 0.0F, 0.0F }, { -0.0989F, 3.1067F, -0.35F, 0.6981F, 0.0F, 0.0F } };
-			private final float[][] swingingLeg3_3Preset2 = { { 0.0F, 2.3F, 2.45F, -0.8727F, 0.0F, 0.0F }, { 0.0F, 2.3F, 2.45F, -0.6981F, 0.0F, 0.0F } };
-			private final float[][] swingingLeg4_1Preset2 = { { 0.0F, 0.0F, 0.0F, -0.5236F, 0.0F, -0.0873F }, { 0.0F, 0.0F, 0.0F, -0.2618F, 0.0F, -0.0873F } };
-			private final float[][] swingingLeg4_2Preset2 = { { 0.0989F, 3.1067F, -0.35F, 0.8727F, 0.0F, 0.0F }, { 0.0989F, 3.1067F, -0.35F, 0.6981F, 0.0F, 0.0F } };
-			private final float[][] swingingLeg4_3Preset2 = { { 0.0F, 2.3F, 2.45F, -0.8727F, 0.0F, 0.0F }, { 0.0F, 2.3F, 2.45F, -0.6981F, 0.0F, 0.0F } };
-			private final float[][] swingingFoot1Preset2 = { { -0.0629F, 4.1779F, -1.0035F, 0.3927F, 0.0F, 0.0436F }, { -0.0629F, 4.1779F, -1.0035F, 0.3927F, 0.0F, 0.0436F } };
-			private final float[][] swingingFoot2Preset2 = { { 0.0629F, 4.1779F, -1.0035F, 0.3927F, 0.0F, -0.0436F }, { 0.0629F, 4.1779F, -1.0035F, 0.3927F, 0.0F, -0.0436F } };
-			private final float[][] swingingFoot3Preset2 = { { 0.0827F, 2.5369F, -1.7875F, 0.2618F, 0.0F, 0.0F }, { 0.0827F, 2.5369F, -1.7875F, 0.2618F, 0.0F, 0.0F } };
-			private final float[][] swingingFoot4Preset2 = { { -0.0827F, 2.5369F, -1.7875F, 0.2618F, 0.0F, 0.0F }, { -0.0827F, 2.5369F, -1.7875F, 0.2618F, 0.0F, 0.0F } };
-
-			private final float[][] swingingHeadPreset3 = { { 0.0F, 0.0F, -4.0F, -0.6981F, 0.0F, 0.0F }, { 0.0F, 0.0F, -4.0F, 0.0F, 0.0F, 0.0F } };
+			private final float[][] swingingBodyPreset = { { 0.0F, 13.75F, 0.0F, 0.0F, 0.0F, 0.0F }, { 0.0F, 16.75F, 0.0F, 0.2618F, 0.0F, 0.0F }, { 0.0F, 13.75F, 0.0F, 0.0F, 0.0F, 0.0F } };
+			private final float[][] swingingHeadPreset = { { 0.0F, 0.0F, -3.0F, 0.0F, 0.0F, 0.0F }, { 0.0F, 0.0F, -3.0F, 0.5236F, 0.0F, 0.0F }, { 0.0F, 0.0F, -3.0F, -0.6981F, 0.0F, 0.0F } };
+			private final float[][] swingingLeg1_1Preset = { { -0.3946F, -0.5729F, 0.0539F, -0.3927F, 0.0F, 0.2618F }, { -0.3946F, -0.5729F, 0.0539F, 0.1309F, 0.0F, 0.4363F }, { -0.3946F, -0.5729F, 0.0539F, -0.3927F, 0.0F, 0.2618F } };
+			private final float[][] swingingLeg1_2Preset = { { -0.2777F, 2.536F, 0.101F, 0.8727F, 0.0F, -0.0436F }, { -0.2777F, 2.536F, 0.101F, 1.0472F, 0.0F, -0.1745F }, { -0.2777F, 2.536F, 0.101F, 0.8727F, 0.0F, -0.0436F } };
+			private final float[][] swingingLeg1_3Preset = { { 0.0354F, 3.913F, 1.1241F, -0.9599F, -0.0436F, -0.1745F }, { 0.0354F, 3.913F, 1.1241F, -1.6581F, -0.0436F, -0.1745F }, { 0.0354F, 3.913F, 1.1241F, -0.9599F, -0.0436F, -0.1745F } };
+			private final float[][] swingingFoot1Preset = { { -0.0629F, 4.1779F, -1.0035F, 0.48F, 0.0F, 0.0436F }, { -0.0629F, 4.1779F, -1.0035F, 0.2182F, 0.0F, -0.0436F }, { -0.0629F, 4.1779F, -1.0035F, 0.48F, 0.0F, 0.0436F } };
+			private final float[][] swingingLeg2_1Preset = { { 0.3946F, -0.5729F, 0.0539F, -0.3927F, 0.0F, -0.2618F }, { 0.3946F, -0.5729F, 0.0539F, 0.1309F, 0.0F, -0.4363F }, { 0.3946F, -0.5729F, 0.0539F, -0.3927F, 0.0F, -0.2618F } };
+			private final float[][] swingingLeg2_2Preset = { { 0.2777F, 2.536F, 0.101F, 0.8727F, 0.0F, 0.0436F }, { 0.2777F, 2.536F, 0.101F, 1.0472F, 0.0F, 0.1745F }, { 0.2777F, 2.536F, 0.101F, 0.8727F, 0.0F, 0.0436F } };
+			private final float[][] swingingLeg2_3Preset = { { -0.0354F, 3.913F, 1.1241F, -0.9599F, 0.0436F, 0.1745F }, { -0.0354F, 3.913F, 1.1241F, -1.6581F, 0.0436F, 0.1745F }, { -0.0354F, 3.913F, 1.1241F, -0.9599F, 0.0436F, 0.1745F } };
+			private final float[][] swingingFoot2Preset = { { 0.0629F, 4.1779F, -1.0035F, 0.48F, 0.0F, -0.0436F }, { 0.0629F, 4.1779F, -1.0035F, 0.2182F, 0.0F, 0.0436F }, { 0.0629F, 4.1779F, -1.0035F, 0.48F, 0.0F, -0.0436F } };
 
 			public ModelFiveTails() {
 				super(12, 0.0F);
@@ -388,25 +363,25 @@ public class EntityFiveTails extends ElementsNarutomodMod.ModElement {
 				
 		
 				headsync = new ModelRenderer(this);
-				headsync.setRotationPoint(0.0F, 0.0F, -4.0F);
+				headsync.setRotationPoint(0.0F, 0.0F, -3.0F);
 				eyesHighlight.addChild(headsync);
 				
 		
 				eye4_r1 = new ModelRenderer(this);
-				eye4_r1.setRotationPoint(-2.0F, 0.3521F, -5.7954F);
+				eye4_r1.setRotationPoint(-2.0F, 0.3521F, -6.7954F);
 				headsync.addChild(eye4_r1);
 				setRotationAngle(eye4_r1, 0.2618F, 0.0F, 0.0F);
 				eye4_r1.cubeList.add(new ModelBox(eye4_r1, 48, 9, -0.53F, -1.1F, -0.5F, 1, 2, 2, -0.4F, false));
 				eye4_r1.cubeList.add(new ModelBox(eye4_r1, 48, 9, 3.53F, -1.1F, -0.5F, 1, 2, 2, -0.4F, true));
 		
 				eye3_r1 = new ModelRenderer(this);
-				eye3_r1.setRotationPoint(-2.0099F, 0.5605F, -6.9564F);
+				eye3_r1.setRotationPoint(-2.0099F, 0.5605F, -7.9564F);
 				headsync.addChild(eye3_r1);
 				setRotationAngle(eye3_r1, 0.2618F, -0.1693F, -0.0436F);
 				eye3_r1.cubeList.add(new ModelBox(eye3_r1, 56, 9, -0.33F, -1.0F, -0.5F, 1, 2, 2, -0.4F, false));
 		
 				eye3_r2 = new ModelRenderer(this);
-				eye3_r2.setRotationPoint(1.9099F, 0.5605F, -6.9564F);
+				eye3_r2.setRotationPoint(1.9099F, 0.5605F, -7.9564F);
 				headsync.addChild(eye3_r2);
 				setRotationAngle(eye3_r2, 0.2618F, 0.1693F, 0.0436F);
 				eye3_r2.cubeList.add(new ModelBox(eye3_r2, 56, 9, -0.57F, -1.0F, -0.5F, 1, 2, 2, -0.4F, true));
@@ -428,30 +403,30 @@ public class EntityFiveTails extends ElementsNarutomodMod.ModElement {
 				cube_r2.cubeList.add(new ModelBox(cube_r2, 22, 22, -2.5F, -1.4F, 0.6F, 5, 2, 4, 0.0F, false));
 		
 				head = new ModelRenderer(this);
-				head.setRotationPoint(0.0F, 0.0F, -4.0F);
+				head.setRotationPoint(0.0F, 0.0F, -3.0F);
 				body.addChild(head);
 				
 		
 				cube_r3 = new ModelRenderer(this);
-				cube_r3.setRotationPoint(0.0F, 0.0272F, -8.158F);
+				cube_r3.setRotationPoint(0.0F, 0.0272F, -9.158F);
 				head.addChild(cube_r3);
 				setRotationAngle(cube_r3, -0.48F, 0.0F, 0.0F);
 				cube_r3.cubeList.add(new ModelBox(cube_r3, 32, 0, -2.0F, -0.4F, -0.4F, 4, 2, 2, -0.36F, false));
 		
 				cube_r4 = new ModelRenderer(this);
-				cube_r4.setRotationPoint(0.0F, 0.1F, -7.5F);
+				cube_r4.setRotationPoint(0.0F, 0.1F, -8.5F);
 				head.addChild(cube_r4);
 				setRotationAngle(cube_r4, 0.2618F, 0.0F, 0.0F);
 				cube_r4.cubeList.add(new ModelBox(cube_r4, 28, 8, -2.0F, -0.4F, -0.7F, 4, 2, 3, -0.1F, false));
 		
 				cube_r5 = new ModelRenderer(this);
-				cube_r5.setRotationPoint(0.0F, 0.3861F, 0.5902F);
+				cube_r5.setRotationPoint(0.0F, 0.3861F, -0.4098F);
 				head.addChild(cube_r5);
 				setRotationAngle(cube_r5, 0.2182F, 0.0F, 0.0F);
 				cube_r5.cubeList.add(new ModelBox(cube_r5, 0, 26, -2.0F, -2.5658F, -6.2052F, 4, 4, 4, 0.0F, false));
 		
 				bone = new ModelRenderer(this);
-				bone.setRotationPoint(-1.3F, -0.7182F, -4.8788F);
+				bone.setRotationPoint(-1.3F, -0.7182F, -5.8788F);
 				head.addChild(bone);
 				setRotationAngle(bone, -0.0873F, 0.0F, -0.3491F);
 				
@@ -476,7 +451,7 @@ public class EntityFiveTails extends ElementsNarutomodMod.ModElement {
 				cube_r8.cubeList.add(new ModelBox(cube_r8, 16, 26, -0.5F, -0.2F, -0.2F, 1, 1, 1, 0.1F, false));
 		
 				bone3 = new ModelRenderer(this);
-				bone3.setRotationPoint(1.3F, -0.7182F, -4.8788F);
+				bone3.setRotationPoint(1.3F, -0.7182F, -5.8788F);
 				head.addChild(bone3);
 				setRotationAngle(bone3, -0.0873F, 0.0F, 0.3491F);
 				
@@ -501,7 +476,7 @@ public class EntityFiveTails extends ElementsNarutomodMod.ModElement {
 				cube_r11.cubeList.add(new ModelBox(cube_r11, 16, 26, -0.5F, -0.2F, -0.2F, 1, 1, 1, 0.1F, true));
 		
 				bone4 = new ModelRenderer(this);
-				bone4.setRotationPoint(-1.45F, -1.2182F, -3.3788F);
+				bone4.setRotationPoint(-1.45F, -1.2182F, -4.3788F);
 				head.addChild(bone4);
 				setRotationAngle(bone4, -0.2618F, 0.0F, -0.6981F);
 				
@@ -526,7 +501,7 @@ public class EntityFiveTails extends ElementsNarutomodMod.ModElement {
 				cube_r14.cubeList.add(new ModelBox(cube_r14, 16, 26, -0.5F, -0.2F, -0.2F, 1, 1, 1, 0.1F, false));
 		
 				bone5 = new ModelRenderer(this);
-				bone5.setRotationPoint(1.45F, -1.2182F, -3.3788F);
+				bone5.setRotationPoint(1.45F, -1.2182F, -4.3788F);
 				head.addChild(bone5);
 				setRotationAngle(bone5, -0.2618F, 0.0F, 0.6981F);
 				
@@ -551,7 +526,7 @@ public class EntityFiveTails extends ElementsNarutomodMod.ModElement {
 				cube_r17.cubeList.add(new ModelBox(cube_r17, 16, 26, -0.5F, -0.2F, -0.2F, 1, 1, 1, 0.1F, true));
 		
 				eyes = new ModelRenderer(this);
-				eyes.setRotationPoint(0.0F, 0.0F, 0.0F);
+				eyes.setRotationPoint(0.0F, 0.0F, -1.0F);
 				head.addChild(eyes);
 				
 		
@@ -575,7 +550,7 @@ public class EntityFiveTails extends ElementsNarutomodMod.ModElement {
 				eye1_r2.cubeList.add(new ModelBox(eye1_r2, 19, 13, -0.6F, -1.0F, -0.5F, 1, 2, 2, -0.4F, true));
 		
 				jaw = new ModelRenderer(this);
-				jaw.setRotationPoint(-0.0099F, 1.0605F, -4.2064F);
+				jaw.setRotationPoint(-0.0099F, 1.0605F, -5.2064F);
 				head.addChild(jaw);
 				jaw.cubeList.add(new ModelBox(jaw, 15, 38, -2.1901F, 0.0395F, -1.8936F, 1, 2, 3, 0.0F, false));
 				jaw.cubeList.add(new ModelBox(jaw, 15, 38, 1.2099F, 0.0395F, -1.8936F, 1, 2, 3, 0.0F, true));
@@ -597,7 +572,7 @@ public class EntityFiveTails extends ElementsNarutomodMod.ModElement {
 				cube_r19.cubeList.add(new ModelBox(cube_r19, 37, 25, -0.8F, -1.0F, -1.5F, 1, 2, 3, 0.0F, true));
 		
 				bone2 = new ModelRenderer(this);
-				bone2.setRotationPoint(0.0F, -1.6F, -2.3F);
+				bone2.setRotationPoint(0.0F, -1.6F, -3.3F);
 				head.addChild(bone2);
 				setRotationAngle(bone2, 0.0873F, 0.0F, 0.0F);
 				bone2.cubeList.add(new ModelBox(bone2, 20, 0, -2.0F, 0.0F, 0.0F, 4, 4, 4, 0.0F, false));
@@ -620,15 +595,15 @@ public class EntityFiveTails extends ElementsNarutomodMod.ModElement {
 				leg1_2.cubeList.add(new ModelBox(leg1_2, 0, 34, -0.9868F, 0.0261F, -1.621F, 2, 4, 3, 0.0F, false));
 		
 				leg1_3 = new ModelRenderer(this);
-				leg1_3.setRotationPoint(0.0354F, 3.663F, 1.1241F);
+				leg1_3.setRotationPoint(0.0354F, 3.913F, 1.1241F);
 				leg1_2.addChild(leg1_3);
-				setRotationAngle(leg1_3, -0.8727F, -0.0436F, -0.1745F);
+				setRotationAngle(leg1_3, -0.9599F, -0.0436F, -0.1745F);
 				leg1_3.cubeList.add(new ModelBox(leg1_3, 0, 0, -1.0955F, -0.209F, -1.916F, 2, 5, 2, -0.1F, false));
 		
 				foot1 = new ModelRenderer(this);
 				foot1.setRotationPoint(-0.0629F, 4.1779F, -1.0035F);
 				leg1_3.addChild(foot1);
-				setRotationAngle(foot1, 0.3927F, 0.0F, 0.0436F);
+				setRotationAngle(foot1, 0.48F, 0.0F, 0.0436F);
 				
 		
 				hoof_r1 = new ModelRenderer(this);
@@ -667,15 +642,15 @@ public class EntityFiveTails extends ElementsNarutomodMod.ModElement {
 				leg2_2.cubeList.add(new ModelBox(leg2_2, 0, 34, -1.0132F, 0.0261F, -1.621F, 2, 4, 3, 0.0F, true));
 		
 				leg2_3 = new ModelRenderer(this);
-				leg2_3.setRotationPoint(-0.0354F, 3.663F, 1.1241F);
+				leg2_3.setRotationPoint(-0.0354F, 3.913F, 1.1241F);
 				leg2_2.addChild(leg2_3);
-				setRotationAngle(leg2_3, -0.8727F, 0.0436F, 0.1745F);
+				setRotationAngle(leg2_3, -0.9599F, 0.0436F, 0.1745F);
 				leg2_3.cubeList.add(new ModelBox(leg2_3, 0, 0, -0.9045F, -0.209F, -1.916F, 2, 5, 2, -0.1F, true));
 		
 				foot2 = new ModelRenderer(this);
 				foot2.setRotationPoint(0.0629F, 4.1779F, -1.0035F);
 				leg2_3.addChild(foot2);
-				setRotationAngle(foot2, 0.3927F, 0.0F, -0.0436F);
+				setRotationAngle(foot2, 0.48F, 0.0F, -0.0436F);
 				
 		
 				hoof_r4 = new ModelRenderer(this);
@@ -704,26 +679,27 @@ public class EntityFiveTails extends ElementsNarutomodMod.ModElement {
 				leg3_1 = new ModelRenderer(this);
 				leg3_1.setRotationPoint(0.0F, 0.0F, 0.0F);
 				leg3.addChild(leg3_1);
-				setRotationAngle(leg3_1, -0.2618F, 0.0F, 0.0873F);
+				setRotationAngle(leg3_1, 0.0F, 0.0F, 0.0873F);
 				leg3_1.cubeList.add(new ModelBox(leg3_1, 28, 28, -1.5989F, -2.3433F, -0.6F, 3, 5, 3, 0.3F, false));
 		
 				leg3_2 = new ModelRenderer(this);
-				leg3_2.setRotationPoint(-0.0989F, 3.1067F, -0.35F);
+				leg3_2.setRotationPoint(-0.0989F, 2.9567F, -0.75F);
 				leg3_1.addChild(leg3_2);
-				setRotationAngle(leg3_2, 0.6981F, 0.0F, 0.0F);
-				leg3_2.cubeList.add(new ModelBox(leg3_2, 31, 13, -1.5F, -0.55F, -0.2F, 3, 3, 3, -0.1F, false));
+				setRotationAngle(leg3_2, 0.7854F, 0.0F, 0.0F);
+				leg3_2.cubeList.add(new ModelBox(leg3_2, 28, 28, -1.5F, -0.1978F, -0.1692F, 3, 4, 3, -0.1F, false));
 		
 				leg3_3 = new ModelRenderer(this);
-				leg3_3.setRotationPoint(0.0F, 2.3F, 2.45F);
+				leg3_3.setRotationPoint(0.0F, 3.6522F, 2.6308F);
 				leg3_2.addChild(leg3_3);
-				setRotationAngle(leg3_3, -0.6981F, 0.0F, 0.0F);
-				leg3_3.cubeList.add(new ModelBox(leg3_3, 10, 35, -1.0F, -0.25F, -1.9F, 2, 3, 2, -0.1F, false));
+				setRotationAngle(leg3_3, -0.9599F, 0.0F, 0.0F);
+				leg3_3.cubeList.add(new ModelBox(leg3_3, 10, 35, -1.0F, -0.1734F, -1.8357F, 2, 3, 2, -0.1F, false));
 		
 				foot3 = new ModelRenderer(this);
-				foot3.setRotationPoint(0.0827F, 2.5369F, -1.7875F);
+				foot3.setRotationPoint(0.0827F, 2.6135F, -1.7232F);
 				leg3_3.addChild(foot3);
-				setRotationAngle(foot3, 0.2618F, 0.0F, 0.0F);
-						
+				setRotationAngle(foot3, 0.1745F, 0.0F, 0.0F);
+				
+		
 				hoof_r7 = new ModelRenderer(this);
 				hoof_r7.setRotationPoint(0.7173F, 1.9631F, -0.2625F);
 				foot3.addChild(hoof_r7);
@@ -750,25 +726,25 @@ public class EntityFiveTails extends ElementsNarutomodMod.ModElement {
 				leg4_1 = new ModelRenderer(this);
 				leg4_1.setRotationPoint(0.0F, 0.0F, 0.0F);
 				leg4.addChild(leg4_1);
-				setRotationAngle(leg4_1, -0.2618F, 0.0F, -0.0873F);
+				setRotationAngle(leg4_1, 0.0F, 0.0F, -0.0873F);
 				leg4_1.cubeList.add(new ModelBox(leg4_1, 28, 28, -1.4011F, -2.3433F, -0.6F, 3, 5, 3, 0.3F, true));
 		
 				leg4_2 = new ModelRenderer(this);
-				leg4_2.setRotationPoint(0.0989F, 3.1067F, -0.35F);
+				leg4_2.setRotationPoint(0.0989F, 2.9567F, -0.75F);
 				leg4_1.addChild(leg4_2);
-				setRotationAngle(leg4_2, 0.6981F, 0.0F, 0.0F);
-				leg4_2.cubeList.add(new ModelBox(leg4_2, 31, 13, -1.5F, -0.55F, -0.2F, 3, 3, 3, -0.1F, true));
+				setRotationAngle(leg4_2, 0.7854F, 0.0F, 0.0F);
+				leg4_2.cubeList.add(new ModelBox(leg4_2, 28, 28, -1.5F, -0.1978F, -0.1692F, 3, 4, 3, -0.1F, true));
 		
 				leg4_3 = new ModelRenderer(this);
-				leg4_3.setRotationPoint(0.0F, 2.3F, 2.45F);
+				leg4_3.setRotationPoint(0.0F, 3.6522F, 2.6308F);
 				leg4_2.addChild(leg4_3);
-				setRotationAngle(leg4_3, -0.6981F, 0.0F, 0.0F);
-				leg4_3.cubeList.add(new ModelBox(leg4_3, 10, 35, -1.0F, -0.25F, -1.9F, 2, 3, 2, -0.1F, true));
+				setRotationAngle(leg4_3, -0.9599F, 0.0F, 0.0F);
+				leg4_3.cubeList.add(new ModelBox(leg4_3, 10, 35, -1.0F, -0.1734F, -1.8357F, 2, 3, 2, -0.1F, true));
 		
 				foot4 = new ModelRenderer(this);
-				foot4.setRotationPoint(-0.0827F, 2.5369F, -1.7875F);
+				foot4.setRotationPoint(-0.0827F, 2.6135F, -1.7232F);
 				leg4_3.addChild(foot4);
-				setRotationAngle(foot4, 0.2618F, 0.0F, 0.0F);
+				setRotationAngle(foot4, 0.1745F, 0.0F, 0.0F);
 				
 		
 				hoof_r10 = new ModelRenderer(this);
@@ -1072,49 +1048,42 @@ public class EntityFiveTails extends ElementsNarutomodMod.ModElement {
 					}
 				}
 				if (this.swingProgress > 0.0F) {
-					if (this.swingProgress < 0.4F) {
-						float f6 = this.swingProgress / 0.4F;
-						this.bodyPartAngles(this.body, this.swingingBodyPreset1, f6);
-						this.bodyPartAngles(this.head, this.swingingHeadPreset1, f6);
-						this.bodyPartAngles(this.leg1_1, this.swingingLeg1_1Preset1, f6);
-						this.bodyPartAngles(this.leg1_2, this.swingingLeg1_2Preset1, f6);
-						this.bodyPartAngles(this.leg1_3, this.swingingLeg1_3Preset1, f6);
-						this.bodyPartAngles(this.leg2_1, this.swingingLeg2_1Preset1, f6);
-						this.bodyPartAngles(this.leg2_2, this.swingingLeg2_2Preset1, f6);
-						this.bodyPartAngles(this.leg2_3, this.swingingLeg2_3Preset1, f6);
-						this.bodyPartAngles(this.leg3_1, this.swingingLeg3_1Preset1, f6);
-						this.bodyPartAngles(this.leg3_2, this.swingingLeg3_2Preset1, f6);
-						this.bodyPartAngles(this.leg3_3, this.swingingLeg3_3Preset1, f6);
-						this.bodyPartAngles(this.leg4_1, this.swingingLeg4_1Preset1, f6);
-						this.bodyPartAngles(this.leg4_2, this.swingingLeg4_2Preset1, f6);
-						this.bodyPartAngles(this.leg4_3, this.swingingLeg4_3Preset1, f6);
-						this.bodyPartAngles(this.foot1, this.swingingFoot1Preset1, f6);
-						this.bodyPartAngles(this.foot2, this.swingingFoot2Preset1, f6);
-						this.bodyPartAngles(this.foot3, this.swingingFoot3Preset1, f6);
-						this.bodyPartAngles(this.foot4, this.swingingFoot4Preset1, f6);
-					} else if (this.swingProgress < 0.8F) {
-						float f6 = (this.swingProgress - 0.4F) / 0.4F;
-						this.bodyPartAngles(this.body, this.swingingBodyPreset2, f6);
-						this.bodyPartAngles(this.head, this.swingingHeadPreset2, f6);
-						this.bodyPartAngles(this.leg1_1, this.swingingLeg1_1Preset2, f6);
-						this.bodyPartAngles(this.leg1_2, this.swingingLeg1_2Preset2, f6);
-						this.bodyPartAngles(this.leg1_3, this.swingingLeg1_3Preset2, f6);
-						this.bodyPartAngles(this.leg2_1, this.swingingLeg2_1Preset2, f6);
-						this.bodyPartAngles(this.leg2_2, this.swingingLeg2_2Preset2, f6);
-						this.bodyPartAngles(this.leg2_3, this.swingingLeg2_3Preset2, f6);
-						this.bodyPartAngles(this.leg3_1, this.swingingLeg3_1Preset2, f6);
-						this.bodyPartAngles(this.leg3_2, this.swingingLeg3_2Preset2, f6);
-						this.bodyPartAngles(this.leg3_3, this.swingingLeg3_3Preset2, f6);
-						this.bodyPartAngles(this.leg4_1, this.swingingLeg4_1Preset2, f6);
-						this.bodyPartAngles(this.leg4_2, this.swingingLeg4_2Preset2, f6);
-						this.bodyPartAngles(this.leg4_3, this.swingingLeg4_3Preset2, f6);
-						this.bodyPartAngles(this.foot1, this.swingingFoot1Preset2, f6);
-						this.bodyPartAngles(this.foot2, this.swingingFoot2Preset2, f6);
-						this.bodyPartAngles(this.foot3, this.swingingFoot3Preset2, f6);
-						this.bodyPartAngles(this.foot4, this.swingingFoot4Preset2, f6);
+					if (this.swingProgress < 0.5F) {
+						float f6 = this.swingProgress / 0.5F;
+						this.bodyPartAngles(this.body, this.swingingBodyPreset, 0, f6);
+						this.bodyPartAngles(this.head, this.swingingHeadPreset, 0, f6);
+						this.bodyPartAngles(this.leg1_1, this.swingingLeg1_1Preset, 0, f6);
+						this.bodyPartAngles(this.leg1_2, this.swingingLeg1_2Preset, 0, f6);
+						this.bodyPartAngles(this.leg1_3, this.swingingLeg1_3Preset, 0, f6);
+						this.bodyPartAngles(this.foot1, this.swingingFoot1Preset, 0, f6);
+						this.bodyPartAngles(this.leg2_1, this.swingingLeg2_1Preset, 0, f6);
+						this.bodyPartAngles(this.leg2_2, this.swingingLeg2_2Preset, 0, f6);
+						this.bodyPartAngles(this.leg2_3, this.swingingLeg2_3Preset, 0, f6);
+						this.bodyPartAngles(this.foot2, this.swingingFoot2Preset, 0, f6);
+					} else if (this.swingProgress < 0.7F) {
+						float f6 = (this.swingProgress - 0.5F) / 0.2F;
+						this.bodyPartAngles(this.body, this.swingingBodyPreset, 1, f6);
+						this.bodyPartAngles(this.head, this.swingingHeadPreset, 1, f6);
+						this.bodyPartAngles(this.leg1_1, this.swingingLeg1_1Preset, 1, f6);
+						this.bodyPartAngles(this.leg1_2, this.swingingLeg1_2Preset, 1, f6);
+						this.bodyPartAngles(this.leg1_3, this.swingingLeg1_3Preset, 1, f6);
+						this.bodyPartAngles(this.foot1, this.swingingFoot1Preset, 1, f6);
+						this.bodyPartAngles(this.leg2_1, this.swingingLeg2_1Preset, 1, f6);
+						this.bodyPartAngles(this.leg2_2, this.swingingLeg2_2Preset, 1, f6);
+						this.bodyPartAngles(this.leg2_3, this.swingingLeg2_3Preset, 1, f6);
+						this.bodyPartAngles(this.foot2, this.swingingFoot2Preset, 1, f6);
 					} else {
-						float f6 = (this.swingProgress - 0.8F) / 0.2F;
-						this.bodyPartAngles(this.head, this.swingingHeadPreset3, f6);
+						float f6 = (this.swingProgress - 0.7F) / 0.3F;
+						this.bodyPartAngles(this.body, this.swingingBodyPreset, 2, f6);
+						this.bodyPartAngles(this.head, this.swingingHeadPreset, 2, f6);
+						this.bodyPartAngles(this.leg1_1, this.swingingLeg1_1Preset, 2, f6);
+						this.bodyPartAngles(this.leg1_2, this.swingingLeg1_2Preset, 2, f6);
+						this.bodyPartAngles(this.leg1_3, this.swingingLeg1_3Preset, 2, f6);
+						this.bodyPartAngles(this.foot1, this.swingingFoot1Preset, 2, f6);
+						this.bodyPartAngles(this.leg2_1, this.swingingLeg2_1Preset, 2, f6);
+						this.bodyPartAngles(this.leg2_2, this.swingingLeg2_2Preset, 2, f6);
+						this.bodyPartAngles(this.leg2_3, this.swingingLeg2_3Preset, 2, f6);
+						this.bodyPartAngles(this.foot2, this.swingingFoot2Preset, 2, f6);
 					}
 				}
 				if (((EntityCustom) e).isShooting()) {
@@ -1137,13 +1106,17 @@ public class EntityFiveTails extends ElementsNarutomodMod.ModElement {
 				this.copyModelAngles(head, headsync);
 			}
 
-			private void bodyPartAngles(ModelRenderer part, float[][] preset, float progress) {
-				part.rotationPointX = preset[0][0] + (preset[1][0] - preset[0][0]) * progress;
-				part.rotationPointY = preset[0][1] + (preset[1][1] - preset[0][1]) * progress;
-				part.rotationPointZ = preset[0][2] + (preset[1][2] - preset[0][2]) * progress;
-				part.rotateAngleX = preset[0][3] + (preset[1][3] - preset[0][3]) * progress;
-				part.rotateAngleY = preset[0][4] + (preset[1][4] - preset[0][4]) * progress;
-				part.rotateAngleZ = preset[0][5] + (preset[1][5] - preset[0][5]) * progress;
+			private void bodyPartAngles(ModelRenderer part, float[][] preset, int seg, float progress) {
+				if (seg < 0 || seg >= preset.length) {
+					return;
+				}
+				int to = seg == preset.length - 1 ? 0 : (seg + 1);
+				part.rotationPointX = preset[seg][0] + (preset[to][0] - preset[seg][0]) * progress;
+				part.rotationPointY = preset[seg][1] + (preset[to][1] - preset[seg][1]) * progress;
+				part.rotationPointZ = preset[seg][2] + (preset[to][2] - preset[seg][2]) * progress;
+				part.rotateAngleX = preset[seg][3] + (preset[to][3] - preset[seg][3]) * progress;
+				part.rotateAngleY = preset[seg][4] + (preset[to][4] - preset[seg][4]) * progress;
+				part.rotateAngleZ = preset[seg][5] + (preset[to][5] - preset[seg][5]) * progress;
 			}
 		}
 	}

@@ -108,9 +108,8 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 		private static final DataParameter<Integer> BREAKING_TICKS = EntityDataManager.<Integer>createKey(EntityCustom.class, DataSerializers.VARINT);
 		private final BossInfoServer bossInfo = new BossInfoServer(this.getDisplayName(), BossInfo.Color.RED, BossInfo.Overlay.PROGRESS);
 		private final int BLOCKING_CD = 30;
-		private final int JUTSU_CD = 300;
 		private final int SANDGATHERING_CD = 400;
-		private final int SANDBULLET_CD = 200;
+		private final int SANDBULLET_CD = 160;
 		private final double chakra4elementals = 200d;
 		private int lastBlockTime;
 		private EntityCore coreEntity;
@@ -251,7 +250,7 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 					return super.shouldExecute() && EntityCustom.this.isRidingHiruko() && !EntityCustom.this.actionsHalted();
 				}
 			});
-			this.tasks.addTask(2, new EntityNinjaMob.AIAttackRangedTactical(this, 1.0d, JUTSU_CD, 30.0F) {
+			this.tasks.addTask(2, new EntityNinjaMob.AIAttackRangedTactical(this, 1.0d, SANDBULLET_CD, 30.0F) {
 				@Override
 				public boolean shouldExecute() {
 					return super.shouldExecute() && !EntityCustom.this.isRidingHiruko() && !EntityCustom.this.actionsHalted();
@@ -307,7 +306,7 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 							this.stopActiveHand();
 						}
 					} else if (ItemScroll3rdKazekage.GATHERING.jutsu.isActivated(this.thirdEntity)
-					 && (this.ticksExisted - this.lastSandGatheringTime) % 80 == 50) {
+					 && (this.ticksExisted - this.lastSandGatheringTime) % 60 == 50) {
 						((ItemScroll3rdKazekage.RangedItem)offStack.getItem()).executeJutsu(offStack, this, 1f);
 					}
 				} else if (this.isRobeOff()) {
@@ -471,23 +470,23 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 					}
 				}
 			} else if (this.isThirdSummoned() && stack.getItem() == ItemScroll3rdKazekage.block
-			 && !ItemScroll3rdKazekage.GATHERING.jutsu.isActivated(this.thirdEntity)) {
+			 && !ItemScroll3rdKazekage.GATHERING.jutsu.isActivated(this.thirdEntity) && !this.isHandActive()) {
 				if (this.ticksExisted - this.lastSandGatheringTime > SANDGATHERING_CD && this.rand.nextFloat() < 0.25f) {
 					((ItemScroll3rdKazekage.RangedItem)stack.getItem()).setCurrentJutsu(stack, ItemScroll3rdKazekage.GATHERING);
 					((ItemScroll3rdKazekage.RangedItem)stack.getItem()).executeJutsu(stack, this, 1f);
 					this.lastSandGatheringTime = this.ticksExisted;
-				} else if (this.ticksExisted - this.lastSandBulletTime > SANDBULLET_CD && !this.isHandActive()) {
+				} else if (this.ticksExisted - this.lastSandBulletTime > SANDBULLET_CD) {
 					((ItemScroll3rdKazekage.RangedItem)stack.getItem()).setCurrentJutsu(stack, ItemScroll3rdKazekage.SANDBULLET);
 					this.setActiveHand(EnumHand.OFF_HAND);
 					this.lastSandBulletTime = this.ticksExisted;
 				}
 			} else if (this.isRobeOff() && (this.hundredStage == EnumStage.CANNOT_USE || this.hundredStage == EnumStage.USED)
 			 && this.ticksExisted - this.lastElementalJutsuTime > 150) {
-				if (this.rand.nextFloat() <= 0.5f && this.consumeChakra(this.chakra4elementals)) {
+				if (this.rand.nextFloat() <= 0.3333f && this.consumeChakra(this.chakra4elementals)) {
 					this.fireImmuneTicks = 300;
 					this.lastElementalJutsu = new EntityFirestream.EC.Jutsu2().createJutsu(this, 25.0f, 200);
 					this.lastElementalJutsuTime = this.ticksExisted;
-				} else if (this.rand.nextFloat() <= 0.5f && this.consumeChakra(this.chakra4elementals)) {
+				} else if (this.rand.nextFloat() < 0.5f && this.consumeChakra(this.chakra4elementals)) {
 					this.lastElementalJutsu = new EntityWaterStream.EC.Jutsu().createJutsu(this, 25.0f, 200);
 					this.lastElementalJutsuTime = this.ticksExisted;
 				} else if (this.consumeChakra(this.chakra4elementals)) {

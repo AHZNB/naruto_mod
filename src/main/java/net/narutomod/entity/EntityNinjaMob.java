@@ -538,7 +538,7 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 	            return false;
 	        } else {
 	            double d0 = this.leaper.getDistance(this.target);
-	            if (d0 >= 3.0D && d0 <= this.leapStrength * 12.0d && this.leaper.onGround) {
+	            if (d0 >= 3.0D && d0 <= this.leapStrength * 16.0d && this.leaper.onGround) {
                     return this.leaper.getRNG().nextInt(5) == 0;
 	            } else {
 	                return false;
@@ -554,7 +554,7 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 	        double d0 = this.target.posX - this.leaper.posX;
 	        double d1 = this.target.posZ - this.leaper.posZ;
 	        double d4 = MathHelper.sqrt(d0 * d0 + d1 * d1);
-	        double d2 = this.target.posY + (double)this.target.height / 3d - this.leaper.posY + d4 * 0.2d;
+	        double d2 = this.target.posY + (double)this.target.height * 0.4d - this.leaper.posY + d4 * 0.2d;
 	        double d3 = MathHelper.sqrt(d0 * d0 + d1 * d1 + d2 * d2);
 	        if (d3 >= 1.0E-4D) {
 	            this.leaper.motionX = d0 / d3 * (double)this.leapStrength;

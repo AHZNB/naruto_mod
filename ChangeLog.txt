@@ -66,7 +66,7 @@ Entities:
  - Kisame wears Akatsuki robe now and has a chance to drop it. follows Itachi if he's in the area
  - Haku wears anbu mask and has a chance to drop it
  - improved Hirudora model
- - 3rd kazekage puppet can use sand bullet jutsu & sand gathering jutsu (use with 3rd kazekage scroll)
+ - 3rd kazekage puppet inflicts poison, can use sand bullet jutsu & sand gathering jutsu (use with 3rd kazekage scroll)
  - fixed jinchuriki's biju mode visibility bug
  - fixed perfect susanoo jerky body pitch when flying
  - added Sasori mob, naturally spawns, spawn weight configurable
@@ -85,7 +85,7 @@ Entities:
     will not spawn in the same 1024 block area within 30 mins
  - add Toad Sage Fukasaku & Shima (WIP)
  - hitting your own Explosion release: explosive clone despawns it
- - adding Hidan (WIP-3: throws his scythe, activates jashin mode, pokes himself with retractable spear, naturally spawns)
+ - adding Hidan (WIP-4: jashin mode only works on players or ninja mobs, unblockable, uses chakra)
  
 General:
  - fixed alpha transparency bug when using certain jutsus

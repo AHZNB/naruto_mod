@@ -106,7 +106,7 @@ public class ItemScytheHidan extends ElementsNarutomodMod.ModElement {
 			Multimap<String, AttributeModifier> multimap = super.getItemAttributeModifiers(slot);
 			if (slot == EntityEquipmentSlot.MAINHAND) {
 				multimap.put(SharedMonsterAttributes.ATTACK_DAMAGE.getName(),
-						new AttributeModifier(ATTACK_DAMAGE_MODIFIER, "Ranged item modifier", (double) 4, 0));
+						new AttributeModifier(ATTACK_DAMAGE_MODIFIER, "Ranged item modifier", 11.0d, 0));
 				multimap.put(SharedMonsterAttributes.ATTACK_SPEED.getName(),
 						new AttributeModifier(ATTACK_SPEED_MODIFIER, "Ranged item modifier", -2.4, 0));
 			}
@@ -230,14 +230,14 @@ public class ItemScytheHidan extends ElementsNarutomodMod.ModElement {
 			Entity entity = raytraceResultIn.entityHit;
 			if (entity != null) {
 				if (!entity.equals(this.shootingEntity) && this.isTargetable(entity)) {
-					float f = MathHelper.sqrt(this.getVelocitySq()) * (float)this.getDamage();
+					float f = MathHelper.sqrt(this.getVelocitySq()) * (float)this.getDamage() * 0.7f;
+					this.playSound(SoundEvents.ENTITY_ARROW_HIT, 1.0F, 1.2F / (this.rand.nextFloat() * 0.2F + 0.9F));
 					if (entity.attackEntityFrom(DamageSource.causeThrownDamage(this, this.shootingEntity), f)) {
+						this.motionX *= 0.85d;
+						this.motionY *= 0.85d;
+						this.motionZ *= 0.85d;
 						if (entity instanceof EntityLivingBase) {
 							this.hitTarget = (EntityLivingBase)entity;
-							this.playSound(SoundEvents.ENTITY_ARROW_HIT, 1.0F, 1.2F / (this.rand.nextFloat() * 0.2F + 0.9F));
-							this.motionX *= 0.85d;
-							this.motionY *= 0.85d;
-							this.motionZ *= 0.85d;
 						}
 					} else {
 						this.motionX *= -0.1d;
@@ -296,7 +296,7 @@ public class ItemScytheHidan extends ElementsNarutomodMod.ModElement {
 	        double d0 = entity.posX - this.posX;
 	        double d1 = entity.getEntityBoundingBox().minY + (double)entity.height * 0.333d - this.posY;
 	        double d2 = entity.posZ - this.posZ;
-	        double d3 = (double)MathHelper.sqrt(d0 * d0 + d2 * d2);
+	        double d3 = (double)MathHelper.sqrt(d0 * d0 + d1 * d1 + d2 * d2);
 	        this.retrieve(d0, d1 + d3 * 0.3D, d2, (float)MathHelper.sqrt(d3) * 0.3F);
 		}
 

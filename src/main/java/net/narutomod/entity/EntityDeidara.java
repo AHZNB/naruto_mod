@@ -88,8 +88,8 @@ public class EntityDeidara extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static class EntityCustom extends EntityNinjaMob.Base implements IMob, IRangedAttackMob {
-		private final int explosiveCloneCD = 120;
-		private int explosiveCloneLastUsed = -120;
+		private final int explosiveCloneCD = 200;
+		private int explosiveCloneLastUsed = -200;
 		private EntityC2.EC c2Entity;
 		private EntityC4.EC c4Entity;
 		private final Vec3d[] flightPath = new Vec3d[8];

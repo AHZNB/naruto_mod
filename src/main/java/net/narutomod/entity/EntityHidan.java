@@ -6,6 +6,7 @@ import net.narutomod.item.ItemScytheHidan;
 import net.narutomod.item.ItemScytheHidanThrown;
 import net.narutomod.item.ItemSpearRetractable;
 import net.narutomod.potion.PotionHeaviness;
+import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.ModConfig;
 import net.narutomod.ElementsNarutomodMod;
 
@@ -105,6 +106,7 @@ public class EntityHidan extends ElementsNarutomodMod.ModElement {
 		private boolean scytheOnRetrieval;
 		private EntityJashinSymbol jashinSymbol;
 		private int lastJashinTime;
+		private final double jashinChakraUsage = 500d;
 
 		public EntityCustom(World world) {
 			super(world, 120, 7000d);
@@ -174,8 +176,7 @@ public class EntityHidan extends ElementsNarutomodMod.ModElement {
 			this.tasks.addTask(2, new EntityNinjaMob.AILeapAtTarget(this, 1.0F) {
 				@Override
 				public boolean shouldExecute() {
-					return super.shouldExecute() && EntityCustom.this.jashinTransitionDirection == 0
-							&& EntityCustom.this.getAttackTarget().posY - EntityCustom.this.posY > 3d;
+					return super.shouldExecute() && EntityCustom.this.jashinTransitionDirection == 0;
 				}
 			});
 			this.tasks.addTask(3, new EntityAIAttackRanged(this, 1.0D, 10, 16.0F) {
@@ -217,7 +218,9 @@ public class EntityHidan extends ElementsNarutomodMod.ModElement {
 			ItemStack stack = this.getHeldItemMainhand();
 			if (stack.getItem() == ItemScytheHidanThrown.block) {
 				ItemScytheHidan.EntityCustom entity = ((ItemScytheHidanThrown.RangedItem)stack.getItem()).getEntity(this.world, stack);
-				this.curseTarget = entity.getHitTarget();
+				if (entity.getHitTarget() instanceof EntityNinjaMob.Base || entity.getHitTarget() instanceof EntityPlayer) {
+					this.curseTarget = entity.getHitTarget();
+				}
 				if (entity.inGround()) {
 					this.standStillFor(30);
 					stack.onPlayerStoppedUsing(this.world, this, 0);
@@ -225,19 +228,7 @@ public class EntityHidan extends ElementsNarutomodMod.ModElement {
 				}
 			} else {
 				if (this.curseTarget != null && this.curseTarget.isEntityAlive()) {
-					if (this.jashinSymbol == null || this.jashinSymbol.isDead) {
-						if (this.onGround) {
-							this.jashinSymbol = new EntityJashinSymbol(this.world);
-							this.jashinSymbol.setLocationAndAngles(this.posX, this.posY, this.posZ, this.rotationYaw, 0.0f);
-							this.world.spawnEntity(this.jashinSymbol);
-							this.lastJashinTime = this.ticksExisted;
-							this.playSound(net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:hidan")), 2f, 1f);
-							if (stack.getItem() != ItemSpearRetractable.block && this.getItemFromInventory(1).getItem() == ItemSpearRetractable.block) {
-								this.swapWithInventory(EntityEquipmentSlot.MAINHAND, 0);
-								this.swapWithInventory(EntityEquipmentSlot.MAINHAND, 1);
-							}
-						}
-					} else {
+					if (this.jashinSymbol != null && !this.jashinSymbol.isDead) {
 						AxisAlignedBB bb1 = this.getEntityBoundingBox();
 						AxisAlignedBB bb2 = this.jashinSymbol.getEntityBoundingBox();
 						if (this.jashinTransitionDirection >= 0 && (bb1.minX > bb2.maxX || bb1.maxX < bb2.minX || bb1.minZ > bb2.maxZ || bb1.maxZ < bb2.minZ)) {
@@ -252,8 +243,23 @@ public class EntityHidan extends ElementsNarutomodMod.ModElement {
 						 && this.ticksExisted > this.lastJashinTime + 40 && this.ticksExisted % 40 == 2) {
 						 	ItemSpearRetractable.setHurtSelf(stack);
 							this.swingArm(EnumHand.MAIN_HAND);
-							this.attackEntityFrom(DamageSource.causeMobDamage(this), 100.0f * this.rand.nextFloat() * Math.min((float)(this.ticksExisted - this.lastJashinTime) / 160f, 1.0f));
+							this.attackEntityFrom(ProcedureUtils.SPECIAL_DAMAGE, 100.0f * this.rand.nextFloat() * Math.min((float)(this.ticksExisted - this.lastJashinTime) / 160f, 1.0f));
 							this.curseTarget.addPotionEffect(new PotionEffect(PotionHeaviness.potion, 60, this.rand.nextInt(5)));
+						}
+					} else if (this.onGround) {
+						if (this.consumeChakra(this.jashinChakraUsage)) {
+							this.jashinSymbol = new EntityJashinSymbol(this.world);
+							this.jashinSymbol.setLocationAndAngles(this.posX, this.posY, this.posZ, this.rotationYaw, 0.0f);
+							this.world.spawnEntity(this.jashinSymbol);
+							this.lastJashinTime = this.ticksExisted;
+							this.playSound(net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:hidan")), 2f, 1f);
+							if (stack.getItem() != ItemSpearRetractable.block && this.getItemFromInventory(1).getItem() == ItemSpearRetractable.block) {
+								this.swapWithInventory(EntityEquipmentSlot.MAINHAND, 0);
+								this.swapWithInventory(EntityEquipmentSlot.MAINHAND, 1);
+							}
+						} else {
+							this.setAttackTarget(this.curseTarget);
+							this.curseTarget = null;
 						}
 					}
 				} else if (this.jashinTransitionDirection > 0) {
@@ -269,15 +275,27 @@ public class EntityHidan extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public void setSwingingArms(boolean swingingArms) {
-			this.swingArm(EnumHand.MAIN_HAND);
 		}
 
 		@Override
 		public void attackEntityWithRangedAttack(EntityLivingBase target, float distanceFactor) {
 			ItemStack stack = this.getHeldItemMainhand();
 			if (stack.getItem() == ItemScytheHidan.block) {
+				this.swingArm(EnumHand.MAIN_HAND);
 				stack.onPlayerStoppedUsing(this.world, this, stack.getMaxItemUseDuration() - 50);
 			}
+		}
+
+		@Override
+		public boolean attackEntityAsMob(Entity entityIn) {
+			if (super.attackEntityAsMob(entityIn)) {
+				if (this.getHeldItemMainhand().getItem() == ItemScytheHidan.block
+				 && (entityIn instanceof EntityNinjaMob.Base || entityIn instanceof EntityPlayer)) {
+					this.curseTarget = (EntityLivingBase)entityIn;
+				}
+				return true;
+			}
+			return false;
 		}
 
 		@Override
@@ -285,7 +303,7 @@ public class EntityHidan extends ElementsNarutomodMod.ModElement {
 			if (this.curseTarget != null && this.curseTarget.isEntityAlive() && this.jashinTransitionDirection > 0) {
 				this.curseTarget.attackEntityFrom(source, amount);
 			}
-			return super.attackEntityFrom(source, amount * 0.05f);
+			return super.attackEntityFrom(source, amount * (this.rand.nextFloat() * 0.05f + 0.05f));
 		}
 
 		@Override
