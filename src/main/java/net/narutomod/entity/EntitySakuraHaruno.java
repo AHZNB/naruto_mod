@@ -164,6 +164,7 @@ public class EntitySakuraHaruno extends ElementsNarutomodMod.ModElement {
 				}
 			});
 			this.tasks.addTask(1, new AIHeal(this, 1.2d));
+			this.tasks.addTask(2, new EntityNinjaMob.AILeapAtTarget(this, 1.0f));
 		}
 
 		@Override

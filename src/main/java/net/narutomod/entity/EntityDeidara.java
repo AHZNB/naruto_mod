@@ -5,7 +5,6 @@ import net.narutomod.item.ItemAkatsukiRobe;
 import net.narutomod.item.ItemNinjaArmorFishnets;
 import net.narutomod.item.ItemBakuton;
 import net.narutomod.procedure.ProcedureUtils;
-import net.narutomod.procedure.ProcedureSync;
 import net.narutomod.ModConfig;
 import net.narutomod.NarutomodModVariables;
 import net.narutomod.ElementsNarutomodMod;
@@ -26,6 +25,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntitySelectors;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -210,14 +210,15 @@ public class EntityDeidara extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public void setSwingingArms(boolean swingingArms) {
-			ProcedureSync.EntityNBTTag.setAndSync(this, NarutomodModVariables.forceBowPose, swingingArms);
+			//ProcedureSync.EntityNBTTag.setAndSync(this, NarutomodModVariables.forceBowPose, swingingArms);
 		}
 
 		@Override
 		public void attackEntityWithRangedAttack(EntityLivingBase target, float distanceFactor) {
 			if (this.consumeChakra(ItemBakuton.CLAY.chakraUsage * 0.5d)) {
+				this.swingArm(EnumHand.MAIN_HAND);
 				this.setLastAttackedEntity(target);
-				for (int i = 0; i < 2; i++) {
+				for (int i = 0; i < 1 + this.rand.nextInt(2); i++) {
 					ItemBakuton.CLAY.jutsu.createJutsu(null, this, 1.0f);
 				}
 			}
@@ -253,29 +254,45 @@ public class EntityDeidara extends ElementsNarutomodMod.ModElement {
 		}
 
 		private boolean generateFlightPath(Vec3d centerVec) {
-			for (int i = 0; i < this.flightPath.length; i++) {
-				this.flightPath[i] = new Vec3d(10d, 0d, 0d).rotateYaw(0.7854f * i).add(centerVec);
+			int i;
+			Vec3d[] newPath = new Vec3d[this.flightPath.length];
+			for (i = 0; i < newPath.length; i++) {
+				newPath[i] = new Vec3d(10d, 0d, 0d).rotateYaw(0.7854f * i).add(centerVec);
 			}
-			for (int i = 0; i < this.flightPath.length; i++) {
-				int j = i == this.flightPath.length - 1 ? 0 : (i + 1);
-				Vec3d vec1 = this.flightPath[i];
-				while ((int)(vec1.y + 1) < this.world.getHeight()) {
-					Vec3d vec2 = this.flightPath[j];
-					while ((int)(vec2.y + 1) < this.world.getHeight() && !this.isDirectPath(vec1, vec2)) {
-						vec2 = vec2.addVector(0d, 1d, 0d);
-					}
-					if (vec2.y + 1 < this.world.getHeight()) {
-						this.flightPath[i] = vec1;
-						this.flightPath[j] = vec2;
-						break;
-					}
-					vec1 = vec1.addVector(0d, 1d, 0d);
-				}
-				if (vec1.y + 1 >= this.world.getHeight()) {
+			for (i = 1;
+				i < 13 && !ProcedureUtils.isSpaceOpenToStandOn(this.world, EntityC2.EC.WIDTH, EntityC2.EC.HEIGHT,
+				 new BlockPos(MathHelper.floor(newPath[0].x), (int)newPath[0].y, MathHelper.floor(newPath[0].z)));
+				newPath[0] = newPath[0].addVector(0d, (i % 2 == 0 ? -1d : 1d) * i++, 0d));
+			if (i >= 13) {
+				return false;
+			}
+			for (i = 0; i < newPath.length; i++) {
+				int j = i == newPath.length - 1 ? 0 : (i + 1);
+				Vec3d vec = this.findNextDirectPath(newPath[i], newPath[j]);
+				if (vec == null) {
 					return false;
 				}
+				newPath[j] = vec;
 			}
+			System.arraycopy(newPath, 0, this.flightPath, 0, newPath.length);
 			return true;
+		}
+
+		@Nullable
+		private Vec3d findNextDirectPath(Vec3d ogVec1, Vec3d ogVec2) {
+			Vec3d tvec;
+			Vec3d vec2 = ogVec2;
+			for (int y = 1; y < 13; vec2 = ogVec2.addVector(0d, y % 2 == 0 ? -y / 2 : (y / 2 + 1), 0d), y++) {
+				for (int x = 1; x < 9; vec2 = tvec.addVector((x % 2 == 0 ? -1d : 1d) * x++, 0d, 0d)) {
+					tvec = vec2;
+					for (int z = 1; z < 9; vec2 = vec2.addVector(0d, 0d, (z % 2 == 0 ? -1d : 1d) * z++)) {
+						if (this.isDirectPath(ogVec1, vec2)) {
+							return vec2;
+						}
+					}
+				}
+			}
+			return null;
 		}
 
 		private boolean isDirectPath(Vec3d fromVec, Vec3d toVec) {
@@ -430,6 +447,7 @@ public class EntityDeidara extends ElementsNarutomodMod.ModElement {
 				bipedBody = new ModelRenderer(this);
 				bipedBody.setRotationPoint(0.0F, 0.0F, 0.0F);
 				bipedBody.cubeList.add(new ModelBox(bipedBody, 16, 16, -4.0F, 0.0F, -2.0F, 8, 12, 4, 0.0F, false));		
+				bipedBody.cubeList.add(new ModelBox(bipedBody, 0, 34, -7.0F, -3.0F, -6.01F, 16, 12, 0, -4.0F, false));
 				bipedRightArm = new ModelRenderer(this);
 				bipedRightArm.setRotationPoint(-5.0F, 2.0F, 0.0F);
 				bipedRightArm.cubeList.add(new ModelBox(bipedRightArm, 40, 16, -3.0F, -2.0F, -2.0F, 4, 12, 4, 0.0F, false));

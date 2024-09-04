@@ -395,6 +395,7 @@ public class EntityHidan extends ElementsNarutomodMod.ModElement {
 		    private EntityJashinSymbol targetEntity;
 		    private final double speed;
 		    private final float maxTargetDistance;
+		    private int ticks;
 		
 		    public AIMoveTowardsSymbol(EntityCustom entityIn, double speedIn) {
 		        this.entity = entityIn;
@@ -424,7 +425,7 @@ public class EntityHidan extends ElementsNarutomodMod.ModElement {
 		    public boolean shouldContinueExecuting() {
 		    	double d = this.targetEntity.getDistanceSq(this.entity);
 		        return !this.entity.getNavigator().noPath() && !this.targetEntity.isDead
-		         && d < (double)(this.maxTargetDistance * this.maxTargetDistance) && d > 1.0d && this.entity.curseTarget.isEntityAlive();
+		         && d < (double)this.maxTargetDistance * this.maxTargetDistance && d > 1.0d && this.entity.curseTarget.isEntityAlive();
 		    }
 		
 		    @Override
@@ -436,6 +437,15 @@ public class EntityHidan extends ElementsNarutomodMod.ModElement {
 		    public void startExecuting() {
 		    	double d = this.entity.getDistanceSq(this.targetEntity);
 		        this.entity.getNavigator().tryMoveToEntityLiving(this.targetEntity, this.speed * Math.min(d, 16.0d) / 16.0d);
+		        this.ticks = 0;
+		    }
+
+		    @Override
+		    public void updateTask() {
+		    	double d = this.entity.getDistanceSq(this.targetEntity);
+		    	if (++this.ticks % 20 == 0) {
+		    		this.entity.getNavigator().tryMoveToEntityLiving(this.targetEntity, this.speed * Math.min(d, 16.0d) / 16.0d);
+		    	}
 		    }
 		}
 	}

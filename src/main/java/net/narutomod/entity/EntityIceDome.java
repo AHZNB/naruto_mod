@@ -442,6 +442,11 @@ public class EntityIceDome extends ElementsNarutomodMod.ModElement {
 			private final ModelRenderer bone17;
 			private final ModelRenderer cube_r3;
 			private final ModelRenderer cube_r4;
+			private final ModelRenderer bottom;
+			private final ModelRenderer bone;
+			private final ModelRenderer bone9;
+			private final ModelRenderer bone5;
+			private final ModelRenderer bone11;
 
 			public ModelDome() {
 				textureWidth = 16;
@@ -537,6 +542,29 @@ public class EntityIceDome extends ElementsNarutomodMod.ModElement {
 				roof.addChild(cube_r4);
 				setRotationAngle(cube_r4, 0.7854F, -0.7854F, 0.0F);
 				cube_r4.cubeList.add(new ModelBox(cube_r4, 0, 8, -3.8609F, -7.9F, -0.0457F, 8, 8, 0, 0.0F, false));
+				bottom = new ModelRenderer(this);
+				bottom.setRotationPoint(0.0F, 0.0F, 0.0F);
+				dome.addChild(bottom);
+				bone = new ModelRenderer(this);
+				bone.setRotationPoint(0.0F, 0.0F, 0.0F);
+				bottom.addChild(bone);
+				setRotationAngle(bone, 0.0F, -0.7854F, 0.0F);
+				bone.cubeList.add(new ModelBox(bone, -8, 0, -4.0F, 0.0F, 1.75F, 8, 0, 8, 0.0F, false));
+				bone9 = new ModelRenderer(this);
+				bone9.setRotationPoint(0.0F, 0.0F, 0.0F);
+				bottom.addChild(bone9);
+				setRotationAngle(bone9, 0.0F, 0.7854F, 0.0F);
+				bone9.cubeList.add(new ModelBox(bone9, -8, 0, -4.0F, 0.0F, 1.75F, 8, 0, 8, 0.0F, false));
+				bone5 = new ModelRenderer(this);
+				bone5.setRotationPoint(0.0F, 0.0F, 0.0F);
+				bottom.addChild(bone5);
+				setRotationAngle(bone5, 0.0F, -2.3562F, 0.0F);
+				bone5.cubeList.add(new ModelBox(bone5, -8, 0, -4.0F, 0.0F, 1.75F, 8, 0, 8, 0.0F, false));
+				bone11 = new ModelRenderer(this);
+				bone11.setRotationPoint(0.0F, 0.0F, 0.0F);
+				bottom.addChild(bone11);
+				setRotationAngle(bone11, 0.0F, 2.3562F, 0.0F);
+				bone11.cubeList.add(new ModelBox(bone11, -8, 0, -4.0F, 0.0F, 1.75F, 8, 0, 8, 0.0F, false));
 			}
 
 			@Override

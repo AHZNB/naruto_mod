@@ -1,9 +1,6 @@
 
 package net.narutomod.entity;
 
-import com.google.common.collect.Maps;
-import net.minecraft.entity.*;
-import net.minecraft.village.Village;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
@@ -23,29 +20,29 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.*;
+import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
 import net.minecraft.entity.monster.EntitySkeleton;
 import net.minecraft.entity.monster.EntityZombie;
-import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
 import net.minecraft.client.renderer.entity.RenderLiving;
 import net.minecraft.client.renderer.entity.RenderManager;
-//import net.minecraft.client.renderer.entity.layers.LayerHeldItem;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.model.ModelBox;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.village.MerchantRecipeList;
-import net.minecraft.village.MerchantRecipe;
-
+import net.minecraft.village.MerchantRecipe;
+import net.minecraft.village.Village;
 import net.minecraft.inventory.EntityEquipmentSlot;
 
-import net.narutomod.ElementsNarutomodMod;
-import net.narutomod.item.*;
 import net.narutomod.block.BlockExplosiveTag;
+import net.narutomod.item.*;
+import net.narutomod.ElementsNarutomodMod;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Map;
+import com.google.common.collect.Maps;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityTenten extends ElementsNarutomodMod.ModElement {
@@ -145,6 +142,7 @@ public class EntityTenten extends ElementsNarutomodMod.ModElement {
 					return super.shouldExecute() && EntityCustom.this.getDistance(EntityCustom.this.getAttackTarget()) >= 4d;
 				}
 			});
+			this.tasks.addTask(2, new EntityNinjaMob.AILeapAtTarget(this, 1.0f));
 			this.targetTasks.addTask(3, new EntityAINearestAttackableTarget(this, EntitySkeleton.class, false, false));
 			this.targetTasks.addTask(4, new EntityAINearestAttackableTarget(this, EntityZombie.class, false, false));
 		}

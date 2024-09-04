@@ -538,7 +538,7 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 	            return false;
 	        } else {
 	            double d0 = this.leaper.getDistance(this.target);
-	            if (d0 >= 3.0D && d0 <= this.leapStrength * 16.0d && this.leaper.onGround) {
+	            if (d0 >= 3.0D && d0 <= this.leapStrength * 20.0d && this.leaper.onGround) {
                     return this.leaper.getRNG().nextInt(5) == 0;
 	            } else {
 	                return false;

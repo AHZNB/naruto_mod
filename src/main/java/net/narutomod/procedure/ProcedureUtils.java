@@ -861,9 +861,12 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static boolean isSpaceOpenToStandOn(EntityLivingBase entity, BlockPos pos) {
-		AxisAlignedBB bb = entity.getEntityBoundingBox();
-		Vec3d vec = new Vec3d(0.5d+pos.getX(), pos.getY(), 0.5d+pos.getZ()).subtract(entity.posX, bb.minY, entity.posZ);
-		return entity.world.getCollisionBoxes(null, bb.contract(0d, -0.1d, 0d).grow(0.5d, 0d, 0.5d).offset(vec)).isEmpty();
+		return isSpaceOpenToStandOn(entity.world, entity.width, entity.height, pos);
+	}
+
+	public static boolean isSpaceOpenToStandOn(World world, float width, float height, BlockPos pos) {
+		AxisAlignedBB bb = new AxisAlignedBB(0.5f + pos.getX() - width * 0.5f, pos.getY(), 0.5f + pos.getZ() - width * 0.5f, 0.5f + pos.getX() + width * 0.5f, height + pos.getY(), 0.5f + pos.getZ() + width * 0.5f);
+		return world.getCollisionBoxes(null, bb.contract(0d, -0.1d, 0d).grow(0.5d, 0d, 0.5d)).isEmpty();
 	}
 
 	public static String animateString(String string, int type, boolean returnToBlack) {

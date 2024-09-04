@@ -81,8 +81,8 @@ public class SpawnTailedBeasts extends ElementsNarutomodMod.ModElement {
 				spawnPos = bm.getSpawnPos();
 			}
 			else {
-				final int x = (world.rand.nextInt(SPAWN_MAX_RADIUS - SPAWN_MIN_RADIUS) + SPAWN_MIN_RADIUS) + world.getSpawnPoint().getX();
-				final int z = (world.rand.nextInt(SPAWN_MAX_RADIUS - SPAWN_MIN_RADIUS) + SPAWN_MIN_RADIUS) + world.getSpawnPoint().getZ();
+				final int x = world.getSpawnPoint().getX() + (world.rand.nextBoolean() ? -1 : 1) * (world.rand.nextInt(SPAWN_MAX_RADIUS - SPAWN_MIN_RADIUS) + SPAWN_MIN_RADIUS);
+				final int z = world.getSpawnPoint().getZ() + (world.rand.nextBoolean() ? -1 : 1) * (world.rand.nextInt(SPAWN_MAX_RADIUS - SPAWN_MIN_RADIUS) + SPAWN_MIN_RADIUS);
 
 				spawnPos = new BlockPos(x, 0.0D, z);
 				Biome biome = world.getBiome(new BlockPos(spawnPos.getX(), spawnPos.getY(), spawnPos.getZ()));

@@ -106,6 +106,7 @@ public class EntityIrukaSensei extends ElementsNarutomodMod.ModElement {
 		protected void initEntityAI() {
 			super.initEntityAI();
 			this.targetTasks.addTask(3, new EntityAINearestAttackableTarget(this, EntityZombie.class, false, false));
+			this.tasks.addTask(2, new EntityNinjaMob.AILeapAtTarget(this, 1.0f));
 		}
 
 		@Override
