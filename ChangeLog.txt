@@ -37,6 +37,7 @@ Jutsus:
  - Kirin is now a stand alone jutsu, learning chidori won't auto give you kirin anymore
  - add chakra effects on player's arm when Chakra enhanced strength active
  - Lightning chakra mode: slightly more reach, hunger & resistance scaled to jutsuXP and max chakra, shuts down if food < 1
+ - updated dust release cube, charges slower, smaller max, updated effects
 
 Items:
  - added Sakura shippuden clothing and leggings (for slim player models only)

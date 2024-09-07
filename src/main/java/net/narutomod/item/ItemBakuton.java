@@ -52,6 +52,7 @@ import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.procedure.ProcedureOnLeftClickEmpty;
 import net.narutomod.potion.PotionChakraEnhancedStrength;
 import net.narutomod.creativetab.TabModTab;
+import net.narutomod.Particles;
 import net.narutomod.ElementsNarutomodMod;
 
 import java.util.List;
@@ -327,6 +328,18 @@ public class ItemBakuton extends ElementsNarutomodMod.ModElement {
     		this.setDead();
 		}
 
+		private void poof() {
+			this.playSound(net.minecraft.init.SoundEvents.ENTITY_SLIME_SQUISH, 0.6F, 0.7F);
+			Particles.Renderer particles = new Particles.Renderer(this.world);
+			for (int i = 0; i < 200; i++) {
+				float scale = (1.667f + this.rand.nextFloat() * 1.667f) * this.height;
+				particles.spawnParticles(Particles.Types.SMOKE, this.posX + (this.rand.nextFloat()-0.5f) * this.width,
+				 this.posY + this.rand.nextFloat() * this.height, this.posZ + (this.rand.nextFloat()-0.5f) * this.width,
+				 1, 0d, 0d, 0d, 0d, 0d, 0d, -1, (int)(scale * 10f), 0, 0, -1, -6 - this.rand.nextInt(8));
+			}
+			particles.send();
+		}
+
 	    @Override
 	    public void onUpdate() {
 	    	this.fallDistance = 0f;
@@ -334,6 +347,7 @@ public class ItemBakuton extends ElementsNarutomodMod.ModElement {
 	    	super.onUpdate();
 	    	this.setNoGravity(true);
 	    	if (this.ticksExisted > this.lifeSpan && !this.world.isRemote) {
+	    		this.poof();
 	    		this.setDead();
 	    	}
 	    }
@@ -427,14 +441,31 @@ public class ItemBakuton extends ElementsNarutomodMod.ModElement {
 	            super(creature, false);
 	        }
 	
+	        @Override
 	        public boolean shouldExecute() {
-	        	this.target = ExplosiveClay.this.owner instanceof EntityLiving 
-	        	 ? ((EntityLiving)ExplosiveClay.this.owner).getAttackTarget() 
-	        	 : ExplosiveClay.this.owner != null ? ExplosiveClay.this.owner.getRevengeTarget() != null
-	        	 ? ExplosiveClay.this.owner.getRevengeTarget() : ExplosiveClay.this.owner.getLastAttackedEntity() : null;
+	            if (ExplosiveClay.this.owner != null && ExplosiveClay.this.owner.isEntityAlive()) {
+		            if (ExplosiveClay.this.owner instanceof EntityLiving) {
+            			this.target = ((EntityLiving)ExplosiveClay.this.owner).getAttackTarget();
+		            } else if (ExplosiveClay.this.owner.getRevengeTarget() != null) {
+		            	this.target = ExplosiveClay.this.owner.getRevengeTarget();
+		            } else {
+		            	this.target = ExplosiveClay.this.owner.getLastAttackedEntity();
+		            }
+	            }
 	            return this.target != null && this.isSuitableTarget(this.target, false);
 	        }
+
+	        @Override
+	        public boolean shouldContinueExecuting() {
+	        	if (!ExplosiveClay.this.owner.isEntityAlive()) {
+	        		return false;
+	        	} else if (ExplosiveClay.this.owner instanceof EntityLiving && ((EntityLiving)ExplosiveClay.this.owner).isAIDisabled()) {
+	        		return false;
+	        	}
+	        	return super.shouldContinueExecuting();
+	        }
 	
+	        @Override
 	        public void startExecuting() {
 	            ExplosiveClay.this.setAttackTarget(this.target);
 	            super.startExecuting();

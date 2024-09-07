@@ -189,10 +189,12 @@ public class ItemNinjaArmor extends ElementsNarutomodMod.ModElement {
 			bipedBody.addChild(shirt);
 			shirt.cubeList.add(new ModelBox(shirt, 16, 16, -4.0F, -24.0F, -2.0F, 8, 12, 4, 0.1F, false));
 	
-			//headbandWaist = new ModelRenderer(this);
-			//headbandWaist.setRotationPoint(0.0F, 24.0F, 0.0F);
-			//bipedBody.addChild(headbandWaist);
-			//headbandWaist.cubeList.add(new ModelBox(headbandWaist, 4, 3, -4.0F, -19.0F, -2.0F, 8, 8, 4, 0.35F, false));
+			if (type == Type.JUMPSUIT) {
+				ModelRenderer headbandWaist = new ModelRenderer(this);
+				headbandWaist.setRotationPoint(0.0F, 0.0F, 0.0F);
+				bipedBody.addChild(headbandWaist);
+				headbandWaist.cubeList.add(new ModelBox(headbandWaist, 4, 3, -4.0F, 5.0F, -2.0F, 8, 8, 4, 0.25F, false));
+			}
 	
 			vest = new ModelRenderer(this);
 			vest.setRotationPoint(0.0F, 0.0F, 0.0F);

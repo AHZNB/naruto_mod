@@ -1150,5 +1150,14 @@
         "stream": false
       }
     ]
+  },
+  "groundshock": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "narutomod:gal_se_groundshock",
+        "stream": false
+      }
+    ]
   }
 }

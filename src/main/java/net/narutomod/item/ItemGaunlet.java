@@ -309,15 +309,20 @@ public class ItemGaunlet extends ElementsNarutomodMod.ModElement {
 				this.setPosition(vec.x, vec.y, vec.z);
 			}
 			if (this.shootingEntity != null && this.getDistance(this.shootingEntity) > this.chainMaxLength) {
-				Vec3d vec = this.getPositionVector().subtract(this.shootingEntity.getPositionVector()).normalize().scale(0.15d);
-				if (this.inGround || this.grabbedEntity != null) {
-					this.shootingEntity.addVelocity(vec.x, vec.y, vec.z);
-					this.shootingEntity.velocityChanged = true;
-				}
+				double d = this.getDistance(this.shootingEntity) - this.chainMaxLength;
+				Vec3d vec = this.getPositionVector().subtract(this.shootingEntity.getPositionVector()).normalize();
 				if (this.grabbedEntity != null) {
-					vec = vec.scale(-1.5d);
-					this.grabbedEntity.addVelocity(vec.x, vec.y, vec.z);
+					float ratio = this.grabbedEntity.height / (this.grabbedEntity.height + this.shootingEntity.height);
+					Vec3d vec1 = vec.scale(0.1d * d * ratio);
+					this.shootingEntity.addVelocity(vec1.x, vec1.y, vec1.z);
+					this.shootingEntity.velocityChanged = true;
+					vec1 = vec.scale(-0.1d * d * (1.0f - ratio));
+					this.grabbedEntity.addVelocity(vec1.x, vec1.y, vec1.z);
 					this.grabbedEntity.velocityChanged = true;
+				} else if (this.inGround) {
+					Vec3d vec1 = vec.scale(0.1d * d);
+					this.shootingEntity.addVelocity(vec1.x, vec1.y, vec1.z);
+					this.shootingEntity.velocityChanged = true;
 				} else {
 					this.motionX *= -0.4d;
 					this.motionY *= -0.4d;

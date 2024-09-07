@@ -315,11 +315,12 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 		protected float smokeParticleScale;
 		private int particleBrightness;
 		protected double floatMotionY;
+		private final double bounceMotion;
 		private int viewerId;
 
 		protected Smoke(World worldIn, double xCoordIn, double yCoordIn, double zCoordIn, 
 		 double motionX, double motionY, double motionZ, int color, float scale, int maxAge, int brightness, 
-		 int playerId, double floatSpeed) {
+		 int playerId, double floatSpeed, double bounceMotionIn) {
 			super(worldIn, xCoordIn, yCoordIn, zCoordIn, 0.0D, 0.0D, 0.0D);
 			//super(worldIn, xCoordIn, yCoordIn, zCoordIn);
 			this.particleTextureIndexY = 2;
@@ -354,6 +355,7 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 				this.particleBrightness = brightness;
 			}
 			this.floatMotionY = floatSpeed;
+			this.bounceMotion = bounceMotionIn;
 			this.viewerId = playerId >= 0 ? playerId : -1;
 		}
 
@@ -408,14 +410,49 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 				this.motionX *= 1.1D;
 				this.motionZ *= 1.1D;
 			}
-			this.motionX *= 0.9599999785423279D;
-			this.motionY *= 0.9599999785423279D;
-			this.motionZ *= 0.9599999785423279D;
+			this.motionX *= 0.96D;
+			this.motionY *= 0.96D;
+			this.motionZ *= 0.96D;
 			if (this.onGround) {
-				this.motionX *= 0.699999988079071D;
-				this.motionZ *= 0.699999988079071D;
+				this.motionX *= 0.7D;
+				this.motionZ *= 0.7D;
 			}
 		}
+
+	    @Override
+	    public void move(double x, double y, double z) {
+	        double d0 = y;
+	        double origX = x;
+	        double origZ = z;
+	        if (this.canCollide) {
+	            List<AxisAlignedBB> list = this.world.getCollisionBoxes((Entity)null, this.getBoundingBox().expand(x, y, z));
+	            for (AxisAlignedBB axisalignedbb : list) {
+	                y = axisalignedbb.calculateYOffset(this.getBoundingBox(), y);
+	            }
+	            this.setBoundingBox(this.getBoundingBox().offset(0.0D, y, 0.0D));
+	            for (AxisAlignedBB axisalignedbb1 : list) {
+	                x = axisalignedbb1.calculateXOffset(this.getBoundingBox(), x);
+	            }
+	            this.setBoundingBox(this.getBoundingBox().offset(x, 0.0D, 0.0D));
+	            for (AxisAlignedBB axisalignedbb2 : list) {
+	                z = axisalignedbb2.calculateZOffset(this.getBoundingBox(), z);
+	            }
+	            this.setBoundingBox(this.getBoundingBox().offset(0.0D, 0.0D, z));
+	        } else {
+	            this.setBoundingBox(this.getBoundingBox().offset(x, y, z));
+	        }
+	        this.resetPositionToBB();
+	        if (d0 != y) {
+	        	this.motionY *= this.bounceMotion;
+	        	this.onGround = this.bounceMotion == 0.0D && d0 < 0.0D;
+	        } 
+	        if (origX != x) {
+	            this.motionX *= this.bounceMotion;
+	        }
+	        if (origZ != z) {
+	            this.motionZ *= this.bounceMotion;
+	        }
+	    }
 
 		public boolean shouldDisableDepth() {
 			return true;
@@ -425,13 +462,14 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 		public static class Factory implements IParticleFactory {
 			public Particle createParticle(int particleID, World worldIn, double xCoordIn, double yCoordIn, double zCoordIn, double xSpeedIn,
 					double ySpeedIn, double zSpeedIn, int... parameters) {
+				double arg6 = (parameters.length > 6) ? (double)parameters[6] / 100.0D : 0.0D;
 				double arg5 = (parameters.length > 5) ? (double)parameters[5] / 1000.0D : 0.004D;
 				int arg4 = (parameters.length > 4) ? parameters[4] : -1;
 				int arg3 = (parameters.length > 3) ? parameters[3] : 0;
 				int arg2 = (parameters.length > 2) ? parameters[2] : 0;
 				float arg1 = (parameters.length > 1) ? ((float)parameters[1] / 10.0F) : 1.0F;
 				int arg0 = (parameters.length > 0) ? parameters[0] : -1;
-				return new Smoke(worldIn, xCoordIn, yCoordIn, zCoordIn, xSpeedIn, ySpeedIn, zSpeedIn, arg0, arg1, arg2, arg3, arg4, arg5);
+				return new Smoke(worldIn, xCoordIn, yCoordIn, zCoordIn, xSpeedIn, ySpeedIn, zSpeedIn, arg0, arg1, arg2, arg3, arg4, arg5, arg6);
 			}
 		}
 	}
@@ -890,7 +928,7 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 
 		protected BurningAsh(World worldIn, double xCoordIn, double yCoordIn, double zCoordIn, double xSpeedIn, double ySpeedIn, double zSpeedIn,
 		  int excludeEntityId, float explodesize) {
-			super(worldIn, xCoordIn, yCoordIn, zCoordIn, xSpeedIn, ySpeedIn, zSpeedIn, 0xFF606060, 8f + RAND.nextFloat() * 5f, 100, 0, -1, 0f);
+			super(worldIn, xCoordIn, yCoordIn, zCoordIn, xSpeedIn, ySpeedIn, zSpeedIn, 0xFF606060, 8f + RAND.nextFloat() * 5f, 100, 0, -1, 0f, 0d);
 			this.excludeEntity = worldIn.getEntityByID(excludeEntityId);
 			this.explodeSize = explodesize;
 		}
@@ -970,7 +1008,7 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 
 		protected Spit(World worldIn, double xCoordIn, double yCoordIn, double zCoordIn, 
 		 double xSpeedIn, double ySpeedIn, double zSpeedIn, int color, float scale, int excludedEntityId, int maxAge) {
-			super(worldIn, xCoordIn, yCoordIn, zCoordIn, xSpeedIn, ySpeedIn, zSpeedIn, color, scale, maxAge, 0, -1, -0.05f);
+			super(worldIn, xCoordIn, yCoordIn, zCoordIn, xSpeedIn, ySpeedIn, zSpeedIn, color, scale, maxAge, 0, -1, -0.05f, 0d);
 			this.excludedEntity = worldIn.getEntityByID(excludedEntityId);
 			//this.setSize(this.width * this.particleScale, this.height * this.particleScale);
 		}
@@ -1023,7 +1061,7 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 
 		protected ClaySpit(World worldIn, double xCoordIn, double yCoordIn, double zCoordIn, 
 		 double xSpeedIn, double ySpeedIn, double zSpeedIn, int color, float scale, int entityId) {
-			super(worldIn, xCoordIn, yCoordIn, zCoordIn, xSpeedIn, ySpeedIn, zSpeedIn, color, scale, 50 + RAND.nextInt(20), 0, -1, -0.08f);
+			super(worldIn, xCoordIn, yCoordIn, zCoordIn, xSpeedIn, ySpeedIn, zSpeedIn, color, scale, 50 + RAND.nextInt(20), 0, -1, -0.08f, 0d);
 			this.entity = worldIn.getEntityByID(entityId);
 			//this.setSize(this.width * this.particleScale, this.height * this.particleScale);
 		}
@@ -1642,7 +1680,7 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 	public static class Sand extends Smoke {
 		protected Sand(World worldIn, double xCoordIn, double yCoordIn, double zCoordIn, 
 		 double motionX, double motionY, double motionZ, int color, float scale, int maxAge, double floatSpeed) {
-			super(worldIn, xCoordIn, yCoordIn, zCoordIn, motionX, motionY, motionZ, color, scale, maxAge, 0, -1, floatSpeed);
+			super(worldIn, xCoordIn, yCoordIn, zCoordIn, motionX, motionY, motionZ, color, scale, maxAge, 0, -1, floatSpeed, 0d);
 			this.particleTextureIndexY = 0;
 			this.particleScale = scale;
 			this.motionX = motionX;
@@ -1735,7 +1773,7 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 	}
 
 	public enum Types {
-		SMOKE("smoke_colored", 54678400, 6), 
+		SMOKE("smoke_colored", 54678400, 7), 
 		SUSPENDED("suspended_colored", 54678401, 3), 
 		FALLING_DUST("falling_dust", 54678402, 3),
 		FLAME("flame_colored", 54678403, 2),

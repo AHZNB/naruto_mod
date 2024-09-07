@@ -704,7 +704,8 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public void onUpdate() {
-			if (this.returnToOwner) {
+			if (this.returnToOwner && this.ticksExisted % 4 == 1) {
+				this.setNoGravity(true);
 				EntityCustom owner = this.getOwner();
 				if (owner != null) {
 					this.inGround = false;
@@ -774,6 +775,11 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 		@Override
 		public boolean canBeCollidedWith() {
 			return true;
+		}
+
+		@Override
+		public void onKillCommand() {
+			this.attackEntityFrom(DamageSource.OUT_OF_WORLD, Float.MAX_VALUE);
 		}
 
 		@Override
