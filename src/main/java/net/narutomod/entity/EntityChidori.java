@@ -351,13 +351,12 @@ public class EntityChidori extends ElementsNarutomodMod.ModElement {
 					this.setDead();
 				}
 			}
-			if (this.rand.nextFloat() <= 0.3f) {
-				this.playSound((SoundEvent)SoundEvent.REGISTRY.getObject(new ResourceLocation(("narutomod:electricity"))),
-				  1f, this.rand.nextFloat() * 2.0f + 1.5f);
-			}
 			if (this.summoner != null && this.ticksExisted <= this.duration) {
 				if (this.ryu) {
-					for (Entity entity1 : this.world.getEntitiesWithinAABBExcludingEntity(this.summoner, this.summoner.getEntityBoundingBox().grow(4d))) {
+					if (this.rand.nextFloat() < 0.5f) {
+						this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:electricity")), 1.2f, this.rand.nextFloat() * 2.0f + 1.5f);
+					}
+					for (Entity entity1 : this.world.getEntitiesWithinAABBExcludingEntity(this.summoner, this.summoner.getEntityBoundingBox().grow(5d))) {
 						if (!(entity1 instanceof EntityLightningArc.Base) && this.rand.nextInt(3) == 0) {
 							EntityLightningArc.Base entity2 = new EntityLightningArc.Base(this.world,
 							 this.summoner.getPositionVector().addVector(0d, 1d, 0d),
@@ -367,10 +366,17 @@ public class EntityChidori extends ElementsNarutomodMod.ModElement {
 						}
 					}
 					EntityLightningArc.Base entity = new EntityLightningArc.Base(this.world,
-					 this.summoner.getPositionVector().addVector(0d, 1d, 0d), this.rand.nextDouble() * 3d + 1d, 0d, 0d, 0d);
+					 this.summoner.getPositionVector().addVector(0d, 1d, 0d), this.rand.nextDouble() * 4d + 1d, 0d, 0d, 0d);
 					entity.setDamage(ItemJutsu.causeJutsuDamage(this, this.summoner), 10f * this.damageMultiplier(), this.summoner);
 					this.world.spawnEntity(entity);
 				} else {
+					if (this.ticksExisted % 8 == 1) {
+						this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:lightning_shoot")),
+						 1.0f - (float)this.ticksExisted * 0.02f, 1.2f - (float)this.ticksExisted * 0.025f);
+					}
+					if (this.rand.nextFloat() <= 0.3f) {
+						this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:electricity")), 0.8f, this.rand.nextFloat() * 2.0f + 1.5f);
+					}
 					Vec3d vec0 = this.summoner.getPositionEyes(1f);
 					Vec3d vec1 = vec0.add(this.summoner.getLookVec().scale(6d));
 					vec0 = this.handPos != null ? this.handPos : vec0.subtract(0d, 0.5d, 0d);

@@ -106,7 +106,6 @@ public class ItemFuton extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static class ChakraFlow extends EntityChakraFlow.Base {
-		private int strengthModifier = 2;
 		private boolean holdingWeapon;
 
 		public ChakraFlow(World world) {
@@ -122,16 +121,16 @@ public class ItemFuton extends ElementsNarutomodMod.ModElement {
 					if (user instanceof EntityPlayer) {
 						f *= PlayerTracker.getNinjaLevel((EntityPlayer)user) / 30d;
 					}
-					this.strengthModifier = (int)f;
+					this.damageModifier = f * 3;
 				}
 			}
 		}
 
 		@Override
 		protected void addEffects() {
-			if (!this.world.isRemote && this.ticksExisted % 10 == 0) {
-				EntityLivingBase user = this.getUser();
-				user.addPotionEffect(new PotionEffect(MobEffects.STRENGTH, 12, this.strengthModifier + this.ogStrength, false, false));
+			super.addEffects();
+			EntityLivingBase user = this.getUser();
+			if (user != null && this.ticksExisted % 10 == 0) {
 				user.addPotionEffect(new PotionEffect(PotionReach.potion, 12, 0, false, false));
 			}
 		}

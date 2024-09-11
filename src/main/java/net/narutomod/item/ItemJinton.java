@@ -49,6 +49,7 @@ import net.minecraft.network.datasync.DataSerializers;
 
 import net.narutomod.creativetab.TabModTab;
 import net.narutomod.ElementsNarutomodMod;
+import net.narutomod.NarutomodModVariables;
 import net.narutomod.Particles;
 import net.narutomod.Chakra;
 import net.narutomod.PlayerTracker;
@@ -58,6 +59,7 @@ import net.narutomod.entity.EntityScalableProjectile;
 import net.narutomod.procedure.ProcedureAirPunch;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.procedure.ProcedureAoeCommand;
+import net.narutomod.procedure.ProcedureSync;
 
 import java.util.List;
 import com.google.common.collect.Lists;
@@ -192,6 +194,9 @@ public class ItemJinton extends ElementsNarutomodMod.ModElement {
 		public void onUpdate() {
 			super.onUpdate();
 			if (this.shootingEntity != null) {
+				if (this.ticksAlive == 1) {
+					ProcedureSync.EntityNBTTag.setAndSync(this.shootingEntity, NarutomodModVariables.forceBowPose, true);
+				}
 				if (this.ticksAlive < this.wait) {
 					Vec3d vec3d = this.shootingEntity.getLookVec();
 					this.shoot(vec3d.x, vec3d.y, vec3d.z);
@@ -204,8 +209,17 @@ public class ItemJinton extends ElementsNarutomodMod.ModElement {
 					this.beam.execute2(this.shootingEntity, (double)this.getBeamLength(), (double)this.getScale() / 2);
 				}
 			}
-			if (this.ticksAlive > this.wait + 60)
-				this.world.removeEntity(this);
+			if (!this.world.isRemote && this.ticksAlive > this.wait + 60) {
+				this.setDead();
+			}
+		}
+
+		@Override
+		public void setDead() {
+			super.setDead();
+			if (this.shootingEntity != null) {
+				ProcedureSync.EntityNBTTag.removeAndSync(this.shootingEntity, NarutomodModVariables.forceBowPose);
+			}
 		}
 
 		public class AirPunch extends ProcedureAirPunch {
@@ -271,18 +285,20 @@ public class ItemJinton extends ElementsNarutomodMod.ModElement {
 		private final int wait = 60;
 		private final int growTime = 30;
 		private final int idleTime = 40;
-		private final int shrinkTime = 20;
+		private final int shrinkTime = 40;
 		private float fullScale = 1f;
 		
 		public EntityCube(World a) {
 			super(a);
 			this.setOGSize(0.5F, 0.5F);
+			this.setEntityScale(0.01F);
 			this.isImmuneToFire = true;
 		}
 
 		public EntityCube(EntityLivingBase shooter, float scale) {
 			super(shooter);
 			this.setOGSize(0.5F, 0.5F);
+			this.setEntityScale(0.01F);
 			this.fullScale = scale;
 			this.setWaitPosition(shooter);
 			this.isImmuneToFire = true;
@@ -290,8 +306,8 @@ public class ItemJinton extends ElementsNarutomodMod.ModElement {
 
 		private void setWaitPosition(EntityLivingBase shooter) {
 			Vec3d vec3d = shooter.getLookVec().scale(0.5);
-			this.setPosition(shooter.posX + vec3d.x, shooter.posY + shooter.getEyeHeight() - 0.6d + vec3d.y, shooter.posZ + vec3d.z);
-			this.setEntityScale(0.5f);
+			this.setPosition(shooter.posX + vec3d.x, shooter.posY + shooter.getEyeHeight() - 0.5d + vec3d.y, shooter.posZ + vec3d.z);
+			this.setEntityScale(Math.min((float)this.ticksAlive / this.wait, 0.5f));
 		}
 
 		public void shoot(RayTraceResult result) {
@@ -322,7 +338,7 @@ public class ItemJinton extends ElementsNarutomodMod.ModElement {
 		public void setEntityScale(float scale) {
 			double d = (this.height * scale / this.getEntityScale() - this.height) / 2;
 			super.setEntityScale(scale);
-			this.setPositionAndUpdate(this.posX, this.posY - d, this.posZ);
+			this.setPosition(this.posX, this.posY - d, this.posZ);
 		}
 
 		@Override
@@ -330,10 +346,14 @@ public class ItemJinton extends ElementsNarutomodMod.ModElement {
 			super.onUpdate();
 			int idle = this.wait + this.growTime + this.idleTime;
 			if (this.shootingEntity != null) {
-				if (this.ticksAlive < this.wait) {
+				if (this.ticksAlive == 1) {
+					ProcedureSync.EntityNBTTag.setAndSync(this.shootingEntity, NarutomodModVariables.forceBowPose, true);
+				}
+				if (this.ticksAlive <= this.wait) {
 					this.setWaitPosition(this.shootingEntity);
-				} else if (this.ticksAlive == this.wait) {
-					this.shoot(ProcedureUtils.objectEntityLookingAt(this.shootingEntity, 50d, true));
+					if (this.ticksAlive == this.wait) {
+						this.shoot(ProcedureUtils.objectEntityLookingAt(this.shootingEntity, 50d, true));
+					}
 				} else {
 					ProcedureAoeCommand.set(this, 0d, this.width/2).motion(0d, 0d, 0d);
 					if (this.ticksAlive <= this.wait + this.growTime) {
@@ -348,12 +368,15 @@ public class ItemJinton extends ElementsNarutomodMod.ModElement {
 								particles.spawnParticles(Particles.Types.SMOKE, this.posX, this.posY + 0.5d * this.height, this.posZ,
 								 1, 0d, 0d, 0d, (this.rand.nextFloat()-0.5f) * 0.2f * this.fullScale,
 								 (this.rand.nextFloat()-0.5f) * 0.2f * this.fullScale, (this.rand.nextFloat()-0.5f) * 0.2f * this.fullScale,
-								 0x80FFFFFF, (int)(this.fullScale * 4f), idle - this.ticksAlive - 1, 0xF0, -1, 2, -10);
+								 0xB0FFFFFF, (int)(this.fullScale * 4f), idle - this.ticksAlive - 1, 0xF0, -1, 2, -10);
 							}
 							particles.send();
 						}
 						this.destroyBlocksAndEntitiesInAABB(this.getEntityBoundingBox());
 					} else {
+						if (this.shootingEntity.getEntityData().getBoolean(NarutomodModVariables.forceBowPose)) {
+							ProcedureSync.EntityNBTTag.removeAndSync(this.shootingEntity, NarutomodModVariables.forceBowPose);
+						}
 						Particles.spawnParticle(this.world, Particles.Types.FALLING_DUST, this.posX, this.posY + 0.25d * this.fullScale, this.posZ,
 						  (int)(this.fullScale * 6), this.fullScale * 0.1F, this.fullScale * 0.1F, this.fullScale * 0.1F, 0D, 0D, 0D, 0xC0A0A0A0);
 					}
@@ -362,6 +385,14 @@ public class ItemJinton extends ElementsNarutomodMod.ModElement {
 			if (!this.world.isRemote
 			 && (this.ticksAlive > idle + this.shrinkTime || this.shootingEntity == null || !this.shootingEntity.isEntityAlive())) {
 				this.setDead();
+			}
+		}
+
+		@Override
+		public void setDead() {
+			super.setDead();
+			if (this.shootingEntity != null) {
+				ProcedureSync.EntityNBTTag.removeAndSync(this.shootingEntity, NarutomodModVariables.forceBowPose);
 			}
 		}
 
@@ -491,10 +522,17 @@ public class ItemJinton extends ElementsNarutomodMod.ModElement {
 				GlStateManager.scale(scale, scale, scale);
 				GlStateManager.enableBlend();
 				GlStateManager.disableCull();
-				GlStateManager.depthMask(age <= (float)entity.wait);
 				GlStateManager.disableLighting();
 				OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240.0F, 240.0F);
-				GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+				if (age <= (float)entity.wait) {
+					GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE);
+				} else {
+					GlStateManager.depthMask(false);
+					GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+					//GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA,
+					// age > (float)entity.wait + entity.growTime && age <= (float)entity.wait + entity.growTime + entity.idleTime
+					// ? GlStateManager.DestFactor.ONE : GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+				}
 				this.model.render(entity, 0.0F, 0.0F, age, 0.0F, 0.0F, 0.0625F);
 				GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 				GlStateManager.enableLighting();
@@ -523,15 +561,15 @@ public class ItemJinton extends ElementsNarutomodMod.ModElement {
 				this.textureWidth = 32;
 				this.textureHeight = 32;
 				int len = (int)(16f * length);
-				this.bone = new ModelRenderer(this);
-				this.bone.setRotationPoint(0.0F, 0.0F, 0.0F);
-				this.bone.cubeList.add(new ModelBox(this.bone, 0, 0, -0.5F, -16.0F, -0.5F, 1, len, 1, 0.0F, false));
-				this.bone2 = new ModelRenderer(this);
-				this.bone2.setRotationPoint(0.0F, 0.0F, 0.0F);
-				this.bone2.cubeList.add(new ModelBox(this.bone2, 0, 0, -1.0F, -16.0F, -1.0F, 2, len, 2, 0.0F, false));
-				this.bone2.cubeList.add(new ModelBox(this.bone2, 0, 0, -1.5F, -16.0F, -1.5F, 3, len, 3, 0.0F, false));
-				this.bone2.cubeList.add(new ModelBox(this.bone2, 0, 0, -2.0F, -16.0F, -2.0F, 4, len, 4, 0.0F, false));
-				this.bone2.cubeList.add(new ModelBox(this.bone2, 0, 0, -4.0F, -16.0F, -4.0F, 8, len, 8, 0.0F, false));
+				bone = new ModelRenderer(this);
+				bone.setRotationPoint(0.0F, 0.0F, 0.0F);
+				bone.cubeList.add(new ModelBox(bone, 0, 0, -0.5F, -15.5F, -0.5F, 1, len - 1, 1, 0.0F, false));
+				bone2 = new ModelRenderer(this);
+				bone2.setRotationPoint(0.0F, 0.0F, 0.0F);
+				bone2.cubeList.add(new ModelBox(bone2, 0, 0, -0.5F, -15.5F, -0.5F, 1, len - 1, 1, 0.2F, false));
+				bone2.cubeList.add(new ModelBox(bone2, 0, 0, -0.5F, -15.5F, -0.5F, 1, len - 1, 1, 0.4F, false));
+				bone2.cubeList.add(new ModelBox(bone2, 0, 0, -0.5F, -15.5F, -0.5F, 1, len - 1, 1, 0.6F, false));
+				bone2.cubeList.add(new ModelBox(bone2, 0, 0, -4.0F, -16.0F, -4.0F, 8, len, 8, 0.0F, false));
 			}
 	
 			@Override

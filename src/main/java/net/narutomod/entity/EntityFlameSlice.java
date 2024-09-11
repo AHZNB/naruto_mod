@@ -54,7 +54,6 @@ public class EntityFlameSlice extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static class EC extends EntityChakraFlow.Base {
-		private int strengthModifier = 2;
 		private boolean holdingWeapon;
 		private int ticksSinceLastSwing;
 
@@ -67,16 +66,8 @@ public class EntityFlameSlice extends ElementsNarutomodMod.ModElement {
 			if (itemstack.getItem() == ItemKaton.block) {
 				float f = ((ItemKaton.RangedItem)itemstack.getItem()).getCurrentJutsuXpModifier(itemstack, user);
 				if (f > 0.0f) {
-					this.strengthModifier = (int)(1.0f / f);
+					this.damageModifier = (1.0f / f) * 3;
 				}
-			}
-		}
-
-		@Override
-		protected void addEffects() {
-			if (!this.world.isRemote && this.ticksExisted % 10 == 0) {
-				EntityLivingBase user = this.getUser();
-				user.addPotionEffect(new PotionEffect(MobEffects.STRENGTH, 12, this.strengthModifier + this.ogStrength, false, false));
 			}
 		}
 

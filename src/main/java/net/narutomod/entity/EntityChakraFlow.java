@@ -11,6 +11,8 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraft.world.World;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.entity.ai.attributes.IAttributeInstance;
+import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.EntityPlayer;
@@ -38,6 +40,7 @@ import net.narutomod.ElementsNarutomodMod;
 
 import io.netty.buffer.ByteBuf;
 import java.io.IOException;
+import java.util.UUID;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityChakraFlow extends ElementsNarutomodMod.ModElement {
@@ -55,8 +58,9 @@ public class EntityChakraFlow extends ElementsNarutomodMod.ModElement {
 
 	public static abstract class Base extends Entity {
 		private static final DataParameter<Integer> USER_ID = EntityDataManager.<Integer>createKey(Base.class, DataSerializers.VARINT);
+		protected static final UUID DAMAGE_MODIFIER = UUID.fromString("ef834eb3-67d2-48cf-8d75-1530ee1ed81f");
 		private EntityLivingBase user;
-		protected int ogStrength;
+		protected double damageModifier = 6d;
 		private ItemStack lastHeldWeapon;
 
 		public Base(World world) {
@@ -96,7 +100,31 @@ public class EntityChakraFlow extends ElementsNarutomodMod.ModElement {
 			return false;
 		}
 
-		protected abstract void addEffects();
+		protected void addEffects() {
+			EntityLivingBase user = this.getUser();
+			if (user != null && this.ticksExisted % 10 == 0) {
+				IAttributeInstance aInstance = user.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE);
+				if (aInstance != null) {
+					AttributeModifier attributemodifier = aInstance.getModifier(DAMAGE_MODIFIER);
+					if (attributemodifier == null || attributemodifier.getAmount() != this.damageModifier) {
+						if (attributemodifier != null) {
+							aInstance.removeModifier(attributemodifier);
+						}
+						aInstance.applyModifier(new AttributeModifier(DAMAGE_MODIFIER, "chakraflow.damage", this.damageModifier, 0));
+					}
+				}
+			}
+		}
+
+		protected void removeEffects() {
+			EntityLivingBase user = this.getUser();
+			if (user != null) {
+				IAttributeInstance aInstance = user.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE);
+				if (aInstance != null) {
+					aInstance.removeModifier(DAMAGE_MODIFIER);
+				}
+			}
+		}
 
 		protected void addEnchantment(ItemStack stack) {
 			Message.send(this.user, true, stack);
@@ -119,12 +147,6 @@ public class EntityChakraFlow extends ElementsNarutomodMod.ModElement {
 			if (this.user != null) {
 				this.setPosition(this.user.posX, this.user.posY, this.user.posZ);
 				if (isHoldingWeapon(this.user)) {
-					if (this.ogStrength == 0) {
-						++this.ogStrength;
-						if (this.user.isPotionActive(MobEffects.STRENGTH)) {
-							this.ogStrength += this.user.getActivePotionEffect(MobEffects.STRENGTH).getAmplifier();
-						}
-					}
 					this.addEffects();
 					ItemStack stack = this.user.getHeldItemMainhand();
 					if (this.lastHeldWeapon == null || !ItemStack.areItemStacksEqual(stack, this.lastHeldWeapon)) {
@@ -135,7 +157,7 @@ public class EntityChakraFlow extends ElementsNarutomodMod.ModElement {
 						this.lastHeldWeapon = stack.copy();
 					}
 				} else {
-					this.ogStrength = 0;
+					this.removeEffects();
 					if (this.lastHeldWeapon != null) {
 						this.removeEnchantment(this.lastHeldWeapon);
 						this.lastHeldWeapon = null;
@@ -145,6 +167,12 @@ public class EntityChakraFlow extends ElementsNarutomodMod.ModElement {
 			if (!this.world.isRemote && (this.user == null || !this.user.isEntityAlive())) {
 				this.setDead();
 			}
+		}
+
+		@Override
+		public void setDead() {
+			super.setDead();
+			this.removeEffects();
 		}
 
 		@Override

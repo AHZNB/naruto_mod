@@ -1,7 +1,6 @@
 
 package net.narutomod.item;
 
-import net.narutomod.procedure.ProcedureFoldingFanRangedItemUsed;
 import net.narutomod.creativetab.TabModTab;
 import net.narutomod.ElementsNarutomodMod;
 
@@ -26,17 +25,21 @@ import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.client.renderer.block.model.ModelBakery;
+import net.minecraft.client.renderer.ItemMeshDefinition;
+import net.minecraft.nbt.NBTTagCompound;
 
 import java.util.Map;
 import java.util.HashMap;
-import com.google.common.collect.Multimap;
 import javax.annotation.Nullable;
+import com.google.common.collect.Multimap;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class ItemGunbai extends ElementsNarutomodMod.ModElement {
 	@GameRegistry.ObjectHolder("narutomod:gunbai")
 	public static final Item block = null;
 	public static final int ENTITYID = 389;
+	private static final String USE_BLOCKING_MODEL = "UseBlockingModel";
 
 	public ItemGunbai(ElementsNarutomodMod instance) {
 		super(instance, 769);
@@ -50,13 +53,25 @@ public class ItemGunbai extends ElementsNarutomodMod.ModElement {
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void registerModels(ModelRegistryEvent event) {
-		ModelLoader.setCustomModelResourceLocation(block, 0, new ModelResourceLocation("narutomod:gunbai", "inventory"));
+   	    ModelBakery.registerItemVariants(block,
+   	     new ModelResourceLocation("narutomod:gunbai", "inventory"),
+   	     new ModelResourceLocation("narutomod:gunbai_blocking", "inventory"));
+
+	    ModelLoader.setCustomMeshDefinition(block, new ItemMeshDefinition() {
+	        @Override
+	        public ModelResourceLocation getModelLocation(ItemStack stack) {
+	            if (stack.hasTagCompound() && stack.getTagCompound().getBoolean(USE_BLOCKING_MODEL)) {
+	                return new ModelResourceLocation("narutomod:gunbai_blocking", "inventory");
+	            }
+	            return new ModelResourceLocation("narutomod:gunbai", "inventory");
+	        }
+	    });
 	}
 
 	public static class RangedItem extends Item implements ItemOnBody.Interface {
 		public RangedItem() {
 			super();
-			setMaxDamage(2000);
+			setMaxDamage(2500);
 			setFull3D();
 			setUnlocalizedName("gunbai");
 			setRegistryName("gunbai");
@@ -76,15 +91,20 @@ public class ItemGunbai extends ElementsNarutomodMod.ModElement {
 			return multimap;
 		}
 
-		/*@Override
-		public void onPlayerStoppedUsing(ItemStack itemstack, World world, EntityLivingBase entityLivingBase, int timeLeft) {
-			if (!world.isRemote) {
-				Map<String, Object> $_dependencies = new HashMap<>();
-				$_dependencies.put("entity", entityLivingBase);
-				$_dependencies.put("itemstack", itemstack);
-				ProcedureFoldingFanRangedItemUsed.executeProcedure($_dependencies);
+		@Override
+		public void onUpdate(ItemStack stack, World worldIn, Entity entityIn, int itemSlot, boolean isSelected) {
+			if (!stack.hasTagCompound()) {
+				stack.setTagCompound(new NBTTagCompound());
 			}
-		}*/
+			if (entityIn instanceof EntityLivingBase && ((EntityLivingBase)entityIn).isHandActive()
+			 && ((EntityLivingBase)entityIn).getActiveItemStack().getItem() == block) {
+				if (worldIn.isRemote && !stack.getTagCompound().getBoolean(USE_BLOCKING_MODEL)) {
+					stack.getTagCompound().setBoolean(USE_BLOCKING_MODEL, true);
+				}
+			} else if (stack.getTagCompound().hasKey(USE_BLOCKING_MODEL)) {
+				stack.getTagCompound().removeTag(USE_BLOCKING_MODEL);
+			}
+		}
 
 		@Override
 		public boolean canDisableShield(ItemStack stack, ItemStack shield, EntityLivingBase entity, EntityLivingBase attacker) {

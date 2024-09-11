@@ -17,7 +17,7 @@ import net.minecraft.client.model.ModelRenderer;
 @ElementsNarutomodMod.ModElement.Tag
 public class ItemRobe extends ElementsNarutomodMod.ModElement {
 	protected static final ItemArmor.ArmorMaterial ENUMA = EnumHelper.addArmorMaterial("NINJA_ROBE", "narutomod:sasuke_",
-	 100, new int[]{1, 2, 3, 1}, 9, SoundEvents.ITEM_ARMOR_EQUIP_LEATHER, 0f);
+	 200, new int[]{1, 2, 3, 1}, 9, SoundEvents.ITEM_ARMOR_EQUIP_LEATHER, 0f);
 
 	public ItemRobe(ElementsNarutomodMod instance) {
 		super(instance, 865);

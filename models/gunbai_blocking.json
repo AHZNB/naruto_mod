@@ -7435,12 +7435,12 @@
 	],
 	"display": {
 		"thirdperson_righthand": {
-			"rotation": [80, 0, 90],
-			"translation": [0, 6, 1]
+			"rotation": [120, 0, 30],
+			"translation": [0.5, 3, 3.75]
 		},
 		"thirdperson_lefthand": {
-			"rotation": [80, 0, 90],
-			"translation": [0, 6, -1]
+			"rotation": [120, 0, 30],
+			"translation": [-0.5, 3, 3.75]
 		},
 		"firstperson_righthand": {
 			"rotation": [80, 0, 90],

@@ -160,9 +160,9 @@ public class ItemYooton extends ElementsNarutomodMod.ModElement {
 				return;
 			}
 			if (!this.world.isRemote) {
-				if (this.shootingEntity != null) {
-					this.shootingEntity.getEntityData().setDouble(NarutomodModVariables.InvulnerableTime, 40d);
-				}
+				//if (this.shootingEntity != null) {
+				//	this.shootingEntity.getEntityData().setDouble(NarutomodModVariables.InvulnerableTime, 4d);
+				//}
 				if (result.entityHit != null) {
 					if (result.entityHit.equals(this.shootingEntity) || result.entityHit instanceof EntityMagmaBall)
 						return;

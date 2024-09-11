@@ -301,6 +301,13 @@ public class ItemScytheHidan extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
+		public void shoot(double x, double y, double z, float velocity, float inaccuracy) {
+			super.shoot(x, y, z, velocity, inaccuracy);
+			this.playSound(net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:chainsound")),
+			 1f, this.rand.nextFloat() * 0.3f + 0.8f);
+		}
+
+		@Override
 		public void onUpdate() {
 			super.onUpdate();
 			this.doBlockCollisions();

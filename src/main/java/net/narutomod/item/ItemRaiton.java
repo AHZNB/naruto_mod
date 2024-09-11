@@ -99,6 +99,9 @@ public class ItemRaiton extends ElementsNarutomodMod.ModElement {
 				ItemJutsu.JutsuEnum jutsu = this.getCurrentJutsu(stack);
 				if (jutsu == KIRIN) {
 					EntityKirin.chargingEffects(player, this.getPower(stack, player, timeLeft));
+					if ((this.getMaxUseDuration() - timeLeft) % 100 == 99) {
+						EntityKirin.startWeatherThunder(player, 200);
+					}
 				} else if (jutsu == BLACKPANTHER) {
 					EntityLightningArc.spawnAsParticle(player.world, player.posX + this.itemRand.nextGaussian() * 0.3d, 
 					  player.posY + this.itemRand.nextDouble() * 1.3d, player.posZ + this.itemRand.nextGaussian() * 0.3d,
@@ -114,7 +117,7 @@ public class ItemRaiton extends ElementsNarutomodMod.ModElement {
 		public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer entity, EnumHand hand) {
 			ActionResult<ItemStack> result = super.onItemRightClick(world, entity, hand);
 			if (result.getType() == EnumActionResult.SUCCESS && this.getCurrentJutsu(entity.getHeldItem(hand)) == KIRIN && !world.isRemote) {
-				EntityKirin.startWeatherThunder(entity);
+				EntityKirin.startWeatherThunder(entity, 200);
 			}
 			return result;
 		}

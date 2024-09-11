@@ -12,6 +12,7 @@ import net.minecraft.init.MobEffects;
 import net.minecraft.world.World;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.MathHelper;
@@ -79,6 +80,7 @@ public class EntityKirin extends ElementsNarutomodMod.ModElement {
 			this.setLocationAndAngles(shooter.posX, shooter.posY + 100d, shooter.posZ, shooter.rotationYaw, 80f);
 			this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:dragon_roar")),
 			 100f, this.rand.nextFloat() * 0.4f + 0.8f);
+//this.shootVec = new Vec3d(0d, -1d, 0d);
 		}
 
 		private void setWaitPosition() {
@@ -151,11 +153,41 @@ public class EntityKirin extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void renderParticles() {
 			if (!this.world.isRemote) {
-				for (int i = 0; i < 8; i++) {
-					Vec3d vec = this.getPositionVector().addVector((this.rand.nextDouble()-0.5d) * this.width,
-					 this.rand.nextDouble() * this.height - 2d, (this.rand.nextDouble()-0.5d) * this.width);
-					EntityLightningArc.Base entity = new EntityLightningArc.Base(this.world, vec, this.rand.nextDouble() * 15d + 15d,
-					 this.motionX, this.motionY, this.motionZ, this.width * 0.5f);
+				AxisAlignedBB bb = this.getEntityBoundingBox();
+				for (int i = 0; i < 1 + this.rand.nextInt(4); i++) {
+					double x1, y1, z1, x2, y2, z2;
+					switch (this.rand.nextInt(4)) {
+						case 0:
+							x1 = bb.minX;
+							x2 = bb.minX - this.rand.nextDouble() * 25d;
+							z1 = bb.minZ + this.rand.nextDouble() * this.width;
+							z2 = z1 + (this.rand.nextDouble()-0.5d) * 25d;
+							break;
+						case 1:
+							x1 = bb.maxX;
+							x2 = bb.maxX + this.rand.nextDouble() * 25d;
+							z1 = bb.minZ + this.rand.nextDouble() * this.width;
+							z2 = z1 + (this.rand.nextDouble()-0.5d) * 25d;
+							break;
+						case 2:
+							x1 = bb.minX + this.rand.nextDouble() * this.width;
+							x2 = x1 + (this.rand.nextDouble()-0.5d) * 25d;
+							z1 = bb.minZ;
+							z2 = bb.minZ - this.rand.nextDouble() * 25d;
+							break;
+						default:
+							x1 = bb.minX + this.rand.nextDouble() * this.width;
+							x2 = x1 + (this.rand.nextDouble()-0.5d) * 25d;
+							z1 = bb.maxZ;
+							z2 = bb.maxZ + this.rand.nextDouble() * 25d;
+							break;
+					}
+					y1 = bb.minY + this.rand.nextDouble() * this.height;
+					y2 = y1 + this.rand.nextDouble() * 12.5d;
+					EntityLightningArc.Base entity = new EntityLightningArc.Base(this.world, new Vec3d(x1, y1, z1), new Vec3d(x2, y2, z2), 0xc00000ff, 1, 0f, 0.3f).setStatic();
+					entity.motionX = this.motionX;
+					entity.motionY = this.motionY;
+					entity.motionZ = this.motionZ;
 					this.world.spawnEntity(entity);
 				}
 			}
@@ -168,8 +200,9 @@ public class EntityKirin extends ElementsNarutomodMod.ModElement {
 			if (!this.world.isRemote) {
 				this.playSound(SoundEvents.ENTITY_LIGHTNING_IMPACT, 5.0F, 0.5F + this.rand.nextFloat() * 0.2F);
 				Vec3d vec = result.entityHit != null ? result.entityHit.getPositionVector() : result.hitVec;
-				EntityLightningArc.Base entity = new EntityLightningArc.Base(this.world, vec.subtract(0d, 5d, 0d),
-				 vec.addVector(0d, 150d, 0d), 0xc00000ff, 40, 0f, 6f);
+				EntityLightningArc.Base entity = new EntityLightningArc.Base(this.world, vec, vec.addVector(0d, 150d, 0d), 0xc00000ff, 40, 0f, 6f);
+				this.world.spawnEntity(entity);
+				entity = new EntityLightningArc.Base(this.world, vec.subtract(0d, 4d, 0d), vec.addVector(0d, 150d, 0d), 0xc00000ff, 40, 0f, 12f);
 				this.world.spawnEntity(entity);
 				float size = this.getEntityScale();
 				boolean flag = net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.world, this.shootingEntity);
@@ -236,10 +269,10 @@ public class EntityKirin extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-	public static void startWeatherThunder(Entity entity) {
+	public static void startWeatherThunder(Entity entity, int ticks) {
 		entity.world.getWorldInfo().setCleanWeatherTime(0);
-		entity.world.getWorldInfo().setRainTime(600);
-		entity.world.getWorldInfo().setThunderTime(600);
+		entity.world.getWorldInfo().setRainTime(ticks);
+		entity.world.getWorldInfo().setThunderTime(ticks);
 		entity.world.getWorldInfo().setRaining(true);
 		entity.world.getWorldInfo().setThundering(true);
 		entity.world.playSound(null, entity.posX, entity.posY + 100d, entity.posZ,

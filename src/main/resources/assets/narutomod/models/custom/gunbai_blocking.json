@@ -43811,26 +43811,26 @@
   "display": {
     "thirdperson_righthand": {
       "rotation": [
-        80,
+        120,
         0,
-        90
+        30
       ],
       "translation": [
-        0,
-        6,
-        1
+        0.5,
+        3,
+        3.75
       ]
     },
     "thirdperson_lefthand": {
       "rotation": [
-        80,
+        120,
         0,
-        90
+        30
       ],
       "translation": [
-        0,
-        6,
-        -1
+        -0.5,
+        3,
+        3.75
       ]
     },
     "firstperson_righthand": {

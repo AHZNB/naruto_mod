@@ -2,6 +2,7 @@
 package net.narutomod.item;
 
 import net.narutomod.procedure.ProcedureFoldingFanRangedItemUsed;
+import net.narutomod.procedure.ProcedureSync;
 import net.narutomod.creativetab.TabModTab;
 import net.narutomod.ElementsNarutomodMod;
 
@@ -120,6 +121,9 @@ public class ItemFoldingFan extends ElementsNarutomodMod.ModElement {
 			if (isSelected) {
 				if (worldIn.isRemote && !stack.getTagCompound().getBoolean(CUSTOM_MODEL_KEY)) {
 					stack.getTagCompound().setBoolean(CUSTOM_MODEL_KEY, true);
+					ProcedureSync.SoundEffectMessage.sendToServer(entityIn.posX, entityIn.posY, entityIn.posZ,
+					 net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:movement")),
+					 net.minecraft.util.SoundCategory.NEUTRAL, 0.6f, worldIn.rand.nextFloat() * 0.3f + 0.8f);
 				}
 			} else if (stack.getTagCompound().hasKey(CUSTOM_MODEL_KEY)) {
 				stack.getTagCompound().removeTag(CUSTOM_MODEL_KEY);
@@ -138,12 +142,6 @@ public class ItemFoldingFan extends ElementsNarutomodMod.ModElement {
 				entityarrow.setDamage(5);
 				entityarrow.setKnockbackStrength(5);
 				itemstack.damageItem(1, entity);
-				int x = (int) entity.posX;
-				int y = (int) entity.posY;
-				int z = (int) entity.posZ;
-				world.playSound((EntityPlayer) null, (double) x, (double) y, (double) z,
-						(net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation((""))),
-						SoundCategory.NEUTRAL, 1, 1f / (itemRand.nextFloat() * 0.5f + 1f) + (power / 2));
 				entityarrow.pickupStatus = EntityArrow.PickupStatus.DISALLOWED;
 				if (!world.isRemote)
 					world.spawnEntity(entityarrow);

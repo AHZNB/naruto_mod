@@ -507,6 +507,7 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 		if (!stack.hasTagCompound()) {
 			stack.setTagCompound(new NBTTagCompound());
 		}
+//System.out.println(">>>>>> before nbt:"+stack.getTagCompound());
 		if (!stack.getTagCompound().hasKey("ench", 9)) {
 			stack.getTagCompound().setTag("ench", new NBTTagList());
 		}
@@ -523,6 +524,7 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 			compound.setBoolean("FAKE", true);
 			nbttaglist.appendTag(compound);
 		}
+//System.out.println("       after nbt:"+stack.getTagCompound());
 	}
 
 	public static void removeFakeEnchantmentEffect(ItemStack stack) {
@@ -531,6 +533,7 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 		}
 		if (stack.hasTagCompound() && stack.getTagCompound().hasKey("ench", 9)) {
 			NBTTagList nbttaglist = stack.getTagCompound().getTagList("ench", 10);
+//System.out.println("====== before_nbt:"+stack.getTagCompound());
 			Iterator<NBTBase> iter = nbttaglist.iterator();
 			while (iter.hasNext()) {
 				NBTTagCompound compound = (NBTTagCompound)iter.next();
@@ -541,6 +544,7 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 			if (nbttaglist.hasNoTags()) {
 				stack.getTagCompound().removeTag("ench");
 			}
+//System.out.println("       after_nbt:"+stack.getTagCompound());
 		}
 	}
 

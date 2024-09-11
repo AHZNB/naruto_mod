@@ -228,6 +228,10 @@ public class ItemHiramekareiSword extends ElementsNarutomodMod.ModElement {
 		protected void addEffects() {
 		}
 
+		@Override
+		protected void removeEffects() {
+		}
+
 		private Random getRNG() {
 			return this.rand;
 		}

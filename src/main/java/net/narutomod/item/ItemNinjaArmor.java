@@ -24,7 +24,7 @@ import javax.annotation.Nullable;
 @ElementsNarutomodMod.ModElement.Tag
 public class ItemNinjaArmor extends ElementsNarutomodMod.ModElement {
 	private static final ItemArmor.ArmorMaterial ENUMA = EnumHelper.addArmorMaterial("NINJA_ARMOR", "narutomod:sasuke_",
-	 100, new int[]{2, 5, 6, 2}, 0, SoundEvents.ITEM_ARMOR_EQUIP_LEATHER, 1f);
+	 200, new int[]{2, 5, 6, 2}, 0, SoundEvents.ITEM_ARMOR_EQUIP_LEATHER, 1f);
 
 	public ItemNinjaArmor(ElementsNarutomodMod instance) {
 		super(instance, 746);
