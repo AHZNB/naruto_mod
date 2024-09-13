@@ -265,6 +265,9 @@ public class EntityHidan extends ElementsNarutomodMod.ModElement {
 				} else if (this.jashinTransitionDirection > 0) {
 					this.setJashinTransitionDirection(-1);
 					this.getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(0.0D);
+					if (this.jashinSymbol != null) {
+						this.jashinSymbol.fadeOut();
+					}
 					if (stack.getItem() == ItemSpearRetractable.block) {
 						this.swapWithInventory(EntityEquipmentSlot.MAINHAND, 1);
 					}
@@ -317,6 +320,14 @@ public class EntityHidan extends ElementsNarutomodMod.ModElement {
 						this.scytheOnRetrieval = false;
 					}
 				}
+			}
+		}
+
+		@Override
+		public void setDead() {
+			super.setDead();
+			if (!this.world.isRemote && this.jashinSymbol != null) {
+				this.jashinSymbol.fadeOut();
 			}
 		}
 
@@ -474,6 +485,10 @@ public class EntityHidan extends ElementsNarutomodMod.ModElement {
 	
 		public int getAge() {
 			return ((Integer)this.getDataManager().get(AGE)).intValue();
+		}
+
+		public void fadeOut() {
+			this.setAge(this.maxLife - this.fadeOutTime - 1);
 		}
 
 		@Override

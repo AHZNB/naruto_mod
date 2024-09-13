@@ -60,7 +60,7 @@ public class EntityHaku extends ElementsNarutomodMod.ModElement {
 	public static class EntityCustom extends EntityNinjaMob.Base implements IRangedAttackMob, IMob {
 		private EntityLivingBase leader;
 		private boolean shouldDefendLeader = true;
-		private final int ICE_SPEARS_CD = 80;
+		private final int ICE_SPEARS_CD = 40;
 		private final int DOME_SPEARS_CD = 160;
 		private final int DOME_CD = 500;
 		private final int MAX_DOME_USAGE = DOME_SPEARS_CD + 180;
@@ -91,14 +91,15 @@ public class EntityHaku extends ElementsNarutomodMod.ModElement {
 			this.tasks.addTask(1, new EntityAIAttackMelee(this, 1.5d, true) {
 				@Override
 				public boolean shouldExecute() {
-					return super.shouldExecute() && this.attacker.getRevengeTarget() == null;
+					return super.shouldExecute() && this.attacker.getAttackTarget().getDistance(EntityCustom.this) <= 3d
+					 && this.attacker.getRevengeTarget() == null;
 				}
 				@Override
 				public boolean shouldContinueExecuting() {
 					return super.shouldContinueExecuting() && this.attacker.getAttackTarget().getDistance(EntityCustom.this) <= 3d;
 				}
 			});
-			this.tasks.addTask(2, new EntityNinjaMob.AIAttackRangedTactical(this, 1.25D, ICE_SPEARS_CD, 10.0F));
+			this.tasks.addTask(2, new EntityNinjaMob.AIAttackRangedTactical(this, 1.25D, 20, ICE_SPEARS_CD, 10.0F));
 			this.tasks.addTask(3, new AIFollowLeader(this, 0.5d, 4f));
 			this.targetTasks.addTask(2, new EntityAIHurtByTarget(this, false));
 		}

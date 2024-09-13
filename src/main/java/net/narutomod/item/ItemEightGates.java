@@ -441,7 +441,8 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 						}
 					}
 					if (gateOpened >= 2) {
-						ProcedureUtils.pushEntity(attacker, target, 10, 0.2f * gateOpened + 2f);
+						ProcedureUtils.pushEntity(attacker, target, 10,
+						 0.2f * gateOpened + (!(attacker instanceof EntityPlayer) && !(target instanceof EntityPlayer) ? 1.0f : 2.0f));
 					}
 				}
 			}

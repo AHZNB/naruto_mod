@@ -322,7 +322,7 @@ public class EntityGamarinsho extends ElementsNarutomodMod.ModElement {
 	        	Sphere sphere = new Sphere();
 				sphere.setDrawStyle(GLU.GLU_FILL);
 				sphere.setNormals(GLU.GLU_SMOOTH);
-				sphere.setOrientation(GLU.GLU_OUTSIDE);
+				sphere.setOrientation(GLU.GLU_INSIDE);
 				sphere.setTextureFlag(true);
 				sphere.draw(1.0F, 32, 32);
 				GlStateManager.glEndList();
@@ -388,10 +388,10 @@ public class EntityGamarinsho extends ElementsNarutomodMod.ModElement {
 					GlStateManager.popMatrix();
 					
 		            long ticksElapsed = worldTime - this.startTime;
-		            this.renderToad(mc, event.getPartialTicks(), EnumFacing.NORTH, 12.0D);
-		            this.renderToad(mc, event.getPartialTicks(), EnumFacing.SOUTH, 12.0D);
-		            this.renderToad(mc, event.getPartialTicks(), EnumFacing.EAST, 12.0D);
-		            this.renderToad(mc, event.getPartialTicks(), EnumFacing.WEST, 12.0D);
+		            this.renderToad(mc, event.getPartialTicks(), x, y, z, EnumFacing.NORTH, 12.0D);
+		            this.renderToad(mc, event.getPartialTicks(), x, y, z, EnumFacing.SOUTH, 12.0D);
+		            this.renderToad(mc, event.getPartialTicks(), x, y, z, EnumFacing.EAST, 12.0D);
+		            this.renderToad(mc, event.getPartialTicks(), x, y, z, EnumFacing.WEST, 12.0D);
 		            this.renderCube(mc, x, y - 0.2D, z, (int)ticksElapsed, event.getPartialTicks());
 
 		            if (this.isCaster) {
@@ -403,10 +403,10 @@ public class EntityGamarinsho extends ElementsNarutomodMod.ModElement {
                 }
 	        }
 
-			private void renderToad(Minecraft mc, float partialTicks, EnumFacing facing, double offset) {
-			    double x = this.posX + offset * facing.getDirectionVec().getX() + (double)facing.getDirectionVec().getZ() - mc.getRenderManager().viewerPosX;
-			    double y = this.posY + offset * facing.getDirectionVec().getY() - mc.getRenderManager().viewerPosY;
-			    double z = this.posZ + offset * facing.getDirectionVec().getZ() - (double)facing.getDirectionVec().getX() - mc.getRenderManager().viewerPosZ;
+			private void renderToad(Minecraft mc, float partialTicks, double x, double y, double z, EnumFacing facing, double offset) {
+			    x = x + offset * facing.getDirectionVec().getX() + (double)facing.getDirectionVec().getZ();
+			    y = y + offset * facing.getDirectionVec().getY();
+			    z = z + offset * facing.getDirectionVec().getZ() - (double)facing.getDirectionVec().getX();
 		        this.toadEntity.rotationYaw = facing.getOpposite().getHorizontalAngle();
 		        mc.getRenderManager().renderEntity(this.toadEntity, x, y - this.toadEntity.height * 0.4f, z, this.toadEntity.rotationYaw, partialTicks, false);
 			}
