@@ -99,7 +99,7 @@ public class EntityHaku extends ElementsNarutomodMod.ModElement {
 					return super.shouldContinueExecuting() && this.attacker.getAttackTarget().getDistance(EntityCustom.this) <= 3d;
 				}
 			});
-			this.tasks.addTask(2, new EntityNinjaMob.AIAttackRangedTactical(this, 1.25D, 20, ICE_SPEARS_CD, 10.0F));
+			this.tasks.addTask(2, new EntityNinjaMob.AIAttackRangedTactical(this, 1.25D, 20, ICE_SPEARS_CD, 12.0F));
 			this.tasks.addTask(3, new AIFollowLeader(this, 0.5d, 4f));
 			this.targetTasks.addTask(2, new EntityAIHurtByTarget(this, false));
 		}

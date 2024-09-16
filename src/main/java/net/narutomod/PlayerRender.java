@@ -359,7 +359,7 @@ public class PlayerRender extends ElementsNarutomodMod.ModElement {
 						resourcelocation = new ResourceLocation(s);
 						ARMOR_TEXTURE_RES_MAP.put(s, resourcelocation);
 					}
-					model.isSneak = this.playerRenderer.getMainModel().isSneak;
+					model.setModelAttributes(this.playerRenderer.getMainModel());
 					model.setLivingAnimations(entityIn, limbSwing, limbSwingAmount, partialTicks);
 					this.playerRenderer.bindTexture(resourcelocation);
 					model.render(entityIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale);

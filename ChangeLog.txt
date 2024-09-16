@@ -30,7 +30,7 @@ Jutsus:
  - truth seeker balls are actually balls now
  - fixed rasenshurken sometimes breaking blocks when mobGriefing=false
  - add wind release: vacuum wave and B-rank scroll
- - add water release: acid scattering jutsu
+ - add water release: acid scattering jutsu (6-tail jinchuriki exclusive)
  - add Sage Mode: Demonic Illusion: Toad Confrontation Chant (AOE genjutsu)
  - Mind Transfer jutsu: cancel the jutsu by pressing Jutsu key 2
  - the number of puppets you can control depends on your jutsuXP in your puppet jutsu, max 10 puppets
@@ -38,6 +38,7 @@ Jutsus:
  - add chakra effects on player's arm when Chakra enhanced strength active
  - Lightning chakra mode: slightly more reach, hunger & resistance scaled to jutsuXP and max chakra, shuts down if food < 1
  - updated dust release cube, charges slower, smaller max, updated effects
+ - fixed fuzzy targeting system sometimes not hitting the target correctly when the projectile is huge (such as rasenshuirken)
 
 Items:
  - added Sakura shippuden clothing and leggings (for slim player models only)
@@ -88,6 +89,7 @@ Entities:
  - hitting your own Explosion release: explosive clone despawns it
  - added Hidan, jashin mode only works on players or ninja mobs, unblockable, naturally spawns
  - fixed naturally spawned tailed beast only spawning in the +X, +Z direction relative to world spawn point
+ - Itachi no longer does close range melee, better kunai targeting
  
 General:
  - fixed alpha transparency bug when using certain jutsus

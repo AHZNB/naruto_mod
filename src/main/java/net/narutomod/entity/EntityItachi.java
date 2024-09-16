@@ -119,7 +119,8 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 		private int lookedAtTime;
 		private final int genjutsuDuration = 200;
 		private int lastGenjutsuTime;
-		private int lastInvisTime;
+		private final int invisCD = 200;
+		private int lastInvisTime = -invisCD;
 		private int lastSusanooTime = -600;
 		private EntitySusanooClothed.EntityCustom susanooEntity;
 
@@ -159,11 +160,11 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 		protected void initEntityAI() {
 			super.initEntityAI();
 			this.tasks.addTask(0, new EntityAISwimming(this));
-			this.tasks.addTask(1, new EntityNinjaMob.AIAttackRangedTactical(this, 1.0D, 50, 16.0F) {
+			this.tasks.addTask(1, new EntityNinjaMob.AIAttackRangedTactical(this, 1.0D, 10, 50, 16.0F) {
 				@Override
 				public boolean shouldExecute() {
-					return super.shouldExecute() && !EntityCustom.this.isSusanooActive()
-							&& EntityCustom.this.getAttackTarget().getDistance(EntityCustom.this) > 4d;
+					return super.shouldExecute() && !EntityCustom.this.isSusanooActive();
+							//&& EntityCustom.this.getAttackTarget().getDistance(EntityCustom.this) > 4d;
 				}
 			});
 			this.tasks.addTask(2, new EntityNinjaMob.AILeapAtTarget(this, 1.0F) {
@@ -173,13 +174,13 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 							&& EntityCustom.this.getAttackTarget().posY - EntityCustom.this.posY > 3d;
 				}
 			});
-			this.tasks.addTask(3, new EntityAIAttackMelee(this, 1.0d, true) {
+			/*this.tasks.addTask(3, new EntityAIAttackMelee(this, 1.0d, true) {
 				@Override
 				public boolean shouldExecute() {
 					return super.shouldExecute() && !EntityCustom.this.isRiding()
 							&& EntityCustom.this.getAttackTarget().getDistance(EntityCustom.this) <= 4d;
 				}
-			});
+			});*/
 			this.tasks.addTask(4, new EntityAIWatchClosest2(this, EntityPlayer.class, 15.0F, 1.0F));
 			this.tasks.addTask(5, new EntityAIWander(this, 0.3));
 			this.tasks.addTask(6, new EntityAILookIdle(this));
@@ -277,7 +278,7 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 					this.lastSusanooTime = this.ticksExisted;
 					this.susanooEntity.attackEntityFrom(source, amount);
 					ret = false;
-				} else if (this.ticksExisted > this.lastInvisTime + 200 && this.consumeChakra(INVIS_CHAKRA)) {
+				} else if (this.ticksExisted > this.lastInvisTime + this.invisCD && this.consumeChakra(INVIS_CHAKRA)) {
 					this.addPotionEffect(new PotionEffect(MobEffects.INVISIBILITY, 100, 1, false, false));
 					for (int i = 0; i < 100; i++) {
 						Entity entityToSpawn = new EntityCrow.EntityCustom(this.world);
@@ -329,8 +330,8 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 					new ItemKaton.EntityBigFireball.Jutsu().createJutsu(this, d0, d1, d2, 5f, true);
 				} else if (!this.isRiding()) {
 					ItemKunai.EntityArrowCustom kunai = new ItemKunai.EntityArrowCustom(this.world, this);
-					Vec3d vec = target.getPositionEyes(1f).subtract(kunai.getPositionVector());
-					kunai.shoot(vec.x, vec.y + MathHelper.sqrt(vec.x * vec.x + vec.z * vec.z) * 0.2d, vec.z, 1f, 0);
+					Vec3d vec = target.getPositionVector().addVector(0d, target.height * 0.333f, 0d).subtract(kunai.getPositionVector());
+					kunai.shoot(vec.x, vec.y + MathHelper.sqrt(vec.x * vec.x + vec.z * vec.z) * 0.2d, vec.z, 1.2f, 0);
 					kunai.setDamage(5);
 					kunai.setKnockbackStrength(1);
 					this.playSound(SoundEvents.ENTITY_ARROW_SHOOT, 1, 1f / (this.rand.nextFloat() * 0.5f + 1f) + 0.25f);

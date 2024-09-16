@@ -306,7 +306,7 @@ public class EntityHidan extends ElementsNarutomodMod.ModElement {
 			if (this.curseTarget != null && this.curseTarget.isEntityAlive() && this.jashinTransitionDirection > 0) {
 				this.curseTarget.attackEntityFrom(source, amount);
 			}
-			return super.attackEntityFrom(source, amount * (this.rand.nextFloat() * 0.05f + 0.05f));
+			return super.attackEntityFrom(source, amount * (this.rand.nextFloat() * 0.08f + 0.08f));
 		}
 
 		@Override

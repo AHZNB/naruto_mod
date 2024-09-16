@@ -253,7 +253,7 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 		    		if (!this.isAIDisabled()) {
 		    			this.setNoAI(true);
 		    		}
-		    	} else if (this.isAIDisabled()) {
+		    	} else if (this.isAIDisabled() && !this.getEntityData().getBoolean("temporaryDisableAI")) {
 		    		this.setNoAI(false);
 		    	}
 				if (this.ticksExisted % 200 == 1) {

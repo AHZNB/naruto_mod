@@ -7,7 +7,6 @@ import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.items.ItemHandlerHelper;
 
 import net.minecraft.world.World;
 import net.minecraft.world.storage.MapStorage;
@@ -28,6 +27,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.item.ItemStack;
 
+import net.narutomod.gui.GuiNinjaScroll;
 import net.narutomod.item.ItemSuiton;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.ElementsNarutomodMod;
@@ -64,8 +64,9 @@ public class EntitySixTails extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void setVesselEntity(@Nullable Entity player) {
 			super.setVesselEntity(player);
-			if (player instanceof EntityPlayer && !ProcedureUtils.hasItemInInventory((EntityPlayer)player, ItemSuiton.block)) {
-				ItemHandlerHelper.giveItemToPlayer((EntityPlayer)player, new ItemStack(ItemSuiton.block));
+			if (player instanceof EntityPlayer) {
+				//ItemHandlerHelper.giveItemToPlayer((EntityPlayer)player, new ItemStack(ItemSuiton.block));
+				GuiNinjaScroll.enableJutsu((EntityPlayer)player, (ItemSuiton.RangedItem)ItemSuiton.block, ItemSuiton.ACIDSPIT, true);
 			}
 		}
 

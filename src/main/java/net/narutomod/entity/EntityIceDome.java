@@ -141,7 +141,7 @@ public class EntityIceDome extends ElementsNarutomodMod.ModElement {
 			}
 			if (this.ticksExisted < 5) {
 				for (Entity entity : this.world.getEntitiesWithinAABBExcludingEntity(this, this.getEntityBoundingBox())) {
-					if (entity instanceof EntityLivingBase && !entity.equals(summoner)
+					if (entity.canBeCollidedWith() && entity instanceof EntityLivingBase && !entity.equals(summoner)
 					 && !entity.equals(this.excludedEntity) && !this.entitiesInside.contains(entity)
 					 && this.getEntityBoundingBox().intersect(entity.getEntityBoundingBox()).equals(entity.getEntityBoundingBox())) {
 						this.entitiesInside.add((EntityLivingBase)entity);

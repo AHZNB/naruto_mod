@@ -12,11 +12,12 @@ import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.common.MinecraftForge;
 
 import net.minecraft.world.World;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.DamageSource;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.item.ItemStack;
 import net.minecraft.client.renderer.entity.Render;
@@ -160,11 +161,17 @@ public class EntityCellularActivation extends ElementsNarutomodMod.ModElement {
 				Entity entity1 = entity.world.getEntityByID(entity.getEntityData().getInteger(ID_KEY));
 				if (entity1 instanceof EC) {
 					entity1.setDead();
+					if (entity instanceof EntityPlayer && !entity.world.isRemote) {
+						((EntityPlayer)entity).sendStatusMessage(new TextComponentString("Off"), true);
+					}
 					return false;
 				} else {
 					entity1 = new EC(entity);
 					entity.world.spawnEntity(entity1);
 					entity.getEntityData().setInteger(ID_KEY, entity1.getEntityId());
+					if (entity instanceof EntityPlayer && !entity.world.isRemote) {
+						((EntityPlayer)entity).sendStatusMessage(new TextComponentString("On"), true);
+					}
 					return true;
 				}
 			}

@@ -689,6 +689,12 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 			}
 		}
 		if (entityTrace != null && (d2 < d1 || objectMouseOver == null)) {
+			if (!BB.touches(entityTrace.entityHit.getEntityBoundingBox(), entityTrace.hitVec)) {
+				RayTraceResult res = entityTrace.entityHit.getEntityBoundingBox().calculateIntercept(entityTrace.hitVec, BB.getCenter(entityTrace.entityHit.getEntityBoundingBox()));
+				if (res != null) {
+					entityTrace.hitVec = res.hitVec;
+				}
+			}
 			objectMouseOver = entityTrace;
 		}
 		return objectMouseOver;
@@ -1369,6 +1375,10 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 
 	    public static double getVolume(AxisAlignedBB aabb) {
 	    	return (aabb.maxX - aabb.minX) * (aabb.maxY - aabb.minY) * (aabb.maxZ - aabb.minZ);
+	    }
+
+	    public static boolean touches(AxisAlignedBB aabb, Vec3d vec) {
+	    	return vec.x >= aabb.minX && vec.x <= aabb.maxX && vec.y >= aabb.minY && vec.y <= aabb.maxY && vec.z >= aabb.minZ && vec.z <= aabb.maxZ;
 	    }
     }
 
