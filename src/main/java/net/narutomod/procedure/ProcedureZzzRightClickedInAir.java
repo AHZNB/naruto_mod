@@ -42,6 +42,9 @@ public class ProcedureZzzRightClickedInAir extends ElementsNarutomodMod.ModEleme
 			if (entity1 instanceof EntityLivingBase) {
 				id = (double) ((itemstack).hasTagCompound() ? (itemstack).getTagCompound().getDouble("attackerID") : -1);
 				if (((id) < 0)) {
+					if ((!(entity1 instanceof EntityLiving))) {
+						entity1 = entity1.getControllingPassenger();
+					}
 					if ((entity1 instanceof EntityLiving)) {
 						{
 							ItemStack _stack = (itemstack);

@@ -230,12 +230,12 @@ public class EntityHidan extends ElementsNarutomodMod.ModElement {
 				if (this.curseTarget != null && this.curseTarget.isEntityAlive()) {
 					if (this.jashinSymbol != null && !this.jashinSymbol.isDead) {
 						AxisAlignedBB bb1 = this.getEntityBoundingBox();
-						AxisAlignedBB bb2 = this.jashinSymbol.getEntityBoundingBox();
-						if (this.jashinTransitionDirection >= 0 && (bb1.minX > bb2.maxX || bb1.maxX < bb2.minX || bb1.minZ > bb2.maxZ || bb1.maxZ < bb2.minZ)) {
+						AxisAlignedBB bb2 = this.jashinSymbol.getEntityBoundingBox().expand(0d, 1d, 0d);
+						if (this.jashinTransitionDirection >= 0 && !ProcedureUtils.BB.touches(bb1, bb2)) {
 							this.setJashinTransitionDirection(-1);
 							this.getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(0.5D);
 							this.setAttackTarget(this.curseTarget);
-						} else if (this.jashinTransitionDirection <= 0 && bb1.minX <= bb2.maxX && bb1.maxX >= bb2.minX && bb1.minZ <= bb2.maxZ && bb1.maxZ >= bb2.minZ) {
+						} else if (this.jashinTransitionDirection <= 0 && ProcedureUtils.BB.touches(bb1, bb2)) {
 							this.setJashinTransitionDirection(1);
 							this.getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(1.0D);
 							this.curseTarget.addPotionEffect(new PotionEffect(PotionHeaviness.potion, 60, 4));
@@ -304,7 +304,7 @@ public class EntityHidan extends ElementsNarutomodMod.ModElement {
 		@Override
 		public boolean attackEntityFrom(DamageSource source, float amount) {
 			if (this.curseTarget != null && this.curseTarget.isEntityAlive() && this.jashinTransitionDirection > 0) {
-				this.curseTarget.attackEntityFrom(source, amount);
+				this.curseTarget.attackEntityFrom(source.setDamageBypassesArmor(), amount);
 			}
 			return super.attackEntityFrom(source, amount * (this.rand.nextFloat() * 0.08f + 0.08f));
 		}

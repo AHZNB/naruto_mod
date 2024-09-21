@@ -1,6 +1,8 @@
 
 package net.narutomod.entity;
 
+import net.narutomod.potion.PotionAmaterasuFlame;
+import net.narutomod.potion.PotionCorrosion;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.item.ItemAkatsukiRobe;
 import net.narutomod.item.ItemNinjutsu;
@@ -56,6 +58,7 @@ import java.util.Random;
 import javax.vecmath.Vector3f;
 import javax.annotation.Nullable;
 import io.netty.buffer.ByteBuf;
+import com.google.common.collect.Lists;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
@@ -102,6 +105,7 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 			this.stepHeight = 4.0f;
 			this.isImmuneToFire = false;
 			this.dieOnNoPassengers = false;
+			this.effectivePotions.addAll(Lists.newArrayList(PotionAmaterasuFlame.potion, PotionCorrosion.potion));
 		}
 
 		public EntityCustom(EntityLivingBase summonerIn, double x, double y, double z) {
@@ -110,6 +114,7 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 			this.stepHeight = 4.0f;
 			this.isImmuneToFire = false;
 			this.dieOnNoPassengers = false;
+			this.effectivePotions.addAll(Lists.newArrayList(PotionAmaterasuFlame.potion, PotionCorrosion.potion));
 			this.setHealth(this.getMaxHealth());
 		}
 

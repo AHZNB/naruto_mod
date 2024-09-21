@@ -210,9 +210,9 @@ public class ItemSharingan extends ElementsNarutomodMod.ModElement {
 		public void onAttacked(LivingAttackEvent event) {
 			EntityLivingBase entity = event.getEntityLiving();
 			Entity attacker = event.getSource().getTrueSource();
-			if (wearingAny(entity) && ItemJutsu.canTarget(entity) && !entity.isRiding()
+			if (wearingAny(entity) && ItemJutsu.canTarget(entity) && !entity.isRiding() && !event.getSource().isUnblockable()
 			 && attacker instanceof EntityLivingBase && !attacker.world.isRemote) {
-			 	if (entity.getRNG().nextFloat() < 0.5f) {
+			 	if (entity.getRNG().nextFloat() <= 0.6f) {
 			    	List<BlockPos> list = ProcedureUtils.getAllAirBlocks(entity.world, entity.getEntityBoundingBox().grow(2.5d));
 			    	for (int i = 0; i < list.size(); i++) {
 			    		BlockPos pos = list.get(entity.getRNG().nextInt(list.size()));

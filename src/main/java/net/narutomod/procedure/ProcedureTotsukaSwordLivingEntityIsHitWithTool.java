@@ -25,7 +25,7 @@ public class ProcedureTotsukaSwordLivingEntityIsHitWithTool extends ElementsNaru
 		if (entity instanceof EntityLivingBase)
 			((EntityLivingBase) entity).addPotionEffect(new PotionEffect(PotionParalysis.potion, (int) 60, (int) 0));
 		if (entity instanceof EntityLivingBase) {
-			Chakra.pathway((EntityLivingBase) entity).consume(500.0d);
+			Chakra.pathway((EntityLivingBase) entity).consume(2000.0d);
 		}
 	}
 }

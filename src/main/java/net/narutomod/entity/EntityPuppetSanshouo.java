@@ -28,11 +28,15 @@ import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.network.datasync.DataSerializers;
 
+import net.narutomod.potion.PotionAmaterasuFlame;
+import net.narutomod.potion.PotionCorrosion;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.item.ItemScrollSanshouo;
 import net.narutomod.item.ItemNinjutsu;
 import net.narutomod.Particles;
 import net.narutomod.ElementsNarutomodMod;
+
+import com.google.common.collect.Lists;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityPuppetSanshouo extends ElementsNarutomodMod.ModElement {
@@ -63,6 +67,7 @@ public class EntityPuppetSanshouo extends ElementsNarutomodMod.ModElement {
 			this.dieOnNoPassengers = false;
 			this.setAlwaysRenderNameTag(false);
 			//this.setOwnerCanSteer(true, this.driveSpeed);
+			this.effectivePotions.addAll(Lists.newArrayList(PotionAmaterasuFlame.potion, PotionCorrosion.potion));
 		}
 
 		public EntityCustom(EntityLivingBase summonerIn) {

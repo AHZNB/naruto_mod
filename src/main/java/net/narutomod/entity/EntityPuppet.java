@@ -49,12 +49,17 @@ import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.potion.Potion;
+import net.minecraft.potion.PotionEffect;
 
 import net.narutomod.item.ItemJutsu;
 import net.narutomod.item.ItemNinjutsu;
+import net.narutomod.potion.PotionAmaterasuFlame;
+import net.narutomod.potion.PotionCorrosion;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.ElementsNarutomodMod;
 
+import java.util.Iterator;
 import java.util.List;
 import javax.annotation.Nullable;
 import com.google.common.collect.Lists;
@@ -322,7 +327,7 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 	    public void onUpdate() {
 	    	this.setAge(this.getAge() + 1);
 	    	this.fallDistance = 0f;
-	    	this.clearActivePotions();
+	    	this.clearMostPotions(PotionCorrosion.potion, PotionAmaterasuFlame.potion);
 	    	super.onUpdate();
 	    	
 	    	if (!this.world.isRemote) {
@@ -345,6 +350,25 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 		public void setDead() {
 			super.setDead();
 			this.setOwner(null);
+		}
+
+		private void clearMostPotions(Potion... excludePotions) {
+			if (!this.world.isRemote) {
+				Iterator<PotionEffect> iterator = this.getActivePotionEffects().iterator();
+				while (iterator.hasNext()) {
+					PotionEffect effect = iterator.next();
+					boolean skip = false;
+					for (Potion potion : excludePotions) {
+						if (effect.getPotion() == potion) {
+							skip = true;
+						}
+					}
+					if (!skip) {
+						this.onFinishedPotionEffect(effect);
+						iterator.remove();
+					}
+				}
+			}
 		}
 
 		@Override

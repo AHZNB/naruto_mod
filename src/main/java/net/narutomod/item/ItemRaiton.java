@@ -161,7 +161,7 @@ public class ItemRaiton extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void onUpdate() {
 			super.onUpdate();
-			if (this.summoner != null && this.summoner.isEntityAlive()) {
+			if (this.summoner != null && this.summoner.isEntityAlive() && this.getStackFromInventory() != null) {
 				this.setPosition(this.summoner.posX, this.summoner.posY, this.summoner.posZ);
 				if (this.ticksExisted % 20 == 2) {
 					Chakra.Pathway chakra = Chakra.pathway(this.summoner);
@@ -218,15 +218,22 @@ public class ItemRaiton extends ElementsNarutomodMod.ModElement {
 		}
 
 		private void setNewCooldown() {
+			ItemStack stack = this.getStackFromInventory();
+			if (stack != null && stack.getItem() instanceof ItemJutsu.Base) {
+				ItemJutsu.Base item = (ItemJutsu.Base)stack.getItem();
+				item.setJutsuCooldown(stack, CHAKRAMODE, (long)((float)this.ticksExisted * item.getModifier(stack, this.summoner)) + 40);
+			}
+		}
+
+		@Nullable
+		private ItemStack getStackFromInventory() {
 			if (this.usingItemstack != null && this.summoner != null) {
 				ItemStack stack = this.summoner instanceof EntityPlayer
 				 ? ProcedureUtils.getMatchingItemStack((EntityPlayer)this.summoner, this.usingItemstack)
 				 : this.usingItemstack;
-				if (stack != null) {
-					ItemJutsu.Base item = (ItemJutsu.Base)stack.getItem();
-					item.setJutsuCooldown(stack, CHAKRAMODE, (long)((float)this.ticksExisted * item.getModifier(stack, this.summoner)) + 40);
-				}
+				return stack;
 			}
+			return null;
 		}
 
 		@Override
@@ -249,6 +256,9 @@ public class ItemRaiton extends ElementsNarutomodMod.ModElement {
 				} else {
 					if (ItemFuton.CHAKRAFLOW.jutsu.isActivated(entity)) {
 						ItemFuton.CHAKRAFLOW.jutsu.deactivate(entity);
+					}
+					if (ItemKaton.FLAMESLICE.jutsu.isActivated(entity)) {
+						ItemKaton.FLAMESLICE.jutsu.deactivate(entity);
 					}
 					entity1 = new EntityChakraMode(entity, stack);
 					entity.world.spawnEntity(entity1);

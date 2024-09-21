@@ -1,6 +1,7 @@
 package net.narutomod.procedure;
 
 import net.narutomod.item.ItemJutsu;
+import net.narutomod.Particles;
 import net.narutomod.ElementsNarutomodMod;
 
 import net.minecraft.world.World;
@@ -36,6 +37,8 @@ public class ProcedureCorrosionOnPotionActiveTick extends ElementsNarutomodMod.M
 		double amp = 0;
 		amp = (double) (amplifier);
 		entity.attackEntityFrom(ItemJutsu.NINJUTSU_DAMAGE, (float) amp + 1f);
+		Particles.spawnParticle(world, Particles.Types.SMOKE, entity.posX, entity.posY + entity.height * 0.5, entity.posZ, 10, entity.width * 0.3,
+				entity.height * 0.3, entity.width * 0.3, 0d, 0d, 0d, 0x20FFFFFF);
 		if ((Math.random() <= 0.5)) {
 			world.playSound((EntityPlayer) null, (entity.posX), (entity.posY), (entity.posZ),
 					(net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("block.fire.extinguish")),

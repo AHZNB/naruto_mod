@@ -22,13 +22,18 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.network.datasync.DataSerializers;
+import net.minecraft.potion.Potion;
+import net.minecraft.potion.PotionEffect;
 
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.ElementsNarutomodMod;
 
-import javax.annotation.Nullable;
 import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
 import java.util.UUID;
+import java.util.Iterator;
+import java.util.List;
+import javax.annotation.Nullable;
 
 @ElementsNarutomodMod.ModElement.Tag
 public abstract class EntityShieldBase extends EntityLivingBase {
@@ -37,6 +42,7 @@ public abstract class EntityShieldBase extends EntityLivingBase {
 	private boolean ownerCanSteer = false;
 	private float steerSpeed;
 	protected boolean dieOnNoPassengers = true;
+	protected final List<Potion> effectivePotions = Lists.newArrayList();
 	
 	public EntityShieldBase(World world) {
 		super(world);
@@ -207,6 +213,26 @@ public abstract class EntityShieldBase extends EntityLivingBase {
 				this.motionY = (this.motionY > 0.0D) ? d : -d;
 			if (Math.abs(this.motionZ) > d)
 				this.motionZ = (this.motionZ > 0.0D) ? d : -d;
+		}
+	}
+
+	@Override
+	public void clearActivePotions() {
+		if (!this.world.isRemote) {
+			Iterator<PotionEffect> iterator = this.getActivePotionEffects().iterator();
+			while (iterator.hasNext()) {
+				PotionEffect effect = iterator.next();
+				boolean skip = false;
+				for (Potion potion : this.effectivePotions) {
+					if (effect.getPotion() == potion) {
+						skip = true;
+					}
+				}
+				if (!skip) {
+					this.onFinishedPotionEffect(effect);
+					iterator.remove();
+				}
+			}
 		}
 	}
 

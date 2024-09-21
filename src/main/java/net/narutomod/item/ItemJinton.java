@@ -315,7 +315,7 @@ public class ItemJinton extends ElementsNarutomodMod.ModElement {
 			double d1 = result.entityHit != null ? result.entityHit.posY + result.entityHit.height/2 : result.hitVec.y;
 			double d2 = result.entityHit != null ? result.entityHit.posZ : result.hitVec.z;
 			this.setPosition(d0, d1, d2);
-			ProcedureAoeCommand.set(this.world, d0, d1, d2, 0d, this.fullScale * 0.2f).effect(MobEffects.SLOWNESS, 5, 5, false);
+			ProcedureAoeCommand.set(this.world, d0, d1, d2, 0d, this.fullScale * 0.2f).exclude(this.shootingEntity).effect(MobEffects.SLOWNESS, 5, 5, false);
 		}
 
 		private void destroyBlocksAndEntitiesInAABB(AxisAlignedBB bb) {
@@ -352,10 +352,10 @@ public class ItemJinton extends ElementsNarutomodMod.ModElement {
 				if (this.ticksAlive <= this.wait) {
 					this.setWaitPosition(this.shootingEntity);
 					if (this.ticksAlive == this.wait) {
-						this.shoot(ProcedureUtils.objectEntityLookingAt(this.shootingEntity, 50d, true));
+						this.shoot(ProcedureUtils.objectEntityLookingAt(this.shootingEntity, 50d, true, this));
 					}
 				} else {
-					ProcedureAoeCommand.set(this, 0d, this.width/2).motion(0d, 0d, 0d);
+					ProcedureAoeCommand.set(this, 0d, this.width/2).exclude(this.shootingEntity).motion(0d, 0d, 0d);
 					if (this.ticksAlive <= this.wait + this.growTime) {
 						this.setEntityScale(this.fullScale * (this.ticksAlive - this.wait) / (float) this.growTime);
 					} else if (this.ticksAlive <= idle) {
@@ -433,7 +433,7 @@ public class ItemJinton extends ElementsNarutomodMod.ModElement {
 			public void onGetCollisionBoxes(GetCollisionBoxesEvent event) {
 				//if (event.getWorld().isRemote && event.getEntity() == null) {
 					for (Entity entity : event.getWorld().getEntitiesWithinAABBExcludingEntity(event.getEntity(), event.getAabb().grow(10.0D))) {
-						if (entity instanceof EntityCube) {
+						if (entity instanceof EntityCube && entity.getEntityBoundingBox().intersects(event.getAabb())) {
 							EntityCube ec = (EntityCube)entity;
 							if (ec.getTicksAlive() >= ec.wait + ec.growTime && ec.getTicksAlive() - ec.wait - ec.growTime <= ec.idleTime) {
 								event.getCollisionBoxesList().clear();

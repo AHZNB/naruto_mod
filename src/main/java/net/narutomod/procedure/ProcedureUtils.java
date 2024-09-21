@@ -610,6 +610,10 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 		return objectEntityLookingAt(entity, range, trackall, false, (Predicate)null);
 	}
 
+	public static RayTraceResult objectEntityLookingAt(Entity entity, double range, boolean trackall, @Nullable Entity excludeEntity) {
+		return objectEntityLookingAt(entity, range, 0.0d, trackall, false, excludeEntity);
+	}
+
 	public static RayTraceResult objectEntityLookingAt(Entity entity, double range, boolean trackall, boolean stopOnLiquid) {
 		return objectEntityLookingAt(entity, range, trackall, stopOnLiquid, (Predicate)null);
 	}
@@ -1379,6 +1383,10 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 
 	    public static boolean touches(AxisAlignedBB aabb, Vec3d vec) {
 	    	return vec.x >= aabb.minX && vec.x <= aabb.maxX && vec.y >= aabb.minY && vec.y <= aabb.maxY && vec.z >= aabb.minZ && vec.z <= aabb.maxZ;
+	    }
+
+	    public static boolean touches(AxisAlignedBB aabb1, AxisAlignedBB aabb2) {
+	    	return aabb1.minX <= aabb2.maxX && aabb1.maxX >= aabb2.minX && aabb1.minY <= aabb2.maxY && aabb1.maxY >= aabb2.minY && aabb1.minZ <= aabb2.maxZ && aabb1.maxZ >= aabb2.minZ;
 	    }
     }
 

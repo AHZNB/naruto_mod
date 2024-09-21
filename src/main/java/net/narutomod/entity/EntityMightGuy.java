@@ -115,6 +115,7 @@ public class EntityMightGuy extends ElementsNarutomodMod.ModElement {
 		private ScoreObjective customerKillCount;
 		private int killCount;
 		private float gateOpened;
+		private int blockingTicks;
 
 		public EntityCustom(World world) {
 			super(world, 120, 5000d);
@@ -251,7 +252,7 @@ public class EntityMightGuy extends ElementsNarutomodMod.ModElement {
 			if (source.getTrueSource() instanceof EntityLivingBase
 					&& !source.isUnblockable() && this.isEntityInFOV(source.getTrueSource())) {
 				amount *= this.rand.nextFloat() * 0.2f;
-				this.swingArm(EnumHand.OFF_HAND);
+				this.world.setEntityState(this, (byte)101);
 			}
 			return super.attackEntityFrom(source, amount);
 		}
@@ -529,11 +530,24 @@ public class EntityMightGuy extends ElementsNarutomodMod.ModElement {
 			}
 		}
 
+		@SideOnly(Side.CLIENT)
+		@Override
+		public void handleStatusUpdate(byte id) {
+			if (id == 101) {
+				this.blockingTicks = 10;
+			} else {
+				super.handleStatusUpdate(id);
+			}
+		}
+
 		@Override
 		public void onUpdate() {
 			super.onUpdate();
 			this.trackAttackingPlayer();
 			this.bossInfo.setPercent(this.getHealth() / this.getMaxHealth());
+			if (this.blockingTicks > 0) {
+				--this.blockingTicks;
+			}
 		}
 	}
 
@@ -580,6 +594,15 @@ public class EntityMightGuy extends ElementsNarutomodMod.ModElement {
 				super.setLivingAnimations(entity, limbSwing, limbSwingAmount, partialTickTime);
 				if (((EntityCustom) entity).isSwingingArms()) {
 					this.rightArmPose = ModelBiped.ArmPose.BOW_AND_ARROW;
+				}
+			}
+
+			@Override
+			public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn) {
+				super.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scaleFactor, entityIn);
+				if (((EntityCustom)entityIn).blockingTicks > 0) {
+					setRotationAngle(bipedRightArm, -1.0472F, -0.7854F, 0.0F);
+					setRotationAngle(bipedLeftArm, -2.0071F, 0.6109F, 0.0F);
 				}
 			}
 		}

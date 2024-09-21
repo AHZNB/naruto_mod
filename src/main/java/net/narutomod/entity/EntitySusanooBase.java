@@ -1,5 +1,7 @@
 package net.narutomod.entity;
 
+import net.minecraftforge.fml.relauncher.ReflectionHelper;
+
 import net.minecraft.world.World;
 import net.minecraft.util.CombatRules;
 import net.minecraft.util.math.MathHelper;
@@ -40,6 +42,7 @@ import net.narutomod.Particles;
 import net.narutomod.Chakra;
 import net.narutomod.ElementsNarutomodMod;
 
+import java.util.List;
 import javax.annotation.Nullable;
 
 @ElementsNarutomodMod.ModElement.Tag
@@ -87,7 +90,7 @@ public abstract class EntitySusanooBase extends EntityCreature implements IRange
 				this.setFlameColor(color);
 			}
 		}
-		this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(ProcedureUtils.getModifiedSpeed(player) * 0.3d);
+		//this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(ProcedureUtils.getModifiedSpeed(player) * 0.3d);
 		this.setHealth(this.getMaxHealth());
 		this.setAlwaysRenderNameTag(false);
 		player.startRiding(this);
@@ -144,7 +147,7 @@ public abstract class EntitySusanooBase extends EntityCreature implements IRange
 		this.getAttributeMap().registerAttribute(SharedMonsterAttributes.ATTACK_DAMAGE);
 		this.getAttributeMap().registerAttribute(EntityPlayer.REACH_DISTANCE);
 		//this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(100.0D);
-		this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.05D);
+		this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.1D);
 		this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(100.0D);
 		this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(10.0D);
 		this.getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(1.0D);
@@ -211,8 +214,7 @@ public abstract class EntitySusanooBase extends EntityCreature implements IRange
 					stack.getItem().hitEntity(stack, (EntityLivingBase)entityIn, this);
 				}
 				if (f2 > 0.8f) {
-					((EntityLivingBase)entityIn).knockBack(this, f2 * 2.5F, 
-					 (double)MathHelper.sin(this.rotationYaw * 0.017453292F), (double)(-MathHelper.cos(this.rotationYaw * 0.017453292F)));
+					ProcedureUtils.pushEntity(this, entityIn, ProcedureUtils.getReachDistance(this) + 1.0d, f2 * 2.5F);
 					this.motionX *= 0.6D;
 					this.motionZ *= 0.6D;
 				}
@@ -254,6 +256,16 @@ public abstract class EntitySusanooBase extends EntityCreature implements IRange
 		} else {
 			this.jumpMovementFactor = 0.02F;
 			super.travel(ti, tj, tk);
+		}
+	}
+
+	@Override
+	protected void addPassenger(Entity passenger) {
+		if (passenger.getRidingEntity() != this) {
+			throw new IllegalStateException("Use x.startRiding(y), not y.addPassenger(x)");
+		} else {
+			List<Entity> list = ReflectionHelper.getPrivateValue(Entity.class, this, 7);
+			list.add(passenger);
 		}
 	}
 
@@ -344,7 +356,7 @@ public abstract class EntitySusanooBase extends EntityCreature implements IRange
 					this.consumeChakra();
 				}
 			}
-			if (this.ticksExisted % 20 == 1) {
+			if (!this.world.isRemote && this.ticksExisted % 20 == 1) {
 				ownerPlayer.addPotionEffect(new PotionEffect(MobEffects.MINING_FATIGUE, 22, 6, false, false));
 			}
 		}
@@ -409,6 +421,7 @@ public abstract class EntitySusanooBase extends EntityCreature implements IRange
 	    private final double entityMoveSpeed;
 	    private final int maxRangedAttackTime;
 	    private final float minAttackRadius;
+	    private int navigateDelay;
 		
 	    public AIAttackRangedAndMoveTowardsTarget(IRangedAttackMob attacker, double movespeed, int maxAttackTime, float minAttackDistanceIn) {
 	        if (!(attacker instanceof EntitySusanooBase)) {
@@ -419,7 +432,7 @@ public abstract class EntitySusanooBase extends EntityCreature implements IRange
 	            this.entityMoveSpeed = movespeed;
 	            this.maxRangedAttackTime = maxAttackTime;
 	    		this.rangedAttackTime = maxAttackTime;
-	            this.minAttackRadius = minAttackDistanceIn;
+	            this.minAttackRadius = (float)ProcedureUtils.getReachDistance(this.entityHost) + minAttackDistanceIn;
 	            this.setMutexBits(3);
 	        }
 	    }
@@ -427,9 +440,9 @@ public abstract class EntitySusanooBase extends EntityCreature implements IRange
 	    @Override
 	    public boolean shouldExecute() {
 	        EntityLivingBase entitylivingbase = this.entityHost.getAttackTarget();
-	        if (entitylivingbase == null) {
+	        if (entitylivingbase == null || !entitylivingbase.isEntityAlive()) {
 	        	return false;
-	        } else if (entitylivingbase.getDistance(this.entityHost) < ProcedureUtils.getReachDistance(this.entityHost) + this.minAttackRadius) {
+	        } else if (entitylivingbase.getDistance(this.entityHost) < this.minAttackRadius) {
 	        	return false;
 	        } else {
 	        	this.attackTarget = entitylivingbase;
@@ -450,11 +463,13 @@ public abstract class EntitySusanooBase extends EntityCreature implements IRange
 		
 		@Override
 		public void updateTask() {
+		    --this.navigateDelay;
 		    double d0 = this.entityHost.getDistance(this.attackTarget.posX, this.attackTarget.getEntityBoundingBox().minY, this.attackTarget.posZ);
-		    if (d0 >= ProcedureUtils.getReachDistance(this.entityHost) + this.minAttackRadius) {
-		        this.entityHost.getNavigator().tryMoveToEntityLiving(this.attackTarget, this.entityMoveSpeed);
-		    } else {
+		    if (d0 < this.minAttackRadius) {
 		        this.entityHost.getNavigator().clearPath();
+		    } else if (this.navigateDelay <= 0) {
+		        this.entityHost.getNavigator().tryMoveToEntityLiving(this.attackTarget, this.entityMoveSpeed);
+		        this.navigateDelay = 15;
 		    }
 		    this.entityHost.getLookHelper().setLookPositionWithEntity(this.attackTarget, 30.0F, 30.0F);
 		    if (--this.rangedAttackTime <= 0) {
@@ -462,5 +477,78 @@ public abstract class EntitySusanooBase extends EntityCreature implements IRange
 		        this.rangedAttackTime = this.maxRangedAttackTime;
 		    }
 		}
+	}
+
+	public static class AIAttackMelee extends EntityAIBase {
+	    protected EntitySusanooBase attacker;
+	    protected int attackTick;
+	    double speedTowardsTarget;
+	    protected final int attackInterval = 20;
+	    private final double attackReachSqr;
+	    private int navigateDelay;
+	
+	    public AIAttackMelee(EntitySusanooBase creature, double speedIn) {
+	        this.attacker = creature;
+	        this.speedTowardsTarget = speedIn;
+	        this.attackReachSqr = ProcedureUtils.getReachDistanceSq(creature);
+	        this.setMutexBits(3);
+	    }
+	
+	    @Override
+	    public boolean shouldExecute() {
+	        EntityLivingBase entitylivingbase = this.attacker.getAttackTarget();
+	        if (entitylivingbase == null || !entitylivingbase.isEntityAlive()) {
+	            return false;
+	        } else if (this.attacker.getDistanceSq(entitylivingbase) > this.attackReachSqr) {
+	            return this.attacker.getNavigator().getPathToEntityLiving(entitylivingbase) != null;
+	        }
+	        return true;
+	    }
+	
+	    @Override
+	    public boolean shouldContinueExecuting() {
+	        EntityLivingBase entitylivingbase = this.attacker.getAttackTarget();
+	        if (entitylivingbase == null || !entitylivingbase.isEntityAlive()) {
+	            return false;
+	        } else if (!this.attacker.isWithinHomeDistanceFromPosition(entitylivingbase.getPosition())) {
+	            return false;
+	        } else {
+	            return !(entitylivingbase instanceof EntityPlayer) || !((EntityPlayer)entitylivingbase).isSpectator() && !((EntityPlayer)entitylivingbase).isCreative();
+	        }
+	    }
+
+	    @Override
+	    public void startExecuting() {
+	    	this.navigateDelay = 0;
+	    }
+	
+	    @Override
+	    public void resetTask() {
+	        EntityLivingBase entitylivingbase = this.attacker.getAttackTarget();
+	        if (entitylivingbase instanceof EntityPlayer && (((EntityPlayer)entitylivingbase).isSpectator() || ((EntityPlayer)entitylivingbase).isCreative())) {
+	            this.attacker.setAttackTarget(null);
+	        }
+	        this.attacker.getNavigator().clearPath();
+	    }
+	
+	    @Override
+	    public void updateTask() {
+	        EntityLivingBase entitylivingbase = this.attacker.getAttackTarget();
+	        this.attacker.getLookHelper().setLookPositionWithEntity(entitylivingbase, 30.0F, 30.0F);
+	        double d0 = this.attacker.getDistanceSq(entitylivingbase);
+	        this.attackTick = Math.max(this.attackTick - 1, 0);
+	        --this.navigateDelay;
+	        if (d0 <= this.attackReachSqr) {
+	        	this.attacker.getNavigator().clearPath();
+	        	if (this.attackTick <= 0) {
+		            this.attackTick = this.attackInterval;
+		            this.attacker.swingArm(EnumHand.MAIN_HAND);
+		            this.attacker.attackEntityAsMob(entitylivingbase);
+	        	}
+	        } else if (this.navigateDelay <= 0) {
+	            this.attacker.getNavigator().tryMoveToEntityLiving(entitylivingbase, this.speedTowardsTarget);
+	            this.navigateDelay = 20;
+	        }
+	    }
 	}
 }

@@ -39,6 +39,7 @@ Jutsus:
  - Lightning chakra mode: slightly more reach, hunger & resistance scaled to jutsuXP and max chakra, shuts down if food < 1
  - updated dust release cube, charges slower, smaller max, updated effects
  - fixed fuzzy targeting system sometimes not hitting the target correctly when the projectile is huge (such as rasenshuirken)
+ - change sharingan chance to evade attacks to 60%, can't evade unblockable attacks
 
 Items:
  - added Sakura shippuden clothing and leggings (for slim player models only)
@@ -74,7 +75,7 @@ Entities:
  - added Sasori mob, naturally spawns, spawn weight configurable
  - Karasu puppet shoots poison bombs as well as senbons, better AI
  - added sasori's 100 puppet, puppet size and appearance is random
- - slightly buffed puppets health, increased speed slightly, auto covers for summoner and takes damage if within range
+ - slightly buffed puppets health, increased speed slightly, auto covers for summoner and takes damage if within range, susceptible only to amaterasu and corrosion potion effects
  - buffed tailed beast melee damage slightly, better AI
  - added melee animation for Matatabi(paw swipe) and Kokuo(head butt)
  - Shukaku shoots air bullets, Matatabi shoots fire balls, Isobu shoots water balls, Son Goku shoots green fire,
@@ -89,7 +90,8 @@ Entities:
  - hitting your own Explosion release: explosive clone despawns it
  - added Hidan, jashin mode only works on players or ninja mobs, unblockable, naturally spawns
  - fixed naturally spawned tailed beast only spawning in the +X, +Z direction relative to world spawn point
- - Itachi no longer does close range melee, better kunai targeting
+ - Itachi no longer does close range melee, better kunai targeting, can block attacks with kunai
+ - added Might Guy blocking animation
  
 General:
  - fixed alpha transparency bug when using certain jutsus

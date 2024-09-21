@@ -96,8 +96,8 @@ public class EntitySusanooClothed extends ElementsNarutomodMod.ModElement {
 			}
 			if (!(entity instanceof EntityPlayer)) {
 				this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).applyModifier(new AttributeModifier("susanoo.maxhealth", 400.0d, 0));
-				this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).applyModifier(new AttributeModifier("susanoo.damage", 40.0d, 0));
-				this.setFlameColor(0x20ec1c24);
+				this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).applyModifier(new AttributeModifier("susanoo.damage", 50.0d, 0));
+				this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.4D);
 				this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(ItemTotsukaSword.block));
 				this.setNoAI(false);
 			} else {
@@ -120,20 +120,6 @@ public class EntitySusanooClothed extends ElementsNarutomodMod.ModElement {
 			this.getDataManager().register(SHOW_SWORD, Boolean.valueOf(false));
 		}
 
-		@Override
-		protected void initEntityAI() {
-			//this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, false));
-			//this.targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, EntityPlayer.class, false, false));
-			this.tasks.addTask(1, new EntitySusanooBase.AIAttackRangedAndMoveTowardsTarget(this, 1.0D, 40, 4F));
-			this.tasks.addTask(2, new EntityAIAttackMelee(this, 1.5D, true) {
-				@Override
-				protected double getAttackReachSqr(EntityLivingBase attackTarget) {
-					return ProcedureUtils.getReachDistanceSq(EntityCustom.this);
-					 //+ (EntityCustom.this.getHeldItemMainhand().getItem() == ItemTotsukaSword.block ? 16.0d : 0d);
-				}
-			});
-		}
-
 		public boolean hasLegs() {
 			return ((Boolean) this.getDataManager().get(HAS_LEGS)).booleanValue();
 		}
@@ -148,6 +134,19 @@ public class EntitySusanooClothed extends ElementsNarutomodMod.ModElement {
 			super.notifyDataManagerChange(key);
 			if (HAS_LEGS.equals(key) && this.world.isRemote) {
 				this.setSize(MODELSCALE * 0.8F, MODELSCALE * (this.hasLegs() ? 2.0F : 1.25F));
+			}
+		}
+
+		@Override
+		protected void initEntityAI() {
+			this.tasks.addTask(1, new EntitySusanooBase.AIAttackRangedAndMoveTowardsTarget(this, 1.5D, 30, 4F));
+			this.tasks.addTask(2, new EntitySusanooBase.AIAttackMelee(this, 1.5D));
+		}
+
+		@Override
+		protected void updateAITasks() {
+			if (this.getAttackTarget() != null && !this.getAttackTarget().isEntityAlive()) {
+				this.setAttackTarget(null);
 			}
 		}
 
@@ -214,9 +213,6 @@ public class EntitySusanooClothed extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public void onEntityUpdate() {
-			//if (this.hasLegs() && this.height < MODELSCALE * 2f) {
-			//	this.setSize(this.width, MODELSCALE * 2f);
-			//}
 			super.onEntityUpdate();
 			if (this.lifeSpan-- <= 0) {
 				this.setDead();
