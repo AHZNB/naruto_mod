@@ -54,11 +54,12 @@ Items:
  - added kunai sword and recipe, can block attacks
  - fix remaining server crashes due to "NoClassDefFoundError"
  - prevents players dropping the duplicate kiba sword
- - Hiramekarei now does sweeping damage
+ - Hiramekarei now does sweeping damage, added sound and sweeping effects
  - Kusanagi sword won't get stuck in blocks
  - byakugan veins won't appear unless byakugan jutsus are used
  - add retractable spear and recipe
  - folding fan opens when in main hand, closes when worn on back
+ - gunbai: updated model, can be thrown like a flail/mace (future: will deflect jutsu back on enemy when blocking)
 
 Entities:
  - re-textured Kisame, Sakura, Zabuza

@@ -35,7 +35,7 @@ public class ProcedureTenseiganBodyTickEvent extends ElementsNarutomodMod.ModEle
 			(entity).extinguish();
 			Particles.spawnParticle(entity.world, Particles.Types.SMOKE, entity.posX, entity.posY + 0.8d, entity.posZ, 20, 0.15d, 0.4d, 0.15d, 0d,
 					0.1d, 0d, 0x20b5fff5, 20, 5, 0xF0, entity.getEntityId());
-			ItemBijuCloak.applyEffects((EntityLivingBase) entity, 2, false);
+			ItemBijuCloak.applyEffects((EntityLivingBase) entity, 2, 0);
 		}
 	}
 }

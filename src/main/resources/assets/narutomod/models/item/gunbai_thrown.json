@@ -1,0 +1,6 @@
+{
+  "parent": "narutomod:custom/gunbai_thrown",
+  "textures": {
+    "0": "narutomod:blocks/gunbai"
+  }
+}

@@ -1159,5 +1159,14 @@
         "stream": false
       }
     ]
+  },
+  "hiramekarei_release": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "narutomod:hiramekarei_release",
+        "stream": false
+      }
+    ]
   }
 }

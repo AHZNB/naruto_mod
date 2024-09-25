@@ -143,12 +143,12 @@ public class ItemNinjutsu extends ElementsNarutomodMod.ModElement {
 		public EntityReplacementClone(EntityLivingBase player, Entity attacker) {
 			super(player);
 			Vec3d vec3d = player.getPositionVector().subtract(attacker.getPositionVector()).normalize();
-			int i = 5;
+			int i = 6;
 			BlockPos.PooledMutableBlockPos pos = BlockPos.PooledMutableBlockPos.retain();
 			for (Vec3d vec1 = vec3d.scale(i); i > 1; vec1 = vec3d.scale(--i)) {
 				int j = 0;
 				pos.setPos(attacker.posX - vec1.x, attacker.posY - vec1.y, attacker.posZ - vec1.z);
-				while (j < EnumFacing.VALUES.length && (!player.world.getBlockState(pos.down()).isTopSolid() || !player.world.isAirBlock(pos.up()))) {
+				while (j < EnumFacing.VALUES.length && (!player.world.getBlockState(pos.down()).isTopSolid() || !ProcedureUtils.isSpaceOpenToStandOn(player, pos))) {
 					pos.setPos(pos.offset(EnumFacing.VALUES[j++]));
 				}
 				if (j < EnumFacing.VALUES.length) {

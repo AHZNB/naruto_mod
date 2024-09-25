@@ -341,7 +341,7 @@ public class PlayerRender extends ElementsNarutomodMod.ModElement {
 						if (item.showSkinLayer()) {
 							this.renderSkinLayer(stack, entityIn, limbSwing, limbSwingAmount, partialTicks, ageInTicks, netHeadYaw, headPitch, scale);
 						}
-						if (item.showOnBody() != ItemOnBody.BodyPart.NONE && i != entityIn.inventory.currentItem && i != 40) {
+						if (item.showOnBody(stack) != ItemOnBody.BodyPart.NONE && i != entityIn.inventory.currentItem && i != 40) {
 							this.renderItemOnBody(stack, entityIn, limbSwing, limbSwingAmount, partialTicks, ageInTicks, netHeadYaw, headPitch, scale);
 						}
 					}
@@ -369,7 +369,7 @@ public class PlayerRender extends ElementsNarutomodMod.ModElement {
 
 		private void renderItemOnBody(ItemStack stack, AbstractClientPlayer entityIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
 			Vec3d offset = ((ItemOnBody.Interface)stack.getItem()).getOffset();
-			ItemOnBody.BodyPart bodypart = ((ItemOnBody.Interface)stack.getItem()).showOnBody();
+			ItemOnBody.BodyPart bodypart = ((ItemOnBody.Interface)stack.getItem()).showOnBody(stack);
 			GlStateManager.pushMatrix();
 			ModelBiped model = this.playerRenderer.getMainModel();
 			//model.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale, entityIn);

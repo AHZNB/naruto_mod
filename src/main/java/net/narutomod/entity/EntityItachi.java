@@ -442,11 +442,6 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 						setRotationAngle(cube_r2, 0.0F, 0.1745F, 0.0F);
 						cube_r2.cubeList.add(new ModelBox(cube_r2, 0, 0, -2.0F, -4.0F, 0.0F, 4, 8, 0, 0.0F, false));
 					}
-					public void setRotationAngle(ModelRenderer modelRenderer, float x, float y, float z) {
-						modelRenderer.rotateAngleX = x;
-						modelRenderer.rotateAngleY = y;
-						modelRenderer.rotateAngleZ = z;
-					}
 					@Override
 					public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn) {
 						super.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scaleFactor, entityIn);

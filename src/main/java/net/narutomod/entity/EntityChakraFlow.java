@@ -81,7 +81,7 @@ public class EntityChakraFlow extends ElementsNarutomodMod.ModElement {
 		}
 
 		public EntityLivingBase getUser() {
-			if (!this.world.isRemote) {
+			if (this.user != null) {
 				return this.user;
 			}
 			Entity entity = this.world.getEntityByID(((Integer)this.getDataManager().get(USER_ID)).intValue());
@@ -94,10 +94,7 @@ public class EntityChakraFlow extends ElementsNarutomodMod.ModElement {
 		}
 
 		public boolean isUserHoldingWeapon() {
-			if (this.getUser() != null) {
-				return isHoldingWeapon(this.getUser());
-			}
-			return false;
+			return this.getUser() != null && isHoldingWeapon(this.getUser());
 		}
 
 		protected void addEffects() {
@@ -146,7 +143,7 @@ public class EntityChakraFlow extends ElementsNarutomodMod.ModElement {
 		public void onUpdate() {
 			if (this.user != null) {
 				this.setPosition(this.user.posX, this.user.posY, this.user.posZ);
-				if (isHoldingWeapon(this.user)) {
+				if (this.isUserHoldingWeapon()) {
 					this.addEffects();
 					ItemStack stack = this.user.getHeldItemMainhand();
 					if (this.lastHeldWeapon == null || !ItemStack.areItemStacksEqual(stack, this.lastHeldWeapon)) {

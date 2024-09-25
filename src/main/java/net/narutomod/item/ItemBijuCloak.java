@@ -167,7 +167,8 @@ public class ItemBijuCloak extends ElementsNarutomodMod.ModElement {
 									setWearingTicks(livingEntity, wearingTicks);
 									if (cloakXp >= 800 || (cloakLevel == 1 && cloakXp >= 400)) {
 										revertOriginal(livingEntity, itemstack);
-										applyEffects(livingEntity, cloakLevel, getTails(itemstack) != 1 && cloakLevel == 1);
+										int tails = getTails(itemstack);
+										applyEffects(livingEntity, cloakLevel, tails != 1 && cloakLevel == 1 ? 0x2088001b : tails == 9 ? 0x20ff8c00 : 0);
 									} else {
 										spawnClone(livingEntity, itemstack);
 									}
@@ -188,7 +189,7 @@ public class ItemBijuCloak extends ElementsNarutomodMod.ModElement {
 				} else if (entity instanceof EntityJinchurikiClone.EntityCustom && !world.isRemote && entity.isEntityAlive()) {
 					setWearingTicks(entity, getWearingTicks(entity) + 1);
 					int i = getCloakLevel(itemstack);
-					applyEffects((EntityLivingBase)entity, i, getTails(itemstack) != 1 && i == 1);
+					applyEffects((EntityLivingBase)entity, i, getTails(itemstack) != 1 && i == 1 ? 0x2088001b : 0);
 				}
 			}
 
@@ -293,14 +294,10 @@ public class ItemBijuCloak extends ElementsNarutomodMod.ModElement {
 		player.getEntityData().removeTag("lungeAttackData");
 	}
 
-	public static void applyEffects(EntityLivingBase entity, int level) {
-		applyEffects(entity, level, true);
-	}
-
-	public static void applyEffects(EntityLivingBase entity, int level, boolean smoke) {
-		if (smoke) {
-			Particles.spawnParticle(entity.world, Particles.Types.SMOKE, entity.posX, entity.posY + 0.8d, entity.posZ, 
-			 40, 0.2d, 0.4d, 0.2d, 0d, 0d, 0d, 0x2088001b, 20, 
+	public static void applyEffects(EntityLivingBase entity, int level, int smokeColor) {
+		if (smokeColor != 0) {
+			Particles.spawnParticle(entity.world, Particles.Types.SMOKE, entity.posX, entity.posY + 0.9d, entity.posZ, 
+			 50, 0.18d, 0.4d, 0.18d, 0d, 0d, 0d, smokeColor, 10, 
 			 (int)(4.0D / (entity.getRNG().nextDouble() * 0.8D + 0.2D)), 0, entity.getEntityId());
 		}
 		if (!entity.world.isRemote && entity.ticksExisted % 10 == 4) {
@@ -454,8 +451,8 @@ public class ItemBijuCloak extends ElementsNarutomodMod.ModElement {
 	@SideOnly(Side.CLIENT)
 	public class ModelBijuCloak extends ModelBiped {
 		//private final ModelRenderer bipedHead;
-		private final ModelRenderer earLeft[] = new ModelRenderer[6];
-		private final ModelRenderer earRight[] = new ModelRenderer[6];
+		private final ModelRenderer earLeft[] = new ModelRenderer[9];
+		private final ModelRenderer earRight[] = new ModelRenderer[9];
 		private final ModelRenderer sandEar;
 		private final ModelRenderer cube_r1;
 		//private final ModelRenderer bipedBody;
@@ -472,13 +469,17 @@ public class ItemBijuCloak extends ElementsNarutomodMod.ModElement {
 		private final ModelRenderer sandArm;
 		private final ModelRenderer bipedLeftArmWear;
 		private final ModelRenderer bipedRightLegWear;
+		private final ModelRenderer bipedRightLeg_r1;
+		private final ModelRenderer bipedRightLeg_r2;
 		private final ModelRenderer bipedLeftLegWear;
+		private final ModelRenderer bipedLeftLeg_r1;
+		private final ModelRenderer bipedLeftLeg_r2;
 		private final float tailSwayX[][] = new float[9][8];
 		private final float tailSwayZ[][] = new float[9][8];
-		private final float leftEarSwayX[] = new float[6];
-		private final float leftEarSwayZ[] = new float[6];
-		private final float rightEarSwayX[] = new float[6];
-		private final float rightEarSwayZ[] = new float[6];
+		private final float leftEarSwayX[] = new float[9];
+		private final float leftEarSwayZ[] = new float[9];
+		private final float rightEarSwayX[] = new float[9];
+		private final float rightEarSwayZ[] = new float[9];
 		private int[] tailShowMap = { 0, 1, 6, 0x19, 0x1E, 0x1F, 0x1F8, 0x7F, 0x1FE, 0x1FF };
 		private boolean bodyShine;
 		private boolean layerShine;
@@ -490,9 +491,9 @@ public class ItemBijuCloak extends ElementsNarutomodMod.ModElement {
 			textureHeight = 64;
 			bipedHead = new ModelRenderer(this);
 			bipedHead.setRotationPoint(0.0F, 0.0F, 0.0F);
-			bipedHead.cubeList.add(new ModelBox(bipedHead, 0, 0, -4.0F, -8.0F, -4.0F, 8, 8, 8, 0.6F, false));
+			bipedHead.cubeList.add(new ModelBox(bipedHead, 0, 0, -4.0F, -8.0F, -4.0F, 8, 8, 8, 0.4F, false));
 			earLeft[0] = new ModelRenderer(this);
-			earLeft[0].setRotationPoint(3.5F, -8.25F, -0.5F);
+			earLeft[0].setRotationPoint(3.5F, -8.25F, -1.5F);
 			bipedHead.addChild(earLeft[0]);
 			setRotationAngle(earLeft[0], -0.5236F, 0.0F, 0.7854F);
 			earLeft[0].cubeList.add(new ModelBox(earLeft[0], 32, 0, -0.5F, -1.5F, -0.5F, 1, 2, 1, 0.8F, false));
@@ -510,19 +511,34 @@ public class ItemBijuCloak extends ElementsNarutomodMod.ModElement {
 			earLeft[3].setRotationPoint(0.0F, -1.0F, 0.0F);
 			earLeft[2].addChild(earLeft[3]);
 			setRotationAngle(earLeft[3], 0.0F, 0.0F, -0.1745F);
-			earLeft[3].cubeList.add(new ModelBox(earLeft[3], 32, 0, -0.5F, -1.5F, -0.5F, 1, 2, 1, 0.4F, false));
+			earLeft[3].cubeList.add(new ModelBox(earLeft[3], 32, 0, -0.5F, -1.5F, -0.5F, 1, 2, 1, 0.5F, false));
 			earLeft[4] = new ModelRenderer(this);
 			earLeft[4].setRotationPoint(0.0F, -1.0F, 0.0F);
 			earLeft[3].addChild(earLeft[4]);
 			setRotationAngle(earLeft[4], 0.0F, 0.0F, -0.1745F);
-			earLeft[4].cubeList.add(new ModelBox(earLeft[4], 32, 0, -0.5F, -1.5F, -0.5F, 1, 2, 1, 0.2F, false));
+			earLeft[4].cubeList.add(new ModelBox(earLeft[4], 32, 0, -0.5F, -1.5F, -0.5F, 1, 2, 1, 0.35F, false));
 			earLeft[5] = new ModelRenderer(this);
 			earLeft[5].setRotationPoint(0.0F, -1.0F, 0.0F);
 			earLeft[4].addChild(earLeft[5]);
 			setRotationAngle(earLeft[5], 0.0F, 0.0F, -0.1745F);
-			earLeft[5].cubeList.add(new ModelBox(earLeft[5], 32, 0, -0.5F, -1.5F, -0.5F, 1, 2, 1, -0.1F, false));
+			earLeft[5].cubeList.add(new ModelBox(earLeft[5], 32, 0, -0.5F, -1.5F, -0.5F, 1, 2, 1, 0.2F, false));
+			earLeft[6] = new ModelRenderer(this);
+			earLeft[6].setRotationPoint(0.0F, -1.0F, 0.0F);
+			earLeft[5].addChild(earLeft[6]);
+			setRotationAngle(earLeft[6], 0.0F, 0.0F, -0.1745F);
+			earLeft[6].cubeList.add(new ModelBox(earLeft[6], 32, 0, -0.5F, -1.5F, -0.5F, 1, 2, 1, 0.05F, false));
+			earLeft[7] = new ModelRenderer(this);
+			earLeft[7].setRotationPoint(0.0F, -1.0F, 0.0F);
+			earLeft[6].addChild(earLeft[7]);
+			setRotationAngle(earLeft[7], 0.0F, 0.0F, -0.1745F);
+			earLeft[7].cubeList.add(new ModelBox(earLeft[7], 32, 0, -0.5F, -1.5F, -0.5F, 1, 2, 1, -0.1F, false));
+			earLeft[8] = new ModelRenderer(this);
+			earLeft[8].setRotationPoint(0.0F, -1.0F, 0.0F);
+			earLeft[7].addChild(earLeft[8]);
+			setRotationAngle(earLeft[8], 0.0F, 0.0F, -0.1745F);
+			earLeft[8].cubeList.add(new ModelBox(earLeft[8], 32, 0, -0.5F, -1.5F, -0.5F, 1, 2, 1, -0.25F, false));
 			earRight[0] = new ModelRenderer(this);
-			earRight[0].setRotationPoint(-3.5F, -8.25F, -0.5F);
+			earRight[0].setRotationPoint(-3.5F, -8.25F, -1.5F);
 			bipedHead.addChild(earRight[0]);
 			setRotationAngle(earRight[0], -0.5236F, 0.0F, -0.7854F);
 			earRight[0].cubeList.add(new ModelBox(earRight[0], 32, 0, -0.5F, -1.5F, -0.5F, 1, 2, 1, 0.8F, false));
@@ -540,17 +556,32 @@ public class ItemBijuCloak extends ElementsNarutomodMod.ModElement {
 			earRight[3].setRotationPoint(0.0F, -1.0F, 0.0F);
 			earRight[2].addChild(earRight[3]);
 			setRotationAngle(earRight[3], 0.0F, 0.0F, 0.1745F);
-			earRight[3].cubeList.add(new ModelBox(earRight[3], 32, 0, -0.5F, -1.5F, -0.5F, 1, 2, 1, 0.4F, false));
+			earRight[3].cubeList.add(new ModelBox(earRight[3], 32, 0, -0.5F, -1.5F, -0.5F, 1, 2, 1, 0.5F, false));
 			earRight[4] = new ModelRenderer(this);
 			earRight[4].setRotationPoint(0.0F, -1.0F, 0.0F);
 			earRight[3].addChild(earRight[4]);
 			setRotationAngle(earRight[4], 0.0F, 0.0F, 0.1745F);
-			earRight[4].cubeList.add(new ModelBox(earRight[4], 32, 0, -0.5F, -1.5F, -0.5F, 1, 2, 1, 0.2F, false));
+			earRight[4].cubeList.add(new ModelBox(earRight[4], 32, 0, -0.5F, -1.5F, -0.5F, 1, 2, 1, 0.35F, false));
 			earRight[5] = new ModelRenderer(this);
 			earRight[5].setRotationPoint(0.0F, -1.0F, 0.0F);
 			earRight[4].addChild(earRight[5]);
 			setRotationAngle(earRight[5], 0.0F, 0.0F, 0.1745F);
-			earRight[5].cubeList.add(new ModelBox(earRight[5], 32, 0, -0.5F, -1.5F, -0.5F, 1, 2, 1, -0.1F, false));
+			earRight[5].cubeList.add(new ModelBox(earRight[5], 32, 0, -0.5F, -1.5F, -0.5F, 1, 2, 1, 0.2F, false));
+			earRight[6] = new ModelRenderer(this);
+			earRight[6].setRotationPoint(0.0F, -1.0F, 0.0F);
+			earRight[5].addChild(earRight[6]);
+			setRotationAngle(earRight[6], 0.0F, 0.0F, 0.1745F);
+			earRight[6].cubeList.add(new ModelBox(earRight[6], 32, 0, -0.5F, -1.5F, -0.5F, 1, 2, 1, 0.05F, false));
+			earRight[7] = new ModelRenderer(this);
+			earRight[7].setRotationPoint(0.0F, -1.0F, 0.0F);
+			earRight[6].addChild(earRight[7]);
+			setRotationAngle(earRight[7], 0.0F, 0.0F, 0.1745F);
+			earRight[7].cubeList.add(new ModelBox(earRight[7], 32, 0, -0.5F, -1.5F, -0.5F, 1, 2, 1, -0.1F, false));
+			earRight[8] = new ModelRenderer(this);
+			earRight[8].setRotationPoint(0.0F, -1.0F, 0.0F);
+			earRight[7].addChild(earRight[8]);
+			setRotationAngle(earRight[8], 0.0F, 0.0F, 0.1745F);
+			earRight[8].cubeList.add(new ModelBox(earRight[8], 32, 0, -0.5F, -1.5F, -0.5F, 1, 2, 1, -0.25F, false));
 			bipedHeadwear = new ModelRenderer(this);
 			bipedHeadwear.setRotationPoint(0.0F, 0.0F, 0.0F);
 			bipedHeadwear.cubeList.add(new ModelBox(bipedHeadwear, 64, 0, -4.0F, -8.0F, -4.0F, 8, 8, 8, 0.6F, false));
@@ -1090,16 +1121,34 @@ public class ItemBijuCloak extends ElementsNarutomodMod.ModElement {
 			bipedRightLegWear = new ModelRenderer(this);
 			bipedRightLegWear.setRotationPoint(-1.9F, 12.0F, 0.0F);
 			bipedRightLegWear.cubeList.add(new ModelBox(bipedRightLegWear, 64, 16, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.65F, false));
-			bipedRightLegWear.cubeList.add(new ModelBox(bipedRightLegWear, 64, 32, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.7F, false));
+			bipedRightLeg_r1 = new ModelRenderer(this);
+			bipedRightLeg_r1.setRotationPoint(-2.0F, 0.0F, 0.0F);
+			bipedRightLegWear.addChild(bipedRightLeg_r1);
+			setRotationAngle(bipedRightLeg_r1, -0.1309F, 0.0F, 0.1745F);
+			bipedRightLeg_r1.cubeList.add(new ModelBox(bipedRightLeg_r1, 64, 32, 0.0F, 0.0F, -2.0F, 4, 12, 4, 0.7F, false));
+			bipedRightLeg_r2 = new ModelRenderer(this);
+			bipedRightLeg_r2.setRotationPoint(-2.0F, 0.0F, 0.0F);
+			bipedRightLegWear.addChild(bipedRightLeg_r2);
+			setRotationAngle(bipedRightLeg_r2, 0.1309F, 0.0F, 0.1745F);
+			bipedRightLeg_r2.cubeList.add(new ModelBox(bipedRightLeg_r2, 64, 32, 0.0F, 0.0F, -2.0F, 4, 12, 4, 0.7F, false));
 			bipedLeftLeg = new ModelRenderer(this);
 			bipedLeftLeg.setRotationPoint(1.9F, 12.0F, 0.0F);
 			bipedLeftLeg.cubeList.add(new ModelBox(bipedLeftLeg, 16, 48, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.6F, false));
 			bipedLeftLegWear = new ModelRenderer(this);
 			bipedLeftLegWear.setRotationPoint(1.9F, 12.0F, 0.0F);
 			bipedLeftLegWear.cubeList.add(new ModelBox(bipedLeftLegWear, 80, 48, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.65F, false));
-			bipedLeftLegWear.cubeList.add(new ModelBox(bipedLeftLegWear, 64, 48, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.7F, false));
+			bipedLeftLeg_r1 = new ModelRenderer(this);
+			bipedLeftLeg_r1.setRotationPoint(2.0F, 0.0F, 0.0F);
+			bipedLeftLegWear.addChild(bipedLeftLeg_r1);
+			setRotationAngle(bipedLeftLeg_r1, -0.1309F, 0.0F, -0.1745F);
+			bipedLeftLeg_r1.cubeList.add(new ModelBox(bipedLeftLeg_r1, 64, 48, -4.0F, 0.0F, -2.0F, 4, 12, 4, 0.7F, false));
+			bipedLeftLeg_r2 = new ModelRenderer(this);
+			bipedLeftLeg_r2.setRotationPoint(2.0F, 0.0F, 0.0F);
+			bipedLeftLegWear.addChild(bipedLeftLeg_r2);
+			setRotationAngle(bipedLeftLeg_r2, 0.1309F, 0.0F, -0.1745F);
+			bipedLeftLeg_r2.cubeList.add(new ModelBox(bipedLeftLeg_r2, 64, 48, -4.0F, 0.0F, -2.0F, 4, 12, 4, 0.7F, false));
 
-			for (int i = 1; i < 6; i++) {
+			for (int i = 1; i < leftEarSwayX.length; i++) {
 				leftEarSwayX[i] = (rand.nextFloat() * 0.2618F + 0.0873F) * (rand.nextBoolean() ? -1F : 1F);
 				leftEarSwayZ[i] = (rand.nextFloat() * 0.2618F + 0.0873F) * (rand.nextBoolean() ? -1F : 1F);
 				rightEarSwayX[i] = (rand.nextFloat() * 0.2618F + 0.0873F) * (rand.nextBoolean() ? -1F : 1F);
@@ -1196,7 +1245,7 @@ public class ItemBijuCloak extends ElementsNarutomodMod.ModElement {
 				this.isSneak = true;
 			}
 			super.setRotationAngles(f, f1, f2, f3, f4, f5, e);
-			for (int i = 1; i < 6; i++) {
+			for (int i = 1; i < leftEarSwayX.length; i++) {
 				earLeft[i].rotateAngleX = -0.1745F + MathHelper.sin(f2 * 0.15F) * leftEarSwayX[i];
 				earLeft[i].rotateAngleZ = MathHelper.cos(f2 * 0.15F) * leftEarSwayZ[i];
 				earRight[i].rotateAngleX = 0.1745F + MathHelper.sin(f2 * 0.15F) * rightEarSwayX[i];

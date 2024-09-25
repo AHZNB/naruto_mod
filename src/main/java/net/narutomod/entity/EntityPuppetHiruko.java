@@ -63,7 +63,6 @@ import com.google.common.collect.Lists;
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 	public static final int ENTITYID = 389;
-	public static final int ENTITYID_RANGED = 390;
 
 	public EntityPuppetHiruko(ElementsNarutomodMod instance) {
 		super(instance, 768);

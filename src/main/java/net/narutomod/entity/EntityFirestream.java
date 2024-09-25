@@ -245,8 +245,7 @@ public class EntityFirestream extends ElementsNarutomodMod.ModElement {
 		public void onImpact(RayTraceResult result) {
 			int i = this.rand.nextInt(8);
 			if (result.entityHit != null) {
-				result.entityHit.attackEntityFrom(ItemJutsu.causeJutsuDamage(this, this.shooter)
-				 .setDamageBypassesArmor().setFireDamage(), this.damage);
+				result.entityHit.attackEntityFrom(ItemJutsu.causeJutsuDamage(this, this.shooter).setFireDamage(), this.damage);
 				result.entityHit.setFire(10);
 			} else if (i == 0) {
 				BlockPos pos = result.getBlockPos().offset(result.sideHit);

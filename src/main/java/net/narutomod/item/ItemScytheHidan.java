@@ -150,6 +150,11 @@ public class ItemScytheHidan extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
+		public boolean canDisableShield(ItemStack stack, ItemStack shield, EntityLivingBase entity, EntityLivingBase attacker) {
+			return true;
+		}
+
+		@Override
 		public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer entity, EnumHand hand) {
 			entity.setActiveHand(hand);
 			return new ActionResult(EnumActionResult.SUCCESS, entity.getHeldItem(hand));
@@ -181,6 +186,7 @@ public class ItemScytheHidan extends ElementsNarutomodMod.ModElement {
 
 	public static class EntityCustom extends EntityArrow {
 		private static final DataParameter<Integer> SHOOTERID = EntityDataManager.<Integer>createKey(EntityCustom.class, DataSerializers.VARINT);
+		private final double chainMaxLength = 32.0d;
 		private double damage;
 		private EntityLivingBase hitTarget;
 
@@ -314,12 +320,19 @@ public class ItemScytheHidan extends ElementsNarutomodMod.ModElement {
 			if (this.shootingEntity != null && !this.shootingEntity.isEntityAlive()) {
 				this.setShooter(null);
 			}
-			if (this.inGround) {
-				if ((int)ReflectionHelper.getPrivateValue(EntityArrow.class, this, 12) > 1198) { // this.ticksInGround
-					ReflectionHelper.setPrivateValue(EntityArrow.class, this, 1000, 12);
+			if (this.inGround && (int)ReflectionHelper.getPrivateValue(EntityArrow.class, this, 12) > 1198) { // this.ticksInGround
+				ReflectionHelper.setPrivateValue(EntityArrow.class, this, 1000, 12);
+			}
+			if (this.shootingEntity != null && this.getDistance(this.shootingEntity) > this.chainMaxLength) {
+				double d = this.getDistance(this.shootingEntity) - this.chainMaxLength;
+				Vec3d vec = this.getPositionVector().subtract(this.shootingEntity.getPositionVector()).normalize();
+				if (this.inGround) {
+					Vec3d vec1 = vec.scale(0.1d * d);
+					this.shootingEntity.addVelocity(vec1.x, vec1.y, vec1.z);
+					this.shootingEntity.velocityChanged = true;
+				} else if (this.arrowShake <= 0) {
+					this.retrieve(this.shootingEntity);
 				}
-			} else if (this.shootingEntity != null && this.getDistance(this.shootingEntity) > 32d && this.arrowShake <= 0) {
-				this.retrieve(this.shootingEntity);
 			}
 		}
 

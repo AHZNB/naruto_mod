@@ -43817,8 +43817,8 @@
       ],
       "translation": [
         0.5,
-        3,
-        3.75
+        2,
+        3
       ]
     },
     "thirdperson_lefthand": {
@@ -43829,19 +43829,19 @@
       ],
       "translation": [
         -0.5,
-        3,
-        3.75
+        2,
+        3
       ]
     },
     "firstperson_righthand": {
       "rotation": [
         80,
         0,
-        90
+        15
       ],
       "translation": [
-        0,
-        6,
+        1,
+        1,
         1
       ]
     },
@@ -43849,12 +43849,12 @@
       "rotation": [
         80,
         0,
-        90
+        15
       ],
       "translation": [
-        0,
-        6,
-        -1
+        -1,
+        1,
+        1
       ]
     },
     "ground": {

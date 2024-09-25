@@ -846,8 +846,9 @@ public class EntityClone extends ElementsNarutomodMod.ModElement {
 							if (item.showSkinLayer()) {
 								this.renderSkinLayer(stack, entityIn, limbSwing, limbSwingAmount, partialTicks, ageInTicks, netHeadYaw, headPitch, scale);
 							}
-							if (item.showOnBody() != ItemOnBody.BodyPart.NONE && !entityIn.getHeldItemMainhand().isItemEqualIgnoreDurability(stack)) {
-								this.renderItemOnBody(stack, entityIn, item.showOnBody());
+							ItemOnBody.BodyPart part = item.showOnBody(stack);
+							if (part != ItemOnBody.BodyPart.NONE && !entityIn.getHeldItemMainhand().isItemEqualIgnoreDurability(stack)) {
+								this.renderItemOnBody(stack, entityIn, part);
 							}
 						}
 					}

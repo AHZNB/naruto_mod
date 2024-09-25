@@ -112,7 +112,7 @@ public class ItemZabuzaSword extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public boolean canDisableShield(ItemStack stack, ItemStack shield, EntityLivingBase entity, EntityLivingBase attacker) {
-			return false;
+			return true;
 		}
 
 		@Override

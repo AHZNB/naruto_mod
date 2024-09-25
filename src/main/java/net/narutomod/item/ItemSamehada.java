@@ -133,6 +133,11 @@ public class ItemSamehada extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
+		public boolean canDisableShield(ItemStack stack, ItemStack shield, EntityLivingBase entity, EntityLivingBase attacker) {
+			return true;
+		}
+
+		@Override
 		public boolean isShield(ItemStack stack, @Nullable EntityLivingBase entity) {
 			return true;
 		}

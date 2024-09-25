@@ -149,7 +149,8 @@ public class EntityFutonVacuum extends ElementsNarutomodMod.ModElement {
 			protected void attackEntityFrom(Entity player, Entity target) {
 				if (!target.equals(player)) {
 					EC.this.playImpactSound(target.posX, target.posY, target.posZ);
-					target.attackEntityFrom(ItemJutsu.causeJutsuDamage(EC.this, player), EC.this.power * EC.this.damageModifier);				}
+					target.attackEntityFrom(ItemJutsu.causeJutsuDamage(EC.this, player), EC.this.power * EC.this.damageModifier);
+				}
 			}
 	
 			@Override

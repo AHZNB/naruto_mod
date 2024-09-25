@@ -991,11 +991,12 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 				ItemStack stack = entityIn.inventory.get(i);
 				if (stack.getItem() instanceof ItemOnBody.Interface) {
 					ItemOnBody.Interface item = (ItemOnBody.Interface)stack.getItem();
-					if (item.showOnBody() != ItemOnBody.BodyPart.NONE) {
+					ItemOnBody.BodyPart bodypart = item.showOnBody(stack);
+					if (bodypart != ItemOnBody.BodyPart.NONE) {
 						Vec3d offset = item.getOffset();
 						GlStateManager.pushMatrix();
 						ModelBiped model = (ModelBiped)this.renderer.getMainModel();
-						switch (item.showOnBody()) {
+						switch (bodypart) {
 							case HEAD:
 								model.bipedHead.postRender(0.0625F);
 								break;

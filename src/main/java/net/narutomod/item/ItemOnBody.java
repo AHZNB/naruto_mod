@@ -70,8 +70,19 @@ public class ItemOnBody extends ElementsNarutomodMod.ModElement {
 					return Vec3d.ZERO;
 			}
 		}
-		default boolean showSkinLayer() { return false; }
-		default BodyPart showOnBody() { return BodyPart.TORSO; }
+
+		default boolean showSkinLayer() {
+			return false;
+		}
+		
+ 		@Deprecated // Use ItemStack sensitive version below.
+		default BodyPart showOnBody() {
+			return BodyPart.TORSO;
+		}
+		
+		default BodyPart showOnBody(ItemStack stack) {
+			return this.showOnBody();
+		}
 	}
 
 	public enum BodyPart {
