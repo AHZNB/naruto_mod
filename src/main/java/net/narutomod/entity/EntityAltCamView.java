@@ -25,7 +25,6 @@ import net.narutomod.ElementsNarutomodMod;
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityAltCamView extends ElementsNarutomodMod.ModElement {
 	public static final int ENTITYID = 60;
-	public static final int ENTITYID_RANGED = 61;
 
 	public EntityAltCamView(ElementsNarutomodMod instance) {
 		super(instance, 268);

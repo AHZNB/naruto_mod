@@ -59,7 +59,10 @@ Items:
  - byakugan veins won't appear unless byakugan jutsus are used
  - add retractable spear and recipe
  - folding fan opens when in main hand, closes when worn on back
- - gunbai: updated model, can be thrown like a flail/mace (future: will deflect jutsu back on enemy when blocking)
+ - gunbai: updated model, can be thrown like a flail/mace, will accumulate & deflect enemy jutsu when blocking
+ - Madara's scythe can now be thrown like a flail/mace
+ - slightly buffed damage for kiba blade, nuibari, samehada
+ - increased paralizing effect duration for sound gauntlet
 
 Entities:
  - re-textured Kisame, Sakura, Zabuza

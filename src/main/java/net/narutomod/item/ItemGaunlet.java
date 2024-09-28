@@ -104,20 +104,22 @@ public class ItemGaunlet extends ElementsNarutomodMod.ModElement {
 		public void onPlayerStoppedUsing(ItemStack itemstack, World world, EntityLivingBase entityLivingBase, int timeLeft) {
 			if (!world.isRemote && entityLivingBase instanceof EntityPlayerMP) {
 				EntityPlayerMP entity = (EntityPlayerMP) entityLivingBase;
-				float f = net.minecraft.item.ItemBow.getArrowVelocity(this.getMaxItemUseDuration(itemstack) - timeLeft);
-				EntityCustom entityarrow = new EntityCustom(world, entity, itemstack);
-				entityarrow.shoot(entity.getLookVec().x, entity.getLookVec().y, entity.getLookVec().z, f * 2.0f, 0);
-				//entityarrow.setSilent(true);
-				entityarrow.setDamage(9d);
-				//entityarrow.setKnockbackStrength(0);
-				world.playSound(null, entity.posX, entity.posY, entity.posZ, SoundEvent.REGISTRY
-				 .getObject(new ResourceLocation("narutomod:bullet")), SoundCategory.NEUTRAL,
-				 0.8f, 1f / (itemRand.nextFloat() * 0.5f + 1f) + f);
-				world.spawnEntity(entityarrow);
-				ItemStack newstack = new ItemStack(ItemGauntletThrown.block);
-				((ItemGauntletThrown.RangedItem)newstack.getItem()).setEntity(newstack, entityarrow);
-				entity.replaceItemInInventory(getSlotId(entity), newstack);
 				itemstack.damageItem(1, entity);
+				if (!itemstack.isEmpty()) {
+					float f = net.minecraft.item.ItemBow.getArrowVelocity(this.getMaxItemUseDuration(itemstack) - timeLeft);
+					EntityCustom entityarrow = new EntityCustom(world, entity, itemstack);
+					entityarrow.shoot(entity.getLookVec().x, entity.getLookVec().y, entity.getLookVec().z, f * 2.0f, 0);
+					//entityarrow.setSilent(true);
+					entityarrow.setDamage(9d);
+					//entityarrow.setKnockbackStrength(0);
+					world.playSound(null, entity.posX, entity.posY, entity.posZ, SoundEvent.REGISTRY
+					 .getObject(new ResourceLocation("narutomod:bullet")), SoundCategory.NEUTRAL,
+					 0.8f, 1f / (itemRand.nextFloat() * 0.5f + 1f) + f);
+					world.spawnEntity(entityarrow);
+					ItemStack newstack = new ItemStack(ItemGauntletThrown.block);
+					((ItemGauntletThrown.RangedItem)newstack.getItem()).setEntity(newstack, entityarrow);
+					entity.replaceItemInInventory(getSlotId(entity), newstack);
+				}
 			}
 		}
 
@@ -177,7 +179,7 @@ public class ItemGaunlet extends ElementsNarutomodMod.ModElement {
 	public static class EntityCustom extends EntityArrow {
 		private static final DataParameter<Integer> SHOOTERID = EntityDataManager.<Integer>createKey(EntityCustom.class, DataSerializers.VARINT);
 		private double damage;
-		private ItemStack stack;
+		private ItemStack stack = ItemStack.EMPTY;
 		private EntityLivingBase grabbedEntity;
 		private Vec3d grabbedOffset;
 		private double chainMaxLength = 25.0d;
@@ -361,6 +363,7 @@ public class ItemGaunlet extends ElementsNarutomodMod.ModElement {
 			return !this.isDead;
 		}
 
+		@Override
 		protected ItemStack getArrowStack() {
 			return this.stack;
 		}

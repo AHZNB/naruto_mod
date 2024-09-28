@@ -3,8 +3,11 @@ package net.narutomod.item;
 
 import net.narutomod.creativetab.TabModTab;
 import net.narutomod.entity.EntityRendererRegister;
+import net.narutomod.entity.EntityScalableProjectile;
+import net.narutomod.procedure.ProcedureAirPunch;
 import net.narutomod.procedure.ProcedureOnLeftClickEmpty;
 import net.narutomod.procedure.ProcedureUtils;
+import net.narutomod.Particles;
 import net.narutomod.ElementsNarutomodMod;
 
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -19,6 +22,7 @@ import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
+import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.common.MinecraftForge;
 
 import net.minecraft.world.World;
@@ -27,12 +31,14 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumActionResult;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvent;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Item;
 import net.minecraft.item.EnumAction;
@@ -54,6 +60,8 @@ import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.ItemMeshDefinition;
 import net.minecraft.client.renderer.RenderItem;
 import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraft.client.renderer.GLAllocation;
+import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
@@ -69,17 +77,21 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.block.material.Material;
 
 import java.util.Map;
-import java.util.HashMap;
+import java.util.HashMap;
 import javax.annotation.Nullable;
 import com.google.common.collect.Multimap;
+import org.lwjgl.util.glu.Sphere;
+import org.lwjgl.util.glu.GLU;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class ItemGunbai extends ElementsNarutomodMod.ModElement {
 	@GameRegistry.ObjectHolder("narutomod:gunbai")
 	public static final Item block = null;
 	public static final int ENTITYID = 390;
+	public static final int ENTITYID_RANGED = 61;
 	private static final String USE_BLOCKING_MODEL = "UseBlockingModel";
 	private static final String USE_THROWN_MODEL = "UseThrownModel";
+	private static final String ACCUMULATED_CHAKRA = "accumulatedDamageFromJutsu";
 
 	public ItemGunbai(ElementsNarutomodMod instance) {
 		super(instance, 769);
@@ -90,6 +102,9 @@ public class ItemGunbai extends ElementsNarutomodMod.ModElement {
 		elements.items.add(() -> new RangedItem());
 		elements.entities.add(() -> EntityEntryBuilder.create().entity(EntityCustom.class)
 		 .id(new ResourceLocation("narutomod", "entitygunbai"), ENTITYID).name("entitygunbai").tracker(64, 1, true).build());
+		elements.entities.add(() -> EntityEntryBuilder.create().entity(EntityChakraball.class)
+		 .id(new ResourceLocation("narutomod", "entitygunbai_chakraball"), ENTITYID_RANGED).name("entitygunbai_chakraball")
+		 .tracker(64, 1, true).build());
 	}
 
 	@Override
@@ -129,7 +144,7 @@ public class ItemGunbai extends ElementsNarutomodMod.ModElement {
 	public static class RangedItem extends Item implements ItemOnBody.Interface {
 		public RangedItem() {
 			super();
-			this.setMaxDamage(2500);
+			this.setMaxDamage(5000);
 			this.setFull3D();
 			this.setUnlocalizedName("gunbai");
 			this.setRegistryName("gunbai");
@@ -142,14 +157,14 @@ public class ItemGunbai extends ElementsNarutomodMod.ModElement {
 			Multimap<String, AttributeModifier> multimap = super.getItemAttributeModifiers(slot);
 			if (slot == EntityEquipmentSlot.MAINHAND) {
 				multimap.put(SharedMonsterAttributes.ATTACK_DAMAGE.getName(),
-						new AttributeModifier(ATTACK_DAMAGE_MODIFIER, "Ranged item modifier", 19.0d, 0));
+						new AttributeModifier(ATTACK_DAMAGE_MODIFIER, "Ranged item modifier", 15.0d, 0));
 				multimap.put(SharedMonsterAttributes.ATTACK_SPEED.getName(),
 						new AttributeModifier(ATTACK_SPEED_MODIFIER, "Ranged item modifier", -2.4, 0));
 			}
 			return multimap;
 		}
 
-		public void setEntity(ItemStack stack, EntityCustom entity) {
+		public void setGunbaiEntity(ItemStack stack, EntityCustom entity) {
 			if (!stack.hasTagCompound()) {
 				stack.setTagCompound(new NBTTagCompound());
 			}
@@ -157,9 +172,26 @@ public class ItemGunbai extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Nullable
-		public EntityCustom getEntity(World world, ItemStack stack) {
+		public EntityCustom getGunbaiEntity(World world, ItemStack stack) {
 			Entity entity = world.getEntityByID(stack.hasTagCompound() ? stack.getTagCompound().getInteger("gunbaiEntityId") : -1);
 			return entity instanceof EntityCustom ? (EntityCustom)entity : null;
+		}
+
+		public void setChakraballEntity(ItemStack stack, EntityChakraball entity) {
+			if (!stack.hasTagCompound()) {
+				stack.setTagCompound(new NBTTagCompound());
+			}
+			stack.getTagCompound().setInteger("ChakraballEntityId", entity.getEntityId());
+		}
+
+		@Nullable
+		public EntityChakraball getChakraballEntity(World world, ItemStack stack) {
+			Entity entity = world.getEntityByID(stack.hasTagCompound() ? stack.getTagCompound().getInteger("ChakraballEntityId") : -1);
+			return entity instanceof EntityChakraball ? (EntityChakraball)entity : null;
+		}
+
+		private boolean isThrown(ItemStack stack) {
+			return stack.hasTagCompound() && stack.getTagCompound().getBoolean(USE_THROWN_MODEL);
 		}
 
 		@Override
@@ -169,14 +201,35 @@ public class ItemGunbai extends ElementsNarutomodMod.ModElement {
 			}
 			if (entityIn instanceof EntityLivingBase && ((EntityLivingBase)entityIn).isHandActive()
 			 && ((EntityLivingBase)entityIn).getActiveItemStack().equals(stack) && !stack.getTagCompound().getBoolean(USE_THROWN_MODEL)) {
-				if (worldIn.isRemote && !stack.getTagCompound().getBoolean(USE_BLOCKING_MODEL)) {
-					stack.getTagCompound().setBoolean(USE_BLOCKING_MODEL, true);
+				if (!worldIn.isRemote) {
+					float accumulatedChakra = stack.getTagCompound().getFloat(ACCUMULATED_CHAKRA);
+					if (accumulatedChakra >= 10f) {
+						EntityChakraball ballEntity = this.getChakraballEntity(worldIn, stack);
+						if (ballEntity == null || ballEntity.isDead) {
+							ballEntity = new EntityChakraball((EntityLivingBase)entityIn);
+							worldIn.spawnEntity(ballEntity);
+							this.setChakraballEntity(stack, ballEntity);
+						}
+						ballEntity.scale = accumulatedChakra * 0.01f;
+						if (accumulatedChakra > 150f) {
+							((EntityLivingBase)entityIn).resetActiveHand();
+						}
+					}
 				}
-			} else if (stack.getTagCompound().hasKey(USE_BLOCKING_MODEL)) {
-				stack.getTagCompound().removeTag(USE_BLOCKING_MODEL);
+			} else {
+				if (!worldIn.isRemote) {
+					EntityChakraball ballEntity = this.getChakraballEntity(worldIn, stack);
+					if (ballEntity != null && !ballEntity.isDead) {
+						ballEntity.burst();
+						stack.getTagCompound().removeTag(ACCUMULATED_CHAKRA);
+					}
+				}
+				if (stack.getTagCompound().hasKey(USE_BLOCKING_MODEL)) {
+					stack.getTagCompound().removeTag(USE_BLOCKING_MODEL);
+				}
 			}
 			if (!worldIn.isRemote && stack.getTagCompound().getBoolean(USE_THROWN_MODEL) && entityIn.ticksExisted % 20 == 19) {
-				EntityCustom itemEntity = this.getEntity(worldIn, stack);
+				EntityCustom itemEntity = this.getGunbaiEntity(worldIn, stack);
 				if (itemEntity == null || !entityIn.equals(itemEntity.getShooter())) {
 					stack.shrink(1);
 				}
@@ -184,11 +237,23 @@ public class ItemGunbai extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
+		public void onUsingTick(ItemStack stack, EntityLivingBase player, int count) {
+			if (player.world.isRemote && !this.isThrown(stack)) {
+				if (!stack.hasTagCompound()) {
+					stack.setTagCompound(new NBTTagCompound());
+				}
+				if (!stack.getTagCompound().getBoolean(USE_BLOCKING_MODEL)) {
+					stack.getTagCompound().setBoolean(USE_BLOCKING_MODEL, true);
+				}
+			}
+		}
+
+		@Override
 		public void onPlayerStoppedUsing(ItemStack itemstack, World world, EntityLivingBase entity, int timeLeft) {
 			if (!world.isRemote && this.isThrown(itemstack)) {
-				EntityCustom itemEntity = this.getEntity(world, itemstack);
+				EntityCustom itemEntity = this.getGunbaiEntity(world, itemstack);
 				if (itemEntity != null && entity.equals(itemEntity.getShooter())) {
-			        itemEntity.retrieve(entity);
+				    itemEntity.retrieve(entity);
 				}
 			}
 		}
@@ -197,24 +262,34 @@ public class ItemGunbai extends ElementsNarutomodMod.ModElement {
 		public boolean onLeftClickEntity(ItemStack itemstack, EntityPlayer attacker, Entity target) {
 			if (!attacker.world.isRemote && attacker.equals(target)) {
 				if (itemstack.hasTagCompound() && !this.isThrown(itemstack)) {
-					itemstack.getTagCompound().setBoolean(USE_THROWN_MODEL, true);
-					EntityCustom entityarrow = new EntityCustom(attacker.world, attacker);
-					Vec3d vec = attacker.getLookVec();
-					entityarrow.shoot(vec.x, vec.y, vec.z, 2.0f, 0);
-					entityarrow.setDamage(20d);
-					attacker.world.playSound(null, attacker.posX, attacker.posY, attacker.posZ, SoundEvents.ENTITY_ARROW_SHOOT,
-							SoundCategory.NEUTRAL, 1, 1f / (itemRand.nextFloat() * 0.5f + 1f) + 1f);
-					attacker.world.spawnEntity(entityarrow);
-					this.setEntity(itemstack, entityarrow);
-					entityarrow.gunbaiStack = itemstack;
+					itemstack.damageItem(1, attacker);
+					if (!itemstack.isEmpty()) {
+						itemstack.getTagCompound().setBoolean(USE_THROWN_MODEL, true);
+						EntityCustom entityarrow = new EntityCustom(attacker.world, attacker);
+						Vec3d vec = attacker.getLookVec();
+						entityarrow.shoot(vec.x, vec.y, vec.z, 2.0f, 0);
+						entityarrow.setDamage(16d);
+						attacker.world.playSound(null, attacker.posX, attacker.posY, attacker.posZ, SoundEvents.ENTITY_ARROW_SHOOT,
+								SoundCategory.NEUTRAL, 1, 1f / (itemRand.nextFloat() * 0.5f + 1f) + 1f);
+						attacker.world.spawnEntity(entityarrow);
+						this.setGunbaiEntity(itemstack, entityarrow);
+						entityarrow.setItemStack(itemstack);
+					}
 				}
 				return true;
 			}
 			return super.onLeftClickEntity(itemstack, attacker, target);
 		}
 
-		private boolean isThrown(ItemStack stack) {
-			return stack.hasTagCompound() && stack.getTagCompound().getBoolean(USE_THROWN_MODEL);
+		@Override
+		public boolean hitEntity(ItemStack stack, EntityLivingBase target, EntityLivingBase attacker) {
+			stack.damageItem(1, attacker);
+			return true;
+		}
+
+		@Override
+		public boolean canContinueUsing(ItemStack oldStack, ItemStack newStack) {
+			return oldStack.equals(newStack) || oldStack.getItem() == newStack.getItem();
 		}
 
 		@Override
@@ -257,11 +332,20 @@ public class ItemGunbai extends ElementsNarutomodMod.ModElement {
 				ItemStack stack = entityitem.getItem();
 				if (stack.getItem() == block && ((RangedItem)stack.getItem()).isThrown(stack)) {
 					event.setCanceled(true);
-					EntityCustom entity = ((RangedItem)stack.getItem()).getEntity(entityitem.world, stack);
+					EntityCustom entity = ((RangedItem)stack.getItem()).getGunbaiEntity(entityitem.world, stack);
 					if (entity != null) {
 						entity.setShooter(null);
 					}
 				}
+			}
+		}
+
+		@SubscribeEvent
+		public void onAttack(LivingAttackEvent event) {
+			if (!event.getSource().isUnblockable() && event.getEntityLiving().isActiveItemStackBlocking()
+			 && event.getEntityLiving().getActiveItemStack().getItem() == block && ItemJutsu.isDamageSourceNinjutsu(event.getSource())) {
+				ItemStack stack = event.getEntityLiving().getActiveItemStack();
+				stack.getTagCompound().setFloat(ACCUMULATED_CHAKRA, stack.getTagCompound().getFloat(ACCUMULATED_CHAKRA) + event.getAmount());
 			}
 		}
 	}
@@ -270,7 +354,7 @@ public class ItemGunbai extends ElementsNarutomodMod.ModElement {
 		private static final DataParameter<Integer> SHOOTERID = EntityDataManager.<Integer>createKey(EntityCustom.class, DataSerializers.VARINT);
 		private final double chainMaxLength = 32.0d;
 		private double damage;
-		private ItemStack gunbaiStack;
+		private ItemStack itemstack = ItemStack.EMPTY;
 
 		public EntityCustom(World a) {
 			super(a);
@@ -290,19 +374,18 @@ public class ItemGunbai extends ElementsNarutomodMod.ModElement {
 		}
 
 		public void setShooter(@Nullable EntityLivingBase shooter) {
-			if (shooter != null) {
-				this.dataManager.set(SHOOTERID, Integer.valueOf(shooter.getEntityId()));
-				this.shootingEntity = shooter;
-			} else {
-				this.dataManager.set(SHOOTERID, Integer.valueOf(-1));
-				this.shootingEntity = null;
-			}
+			this.dataManager.set(SHOOTERID, Integer.valueOf(shooter != null ? shooter.getEntityId() : -1));
+			this.shootingEntity = shooter;
 		}
 
 		@Nullable
 		public EntityLivingBase getShooter() {
 			Entity entity = this.world.getEntityByID(((Integer)this.dataManager.get(SHOOTERID)).intValue());
 			return entity instanceof EntityLivingBase ? (EntityLivingBase)entity : null;
+		}
+
+		protected void setItemStack(ItemStack stack) {
+			this.itemstack = stack.copy();
 		}
 
 		public boolean inGround() {
@@ -388,8 +471,7 @@ public class ItemGunbai extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void shoot(double x, double y, double z, float velocity, float inaccuracy) {
 			super.shoot(x, y, z, velocity, inaccuracy);
-			this.playSound(net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:chainsound")),
-			 1f, this.rand.nextFloat() * 0.3f + 0.8f);
+			this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:chainsound")), 1f, this.rand.nextFloat() * 0.3f + 0.8f);
 		}
 
 		@Override
@@ -421,14 +503,17 @@ public class ItemGunbai extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public void onCollideWithPlayer(EntityPlayer entityIn) {
-			if (!this.world.isRemote && this.arrowShake <= 0) {
+			if (!this.world.isRemote && this.arrowShake <= 0 && this.itemstack != null && this.itemstack.getItem() == block) {
 				boolean flag = false;
 				if (this.shootingEntity == null && this.inGround) {
-					flag = entityIn.inventory.addItemStackToInventory(this.getArrowStack());
+					if (this.itemstack.hasTagCompound()) {
+						this.itemstack.getTagCompound().removeTag(USE_THROWN_MODEL);
+					}
+					flag = entityIn.inventory.addItemStackToInventory(this.itemstack);
 	            	((WorldServer)this.world).getEntityTracker().sendToTracking(this, new SPacketCollectItem(this.getEntityId(), entityIn.getEntityId(), 1));
-				} else if (this.gunbaiStack != null && entityIn.equals(this.shootingEntity) && this.ticksExisted > 15) {
-					ItemStack stack = ProcedureUtils.getMatchingItemStack(entityIn, this.gunbaiStack);
-					if (stack != null && stack.getItem() == block && ((RangedItem)stack.getItem()).isThrown(stack)) {
+				} else if (entityIn.equals(this.shootingEntity) && this.ticksExisted > 15) {
+					ItemStack stack = ProcedureUtils.getMatchingItemStack(entityIn, this.itemstack);
+					if (stack != null && ((RangedItem)stack.getItem()).isThrown(stack)) {
 						stack.getTagCompound().removeTag(USE_THROWN_MODEL);
 						flag = true;
 					}
@@ -439,8 +524,9 @@ public class ItemGunbai extends ElementsNarutomodMod.ModElement {
 			}
 		}
 
+		@Override
 		protected ItemStack getArrowStack() {
-			return new ItemStack(block);
+			return this.itemstack;
 		}
 
 	    public void setDamage(double damageIn) {
@@ -450,8 +536,129 @@ public class ItemGunbai extends ElementsNarutomodMod.ModElement {
 	    public double getDamage() {
 	        return this.damage;
 	    }
+
+		@Override
+		public void readEntityFromNBT(NBTTagCompound compound) {
+			super.readEntityFromNBT(compound);
+			if (compound.hasKey("itemstack")) {
+				this.itemstack = new ItemStack((NBTTagCompound)compound.getTag("itemstack"));
+			}
+		}
+
+		@Override
+		public void writeEntityToNBT(NBTTagCompound compound) {
+			super.writeEntityToNBT(compound);
+			if (this.itemstack != null) {
+				compound.setTag("itemstack", this.itemstack.writeToNBT(new NBTTagCompound()));
+			}
+		}	    
 	}
-	
+
+	public static class EntityChakraball extends EntityScalableProjectile.Base {
+		private static final DataParameter<Integer> SHOOTERID = EntityDataManager.<Integer>createKey(EntityChakraball.class, DataSerializers.VARINT);
+		private float scale;
+
+		public EntityChakraball(World world) {
+			super(world);
+			this.setOGSize(1.0f, 1.0f);
+			this.setEntityScale(0.1f);
+			this.isImmuneToFire = false;
+		}
+
+		public EntityChakraball(EntityLivingBase shooter) {
+			super(shooter);
+			this.setOGSize(1.0f, 1.0f);
+			this.setEntityScale(0.1f);
+			this.setShooter(shooter);
+			this.isImmuneToFire = false;
+			Vec3d vec = this.interpPositionFromShooter(shooter, 1f);
+			this.setLocationAndAngles(vec.x, vec.y, vec.z, shooter.rotationYaw, 0f);
+		}
+
+		@Override
+		protected void entityInit() {
+			super.entityInit();
+			this.dataManager.register(SHOOTERID, Integer.valueOf(-1));
+		}
+
+		public void setShooter(@Nullable EntityLivingBase shooter) {
+			this.dataManager.set(SHOOTERID, Integer.valueOf(shooter != null ? shooter.getEntityId() : -1));
+			this.shootingEntity = shooter;
+		}
+
+		@Nullable
+		public EntityLivingBase getShooter() {
+			Entity entity = this.world.getEntityByID(((Integer)this.dataManager.get(SHOOTERID)).intValue());
+			return entity instanceof EntityLivingBase ? (EntityLivingBase)entity : null;
+		}
+
+		public Vec3d interpPositionFromShooter(EntityLivingBase shooter, float partialTicks) {
+			Vec3d vec0 = new Vec3d(shooter.lastTickPosX, shooter.lastTickPosY, shooter.lastTickPosZ);
+			return Vec3d.fromPitchYaw(0f, shooter.prevRenderYawOffset + (shooter.renderYawOffset - shooter.prevRenderYawOffset) * partialTicks)
+			 .scale(0.6d).add(shooter.getPositionVector().subtract(vec0).scale(partialTicks).add(vec0)).addVector(0d, shooter.getEyeHeight(), 0d);
+		}
+
+		@Override
+		public void onUpdate() {
+			if (!this.world.isRemote && this.scale > this.getEntityScale()) {
+				this.setEntityScale(this.scale);
+			}
+			if (this.shootingEntity != null) {
+				Vec3d vec = this.interpPositionFromShooter(this.shootingEntity, 1f);
+				this.setPosition(vec.x, vec.y, vec.z);
+			}
+		}
+
+		@Override
+		protected void onImpact(RayTraceResult param1RayTraceResult) {
+		}
+
+		public void burst() {
+			class AirPunch extends ProcedureAirPunch {
+				private float damage;
+				
+				public AirPunch(float damageIn) {
+					this.damage = damageIn;
+					this.particlesDuring = null;
+				}
+
+				@Override
+				protected void preExecuteParticles(Entity player) {
+					Vec3d vec = player.getLookVec();
+					Vec3d vec1 = player.getPositionEyes(1.0f);
+					Particles.Renderer particles = new Particles.Renderer(player.world);
+					for (int i = 1, j = (int)(this.getRange(0) * 10); i <= j; i++) {
+						double d = (double)i * this.getRange(0) / j * 0.2d;
+						Vec3d vec2 = vec.scale(d);
+						particles.spawnParticles(Particles.Types.WHIRLPOOL, vec1.x, vec1.y, vec1.z, 1,
+						 0d, 0d, 0d, vec2.x, vec2.y, vec2.z, 0x40ffffff, 20 + (int)((float)i/j * this.getFarRadius(0) * 40), 20, 0xF0);
+					}
+					particles.send();
+				}
+
+				@Override
+				protected void attackEntityFrom(Entity player, Entity target) {
+					super.attackEntityFrom(player, target);
+					target.attackEntityFrom(ItemJutsu.causeJutsuDamage(EntityChakraball.this, player), this.damage);
+				}
+		
+				@Override
+				protected EntityItem processAffectedBlock(Entity player, BlockPos pos, EnumFacing facing) {
+					return null;
+				}
+		
+				@Override
+				protected float getBreakChance(BlockPos pos, Entity player, double range) {
+					return 0.0F;
+				}
+			}
+			if (this.scale > 0.1f && this.shootingEntity != null) {
+				this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:gunbai_deflect")), 1f, this.rand.nextFloat() * 0.5f + 0.8f);
+				new AirPunch(this.scale * 100f).execute(this.shootingEntity, this.scale * 20f, this.scale * 5f);
+			}
+			this.setDead();
+		}
+	}
 
 	@Override
 	public void preInit(FMLPreInitializationEvent event) {
@@ -465,6 +672,7 @@ public class ItemGunbai extends ElementsNarutomodMod.ModElement {
 			RenderingRegistry.registerEntityRenderingHandler(EntityCustom.class, renderManager -> {
 				return new RenderCustom(renderManager, Minecraft.getMinecraft().getRenderItem());
 			});
+			RenderingRegistry.registerEntityRenderingHandler(EntityChakraball.class, renderManager -> new RenderChakraball(renderManager));
 		}
 
 		@SideOnly(Side.CLIENT)
@@ -558,6 +766,66 @@ public class ItemGunbai extends ElementsNarutomodMod.ModElement {
 			@Override
 			protected ResourceLocation getEntityTexture(EntityCustom entity) {
 				return TextureMap.LOCATION_BLOCKS_TEXTURE;
+			}
+		}
+
+		@SideOnly(Side.CLIENT)
+		public class RenderChakraball extends Render<EntityChakraball> {
+			private final ResourceLocation texture1 = new ResourceLocation("narutomod:textures/white_sqr_gray_lines.png");
+			private final ResourceLocation texture2 = new ResourceLocation("narutomod:textures/white_square.png");
+			private final int sphereId;
+			
+			public RenderChakraball(RenderManager renderManagerIn) {
+				super(renderManagerIn);
+				this.sphereId = GLAllocation.generateDisplayLists(1);
+				GlStateManager.glNewList(this.sphereId, 0x1300);
+	        	Sphere sphere = new Sphere();
+				sphere.setDrawStyle(GLU.GLU_FILL);
+				sphere.setNormals(GLU.GLU_SMOOTH);
+				sphere.setOrientation(GLU.GLU_OUTSIDE);
+				sphere.setTextureFlag(true);
+				sphere.draw(0.5F, 32, 32);
+				GlStateManager.glEndList();
+			}
+
+			@Override
+			public void doRender(EntityChakraball entity, double x, double y, double z, float entityYaw, float pt) {
+				EntityLivingBase shooter = entity.getShooter();
+				if (shooter != null) {
+					float scale = entity.getEntityScale();
+					Vec3d vec = entity.interpPositionFromShooter(shooter, pt).subtract(this.renderManager.viewerPosX, this.renderManager.viewerPosY, this.renderManager.viewerPosZ);
+					GlStateManager.pushMatrix();
+					GlStateManager.translate(vec.x, vec.y, vec.z);
+					GlStateManager.enableRescaleNormal();
+					GlStateManager.scale(scale, scale, scale);
+					GlStateManager.rotate((pt + entity.ticksExisted) * 120.0F, 0.0F, 1.0F, 0.0F);
+					GlStateManager.disableCull();
+					GlStateManager.enableTexture2D();
+					this.bindTexture(this.texture1);
+					GlStateManager.enableBlend();
+					GlStateManager.disableLighting();
+					OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float)0xF0, (float)0xF0);
+					GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE);
+					GlStateManager.color(1.0F, 1.0F, 1.0F, 0.8F);
+					Minecraft.getMinecraft().entityRenderer.setupFogColor(true);
+					GlStateManager.callList(this.sphereId);
+					this.bindTexture(this.texture2);
+					GlStateManager.scale(1.5F, 1.5F, 1.5F);
+					GlStateManager.rotate(-(pt + entity.ticksExisted) * 90.0F, 0.0F, 1.0F, 0.0F);
+					GlStateManager.color(1.0F, 1.0F, 1.0F, 0.11F);
+					GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+					GlStateManager.callList(this.sphereId);
+					Minecraft.getMinecraft().entityRenderer.setupFogColor(false);
+					GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+					GlStateManager.enableLighting();
+					GlStateManager.enableCull();
+					GlStateManager.popMatrix();
+				}
+			}
+
+			@Override
+			protected ResourceLocation getEntityTexture(EntityChakraball entity) {
+				return this.texture2;
 			}
 		}
 	}

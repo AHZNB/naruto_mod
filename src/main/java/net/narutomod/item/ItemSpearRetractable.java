@@ -1,7 +1,6 @@
 
 package net.narutomod.item;
 
-import net.narutomod.procedure.ProcedureSync;
 import net.narutomod.creativetab.TabModTab;
 import net.narutomod.ElementsNarutomodMod;
 
@@ -71,11 +70,11 @@ public class ItemSpearRetractable extends ElementsNarutomodMod.ModElement {
 					stack.setTagCompound(new NBTTagCompound());
 				}
 				if (isSelected) {
-					if (worldIn.isRemote && entityIn.ticksExisted % 5 == 0) {
+					if (!worldIn.isRemote && entityIn.ticksExisted % 5 == 0) {
 						int customModel = stack.getTagCompound().hasKey(CUSTOM_MODEL_KEY) ? stack.getTagCompound().getInteger(CUSTOM_MODEL_KEY) : -1;
 						if (customModel < 6) {
 							stack.getTagCompound().setInteger(CUSTOM_MODEL_KEY, ++customModel);
-							ProcedureSync.SoundEffectMessage.sendToServer(entityIn.posX, entityIn.posY, entityIn.posZ,
+							worldIn.playSound(null, entityIn.posX, entityIn.posY, entityIn.posZ,
 							 SoundEvents.ITEM_ARMOR_EQUIP_IRON, SoundCategory.PLAYERS, 0.4f, 0.4f + (float)customModel * 0.1f);
 						}
 					}

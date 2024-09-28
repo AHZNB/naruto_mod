@@ -51,6 +51,7 @@ import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.init.Items;
 
+import net.narutomod.entity.EntityNinjaMob;
 import net.narutomod.item.ItemJutsu;
 import net.narutomod.PlayerTracker;
 import net.narutomod.PlayerRender;
@@ -233,6 +234,28 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 				if (!itemstack.isEmpty() && ItemStack.areItemStacksEqual(itemstack, itemStackIn)) {
 					return itemstack;
 				}
+			}
+		}
+		return null;
+	}
+
+	@Nullable
+	public static ItemStack getMatchingItemStack(EntityLivingBase entity, ItemStack stackIn) {
+		if (entity instanceof EntityPlayer && !entity.world.isRemote) {
+			return getMatchingItemStack((EntityPlayer)entity, stackIn);
+		}
+		if (entity instanceof EntityNinjaMob.Base) {
+			for (int i = 0; i < ((EntityNinjaMob.Base)entity).getInventorySize(); i++) {
+		 		ItemStack stack = ((EntityNinjaMob.Base)entity).getItemFromInventory(i);
+		 		if (!stack.isEmpty() && ItemStack.areItemStacksEqual(stack, stackIn)) {
+		 			return stack;
+		 		}
+		 	}
+		}
+		for (EntityEquipmentSlot slot : EntityEquipmentSlot.values()) {
+			ItemStack stack = entity.getItemStackFromSlot(slot);
+			if (!stack.isEmpty() && ItemStack.areItemStacksEqual(stack, stackIn)) {
+				return stack;
 			}
 		}
 		return null;

@@ -85,11 +85,11 @@ public class ItemSoundGaunlet extends ElementsNarutomodMod.ModElement {
 					double d = vec0.distanceTo(entity1.getPositionVector());
 					if (!entity1.equals(entity) && ItemJutsu.canTarget(entity1)
 					 && entity1.getEntityBoundingBox().grow(4d * d / 15d).calculateIntercept(vec0, vec2) != null) {
-						double d1 = (20d - d) * 0.5d / entity1.height;
+						double d1 = (20d - d) * 10d / entity1.height;
 						entity1.addPotionEffect(new PotionEffect(PotionParalysis.potion, (int)d1, 0));
 						entity1.addPotionEffect(new PotionEffect(MobEffects.NAUSEA, (int)d1 + 5, 0));
 						entity1.hurtResistantTime = 10;
-						entity1.attackEntityFrom(ItemJutsu.causeJutsuDamage(entity, null).setDamageBypassesArmor(), (float)d1 * 3f);
+						entity1.attackEntityFrom(ItemJutsu.causeJutsuDamage(entity, null).setDamageBypassesArmor(), (float)d1 * 0.15f);
 					}
 				}
 				if (!(entity instanceof EntityPlayer) || !((EntityPlayer)entity).isCreative()) {

@@ -1168,5 +1168,14 @@
         "stream": false
       }
     ]
+  },
+  "gunbai_deflect": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "narutomod:gunbai_deflect",
+        "stream": false
+      }
+    ]
   }
 }

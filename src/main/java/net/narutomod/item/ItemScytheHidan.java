@@ -52,10 +52,11 @@ import net.minecraft.client.model.ModelBiped;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.network.datasync.DataSerializers;
+import net.minecraft.network.play.server.SPacketCollectItem;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.block.material.Material;
-import net.minecraft.network.play.server.SPacketCollectItem;
+import net.minecraft.nbt.NBTTagCompound;
 
 import net.narutomod.entity.EntityRendererRegister;
 import net.narutomod.creativetab.TabModTab;
@@ -122,31 +123,41 @@ public class ItemScytheHidan extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void onPlayerStoppedUsing(ItemStack itemstack, World world, EntityLivingBase entity, int timeLeft) {
 			if (!world.isRemote) {
-				float f = net.minecraft.item.ItemBow.getArrowVelocity(this.getMaxItemUseDuration(itemstack) - timeLeft);
-				EntityCustom entityarrow = new EntityCustom(world, entity);
-				Vec3d vec = entity.getLookVec();
-				if (entity instanceof EntityLiving && ((EntityLiving)entity).getAttackTarget() != null) {
-					vec = ((EntityLiving)entity).getAttackTarget().getPositionEyes(1f)
-					 .subtract(entity.posX, entity.posY + entity.getEyeHeight() - 0.1f, entity.posZ);
-					vec = vec.addVector(0d, MathHelper.sqrt(vec.x * vec.x + vec.z * vec.z) * 0.1d, 0d);
-				}
-				entityarrow.shoot(vec.x, vec.y, vec.z, f * 2.0f, 0);
-				//entityarrow.setSilent(true);
-				entityarrow.setDamage(12d);
-				//entityarrow.setKnockbackStrength(0);
-				world.playSound(null, entity.posX, entity.posY, entity.posZ, SoundEvents.ENTITY_ARROW_SHOOT,
-						SoundCategory.NEUTRAL, 1, 1f / (itemRand.nextFloat() * 0.5f + 1f) + f);
-				world.spawnEntity(entityarrow);
-				ItemStack newstack = new ItemStack(ItemScytheHidanThrown.block);
-				((ItemScytheHidanThrown.RangedItem)newstack.getItem()).setEntity(newstack, entityarrow);
-				if (entity instanceof EntityPlayer) {
-					((EntityPlayer)entity).replaceItemInInventory(getSlotId((EntityPlayer)entity), newstack);
-				} else if (entity.getHeldItemMainhand().getItem() == block) {
-					entity.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, newstack);
-				} else if (entity.getHeldItemOffhand().getItem() == block) {
-					entity.setItemStackToSlot(EntityEquipmentSlot.OFFHAND, newstack);
+				itemstack.damageItem(1, entity);
+				if (!itemstack.isEmpty()) {
+					float f = net.minecraft.item.ItemBow.getArrowVelocity(this.getMaxItemUseDuration(itemstack) - timeLeft);
+					EntityCustom entityarrow = new EntityCustom(world, entity);
+					Vec3d vec = entity.getLookVec();
+					if (entity instanceof EntityLiving && ((EntityLiving)entity).getAttackTarget() != null) {
+						vec = ((EntityLiving)entity).getAttackTarget().getPositionEyes(1f)
+						 .subtract(entity.posX, entity.posY + entity.getEyeHeight() - 0.1f, entity.posZ);
+						vec = vec.addVector(0d, MathHelper.sqrt(vec.x * vec.x + vec.z * vec.z) * 0.1d, 0d);
+					}
+					entityarrow.shoot(vec.x, vec.y, vec.z, f * 2.0f, 0);
+					//entityarrow.setSilent(true);
+					entityarrow.setDamage(12d);
+					//entityarrow.setKnockbackStrength(0);
+					world.playSound(null, entity.posX, entity.posY, entity.posZ, SoundEvents.ENTITY_ARROW_SHOOT,
+							SoundCategory.NEUTRAL, 1, 1f / (itemRand.nextFloat() * 0.5f + 1f) + f);
+					world.spawnEntity(entityarrow);
+					entityarrow.setItemStack(itemstack);
+					ItemStack newstack = new ItemStack(ItemScytheHidanThrown.block);
+					((ItemScytheHidanThrown.RangedItem)newstack.getItem()).setEntity(newstack, entityarrow);
+					if (entity instanceof EntityPlayer) {
+						((EntityPlayer)entity).replaceItemInInventory(getSlotId((EntityPlayer)entity), newstack);
+					} else if (entity.getHeldItemMainhand().getItem() == block) {
+						entity.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, newstack);
+					} else if (entity.getHeldItemOffhand().getItem() == block) {
+						entity.setItemStackToSlot(EntityEquipmentSlot.OFFHAND, newstack);
+					}
 				}
 			}
+		}
+
+		@Override
+		public boolean hitEntity(ItemStack stack, EntityLivingBase target, EntityLivingBase attacker) {
+			stack.damageItem(1, attacker);
+			return true;
 		}
 
 		@Override
@@ -189,6 +200,7 @@ public class ItemScytheHidan extends ElementsNarutomodMod.ModElement {
 		private final double chainMaxLength = 32.0d;
 		private double damage;
 		private EntityLivingBase hitTarget;
+		private ItemStack itemstack = ItemStack.EMPTY;
 
 		public EntityCustom(World a) {
 			super(a);
@@ -220,6 +232,10 @@ public class ItemScytheHidan extends ElementsNarutomodMod.ModElement {
 		public EntityLivingBase getShooter() {
 			Entity entity = this.world.getEntityByID(((Integer)this.dataManager.get(SHOOTERID)).intValue());
 			return entity instanceof EntityLivingBase ? (EntityLivingBase)entity : null;
+		}
+
+		protected void setItemStack(ItemStack stack) {
+			this.itemstack = stack.copy();
 		}
 
 		@Nullable
@@ -356,8 +372,9 @@ public class ItemScytheHidan extends ElementsNarutomodMod.ModElement {
 			}
 		}
 
+		@Override
 		protected ItemStack getArrowStack() {
-			return new ItemStack(block);
+			return this.itemstack;
 		}
 
 	    public void setDamage(double damageIn) {
@@ -367,6 +384,22 @@ public class ItemScytheHidan extends ElementsNarutomodMod.ModElement {
 	    public double getDamage() {
 	        return this.damage;
 	    }
+
+		@Override
+		public void readEntityFromNBT(NBTTagCompound compound) {
+			super.readEntityFromNBT(compound);
+			if (compound.hasKey("itemStack")) {
+				this.itemstack = new ItemStack((NBTTagCompound)compound.getTag("itemStack"));
+			}
+		}
+
+		@Override
+		public void writeEntityToNBT(NBTTagCompound compound) {
+			super.writeEntityToNBT(compound);
+			if (this.itemstack != null) {
+				compound.setTag("itemstack", this.itemstack.writeToNBT(new NBTTagCompound()));
+			}
+		}	    
 	}
 	
 

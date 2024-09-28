@@ -321,12 +321,13 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 			for (EntityEquipmentSlot slot : EntityEquipmentSlot.values()) {
 				ItemStack stack = this.getItemStackFromSlot(slot);
 				if (!stack.isEmpty()) {
-					stack.updateAnimation(this.world, this, 0, slot == EntityEquipmentSlot.MAINHAND);
+					stack.updateAnimation(this.world, this, -slot.getSlotIndex(), slot == EntityEquipmentSlot.MAINHAND);
 				}
 			}
-			for (ItemStack stack : this.inventory) {
+			for (int i = 0; i < this.inventory.size(); i++) {
+				ItemStack stack = this.inventory.get(i);
 				if (!stack.isEmpty())
-					stack.updateAnimation(this.world, this, 0, false);
+					stack.updateAnimation(this.world, this, i, false);
 			}
 		}
 
