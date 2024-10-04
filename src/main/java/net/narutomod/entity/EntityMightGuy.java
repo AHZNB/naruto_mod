@@ -53,6 +53,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.client.renderer.entity.RenderBiped;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.model.ModelBox;
 import net.minecraft.entity.monster.IMob;
@@ -119,7 +120,7 @@ public class EntityMightGuy extends ElementsNarutomodMod.ModElement {
 
 		public EntityCustom(World world) {
 			super(world, 120, 5000d);
-			this.setSize(0.6f, 2.0f);
+			this.setSize(0.6f, 1.9f);
 			this.tasks.removeTask(this.leapAI);
 			this.setDropChance(EntityEquipmentSlot.MAINHAND, 0f);
 			this.gateCooldown = 100;
@@ -563,6 +564,10 @@ public class EntityMightGuy extends ElementsNarutomodMod.ModElement {
 			RenderingRegistry.registerEntityRenderingHandler(EntityCustom.class, renderManager -> {
 				return new EntityNinjaMob.RenderBase<EntityCustom>(renderManager, new ModelMightguy()) {
 					private final ResourceLocation texture = new ResourceLocation("narutomod:textures/might_guy.png");
+					@Override
+					protected void preRenderCallback(EntityCustom entity, float partialTickTime) {
+						GlStateManager.scale(0.9687F, 0.9687F, 0.9687F);
+					}
 					@Override
 					protected ResourceLocation getEntityTexture(EntityCustom entity) {
 						return this.texture;

@@ -258,24 +258,32 @@ public class ItemGunbai extends ElementsNarutomodMod.ModElement {
 			}
 		}
 
+		public void throwItemAt(ItemStack itemstack, EntityLivingBase attacker, @Nullable Entity target) {
+			if (itemstack.hasTagCompound() && !this.isThrown(itemstack)) {
+				itemstack.damageItem(1, attacker);
+				if (!itemstack.isEmpty()) {
+					itemstack.getTagCompound().setBoolean(USE_THROWN_MODEL, true);
+					EntityCustom entityarrow = new EntityCustom(attacker.world, attacker);
+					Vec3d vec = attacker.getLookVec();
+					if (target != null) {
+						vec = target.getPositionEyes(1f).subtract(attacker.getPositionEyes(1f).subtract(0d, 0.1d, 0d));
+						vec = vec.addVector(0d, MathHelper.sqrt(vec.x * vec.x + vec.z * vec.z) * 0.1d, 0d);
+					}
+					entityarrow.shoot(vec.x, vec.y, vec.z, 2.0f, 0);
+					entityarrow.setDamage(16d);
+					attacker.world.playSound(null, attacker.posX, attacker.posY, attacker.posZ, SoundEvents.ENTITY_ARROW_SHOOT,
+							SoundCategory.NEUTRAL, 1, 1f / (itemRand.nextFloat() * 0.5f + 1f) + 1f);
+					attacker.world.spawnEntity(entityarrow);
+					this.setGunbaiEntity(itemstack, entityarrow);
+					entityarrow.setItemStack(itemstack);
+				}
+			}			
+		}
+
 		@Override
 		public boolean onLeftClickEntity(ItemStack itemstack, EntityPlayer attacker, Entity target) {
 			if (!attacker.world.isRemote && attacker.equals(target)) {
-				if (itemstack.hasTagCompound() && !this.isThrown(itemstack)) {
-					itemstack.damageItem(1, attacker);
-					if (!itemstack.isEmpty()) {
-						itemstack.getTagCompound().setBoolean(USE_THROWN_MODEL, true);
-						EntityCustom entityarrow = new EntityCustom(attacker.world, attacker);
-						Vec3d vec = attacker.getLookVec();
-						entityarrow.shoot(vec.x, vec.y, vec.z, 2.0f, 0);
-						entityarrow.setDamage(16d);
-						attacker.world.playSound(null, attacker.posX, attacker.posY, attacker.posZ, SoundEvents.ENTITY_ARROW_SHOOT,
-								SoundCategory.NEUTRAL, 1, 1f / (itemRand.nextFloat() * 0.5f + 1f) + 1f);
-						attacker.world.spawnEntity(entityarrow);
-						this.setGunbaiEntity(itemstack, entityarrow);
-						entityarrow.setItemStack(itemstack);
-					}
-				}
+				this.throwItemAt(itemstack, attacker, null);
 				return true;
 			}
 			return super.onLeftClickEntity(itemstack, attacker, target);

@@ -261,8 +261,8 @@ public class ItemRaiton extends ElementsNarutomodMod.ModElement {
 						ItemKaton.FLAMESLICE.jutsu.deactivate(entity);
 					}
 					entity1 = new EntityChakraMode(entity, stack);
-					entity.world.spawnEntity(entity1);
 					stack.getTagCompound().setInteger(ID_KEY, entity1.getEntityId());
+					entity.world.spawnEntity(entity1);
 					return true;
 				}
 			}

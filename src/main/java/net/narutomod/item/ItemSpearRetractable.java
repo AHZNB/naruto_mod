@@ -122,30 +122,30 @@ public class ItemSpearRetractable extends ElementsNarutomodMod.ModElement {
 	@SideOnly(Side.CLIENT)
 	@Override
 	public void registerModels(ModelRegistryEvent event) {
-		final ModelResourceLocation[] resources = {
-	   	    new ModelResourceLocation("narutomod:spear_retractable_0", "inventory"),
-	   	    new ModelResourceLocation("narutomod:spear_retractable_1", "inventory"),
-	   	    new ModelResourceLocation("narutomod:spear_retractable_2", "inventory"),
-	   	    new ModelResourceLocation("narutomod:spear_retractable_3", "inventory"),
-	   	    new ModelResourceLocation("narutomod:spear_retractable_4", "inventory"),
-	   	    new ModelResourceLocation("narutomod:spear_retractable_5", "inventory"),
-	   	    new ModelResourceLocation("narutomod:spear_retractable_6", "inventory"),
-	   	    new ModelResourceLocation("narutomod:spear_retractable_7", "inventory")
-		};
-   	    ModelBakery.registerItemVariants(block, resources);
-
-	    ModelLoader.setCustomMeshDefinition(block, new ItemMeshDefinition() {
-	    	private final ModelResourceLocation[] res = Arrays.copyOf(resources, resources.length);
+		class MeshDef implements ItemMeshDefinition {
+			final ModelResourceLocation[] resources = {
+		   	    new ModelResourceLocation("narutomod:spear_retractable_0", "inventory"),
+		   	    new ModelResourceLocation("narutomod:spear_retractable_1", "inventory"),
+		   	    new ModelResourceLocation("narutomod:spear_retractable_2", "inventory"),
+		   	    new ModelResourceLocation("narutomod:spear_retractable_3", "inventory"),
+		   	    new ModelResourceLocation("narutomod:spear_retractable_4", "inventory"),
+		   	    new ModelResourceLocation("narutomod:spear_retractable_5", "inventory"),
+		   	    new ModelResourceLocation("narutomod:spear_retractable_6", "inventory"),
+		   	    new ModelResourceLocation("narutomod:spear_retractable_7", "inventory")
+			};
 	        @Override
 	        public ModelResourceLocation getModelLocation(ItemStack stack) {
 	            if (stack.hasTagCompound() && stack.getTagCompound().hasKey(CUSTOM_MODEL_KEY)) {
 	                int customModel = stack.getTagCompound().getInteger(CUSTOM_MODEL_KEY);
 	                if (customModel >= 0 && customModel <= 7) {
-	                	return this.res[customModel];
+	                	return this.resources[customModel];
 	                }
 	            }
-	            return this.res[0];
+	            return this.resources[0];
 	        }
-	    });
+	    }
+	    MeshDef meshDef = new MeshDef();
+   	    ModelBakery.registerItemVariants(block, meshDef.resources);
+	    ModelLoader.setCustomMeshDefinition(block, meshDef);
 	}
 }

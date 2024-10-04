@@ -504,10 +504,12 @@ public class EntityHidan extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		protected void readEntityFromNBT(NBTTagCompound compound) {
+			this.setAge(compound.getInteger("age"));
 		}
 
 		@Override
 		protected void writeEntityToNBT(NBTTagCompound compound) {
+			compound.setInteger("age", this.getAge());
 		}
 	}
 

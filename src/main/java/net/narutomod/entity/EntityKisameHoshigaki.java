@@ -136,7 +136,7 @@ public class EntityKisameHoshigaki extends ElementsNarutomodMod.ModElement {
 
 		public EntityCustom(World worldIn) {
 			super(worldIn, 140, 10000d);
-			this.setSize(0.6f, 2.1f);
+			this.setSize(0.6f, 2.0f);
 			this.mainNavigator = this.navigator;
 			this.altNavigator = new PathNavigateSwimmer(this, worldIn);
 			this.mainMoveHelper = this.moveHelper;
@@ -491,11 +491,6 @@ public class EntityKisameHoshigaki extends ElementsNarutomodMod.ModElement {
 				if (!entityIn.useAltModel()) {
 					super.renderLayers(entityIn, f0, f1, f2, f3, f4, f5, f6);
 				}
-			}
-
-			@Override
-			protected void preRenderCallback(EntityCustom entity, float partialTickTime) {
-				GlStateManager.scale(1.0625F, 1.0625F, 1.0625F);
 			}
 
 			@Override

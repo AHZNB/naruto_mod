@@ -40,6 +40,7 @@ Jutsus:
  - updated dust release cube, charges slower, smaller max, updated effects
  - fixed fuzzy targeting system sometimes not hitting the target correctly when the projectile is huge (such as rasenshuirken)
  - change sharingan chance to evade attacks to 60%, can't evade unblockable attacks
+ - genjutsu doesn't affect tailed beasts unless the caster is wearing sharingan; genjutsu doesn't affect kikaichu users
 
 Items:
  - added Sakura shippuden clothing and leggings (for slim player models only)
@@ -96,6 +97,7 @@ Entities:
  - fixed naturally spawned tailed beast only spawning in the +X, +Z direction relative to world spawn point
  - Itachi no longer does close range melee, better kunai targeting, can block attacks with kunai
  - added Might Guy blocking animation
+ - adding Kakuzu (does nothing yet)
  
 General:
  - fixed alpha transparency bug when using certain jutsus

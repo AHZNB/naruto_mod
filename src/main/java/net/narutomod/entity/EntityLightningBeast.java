@@ -133,7 +133,7 @@ public class EntityLightningBeast extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public boolean attackEntityAsMob(Entity entityIn) {
-			return EntityLightningArc.onStruck(entityIn, ItemJutsu.causeJutsuDamage(this, null), this.power);
+			return EntityLightningArc.onStruck(entityIn, ItemJutsu.causeJutsuDamage(this, this.getOwner()), this.power);
 		}
 
 		private BlockPos findDestination() {
@@ -413,7 +413,7 @@ public class EntityLightningBeast extends ElementsNarutomodMod.ModElement {
 	
 			@Override
 			public void setRotationAngles(float f, float f1, float f2, float f3, float f4, float f5, Entity e) {
-				f *= 2.0f / e.height;
+				//f *= 0.85f * MODELSCALE / e.height;
 				super.setRotationAngles(f, f1, f2, f3, f4, f5, e);
 				this.head.rotateAngleY = f3 / (180F / (float) Math.PI);
 				this.head.rotateAngleX = f4 / (180F / (float) Math.PI);

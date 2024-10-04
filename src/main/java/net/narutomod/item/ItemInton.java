@@ -23,6 +23,7 @@ import net.minecraft.init.MobEffects;
 
 import net.narutomod.entity.EntityMindTransfer;
 import net.narutomod.entity.EntityShadowImitation;
+import net.narutomod.entity.EntityTailedBeast;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.procedure.ProcedureSync;
 import net.narutomod.potion.PotionParalysis;
@@ -70,7 +71,7 @@ public class ItemInton extends ElementsNarutomodMod.ModElement {
 		@Override
 		public boolean createJutsu(ItemStack stack, EntityLivingBase entity, float power) {
 			Entity target = ProcedureUtils.objectEntityLookingAt(entity, this.maxRange).entityHit;
-			if (target instanceof EntityLivingBase) {
+			if (target instanceof EntityLivingBase && this.canTargetBeAffected(entity, (EntityLivingBase)target)) {
 				entity.world.playSound(null, target.posX, target.posY, target.posZ,
 				  (SoundEvent) SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:genjutsu")), SoundCategory.NEUTRAL, 1f, 1f);
 				((EntityLivingBase)target).addPotionEffect(new PotionEffect(PotionParalysis.potion, this.duration, 1, false, false));
@@ -85,6 +86,18 @@ public class ItemInton extends ElementsNarutomodMod.ModElement {
 				return true;
 			}
 			return false;
+		}
+
+		public boolean canTargetBeAffected(EntityLivingBase caster, EntityLivingBase target) {
+			if (target instanceof EntityTailedBeast.Base && !ItemSharingan.wearingAny(caster)) {
+				return false;
+			} else {
+				ItemStack stack = ProcedureUtils.getMatchingItemStack(target, ItemNinjutsu.block);
+				if (stack != null && ItemNinjutsu.isJutsuEnabled(stack, ItemNinjutsu.BUGSWARM)) {
+					return false;
+				}
+			}
+			return true;
 		}
 	}
 }
