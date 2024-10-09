@@ -624,6 +624,7 @@ public class ItemJutsu extends ElementsNarutomodMod.ModElement {
 	}
 
 	public interface IJutsu {
+		JutsuEnum.Type getJutsuType();
 	}
 	
 	public interface IJutsuCallback {

@@ -1,9 +1,6 @@
 
 package net.narutomod.entity;
 
-//import net.minecraftforge.fml.relauncher.SideOnly;
-//import net.minecraftforge.fml.relauncher.Side;
-
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
@@ -17,6 +14,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.ai.attributes.IAttribute;
+import net.minecraft.entity.ai.EntityAIWander;
 import net.minecraft.entity.MoverType;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.monster.IMob;
@@ -68,7 +66,6 @@ public class EntitySummonAnimal extends ElementsNarutomodMod.ModElement {
 
 		public Base(World w) {
 			super(w);
-			//this.dontWander(false);
 			this.enablePersistence();
 		}
 
@@ -76,7 +73,6 @@ public class EntitySummonAnimal extends ElementsNarutomodMod.ModElement {
 			this(summonerIn.world);
 			//this.postScaleFixup();
 			this.setSummoner(summonerIn);
-			this.dontWander(true);
 			this.enablePersistence();
 		}
 
@@ -220,8 +216,6 @@ public class EntitySummonAnimal extends ElementsNarutomodMod.ModElement {
 			}
 		}
 
-		protected abstract void dontWander(boolean set);
-
 		@Override
 		public boolean processInteract(EntityPlayer entity, EnumHand hand) {
 			if (!this.world.isRemote && this.isSummoner(entity)) {
@@ -312,7 +306,9 @@ public class EntitySummonAnimal extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public boolean attackEntityAsMob(Entity entityIn) {
-			return ProcedureUtils.attackEntityAsMob(this, entityIn);
+			EntityLivingBase owner = this.getSummoner();
+			return owner != null ? ProcedureUtils.attackEntityAsMob(this, entityIn, DamageSource.causeIndirectDamage(this, owner))
+			 : ProcedureUtils.attackEntityAsMob(this, entityIn);
 		}
 
 		@Override
@@ -422,6 +418,24 @@ public class EntitySummonAnimal extends ElementsNarutomodMod.ModElement {
 			compound.setInteger("lifeSpan", this.lifeSpan);
 			compound.setFloat("scale", this.getScale());
 			compound.setString("OwnerUUID", this.getOwnerId() == null ? "" : this.getOwnerId().toString());
+		}
+	}
+
+	public static class AIWander extends EntityAIWander {
+		protected final Base baseEntity;
+		
+		public AIWander(Base creatureIn, double speedIn) {
+			this(creatureIn, speedIn, 120);
+		}
+
+		public AIWander(Base creatureIn, double speedIn, int chance) {
+			super(creatureIn, speedIn, chance);
+			this.baseEntity = creatureIn;
+		}
+
+		@Override
+		public boolean shouldExecute() {
+			return this.baseEntity.getSummoner() == null && super.shouldExecute();
 		}
 	}
 

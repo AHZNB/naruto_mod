@@ -170,6 +170,14 @@ public class WorldKamuiDimension extends ElementsNarutomodMod.ModElement {
 				$_dependencies.put("world", world);
 				ProcedureKamuiDimensionPlayerEntersDimension.executeProcedure($_dependencies);
 			}
+			entity.capabilities.allowEdit = false;
+			entity.sendPlayerAbilities();
+		}
+
+		@Override
+		public void onPlayerRemoved(EntityPlayerMP player) {
+			player.capabilities.allowEdit = !player.interactionManager.getGameType().hasLimitedInteractions();
+			player.sendPlayerAbilities();
 		}
 	}
 

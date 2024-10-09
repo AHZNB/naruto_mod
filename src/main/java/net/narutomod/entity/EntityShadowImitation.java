@@ -84,7 +84,7 @@ public class EntityShadowImitation extends ElementsNarutomodMod.ModElement {
 			//}
 			//PlayerInput.Hook.haltTargetInput(targetIn, true);
 			this.setPosition(userIn.posX, userIn.posY, userIn.posZ);
-			this.chakraBurn = chakraUsagePerSec + ProcedureUtils.getPunchDamage(targetIn) * 5;
+			this.chakraBurn = chakraUsagePerSec + ProcedureUtils.getPunchDamage(targetIn) * 50;
 		}
 
 		@Override
@@ -153,7 +153,7 @@ public class EntityShadowImitation extends ElementsNarutomodMod.ModElement {
 						this.setDead();
 					} else {
 						if (this.ticksExisted == 1) {
-							this.playSound((SoundEvent)SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:shadow_sfx")), 1f, 1f);
+							this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:shadow_sfx")), 1f, 1f);
 							PlayerInput.Hook.haltTargetInput(target, true);
 							if (user instanceof EntityPlayer) {
 								PlayerInput.Hook.copyInputFrom((EntityPlayerMP)user, this, true);
@@ -252,6 +252,21 @@ public class EntityShadowImitation extends ElementsNarutomodMod.ModElement {
 					}
 				}
 				return s + "]";
+			}
+
+			@Override
+			public boolean isActivated(EntityLivingBase entity) {
+				int[] intarray = entity.getEntityData().getIntArray(ECENTITYID);
+				if (intarray.length > 0) {
+					for (int i = 0; i < intarray.length; i++) {
+						Entity entity1 = entity.world.getEntityByID(intarray[i]);
+						if (entity1 instanceof EC) {
+							return true;
+						}
+					}
+					entity.getEntityData().removeTag(ECENTITYID);
+				}
+				return false;
 			}
 		}
 

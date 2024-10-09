@@ -128,6 +128,12 @@ public abstract class EntityShieldBase extends EntityLivingBase {
 	}
 
 	@Override
+	public boolean attackEntityAsMob(Entity entityIn) {
+		EntityLivingBase owner = this.getSummoner();
+		return owner != null ? ProcedureUtils.attackEntityAsMob(this, entityIn, DamageSource.causeIndirectDamage(this, owner)) : false;
+	}
+
+	@Override
 	public boolean processInitialInteract(EntityPlayer entity, EnumHand hand) {
 		super.processInitialInteract(entity, hand);
 		if (!this.world.isRemote && entity.equals(this.getSummoner())) {

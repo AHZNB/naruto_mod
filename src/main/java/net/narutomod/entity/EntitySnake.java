@@ -94,30 +94,12 @@ public class EntitySnake extends ElementsNarutomodMod.ModElement {
 		private boolean needsSync;
 		private boolean prevOnGround;
 		private boolean defensive;
-		private final EntityAIWander wanderAI = new EntityAIWander(this, 0.8d, 10) {
-			@Override
-			public boolean shouldExecute() {
-				Phase phase = EntityCustom.this.getPhaseManager().getPhase().getType();
-				return phase != Phase.DEFENSIVE && phase != Phase.RIDING && super.shouldExecute();
-			}
-			@Override
-			@Nullable
-			protected Vec3d getPosition() {
-				float f = EntityCustom.this.getScale();
-				Vec3d vec = this.entity.getPositionVector();
-				while (vec != null && vec.distanceTo(this.entity.getPositionVector()) < 4.0d + f) {
-					vec = RandomPositionGenerator.findRandomTarget(this.entity, 4 + (int)(f * 3), 6 + (int)f);
-				}
-				return vec;
-			}
-		};
 		
 		public EntityCustom(World worldIn) {
 			super(worldIn);
 			this.setOGSize(0.3f, 0.25f);
 			this.isImmuneToFire = false;
 			this.setNoAI(!true);
-			this.dontWander(false);
 			//this.enablePersistence();
 			this.ignoreFrustumCheck = true;
 			this.mainNavigator = this.navigator;
@@ -139,7 +121,6 @@ public class EntitySnake extends ElementsNarutomodMod.ModElement {
 			this(summonerIn.world);
 			this.setSummoner(summonerIn);
 			this.phaseManager.setPhase(Phase.DEFENSIVE);
-			this.dontWander(true);
 		}
 
 		@Override
@@ -281,16 +262,24 @@ public class EntitySnake extends ElementsNarutomodMod.ModElement {
 					EntityCustom.this.defensive = false;
 				}
 			});
-			this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, false));
-		}
+			this.tasks.addTask(4, new EntitySummonAnimal.AIWander(this, 0.8d, 10) {
+				@Override
+				public boolean shouldExecute() {
+					Phase phase = EntityCustom.this.getPhaseManager().getPhase().getType();
+					return phase != Phase.DEFENSIVE && phase != Phase.RIDING && super.shouldExecute();
+				}
+				@Override @Nullable
+				protected Vec3d getPosition() {
+					float f = EntityCustom.this.getScale();
+					Vec3d vec = this.entity.getPositionVector();
+					while (vec != null && vec.distanceTo(this.entity.getPositionVector()) < 4.0d + f) {
+						vec = RandomPositionGenerator.findRandomTarget(this.entity, 4 + (int)(f * 3), 6 + (int)f);
+					}
+					return vec;
+				}
+			});
 
-		@Override
-		protected void dontWander(boolean dont) {
-			if (dont) {
-				this.tasks.removeTask(this.wanderAI);
-			} else {
-				this.tasks.addTask(4, this.wanderAI);
-			}
+			this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, false));
 		}
 
 		@Override

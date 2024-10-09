@@ -102,12 +102,6 @@ public class EntityWoodGolem extends ElementsNarutomodMod.ModElement {
 			return -0.625d * MODELSCALE;
 		}
 
-		@Override
-		public boolean attackEntityAsMob(Entity entityIn) {
-			super.attackEntityAsMob(entityIn);
-			return ProcedureUtils.attackEntityAsMob(this, entityIn);
-		}
-
 		private float getGrowth(float ageInTicks) {
 			return Math.min(ageInTicks / (float)this.growTime, 1.0f);
 		}

@@ -183,12 +183,6 @@ public class EntityBuddha1000 extends ElementsNarutomodMod.ModElement {
 			}
 		}
 
-		@Override
-		public boolean attackEntityAsMob(Entity entityIn) {
-			super.attackEntityAsMob(entityIn);
-			return ProcedureUtils.attackEntityAsMob(this, entityIn);
-		}
-
 	    private float updateRotation(float p_75652_1_, float p_75652_2_, float p_75652_3_) {
 	        float f = MathHelper.wrapDegrees(p_75652_2_ - p_75652_1_);
 	        if (f > p_75652_3_) {

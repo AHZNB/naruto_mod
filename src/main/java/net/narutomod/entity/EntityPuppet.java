@@ -297,6 +297,12 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 			return super.attackEntityFrom(source, amount);
 		}
 
+		@Override
+		public boolean attackEntityAsMob(Entity entityIn) {
+			EntityLivingBase owner = this.getOwner();
+			return owner != null ? ProcedureUtils.attackEntityAsMob(this, entityIn, DamageSource.causeIndirectDamage(this, owner)) : false;
+		}
+
 		/*@Override
 		protected boolean processInteract(EntityPlayer player, EnumHand hand) {
 			ItemStack stack = player.getHeldItem(hand);

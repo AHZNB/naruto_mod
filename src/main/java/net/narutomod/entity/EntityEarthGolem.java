@@ -86,10 +86,6 @@ public class EntityEarthGolem extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
-		protected void dontWander(boolean set) {
-		}
-
-		@Override
 		protected void initEntityAI() {
 			super.initEntityAI();
 			this.tasks.addTask(1, new EntityAIAttackMelee(this, 1.0d, true));

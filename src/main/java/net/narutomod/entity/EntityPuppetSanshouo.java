@@ -192,7 +192,8 @@ public class EntityPuppetSanshouo extends ElementsNarutomodMod.ModElement {
 	                    }
                         entityIn.addVelocity(d0 * d4, d4 * 0.5d, d1 * d4);
                         if (d4 >= 0.1d) {
-                        	entityIn.attackEntityFrom(DamageSource.FLY_INTO_WALL, (float)d4 * 10.0f);
+                        	Entity passenger = this.getControllingPassenger();
+                        	entityIn.attackEntityFrom(passenger instanceof EntityLivingBase ? DamageSource.causeIndirectDamage(this, (EntityLivingBase)passenger) : DamageSource.causeMobDamage(this), (float)d4 * 10.0f);
                         }
                     }
                 }

@@ -67,7 +67,6 @@ public class EntitySlug extends ElementsNarutomodMod.ModElement {
 
 	public static class EntityCustom extends EntitySummonAnimal.Base implements IRangedAttackMob {
 		private static final DataParameter<EnumFacing> CLIMBING = EntityDataManager.<EnumFacing>createKey(EntityCustom.class, DataSerializers.FACING);
-		private final EntityAIWander aiWander = new EntityAIWander(this, 1.0, 50);
 		private int climbingTime;
 
 		public EntityCustom(World world) {
@@ -76,7 +75,6 @@ public class EntitySlug extends ElementsNarutomodMod.ModElement {
 			this.isImmuneToFire = true;
 			this.enablePersistence();
 			this.postScaleFixup();
-			this.dontWander(false);
 		}
 
 		public EntityCustom(EntityLivingBase summonerIn, float scale) {
@@ -183,16 +181,8 @@ public class EntitySlug extends ElementsNarutomodMod.ModElement {
 		protected void initEntityAI() {
 			super.initEntityAI();
 			this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, false));
+			this.tasks.addTask(2, new EntitySummonAnimal.AIWander(this, 1.0, 50));
 			this.tasks.addTask(3, new EntityAILookIdle(this));
-		}
-
-		@Override
-		protected void dontWander(boolean set) {
-			if (!set) {
-				this.tasks.addTask(2, this.aiWander);
-			} else {
-				this.tasks.removeTask(this.aiWander);
-			}
 		}
 
 		@Override

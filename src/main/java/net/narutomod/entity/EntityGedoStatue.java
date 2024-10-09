@@ -291,10 +291,6 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
-		protected void dontWander(boolean set) {
-		}
-
-		@Override
 		protected void updateAITasks() {
 			super.updateAITasks();
 			if (this.rand.nextInt(100) == 0) {

@@ -143,11 +143,6 @@ public class EntityPuppetKarasu extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
-		public boolean attackEntityAsMob(Entity entityIn) {
-			return ProcedureUtils.attackEntityAsMob(this, entityIn);
-		}
-
-		@Override
 		public void setSwingingArms(boolean swingingArms) {
 			this.setMouthOpen(swingingArms);
 		}

@@ -58,26 +58,6 @@ public class EntityToad extends ElementsNarutomodMod.ModElement {
 		private float prevJumpProgress;
 		private float jumpProgress;
 		protected final Navigator jumpNavigator;
-		private final EntityAIWander aiWander = new EntityAIWander(this, 1.2, 20) {
-			@Override
-			@Nullable
-			protected Vec3d getPosition() {
-				float f = EntityCustom.this.getScale();
-				Vec3d vec = this.entity.getPositionVector();
-				while (vec != null && vec.distanceTo(this.entity.getPositionVector()) < 4.0d + f) {
-					vec = RandomPositionGenerator.findRandomTarget(this.entity, 7 + (int)(f * 3), 6 + (int)f);
-				}
-				return vec;
-			}
-			@Override
-			public boolean shouldContinueExecuting() {
-				return !this.entity.onGround;
-			}
-			@Override
-			public void startExecuting() {
-				EntityCustom.this.jumpNavigator.setNavigateTarget(this.x, this.y, this.z);
-			}
-		};
 
 		public EntityCustom(World world) {
 			super(world);
@@ -86,7 +66,6 @@ public class EntityToad extends ElementsNarutomodMod.ModElement {
 			this.setNoAI(!true);
 			this.moveHelper = new MoveHelper(this);
 			this.jumpNavigator = new Navigator(this);
-			this.dontWander(false);
 		}
 
 		public EntityCustom(EntityLivingBase summonerIn) {
@@ -130,6 +109,25 @@ public class EntityToad extends ElementsNarutomodMod.ModElement {
 			super.initEntityAI();
 			this.tasks.addTask(1, new EntityAISwimming(this));
 			this.tasks.addTask(2, new AIAttackMelee(this, true));
+			this. tasks.addTask(3, new EntitySummonAnimal.AIWander(this, 1.2, 20) {
+				@Override @Nullable
+				protected Vec3d getPosition() {
+					float f = EntityCustom.this.getScale();
+					Vec3d vec = this.entity.getPositionVector();
+					while (vec != null && vec.distanceTo(this.entity.getPositionVector()) < 4.0d + f) {
+						vec = RandomPositionGenerator.findRandomTarget(this.entity, 7 + (int)(f * 3), 6 + (int)f);
+					}
+					return vec;
+				}
+				@Override
+				public boolean shouldContinueExecuting() {
+					return !this.entity.onGround;
+				}
+				@Override
+				public void startExecuting() {
+					EntityCustom.this.jumpNavigator.setNavigateTarget(this.x, this.y, this.z);
+				}
+			});
 			this.tasks.addTask(4, new EntityAILookIdle(this));
 			this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, false));
 			/*this.targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, EntityMob.class, true, false) {
@@ -138,15 +136,6 @@ public class EntityToad extends ElementsNarutomodMod.ModElement {
 					return this.taskOwner.getEntityBoundingBox().grow(targetDistance, 2.0d * EntityCustom.this.getScale(), targetDistance);
 				}
 			});*/
-		}
-
-		@Override
-		protected void dontWander(boolean set) {
-			if (!set) {
-				this.tasks.addTask(3, this.aiWander);
-			} else {
-				this.tasks.removeTask(this.aiWander);
-			}
 		}
 
 		@Override

@@ -97,10 +97,6 @@ public class EntityGiantDog2h extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
-		protected void dontWander(boolean set) {
-		}
-
-		@Override
 		public SoundEvent getAmbientSound() {
 			return SoundEvent.REGISTRY.getObject(new ResourceLocation("entity.wolf.growl"));
 		}

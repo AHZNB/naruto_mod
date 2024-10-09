@@ -380,13 +380,17 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static boolean attackEntityAsMob(EntityLivingBase attacker, Entity entityIn) {
+		return attackEntityAsMob(attacker, entityIn, DamageSource.causeMobDamage(attacker));
+	}
+
+	public static boolean attackEntityAsMob(EntityLivingBase attacker, Entity entityIn, DamageSource source) {
 		int i = 0;
 		float f = (float) getModifiedAttackDamage(attacker);
 		if (entityIn instanceof EntityLivingBase) {
 			f += EnchantmentHelper.getModifierForCreature(attacker.getHeldItemMainhand(), ((EntityLivingBase) entityIn).getCreatureAttribute());
 			i += EnchantmentHelper.getKnockbackModifier(attacker);
 		}
-		boolean flag = entityIn.attackEntityFrom(DamageSource.causeMobDamage(attacker), f);
+		boolean flag = entityIn.attackEntityFrom(source, f);
 		if (flag) {
 			if (i > 0 && entityIn instanceof EntityLivingBase) {
 				((EntityLivingBase) entityIn).knockBack(attacker, (float) i * 0.5F, (double) MathHelper.sin(attacker.rotationYaw * 0.017453292F),
@@ -419,8 +423,8 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 				EnchantmentHelper.applyThornEnchantments((EntityLivingBase) entityIn, attacker);
 			}
 			EnchantmentHelper.applyArthropodEnchantments(attacker, entityIn);
-			attacker.setLastAttackedEntity(entityIn);
 		}
+		attacker.setLastAttackedEntity(entityIn);
 		return flag;
 	}
 

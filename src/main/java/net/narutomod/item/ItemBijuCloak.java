@@ -298,7 +298,7 @@ public class ItemBijuCloak extends ElementsNarutomodMod.ModElement {
 		if (smokeColor != 0) {
 			Particles.spawnParticle(entity.world, Particles.Types.SMOKE, entity.posX, entity.posY + 0.9d, entity.posZ, 
 			 50, 0.18d, 0.4d, 0.18d, 0d, 0d, 0d, smokeColor, 10, 
-			 (int)(4.0D / (entity.getRNG().nextDouble() * 0.8D + 0.2D)), 0, entity.getEntityId());
+			 (int)(4.0D / (entity.getRNG().nextDouble() * 0.8D + 0.2D)), 0xF0, entity.getEntityId());
 		}
 		if (!entity.world.isRemote && entity.ticksExisted % 10 == 4) {
 			//entity.addPotionEffect(new PotionEffect(MobEffects.SATURATION, 5, 0, false, false));

@@ -139,11 +139,6 @@ public class EntityPuppetHundred extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
-		public boolean attackEntityAsMob(Entity entityIn) {
-			return ProcedureUtils.attackEntityAsMob(this, entityIn);
-		}
-
-		@Override
 		public void readEntityFromNBT(NBTTagCompound compound) {
 			super.readEntityFromNBT(compound);
 			this.setEntityScale(compound.getFloat("scale"));

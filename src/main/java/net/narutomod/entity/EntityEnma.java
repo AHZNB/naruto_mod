@@ -70,8 +70,6 @@ public class EntityEnma extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static class EC extends EntitySummonAnimal.Base {
-		private final EntityAIWander aiWander = new EntityAIWander(this, 0.8, 50);
-
 		public EC(World world) {
 			super(world);
 			this.setOGSize(0.6f, 2.0f);
@@ -161,16 +159,8 @@ public class EntityEnma extends ElementsNarutomodMod.ModElement {
 					return this.closestEntity != null;
 				}
 			});
+			this.tasks.addTask(5, new EntitySummonAnimal.AIWander(this, 0.8, 50));
 			this.tasks.addTask(6, new EntityAILookIdle(this));
-		}
-
-		@Override
-		protected void dontWander(boolean set) {
-			if (!set) {
-				this.tasks.addTask(5, this.aiWander);
-			} else {
-				this.tasks.removeTask(this.aiWander);
-			}
 		}
 
 		@Override
