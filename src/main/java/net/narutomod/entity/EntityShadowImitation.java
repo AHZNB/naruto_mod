@@ -63,7 +63,7 @@ public class EntityShadowImitation extends ElementsNarutomodMod.ModElement {
 				.id(new ResourceLocation("narutomod", "shadow_imitation"), ENTITYID).name("shadow_imitation").tracker(64, 3, true).build());
 	}
 
-	public static class EC extends Entity implements PlayerInput.Hook.IHandler {
+	public static class EC extends Entity implements PlayerInput.Hook.IHandler, ItemJutsu.IJutsu {
 		private static final DataParameter<Integer> USER_ID = EntityDataManager.<Integer>createKey(EC.class, DataSerializers.VARINT);
 		private static final DataParameter<Integer> TARGET_ID = EntityDataManager.<Integer>createKey(EC.class, DataSerializers.VARINT);
 		private double chakraBurn;
@@ -85,6 +85,11 @@ public class EntityShadowImitation extends ElementsNarutomodMod.ModElement {
 			//PlayerInput.Hook.haltTargetInput(targetIn, true);
 			this.setPosition(userIn.posX, userIn.posY, userIn.posZ);
 			this.chakraBurn = chakraUsagePerSec + ProcedureUtils.getPunchDamage(targetIn) * 50;
+		}
+
+		@Override
+		public ItemJutsu.JutsuEnum.Type getJutsuType() {
+			return ItemJutsu.JutsuEnum.Type.INTON;
 		}
 
 		@Override

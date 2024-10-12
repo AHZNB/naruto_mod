@@ -15,6 +15,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.EnumActionResult;
+import net.minecraft.util.EntityDamageSource;
 import net.minecraft.util.EntityDamageSourceIndirect;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.ResourceLocation;
@@ -63,11 +64,13 @@ public class ItemJutsu extends ElementsNarutomodMod.ModElement {
 	}
 	
 	public static DamageSource causeJutsuDamage(Entity source, @Nullable Entity indirectEntityIn) {
-		return new EntityDamageSourceIndirect(NINJUTSU_TYPE, source, indirectEntityIn);
+		return indirectEntityIn != null ? new EntityDamageSourceIndirect(NINJUTSU_TYPE, source, indirectEntityIn)
+		 : new EntityDamageSource(NINJUTSU_TYPE, source);
 	}
 
 	public static DamageSource causeSenjutsuDamage(Entity source, @Nullable Entity indirectEntityIn) {
-		return new EntityDamageSourceIndirect(SENJUTSU_TYPE, source, indirectEntityIn).setDamageIsAbsolute();
+		return indirectEntityIn != null ? new EntityDamageSourceIndirect(SENJUTSU_TYPE, source, indirectEntityIn).setDamageIsAbsolute()
+		 : new EntityDamageSource(SENJUTSU_TYPE, source).setDamageIsAbsolute();
 	}
 
 	public static boolean isDamageSourceNinjutsu(DamageSource source) {
@@ -744,7 +747,7 @@ public class ItemJutsu extends ElementsNarutomodMod.ModElement {
 		}
 
 		public String toString() {
-			return "\nJutsu - " + this.type + ": " + this.getName() + ", rank:" + this.rank;
+			return "\nJutsu - " + this.type + ": " + this.getName() + ", rank:" + this.rank + ", callback:" + this.jutsu.getClass();
 		}
 
 		public enum Type {

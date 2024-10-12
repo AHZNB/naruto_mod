@@ -44,7 +44,7 @@ public class EntitySwampPit extends ElementsNarutomodMod.ModElement {
 		 .id(new ResourceLocation("narutomod", "swamp_pit"), ENTITYID).name("swamp_pit").tracker(64, 3, true).build());
 	}
 
-	public static class EC extends Entity {
+	public static class EC extends Entity implements ItemJutsu.IJutsu {
 		private BlockPos center;
 		private int radius;
 		private int offsetY;
@@ -72,6 +72,11 @@ public class EntitySwampPit extends ElementsNarutomodMod.ModElement {
 			}
 			this.offsetY = y;
 			this.setPosition(centerPos.getX() + 0.5d, centerPos.getY(), centerPos.getZ() + 0.5d);
+		}
+
+		@Override
+		public ItemJutsu.JutsuEnum.Type getJutsuType() {
+			return ItemJutsu.JutsuEnum.Type.DOTON;
 		}
 
 		@Override

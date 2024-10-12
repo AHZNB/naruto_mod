@@ -37,7 +37,7 @@ public class EntityHidingInAsh extends ElementsNarutomodMod.ModElement {
 				.id(new ResourceLocation("narutomod", "hiding_in_ash"), ENTITYID).name("hiding_in_ash").tracker(64, 3, true).build());
 	}
 
-	public static class EC extends Entity {
+	public static class EC extends Entity implements ItemJutsu.IJutsu {
 		private static final DataParameter<Integer> USER_ID = EntityDataManager.<Integer>createKey(EC.class, DataSerializers.VARINT);
 		private static final DataParameter<Float> RANGE = EntityDataManager.<Float>createKey(EC.class, DataSerializers.FLOAT);
 		private static final int maxLife = 110;
@@ -53,6 +53,11 @@ public class EntityHidingInAsh extends ElementsNarutomodMod.ModElement {
 			this.setRange((float)rangeIn);
 			this.setIdlePosition();
 			userIn.addPotionEffect(new PotionEffect(MobEffects.INVISIBILITY, this.maxLife, 0, false, false));
+		}
+
+		@Override
+		public ItemJutsu.JutsuEnum.Type getJutsuType() {
+			return ItemJutsu.JutsuEnum.Type.RAITON;
 		}
 
 		@Override

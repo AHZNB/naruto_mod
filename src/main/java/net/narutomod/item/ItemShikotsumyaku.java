@@ -99,9 +99,8 @@ public class ItemShikotsumyaku extends ElementsNarutomodMod.ModElement {
 	public static class LarchDance implements ItemJutsu.IJutsuCallback {
 		@Override
 		public boolean createJutsu(ItemStack stack, EntityLivingBase entity, float power) {
-			entity.world.playSound(null, entity.posX, entity.posY, entity.posZ, (SoundEvent) 
-				  SoundEvent.REGISTRY.getObject(new ResourceLocation(("narutomod:bonecrack"))),
-				  SoundCategory.PLAYERS, 1f, 1f);
+			entity.world.playSound(null, entity.posX, entity.posY, entity.posZ,
+			 SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:bonecrack")), SoundCategory.PLAYERS, 1f, 1f);
 			ItemStack cheststack = entity.getItemStackFromSlot(EntityEquipmentSlot.CHEST);
 			if (!ItemBoneArmor.isLarchActive(cheststack)) {
 				if (cheststack.getItem() != ItemBoneArmor.body) {
@@ -126,9 +125,8 @@ public class ItemShikotsumyaku extends ElementsNarutomodMod.ModElement {
 	public static class WillowDance implements ItemJutsu.IJutsuCallback {
 		@Override
 		public boolean createJutsu(ItemStack stack, EntityLivingBase entity, float power) {
-			entity.world.playSound(null, entity.posX, entity.posY, entity.posZ, (SoundEvent) 
-				  SoundEvent.REGISTRY.getObject(new ResourceLocation(("narutomod:bonecrack"))),
-				  SoundCategory.PLAYERS, 1f, 1f);
+			entity.world.playSound(null, entity.posX, entity.posY, entity.posZ,
+			 SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:bonecrack")), SoundCategory.PLAYERS, 1f, 1f);
 			ItemStack cheststack = entity.getItemStackFromSlot(EntityEquipmentSlot.CHEST);
 			if (!ItemBoneArmor.isWillowActive(cheststack)) {
 				if (cheststack.getItem() != ItemBoneArmor.body) {
@@ -154,9 +152,8 @@ public class ItemShikotsumyaku extends ElementsNarutomodMod.ModElement {
 		@Override
 		public boolean createJutsu(ItemStack stack, EntityLivingBase entity, float power) {
 			if (entity.getHeldItemMainhand().getItem() != ItemBoneSword.block) {
-				entity.world.playSound(null, entity.posX, entity.posY, entity.posZ, (SoundEvent) 
-					  SoundEvent.REGISTRY.getObject(new ResourceLocation(("narutomod:bonecrack"))),
-					  SoundCategory.PLAYERS, 1f, 1f);
+				entity.world.playSound(null, entity.posX, entity.posY, entity.posZ,
+				 SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:bonecrack")), SoundCategory.PLAYERS, 1f, 1f);
 				ItemStack itemstack = new ItemStack(ItemBoneSword.block);
 				if (entity instanceof EntityPlayer) {
 					ProcedureUtils.swapItemToSlot((EntityPlayer)entity, EntityEquipmentSlot.MAINHAND, itemstack);
@@ -195,17 +192,15 @@ public class ItemShikotsumyaku extends ElementsNarutomodMod.ModElement {
 			return false;*/
 			if (entity instanceof EntityPlayer) {
 				if (!ProcedureUtils.hasItemInInventory((EntityPlayer)entity, ItemBoneDrill.block)) {
-					entity.world.playSound(null, entity.posX, entity.posY, entity.posZ, (SoundEvent) 
-						  SoundEvent.REGISTRY.getObject(new ResourceLocation(("narutomod:bonecrack"))),
-						  SoundCategory.PLAYERS, 1f, 1f);
+					entity.world.playSound(null, entity.posX, entity.posY, entity.posZ,
+					 SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:bonecrack")), SoundCategory.PLAYERS, 1f, 1f);
 					ItemHandlerHelper.giveItemToPlayer((EntityPlayer)entity, new ItemStack(ItemBoneDrill.block));
 					ItemJutsu.setCurrentJutsuCooldown(stack, (EntityPlayer)entity, 1200);
 					return true;
 				}
 			} else if (entity.getHeldItemMainhand().getItem() != ItemBoneDrill.block) {
-				entity.world.playSound(null, entity.posX, entity.posY, entity.posZ, (SoundEvent) 
-					  SoundEvent.REGISTRY.getObject(new ResourceLocation(("narutomod:bonecrack"))),
-					  SoundCategory.PLAYERS, 1f, 1f);
+				entity.world.playSound(null, entity.posX, entity.posY, entity.posZ,
+				 SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:bonecrack")), SoundCategory.PLAYERS, 1f, 1f);
 				entity.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(ItemBoneDrill.block));
 				return true;
 			}
@@ -213,7 +208,7 @@ public class ItemShikotsumyaku extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-	public static class EntityBrackenDance extends EntitySpike.Base {
+	public static class EntityBrackenDance extends EntitySpike.Base implements ItemJutsu.IJutsu {
 		private final int growTime = 8;
 		private final float maxScale = 2.0f;
 		private final float damage = 20.0f;
@@ -226,6 +221,11 @@ public class ItemShikotsumyaku extends ElementsNarutomodMod.ModElement {
 		public EntityBrackenDance(EntityLivingBase userIn, float damageIn) {
 			super(userIn, 0xFFFFFFFF);
 			//this.damage = damageIn;
+		}
+
+		@Override
+		public ItemJutsu.JutsuEnum.Type getJutsuType() {
+			return ItemJutsu.JutsuEnum.Type.SHIKOTSUMYAKU;
 		}
 
 		@Override
@@ -260,7 +260,7 @@ public class ItemShikotsumyaku extends ElementsNarutomodMod.ModElement {
 						for (; world.getBlockState(new BlockPos(vec).up()).isTopSolid(); vec = vec.addVector(0d, 1d, 0d));
 						entity1.setLocationAndAngles(vec.x, vec.y + 0.5d, vec.z, entity.getRNG().nextFloat() * 360f, (entity.getRNG().nextFloat() - 0.5f) * 60f);
 						world.spawnEntity(entity1);
-						world.playSound(null, entity1.posX, entity1.posY, entity1.posZ, (SoundEvent)
+						world.playSound(null, entity1.posX, entity1.posY, entity1.posZ,
 						 SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:bonecrack")),
 						 SoundCategory.NEUTRAL, 5f, entity.getRNG().nextFloat() * 0.4f + 0.4f);
 					}

@@ -55,7 +55,7 @@ public class EntityKirin extends ElementsNarutomodMod.ModElement {
 				.name("kirin").tracker(128, 3, true).build());
 	}
 
-	public static class EC extends EntityScalableProjectile.Base {
+	public static class EC extends EntityScalableProjectile.Base implements ItemJutsu.IJutsu {
 		private final int wait = 60;
 		private Vec3d shootVec;
 		private float prevHeadYaw;
@@ -81,6 +81,11 @@ public class EntityKirin extends ElementsNarutomodMod.ModElement {
 			this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:dragon_roar")),
 			 100f, this.rand.nextFloat() * 0.4f + 0.8f);
 //this.shootVec = new Vec3d(0d, -1d, 0d);
+		}
+
+		@Override
+		public ItemJutsu.JutsuEnum.Type getJutsuType() {
+			return ItemJutsu.JutsuEnum.Type.RAITON;
 		}
 
 		private void setWaitPosition() {

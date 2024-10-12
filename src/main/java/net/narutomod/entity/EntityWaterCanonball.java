@@ -52,7 +52,7 @@ public class EntityWaterCanonball extends ElementsNarutomodMod.ModElement {
 				.id(new ResourceLocation("narutomod", "water_canonball"), ENTITYID).name("water_canonball").tracker(64, 3, true).build());
 	}
 
-	public static class EC extends EntityScalableProjectile.Base {
+	public static class EC extends EntityScalableProjectile.Base implements ItemJutsu.IJutsu {
 		private float fullScale = 1f;
 		private final int timeToFullscale = 20;
 		private int explosionSize;
@@ -72,6 +72,11 @@ public class EntityWaterCanonball extends ElementsNarutomodMod.ModElement {
 			this.damage = power * 30.0f;
 			Vec3d vec = shooter.getPositionEyes(1f).add(shooter.getLookVec().scale(shooter.width * 0.5f)).subtract(0d, 0.2d, 0d);
 			this.setLocationAndAngles(vec.x, vec.y, vec.z, shooter.rotationYawHead, shooter.rotationPitch);
+		}
+
+		@Override
+		public ItemJutsu.JutsuEnum.Type getJutsuType() {
+			return ItemJutsu.JutsuEnum.Type.SUITON;
 		}
 
 		public void setDamage(float amount) {

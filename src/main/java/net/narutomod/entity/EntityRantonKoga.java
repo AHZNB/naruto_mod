@@ -31,7 +31,7 @@ public class EntityRantonKoga extends ElementsNarutomodMod.ModElement {
 				.id(new ResourceLocation("narutomod", "ranton_koga"), ENTITYID).name("ranton_koga").tracker(64, 3, true).build());
 	}
 
-	public static class EC extends Entity {
+	public static class EC extends Entity implements ItemJutsu.IJutsu {
 		private EntityLivingBase shooter;
 		private float power;
 
@@ -45,6 +45,11 @@ public class EntityRantonKoga extends ElementsNarutomodMod.ModElement {
 			this.shooter = shooterIn;
 			this.power = powerIn;
 			this.setLocationAndAngles(shooterIn.posX, shooterIn.posY, shooterIn.posZ, 0f, 0f);
+		}
+
+		@Override
+		public ItemJutsu.JutsuEnum.Type getJutsuType() {
+			return ItemJutsu.JutsuEnum.Type.SENJUTSU;
 		}
 
 		@Override

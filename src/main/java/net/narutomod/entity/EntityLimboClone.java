@@ -62,7 +62,7 @@ public class EntityLimboClone extends ElementsNarutomodMod.ModElement {
 		MinecraftForge.EVENT_BUS.register(new EntityAttackedHook());
 	}
 
-	public static class EC extends EntityClone._Base {
+	public static class EC extends EntityClone._Base implements ItemJutsu.IJutsu {
 		private final int lifeSpan = 400;
 
 		public EC(World world) {
@@ -79,6 +79,11 @@ public class EntityLimboClone extends ElementsNarutomodMod.ModElement {
 			 .setBaseValue(user instanceof EntityPlayer ? PlayerTracker.getNinjaLevel((EntityPlayer)user)
 			 : ProcedureUtils.getModifiedAttackDamage(user));
 			this.moveHelper = new EntityClone.AIFlyControl(this);
+		}
+
+		@Override
+		public ItemJutsu.JutsuEnum.Type getJutsuType() {
+			return ItemJutsu.JutsuEnum.Type.NINJUTSU;
 		}
 
 		@Override

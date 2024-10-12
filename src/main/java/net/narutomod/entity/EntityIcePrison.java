@@ -64,7 +64,7 @@ public class EntityIcePrison extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-	public static class EC extends Entity {
+	public static class EC extends Entity implements ItemJutsu.IJutsu {
 		private EntityLivingBase user;
 		private EntityLivingBase target;
 		private BlockPos blockpos;
@@ -92,6 +92,11 @@ public class EntityIcePrison extends ElementsNarutomodMod.ModElement {
 			this.tpos[0] = this.blockpos;
 			this.radius = (int)(targetIn.width * 0.5 + 1);
 			this.tHeight = (int)(targetIn.height + 1);
+		}
+
+		@Override
+		public ItemJutsu.JutsuEnum.Type getJutsuType() {
+			return ItemJutsu.JutsuEnum.Type.HYOTON;
 		}
 
 		@Override

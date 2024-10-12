@@ -58,7 +58,7 @@ public class EntitySuitonShark extends ElementsNarutomodMod.ModElement {
 		 .id(new ResourceLocation("narutomod", "suiton_shark"), ENTITYID).name("suiton_shark").tracker(64, 3, true).build());
 	}
 
-	public static class EC extends EntityScalableProjectile.Base {
+	public static class EC extends EntityScalableProjectile.Base implements ItemJutsu.IJutsu {
 		private static final DataParameter<Float> PREVLSA = EntityDataManager.<Float>createKey(EC.class, DataSerializers.FLOAT);
 		private static final DataParameter<Float> LSA = EntityDataManager.<Float>createKey(EC.class, DataSerializers.FLOAT);
 		private static final DataParameter<Float> LS = EntityDataManager.<Float>createKey(EC.class, DataSerializers.FLOAT);
@@ -85,6 +85,11 @@ public class EntitySuitonShark extends ElementsNarutomodMod.ModElement {
 			this.health = power * 20f;
 			this.setWaterSlowdown(1.0f);
 			this.isImmuneToFire = true;
+		}
+
+		@Override
+		public ItemJutsu.JutsuEnum.Type getJutsuType() {
+			return ItemJutsu.JutsuEnum.Type.SUITON;
 		}
 
 		@Override

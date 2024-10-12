@@ -59,7 +59,7 @@ public class EntityEarthSpears extends ElementsNarutomodMod.ModElement {
 		RenderingRegistry.registerEntityRenderingHandler(EC.class, renderManager -> new CustomRender(renderManager));
 	}
 
-	public static class EC extends EntitySpike.Base {
+	public static class EC extends EntitySpike.Base implements ItemJutsu.IJutsu {
 		private final int growTime = 8;
 		private final float maxScale = 2.0f;
 		private final float damage = 10.0f;
@@ -72,6 +72,11 @@ public class EntityEarthSpears extends ElementsNarutomodMod.ModElement {
 		public EC(EntityLivingBase userIn, float damageIn) {
 			super(userIn, 0xFFFFFFFF);
 			//this.damage = Math.min(damageIn, 20f);
+		}
+
+		@Override
+		public ItemJutsu.JutsuEnum.Type getJutsuType() {
+			return ItemJutsu.JutsuEnum.Type.DOTON;
 		}
 
 		@Override

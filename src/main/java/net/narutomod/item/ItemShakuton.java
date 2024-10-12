@@ -170,7 +170,7 @@ public class ItemShakuton extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-	public static class EntityScorchBall extends EntityScalableProjectile.Base {
+	public static class EntityScorchBall extends EntityScalableProjectile.Base implements ItemJutsu.IJutsu {
 		private double idleHeight;
 		private Entity target;
 		//private final int growTime = 60;
@@ -189,6 +189,11 @@ public class ItemShakuton extends ElementsNarutomodMod.ModElement {
 			this.setEntityScale(this.inititalScale);
 			this.setPosition(shooter.posX, shooter.posY+shooter.height, shooter.posZ);
 			this.idleHeight = shooter.getEyeHeight();
+		}
+
+		@Override
+		public ItemJutsu.JutsuEnum.Type getJutsuType() {
+			return ItemJutsu.JutsuEnum.Type.SHAKUTON;
 		}
 
 		private Vec3d getIdlePosition() {

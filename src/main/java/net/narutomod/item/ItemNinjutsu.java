@@ -134,7 +134,7 @@ public class ItemNinjutsu extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-	public static class EntityReplacementClone extends EntityClone.Base {
+	public static class EntityReplacementClone extends EntityClone.Base implements ItemJutsu.IJutsu {
 		public EntityReplacementClone(World world) {
 			super(world);
 			this.setNoAI(true);
@@ -163,6 +163,11 @@ public class ItemNinjutsu extends ElementsNarutomodMod.ModElement {
 			pos.release();
 		}
 		
+		@Override
+		public ItemJutsu.JutsuEnum.Type getJutsuType() {
+			return ItemJutsu.JutsuEnum.Type.NINJUTSU;
+		}
+
 		@Override
 		public void setDead() {
 			super.setDead();

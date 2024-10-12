@@ -2,6 +2,7 @@
 package net.narutomod.entity;
 
 import net.narutomod.item.ItemAkatsukiRobe;
+import net.narutomod.item.ItemJutsu;
 import net.narutomod.ElementsNarutomodMod;
 
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -35,7 +36,7 @@ import javax.annotation.Nullable;
 //import net.minecraft.network.datasync.DataParameter;
 //import net.minecraft.network.datasync.EntityDataManager;
 //import net.minecraft.network.datasync.DataSerializers;
-//import net.minecraft.util.DamageSource;
+import net.minecraft.util.DamageSource;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityKakuzu extends ElementsNarutomodMod.ModElement {
@@ -134,21 +135,32 @@ public class EntityKakuzu extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		protected void updateAITasks() {
-			//if (this.ticksExisted == 20) {
-			//	this.takeOffRobe(true);
-			//}
+			if (this.ticksExisted == 40) {
+				this.takeOffRobe(true);
+			}
 			//if (this.ticksExisted == 100) {
 			//	this.takeOffRobe(false);
 			//}
 		}
 
-		//@Override
-		//protected void damageEntity(DamageSource damageSrc, float damageAmount) {
-		//	if (this.isEntityInvulnerable(damageSrc)) {
-		//		return;
-		//	}
-		//	super.damageEntity(source, amount * 0.2f);
-		//}
+		@Override
+		protected void damageEntity(DamageSource damageSrc, float damageAmount) {
+			if (this.isEntityInvulnerable(damageSrc)) {
+				return;
+			}
+			if (damageSrc.getImmediateSource() instanceof ItemJutsu.IJutsu) {
+				ItemJutsu.JutsuEnum.Type jutsuType = ((ItemJutsu.IJutsu)damageSrc.getImmediateSource()).getJutsuType();
+				if (jutsuType == ItemJutsu.JutsuEnum.Type.RAITON) {
+					super.damageEntity(damageSrc, damageAmount);
+					return;
+				}
+			}
+			if (damageSrc.isDamageAbsolute() || damageSrc.isUnblockable()) {
+				super.damageEntity(damageSrc, damageAmount);
+				return;
+			}
+			super.damageEntity(damageSrc, damageAmount * 0.2f);
+		}
 
 		@SideOnly(Side.CLIENT)
 		@Override
@@ -281,9 +293,17 @@ public class EntityKakuzu extends ElementsNarutomodMod.ModElement {
 				hair = new ModelRenderer(this);
 				hair.setRotationPoint(0.0F, 0.0F, 0.0F);
 				bipedHead.addChild(hair);
-				hair.cubeList.add(new ModelBox(hair, 24, -8, -4.0F, 0.0F, -4.0F, 0, 4, 8, 0.0F, false));
-				hair.cubeList.add(new ModelBox(hair, 24, -8, 4.0F, 0.0F, -4.0F, 0, 4, 8, 0.0F, true));
 				hair.cubeList.add(new ModelBox(hair, 24, 4, -4.0F, 0.0F, 4.0F, 8, 4, 0, 0.0F, false));
+				ModelRenderer bipedHead_r1 = new ModelRenderer(this);
+				bipedHead_r1.setRotationPoint(4.0F, 0.0F, 0.0F);
+				hair.addChild(bipedHead_r1);
+				setRotationAngle(bipedHead_r1, 0.0F, 0.0F, -0.0436F);
+				bipedHead_r1.cubeList.add(new ModelBox(bipedHead_r1, 24, -8, 0.0F, 0.0F, -4.0F, 0, 4, 8, 0.0F, true));
+				ModelRenderer bipedHead_r2 = new ModelRenderer(this);
+				bipedHead_r2.setRotationPoint(-4.0F, 0.0F, 0.0F);
+				hair.addChild(bipedHead_r2);
+				setRotationAngle(bipedHead_r2, 0.0F, 0.0F, 0.0436F);
+				bipedHead_r2.cubeList.add(new ModelBox(bipedHead_r2, 24, -8, 0.0F, 0.0F, -4.0F, 0, 4, 8, 0.0F, false));
 				jaw = new ModelRenderer(this);
 				jaw.setRotationPoint(0.0F, 0.0F, -2.0F);
 				bipedHead.addChild(jaw);

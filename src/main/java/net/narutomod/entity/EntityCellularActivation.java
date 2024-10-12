@@ -56,7 +56,7 @@ public class EntityCellularActivation extends ElementsNarutomodMod.ModElement {
 		MinecraftForge.EVENT_BUS.register(new EC.UserHook());
 	}
 
-	public static class EC extends Entity {
+	public static class EC extends Entity implements ItemJutsu.IJutsu {
 		private static final DataParameter<Integer> USER_ID = EntityDataManager.<Integer>createKey(EC.class, DataSerializers.VARINT);
 		private static final DataParameter<Integer> REDUCTION = EntityDataManager.<Integer>createKey(EC.class, DataSerializers.VARINT);
 		private final double chakraBurn = ItemIryoJutsu.MEDMODE.chakraUsage;
@@ -70,6 +70,11 @@ public class EntityCellularActivation extends ElementsNarutomodMod.ModElement {
 			this(userIn.world);
 			this.setUser(userIn);
 			this.setPosition(userIn.posX, userIn.posY, userIn.posZ);
+		}
+
+		@Override
+		public ItemJutsu.JutsuEnum.Type getJutsuType() {
+			return ItemJutsu.JutsuEnum.Type.IRYO;
 		}
 
 		@Override

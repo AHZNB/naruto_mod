@@ -64,7 +64,7 @@ public class EntityTruthSeekerBall extends ElementsNarutomodMod.ModElement {
 		 .id(new ResourceLocation("narutomod", "truthseekerball"), ENTITYID).name("truthseekerball").tracker(96, 3, true).build());
 	}
 
-	public static class EntityCustom extends EntityScalableProjectile.Base {
+	public static class EntityCustom extends EntityScalableProjectile.Base implements ItemJutsu.IJutsu {
 		private static final Vec3d[] VEC = {
 			new Vec3d(0.0d, 2.0387d, -0.4395d), new Vec3d(-0.4102d, 1.7629d, -0.4395d), 
 			new Vec3d(0.4102d, 1.7629d, -0.4395d), new Vec3d(-0.5859d, 1.3113d, -0.4395d), 
@@ -106,6 +106,11 @@ public class EntityTruthSeekerBall extends ElementsNarutomodMod.ModElement {
 			Vec3d vec = this.getIdlePosition();
 			this.setLocationAndAngles(vec.x, vec.y, vec.z, 0.0f, 0.0f);
 			this.hp = 1000.0f;
+		}
+
+		@Override
+		public ItemJutsu.JutsuEnum.Type getJutsuType() {
+			return ItemJutsu.JutsuEnum.Type.SENJUTSU;
 		}
 
 		@Override
@@ -350,7 +355,7 @@ public class EntityTruthSeekerBall extends ElementsNarutomodMod.ModElement {
 			float damage = radius * 10;
 			ProcedureAoeCommand.set(world, x, y, z, 0.0D, radius).exclude(entity).exclude(EntityCustom.class)
 			 .resetHurtResistanceTime().damageEntities(
-			 DamageSource.causeIndirectDamage(this, this.shootingEntity).setDamageIsAbsolute().setDamageBypassesArmor(), damage);
+			 ItemJutsu.causeSenjutsuDamage(this, this.shootingEntity).setDamageBypassesArmor(), damage);
 		}
 
 		@Override

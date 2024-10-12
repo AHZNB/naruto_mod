@@ -65,7 +65,7 @@ public class EntityIceSpear extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-	public static class EC extends EntitySpike.Base {
+	public static class EC extends EntitySpike.Base implements ItemJutsu.IJutsu {
 		private static final DataParameter<Float> RAND_YAW = EntityDataManager.<Float>createKey(EC.class, DataSerializers.FLOAT);
 		private static final DataParameter<Float> RAND_PITCH = EntityDataManager.<Float>createKey(EC.class, DataSerializers.FLOAT);
 		
@@ -78,6 +78,11 @@ public class EntityIceSpear extends ElementsNarutomodMod.ModElement {
 		public EC(EntityLivingBase userIn) {
 			super(userIn, 0xC0FFFFFF);
 			this.setRandYawPitch();
+		}
+
+		@Override
+		public ItemJutsu.JutsuEnum.Type getJutsuType() {
+			return ItemJutsu.JutsuEnum.Type.HYOTON;
 		}
 
 		@Override

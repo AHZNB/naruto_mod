@@ -51,7 +51,7 @@ public class EntityMeltingJutsu extends ElementsNarutomodMod.ModElement {
 				.id(new ResourceLocation("narutomod", "melting_jutsu"), ENTITYID).name("melting_jutsu").tracker(64, 3, true).build());
 	}
 
-	public static class EC extends EntityScalableProjectile.Base {
+	public static class EC extends EntityScalableProjectile.Base implements ItemJutsu.IJutsu {
 		private final int growTime = 20;
 		private int duration;
 		private BlockPos drip;
@@ -72,6 +72,11 @@ public class EntityMeltingJutsu extends ElementsNarutomodMod.ModElement {
 			this.setRotation(this.rand.nextFloat() * 360f, 0f);
 			this.setIdlePosition();
 			this.duration = (int)(powerIn * 20);
+		}
+
+		@Override
+		public ItemJutsu.JutsuEnum.Type getJutsuType() {
+			return ItemJutsu.JutsuEnum.Type.YOOTON;
 		}
 
 		private void setIdlePosition() {

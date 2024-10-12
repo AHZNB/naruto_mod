@@ -32,7 +32,7 @@ public class EntityWoodArm extends ElementsNarutomodMod.ModElement {
 				.name("wood_arm").tracker(64, 3, true).build());
 	}
 
-	public static class EC extends ItemMokuton.WoodSegment {
+	public static class EC extends ItemMokuton.WoodSegment implements ItemJutsu.IJutsu {
 		private int lifespan = 200;
 		private EC prevSegment;
 		private Entity target;
@@ -60,6 +60,11 @@ public class EntityWoodArm extends ElementsNarutomodMod.ModElement {
 			this.target = segment.target;
 		}
 
+		@Override
+		public ItemJutsu.JutsuEnum.Type getJutsuType() {
+			return ItemJutsu.JutsuEnum.Type.MOKUTON;
+		}
+
 		private void setLifespan(int ticks) {
 			this.lifespan = ticks;
 		}
@@ -68,7 +73,7 @@ public class EntityWoodArm extends ElementsNarutomodMod.ModElement {
 		public void onUpdate() {
 			super.onUpdate();
 			if (this.ticksExisted == 1 && this.rand.nextFloat() < 0.5f) {
-				this.playSound(net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation(("narutomod:woodgrow"))),
+				this.playSound(net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:woodgrow")),
 				 1.0f, this.rand.nextFloat() * 0.4f + 0.6f);
 			}
 			Entity parent = this.getParent();
@@ -123,7 +128,7 @@ public class EntityWoodArm extends ElementsNarutomodMod.ModElement {
 		public static class Jutsu implements ItemJutsu.IJutsuCallback {
 			@Override
 			public boolean createJutsu(ItemStack stack, EntityLivingBase entity, float power) {
-				RayTraceResult res = ProcedureUtils.objectEntityLookingAt(entity, 30d);
+				RayTraceResult res = ProcedureUtils.objectEntityLookingAt(entity, 30d, 3d, ItemMokuton.WoodSegment.class);
 				if (res != null && res.entityHit != null) {
 					entity.world.spawnEntity(new EC(entity, res.entityHit));
 					return true;

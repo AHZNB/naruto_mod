@@ -55,7 +55,7 @@ public class EntityFutonGreatBreakthrough extends ElementsNarutomodMod.ModElemen
 		 .name("futon_great_breakthrough_particle").tracker(64, 3, true).build());
 	}
 
-	public static class EC extends Entity {
+	public static class EC extends Entity implements ItemJutsu.IJutsu {
 		public static final float MAX_RANGE = 64.0f;
 		private int duration = 100;
 		private EntityLivingBase user;
@@ -71,6 +71,11 @@ public class EntityFutonGreatBreakthrough extends ElementsNarutomodMod.ModElemen
 			this.user = userIn;
 			this.power = powerIn;
 			this.setPosition(userIn.posX, userIn.posY, userIn.posZ);
+		}
+
+		@Override
+		public ItemJutsu.JutsuEnum.Type getJutsuType() {
+			return ItemJutsu.JutsuEnum.Type.FUTON;
 		}
 
 		@Override

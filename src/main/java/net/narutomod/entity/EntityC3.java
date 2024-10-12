@@ -45,7 +45,7 @@ public class EntityC3 extends ElementsNarutomodMod.ModElement {
 		 .id(new ResourceLocation("narutomod", "c_3"), ENTITYID).name("c_3").tracker(64, 3, true).build());
 	}
 
-	public static class EC extends EntityLiving {
+	public static class EC extends EntityLiving implements ItemJutsu.IJutsu {
 		private final int growTime = 30;
 		private final int fuseTime = 100;
 		private final int explosionRange = 32;
@@ -66,6 +66,11 @@ public class EntityC3 extends ElementsNarutomodMod.ModElement {
 		public EC(EntityLivingBase userIn) {
 			this(userIn.world);
 			this.user = userIn;
+		}
+
+		@Override
+		public ItemJutsu.JutsuEnum.Type getJutsuType() {
+			return ItemJutsu.JutsuEnum.Type.BAKUTON;
 		}
 
 		@Override

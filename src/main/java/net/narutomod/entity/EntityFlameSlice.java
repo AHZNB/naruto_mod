@@ -53,7 +53,7 @@ public class EntityFlameSlice extends ElementsNarutomodMod.ModElement {
 		 .tracker(64, 3, true).build());
 	}
 
-	public static class EC extends EntityChakraFlow.Base {
+	public static class EC extends EntityChakraFlow.Base implements ItemJutsu.IJutsu {
 		private boolean holdingWeapon;
 		private int ticksSinceLastSwing;
 
@@ -69,6 +69,11 @@ public class EntityFlameSlice extends ElementsNarutomodMod.ModElement {
 					this.damageModifier = (1.0f / f) * 3;
 				}
 			}
+		}
+
+		@Override
+		public ItemJutsu.JutsuEnum.Type getJutsuType() {
+			return ItemJutsu.JutsuEnum.Type.RAITON;
 		}
 
 		@Override

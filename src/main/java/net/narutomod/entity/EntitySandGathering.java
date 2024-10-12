@@ -4,6 +4,7 @@ package net.narutomod.entity;
 import net.narutomod.item.ItemJutsu;
 import net.narutomod.item.ItemJiton;
 import net.narutomod.item.ItemGourd;
+import net.narutomod.procedure.ProcedureAoeCommand;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.ElementsNarutomodMod;
 
@@ -50,7 +51,7 @@ public class EntitySandGathering extends ElementsNarutomodMod.ModElement {
 				.id(new ResourceLocation("narutomod", "sand_gathering"), ENTITYID).name("sand_gathering").tracker(64, 3, true).build());
 	}
 
-	public static class EC extends Entity {
+	public static class EC extends Entity implements ItemJutsu.IJutsu {
 		private static final DataParameter<Integer> DEATH_TICKS = EntityDataManager.<Integer>createKey(EC.class, DataSerializers.VARINT);
 		private final int duration = 300;
 		private EntityLivingBase summoner;
@@ -76,6 +77,11 @@ public class EntitySandGathering extends ElementsNarutomodMod.ModElement {
 			this.setPuppetMouthOpen(true);
 			this.sandCloud = new ItemJiton.SwarmTarget(this.world, 50, this.getMouthPos(), 
 			 this.getEntityBoundingBox(), new Vec3d(0.4d, 0.0d, 0.4d), 0.5f, 0.03f, false, 2f, ItemJiton.Type.IRON.getColor());
+		}
+
+		@Override
+		public ItemJutsu.JutsuEnum.Type getJutsuType() {
+			return ItemJutsu.JutsuEnum.Type.JITON;
 		}
 
 		@Override
@@ -152,6 +158,8 @@ public class EntitySandGathering extends ElementsNarutomodMod.ModElement {
 					if (!this.world.isRemote && result != null) {
 						this.world.createExplosion(this.summoner, result.hitVec.x, result.hitVec.y, result.hitVec.z, SCALE * 0.8f,
 						 net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.world, this.summoner));
+						ProcedureAoeCommand.set(this.world, result.hitVec.x, result.hitVec.y, result.hitVec.z, 0d, SCALE * 0.6f)
+						 .exclude(this.summoner).damageEntities(ItemJutsu.causeJutsuDamage(this, this.summoner), SCALE * 4f);
 						this.accelX = 0.0d;
 						this.accelY = 0.0d;
 						this.accelZ = 0.0d;

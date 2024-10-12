@@ -84,7 +84,7 @@ public class EntitySandBullet extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-	public static class EC extends EntityScalableProjectile.Base {
+	public static class EC extends EntityScalableProjectile.Base implements ItemJutsu.IJutsu {
 		private static final DataParameter<Integer> COLOR = EntityDataManager.<Integer>createKey(EC.class, DataSerializers.VARINT);
 		private int delay;
 		private final List<Entity> ignoreEntities = Lists.newArrayList();
@@ -105,6 +105,11 @@ public class EntitySandBullet extends ElementsNarutomodMod.ModElement {
 			this.setColor(sandColor);
 			this.delay = delayTicks;
 			this.ignoreEntities.add(shooter);
+		}
+
+		@Override
+		public ItemJutsu.JutsuEnum.Type getJutsuType() {
+			return ItemJutsu.JutsuEnum.Type.JITON;
 		}
 
 		@Override

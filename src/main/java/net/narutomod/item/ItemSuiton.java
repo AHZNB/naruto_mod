@@ -80,7 +80,7 @@ public class ItemSuiton extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-	public static class EntityMist extends Entity {
+	public static class EntityMist extends Entity implements ItemJutsu.IJutsu {
 		private static final UUID FOLLOW_MODIFIER = UUID.fromString("7c3e5536-e32d-4ef7-8cf2-e5ef57f9d48f");
 		private final float density = 1.0f;
 		private final int buildTime = 200;
@@ -175,6 +175,11 @@ public class ItemSuiton extends ElementsNarutomodMod.ModElement {
 			compound.setDouble("radius", this.radius);
 			compound.setInteger("idleTime", this.idleTime);
 			compound.setInteger("dissipateTime", this.dissipateTime);
+		}
+
+		@Override
+		public ItemJutsu.JutsuEnum.Type getJutsuType() {
+			return ItemJutsu.JutsuEnum.Type.SUITON;
 		}
 
 		public static class Jutsu implements ItemJutsu.IJutsuCallback {

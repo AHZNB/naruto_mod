@@ -15,6 +15,10 @@ import net.narutomod.ElementsNarutomodMod;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 
 import net.minecraft.init.MobEffects;
 import net.minecraft.world.World;
@@ -49,12 +53,13 @@ public class EntityTransformationJutsu extends ElementsNarutomodMod.ModElement {
 		 .name("transformation_jutsu").tracker(64, 3, true).build());
 	}
 
-	public static class EC extends Entity implements PlayerInput.Hook.IHandler {
+	public static class EC extends Entity implements PlayerInput.Hook.IHandler, ItemJutsu.IJutsu {
 		private EntityLivingBase user;
 		private EntityLivingBase target;
 		private EntityLivingBase clone;
 		private double chakraBurnPerSec;
 		private PlayerInput.Hook userInput = new PlayerInput.Hook();
+		private static final String CLONER_KEY = "ClonedFromTransformation_ClonerID";
 
 		public EC(World world) {
 			super(world);
@@ -68,6 +73,11 @@ public class EntityTransformationJutsu extends ElementsNarutomodMod.ModElement {
 			this.target = targetIn;
 			this.setPosition(userIn.posX, userIn.posY, userIn.posZ);
 			this.chakraBurnPerSec = chakraBurnIn;
+		}
+
+		@Override
+		public ItemJutsu.JutsuEnum.Type getJutsuType() {
+			return ItemJutsu.JutsuEnum.Type.NINJUTSU;
 		}
 
 		@Override
@@ -109,6 +119,7 @@ public class EntityTransformationJutsu extends ElementsNarutomodMod.ModElement {
 						this.clone.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(this.user.getMaxHealth());
 						this.clone.setHealth(this.user.getHealth());
 						this.clone.copyLocationAndAnglesFrom(this.user);
+						this.clone.getEntityData().setInteger(CLONER_KEY, this.user.getEntityId());
 						this.world.spawnEntity(this.clone);
 						PlayerInput.Hook.copyInputFrom((EntityPlayerMP)this.user, this, true);
 						PlayerInput.Hook.haltTargetInput(this.clone, true);
@@ -178,5 +189,24 @@ public class EntityTransformationJutsu extends ElementsNarutomodMod.ModElement {
 				return false;
 			}
 		}
+
+		public static class LivingEventHook {
+			@SubscribeEvent
+			public void onLivingTick(EntityJoinWorldEvent event) {
+				Entity entity = event.getEntity();
+				if (entity.getEntityData().hasKey(EC.CLONER_KEY)) {
+					Entity cloner = entity.world.getEntityByID(entity.getEntityData().getInteger(CLONER_KEY));
+					if (!(cloner instanceof EntityLivingBase) || !cloner.isEntityAlive() || !cloner.getEntityData().hasKey(Jutsu.ECENTITYID)) {
+						entity.setDead();
+						event.setCanceled(true);
+					}
+				}
+			}
+		}
+	}
+
+	@Override
+	public void init(FMLInitializationEvent event) {
+		MinecraftForge.EVENT_BUS.register(new EC.LivingEventHook());
 	}
 }

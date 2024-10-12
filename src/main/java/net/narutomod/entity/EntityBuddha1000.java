@@ -83,7 +83,7 @@ public class EntityBuddha1000 extends ElementsNarutomodMod.ModElement {
 		 .name("buddha_arm").tracker(128, 3, true).build());
 	}
 
-	public static class EC extends EntityShieldBase {
+	public static class EC extends EntityShieldBase implements ItemJutsu.IJutsu {
 		private static final DataParameter<Boolean> SITTING = EntityDataManager.<Boolean>createKey(EC.class, DataSerializers.BOOLEAN);
 		private static final DataParameter<Integer> TICKSALIVE = EntityDataManager.<Integer>createKey(EC.class, DataSerializers.VARINT);
 		protected final int growTime = 40;
@@ -106,6 +106,11 @@ public class EntityBuddha1000 extends ElementsNarutomodMod.ModElement {
 			this.stepHeight = this.height / 3;
 			this.setHealth(this.getMaxHealth());
 			this.chakraBurn = chakraUsagePerSec;
+		}
+
+		@Override
+		public ItemJutsu.JutsuEnum.Type getJutsuType() {
+			return ItemJutsu.JutsuEnum.Type.SENJUTSU;
 		}
 
 		@Override
@@ -361,7 +366,7 @@ public class EntityBuddha1000 extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-	public static class EntityArm extends EntityScalableProjectile.Base {
+	public static class EntityArm extends EntityScalableProjectile.Base implements ItemJutsu.IJutsu {
 		private static final DataParameter<Boolean> GROW = EntityDataManager.<Boolean>createKey(EntityArm.class, DataSerializers.BOOLEAN);
 		private float impactDamage;
 
@@ -375,6 +380,11 @@ public class EntityBuddha1000 extends ElementsNarutomodMod.ModElement {
 			this.setOGSize(0.25F * MODELSCALE, 0.25F * MODELSCALE);
 			this.setLocationAndAngles(x, y, z, shooter.rotationYaw, shooter.rotationPitch);
 			this.impactDamage = damage;
+		}
+
+		@Override
+		public ItemJutsu.JutsuEnum.Type getJutsuType() {
+			return ItemJutsu.JutsuEnum.Type.SENJUTSU;
 		}
 
 		@Override

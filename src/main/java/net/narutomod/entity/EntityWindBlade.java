@@ -46,7 +46,7 @@ public class EntityWindBlade extends ElementsNarutomodMod.ModElement {
 				.id(new ResourceLocation("narutomod", "wind_blade"), ENTITYID).name("wind_blade").tracker(64, 3, true).build());
 	}
 
-	public static class EC extends EntityScalableProjectile.Base {
+	public static class EC extends EntityScalableProjectile.Base implements ItemJutsu.IJutsu {
 		private RayTraceResult targetTrace;
 
 		public EC(World a) {
@@ -62,6 +62,11 @@ public class EntityWindBlade extends ElementsNarutomodMod.ModElement {
 			this.setLocationAndAngles(vec.x, vec.y, vec.z, shooter.rotationYaw, shooter.rotationPitch);
 			this.setEntityScale(scale);
 			this.isImmuneToFire = true;
+		}
+
+		@Override
+		public ItemJutsu.JutsuEnum.Type getJutsuType() {
+			return ItemJutsu.JutsuEnum.Type.FUTON;
 		}
 
 		@Override

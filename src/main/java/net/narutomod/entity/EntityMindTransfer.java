@@ -58,7 +58,7 @@ public class EntityMindTransfer extends ElementsNarutomodMod.ModElement {
 		 .tracker(64, 3, true).build());
 	}
 
-	public static class EC extends Entity implements PlayerInput.Hook.IHandler {
+	public static class EC extends Entity implements PlayerInput.Hook.IHandler, ItemJutsu.IJutsu {
 		private EntityLivingBase user;
 		private EntityLivingBase target;
 		private EntityDuplicate clone;
@@ -86,6 +86,11 @@ public class EntityMindTransfer extends ElementsNarutomodMod.ModElement {
 			//}
 			this.setPosition(userIn.posX, userIn.posY, userIn.posZ);
 			this.chakraBurn = chakraBurnIn;
+		}
+
+		@Override
+		public ItemJutsu.JutsuEnum.Type getJutsuType() {
+			return ItemJutsu.JutsuEnum.Type.INTON;
 		}
 
 		@Override

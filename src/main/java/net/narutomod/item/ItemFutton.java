@@ -104,7 +104,7 @@ public class ItemFutton extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-	public static class EntityBoilingMist extends Entity {
+	public static class EntityBoilingMist extends Entity implements ItemJutsu.IJutsu {
 		private final AirPunch airPunch = new AirPunch();
 		private EntityLivingBase user;
 		private float power;
@@ -126,6 +126,11 @@ public class ItemFutton extends ElementsNarutomodMod.ModElement {
 			this.damagePerSec = 15;
 			this.duration = (int)(powerIn * powerIn * 0.5f);
 			this.setPosition(userIn.posX, userIn.posY, userIn.posZ);
+		}
+
+		@Override
+		public ItemJutsu.JutsuEnum.Type getJutsuType() {
+			return ItemJutsu.JutsuEnum.Type.FUTTON;
 		}
 
 		@Override

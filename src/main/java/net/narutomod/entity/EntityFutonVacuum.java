@@ -38,7 +38,7 @@ public class EntityFutonVacuum extends ElementsNarutomodMod.ModElement {
 		 .id(new ResourceLocation("narutomod", "futon_vacuum"), ENTITYID).name("futon_vacuum").tracker(64, 3, true).build());
 	}
 
-	public static class EC extends Entity {
+	public static class EC extends Entity implements ItemJutsu.IJutsu {
 		private final AirStream airStream = new AirStream();
 		private float damageModifier = 0.5f;
 		private EntityLivingBase user;
@@ -58,6 +58,11 @@ public class EntityFutonVacuum extends ElementsNarutomodMod.ModElement {
 			this.maxDuration = (int)(powerIn * 4f);
 			this.bulletSize = 1.5f;
 			this.setPosition(userIn.posX, userIn.posY, userIn.posZ);
+		}
+
+		@Override
+		public ItemJutsu.JutsuEnum.Type getJutsuType() {
+			return ItemJutsu.JutsuEnum.Type.FUTON;
 		}
 
 		@Override

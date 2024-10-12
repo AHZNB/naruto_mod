@@ -50,7 +50,7 @@ public class EntityWaterShockwave extends ElementsNarutomodMod.ModElement {
 		 .id(new ResourceLocation("narutomod", "water_shockwave"), ENTITYID).name("water_shockwave").tracker(64, 3, true).build());
 	}
 
-	public static class EC extends Entity {
+	public static class EC extends Entity implements ItemJutsu.IJutsu {
 		private EntityLivingBase user;
 		private int radius;
 		private boolean buildUpPhase;
@@ -70,6 +70,11 @@ public class EntityWaterShockwave extends ElementsNarutomodMod.ModElement {
 			this.radius = (int)power;
 			this.setPosition(userIn.posX, userIn.posY, userIn.posZ);
 			this.buildUpPhase = true;
+		}
+
+		@Override
+		public ItemJutsu.JutsuEnum.Type getJutsuType() {
+			return ItemJutsu.JutsuEnum.Type.SUITON;
 		}
 
 		@Override

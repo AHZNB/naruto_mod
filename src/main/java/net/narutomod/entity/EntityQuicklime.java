@@ -42,7 +42,7 @@ public class EntityQuicklime extends ElementsNarutomodMod.ModElement {
 				.id(new ResourceLocation("narutomod", "quicklime"), ENTITYID).name("quicklime").tracker(64, 3, true).build());
 	}
 
-	public static class EC extends EntityParticle.Base {
+	public static class EC extends EntityParticle.Base implements ItemJutsu.IJutsu {
 		private static final DataParameter<Integer> SHOOTER = EntityDataManager.<Integer>createKey(EC.class, DataSerializers.VARINT);
 		private float damage;
 		private EntityLivingBase hitEntity;
@@ -59,6 +59,11 @@ public class EntityQuicklime extends ElementsNarutomodMod.ModElement {
 			this.damage = damageIn;
 		}
 				
+		@Override
+		public ItemJutsu.JutsuEnum.Type getJutsuType() {
+			return ItemJutsu.JutsuEnum.Type.YOOTON;
+		}
+
 		@Override
 		protected void entityInit() {
 			super.entityInit();

@@ -46,7 +46,7 @@ public class EntityFirestream extends ElementsNarutomodMod.ModElement {
 		 .id(new ResourceLocation("narutomod", "fireparticle"), ENTITYID_RANGED).name("fireparticle").tracker(64, 3, true).build());
 	}
 
-	public static class EC extends Entity {
+	public static class EC extends Entity implements ItemJutsu.IJutsu {
 		private int wait = 50;
 		private int maxLife = 110;
 		private EntityLivingBase shooter;
@@ -66,6 +66,11 @@ public class EntityFirestream extends ElementsNarutomodMod.ModElement {
 			this.width = widthIn;
 			this.range = rangeIn;
 			this.damage = (float)rangeIn;
+		}
+
+		@Override
+		public ItemJutsu.JutsuEnum.Type getJutsuType() {
+			return ItemJutsu.JutsuEnum.Type.RAITON;
 		}
 
 		@Override

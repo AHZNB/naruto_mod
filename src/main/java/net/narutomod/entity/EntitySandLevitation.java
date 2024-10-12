@@ -55,7 +55,7 @@ public class EntitySandLevitation extends ElementsNarutomodMod.ModElement {
 			.id(new ResourceLocation("narutomod", "sand_levitation"), ENTITYID).name("sand_levitation").tracker(64, 3, true).build());
 	}
 
-	public static class EC extends Entity {
+	public static class EC extends Entity implements ItemJutsu.IJutsu {
 		private static final DataParameter<Boolean> DEAD = EntityDataManager.<Boolean>createKey(EC.class, DataSerializers.BOOLEAN);
 		private static final DataParameter<Integer> SUMMONER_ID = EntityDataManager.<Integer>createKey(EC.class, DataSerializers.VARINT);
 		private ItemJiton.SwarmTarget sandCloud;
@@ -76,6 +76,11 @@ public class EntitySandLevitation extends ElementsNarutomodMod.ModElement {
 			this.setPosition(vec.x, vec.y, vec.z);
 			this.sandCloud = new ItemJiton.SwarmTarget(this.world, 15, this.getGourdMouthPos(), 
 			 vec, new Vec3d(0.1d, 0.4d, 0.1d), 0.5f, 0.03f, false, 2f, this.getSandType().getColor());
+		}
+
+		@Override
+		public ItemJutsu.JutsuEnum.Type getJutsuType() {
+			return ItemJutsu.JutsuEnum.Type.JITON;
 		}
 
 		@Override

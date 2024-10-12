@@ -59,7 +59,7 @@ public class EntityRasenshuriken extends ElementsNarutomodMod.ModElement {
 				.id(new ResourceLocation("narutomod", "rasenshuriken"), ENTITYID).name("rasenshuriken").tracker(96, 3, true).build());
 	}
 
-	public static class EC extends EntityScalableProjectile.Base {
+	public static class EC extends EntityScalableProjectile.Base implements ItemJutsu.IJutsu {
 		private static final DataParameter<Integer> IMPACT_TICKS = EntityDataManager.<Integer>createKey(EC.class, DataSerializers.VARINT);
 		private static final DataParameter<Integer> BALL_COLOR = EntityDataManager.<Integer>createKey(EC.class, DataSerializers.VARINT);
 		//private final int s = 50;
@@ -86,6 +86,11 @@ public class EntityRasenshuriken extends ElementsNarutomodMod.ModElement {
 			this.setEntityScale(0.1f);
 			this.isImmuneToFire = true;
 			this.damageSource = ItemJutsu.causeJutsuDamage(this, shooter).setDamageBypassesArmor();
+		}
+
+		@Override
+		public ItemJutsu.JutsuEnum.Type getJutsuType() {
+			return ItemJutsu.isDamageSourceSenjutsu(this.damageSource) ? ItemJutsu.JutsuEnum.Type.SENJUTSU : ItemJutsu.JutsuEnum.Type.FUTON;
 		}
 
 		@Override

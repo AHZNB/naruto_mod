@@ -65,7 +65,7 @@ public class EntityWaterPrison extends ElementsNarutomodMod.ModElement {
 		return trappedMap.containsKey(trapper);
 	}
 
-	public static class EC extends Entity {
+	public static class EC extends Entity implements ItemJutsu.IJutsu {
 		private EntityLivingBase user;
 		private EntityLivingBase target;
 		private AxisAlignedBB realBB;
@@ -192,6 +192,11 @@ public class EntityWaterPrison extends ElementsNarutomodMod.ModElement {
 			compound.setDouble("maxX", this.realBB.maxX);
 			compound.setDouble("maxY", this.realBB.maxY);
 			compound.setDouble("maxZ", this.realBB.maxZ);
+		}
+
+		@Override
+		public ItemJutsu.JutsuEnum.Type getJutsuType() {
+			return ItemJutsu.JutsuEnum.Type.SUITON;
 		}
 
 		public static class Jutsu implements ItemJutsu.IJutsuCallback {

@@ -152,7 +152,7 @@ public class ItemJinton extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-	public static class EntityBeam extends EntityBeamBase.Base {
+	public static class EntityBeam extends EntityBeamBase.Base implements ItemJutsu.IJutsu {
 		private static final DataParameter<Float> SCALE = EntityDataManager.<Float>createKey(EntityBeam.class, DataSerializers.FLOAT);
 		private final AirPunch beam = new AirPunch();
 		private final int wait = 60;
@@ -166,6 +166,11 @@ public class ItemJinton extends ElementsNarutomodMod.ModElement {
 			super(shooter);
 			this.setScale(scale);
 			this.isImmuneToFire = true;
+		}
+
+		@Override
+		public ItemJutsu.JutsuEnum.Type getJutsuType() {
+			return ItemJutsu.JutsuEnum.Type.JINTON;
 		}
 
 		@Override
@@ -281,7 +286,7 @@ public class ItemJinton extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-	public static class EntityCube extends EntityScalableProjectile.Base {
+	public static class EntityCube extends EntityScalableProjectile.Base implements ItemJutsu.IJutsu {
 		private final int wait = 60;
 		private final int growTime = 30;
 		private final int idleTime = 40;
@@ -302,6 +307,11 @@ public class ItemJinton extends ElementsNarutomodMod.ModElement {
 			this.fullScale = scale;
 			this.setWaitPosition(shooter);
 			this.isImmuneToFire = true;
+		}
+
+		@Override
+		public ItemJutsu.JutsuEnum.Type getJutsuType() {
+			return ItemJutsu.JutsuEnum.Type.JINTON;
 		}
 
 		private void setWaitPosition(EntityLivingBase shooter) {

@@ -46,7 +46,7 @@ public class EntityWaterStream extends ElementsNarutomodMod.ModElement {
 				.id(new ResourceLocation("narutomod", "water_stream"), ENTITYID).name("water_stream").tracker(64, 3, true).build());
 	}
 
-	public static class EC extends EntityBeamBase.Base {
+	public static class EC extends EntityBeamBase.Base implements ItemJutsu.IJutsu {
 		private final AirPunch stream = new AirPunch();
 		private final float damageModifier = 0.5f;
 		private int maxLife = 100;
@@ -86,6 +86,11 @@ public class EntityWaterStream extends ElementsNarutomodMod.ModElement {
 			if (!this.world.isRemote && (this.ticksAlive > this.maxLife || this.shootingEntity == null || !this.shootingEntity.isEntityAlive())) {
 				this.setDead();
 			}
+		}
+
+		@Override
+		public ItemJutsu.JutsuEnum.Type getJutsuType() {
+			return ItemJutsu.JutsuEnum.Type.SUITON;
 		}
 
 		public class AirPunch extends ProcedureAirPunch {

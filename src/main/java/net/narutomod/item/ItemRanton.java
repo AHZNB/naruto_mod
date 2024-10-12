@@ -92,7 +92,7 @@ public class ItemRanton extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-	public static class EntityRaiunkuha extends Entity {
+	public static class EntityRaiunkuha extends Entity implements ItemJutsu.IJutsu {
 		private final double chakrUsage = CLOUD.chakraUsage;
 		private EntityLivingBase summoner;
 		private float damageMultiplier;
@@ -108,6 +108,11 @@ public class ItemRanton extends ElementsNarutomodMod.ModElement {
 			this.summoner = summonerIn;
 			this.damageMultiplier = Math.max(((ItemJutsu.Base)stack.getItem()).getXpRatio(stack, CLOUD), 1f);
 			this.setPosition(summonerIn.posX, summonerIn.posY, summonerIn.posZ);
+		}
+
+		@Override
+		public ItemJutsu.JutsuEnum.Type getJutsuType() {
+			return ItemJutsu.JutsuEnum.Type.RANTON;
 		}
 
 		@Override

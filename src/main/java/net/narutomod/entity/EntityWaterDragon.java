@@ -59,7 +59,7 @@ public class EntityWaterDragon extends ElementsNarutomodMod.ModElement {
 		 .id(new ResourceLocation("narutomod", "water_dragon"), ENTITYID).name("water_dragon").tracker(64, 3, true).build());
 	}
 
-	public static class EC extends EntityScalableProjectile.Base {
+	public static class EC extends EntityScalableProjectile.Base implements ItemJutsu.IJutsu {
 		private final int wait = 60;
 		private Vec3d shootVec;
 		private float prevHeadYaw;
@@ -208,6 +208,11 @@ public class EntityWaterDragon extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		protected void checkOnGround() {
+		}
+
+		@Override
+		public ItemJutsu.JutsuEnum.Type getJutsuType() {
+			return ItemJutsu.JutsuEnum.Type.SUITON;
 		}
 
 		public static class Jutsu implements ItemJutsu.IJutsuCallback {

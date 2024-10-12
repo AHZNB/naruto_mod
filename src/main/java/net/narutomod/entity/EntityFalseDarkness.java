@@ -39,7 +39,7 @@ public class EntityFalseDarkness extends ElementsNarutomodMod.ModElement {
 		 .id(new ResourceLocation("narutomod", "false_darkness"), ENTITYID).name("false_darkness").tracker(64, 3, true).build());
 	}
 
-	public static class EC extends Entity {
+	public static class EC extends Entity implements ItemJutsu.IJutsu {
 		private EntityLivingBase user;
 		private EntityLivingBase target;
 		private float power;
@@ -56,6 +56,11 @@ public class EntityFalseDarkness extends ElementsNarutomodMod.ModElement {
 			this.target = targetIn;
 			this.power = powerIn;
 			this.setPosition(userIn.posX, userIn.posY + userIn.getEyeHeight() - 0.2d, userIn.posZ);
+		}
+
+		@Override
+		public ItemJutsu.JutsuEnum.Type getJutsuType() {
+			return ItemJutsu.JutsuEnum.Type.RAITON;
 		}
 
 		@Override

@@ -40,7 +40,7 @@ public class EntityVacuumWave extends ElementsNarutomodMod.ModElement {
 				.id(new ResourceLocation("narutomod", "vacuum_wave"), ENTITYID).name("vacuum_wave").tracker(64, 3, true).build());
 	}
 
-	public static class EC extends EntitySweep.Base {
+	public static class EC extends EntitySweep.Base implements ItemJutsu.IJutsu {
 		private static final DataParameter<Integer> SERIAL_INDEX = EntityDataManager.<Integer>createKey(EC.class, DataSerializers.VARINT);
 
 		public EC(World world) {
@@ -50,6 +50,11 @@ public class EntityVacuumWave extends ElementsNarutomodMod.ModElement {
 		public EC(EntityLivingBase shooter, float scale, int index) {
 			super(shooter, -1, scale);
 			this.setIndex(index);
+		}
+
+		@Override
+		public ItemJutsu.JutsuEnum.Type getJutsuType() {
+			return ItemJutsu.JutsuEnum.Type.FUTON;
 		}
 
 		@Override

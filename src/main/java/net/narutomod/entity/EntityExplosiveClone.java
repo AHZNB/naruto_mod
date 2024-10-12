@@ -99,7 +99,7 @@ public class EntityExplosiveClone extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-	public static class EC extends EntityClone.Base {
+	public static class EC extends EntityClone.Base implements ItemJutsu.IJutsu {
 		private static final DataParameter<Boolean> IGNITED = EntityDataManager.<Boolean>createKey(EC.class, DataSerializers.BOOLEAN);
 		private final int fuse = 30;
 		private int ignitionTime;
@@ -120,6 +120,11 @@ public class EntityExplosiveClone extends ElementsNarutomodMod.ModElement {
 			this.setHealth(this.getMaxHealth());
 			this.stepHeight = 16f;
 			this.moveHelper = new EntityNinjaMob.MoveHelper(this);
+		}
+
+		@Override
+		public ItemJutsu.JutsuEnum.Type getJutsuType() {
+			return ItemJutsu.JutsuEnum.Type.BAKUTON;
 		}
 
 		@Override

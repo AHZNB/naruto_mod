@@ -54,7 +54,7 @@ public class EntityKikaichu extends ElementsNarutomodMod.ModElement {
 		 .id(new ResourceLocation("narutomod", "bugball"), ENTITYID_RANGED).name("bugball").tracker(64, 3, true).build());
 	}
 
-	public static class EC extends Entity {
+	public static class EC extends Entity implements ItemJutsu.IJutsu {
 		private EntityLivingBase user;
 		private EntityLivingBase target;
 		private ItemJiton.SwarmTarget bugsTarget;
@@ -86,6 +86,11 @@ public class EntityKikaichu extends ElementsNarutomodMod.ModElement {
 					}
 				}
 			};
+		}
+
+		@Override
+		public ItemJutsu.JutsuEnum.Type getJutsuType() {
+			return ItemJutsu.JutsuEnum.Type.NINJUTSU;
 		}
 
 		@Override

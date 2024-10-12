@@ -163,7 +163,7 @@ public class ItemTenseiganChakraMode extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-	public static class EntityOrbs extends EntityScalableProjectile.Base {
+	public static class EntityOrbs extends EntityScalableProjectile.Base implements ItemJutsu.IJutsu {
 		private final int explosionSize = 5;
 		private final float damage = 30.0F;
 
@@ -179,6 +179,11 @@ public class ItemTenseiganChakraMode extends ElementsNarutomodMod.ModElement {
 			this.setEntityScale(0.5F);
 			Vec3d vec3d = shooter.getLookVec().rotateYaw((this.rand.nextFloat() - 0.5F) * 60.0F);
 			this.setPosition(shooter.posX + vec3d.x, shooter.posY + 1.2D + vec3d.y, shooter.posZ + vec3d.z);
+		}
+
+		@Override
+		public ItemJutsu.JutsuEnum.Type getJutsuType() {
+			return ItemJutsu.JutsuEnum.Type.TENSEIGAN;
 		}
 
 		@Override

@@ -56,7 +56,7 @@ public class EntityTenseiBakuSilver extends ElementsNarutomodMod.ModElement {
 		 .id(new ResourceLocation("narutomod", "tensei_baku_silver"), ENTITYID).name("tensei_baku_silver").tracker(64, 3, true).build());
 	}
 
-	public static class EC extends Entity {
+	public static class EC extends Entity implements ItemJutsu.IJutsu {
 		private static final DataParameter<Integer> USERID = EntityDataManager.<Integer>createKey(EC.class, DataSerializers.VARINT);
 		private final AirPunch airPunch = new AirPunch();
 		private float power;
@@ -75,6 +75,11 @@ public class EntityTenseiBakuSilver extends ElementsNarutomodMod.ModElement {
 			this.power = powerIn;
 			this.duration = (int)powerIn * 4 + this.growTime;
 			this.setIdlePosition();
+		}
+
+		@Override
+		public ItemJutsu.JutsuEnum.Type getJutsuType() {
+			return ItemJutsu.JutsuEnum.Type.TENSEIGAN;
 		}
 
 		@Override

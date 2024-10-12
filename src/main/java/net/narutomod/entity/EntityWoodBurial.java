@@ -41,7 +41,7 @@ public class EntityWoodBurial extends ElementsNarutomodMod.ModElement {
 		 .id(new ResourceLocation("narutomod", "wood_burial"), ENTITYID).name("wood_burial").tracker(64, 3, true).build());
 	}
 
-	public static class EC extends ItemMokuton.WoodSegment {
+	public static class EC extends ItemMokuton.WoodSegment implements ItemJutsu.IJutsu {
 		private int lifespan = 300;
 		private EC prevSegment;
 		private Entity target;
@@ -73,6 +73,11 @@ public class EntityWoodBurial extends ElementsNarutomodMod.ModElement {
 			this.targetVec = segment.targetVec;
 		}
 
+		@Override
+		public ItemJutsu.JutsuEnum.Type getJutsuType() {
+			return ItemJutsu.JutsuEnum.Type.MOKUTON;
+		}
+
 		private void setLifespan(int ticks) {
 			this.lifespan = ticks;
 		}
@@ -81,7 +86,7 @@ public class EntityWoodBurial extends ElementsNarutomodMod.ModElement {
 		public void onUpdate() {
 			super.onUpdate();
 			if (this.ticksExisted == 1 && this.rand.nextFloat() < 0.05f) {
-				this.playSound(net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation(("narutomod:woodgrow"))),
+				this.playSound(net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:woodgrow")),
 				 1.0f, this.rand.nextFloat() * 0.4f + 0.6f);
 			}
 			if (this.getParent() != null && this.ticksExisted < this.lifespan) {
@@ -115,7 +120,7 @@ public class EntityWoodBurial extends ElementsNarutomodMod.ModElement {
 				}
 				if (this.targetVec != null && this.targetTargetable()) {
 					if (this.ticksExisted > 50) {
-						this.target.attackEntityFrom(DamageSource.IN_WALL, 10.0f);
+						this.target.attackEntityFrom(ItemJutsu.causeJutsuDamage(this, null), 10.0f);
 					}
 					this.target.setPositionAndUpdate(this.targetVec.x, this.targetVec.y, this.targetVec.z);
 				}

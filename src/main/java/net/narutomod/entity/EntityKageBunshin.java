@@ -91,7 +91,7 @@ public class EntityKageBunshin extends ElementsNarutomodMod.ModElement {
 		return null;
 	}
 
-	public static class EC extends EntityClone.Base {
+	public static class EC extends EntityClone.Base implements ItemJutsu.IJutsu {
 		//private final NonNullList<ItemStack> inventory = NonNullList.<ItemStack>withSize(36, ItemStack.EMPTY);
 		//private InventoryPlayer summonerInventory;
 		private boolean isOriginal;
@@ -111,6 +111,11 @@ public class EntityKageBunshin extends ElementsNarutomodMod.ModElement {
 			this.getEntityAttribute(SharedMonsterAttributes.ARMOR)
 			 .setBaseValue(user.getEntityAttribute(SharedMonsterAttributes.ARMOR).getAttributeValue());
 			this.moveHelper = new EntityNinjaMob.MoveHelper(this);
+		}
+
+		@Override
+		public ItemJutsu.JutsuEnum.Type getJutsuType() {
+			return ItemJutsu.JutsuEnum.Type.NINJUTSU;
 		}
 
 		@Nullable

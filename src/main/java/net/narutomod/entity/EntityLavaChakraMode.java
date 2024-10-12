@@ -55,7 +55,7 @@ public class EntityLavaChakraMode extends ElementsNarutomodMod.ModElement {
 		 .id(new ResourceLocation("narutomod", "lava_chakra_mode"), ENTITYID).name("lava_chakra_mode").tracker(64, 3, true).build());
 	}
 
-	public static class EC extends Entity {
+	public static class EC extends Entity implements ItemJutsu.IJutsu {
 		private static final DataParameter<Integer> USERID = EntityDataManager.<Integer>createKey(EC.class, DataSerializers.VARINT);
 		protected static final String LCMEntityIdKey = "LavaChakraModeEntityId";
 		private int strengthAmplifier = 9;
@@ -73,6 +73,11 @@ public class EntityLavaChakraMode extends ElementsNarutomodMod.ModElement {
 			if (userIn.isPotionActive(MobEffects.STRENGTH)) {
 				this.strengthAmplifier += userIn.getActivePotionEffect(MobEffects.STRENGTH).getAmplifier() + 1;
 			}
+		}
+
+		@Override
+		public ItemJutsu.JutsuEnum.Type getJutsuType() {
+			return ItemJutsu.JutsuEnum.Type.YOOTON;
 		}
 
 		@Override

@@ -49,7 +49,7 @@ public class EntitySealingChains extends ElementsNarutomodMod.ModElement {
 				.id(new ResourceLocation("narutomod", "sealing_chains"), ENTITYID).name("sealing_chains").tracker(64, 3, true).build());
 	}
 
-	public static class EC extends EntityBeamBase.Base {
+	public static class EC extends EntityBeamBase.Base implements ItemJutsu.IJutsu {
 		private static final DataParameter<Integer> TARGET_ID = EntityDataManager.<Integer>createKey(EC.class, DataSerializers.VARINT);
 		private static final DataParameter<Float> TARGET_OFFX = EntityDataManager.<Float>createKey(EC.class, DataSerializers.FLOAT);
 		private static final DataParameter<Float> TARGET_OFFY = EntityDataManager.<Float>createKey(EC.class, DataSerializers.FLOAT);
@@ -74,6 +74,11 @@ public class EntitySealingChains extends ElementsNarutomodMod.ModElement {
 			super(shooter);
 			this.setTarget(targetIn);
 			this.updatePosition();
+		}
+
+		@Override
+		public ItemJutsu.JutsuEnum.Type getJutsuType() {
+			return ItemJutsu.JutsuEnum.Type.YOTON;
 		}
 
 		@Override

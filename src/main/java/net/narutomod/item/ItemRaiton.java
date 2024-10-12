@@ -123,7 +123,7 @@ public class ItemRaiton extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-	public static class EntityChakraMode extends Entity {
+	public static class EntityChakraMode extends Entity implements ItemJutsu.IJutsu {
 		private final double CHAKRA_BURN = CHAKRAMODE.chakraUsage; // per second
 		private EntityLivingBase summoner;
 		private ItemStack usingItemstack;
@@ -146,6 +146,11 @@ public class ItemRaiton extends ElementsNarutomodMod.ModElement {
 			if (summonerIn.isPotionActive(MobEffects.STRENGTH)) {
 				this.strengthAmplifier += summonerIn.getActivePotionEffect(MobEffects.STRENGTH).getAmplifier() + 1;
 			}
+		}
+
+		@Override
+		public ItemJutsu.JutsuEnum.Type getJutsuType() {
+			return ItemJutsu.JutsuEnum.Type.RAITON;
 		}
 
 		@Override

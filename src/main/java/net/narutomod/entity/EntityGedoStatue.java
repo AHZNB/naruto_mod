@@ -132,7 +132,7 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-	public static class EntityCustom extends EntitySummonAnimal.Base {
+	public static class EntityCustom extends EntitySummonAnimal.Base implements ItemJutsu.IJutsu {
 		private static final DataParameter<Boolean> SIT = EntityDataManager.<Boolean>createKey(EntityCustom.class, DataSerializers.BOOLEAN);
 		private static final DataParameter<Boolean> SEALED9 = EntityDataManager.<Boolean>createKey(EntityCustom.class, DataSerializers.BOOLEAN);
 		private EntityPurpleDragon dragonEntity;
@@ -177,6 +177,11 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 			this.rotationYawHead = summonerIn.rotationYaw;
 			this.setLocationAndAngles(vec.x, summonerIn.world.getTopSolidOrLiquidBlock(new BlockPos(vec)).getY(), vec.z, summonerIn.rotationYaw, 0f);
 			this.lifeSpan = 400;
+		}
+
+		@Override
+		public ItemJutsu.JutsuEnum.Type getJutsuType() {
+			return ItemJutsu.JutsuEnum.Type.YOTON;
 		}
 
 		@Override

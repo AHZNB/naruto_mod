@@ -57,7 +57,7 @@ public class EntityWoodGolem extends ElementsNarutomodMod.ModElement {
 				.id(new ResourceLocation("narutomod", "wood_golem"), ENTITYID).name("wood_golem").tracker(96, 3, true).build());
 	}
 
-	public static class EC extends EntityShieldBase {
+	public static class EC extends EntityShieldBase implements ItemJutsu.IJutsu {
 		protected final int growTime = 30;
 		private List<BlockPos> particleArea;
 		private double chakraBurn;
@@ -80,6 +80,11 @@ public class EntityWoodGolem extends ElementsNarutomodMod.ModElement {
 			this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(Chakra.getLevel(summonerIn) * 50d);
 			this.setHealth(this.getMaxHealth());
 			this.chakraBurn = chakraUsagePerSec;
+		}
+
+		@Override
+		public ItemJutsu.JutsuEnum.Type getJutsuType() {
+			return ItemJutsu.JutsuEnum.Type.MOKUTON;
 		}
 
 		@Override

@@ -58,7 +58,7 @@ public class EntityLightningBeast extends ElementsNarutomodMod.ModElement {
 		 .id(new ResourceLocation("narutomod", "lightning_beast"), ENTITYID).name("lightning_beast").tracker(64, 3, true).build());
 	}
 
-	public static class EC extends EntityTameable {
+	public static class EC extends EntityTameable implements ItemJutsu.IJutsu {
 		private float power;
 		private BlockPos destPos;
 		private Vec3d startVec;
@@ -84,6 +84,11 @@ public class EntityLightningBeast extends ElementsNarutomodMod.ModElement {
 			this.rotationYawHead = this.rotationYaw;
 			this.setTamedBy(player);
 			this.power = powerIn;
+		}
+
+		@Override
+		public ItemJutsu.JutsuEnum.Type getJutsuType() {
+			return ItemJutsu.JutsuEnum.Type.RAITON;
 		}
 
 		@Override

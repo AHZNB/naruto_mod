@@ -61,7 +61,7 @@ public class EntityEarthSandwich extends ElementsNarutomodMod.ModElement {
 		  .id(new ResourceLocation("narutomod", "earth_sandwich"), ENTITYID).name("earth_sandwich").tracker(64, 3, true).build());
 	}
 
-	public static class EC extends Entity {
+	public static class EC extends Entity implements ItemJutsu.IJutsu {
 		private static final DataParameter<Float> SCALE = EntityDataManager.<Float>createKey(EC.class, DataSerializers.FLOAT);
 		private static final DataParameter<Integer> AGE = EntityDataManager.<Integer>createKey(EC.class, DataSerializers.VARINT);
 		private final float ogWidth = 0.875F;
@@ -81,6 +81,11 @@ public class EntityEarthSandwich extends ElementsNarutomodMod.ModElement {
 			this.setScale(heightIn);
 			this.setLocationAndAngles(atVec.x, atVec.y, atVec.z, userIn.rotationYawHead, 0f);
 			this.user = userIn;
+		}
+
+		@Override
+		public ItemJutsu.JutsuEnum.Type getJutsuType() {
+			return ItemJutsu.JutsuEnum.Type.DOTON;
 		}
 
 		@Override

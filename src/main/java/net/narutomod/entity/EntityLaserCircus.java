@@ -51,7 +51,7 @@ public class EntityLaserCircus extends ElementsNarutomodMod.ModElement {
 		 .id(new ResourceLocation("narutomod", "laser_ring"), ENTITYID_RANGED).name("laser_ring").tracker(64, 3, true).build());
 	}
 
-	public static class EC extends Entity {
+	public static class EC extends Entity implements ItemJutsu.IJutsu {
 		private EntityLivingBase summoner;
 		private int duration;
 		private ItemStack rantonstack;
@@ -68,6 +68,11 @@ public class EntityLaserCircus extends ElementsNarutomodMod.ModElement {
 			this.duration = (int)(powerIn * 20);
 			this.rantonstack = stack;
 			this.setIdlePosition();
+		}
+
+		@Override
+		public ItemJutsu.JutsuEnum.Type getJutsuType() {
+			return ItemJutsu.JutsuEnum.Type.RANTON;
 		}
 
 		@Override

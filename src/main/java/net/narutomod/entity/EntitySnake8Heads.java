@@ -70,7 +70,7 @@ public class EntitySnake8Heads extends ElementsNarutomodMod.ModElement {
 		 .name("snake_8_head1").tracker(128, 3, true).egg(-1, -10066330).build());
 	}
 
-	public static class EC extends EntityShieldBase {
+	public static class EC extends EntityShieldBase implements ItemJutsu.IJutsu {
 		private static final DataParameter<Integer> TICKSALIVE = EntityDataManager.<Integer>createKey(EC.class, DataSerializers.VARINT);
 		private final int upTime = 40;
 		private final int waitTime = 20;
@@ -89,6 +89,11 @@ public class EntitySnake8Heads extends ElementsNarutomodMod.ModElement {
 			this.stepHeight = this.height / 3;
 			this.setHealth(this.getMaxHealth());
 			this.chakraBurn = chakraUsagePerSec;
+		}
+
+		@Override
+		public ItemJutsu.JutsuEnum.Type getJutsuType() {
+			return ItemJutsu.JutsuEnum.Type.SENJUTSU;
 		}
 
 		@Override
@@ -193,7 +198,7 @@ public class EntitySnake8Heads extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-	public static class EntitySnakeHead extends EntitySnake.EntityCustom {
+	public static class EntitySnakeHead extends EntitySnake.EntityCustom implements ItemJutsu.IJutsu {
 		private EntityLivingBase target;
 
 		public EntitySnakeHead(World world) {
@@ -209,6 +214,11 @@ public class EntitySnake8Heads extends ElementsNarutomodMod.ModElement {
 			this.rotationYawHead = parent.rotationYaw;
 			this.setLocationAndAngles(parent.posX, parent.posY - 10d, parent.posZ, parent.rotationYaw, -45f);
 			this.target = targetIn;
+		}
+
+		@Override
+		public ItemJutsu.JutsuEnum.Type getJutsuType() {
+			return ItemJutsu.JutsuEnum.Type.SENJUTSU;
 		}
 
 		@Override

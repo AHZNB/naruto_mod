@@ -59,7 +59,7 @@ public class EntityFlameFormation extends ElementsNarutomodMod.ModElement {
 		MinecraftForge.EVENT_BUS.register(new EC.AttackHook());
 	}
 
-	public static class EC extends Entity {
+	public static class EC extends Entity implements ItemJutsu.IJutsu {
 		private static final DataParameter<Float> SCALE = EntityDataManager.<Float>createKey(EC.class, DataSerializers.FLOAT);
 		private final int growTime = 20;
 		private EntityLivingBase user;
@@ -76,6 +76,11 @@ public class EntityFlameFormation extends ElementsNarutomodMod.ModElement {
 			this.user = userIn;
 			this.setScale(size);
 			this.setLocationAndAngles(userIn.posX, userIn.posY, userIn.posZ, 0.0f, 0.0f);
+		}
+
+		@Override
+		public ItemJutsu.JutsuEnum.Type getJutsuType() {
+			return ItemJutsu.JutsuEnum.Type.RAITON;
 		}
 
 		@Override

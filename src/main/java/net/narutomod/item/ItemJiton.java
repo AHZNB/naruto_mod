@@ -360,7 +360,7 @@ public class ItemJiton extends ElementsNarutomodMod.ModElement {
 			if (!this.world.isRemote && !this.isRidingSameEntity(entity) && ProcedureUtils.getVelocity(entity) > 0.22d) {
 				EntityEarthBlocks.BlocksMoveHelper.collideWithEntity(this, entity);
 				//this.moveSandTo(entity.posX, entity.posY + entity.height/2, entity.posZ, 100);
-				this.moveSand(this.getTargetPosition(entity), this.getTargetPosition(entity), 100);
+				this.moveSand(this.getTargetPosition(entity), this.getTargetPosition(entity), 10);
 			}
 			super.collideWithEntity(entity);
 		}
@@ -464,7 +464,11 @@ public class ItemJiton extends ElementsNarutomodMod.ModElement {
 		}
 
 		public SwarmTarget(World worldIn, int totalIn, Vec3d startPosIn, Vec3d targetPosIn, float speedIn, int colorIn) {
-			this(worldIn, totalIn, startPosIn, targetPosIn, new Vec3d(0.05d, 0.2d, 0.05d), speedIn, 0.02f, false, 1f, colorIn);
+			this(worldIn, totalIn, startPosIn, targetPosIn, speedIn, 0.02f, 1f, colorIn);
+		}
+
+		public SwarmTarget(World worldIn, int totalIn, Vec3d startPosIn, Vec3d targetPosIn, float speedIn, float inaccuracyIn, float scaleIn, int colorIn) {
+			this(worldIn, totalIn, startPosIn, targetPosIn, new Vec3d(0.05d, 0.2d, 0.05d), speedIn, inaccuracyIn, false, scaleIn, colorIn);
 		}
 
 		public SwarmTarget(World worldIn, int totalIn, Vec3d startPosIn, Vec3d targetPosIn, Vec3d initialMotion, float speedIn, float inaccuracyIn, boolean dieOnReached, float scaleIn) {

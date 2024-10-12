@@ -134,7 +134,7 @@ public class ItemYooton extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-	public static class EntityMagmaBall extends EntityScalableProjectile.Base {
+	public static class EntityMagmaBall extends EntityScalableProjectile.Base implements ItemJutsu.IJutsu {
 		private int explosionSize;
 		private float damage;
 
@@ -152,6 +152,11 @@ public class ItemYooton extends ElementsNarutomodMod.ModElement {
 			this.damage = scale * 20f;
 			Vec3d vec3d = shooter.getLookVec();
 			this.setPosition(shooter.posX + vec3d.x, shooter.posY + 1.2D + vec3d.y, shooter.posZ + vec3d.z);
+		}
+
+		@Override
+		public ItemJutsu.JutsuEnum.Type getJutsuType() {
+			return ItemJutsu.JutsuEnum.Type.YOOTON;
 		}
 
 		@Override

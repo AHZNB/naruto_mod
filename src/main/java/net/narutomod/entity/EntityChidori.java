@@ -77,7 +77,7 @@ public class EntityChidori extends ElementsNarutomodMod.ModElement {
 			.id(new ResourceLocation("narutomod", "chidori_spear"), ENTITYID_RANGED).name("chidori_spear").tracker(64, 3, true).build());
 	}
 
-	public static class EC extends Entity implements ProcedureSync.CPacketVec3d.IHandler {
+	public static class EC extends Entity implements ProcedureSync.CPacketVec3d.IHandler, ItemJutsu.IJutsu {
 		private static final DataParameter<Integer> OWNER_ID = EntityDataManager.<Integer>createKey(EC.class, DataSerializers.VARINT);
 		private final int growTime = 40;
 		protected EntityLivingBase summoner;
@@ -102,6 +102,11 @@ public class EntityChidori extends ElementsNarutomodMod.ModElement {
 			this.duration = durationIn;
 			this.setPositionToSummoner();
 			this.setAlwaysRenderNameTag(false);
+		}
+
+		@Override
+		public ItemJutsu.JutsuEnum.Type getJutsuType() {
+			return ItemJutsu.JutsuEnum.Type.RAITON;
 		}
 
 		@Override

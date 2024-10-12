@@ -62,7 +62,7 @@ public class EntityLightningPanther extends ElementsNarutomodMod.ModElement {
 		 .name("lightning_panther").tracker(64, 3, true).build());
 	}
 
-	public static class EC extends EntityTameable {
+	public static class EC extends EntityTameable implements ItemJutsu.IJutsu {
 		private static final DataParameter<Float> POWER = EntityDataManager.<Float>createKey(EC.class, DataSerializers.FLOAT);
 		private final float ogWidth = 1.2F;
 		private final float ogHeight = 1.75F;
@@ -88,6 +88,11 @@ public class EntityLightningPanther extends ElementsNarutomodMod.ModElement {
 			Vec3d vec = player.getLookVec();
 			this.motionX = vec.x * 0.2d;
 			this.motionZ = vec.z * 0.2d;
+		}
+
+		@Override
+		public ItemJutsu.JutsuEnum.Type getJutsuType() {
+			return ItemJutsu.JutsuEnum.Type.RAITON;
 		}
 
 		@Override

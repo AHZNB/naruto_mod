@@ -73,7 +73,7 @@ public class EntitySandBind extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-	public static class EC extends Entity {
+	public static class EC extends Entity implements ItemJutsu.IJutsu {
 		private EntityLivingBase user;
 		private EntityLivingBase targetEntity;
 		private ItemJiton.SwarmTarget sandTarget;
@@ -97,6 +97,11 @@ public class EntitySandBind extends ElementsNarutomodMod.ModElement {
 			this.setPosition(vec.x, vec.y, vec.z);
 			this.sandTarget = new ItemJiton.SwarmTarget(this.world, 100, vec, 
 			 this.getTargetVector(), new Vec3d(0.1d, 0.4d, 0.1d), 0.95f, 0.03f, false, 3f, sandType.getColor());
+		}
+
+		@Override
+		public ItemJutsu.JutsuEnum.Type getJutsuType() {
+			return ItemJutsu.JutsuEnum.Type.JITON;
 		}
 
 		@Override

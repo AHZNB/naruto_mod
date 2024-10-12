@@ -192,7 +192,7 @@ public class ItemBakuton extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-	public abstract static class ExplosiveClay extends EntityCreature {
+	public abstract static class ExplosiveClay extends EntityCreature implements ItemJutsu.IJutsu {
 		private EntityLivingBase owner;
 		private int lifeSpan = 600;
 		private float explosionSize = 3.0f;
@@ -211,6 +211,11 @@ public class ItemBakuton extends ElementsNarutomodMod.ModElement {
 		public ExplosiveClay(EntityLivingBase ownerIn) {
 			this(ownerIn.world);
 			this.owner = ownerIn;
+		}
+
+		@Override
+		public ItemJutsu.JutsuEnum.Type getJutsuType() {
+			return ItemJutsu.JutsuEnum.Type.BAKUTON;
 		}
 
 		@Override

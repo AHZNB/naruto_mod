@@ -52,7 +52,7 @@ public class EntityEarthGolem extends ElementsNarutomodMod.ModElement {
 						.name("earth_golem").tracker(64, 3, true).build());
 	}
 
-	public static class EC extends EntitySummonAnimal.Base {
+	public static class EC extends EntitySummonAnimal.Base implements ItemJutsu.IJutsu {
 		private final int growTime = 40;
 		private int attackTimer;
 		private int nextStepDistance;
@@ -71,6 +71,11 @@ public class EntityEarthGolem extends ElementsNarutomodMod.ModElement {
 			this.isImmuneToFire = true;
 			this.setScale(size);
 			this.setLocationAndAngles(summonerIn.posX + summonerIn.getLookVec().x, summonerIn.posY, summonerIn.posZ + summonerIn.getLookVec().z, summonerIn.rotationYaw, 0f);
+		}
+
+		@Override
+		public ItemJutsu.JutsuEnum.Type getJutsuType() {
+			return ItemJutsu.JutsuEnum.Type.DOTON;
 		}
 
 		@Override

@@ -67,7 +67,7 @@ public class EntityRasengan extends ElementsNarutomodMod.ModElement {
 				.id(new ResourceLocation("narutomod", "rasengan"), ENTITYID).name("rasengan").tracker(64, 3, true).build());
 	}
 
-	public static class EC extends EntityScalableProjectile.Base implements ProcedureSync.CPacketVec3d.IHandler {
+	public static class EC extends EntityScalableProjectile.Base implements ProcedureSync.CPacketVec3d.IHandler, ItemJutsu.IJutsu {
 		private static final DataParameter<Integer> OWNER_ID = EntityDataManager.<Integer>createKey(EC.class, DataSerializers.VARINT);
 		private final int growTime = 30;
 		private ItemStack usingItemstack;
@@ -92,6 +92,11 @@ public class EntityRasengan extends ElementsNarutomodMod.ModElement {
 			this.usingItemstack = stack;
 			this.isImmuneToFire = true;
 			this.damageSource = ItemJutsu.causeJutsuDamage(this, shooter);
+		}
+
+		@Override
+		public ItemJutsu.JutsuEnum.Type getJutsuType() {
+			return ItemJutsu.isDamageSourceSenjutsu(this.damageSource) ? ItemJutsu.JutsuEnum.Type.SENJUTSU : ItemJutsu.JutsuEnum.Type.NINJUTSU;
 		}
 
 		@Override

@@ -42,7 +42,7 @@ public class EntityPoisonMist extends ElementsNarutomodMod.ModElement {
 		 .id(new ResourceLocation("narutomod", "poison_mist"), ENTITYID).name("poison_mist").tracker(64, 3, true).build());
 	}
 
-	public static class EC extends Entity {
+	public static class EC extends Entity implements ItemJutsu.IJutsu {
 		private final AirPunch airPunch = new AirPunch();
 		private EntityLivingBase user;
 		private float power;
@@ -57,6 +57,11 @@ public class EntityPoisonMist extends ElementsNarutomodMod.ModElement {
 			this.user = userIn;
 			this.power = powerIn;
 			this.setPosition(userIn.posX, userIn.posY, userIn.posZ);
+		}
+
+		@Override
+		public ItemJutsu.JutsuEnum.Type getJutsuType() {
+			return ItemJutsu.JutsuEnum.Type.IRYO;
 		}
 
 		@Override

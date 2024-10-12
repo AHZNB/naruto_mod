@@ -77,7 +77,7 @@ public class EntityGamarinsho extends ElementsNarutomodMod.ModElement {
 		 .id(new ResourceLocation("narutomod", "gamarinsho_playerdup"), ENTITY3ID).name("gamarinsho_playerdup").tracker(64, 3, true).build());
 	}
 
-	public static class EC extends Entity {
+	public static class EC extends Entity implements ItemJutsu.IJutsu {
 		private static final DataParameter<Integer> CASTER = EntityDataManager.<Integer>createKey(EC.class, DataSerializers.VARINT);
 		private final List<EntityLivingBase> trappedList = Lists.newArrayList();
 		private final double jutsuRadius = 80.0d;
@@ -101,6 +101,11 @@ public class EntityGamarinsho extends ElementsNarutomodMod.ModElement {
 			this(casterIn.world);
 			this.setCaster(casterIn);
 			this.setIdlePosition();
+		}
+
+		@Override
+		public ItemJutsu.JutsuEnum.Type getJutsuType() {
+			return ItemJutsu.JutsuEnum.Type.SENJUTSU;
 		}
 
 		@Override

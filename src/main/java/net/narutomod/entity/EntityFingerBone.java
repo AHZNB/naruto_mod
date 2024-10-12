@@ -50,7 +50,7 @@ public class EntityFingerBone extends ElementsNarutomodMod.ModElement {
 				.id(new ResourceLocation("narutomod", "finger_bone"), ENTITYID).name("finger_bone").tracker(64, 3, true).build());
 	}
 
-	public static class EC extends EntityScalableProjectile.Base {
+	public static class EC extends EntityScalableProjectile.Base implements ItemJutsu.IJutsu {
 		private final float damage = 8.0f;
 
 		public EC(World worldIn) {
@@ -65,6 +65,11 @@ public class EntityFingerBone extends ElementsNarutomodMod.ModElement {
 			this.setOGSize(0.2f, 0.2f);
 			this.setEntityScale(0.4f);
 			//this.setNoGravity(false);
+		}
+
+		@Override
+		public ItemJutsu.JutsuEnum.Type getJutsuType() {
+			return ItemJutsu.JutsuEnum.Type.SHIKOTSUMYAKU;
 		}
 
 		@Override

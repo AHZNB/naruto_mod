@@ -46,7 +46,7 @@ public class EntityAcidScattering extends ElementsNarutomodMod.ModElement {
 		 .id(new ResourceLocation("narutomod", "acid_particle"), ENTITYID_RANGED).name("acid_particle").tracker(64, 3, true).build());
 	}
 
-	public static class EC extends Entity {
+	public static class EC extends Entity implements ItemJutsu.IJutsu {
 		private static final int PARTICLE_COLOR = 0xf0ffd6ba;
 		private int maxLife = 60;
 		private EntityLivingBase shooter;
@@ -68,6 +68,11 @@ public class EntityAcidScattering extends ElementsNarutomodMod.ModElement {
 			this.width = widthIn;
 			this.range = rangeIn;
 			this.potionAmplifier = (int)(rangeIn * 0.5f);
+		}
+
+		@Override
+		public ItemJutsu.JutsuEnum.Type getJutsuType() {
+			return ItemJutsu.JutsuEnum.Type.SUITON;
 		}
 
 		@Override

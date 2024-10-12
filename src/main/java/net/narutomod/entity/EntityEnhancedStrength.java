@@ -52,7 +52,7 @@ public class EntityEnhancedStrength extends ElementsNarutomodMod.ModElement {
 		 .id(new ResourceLocation("narutomod", "enhanced_strength"), ENTITYID).name("enhanced_strength").tracker(64, 3, true).build());
 	}
 
-	public static class EC extends Entity {
+	public static class EC extends Entity implements ItemJutsu.IJutsu {
 		private static final DataParameter<Integer> USER_ID = EntityDataManager.<Integer>createKey(EC.class, DataSerializers.VARINT);
 		private EntityLivingBase user;
 		private int amplifier;
@@ -69,6 +69,11 @@ public class EntityEnhancedStrength extends ElementsNarutomodMod.ModElement {
 			this.amplifier = power;
 			this.setPosition(userIn.posX, userIn.posY, userIn.posZ);
 			this.setAlwaysRenderNameTag(false);
+		}
+
+		@Override
+		public ItemJutsu.JutsuEnum.Type getJutsuType() {
+			return ItemJutsu.JutsuEnum.Type.IRYO;
 		}
 
 		@Override

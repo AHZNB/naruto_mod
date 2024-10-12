@@ -55,7 +55,7 @@ public class EntitySealing extends ElementsNarutomodMod.ModElement {
 				.name("sealing").tracker(96, 3, true).build());
 	}
 
-	public static class EC extends Entity implements IEntityMultiPart {
+	public static class EC extends Entity implements IEntityMultiPart, ItemJutsu.IJutsu {
 		private final EntitySittingCircle[] parts = new EntitySittingCircle[4];
 		private final AxisAlignedBB tableBB = new AxisAlignedBB(-1.3d, 0.0d, -1.3d, 1.3d, 0.9d, 1.3d);
 		private EntityTailedBeast.Base bijuEntity;
@@ -77,6 +77,11 @@ public class EntitySealing extends ElementsNarutomodMod.ModElement {
 			double y = pos.getY();
 			double z = 0.5d + pos.getZ();
 			this.setLocationAndAngles(x, y, z, 0f, 0f);
+		}
+
+		@Override
+		public ItemJutsu.JutsuEnum.Type getJutsuType() {
+			return ItemJutsu.JutsuEnum.Type.YOTON;
 		}
 
 		@Override

@@ -108,7 +108,7 @@ public class ItemDoton extends ElementsNarutomodMod.ModElement {
 		return earthenMaterials.contains(material);
 	}
 
-	public static class EntityHidingInRock extends Entity {
+	public static class EntityHidingInRock extends Entity implements ItemJutsu.IJutsu {
 		private final int waitTime = 60;
 		private EntityLivingBase user;
 
@@ -123,6 +123,11 @@ public class ItemDoton extends ElementsNarutomodMod.ModElement {
 			this.setPosition(userIn.posX, userIn.posY, userIn.posZ);
 		}
 		
+		@Override
+		public ItemJutsu.JutsuEnum.Type getJutsuType() {
+			return ItemJutsu.JutsuEnum.Type.DOTON;
+		}
+
 		@Override
 		protected void entityInit() {
 		}
@@ -206,7 +211,7 @@ public class ItemDoton extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-	public static class EntityEarthWall extends Entity {
+	public static class EntityEarthWall extends Entity implements ItemJutsu.IJutsu {
 		private final int blockChunk = 128;
 		private final int duration = 200;
 		private double wallHeight;
@@ -259,6 +264,11 @@ public class ItemDoton extends ElementsNarutomodMod.ModElement {
 
 		public EntityEarthWall(World worldIn, double x, double y, double z, float yaw, double widthIn) {
 			this(worldIn, x, y, z, yaw, widthIn, widthIn * 0.6d, widthIn * 0.25d, true);
+		}
+
+		@Override
+		public ItemJutsu.JutsuEnum.Type getJutsuType() {
+			return ItemJutsu.JutsuEnum.Type.DOTON;
 		}
 
 		private boolean isNeighborEarthenMaterial(BlockPos pos) {

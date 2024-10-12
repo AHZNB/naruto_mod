@@ -84,7 +84,7 @@ public class ItemKaton extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-	public static class EntityBigFireball extends EntityScalableProjectile.Base {
+	public static class EntityBigFireball extends EntityScalableProjectile.Base implements ItemJutsu.IJutsu {
 		private float fullScale = 1f;
 		private final int timeToFullscale = 20;
 		private int explosionSize;
@@ -107,6 +107,11 @@ public class ItemKaton extends ElementsNarutomodMod.ModElement {
 			//this.setEntityScale(0.1f);
 			Vec3d vec3d = shooter.getLookVec();
 			this.setPosition(shooter.posX + vec3d.x, shooter.posY + shooter.getEyeHeight() - 0.2d * fullScale + vec3d.y, shooter.posZ + vec3d.z);
+		}
+
+		@Override
+		public ItemJutsu.JutsuEnum.Type getJutsuType() {
+			return ItemJutsu.JutsuEnum.Type.KATON;
 		}
 
 		public void setDamage(float amount) {

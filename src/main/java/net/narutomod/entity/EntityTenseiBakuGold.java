@@ -52,7 +52,7 @@ public class EntityTenseiBakuGold extends ElementsNarutomodMod.ModElement {
 		 .id(new ResourceLocation("narutomod", "tensei_baku_gold"), ENTITYID).name("tensei_baku_gold").tracker(128, 3, true).build());
 	}
 
-	public static class EC extends EntityBeamBase.Base {
+	public static class EC extends EntityBeamBase.Base implements ItemJutsu.IJutsu {
 		private final int growTime = 20;
 		private final AirPunch beam = new AirPunch();
 		private float power;
@@ -66,6 +66,11 @@ public class EntityTenseiBakuGold extends ElementsNarutomodMod.ModElement {
 			this.power = powerIn;
 			this.updatePosition();
 			this.shoot(powerIn);
+		}
+
+		@Override
+		public ItemJutsu.JutsuEnum.Type getJutsuType() {
+			return ItemJutsu.JutsuEnum.Type.TENSEIGAN;
 		}
 
 		@Override

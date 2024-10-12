@@ -86,7 +86,7 @@ public class ItemYoton extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-	public static class EntityBiggerMe extends EntityClone.Base {
+	public static class EntityBiggerMe extends EntityClone.Base implements ItemJutsu.IJutsu {
 		private final int growTime = 40;
 		private float scale;
 
@@ -107,6 +107,11 @@ public class ItemYoton extends ElementsNarutomodMod.ModElement {
 			this.setHealth(this.getMaxHealth());
 			this.addPotionEffect(new PotionEffect(MobEffects.JUMP_BOOST, 999999, (int)scaleIn, false, false));
 			user.startRiding(this);
+		}
+
+		@Override
+		public ItemJutsu.JutsuEnum.Type getJutsuType() {
+			return ItemJutsu.JutsuEnum.Type.YOTON;
 		}
 
 		@Override

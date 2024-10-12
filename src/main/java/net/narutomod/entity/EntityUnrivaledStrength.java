@@ -43,7 +43,7 @@ public class EntityUnrivaledStrength extends ElementsNarutomodMod.ModElement {
 		 .name("unrivaled_strength").tracker(64, 3, true).build());
 	}
 
-	public static class EC extends Entity {
+	public static class EC extends Entity implements ItemJutsu.IJutsu {
 		private EntityLivingBase user;
 		private int duration;
 		private boolean isWearingSteamArmor;
@@ -77,6 +77,11 @@ public class EntityUnrivaledStrength extends ElementsNarutomodMod.ModElement {
 			effect = userIn.getActivePotionEffect(MobEffects.JUMP_BOOST);
 			userIn.addPotionEffect(new PotionEffect(MobEffects.JUMP_BOOST, this.duration, 
 			 (int)(power * 0.2f) + (effect != null ? effect.getAmplifier() : -1), false, false));
+		}
+
+		@Override
+		public ItemJutsu.JutsuEnum.Type getJutsuType() {
+			return ItemJutsu.JutsuEnum.Type.FUTTON;
 		}
 
 		@Override

@@ -1,6 +1,7 @@
 
 package net.narutomod.entity;
 
+import net.narutomod.item.ItemJutsu;
 import net.narutomod.potion.PotionInstantDamage;
 import net.narutomod.procedure.ProcedureAoeCommand;
 import net.narutomod.Particles;
@@ -49,7 +50,7 @@ public class EntityC4 extends ElementsNarutomodMod.ModElement {
 				.name("c_4").tracker(88, 3, true).build());
 	}
 
-	public static class EC extends EntityClone.Base {
+	public static class EC extends EntityClone.Base implements ItemJutsu.IJutsu {
 		private static final DataParameter<Integer> TICKS_ALIVE = EntityDataManager.<Integer>createKey(EC.class, DataSerializers.VARINT);
 		private static final DataParameter<Integer> START_GROW_TIME = EntityDataManager.<Integer>createKey(EC.class, DataSerializers.VARINT);
 		private static final DataParameter<Boolean> IGNITED = EntityDataManager.<Boolean>createKey(EC.class, DataSerializers.BOOLEAN);
@@ -74,6 +75,11 @@ public class EntityC4 extends ElementsNarutomodMod.ModElement {
 			this.setScale(0.1f);
 			this.stepHeight = this.finalSize * 1.8f / 3.0f;
 			this.moveHelper = new EntityNinjaMob.MoveHelper(this);
+		}
+
+		@Override
+		public ItemJutsu.JutsuEnum.Type getJutsuType() {
+			return ItemJutsu.JutsuEnum.Type.BAKUTON;
 		}
 
 		@Override

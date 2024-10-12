@@ -69,7 +69,7 @@ public class EntityIceDome extends ElementsNarutomodMod.ModElement {
 		MinecraftForge.EVENT_BUS.register(new EC.LivingHook());
 	}
 
-	public static class EC extends EntityShieldBase {
+	public static class EC extends EntityShieldBase implements ItemJutsu.IJutsu {
 		private final int talkTime = 26;
 		private int shootSpearsTime;
 		private List<EntityLivingBase> entitiesInside = Lists.newArrayList();
@@ -85,6 +85,11 @@ public class EntityIceDome extends ElementsNarutomodMod.ModElement {
 			super(summonerIn, x, y, z);
 			this.isImmuneToFire = false;
 			this.setSize(1.2f * ENTITY_SCALE, 0.8f * ENTITY_SCALE);
+		}
+
+		@Override
+		public ItemJutsu.JutsuEnum.Type getJutsuType() {
+			return ItemJutsu.JutsuEnum.Type.HYOTON;
 		}
 
 		@Override

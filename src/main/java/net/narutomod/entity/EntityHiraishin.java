@@ -125,7 +125,7 @@ public class EntityHiraishin extends ElementsNarutomodMod.ModElement {
 		 .canActivateJutsu(stack, ItemNinjutsu.HIRAISHIN, player) == EnumActionResult.SUCCESS;
 	}
 
-	public static class EC extends Entity {
+	public static class EC extends Entity implements ItemJutsu.IJutsu {
 		private static final DataParameter<Optional<UUID>> TARGET_UUID = EntityDataManager.<Optional<UUID>>createKey(EC.class, DataSerializers.OPTIONAL_UNIQUE_ID);
 		private static final DataParameter<Float> OFFSET_X = EntityDataManager.<Float>createKey(EC.class, DataSerializers.FLOAT);
 		private static final DataParameter<Float> OFFSET_Y = EntityDataManager.<Float>createKey(EC.class, DataSerializers.FLOAT);
@@ -157,6 +157,11 @@ public class EntityHiraishin extends ElementsNarutomodMod.ModElement {
 				this.setOffsets(res.hitVec.x - res.entityHit.posX, res.hitVec.y - res.entityHit.posY, res.hitVec.z - res.entityHit.posZ,
 				 MathHelper.wrapDegrees(this.rotationYaw - yaw), this.rotationPitch);
 			}
+		}
+
+		@Override
+		public ItemJutsu.JutsuEnum.Type getJutsuType() {
+			return ItemJutsu.JutsuEnum.Type.NINJUTSU;
 		}
 
 		@Override
