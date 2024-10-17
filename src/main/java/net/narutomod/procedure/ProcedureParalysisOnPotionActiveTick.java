@@ -53,8 +53,8 @@ public class ProcedureParalysisOnPotionActiveTick extends ElementsNarutomodMod.M
 			((EntityPlayer) entity).capabilities.isFlying = (false);
 			((EntityPlayer) entity).sendPlayerAbilities();
 		}
+		int remainingTicks = ((EntityLivingBase) entity).getActivePotionEffect(PotionParalysis.potion).getDuration();
 		if (((amplifier) >= 2)) {
-			int remainingTicks = ((EntityLivingBase) entity).getActivePotionEffect(PotionParalysis.potion).getDuration();
 			UUID uuid = UUID.fromString("c69af92a-b96d-49b7-a396-9b3b0d77edd5");
 			IAttributeInstance iattributeinstance = ((EntityLivingBase) entity).getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED);
 			iattributeinstance.removeModifier(uuid);
@@ -75,11 +75,8 @@ public class ProcedureParalysisOnPotionActiveTick extends ElementsNarutomodMod.M
 				entity.motionY = ((entity.motionY) - 0.1);
 				entity.motionZ = 0;
 				entity.setPositionAndUpdate(entity.prevPosX, entity.posY + entity.motionY, entity.prevPosZ);
-			} else if (((entity instanceof EntityLiving) && (!(entity.getEntityData().getBoolean("temporaryDisableAI"))))) {
-				if (!((EntityLiving) entity).isAIDisabled()) {
-					((EntityLiving) entity).setNoAI(true);
-					entity.getEntityData().setBoolean("temporaryDisableAI", (true));
-				}
+			} else if ((entity instanceof EntityLiving)) {
+				ProcedureOnLivingUpdate.disableAIfor((EntityLiving) entity, remainingTicks);
 			} else {
 				entity.setPositionAndUpdate(entity.prevPosX, entity.prevPosY, entity.prevPosZ);
 			}

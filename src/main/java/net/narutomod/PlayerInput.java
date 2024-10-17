@@ -48,6 +48,7 @@ import net.minecraft.client.gui.GuiChat;
 import net.minecraft.item.ItemStack;
 
 import net.narutomod.procedure.ProcedureUtils;
+import net.narutomod.procedure.ProcedureOnLivingUpdate;
 
 import io.netty.buffer.ByteBuf;
 import org.lwjgl.input.Mouse;
@@ -281,7 +282,7 @@ public class PlayerInput extends ElementsNarutomodMod.ModElement {
 			if (target instanceof EntityPlayerMP) {
 				NarutomodMod.PACKET_HANDLER.sendTo(new CopyInput(-1, halt), (EntityPlayerMP)target);
 			} else if (target instanceof EntityLiving) {
-				((EntityLiving)target).setNoAI(halt);
+				ProcedureOnLivingUpdate.disableAIfor((EntityLiving)target, halt ? Integer.MAX_VALUE - 1 : 0);
 			}
 		}
 

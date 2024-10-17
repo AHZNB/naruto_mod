@@ -42,6 +42,8 @@ import net.narutomod.Particles;
 import net.narutomod.Chakra;
 import net.narutomod.ElementsNarutomodMod;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.List;
 import javax.annotation.Nullable;
 
@@ -264,8 +266,25 @@ public abstract class EntitySusanooBase extends EntityCreature implements IRange
 		if (passenger.getRidingEntity() != this) {
 			throw new IllegalStateException("Use x.startRiding(y), not y.addPassenger(x)");
 		} else {
-			List<Entity> list = ReflectionHelper.getPrivateValue(Entity.class, this, 7);
-			list.add(passenger);
+			Object obj = ReflectionHelper.getPrivateValue(Entity.class, this, 7);
+			if (!(obj instanceof List)) {
+				obj = null;
+				try {
+					for (Field field : Entity.class.getDeclaredFields()) {
+						if (Modifier.toString(field.getModifiers()).equals("private final") && field.getType() == List.class) {
+							field.setAccessible(true);
+							obj = field.get(this);
+							break;
+						}
+					}
+					if (obj == null) {
+						throw new RuntimeException("Unable to find private field riddenByEntities");
+					}
+				} catch (Exception e) {
+					throw new ReflectionHelper.UnableToAccessFieldException(e);
+				}
+			}
+			((List<Entity>)obj).add(passenger);
 		}
 	}
 

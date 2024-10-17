@@ -71,7 +71,8 @@ public class EntityLightningArc extends ElementsNarutomodMod.ModElement {
 			entity.extinguish();
 		}
 		if (entity instanceof EntityLivingBase && paralysisTicks > 0) {
-			((EntityLivingBase)entity).addPotionEffect(new PotionEffect(PotionParalysis.potion, paralysisTicks, 2 + (int)(damage * 0.1f), false, false));
+			((EntityLivingBase)entity).addPotionEffect(new PotionEffect(PotionParalysis.potion, 
+			 (int)((float)paralysisTicks * 2f / entity.height), 2 + (int)(damage * 0.1f), false, false));
 		}
 		return retval;
 	}

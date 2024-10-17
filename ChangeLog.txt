@@ -41,6 +41,7 @@ Jutsus:
  - fixed fuzzy targeting system sometimes not hitting the target correctly when the projectile is huge (such as rasenshuirken)
  - change sharingan chance to evade attacks to 60%, can't evade unblockable attacks
  - genjutsu doesn't affect tailed beasts unless the caster is wearing sharingan; genjutsu doesn't affect kikaichu users
+ - fixed transformation/shadow imitation/mind control jutsus leaving a clone with no AI after server shutdown
 
 Items:
  - added Sakura shippuden clothing and leggings (for slim player models only)

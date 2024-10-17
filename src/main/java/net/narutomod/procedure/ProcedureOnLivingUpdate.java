@@ -10,6 +10,7 @@ import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.client.event.RenderLivingEvent;
@@ -200,6 +201,20 @@ public class ProcedureOnLivingUpdate extends ElementsNarutomodMod.ModElement {
 				entity.getEntityData().removeTag("UntargetableTicks");
 			}
 		}
+		if (entity instanceof EntityLiving && entity.getEntityData().hasKey(NarutomodModVariables.tempDisableAI)) {
+			int i = entity.getEntityData().getInteger(NarutomodModVariables.tempDisableAI);
+			if (i > 0) {
+				entity.getEntityData().setInteger(NarutomodModVariables.tempDisableAI, i - 1);
+				if (!((EntityLiving)entity).isAIDisabled()) {
+					((EntityLiving)entity).setNoAI(true);
+				}
+			} else {
+				entity.getEntityData().removeTag(NarutomodModVariables.tempDisableAI);
+				if (((EntityLiving)entity).isAIDisabled()) {
+					((EntityLiving)entity).setNoAI(false);
+				}
+			}
+		}
 		float f = ProcedureWhenPlayerAttcked.getExtraDamageReduction(entity);
 		if (f > 0.0f) {
 			ProcedureWhenPlayerAttcked.setExtraDamageReduction(entity, f - 0.01f);
@@ -235,6 +250,20 @@ public class ProcedureOnLivingUpdate extends ElementsNarutomodMod.ModElement {
 
 	public static boolean isUntargetable(Entity entity) {
 		return entity.getEntityData().getInteger("UntargetableTicks") > 0;
+	}
+
+	public static void disableAIfor(EntityLiving entity, int ticks) {
+		if (ticks == 0 || ticks > entity.getEntityData().getInteger(NarutomodModVariables.tempDisableAI)) {
+			entity.getEntityData().setInteger(NarutomodModVariables.tempDisableAI, ticks);
+		}
+	}
+
+	@SubscribeEvent
+	public void onLivingJoinsWorld(EntityJoinWorldEvent event) {
+		Entity entity = event.getEntity();
+		if (entity instanceof EntityLiving && entity.getEntityData().getInteger(NarutomodModVariables.tempDisableAI) > 0) {
+			entity.getEntityData().setInteger(NarutomodModVariables.tempDisableAI, 0);
+		}
 	}
 
 	@SideOnly(Side.CLIENT)

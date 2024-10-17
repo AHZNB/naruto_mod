@@ -192,7 +192,7 @@ public class EntityTransformationJutsu extends ElementsNarutomodMod.ModElement {
 
 		public static class LivingEventHook {
 			@SubscribeEvent
-			public void onLivingTick(EntityJoinWorldEvent event) {
+			public void onEntityJoinsWorld(EntityJoinWorldEvent event) {
 				Entity entity = event.getEntity();
 				if (entity.getEntityData().hasKey(EC.CLONER_KEY)) {
 					Entity cloner = entity.world.getEntityByID(entity.getEntityData().getInteger(CLONER_KEY));

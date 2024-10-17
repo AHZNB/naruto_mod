@@ -4,7 +4,6 @@ import net.narutomod.ElementsNarutomodMod;
 
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.Entity;
 
 import java.util.UUID;
@@ -22,11 +21,9 @@ public class ProcedureParalysisPotionExpires extends ElementsNarutomodMod.ModEle
 			return;
 		}
 		Entity entity = (Entity) dependencies.get("entity");
-		if (((entity instanceof EntityLiving) && (entity.getEntityData().getBoolean("temporaryDisableAI")))) {
-			((EntityLiving) entity).setNoAI(false);
-			entity.getEntityData().setBoolean("temporaryDisableAI", (false));
+		if ((entity.isEntityAlive())) {
+			((EntityLivingBase) entity).getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED)
+					.removeModifier(UUID.fromString("c69af92a-b96d-49b7-a396-9b3b0d77edd5"));
 		}
-		((EntityLivingBase) entity).getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED)
-				.removeModifier(UUID.fromString("c69af92a-b96d-49b7-a396-9b3b0d77edd5"));
 	}
 }

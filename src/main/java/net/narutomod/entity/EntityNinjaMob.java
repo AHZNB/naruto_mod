@@ -65,6 +65,7 @@ import net.minecraft.pathfinding.PathNavigateGround;
 
 import net.narutomod.item.ItemOnBody;
 import net.narutomod.potion.PotionFeatherFalling;
+import net.narutomod.procedure.ProcedureOnLivingUpdate;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.Chakra;
 import net.narutomod.PlayerRender;
@@ -142,7 +143,7 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 		private final int inventorySize = 2;
 		private final NonNullList<ItemStack> inventory = NonNullList.<ItemStack>withSize(inventorySize, ItemStack.EMPTY);
 		public int peacefulTicks;
-		private int haltAITicks;
+		//private int haltAITicks;
 		private int standStillTicks;
 		private float haltedYaw;
 		private float haltedYawHead;
@@ -248,14 +249,14 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 				this.onGround = true;
 			}
 			if (!this.world.isRemote && this.isEntityAlive()) {
-		    	if (this.haltAITicks > 0) {
-		    		--this.haltAITicks;
-		    		if (!this.isAIDisabled()) {
-		    			this.setNoAI(true);
-		    		}
-		    	} else if (this.isAIDisabled() && !this.getEntityData().getBoolean("temporaryDisableAI")) {
-		    		this.setNoAI(false);
-		    	}
+		    	//if (this.haltAITicks > 0) {
+		    	//	--this.haltAITicks;
+		    	//	if (!this.isAIDisabled()) {
+		    	//		this.setNoAI(true);
+		    	//	}
+		    	//} else if (this.isAIDisabled() && !this.getEntityData().getBoolean(NarutomodModVariables.tempDisableAI)) {
+		    	//	this.setNoAI(false);
+		    	//}
 				if (this.ticksExisted % 200 == 1) {
 					this.addPotionEffect(new PotionEffect(PotionFeatherFalling.potion, 201, 1, false, false));
 				}
@@ -267,7 +268,7 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 		}
 
 		protected void haltAIfor(int ticks) {
-			this.haltAITicks = ticks;
+			ProcedureOnLivingUpdate.disableAIfor(this, ticks);
 		}
 
 		@Override

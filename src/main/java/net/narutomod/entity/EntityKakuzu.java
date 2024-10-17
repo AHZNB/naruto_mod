@@ -3,6 +3,7 @@ package net.narutomod.entity;
 
 import net.narutomod.item.ItemAkatsukiRobe;
 import net.narutomod.item.ItemJutsu;
+import net.narutomod.ModConfig;
 import net.narutomod.ElementsNarutomodMod;
 
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -15,13 +16,22 @@ import net.minecraft.world.World;
 import net.minecraft.world.BossInfoServer;
 import net.minecraft.world.BossInfo;
 import net.minecraft.world.DifficultyInstance;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntitySelectors;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.entity.ai.EntityAISwimming;
+import net.minecraft.entity.ai.EntityAIHurtByTarget;
+import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
+import net.minecraft.entity.ai.EntityAIAttackMelee;
+import net.minecraft.entity.ai.EntityAIWatchClosest;
+import net.minecraft.entity.ai.EntityAIWatchClosest2;
+import net.minecraft.entity.ai.EntityAIWander;
+import net.minecraft.entity.ai.EntityAILookIdle;
 import net.minecraft.entity.IEntityLivingData;
 import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.client.model.ModelRenderer;
@@ -33,10 +43,10 @@ import net.minecraft.inventory.EntityEquipmentSlot;
 
 import java.util.Random;
 import javax.annotation.Nullable;
+import com.google.common.base.Predicate;
 //import net.minecraft.network.datasync.DataParameter;
 //import net.minecraft.network.datasync.EntityDataManager;
 //import net.minecraft.network.datasync.DataSerializers;
-import net.minecraft.util.DamageSource;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityKakuzu extends ElementsNarutomodMod.ModElement {
@@ -130,17 +140,36 @@ public class EntityKakuzu extends ElementsNarutomodMod.ModElement {
 		@Override
 		protected void initEntityAI() {
 			super.initEntityAI();
-			this.tasks.addTask(1, new EntityAISwimming(this));
+			this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, false));
+			this.targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, EntityPlayer.class, 10, true, false,
+				new Predicate<EntityPlayer>() {
+					public boolean apply(@Nullable EntityPlayer p_apply_1_) {
+						return p_apply_1_ != null && (ModConfig.AGGRESSIVE_BOSSES || EntityBijuManager.isJinchuriki(p_apply_1_));
+					}
+				}));
+			this.tasks.addTask(0, new EntityAISwimming(this));
+			this.tasks.addTask(2, new EntityNinjaMob.AILeapAtTarget(this, 1.0F));
+			this.tasks.addTask(4, new EntityAIAttackMelee(this, 1.2d, true));
+			this.tasks.addTask(5, new EntityAIWatchClosest2(this, EntityPlayer.class, 32.0F, 1.0F));
+			this.tasks.addTask(6, new EntityAIWatchClosest(this, EntityNinjaMob.Base.class, 24.0F) {
+				@Override
+				public boolean shouldExecute() {
+					return super.shouldExecute() && !this.entity.isOnSameTeam(this.closestEntity);
+				}
+			});
+			this.tasks.addTask(7, new EntityAIWander(this, 0.5d));
+			this.tasks.addTask(8, new EntityAILookIdle(this));
 		}
 
 		@Override
 		protected void updateAITasks() {
-			if (this.ticksExisted == 40) {
-				this.takeOffRobe(true);
-			}
+			//if (this.ticksExisted == 40) {
+			//	this.takeOffRobe(true);
+			//}
 			//if (this.ticksExisted == 100) {
 			//	this.takeOffRobe(false);
 			//}
+			super.updateAITasks();
 		}
 
 		@Override
@@ -184,6 +213,11 @@ public class EntityKakuzu extends ElementsNarutomodMod.ModElement {
 			 && this.world.getEntities(EntityCustom.class, EntitySelectors.IS_ALIVE).isEmpty()
 			 && !EntityNinjaMob.SpawnData.spawnedRecentlyHere(this, 36000);
 			 //&& this.rand.nextInt(5) == 0;
+		}
+
+		@Override
+		public boolean isOnSameTeam(Entity entityIn) {
+			return super.isOnSameTeam(entityIn) || EntityNinjaMob.TeamAkatsuki.contains(entityIn.getClass());
 		}
 
 		@Override
@@ -364,7 +398,7 @@ public class EntityKakuzu extends ElementsNarutomodMod.ModElement {
 					for (int j = 0; j < backThread[i].length; j++) {
 						backThread[i][j] = new ModelRenderer(this);
 						if (j == 0) {
-							float rotateX = (this.rand.nextFloat()-0.5F) * 1.8326F - 0.4363F;
+							float rotateX = (this.rand.nextFloat()-0.5F) * 1.5708F - 0.6109F;
 							float rotateY = (this.rand.nextFloat()-0.5F) * 2.618F;
 							float f = MathHelper.sqrt(rotateX * rotateX + rotateY * rotateY);
 							backThread[i][j].setRotationPoint(0.0F, 4.0F, f * 1.2F);
@@ -377,7 +411,7 @@ public class EntityKakuzu extends ElementsNarutomodMod.ModElement {
 						}
 						backThread[i][j].cubeList.add(new ModelBox(backThread[i][j], 40, 41, -3.0F, -3.0F, 0.0F, 6, 6, 4, 0.0F, false));
 						backThread[i][j].cubeList.add(new ModelBox(backThread[i][j], 40, 41, -3.0F, -3.0F, 0.0F, 6, 6, 4, -1.0F, true));
-						backHairSway[i][j] = (this.rand.nextFloat()-0.5F) * 0.1745F;
+						backHairSway[i][j] = (0.0873F + this.rand.nextFloat() * 0.0873F) * (j % 2 == 0 ? -1.0F : 1.0F);
 					}
 				}
 
@@ -489,25 +523,29 @@ public class EntityKakuzu extends ElementsNarutomodMod.ModElement {
 					bipedLeftArm.rotationPointY = 3.0F;
 					bipedRightArm.rotateAngleZ += 0.7854F;
 					bipedLeftArm.rotateAngleZ -= 0.7854F;
+					float fsin = MathHelper.sin(ageInTicks * 0.09F);
+					float fcos = MathHelper.cos(ageInTicks * 0.09F);
 					for (int i = 0; i < mouthThread.length; i++) {
 						for (int j = 1; j < mouthThread[i].length; j++) {
-							mouthThread[i][j].rotateAngleX = 0.1309F + MathHelper.cos(ageInTicks * 0.09F) * mouthHairSway[i][j];
-							mouthThread[i][j].rotateAngleY = MathHelper.sin(ageInTicks * 0.09F) * mouthHairSway[i][j];
+							mouthThread[i][j].rotateAngleX = 0.1309F + fcos * mouthHairSway[i][j];
+							mouthThread[i][j].rotateAngleY = fsin * mouthHairSway[i][j];
 							mouthThread[i][j].showModel = (float)j / (mouthThread[i].length - 1) <= this.clothesOffProgress;
 						}
 					}
 					for (int i = 0; i < backThread.length; i++) {
 						for (int j = 1; j < backThread[i].length; j++) {
-							backThread[i][j].rotateAngleX = 0.1745F + MathHelper.cos(ageInTicks * 0.09F) * backHairSway[i][j];
-							backThread[i][j].rotateAngleY = MathHelper.sin(ageInTicks * 0.09F) * backHairSway[i][j] * (0.9F + (float)j / backThread[i].length);
+							backThread[i][j].rotateAngleX = 0.1745F + fcos * backHairSway[i][j];
+							backThread[i][j].rotateAngleY = fsin * backHairSway[i][j] * (0.9F + (float)j / backThread[i].length);
 							backThread[i][j].showModel = (float)j / (backThread[i].length - 1) <= this.clothesOffProgress;
 						}
 					}
+					fsin = MathHelper.sin(ageInTicks * 0.067F);
+					fcos = MathHelper.cos(ageInTicks * 0.067F);
 					for (int i = 1; i < rightArmThread.length; i++) {
-						rightArmThread[i].rotateAngleX = -0.0873F + MathHelper.cos(ageInTicks * 0.067F) * 0.0437F;
-						rightArmThread[i].rotateAngleZ = -0.0873F + MathHelper.sin(ageInTicks * 0.067F) * 0.0437F;
-						leftArmThread[i].rotateAngleX = -0.0873F + MathHelper.sin(ageInTicks * 0.067F) * 0.0437F;
-						leftArmThread[i].rotateAngleZ = 0.0873F + MathHelper.cos(ageInTicks * 0.067F) * 0.0437F;
+						rightArmThread[i].rotateAngleX = -0.0873F + fcos * 0.0437F;
+						rightArmThread[i].rotateAngleZ = -0.0873F + fsin * 0.0437F;
+						leftArmThread[i].rotateAngleX = -0.0873F + fsin * 0.0437F;
+						leftArmThread[i].rotateAngleZ = 0.0873F + fcos * 0.0437F;
 					}
 					for (int i = 0; i < rightArmString.length; i++) {
 						for (int j = 1; j < rightArmString[i].length; j++) {
