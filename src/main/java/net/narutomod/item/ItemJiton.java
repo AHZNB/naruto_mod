@@ -620,6 +620,10 @@ public class ItemJiton extends ElementsNarutomodMod.ModElement {
 			}
 		}
 
+		public void setStartVec(Vec3d vec) {
+			this.startPos = vec;
+		}
+
 		public void setSpeed(float speedIn, float inaccuracyIn) {
 			this.speed = speedIn;
 			this.inaccuracy = inaccuracyIn;

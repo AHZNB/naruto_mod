@@ -8,28 +8,30 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
+import net.minecraft.util.DamageSource;
+import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.DamageSource;
-import net.minecraft.entity.Entity;
+import net.minecraft.entity.MoverType;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.Entity;
 import net.minecraft.client.model.ModelQuadruped;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.model.ModelBox;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.entity.MoverType;
-import net.minecraft.world.WorldServer;
-import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.potion.PotionEffect;
 
 import net.narutomod.item.ItemJiton;
 import net.narutomod.item.ItemJutsu;
+import net.narutomod.potion.PotionHeaviness;
 import net.narutomod.procedure.ProcedureSync;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.Chakra;
@@ -118,15 +120,20 @@ public class EntityKikaichu extends ElementsNarutomodMod.ModElement {
 		public void onUpdate() {
 			if (this.user != null && this.user.isEntityAlive() 
 			 && this.bugsTarget != null && !this.bugsTarget.shouldRemove() && this.target != null) {
+				Vec3d userVec = this.getUserVector();
 				if (this.target.isEntityAlive() && this.ticksExisted < MAXTIME) {
 					if (this.bugsTarget.allParticlesReachedTarget()) {
 						this.bugsTarget.setTarget(this.getTargetVector(), 0.2f, 0.01f, false);
+						if (this.ticksExisted % 10 == 1) {
+							target.addPotionEffect(new PotionEffect(PotionHeaviness.potion, 22, 2, false, false));
+						}
 					} else {
-						this.bugsTarget.setTarget(this.getTargetVector(), 0.6f, 0.05f, false);
+						this.bugsTarget.setTarget(this.getTargetVector(), 1.5f, 0.05f, false);
 					}
 				} else {
-					this.bugsTarget.setTarget(this.getUserVector(), 0.6f, 0.05f, true);
+					this.bugsTarget.setTarget(userVec, 0.6f, 0.05f, true);
 				}
+				this.bugsTarget.setStartVec(userVec);
 				this.bugsTarget.onUpdate();
 				this.setEntityBoundingBox(this.bugsTarget.getBorders());
 				this.resetPositionToBB();
@@ -279,6 +286,9 @@ public class EntityKikaichu extends ElementsNarutomodMod.ModElement {
 			if (!this.world.isRemote) {
 				for (EntityLivingBase entity : this.world.getEntitiesWithinAABB(EntityLivingBase.class, this.getEntityBoundingBox())) {
 					if (!entity.equals(this.host)) {
+						if (!entity.isPotionActive(PotionHeaviness.potion) || entity.getActivePotionEffect(PotionHeaviness.potion).getAmplifier() < 1) {
+							entity.addPotionEffect(new PotionEffect(PotionHeaviness.potion, 22, 1, false, false));
+						}
 						if (this.chakra < 100d && Chakra.pathway(entity).consume(0.25d)) {
 							this.chakra += 0.25d;
 						}

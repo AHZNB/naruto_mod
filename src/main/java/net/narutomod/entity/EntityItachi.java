@@ -67,6 +67,7 @@ import net.narutomod.procedure.ProcedureBasicNinjaSkills;
 import net.narutomod.procedure.ProcedureSync;
 import net.narutomod.item.ItemSharingan;
 import net.narutomod.item.ItemMangekyoSharingan;
+import net.narutomod.item.ItemInton;
 import net.narutomod.item.ItemKunai;
 import net.narutomod.item.ItemKaton;
 import net.narutomod.item.ItemAkatsukiRobe;
@@ -212,7 +213,7 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 					this.susanooEntity.setAttackTarget(target);
 				}
 				if (this.lookedAtTime >= 5 && this.ticksExisted > this.lastGenjutsuTime + this.genjutsuDuration + GENJUTSU_COOLDOWN
-						&& this.consumeChakra(GENJUTSU_CHAKRA)) {
+				 && ((ItemInton.Genjutsu)ItemInton.GENJUTSU.jutsu).canTargetBeAffected(this, target) && this.consumeChakra(GENJUTSU_CHAKRA)) {
 					if (target instanceof EntityPlayerMP) {
 						ProcedureSync.MobAppearanceParticle.send((EntityPlayerMP)target, ENTITYID_RANGED);
 					}

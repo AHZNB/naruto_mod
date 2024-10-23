@@ -860,6 +860,7 @@ public class EntityClone extends ElementsNarutomodMod.ModElement {
 				if (model != null) {
 					String s = stack.getItem().getArmorTexture(stack, entityIn, EntityEquipmentSlot.HEAD, null);
 					if (s != null) {
+						model.setModelAttributes(this.renderer.getMainModel());
 						model.setLivingAnimations(entityIn, limbSwing, limbSwingAmount, partialTicks);
 						this.renderer.bindTexture(new ResourceLocation(s));
 						model.render(entityIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale);

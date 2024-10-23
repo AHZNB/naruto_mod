@@ -394,10 +394,13 @@ public class EntityLightningArc extends ElementsNarutomodMod.ModElement {
 				GlStateManager.disableCull();
 				GlStateManager.depthMask(false);
 				GlStateManager.disableLighting();
+				Tessellator tessellator = Tessellator.getInstance();
+				BufferBuilder bufferbuilder = tessellator.getBuffer();
 				for (int j = 0; j < entity.branches.size(); j++) {
 					si = entity.branches.get(j);
 					for (int i = 0; i < si.getTotal(); i++) {
-						this.renderSection(si.getFrom(i), si.getTo(i), d * (j == 0 ? 1d : 0.6d), color, f, j > 0);
+						this.renderSection(bufferbuilder, si.getFrom(i), si.getTo(i), d * (j == 0 ? 1d : 0.6d), color, f, j > 0);
+						tessellator.draw();
 					}
 				}
 				GlStateManager.enableLighting();
@@ -429,12 +432,9 @@ public class EntityLightningArc extends ElementsNarutomodMod.ModElement {
 				}
 			}
 
-			private void renderSection(Vec3d fromVec, Vec3d toVec, double thickness, int color, float opacity, boolean isBranch) {
+			private void renderSection(BufferBuilder buffer, Vec3d fromVec, Vec3d toVec, double thickness, int color, float opacity, boolean isBranch) {
 				OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, isBranch ? 160F : 240F, isBranch ? 160F : 240F);
-				Tessellator tessellator = Tessellator.getInstance();
-				BufferBuilder bufferbuilder = tessellator.getBuffer();
-				bufferbuilder.begin(5, DefaultVertexFormats.POSITION_COLOR);
-				//int a = (color & 0xFF000000) >> 24;
+				buffer.begin(5, DefaultVertexFormats.POSITION_COLOR);
 				int r = (color & 0x00FF0000) >> 16;
 				int g = (color & 0x0000FF00) >> 8;
 				int b = color & 0x000000FF;
@@ -454,18 +454,17 @@ public class EntityLightningArc extends ElementsNarutomodMod.ModElement {
 						GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 					}
 					a = (int)((float)a * opacity);
-					bufferbuilder.pos(fromVec.x - w, fromVec.y - w, fromVec.z).color(r1, g1, b1, a).endVertex();
-					bufferbuilder.pos(toVec.x - w, toVec.y - w, toVec.z).color(r1, g1, b1, a).endVertex();
-					bufferbuilder.pos(fromVec.x - w, fromVec.y + w, fromVec.z).color(r1, g1, b1, a).endVertex();
-					bufferbuilder.pos(toVec.x - w, toVec.y + w, toVec.z).color(r1, g1, b1, a).endVertex();
-					bufferbuilder.pos(fromVec.x + w, fromVec.y + w, fromVec.z).color(r1, g1, b1, a).endVertex();
-					bufferbuilder.pos(toVec.x + w, toVec.y + w, toVec.z).color(r1, g1, b1, a).endVertex();
-					bufferbuilder.pos(fromVec.x + w, fromVec.y - w, fromVec.z).color(r1, g1, b1, a).endVertex();
-					bufferbuilder.pos(toVec.x + w, toVec.y - w, toVec.z).color(r1, g1, b1, a).endVertex();
-					bufferbuilder.pos(fromVec.x - w, fromVec.y - w, fromVec.z).color(r1, g1, b1, a).endVertex();
-					bufferbuilder.pos(toVec.x - w, toVec.y - w, toVec.z).color(r1, g1, b1, a).endVertex();
+					buffer.pos(fromVec.x - w, fromVec.y - w, fromVec.z).color(r1, g1, b1, a).endVertex();
+					buffer.pos(toVec.x - w, toVec.y - w, toVec.z).color(r1, g1, b1, a).endVertex();
+					buffer.pos(fromVec.x - w, fromVec.y + w, fromVec.z).color(r1, g1, b1, a).endVertex();
+					buffer.pos(toVec.x - w, toVec.y + w, toVec.z).color(r1, g1, b1, a).endVertex();
+					buffer.pos(fromVec.x + w, fromVec.y + w, fromVec.z).color(r1, g1, b1, a).endVertex();
+					buffer.pos(toVec.x + w, toVec.y + w, toVec.z).color(r1, g1, b1, a).endVertex();
+					buffer.pos(fromVec.x + w, fromVec.y - w, fromVec.z).color(r1, g1, b1, a).endVertex();
+					buffer.pos(toVec.x + w, toVec.y - w, toVec.z).color(r1, g1, b1, a).endVertex();
+					buffer.pos(fromVec.x - w, fromVec.y - w, fromVec.z).color(r1, g1, b1, a).endVertex();
+					buffer.pos(toVec.x - w, toVec.y - w, toVec.z).color(r1, g1, b1, a).endVertex();
 				}
-				tessellator.draw();
 			}
 
 			@Override
