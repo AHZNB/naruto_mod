@@ -150,20 +150,22 @@ public class ItemBijuCloak extends ElementsNarutomodMod.ModElement {
 				 		ItemStack legStack = livingEntity.getItemStackFromSlot(EntityEquipmentSlot.LEGS);
 						if (helmetStack.getItem() == helmet && itemstack.getItem() == body && legStack.getItem() == legs) {
 					 	 	setWearingFullSet(itemstack, true);
-
 							if (!world.isRemote) {
-								setCloakLevel(helmetStack, cloakLevel);
-								setCloakLevel(itemstack, cloakLevel);
-								setCloakLevel(legStack, cloakLevel);
+								if (getCloakLevel(itemstack) != cloakLevel) {
+									setCloakLevel(helmetStack, cloakLevel);
+									setCloakLevel(itemstack, cloakLevel);
+									setCloakLevel(legStack, cloakLevel);
+								}
 				 				int wearingTicks = getWearingTicks(livingEntity);
 				 				int cloakXp = EntityBijuManager.getCloakXp(livingEntity);
 						 	 	wearingTicks = wearingTicks > 0 ? ++wearingTicks : 1;
-
 						 	 	if (wearingTicks <= cloakXp * 5 + 200 && net.narutomod.Chakra.pathway(livingEntity).getAmount() > 0d) {
 						 	 		cloakXp += wearingTicks / 20;
-									setCloakXp(helmetStack, cloakXp);
-									setCloakXp(itemstack, cloakXp);
-									setCloakXp(legStack, cloakXp);
+						 	 		if (getCloakXp(itemstack) != cloakXp) {
+										setCloakXp(helmetStack, cloakXp);
+										setCloakXp(itemstack, cloakXp);
+										setCloakXp(legStack, cloakXp);
+						 	 		}
 									setWearingTicks(livingEntity, wearingTicks);
 									if (cloakXp >= 800 || (cloakLevel == 1 && cloakXp >= 400)) {
 										revertOriginal(livingEntity, itemstack);
@@ -300,17 +302,17 @@ public class ItemBijuCloak extends ElementsNarutomodMod.ModElement {
 			 50, 0.18d, 0.4d, 0.18d, 0d, 0d, 0d, smokeColor, 10, 
 			 (int)(4.0D / (entity.getRNG().nextDouble() * 0.8D + 0.2D)), 0xF0, entity.getEntityId());
 		}
-		if (!entity.world.isRemote && entity.ticksExisted % 10 == 4) {
+		if (!entity.world.isRemote && entity.ticksExisted % 20 == 4) {
 			//entity.addPotionEffect(new PotionEffect(MobEffects.SATURATION, 5, 0, false, false));
-			entity.addPotionEffect(new PotionEffect(PotionChakraEnhancedStrength.potion, 12, level * 32, false, false));
-			entity.addPotionEffect(new PotionEffect(MobEffects.SPEED, 12, level * 24, false, false));
-			entity.addPotionEffect(new PotionEffect(MobEffects.JUMP_BOOST, 12, 5, false, false));
-			entity.addPotionEffect(new PotionEffect(PotionReach.potion, 12, level - 1, false, false));
+			entity.addPotionEffect(new PotionEffect(PotionChakraEnhancedStrength.potion, 22, level * 32, false, false));
+			entity.addPotionEffect(new PotionEffect(MobEffects.SPEED, 22, level * 24, false, false));
+			entity.addPotionEffect(new PotionEffect(MobEffects.JUMP_BOOST, 22, 5, false, false));
+			entity.addPotionEffect(new PotionEffect(PotionReach.potion, 22, level - 1, false, false));
 			if (entity.getHealth() < entity.getMaxHealth() && entity.getHealth() > 0.0f) {
-				entity.heal((float)level);
+				entity.heal((float)level * 2);
 			}
 			if (level == 2) {
-				entity.addPotionEffect(new PotionEffect(MobEffects.RESISTANCE, 12, 2, false, false));
+				entity.addPotionEffect(new PotionEffect(MobEffects.RESISTANCE, 22, 2, false, false));
 			}
 		}
 		if (!entity.world.isRemote && entity instanceof EntityPlayer) {
@@ -349,7 +351,7 @@ public class ItemBijuCloak extends ElementsNarutomodMod.ModElement {
 	 	if (!itemstack.hasTagCompound()) {
 	 		itemstack.setTagCompound(new NBTTagCompound());
 	 	}
-	 	itemstack.getTagCompound().setInteger("BijuCloakLevel", level);
+ 		itemstack.getTagCompound().setInteger("BijuCloakLevel", level);
 	}
 
 	private static int getCloakLevel(ItemStack itemstack) {
@@ -360,7 +362,7 @@ public class ItemBijuCloak extends ElementsNarutomodMod.ModElement {
 	 	if (!itemstack.hasTagCompound()) {
 	 		itemstack.setTagCompound(new NBTTagCompound());
 	 	}
-	 	itemstack.getTagCompound().setInteger("BijuCloakXp", xp);
+ 		itemstack.getTagCompound().setInteger("BijuCloakXp", xp);
 	}
 
 	private static int getCloakXp(ItemStack itemstack) {
@@ -379,7 +381,9 @@ public class ItemBijuCloak extends ElementsNarutomodMod.ModElement {
 	 	if (!itemstack.hasTagCompound()) {
 	 		itemstack.setTagCompound(new NBTTagCompound());
 	 	}
-	 	itemstack.getTagCompound().setBoolean("WearingFullSetBijuCloak", b);
+	 	if (isWearingFullSet(itemstack) != b) {
+	 		itemstack.getTagCompound().setBoolean("WearingFullSetBijuCloak", b);
+	 	}
 	}
 
 	private boolean isWearingFullSet(ItemStack itemstack) {

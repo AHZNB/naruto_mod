@@ -397,7 +397,7 @@ public class EntityKikaichu extends ElementsNarutomodMod.ModElement {
 				GlStateManager.scale(0.1F, 0.1F, 0.1F);
 				GlStateManager.enableBlend();
 				GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-				this.model.render(entity, f6, f5, 0.0F, 0.0F, 0.0F, 0.0625F);
+				this.model.render(entity, f6, f5, partialTicks + entity.ticksExisted, 0.0F, 0.0F, 0.0625F);
 				GlStateManager.disableBlend();
 				GlStateManager.popMatrix();
 			}

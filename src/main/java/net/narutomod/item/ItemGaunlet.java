@@ -327,7 +327,7 @@ public class ItemGaunlet extends ElementsNarutomodMod.ModElement {
 					this.shootingEntity.velocityChanged = true;
 				} else {
 					this.motionX *= -0.4d;
-					this.motionY *= -0.4d;
+					//this.motionY *= -0.4d;
 					this.motionZ *= -0.4d;
 				}
 			}

@@ -151,6 +151,7 @@ public class ItemSenjutsu extends ElementsNarutomodMod.ModElement {
 					if (forcedType != Type.NONE) {
 						this.setSageType(itemstack, forcedType);
 						this.enableJutsu(itemstack, SAGEMODE, true);
+						itemstack.getTagCompound().removeTag("Type");
 						sageType = forcedType;
 					} else {
 						return;
@@ -167,7 +168,10 @@ public class ItemSenjutsu extends ElementsNarutomodMod.ModElement {
 						}
 					}
 					if (entity instanceof EntityPlayer) {
-						itemstack.getTagCompound().setInteger("prevFoodStat", ((EntityPlayer)entity).getFoodStats().getFoodLevel());
+						int foodlevel = ((EntityPlayer)entity).getFoodStats().getFoodLevel();
+						if (itemstack.getTagCompound().getInteger("prevFoodStat") != foodlevel) {
+							itemstack.getTagCompound().setInteger("prevFoodStat", foodlevel);
+						}
 					}
 				} else if (!flag && flag1) {
 					for (Map.Entry<IAttribute, AttributeModifier> entry : buffMap.entrySet()) {

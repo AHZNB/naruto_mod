@@ -271,7 +271,7 @@ public abstract class EntitySusanooBase extends EntityCreature implements IRange
 				obj = null;
 				try {
 					for (Field field : Entity.class.getDeclaredFields()) {
-						if (Modifier.toString(field.getModifiers()).equals("private final") && field.getType() == List.class) {
+						if (!Modifier.isStatic(field.getModifiers()) && field.getType() == List.class) {
 							field.setAccessible(true);
 							obj = field.get(this);
 							break;
