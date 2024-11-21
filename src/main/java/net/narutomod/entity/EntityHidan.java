@@ -67,7 +67,6 @@ import net.minecraft.potion.PotionEffect;
 import net.minecraft.nbt.NBTTagCompound;
 
 import javax.annotation.Nullable;
-import com.google.common.base.Predicate;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityHidan extends ElementsNarutomodMod.ModElement {
@@ -110,6 +109,7 @@ public class EntityHidan extends ElementsNarutomodMod.ModElement {
 
 		public EntityCustom(World world) {
 			super(world, 120, 7000d);
+			this.targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, EntityPlayer.class, 10, true, false, this.playerTargetSelectorAkatsuki));
 		}
 
 		@Override
@@ -165,12 +165,6 @@ public class EntityHidan extends ElementsNarutomodMod.ModElement {
 		protected void initEntityAI() {
 			super.initEntityAI();
 			this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, false));
-			this.targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, EntityPlayer.class, 10, true, false,
-				new Predicate<EntityPlayer>() {
-					public boolean apply(@Nullable EntityPlayer p_apply_1_) {
-						return p_apply_1_ != null && (ModConfig.AGGRESSIVE_BOSSES || EntityBijuManager.isJinchuriki(p_apply_1_));
-					}
-				}));
 			this.tasks.addTask(0, new EntityAISwimming(this));
 			this.tasks.addTask(1, new AIMoveTowardsSymbol(this, 1.5d));
 			this.tasks.addTask(2, new EntityNinjaMob.AILeapAtTarget(this, 1.0F) {

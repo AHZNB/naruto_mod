@@ -277,6 +277,8 @@ public class EntityKikaichu extends ElementsNarutomodMod.ModElement {
 			this.prevPosX = this.posX;
 			this.prevPosY = this.posY;
 			this.prevPosZ = this.posZ;
+			this.prevRotationYaw = this.rotationYaw;
+			this.prevRotationPitch = this.rotationPitch;
 			this.move(MoverType.SELF, this.motionX, this.motionY, this.motionZ);
 			this.updateLimbSwing();
 			this.updateInFlightRotations();

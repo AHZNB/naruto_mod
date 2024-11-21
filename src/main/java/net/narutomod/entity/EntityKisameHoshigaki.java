@@ -75,7 +75,6 @@ import net.narutomod.ModConfig;
 import net.narutomod.ElementsNarutomodMod;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.common.base.Predicate;
 import javax.annotation.Nullable;
 
 @ElementsNarutomodMod.ModElement.Tag
@@ -143,6 +142,7 @@ public class EntityKisameHoshigaki extends ElementsNarutomodMod.ModElement {
 			this.altMoveHelper = new EntityNinjaMob.SwimHelper(this);
 			//this.setItemToInventory(swordStack);
 			java.util.Arrays.fill(this.inventoryHandsDropChances, 0.0F);
+			this.targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, EntityPlayer.class, 10, true, false, this.playerTargetSelectorAkatsuki));
 		}
 
 		public EntityCustom(EntityCustom cloneFrom) {
@@ -192,14 +192,7 @@ public class EntityKisameHoshigaki extends ElementsNarutomodMod.ModElement {
 		@Override
 		protected void initEntityAI() {
 			super.initEntityAI();
-			//this.targetTasks.addTask(1, new EntityAINearestAttackableTarget(this, EntityPlayer.class, true, false));
 			this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, false));
-			this.targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, EntityPlayer.class, 10, true, false,
-					new Predicate<EntityPlayer>() {
-						public boolean apply(@Nullable EntityPlayer p_apply_1_) {
-							return p_apply_1_ != null && (ModConfig.AGGRESSIVE_BOSSES || EntityBijuManager.isJinchuriki(p_apply_1_));
-						}
-					}));
 			this.tasks.addTask(0, new EntityAISwimming(this) {
 				@Override
 				public boolean shouldExecute() {
@@ -258,28 +251,23 @@ public class EntityKisameHoshigaki extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public boolean attackEntityFrom(DamageSource source, float amount) {
-			if (!this.isAIDisabled() && source instanceof EntityDamageSource
-			 && !((EntityDamageSource)source).getIsThornsDamage() && !source.isUnblockable()) {
-				if (this.getHeldItemMainhand().isEmpty()) {
-					this.swapWithInventory(EntityEquipmentSlot.MAINHAND, 0);
+			if (!this.isAIDisabled()) {
+				if (source == DamageSource.DROWN) {
+					return false;
 				}
-				if (!this.getHeldItemMainhand().isEmpty() && !this.isActiveItemStackBlocking()
-				 && source.getImmediateSource() != null && ProcedureUtils.isEntityInFOV(this, source.getImmediateSource())
-				 && this.ticksExisted > this.lastBlockTime + this.BLOCKING_CD) {
-					this.setActiveHand(EnumHand.MAIN_HAND);
-					this.activeItemStackUseCount = this.getActiveItemStack().getMaxItemUseDuration() - 5;
-					this.lastBlockTime = this.ticksExisted;
+				if (source instanceof EntityDamageSource && !((EntityDamageSource)source).getIsThornsDamage() && !source.isUnblockable()) {
+					if (this.getHeldItemMainhand().isEmpty()) {
+						this.swapWithInventory(EntityEquipmentSlot.MAINHAND, 0);
+					}
+					if (!this.getHeldItemMainhand().isEmpty() && !this.isActiveItemStackBlocking()
+					 && source.getImmediateSource() != null && ProcedureUtils.isEntityInFOV(this, source.getImmediateSource())
+					 && this.ticksExisted > this.lastBlockTime + this.BLOCKING_CD) {
+						this.setActiveHand(EnumHand.MAIN_HAND);
+						this.activeItemStackUseCount = this.getActiveItemStack().getMaxItemUseDuration() - 5;
+						this.lastBlockTime = this.ticksExisted;
+					}
 				}
 			}
-			//if (this.useAltModel() && source.getTrueSource() instanceof EntityLivingBase) {
-			//EntityLivingBase attacker = (EntityLivingBase)source.getTrueSource();
-			//ItemSamehada.applyEffects(attacker, this, 0.5f);
-			//attacker.attackEntityFrom(DamageSource.causeThornsDamage(this), 8f + this.rand.nextFloat() * 2f);
-			//if (!source.isUnblockable() && ProcedureUtils.isEntityInFOV(this, attacker)) {
-			//	amount *= this.rand.nextFloat() * 0.2f;
-			//	this.swingArm(EnumHand.OFF_HAND);
-			//}
-			//}
 			return super.attackEntityFrom(source, amount);
 		}
 

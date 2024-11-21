@@ -75,6 +75,7 @@ import net.narutomod.ModConfig;
 import net.narutomod.ElementsNarutomodMod;
 
 import com.google.common.base.Predicate;
+import com.google.common.base.Predicates;
 import javax.annotation.Nullable;
 
 @ElementsNarutomodMod.ModElement.Tag
@@ -135,6 +136,12 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 			super(world, 120, 7000d);
 			//this.setItemToInventory(kunaiStack);
 			this.isImmuneToFire = true;
+			this.targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, EntityPlayer.class, 10, true, false,
+				Predicates.or(this.playerTargetSelectorAkatsuki, new Predicate<EntityPlayer>() {
+					public boolean apply(@Nullable EntityPlayer p_apply_1_) {
+						return p_apply_1_ != null && ItemSharingan.wearingAny(p_apply_1_);
+					}
+				})));
 		}
 
 		@Override
@@ -195,13 +202,6 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 			this.tasks.addTask(5, new EntityAIWander(this, 0.3));
 			this.tasks.addTask(6, new EntityAILookIdle(this));
 			this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, false));
-			this.targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, EntityPlayer.class, 10, true, false,
-				new Predicate<EntityPlayer>() {
-					public boolean apply(@Nullable EntityPlayer p_apply_1_) {
-						return p_apply_1_ != null && (ModConfig.AGGRESSIVE_BOSSES
-						 || ItemSharingan.wearingAny(p_apply_1_) || EntityBijuManager.isJinchuriki(p_apply_1_));
-					}
-				}));
 		}
 
 		@Override

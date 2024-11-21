@@ -101,6 +101,7 @@ Entities:
  - added Might Guy blocking animation
  - adding Kakuzu (does nothing yet)
  - change summons, puppets, shieldbase melee attacks to include the summoner as indirect attacker (this change affects a wide range of things in the mod, please test thoroughly. this was done so that these entity's attacks can increase the summoner's ninjaXP)
+ - hostile ninja bosses will attack player if within 6 blocks regardless of the AGGRESSIVE_BOSSES config option
  
 General:
  - fixed alpha transparency bug when using certain jutsus

@@ -129,38 +129,33 @@ public class ProcedureSusanoo extends ElementsNarutomodMod.ModElement {
 				boolean fullBody = ((EntitySusanooSkeleton.EntityCustom)susanoo).isFullBody();
 				if (!fullBody && playerXp >= EntitySusanooBase.BXP_REQUIRED_L1) {
 					if (Chakra.pathway(player).consume(BASE_CHAKRA_USAGE)) {
-						susanoo.setDead();
-						EntitySusanooBase entityCustom = new EntitySusanooSkeleton.EntityCustom(player, true);
-						player.world.spawnEntity(entityCustom);
-						player.getEntityData().setInteger(SUMMONED_SUSANOO, entityCustom.getEntityId());
+						changeEntity(player, susanoo, new EntitySusanooSkeleton.EntityCustom(player, true));
 					}
 				} else if (fullBody && playerXp >= EntitySusanooBase.BXP_REQUIRED_L2) {
 					if (Chakra.pathway(player).consume(BASE_CHAKRA_USAGE)) {
-						susanoo.setDead();
-						EntitySusanooBase entityCustom = new EntitySusanooClothed.EntityCustom(player, false);
-						player.world.spawnEntity(entityCustom);
-						player.getEntityData().setInteger(SUMMONED_SUSANOO, entityCustom.getEntityId());
+						changeEntity(player, susanoo, new EntitySusanooClothed.EntityCustom(player, false));
 					}
 				}
 			} else if (susanoo instanceof EntitySusanooClothed.EntityCustom) {
 				boolean hasLegs = ((EntitySusanooClothed.EntityCustom)susanoo).hasLegs();
 				if (hasLegs && playerXp >= EntitySusanooBase.BXP_REQUIRED_L4) {
 					if (Chakra.pathway(player).consume(BASE_CHAKRA_USAGE)) {
-						susanoo.setDead();
-						EntitySusanooBase entityCustom = new EntitySusanooWinged.EntityCustom(player);
-						player.world.spawnEntity(entityCustom);
-						player.getEntityData().setInteger(SUMMONED_SUSANOO, entityCustom.getEntityId());
+						changeEntity(player, susanoo, new EntitySusanooWinged.EntityCustom(player));
 					}
 				} else if (!hasLegs && playerXp >= EntitySusanooBase.BXP_REQUIRED_L3) {
 					if (Chakra.pathway(player).consume(BASE_CHAKRA_USAGE)) {
-						susanoo.setDead();
-						EntitySusanooBase entityCustom = new EntitySusanooClothed.EntityCustom(player, true);
-						player.world.spawnEntity(entityCustom);
-						player.getEntityData().setInteger(SUMMONED_SUSANOO, entityCustom.getEntityId());
+						changeEntity(player, susanoo, new EntitySusanooClothed.EntityCustom(player, true));
 					}
 				}
 			}
 		}
+	}
+
+	private static void changeEntity(EntityPlayer player, Entity oldSusanoo, Entity newSusanoo) {
+		oldSusanoo.setDead();
+		newSusanoo.copyLocationAndAnglesFrom(oldSusanoo);
+		player.world.spawnEntity(newSusanoo);
+		player.getEntityData().setInteger(SUMMONED_SUSANOO, newSusanoo.getEntityId());
 	}
 
 	public class PlayerHook {

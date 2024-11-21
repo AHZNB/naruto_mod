@@ -57,7 +57,6 @@ import net.minecraft.init.SoundEvents;
 import net.minecraft.init.MobEffects;
 import net.minecraft.potion.PotionEffect;
 
-import com.google.common.base.Predicate;
 import javax.annotation.Nullable;
 
 @ElementsNarutomodMod.ModElement.Tag
@@ -98,6 +97,7 @@ public class EntityDeidara extends ElementsNarutomodMod.ModElement {
 		
 		public EntityCustom(World world) {
 			super(world, 120, 7000d);
+			this.targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, EntityPlayer.class, 10, true, false, this.playerTargetSelectorAkatsuki));
 		}
 
 		@Override
@@ -120,12 +120,6 @@ public class EntityDeidara extends ElementsNarutomodMod.ModElement {
 		protected void initEntityAI() {
 			super.initEntityAI();
 			this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, false));
-			this.targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, EntityPlayer.class, 10, true, false,
-				new Predicate<EntityPlayer>() {
-					public boolean apply(@Nullable EntityPlayer p_apply_1_) {
-						return p_apply_1_ != null && (ModConfig.AGGRESSIVE_BOSSES || EntityBijuManager.isJinchuriki(p_apply_1_));
-					}
-				}));
 			this.tasks.addTask(0, new EntityAISwimming(this));
 			this.tasks.addTask(1, new EntityNinjaMob.AIAttackRangedTactical(this, 1.0D, 30, 50, 40.0F));
 			this.tasks.addTask(2, new EntityClone.AIFollowSummoner(this, 0.6d, 4f) {

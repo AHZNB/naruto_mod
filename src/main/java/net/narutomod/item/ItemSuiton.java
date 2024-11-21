@@ -86,7 +86,6 @@ public class ItemSuiton extends ElementsNarutomodMod.ModElement {
 		private final int buildTime = 200;
 		private final int DISSIPATE = 120;
 		private int idleTime;
-		private int dissipateTime;
 		private double radius;
 		private EntityLivingBase user;
 
@@ -99,8 +98,7 @@ public class ItemSuiton extends ElementsNarutomodMod.ModElement {
 			this(world);
 			this.setPosition(x, y, z);
 			this.radius = r;
-			this.idleTime = this.buildTime + (world.containsAnyLiquid(new AxisAlignedBB(x-20, y-10, z-20, x+20, y+10, z+20)) ? 800 : 400);
-			this.dissipateTime = this.idleTime + this.DISSIPATE;
+			this.idleTime = this.buildTime + (world.containsAnyLiquid(new AxisAlignedBB(x-15, y-6, z-15, x+15, y+10, z+15)) ? 800 : 400);
 		}
 
 		public EntityMist(EntityLivingBase userIn) {
@@ -138,8 +136,8 @@ public class ItemSuiton extends ElementsNarutomodMod.ModElement {
 					double d1 = this.getDistance(entity) - this.radius;
 					if (this.ticksExisted <= this.buildTime) {
 						d0 = (double)this.ticksExisted / this.buildTime;
-					} else if (this.ticksExisted > this.idleTime && this.ticksExisted < this.dissipateTime) {
-						d0 = (double)(this.dissipateTime - this.ticksExisted) / (this.dissipateTime - this.idleTime);
+					} else if (this.ticksExisted > this.idleTime && this.ticksExisted < this.getFinishTime()) {
+						d0 = (double)(this.getFinishTime() - this.ticksExisted) / (this.getFinishTime() - this.idleTime);
 					}
 					if (entity instanceof EntityPlayer) {
 						d0 = d0 * this.density / Math.max(d1, 1d);
@@ -155,10 +153,17 @@ public class ItemSuiton extends ElementsNarutomodMod.ModElement {
 						ProcedureSync.SetGlowing.send((EntityPlayerMP)this.user, entity, 5);
 					}
 				}
-				if (this.ticksExisted >= this.dissipateTime) {
+				if (this.user != null && !this.user.isEntityAlive()) {
+					this.idleTime = this.ticksExisted;
+				}
+				if (this.ticksExisted >= this.getFinishTime()) {
 					this.setDead();
 				}
 			}
+		}
+
+		private int getFinishTime() {
+			return this.idleTime + this.DISSIPATE;
 		}
 
 		@Override
@@ -166,7 +171,7 @@ public class ItemSuiton extends ElementsNarutomodMod.ModElement {
 			this.ticksExisted = compound.getInteger("age");
 			this.radius = compound.getDouble("radius");
 			this.idleTime = compound.getInteger("idleTime");
-			this.dissipateTime = compound.getInteger("dissipateTime");
+			//this.dissipateTime = compound.getInteger("dissipateTime");
 		}
 
 		@Override
@@ -174,7 +179,7 @@ public class ItemSuiton extends ElementsNarutomodMod.ModElement {
 			compound.setInteger("age", this.ticksExisted);
 			compound.setDouble("radius", this.radius);
 			compound.setInteger("idleTime", this.idleTime);
-			compound.setInteger("dissipateTime", this.dissipateTime);
+			//compound.setInteger("dissipateTime", this.dissipateTime);
 		}
 
 		@Override
@@ -186,7 +191,7 @@ public class ItemSuiton extends ElementsNarutomodMod.ModElement {
 			@Override
 			public boolean createJutsu(ItemStack stack, EntityLivingBase entity, float power) {
 				entity.world.playSound(null, entity.posX, entity.posY, entity.posZ,
-						SoundEvent.REGISTRY.getObject(new ResourceLocation(("narutomod:kirigakurenojutsu"))),
+						SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:kirigakurenojutsu")),
 						SoundCategory.PLAYERS, 5, 1f);
 				entity.world.spawnEntity(new EntityMist(entity));
 				return true;

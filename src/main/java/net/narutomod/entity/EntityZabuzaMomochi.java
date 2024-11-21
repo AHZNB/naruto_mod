@@ -60,8 +60,10 @@ import net.narutomod.item.ItemSuiton;
 import net.narutomod.ModConfig;
 import net.narutomod.ElementsNarutomodMod;
 
+import java.util.List;
 import javax.annotation.Nullable;
 import com.google.common.base.Predicate;
+import com.google.common.collect.Lists;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityZabuzaMomochi extends ElementsNarutomodMod.ModElement {
@@ -106,23 +108,20 @@ public class EntityZabuzaMomochi extends ElementsNarutomodMod.ModElement {
 		private int prisonLastUsed = -WATERPRISON_CD + 40;
 		private int cloneLastUsed = -WATERCLONE_CD + 40;
 		private int lastBlockTime;
-		private int lastCallForHelp;
 		private EntityCustom original;
 		private int clones;
 		private EntityHaku.EntityCustom haku;
-		private EntityLivingBase avoidTarget;
-		private final EntityAINearestAttackableTarget aiTargetPlayer = new EntityAINearestAttackableTarget(this, EntityPlayer.class, true, false);
+		private List<EntityLivingBase> avoidEntitiesList = Lists.newArrayList();
+		private final EntityAINearestAttackableTarget aiTargetPlayer;
 		private final EntityAIHurtByTarget aiTargetHurt = new EntityAIHurtByTarget(this, true);
 		private final BossInfoServer bossInfo = new BossInfoServer(this.getDisplayName(), BossInfo.Color.RED, BossInfo.Overlay.PROGRESS);
 
 		public EntityCustom(World world) {
 			super(world, 120, 7000d);
 			this.setSize(0.6f, 2.0f);
-			this.setAttackTargetsTasks();
-			//this.setItemToInventory(swordStack);
-			//this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, swordStack);
-			//this.setItemStackToSlot(EntityEquipmentSlot.OFFHAND, new ItemStack(ItemSuiton.block, (int) (1)));
 			java.util.Arrays.fill(this.inventoryHandsDropChances, 0.0F);
+			this.aiTargetPlayer = new EntityAINearestAttackableTarget(this, EntityPlayer.class, 10, true, false, this.playerTargetSelector);
+			this.setAttackTargetsTasks();
 		}
 
 		public EntityCustom(EntityCustom cloneFrom) {
@@ -151,20 +150,9 @@ public class EntityZabuzaMomochi extends ElementsNarutomodMod.ModElement {
 			this.tasks.addTask(0, new EntityAISwimming(this));
 			this.tasks.addTask(1, new EntityAIAvoidEntity(this, EntityLivingBase.class, new Predicate<Entity>() {
 				public boolean apply(@Nullable Entity p_apply_1_) {
-					return p_apply_1_ != null && p_apply_1_.equals(EntityCustom.this.avoidTarget);
+					return p_apply_1_ != null && EntityCustom.this.avoidEntitiesList.contains(p_apply_1_);
 				}
-			}, 10f, 1.25d, 1.25d) {
-				@Override
-				public boolean shouldExecute() {
-					if (EntityCustom.this.getHealth() > EntityCustom.this.getMaxHealth() * 0.6f
-							&& EntityCustom.this.avoidTarget != null) {
-						EntityCustom.this.avoidTarget = null;
-						EntityCustom.this.setAttackTargetsTasks();
-						return false;
-					}
-					return super.shouldExecute();
-				}
-			});
+			}, 10f, 1.25d, 1.5d));
 			this.tasks.addTask(2, new EntityNinjaMob.AIAttackRangedJutsu(this, WATERDRAGON_CD, 12.0F));
 			this.tasks.addTask(2, new EntityNinjaMob.AILeapAtTarget(this, 1.0f));
 			this.tasks.addTask(3, new EntityAIAttackMelee(this, 1.5d, true) {
@@ -186,9 +174,7 @@ public class EntityZabuzaMomochi extends ElementsNarutomodMod.ModElement {
 
 		public void setAttackTargetsTasks() {
 			this.targetTasks.addTask(1, this.aiTargetHurt);
-			if (ModConfig.AGGRESSIVE_BOSSES) {
-				this.targetTasks.addTask(2, this.aiTargetPlayer);
-			}
+			this.targetTasks.addTask(2, this.aiTargetPlayer);
 		}
 
 		@Override
@@ -238,8 +224,7 @@ public class EntityZabuzaMomochi extends ElementsNarutomodMod.ModElement {
 			EntityLivingBase target = this.getAttackTarget();
 			if (target != null && target.isEntityAlive()) {
 				double distanceToTarget = this.getDistance(target);
-				if (!this.isClone()
-						&& this.ticksExisted > this.mistLastUsed + MIST_CD && this.consumeChakra(MIST_CHAKRA)) {
+				if (!this.isClone() && this.ticksExisted > this.mistLastUsed + MIST_CD && this.consumeChakra(MIST_CHAKRA)) {
 					new ItemSuiton.EntityMist.Jutsu().createJutsu(this.getHeldItemOffhand(), this, 1f);
 					this.mistLastUsed = this.ticksExisted;
 				}
@@ -259,22 +244,29 @@ public class EntityZabuzaMomochi extends ElementsNarutomodMod.ModElement {
 					this.cloneLastUsed = this.ticksExisted;
 				}
 			}
-			if (!this.isClone() && this.getHealth() <= this.getMaxHealth() * 0.4f && this.getRevengeTarget() != null
-					&& this.ticksExisted > this.lastCallForHelp + 40) {
-				this.avoidTarget = this.getRevengeTarget();
-				this.removeTargetsTasks();
-				this.callHelp();
-				this.lastCallForHelp = this.ticksExisted;
+			if (!this.isClone()) {
+				float hp = this.getHealth();
+				float maxhp = this.getMaxHealth();
+				if (hp <= maxhp * 0.4f && this.getRevengeTarget() != null && !this.avoidEntitiesList.contains(this.getRevengeTarget())) {
+					this.removeTargetsTasks();
+					this.avoidEntitiesList.add(this.getRevengeTarget());
+					this.callHelp();
+			 	} else if (hp > maxhp * 0.6f && !this.avoidEntitiesList.isEmpty()) {
+					this.avoidEntitiesList.clear();
+					this.setAttackTargetsTasks();
+				}
 			}
 		}
 
 		private void callHelp() {
-			//double d0 = ProcedureUtils.getFollowRange(this);
 			for (Class<? extends EntityNinjaMob.Base> oclass : EntityNinjaMob.TeamZabuza) {
-				for (EntityNinjaMob.Base ninja :
-						this.world.getEntitiesWithinAABB(oclass, this.getEntityBoundingBox().grow(64.0D, 8.0D, 64.0D))) {
-					if (ninja != this && !ninja.isOnSameTeam(this.avoidTarget)) {
-						ninja.setAttackTarget(this.avoidTarget);
+				for (EntityNinjaMob.Base ninja : this.world.getEntitiesWithinAABB(oclass, this.getEntityBoundingBox().grow(64.0D, 8.0D, 64.0D))) {
+					if (ninja != this && (ninja.getAttackTarget() == null || !this.avoidEntitiesList.contains(ninja.getAttackTarget()))) {
+						EntityLivingBase target = this.avoidEntitiesList.get(this.rand.nextInt(this.avoidEntitiesList.size()));
+						for (int i = 0; i < 5 && !target.isEntityAlive(); i++, target = this.avoidEntitiesList.get(this.rand.nextInt(this.avoidEntitiesList.size())));
+						if (target.isEntityAlive() && !ninja.isOnSameTeam(target)) {
+							ninja.setAttackTarget(target);
+						}
 					}
 				}
 			}
@@ -357,7 +349,7 @@ public class EntityZabuzaMomochi extends ElementsNarutomodMod.ModElement {
 				}
 			} else if (!this.world.isRemote) {
 				this.setNoAI(EntityWaterPrison.isEntityTrapping(this));
-				if (!this.original.isEntityAlive() || (this.original.getAttackTarget() == null && this.original.avoidTarget == null)) {
+				if (!this.original.isEntityAlive() || (this.original.getAttackTarget() == null && this.original.avoidEntitiesList.isEmpty())) {
 					this.setHealth(0f);
 				}
 			}

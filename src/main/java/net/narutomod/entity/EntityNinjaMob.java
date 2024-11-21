@@ -68,6 +68,7 @@ import net.narutomod.potion.PotionFeatherFalling;
 import net.narutomod.procedure.ProcedureOnLivingUpdate;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.Chakra;
+import net.narutomod.ModConfig;
 import net.narutomod.PlayerRender;
 import net.narutomod.ElementsNarutomodMod;
 import net.narutomod.NarutomodMod;
@@ -78,6 +79,9 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.Nullable;
+import com.google.common.base.Predicate;
+import com.google.common.base.Predicates;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -85,7 +89,7 @@ import com.google.common.collect.Maps;
 public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 	public static final List<Class <? extends Base>> TeamKonoha = Arrays.asList(EntityTenten.EntityCustom.class, EntitySakuraHaruno.EntityCustom.class, EntityIrukaSensei.EntityCustom.class, EntityMightGuy.EntityCustom.class);
 	public static final List<Class <? extends Base>> TeamZabuza = Arrays.asList(EntityZabuzaMomochi.EntityCustom.class, EntityHaku.EntityCustom.class);
-	public static final List<Class <? extends Base>> TeamAkatsuki = Arrays.asList(EntityItachi.EntityCustom.class, EntityKisameHoshigaki.EntityCustom.class, EntitySasori.EntityCustom.class, EntityDeidara.EntityCustom.class, EntityKakuzu.EntityCustom.class);
+	public static final List<Class <? extends Base>> TeamAkatsuki = Arrays.asList(EntityItachi.EntityCustom.class, EntityKisameHoshigaki.EntityCustom.class, EntitySasori.EntityCustom.class, EntityDeidara.EntityCustom.class, EntityHidan.EntityCustom.class, EntityKakuzu.EntityCustom.class);
 
 	public EntityNinjaMob(ElementsNarutomodMod instance) {
 		super(instance, 404);
@@ -139,6 +143,18 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 	public static abstract class Base extends EntityCreature {
 		private static final DataParameter<Float> CHAKRA_MAX = EntityDataManager.createKey(Base.class, DataSerializers.FLOAT);
 		private static final DataParameter<Float> CHAKRA = EntityDataManager.createKey(Base.class, DataSerializers.FLOAT);
+		protected final Predicate<EntityPlayer> playerTargetSelector = new Predicate<EntityPlayer>() {
+			@Override
+			public boolean apply(@Nullable EntityPlayer p_apply_1_) {
+				return p_apply_1_ != null && (ModConfig.AGGRESSIVE_BOSSES || Base.this.getDistanceSq(p_apply_1_) < 36.0d);
+			}
+		};
+		protected final Predicate<EntityPlayer> playerTargetSelectorAkatsuki = Predicates.or(playerTargetSelector, new Predicate<EntityPlayer>() {
+			@Override
+			public boolean apply(@Nullable EntityPlayer p_apply_1_) {
+				return p_apply_1_ != null && EntityBijuManager.isJinchuriki(p_apply_1_);
+			}
+		});
 		private final PathwayNinjaMob chakraPathway;
 		private final int inventorySize = 2;
 		private final NonNullList<ItemStack> inventory = NonNullList.<ItemStack>withSize(inventorySize, ItemStack.EMPTY);
