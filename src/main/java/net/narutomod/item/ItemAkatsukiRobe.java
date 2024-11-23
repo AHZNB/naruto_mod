@@ -129,7 +129,6 @@ public class ItemAkatsukiRobe extends ElementsNarutomodMod.ModElement {
 		//private final ModelRenderer bipedBody;
 		//private final ModelRenderer bipedRightArm;
 		//private final ModelRenderer bipedLeftArm;
-		private ModelBiped wearerModel;
 	
 		public ModelAkatsukiRobe() {
 			super();
@@ -254,33 +253,6 @@ public class ItemAkatsukiRobe extends ElementsNarutomodMod.ModElement {
 			bipedHeadwear = new ModelRenderer(this);
 			bipedHeadwear.setRotationPoint(0.0F, 0.0F, 0.0F);
 			bipedHeadwear.cubeList.add(new ModelBox(bipedHeadwear, 32, 0, -4.0F, -8.6F, -4.0F, 8, 8, 8, 2.0F, false));
-		}
-
-		public void setRotationAngle(ModelRenderer modelRenderer, float x, float y, float z) {
-			modelRenderer.rotateAngleX = x;
-			modelRenderer.rotateAngleY = y;
-			modelRenderer.rotateAngleZ = z;
-		}
-
-		@Override
-		public void setModelAttributes(ModelBase model) {
-			super.setModelAttributes(model);
-			if (model instanceof ModelBiped) {
-				this.wearerModel = (ModelBiped)model;
-			}
-		}
-
-		@Override
-		public void setRotationAngles(float f, float f1, float f2, float f3, float f4, float f5, Entity entity) {
-			if (entity instanceof AbstractClientPlayer && ((AbstractClientPlayer)entity).getSkinType().equals("slim")) {
-				this.bipedLeftArm.setRotationPoint(5.0F, 2.5F, 0.0F);
-				this.bipedRightArm.setRotationPoint(-5.0F, 2.5F, 0.0F);
-			}
-			super.setRotationAngles(f, f1, f2, f3, f4, f5, entity);
-			if (!(entity instanceof AbstractClientPlayer) && this.wearerModel != null) {
-				copyModelAngles(this.wearerModel.bipedLeftArm, this.bipedLeftArm);
-				copyModelAngles(this.wearerModel.bipedRightArm, this.bipedRightArm);
-			}
 		}
 	}
 }

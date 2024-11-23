@@ -212,11 +212,5 @@ public class ItemClothesHokage extends ElementsNarutomodMod.ModElement {
 			bipedHeadwear.setRotationPoint(0.0F, 0.0F, 0.0F);
 			bipedHeadwear.cubeList.add(new ModelBox(bipedHeadwear, 32, 0, -4.0F, -7.85F, -4.0F, 8, 8, 8, 1.0F, false));
 		}
-
-		public void setRotationAngle(ModelRenderer modelRenderer, float x, float y, float z) {
-			modelRenderer.rotateAngleX = x;
-			modelRenderer.rotateAngleY = y;
-			modelRenderer.rotateAngleZ = z;
-		}
-	}
+	}
 }

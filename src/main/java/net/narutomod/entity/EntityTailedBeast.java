@@ -907,7 +907,7 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 
 		public EntityTailBeastBall(World worldIn) {
 			super(worldIn);
-			this.setOGSize(0.25F, 0.25F);
+			this.setOGSize(0.3125F, 0.3125F);
 			this.setEntityScale(0.01f);
 			this.setWaterSlowdown(0.98f);
 		}
@@ -915,7 +915,7 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 		public EntityTailBeastBall(EntityLivingBase shooter, float maxscale, float maxdamage) {
 			super(shooter);
 			this.setShooter(shooter);
-			this.setOGSize(0.25F, 0.25F);
+			this.setOGSize(0.3125F, 0.3125F);
 			if (shooter instanceof EntityLiving) {
 				this.shooterAIDisabled = ((EntityLiving)shooter).isAIDisabled();
 				((EntityLiving)shooter).setNoAI(true);
@@ -960,14 +960,14 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 		public void onUpdate() {
 			super.onUpdate();
 			if (this.shootingEntity != null && !this.isDead) {
-				if (this.ticksExisted <= this.buildupTime) {
-					if (this.ticksExisted == 1) {
+				if (this.ticksAlive <= this.buildupTime) {
+					if (this.ticksAlive == 1) {
 						this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:bijudama")), 10f, 1f);
 					}
 					this.setBuildupPosition();
-					this.setEntityScale(this.maxScale * (float)this.ticksExisted / this.buildupTime);
-					if (this.ticksExisted <= this.buildupTime - 40) {
-						Particles.spawnParticle(this.world, Particles.Types.HOMING_ORB, this.posX, this.posY + this.height / 2, this.posZ,
+					this.setEntityScale(this.maxScale * (float)this.ticksAlive / this.buildupTime);
+					if (this.ticksAlive <= this.buildupTime - 40) {
+						Particles.spawnParticle(this.world, Particles.Types.HOMING_ORB, this.posX, this.posY + this.maxScale * 0.15625f, this.posZ,
 						  2, 0d, 0d, 0d, 0d, 0d, 0d, MathHelper.ceil(this.maxScale * 0.35f), (int)(this.maxScale * 2.2f));
 					}
 				} else if (this.shootingEntity instanceof EntityLiving && !this.shooterAIDisabled) {
@@ -991,6 +991,9 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 					this.shoot(vec.x, vec.y, vec.z, 1.05F, 0.0F);
 					this.closeMouth();
 				}
+			}
+			if (!this.world.isRemote && this.ticksAlive > this.buildupTime + 100) {
+				this.setDead();
 			}
 		}
 
@@ -1022,6 +1025,18 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public void renderParticles() {
+		}
+
+		@Override
+		protected void readEntityFromNBT(NBTTagCompound compound) {
+			super.readEntityFromNBT(compound);
+			this.maxDamage = compound.getFloat("maxDamage");
+		}
+
+		@Override
+		protected void writeEntityToNBT(NBTTagCompound compound) {
+			super.writeEntityToNBT(compound);
+			compound.setFloat("maxDamage", this.maxDamage);
 		}
 
 		@Nullable
@@ -1556,12 +1571,12 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 
 		@SideOnly(Side.CLIENT)
 		public class RenderTailBeastBall extends Render<EntityTailBeastBall> {
-			private final ResourceLocation texture = new ResourceLocation("narutomod:textures/longcube_white.png");
+			private final ResourceLocation texture = new ResourceLocation("narutomod:textures/bijudama1.png");
 			protected final ModelBase mainModel;
 
 			public RenderTailBeastBall(RenderManager renderManagerIn) {
 				super(renderManagerIn);
-				this.mainModel = new ModelSquareBall();
+				this.mainModel = new ModelBijudama();
 			}
 
 			@Override
@@ -1571,9 +1586,9 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 				GlStateManager.pushMatrix();
 				//GlStateManager.disableCull();
 				float scale = entity.getEntityScale();
-				GlStateManager.translate(x, y + (0.125F * scale), z);
+				GlStateManager.translate(x, y + (0.15625F * scale), z);
 				GlStateManager.scale(scale, scale, scale);
-				GlStateManager.rotate(ageInTicks * 30.0F, 1.0F, 0.0F, 0.0F);
+				//GlStateManager.rotate(ageInTicks * 30.0F, 1.0F, 0.0F, 0.0F);
 				GlStateManager.enableAlpha();
 				GlStateManager.enableBlend();
 				GlStateManager.disableLighting();
@@ -1584,11 +1599,7 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 				if (shooter instanceof EntityPlayer && shooter == this.renderManager.renderViewEntity && this.renderManager.options.thirdPersonView == 0 && entity.ticksExisted <= entity.buildupTime) {
 					alpha = 0.2F;
 				}
-				for (int i = 0; i < 6; i++) {
-					GlStateManager.rotate(entity.rand().nextFloat() * 30f, 0f, 1f, 0f);
-					GlStateManager.rotate(entity.rand().nextFloat() * 30f, 1f, 1f, 0f);
-					this.mainModel.render(entity, alpha, 0.0F, ageInTicks, 0.0F, 0.0F, 0.0625F);
-				}
+				this.mainModel.render(entity, alpha, 0.0F, ageInTicks, 0.0F, 0.0F, 0.0625F);
 				GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 				GlStateManager.enableLighting();
 				//GlStateManager.disableAlpha();
@@ -1605,69 +1616,471 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 		}
 
 		@SideOnly(Side.CLIENT)
-		public class ModelSquareBall extends ModelBase {
-			private final ModelRenderer core;
-			private final ModelRenderer shell;
-
-			public ModelSquareBall() {
-				textureWidth = 32;
-				textureHeight = 32;
-
-				core = new ModelRenderer(this);
-				core.setRotationPoint(0.0F, 0.0F, 0.0F);
-				ModelRenderer cube = new ModelRenderer(this);
-				cube.setRotationPoint(0.0F, 0.0F, 0.0F);
-				core.addChild(cube);
-				cube.cubeList.add(new ModelBox(cube, 0, 0, -2.0F, -2.0F, -2.0F, 4, 4, 4, 0.0F, false));
-				cube = new ModelRenderer(this);
-				cube.setRotationPoint(0.0F, 0.0F, 0.0F);
-				core.addChild(cube);
-				setRotationAngle(cube, 0.0F, 0.0F, 0.7854F);
-				cube.cubeList.add(new ModelBox(cube, 0, 0, -2.0F, -2.0F, -2.0F, 4, 4, 4, 0.0F, false));
-				cube = new ModelRenderer(this);
-				cube.setRotationPoint(0.0F, 0.0F, 0.0F);
-				core.addChild(cube);
-				setRotationAngle(cube, 0.0F, -0.7854F, 0.0F);
-				cube.cubeList.add(new ModelBox(cube, 0, 0, -2.0F, -2.0F, -2.0F, 4, 4, 4, 0.0F, false));
-				cube = new ModelRenderer(this);
-				cube.setRotationPoint(0.0F, 0.0F, 0.0F);
-				core.addChild(cube);
-				setRotationAngle(cube, -0.7854F, 0.0F, 0.0F);
-				cube.cubeList.add(new ModelBox(cube, 0, 0, -2.0F, -2.0F, -2.0F, 4, 4, 4, 0.0F, false));
-
-				shell = new ModelRenderer(this);
-				shell.setRotationPoint(0.0F, 0.0F, 0.0F);
-				cube = new ModelRenderer(this);
-				cube.setRotationPoint(0.0F, 0.0F, 0.0F);
-				shell.addChild(cube);
-				cube.cubeList.add(new ModelBox(cube, 0, 0, -2.0F, -2.0F, -2.0F, 4, 4, 4, 0.1F, false));
-				cube = new ModelRenderer(this);
-				cube.setRotationPoint(0.0F, 0.0F, 0.0F);
-				shell.addChild(cube);
-				setRotationAngle(cube, 0.0F, 0.0F, 0.7854F);
-				cube.cubeList.add(new ModelBox(cube, 0, 0, -2.0F, -2.0F, -2.0F, 4, 4, 4, 0.1F, false));
-				cube = new ModelRenderer(this);
-				cube.setRotationPoint(0.0F, 0.0F, 0.0F);
-				shell.addChild(cube);
-				setRotationAngle(cube, 0.0F, -0.7854F, 0.0F);
-				cube.cubeList.add(new ModelBox(cube, 0, 0, -2.0F, -2.0F, -2.0F, 4, 4, 4, 0.1F, false));
-				cube = new ModelRenderer(this);
-				cube.setRotationPoint(0.0F, 0.0F, 0.0F);
-				shell.addChild(cube);
-				setRotationAngle(cube, -0.7854F, 0.0F, 0.0F);
-				cube.cubeList.add(new ModelBox(cube, 0, 0, -2.0F, -2.0F, -2.0F, 4, 4, 4, 0.1F, false));
+		public class ModelBijudama extends ModelBase {
+			private final ModelRenderer bb_main;
+			private final ModelRenderer hexadecagon;
+			private final ModelRenderer hexadecagon_r1;
+			private final ModelRenderer hexadecagon_r2;
+			private final ModelRenderer hexadecagon_r3;
+			private final ModelRenderer hexadecagon_r4;
+			private final ModelRenderer hexadecagon_r5;
+			private final ModelRenderer hexadecagon_r6;
+			private final ModelRenderer hexadecagon_r7;
+			private final ModelRenderer hexadecagon2;
+			private final ModelRenderer hexadecagon_r8;
+			private final ModelRenderer hexadecagon_r9;
+			private final ModelRenderer hexadecagon_r10;
+			private final ModelRenderer hexadecagon_r11;
+			private final ModelRenderer hexadecagon_r12;
+			private final ModelRenderer hexadecagon_r13;
+			private final ModelRenderer hexadecagon_r14;
+			private final ModelRenderer hexadecagon3;
+			private final ModelRenderer hexadecagon_r15;
+			private final ModelRenderer hexadecagon_r16;
+			private final ModelRenderer hexadecagon_r17;
+			private final ModelRenderer hexadecagon_r18;
+			private final ModelRenderer hexadecagon_r19;
+			private final ModelRenderer hexadecagon_r20;
+			private final ModelRenderer hexadecagon_r21;
+			private final ModelRenderer hexadecagon4;
+			private final ModelRenderer hexadecagon_r22;
+			private final ModelRenderer hexadecagon_r23;
+			private final ModelRenderer hexadecagon_r24;
+			private final ModelRenderer hexadecagon_r25;
+			private final ModelRenderer hexadecagon_r26;
+			private final ModelRenderer hexadecagon_r27;
+			private final ModelRenderer hexadecagon_r28;
+			private final ModelRenderer hexadecagon5;
+			private final ModelRenderer hexadecagon_r29;
+			private final ModelRenderer hexadecagon_r30;
+			private final ModelRenderer hexadecagon_r31;
+			private final ModelRenderer hexadecagon_r32;
+			private final ModelRenderer hexadecagon_r33;
+			private final ModelRenderer hexadecagon_r34;
+			private final ModelRenderer hexadecagon_r35;
+			private final ModelRenderer hexadecagon6;
+			private final ModelRenderer hexadecagon_r36;
+			private final ModelRenderer hexadecagon_r37;
+			private final ModelRenderer hexadecagon_r38;
+			private final ModelRenderer hexadecagon_r39;
+			private final ModelRenderer hexadecagon_r40;
+			private final ModelRenderer hexadecagon_r41;
+			private final ModelRenderer hexadecagon_r42;
+			private final ModelRenderer hexadecagon7;
+			private final ModelRenderer hexadecagon_r43;
+			private final ModelRenderer hexadecagon_r44;
+			private final ModelRenderer hexadecagon_r45;
+			private final ModelRenderer hexadecagon_r46;
+			private final ModelRenderer hexadecagon_r47;
+			private final ModelRenderer hexadecagon_r48;
+			private final ModelRenderer hexadecagon_r49;
+			private final ModelRenderer hexadecagon8;
+			private final ModelRenderer hexadecagon_r50;
+			private final ModelRenderer hexadecagon_r51;
+			private final ModelRenderer hexadecagon_r52;
+			private final ModelRenderer hexadecagon_r53;
+			private final ModelRenderer hexadecagon_r54;
+			private final ModelRenderer hexadecagon_r55;
+			private final ModelRenderer hexadecagon_r56;
+		
+			public ModelBijudama() {
+				textureWidth = 4;
+				textureHeight = 4;
+		
+				bb_main = new ModelRenderer(this);
+				bb_main.setRotationPoint(0.0F, 0.0F, 0.0F);
+				
+		
+				hexadecagon = new ModelRenderer(this);
+				hexadecagon.setRotationPoint(0.0F, 0.0F, 0.0F);
+				bb_main.addChild(hexadecagon);
+				hexadecagon.cubeList.add(new ModelBox(hexadecagon, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+		
+				hexadecagon_r1 = new ModelRenderer(this);
+				hexadecagon_r1.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon.addChild(hexadecagon_r1);
+				setRotationAngle(hexadecagon_r1, 0.0F, 0.0F, 1.9635F);
+				hexadecagon_r1.cubeList.add(new ModelBox(hexadecagon_r1, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+		
+				hexadecagon_r2 = new ModelRenderer(this);
+				hexadecagon_r2.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon.addChild(hexadecagon_r2);
+				setRotationAngle(hexadecagon_r2, 0.0F, 0.0F, 1.5708F);
+				hexadecagon_r2.cubeList.add(new ModelBox(hexadecagon_r2, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+		
+				hexadecagon_r3 = new ModelRenderer(this);
+				hexadecagon_r3.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon.addChild(hexadecagon_r3);
+				setRotationAngle(hexadecagon_r3, 0.0F, 0.0F, 1.1781F);
+				hexadecagon_r3.cubeList.add(new ModelBox(hexadecagon_r3, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+		
+				hexadecagon_r4 = new ModelRenderer(this);
+				hexadecagon_r4.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon.addChild(hexadecagon_r4);
+				setRotationAngle(hexadecagon_r4, 0.0F, 0.0F, 0.7854F);
+				hexadecagon_r4.cubeList.add(new ModelBox(hexadecagon_r4, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+		
+				hexadecagon_r5 = new ModelRenderer(this);
+				hexadecagon_r5.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon.addChild(hexadecagon_r5);
+				setRotationAngle(hexadecagon_r5, 0.0F, 0.0F, 0.3927F);
+				hexadecagon_r5.cubeList.add(new ModelBox(hexadecagon_r5, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+		
+				hexadecagon_r6 = new ModelRenderer(this);
+				hexadecagon_r6.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon.addChild(hexadecagon_r6);
+				setRotationAngle(hexadecagon_r6, 0.0F, 0.0F, -0.3927F);
+				hexadecagon_r6.cubeList.add(new ModelBox(hexadecagon_r6, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+		
+				hexadecagon_r7 = new ModelRenderer(this);
+				hexadecagon_r7.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon.addChild(hexadecagon_r7);
+				setRotationAngle(hexadecagon_r7, 0.0F, 0.0F, -0.7854F);
+				hexadecagon_r7.cubeList.add(new ModelBox(hexadecagon_r7, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+		
+				hexadecagon2 = new ModelRenderer(this);
+				hexadecagon2.setRotationPoint(0.0F, 0.0F, 0.0F);
+				bb_main.addChild(hexadecagon2);
+				setRotationAngle(hexadecagon2, 0.0F, -0.3927F, 0.0F);
+				
+		
+				hexadecagon_r8 = new ModelRenderer(this);
+				hexadecagon_r8.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon2.addChild(hexadecagon_r8);
+				setRotationAngle(hexadecagon_r8, 0.0F, 0.0F, 1.9635F);
+				hexadecagon_r8.cubeList.add(new ModelBox(hexadecagon_r8, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+		
+				hexadecagon_r9 = new ModelRenderer(this);
+				hexadecagon_r9.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon2.addChild(hexadecagon_r9);
+				setRotationAngle(hexadecagon_r9, 0.0F, 0.0F, 1.5708F);
+				hexadecagon_r9.cubeList.add(new ModelBox(hexadecagon_r9, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+		
+				hexadecagon_r10 = new ModelRenderer(this);
+				hexadecagon_r10.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon2.addChild(hexadecagon_r10);
+				setRotationAngle(hexadecagon_r10, 0.0F, 0.0F, 1.1781F);
+				hexadecagon_r10.cubeList.add(new ModelBox(hexadecagon_r10, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+		
+				hexadecagon_r11 = new ModelRenderer(this);
+				hexadecagon_r11.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon2.addChild(hexadecagon_r11);
+				setRotationAngle(hexadecagon_r11, 0.0F, 0.0F, 0.7854F);
+				hexadecagon_r11.cubeList.add(new ModelBox(hexadecagon_r11, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+		
+				hexadecagon_r12 = new ModelRenderer(this);
+				hexadecagon_r12.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon2.addChild(hexadecagon_r12);
+				setRotationAngle(hexadecagon_r12, 0.0F, 0.0F, 0.3927F);
+				hexadecagon_r12.cubeList.add(new ModelBox(hexadecagon_r12, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+		
+				hexadecagon_r13 = new ModelRenderer(this);
+				hexadecagon_r13.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon2.addChild(hexadecagon_r13);
+				setRotationAngle(hexadecagon_r13, 0.0F, 0.0F, -0.3927F);
+				hexadecagon_r13.cubeList.add(new ModelBox(hexadecagon_r13, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+		
+				hexadecagon_r14 = new ModelRenderer(this);
+				hexadecagon_r14.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon2.addChild(hexadecagon_r14);
+				setRotationAngle(hexadecagon_r14, 0.0F, 0.0F, -0.7854F);
+				hexadecagon_r14.cubeList.add(new ModelBox(hexadecagon_r14, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+		
+				hexadecagon3 = new ModelRenderer(this);
+				hexadecagon3.setRotationPoint(0.0F, 0.0F, 0.0F);
+				bb_main.addChild(hexadecagon3);
+				setRotationAngle(hexadecagon3, 0.0F, -0.7854F, 0.0F);
+				
+		
+				hexadecagon_r15 = new ModelRenderer(this);
+				hexadecagon_r15.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon3.addChild(hexadecagon_r15);
+				setRotationAngle(hexadecagon_r15, 0.0F, 0.0F, 1.9635F);
+				hexadecagon_r15.cubeList.add(new ModelBox(hexadecagon_r15, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+		
+				hexadecagon_r16 = new ModelRenderer(this);
+				hexadecagon_r16.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon3.addChild(hexadecagon_r16);
+				setRotationAngle(hexadecagon_r16, 0.0F, 0.0F, 1.5708F);
+				hexadecagon_r16.cubeList.add(new ModelBox(hexadecagon_r16, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+		
+				hexadecagon_r17 = new ModelRenderer(this);
+				hexadecagon_r17.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon3.addChild(hexadecagon_r17);
+				setRotationAngle(hexadecagon_r17, 0.0F, 0.0F, 1.1781F);
+				hexadecagon_r17.cubeList.add(new ModelBox(hexadecagon_r17, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+		
+				hexadecagon_r18 = new ModelRenderer(this);
+				hexadecagon_r18.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon3.addChild(hexadecagon_r18);
+				setRotationAngle(hexadecagon_r18, 0.0F, 0.0F, 0.7854F);
+				hexadecagon_r18.cubeList.add(new ModelBox(hexadecagon_r18, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+		
+				hexadecagon_r19 = new ModelRenderer(this);
+				hexadecagon_r19.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon3.addChild(hexadecagon_r19);
+				setRotationAngle(hexadecagon_r19, 0.0F, 0.0F, 0.3927F);
+				hexadecagon_r19.cubeList.add(new ModelBox(hexadecagon_r19, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+		
+				hexadecagon_r20 = new ModelRenderer(this);
+				hexadecagon_r20.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon3.addChild(hexadecagon_r20);
+				setRotationAngle(hexadecagon_r20, 0.0F, 0.0F, -0.3927F);
+				hexadecagon_r20.cubeList.add(new ModelBox(hexadecagon_r20, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+		
+				hexadecagon_r21 = new ModelRenderer(this);
+				hexadecagon_r21.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon3.addChild(hexadecagon_r21);
+				setRotationAngle(hexadecagon_r21, 0.0F, 0.0F, -0.7854F);
+				hexadecagon_r21.cubeList.add(new ModelBox(hexadecagon_r21, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+		
+				hexadecagon4 = new ModelRenderer(this);
+				hexadecagon4.setRotationPoint(0.0F, 0.0F, 0.0F);
+				bb_main.addChild(hexadecagon4);
+				setRotationAngle(hexadecagon4, 0.0F, -1.1781F, 0.0F);
+				
+		
+				hexadecagon_r22 = new ModelRenderer(this);
+				hexadecagon_r22.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon4.addChild(hexadecagon_r22);
+				setRotationAngle(hexadecagon_r22, 0.0F, 0.0F, 1.9635F);
+				hexadecagon_r22.cubeList.add(new ModelBox(hexadecagon_r22, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+		
+				hexadecagon_r23 = new ModelRenderer(this);
+				hexadecagon_r23.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon4.addChild(hexadecagon_r23);
+				setRotationAngle(hexadecagon_r23, 0.0F, 0.0F, 1.5708F);
+				hexadecagon_r23.cubeList.add(new ModelBox(hexadecagon_r23, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+		
+				hexadecagon_r24 = new ModelRenderer(this);
+				hexadecagon_r24.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon4.addChild(hexadecagon_r24);
+				setRotationAngle(hexadecagon_r24, 0.0F, 0.0F, 1.1781F);
+				hexadecagon_r24.cubeList.add(new ModelBox(hexadecagon_r24, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+		
+				hexadecagon_r25 = new ModelRenderer(this);
+				hexadecagon_r25.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon4.addChild(hexadecagon_r25);
+				setRotationAngle(hexadecagon_r25, 0.0F, 0.0F, 0.7854F);
+				hexadecagon_r25.cubeList.add(new ModelBox(hexadecagon_r25, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+		
+				hexadecagon_r26 = new ModelRenderer(this);
+				hexadecagon_r26.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon4.addChild(hexadecagon_r26);
+				setRotationAngle(hexadecagon_r26, 0.0F, 0.0F, 0.3927F);
+				hexadecagon_r26.cubeList.add(new ModelBox(hexadecagon_r26, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+		
+				hexadecagon_r27 = new ModelRenderer(this);
+				hexadecagon_r27.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon4.addChild(hexadecagon_r27);
+				setRotationAngle(hexadecagon_r27, 0.0F, 0.0F, -0.3927F);
+				hexadecagon_r27.cubeList.add(new ModelBox(hexadecagon_r27, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+		
+				hexadecagon_r28 = new ModelRenderer(this);
+				hexadecagon_r28.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon4.addChild(hexadecagon_r28);
+				setRotationAngle(hexadecagon_r28, 0.0F, 0.0F, -0.7854F);
+				hexadecagon_r28.cubeList.add(new ModelBox(hexadecagon_r28, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+		
+				hexadecagon5 = new ModelRenderer(this);
+				hexadecagon5.setRotationPoint(0.0F, 0.0F, 0.0F);
+				bb_main.addChild(hexadecagon5);
+				setRotationAngle(hexadecagon5, 0.0F, -1.5708F, 0.0F);
+				
+		
+				hexadecagon_r29 = new ModelRenderer(this);
+				hexadecagon_r29.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon5.addChild(hexadecagon_r29);
+				setRotationAngle(hexadecagon_r29, 0.0F, 0.0F, 1.9635F);
+				hexadecagon_r29.cubeList.add(new ModelBox(hexadecagon_r29, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+		
+				hexadecagon_r30 = new ModelRenderer(this);
+				hexadecagon_r30.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon5.addChild(hexadecagon_r30);
+				setRotationAngle(hexadecagon_r30, 0.0F, 0.0F, 1.5708F);
+				hexadecagon_r30.cubeList.add(new ModelBox(hexadecagon_r30, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+		
+				hexadecagon_r31 = new ModelRenderer(this);
+				hexadecagon_r31.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon5.addChild(hexadecagon_r31);
+				setRotationAngle(hexadecagon_r31, 0.0F, 0.0F, 1.1781F);
+				hexadecagon_r31.cubeList.add(new ModelBox(hexadecagon_r31, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+		
+				hexadecagon_r32 = new ModelRenderer(this);
+				hexadecagon_r32.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon5.addChild(hexadecagon_r32);
+				setRotationAngle(hexadecagon_r32, 0.0F, 0.0F, 0.7854F);
+				hexadecagon_r32.cubeList.add(new ModelBox(hexadecagon_r32, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+		
+				hexadecagon_r33 = new ModelRenderer(this);
+				hexadecagon_r33.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon5.addChild(hexadecagon_r33);
+				setRotationAngle(hexadecagon_r33, 0.0F, 0.0F, 0.3927F);
+				hexadecagon_r33.cubeList.add(new ModelBox(hexadecagon_r33, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+		
+				hexadecagon_r34 = new ModelRenderer(this);
+				hexadecagon_r34.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon5.addChild(hexadecagon_r34);
+				setRotationAngle(hexadecagon_r34, 0.0F, 0.0F, -0.3927F);
+				hexadecagon_r34.cubeList.add(new ModelBox(hexadecagon_r34, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+		
+				hexadecagon_r35 = new ModelRenderer(this);
+				hexadecagon_r35.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon5.addChild(hexadecagon_r35);
+				setRotationAngle(hexadecagon_r35, 0.0F, 0.0F, -0.7854F);
+				hexadecagon_r35.cubeList.add(new ModelBox(hexadecagon_r35, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+		
+				hexadecagon6 = new ModelRenderer(this);
+				hexadecagon6.setRotationPoint(0.0F, 0.0F, 0.0F);
+				bb_main.addChild(hexadecagon6);
+				setRotationAngle(hexadecagon6, 0.0F, -1.9635F, 0.0F);
+				
+		
+				hexadecagon_r36 = new ModelRenderer(this);
+				hexadecagon_r36.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon6.addChild(hexadecagon_r36);
+				setRotationAngle(hexadecagon_r36, 0.0F, 0.0F, 1.9635F);
+				hexadecagon_r36.cubeList.add(new ModelBox(hexadecagon_r36, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+		
+				hexadecagon_r37 = new ModelRenderer(this);
+				hexadecagon_r37.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon6.addChild(hexadecagon_r37);
+				setRotationAngle(hexadecagon_r37, 0.0F, 0.0F, 1.5708F);
+				hexadecagon_r37.cubeList.add(new ModelBox(hexadecagon_r37, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+		
+				hexadecagon_r38 = new ModelRenderer(this);
+				hexadecagon_r38.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon6.addChild(hexadecagon_r38);
+				setRotationAngle(hexadecagon_r38, 0.0F, 0.0F, 1.1781F);
+				hexadecagon_r38.cubeList.add(new ModelBox(hexadecagon_r38, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+		
+				hexadecagon_r39 = new ModelRenderer(this);
+				hexadecagon_r39.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon6.addChild(hexadecagon_r39);
+				setRotationAngle(hexadecagon_r39, 0.0F, 0.0F, 0.7854F);
+				hexadecagon_r39.cubeList.add(new ModelBox(hexadecagon_r39, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+		
+				hexadecagon_r40 = new ModelRenderer(this);
+				hexadecagon_r40.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon6.addChild(hexadecagon_r40);
+				setRotationAngle(hexadecagon_r40, 0.0F, 0.0F, 0.3927F);
+				hexadecagon_r40.cubeList.add(new ModelBox(hexadecagon_r40, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+		
+				hexadecagon_r41 = new ModelRenderer(this);
+				hexadecagon_r41.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon6.addChild(hexadecagon_r41);
+				setRotationAngle(hexadecagon_r41, 0.0F, 0.0F, -0.3927F);
+				hexadecagon_r41.cubeList.add(new ModelBox(hexadecagon_r41, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+		
+				hexadecagon_r42 = new ModelRenderer(this);
+				hexadecagon_r42.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon6.addChild(hexadecagon_r42);
+				setRotationAngle(hexadecagon_r42, 0.0F, 0.0F, -0.7854F);
+				hexadecagon_r42.cubeList.add(new ModelBox(hexadecagon_r42, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+		
+				hexadecagon7 = new ModelRenderer(this);
+				hexadecagon7.setRotationPoint(0.0F, 0.0F, 0.0F);
+				bb_main.addChild(hexadecagon7);
+				setRotationAngle(hexadecagon7, 0.0F, -2.3562F, 0.0F);
+				
+		
+				hexadecagon_r43 = new ModelRenderer(this);
+				hexadecagon_r43.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon7.addChild(hexadecagon_r43);
+				setRotationAngle(hexadecagon_r43, 0.0F, 0.0F, 1.9635F);
+				hexadecagon_r43.cubeList.add(new ModelBox(hexadecagon_r43, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+		
+				hexadecagon_r44 = new ModelRenderer(this);
+				hexadecagon_r44.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon7.addChild(hexadecagon_r44);
+				setRotationAngle(hexadecagon_r44, 0.0F, 0.0F, 1.5708F);
+				hexadecagon_r44.cubeList.add(new ModelBox(hexadecagon_r44, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+		
+				hexadecagon_r45 = new ModelRenderer(this);
+				hexadecagon_r45.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon7.addChild(hexadecagon_r45);
+				setRotationAngle(hexadecagon_r45, 0.0F, 0.0F, 1.1781F);
+				hexadecagon_r45.cubeList.add(new ModelBox(hexadecagon_r45, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+		
+				hexadecagon_r46 = new ModelRenderer(this);
+				hexadecagon_r46.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon7.addChild(hexadecagon_r46);
+				setRotationAngle(hexadecagon_r46, 0.0F, 0.0F, 0.7854F);
+				hexadecagon_r46.cubeList.add(new ModelBox(hexadecagon_r46, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+		
+				hexadecagon_r47 = new ModelRenderer(this);
+				hexadecagon_r47.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon7.addChild(hexadecagon_r47);
+				setRotationAngle(hexadecagon_r47, 0.0F, 0.0F, 0.3927F);
+				hexadecagon_r47.cubeList.add(new ModelBox(hexadecagon_r47, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+		
+				hexadecagon_r48 = new ModelRenderer(this);
+				hexadecagon_r48.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon7.addChild(hexadecagon_r48);
+				setRotationAngle(hexadecagon_r48, 0.0F, 0.0F, -0.3927F);
+				hexadecagon_r48.cubeList.add(new ModelBox(hexadecagon_r48, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+		
+				hexadecagon_r49 = new ModelRenderer(this);
+				hexadecagon_r49.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon7.addChild(hexadecagon_r49);
+				setRotationAngle(hexadecagon_r49, 0.0F, 0.0F, -0.7854F);
+				hexadecagon_r49.cubeList.add(new ModelBox(hexadecagon_r49, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+		
+				hexadecagon8 = new ModelRenderer(this);
+				hexadecagon8.setRotationPoint(0.0F, 0.0F, 0.0F);
+				bb_main.addChild(hexadecagon8);
+				setRotationAngle(hexadecagon8, 0.0F, -2.7489F, 0.0F);
+				
+		
+				hexadecagon_r50 = new ModelRenderer(this);
+				hexadecagon_r50.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon8.addChild(hexadecagon_r50);
+				setRotationAngle(hexadecagon_r50, 0.0F, 0.0F, 1.9635F);
+				hexadecagon_r50.cubeList.add(new ModelBox(hexadecagon_r50, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+		
+				hexadecagon_r51 = new ModelRenderer(this);
+				hexadecagon_r51.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon8.addChild(hexadecagon_r51);
+				setRotationAngle(hexadecagon_r51, 0.0F, 0.0F, 1.5708F);
+				hexadecagon_r51.cubeList.add(new ModelBox(hexadecagon_r51, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+		
+				hexadecagon_r52 = new ModelRenderer(this);
+				hexadecagon_r52.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon8.addChild(hexadecagon_r52);
+				setRotationAngle(hexadecagon_r52, 0.0F, 0.0F, 1.1781F);
+				hexadecagon_r52.cubeList.add(new ModelBox(hexadecagon_r52, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+		
+				hexadecagon_r53 = new ModelRenderer(this);
+				hexadecagon_r53.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon8.addChild(hexadecagon_r53);
+				setRotationAngle(hexadecagon_r53, 0.0F, 0.0F, 0.7854F);
+				hexadecagon_r53.cubeList.add(new ModelBox(hexadecagon_r53, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+		
+				hexadecagon_r54 = new ModelRenderer(this);
+				hexadecagon_r54.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon8.addChild(hexadecagon_r54);
+				setRotationAngle(hexadecagon_r54, 0.0F, 0.0F, 0.3927F);
+				hexadecagon_r54.cubeList.add(new ModelBox(hexadecagon_r54, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+		
+				hexadecagon_r55 = new ModelRenderer(this);
+				hexadecagon_r55.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon8.addChild(hexadecagon_r55);
+				setRotationAngle(hexadecagon_r55, 0.0F, 0.0F, -0.3927F);
+				hexadecagon_r55.cubeList.add(new ModelBox(hexadecagon_r55, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
+		
+				hexadecagon_r56 = new ModelRenderer(this);
+				hexadecagon_r56.setRotationPoint(0.0F, 0.0F, 0.0F);
+				hexadecagon8.addChild(hexadecagon_r56);
+				setRotationAngle(hexadecagon_r56, 0.0F, 0.0F, -0.7854F);
+				hexadecagon_r56.cubeList.add(new ModelBox(hexadecagon_r56, 0, 0, -0.5027F, -2.5F, -0.5F, 1, 5, 1, 0.0F, false));
 			}
-
+		
 			@Override
 			public void render(Entity entity, float alpha, float f1, float f2, float f3, float f4, float f5) {
-				GlStateManager.color(0.0f, 0.0f, 0.0f, 1.0f * alpha);
-				core.render(f5);
-				//shell.rotateAngleY += 0.52359876F;
-				//shell.rotateAngleZ += 0.52359876F;
-				GlStateManager.color(1.0F, 1.0F, 1.0F, 0.15F * alpha);
-				shell.render(f5);
+				GlStateManager.color(1.0f, 1.0f, 1.0f, alpha);
+				bb_main.render(f5);
 			}
-
+		
 			public void setRotationAngle(ModelRenderer modelRenderer, float x, float y, float z) {
 				modelRenderer.rotateAngleX = x;
 				modelRenderer.rotateAngleY = y;
