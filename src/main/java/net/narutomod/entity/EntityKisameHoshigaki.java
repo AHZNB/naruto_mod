@@ -482,6 +482,11 @@ public class EntityKisameHoshigaki extends ElementsNarutomodMod.ModElement {
 			}
 
 			@Override
+			protected void preRenderCallback(EntityCustom entity, float partialTickTime) {
+				GlStateManager.scale(0.9375F, 1.0F, 0.9375F);
+			}
+
+			@Override
 			protected ResourceLocation getEntityTexture(EntityCustom entity) {
 				return this.texture;
 			}

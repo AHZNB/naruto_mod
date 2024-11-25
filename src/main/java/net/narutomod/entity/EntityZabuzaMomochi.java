@@ -51,6 +51,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.client.model.ModelBox;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.block.BlockLiquid;
 
@@ -118,7 +119,7 @@ public class EntityZabuzaMomochi extends ElementsNarutomodMod.ModElement {
 
 		public EntityCustom(World world) {
 			super(world, 120, 7000d);
-			this.setSize(0.6f, 2.0f);
+			this.setSize(0.6f, 1.9375f);
 			java.util.Arrays.fill(this.inventoryHandsDropChances, 0.0F);
 			this.aiTargetPlayer = new EntityAINearestAttackableTarget(this, EntityPlayer.class, 10, true, false, this.playerTargetSelector);
 			this.setAttackTargetsTasks();
@@ -411,6 +412,11 @@ public class EntityZabuzaMomochi extends ElementsNarutomodMod.ModElement {
 
 			public RenderCustom(RenderManager renderManager) {
 				super(renderManager, new ModelBiped64());
+			}
+
+			@Override
+			protected void preRenderCallback(EntityCustom entity, float partialTickTime) {
+				GlStateManager.scale(0.9375F, 0.96875F, 0.9375F);
 			}
 
 			@Override

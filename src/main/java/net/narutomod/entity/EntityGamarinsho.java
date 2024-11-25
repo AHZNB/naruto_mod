@@ -79,6 +79,7 @@ public class EntityGamarinsho extends ElementsNarutomodMod.ModElement {
 
 	public static class EC extends Entity implements ItemJutsu.IJutsu {
 		private static final DataParameter<Integer> CASTER = EntityDataManager.<Integer>createKey(EC.class, DataSerializers.VARINT);
+		private static final DataParameter<Integer> AGE = EntityDataManager.<Integer>createKey(EC.class, DataSerializers.VARINT);
 		private final List<EntityLivingBase> trappedList = Lists.newArrayList();
 		private final double jutsuRadius = 80.0d;
 		private final int prepareTime = 300;
@@ -111,6 +112,7 @@ public class EntityGamarinsho extends ElementsNarutomodMod.ModElement {
 		@Override
 		protected void entityInit() {
 			this.getDataManager().register(CASTER, Integer.valueOf(-1));
+			this.getDataManager().register(AGE, Integer.valueOf(0));
 		}
 
 		private void setCaster(EntityLivingBase shooter) {
@@ -121,6 +123,16 @@ public class EntityGamarinsho extends ElementsNarutomodMod.ModElement {
 		protected EntityLivingBase getCaster() {
 			Entity entity = this.world.getEntityByID(((Integer)this.dataManager.get(CASTER)).intValue());
 			return entity instanceof EntityLivingBase ? (EntityLivingBase)entity : null;
+		}
+
+		private void setAge(int age) {
+			if (!this.world.isRemote) {
+				this.getDataManager().set(AGE, Integer.valueOf(age));
+			}
+		}
+
+		public int getAge() {
+			return ((Integer)this.dataManager.get(AGE)).intValue();
 		}
 
 		private void setIdlePosition() {
@@ -162,13 +174,14 @@ public class EntityGamarinsho extends ElementsNarutomodMod.ModElement {
 		@Override 
 		public void onUpdate() {
 			EntityLivingBase caster = this.getCaster();
-			if (!this.world.isRemote && (caster == null || this.ticksExisted > this.prepareTime + this.genjutsuDuration
+			int age = this.getAge() + 1;
+			if (!this.world.isRemote && (caster == null || age > this.prepareTime + this.genjutsuDuration || !caster.isEntityAlive()
 			 || (this.toadPa != null && !this.toadPa.isEntityAlive()) || (this.toadMa != null && !this.toadMa.isEntityAlive())
-			 || (caster instanceof EntityPlayer && this.ticksExisted < this.prepareTime && !ItemSenjutsu.isSageModeActivated((EntityPlayer)caster)))) {
+			 || (caster instanceof EntityPlayer && age < this.prepareTime && !ItemSenjutsu.isSageModeActivated((EntityPlayer)caster)))) {
 				this.setDead();
 			} else {
 				this.setIdlePosition();
-				if (this.ticksExisted == 1 && !this.world.isRemote) {
+				if (age == 1 && !this.world.isRemote) {
 					this.toadPa = new EntityToadFukasaku.EntityCustom(caster);
 					this.toadPa.setLocationAndAngles(caster.posX, caster.posY, caster.posZ, caster.rotationYaw, 0.0f);
 					this.toadPa.setSwingingArms(true);
@@ -178,10 +191,10 @@ public class EntityGamarinsho extends ElementsNarutomodMod.ModElement {
 					this.toadMa.setSwingingArms(true);
 					this.world.spawnEntity(this.toadMa);
 				}
-				if (this.ticksExisted < this.prepareTime && this.ticksExisted % 60 == 20) {
-					this.playSound(net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:toadchant")), (float)this.ticksExisted / 60f, this.rand.nextFloat() * 0.3F + 0.8F);
+				if (age < this.prepareTime && age % 60 == 20) {
+					this.playSound(net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:toadchant")), (float)age / 60f, this.rand.nextFloat() * 0.3F + 0.8F);
 				}
-				if (this.ticksExisted == this.prepareTime) {
+				if (age == this.prepareTime) {
 					for (EntityLivingBase entity : this.world.getEntitiesWithinAABB(EntityLivingBase.class, this.getEntityBoundingBox().grow(this.jutsuRadius, 36d, this.jutsuRadius))) {
 						if (entity != caster && (entity instanceof EntityPlayer || entity instanceof EntityNinjaMob.Base)) {
 							this.trappedList.add(entity);
@@ -199,11 +212,12 @@ public class EntityGamarinsho extends ElementsNarutomodMod.ModElement {
 							}
 						}
 					}
-				} else if (this.ticksExisted == this.prepareTime + 1 && caster instanceof EntityPlayerMP) {
+				} else if (age == this.prepareTime + 1 && caster instanceof EntityPlayerMP) {
 					ProcedureUtils.swapItemToSlot((EntityPlayer)caster, EntityEquipmentSlot.MAINHAND, new ItemStack(ItemIshiken.block));
 					Genjutsu.activate((EntityPlayerMP)caster, this);
 				}
 			}
+			this.setAge(age);
 		}
 
 		public List<EntityLivingBase> getTrappedEntities() {
@@ -309,7 +323,7 @@ public class EntityGamarinsho extends ElementsNarutomodMod.ModElement {
 	    private static class GenjutsuOverlayHandler {
 			private final ResourceLocation texture = new ResourceLocation("narutomod:textures/brainmatterog.png");
 			private final EntityDuplicate playerDup;
-			private final List<EntityDuplicate> trappedEntity = Lists.newArrayList();
+			private final List<EntityDuplicate> trappedEntities = Lists.newArrayList();
 			private final EntityToadSamurai toadEntity;
 			private final EC cubeEntity;
 			private final EC jutsuEntity;
@@ -350,7 +364,7 @@ public class EntityGamarinsho extends ElementsNarutomodMod.ModElement {
 	        			dup.setLocationAndAngles(this.posX + (dup.getRNG().nextFloat()-0.5f), this.posY, this.posZ + (dup.getRNG().nextFloat()-0.5f), trapped.rotationYaw, trapped.rotationPitch);
 	        			dup.setNoGravity(true);
 	        			mc.world.spawnEntity(dup);
-	        			this.trappedEntity.add(dup);
+	        			this.trappedEntities.add(dup);
 	        		}
 	        	} else {
 	        		this.playerDup.setLocationAndAngles(this.posX, this.posY, this.posZ, mc.player.rotationYaw, mc.player.rotationPitch);
@@ -365,47 +379,51 @@ public class EntityGamarinsho extends ElementsNarutomodMod.ModElement {
 	        public void renderGenjutsu(RenderWorldLastEvent event) {
 	        	Minecraft mc = Minecraft.getMinecraft();
 	        	long worldTime = mc.world.getTotalWorldTime();
-                if (worldTime > this.endTime) {
+                if (worldTime > this.endTime || this.jutsuEntity.isDead) {
                     MinecraftForge.EVENT_BUS.unregister(this);
                     mc.setRenderViewEntity(mc.player);
                     this.playerDup.setDead();
-                    for (EntityDuplicate dup : this.trappedEntity) {
+                    for (EntityDuplicate dup : this.trappedEntities) {
                     	dup.setDead();
                     }
                 } else {
-				    double x = this.posX - mc.getRenderManager().viewerPosX;
-				    double y = this.posY - mc.getRenderManager().viewerPosY;
-				    double z = this.posZ - mc.getRenderManager().viewerPosZ;
-					GlStateManager.pushMatrix();
-					GlStateManager.enableLighting();
-					GlStateManager.translate(x, y, z);
-					GlStateManager.enableRescaleNormal();
-					GlStateManager.scale(30.0F, 30.0F, 30.0F);
-					GlStateManager.disableCull();
-					GlStateManager.enableTexture2D();
-					mc.renderEngine.bindTexture(this.texture);
-					OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float)0x80, (float)0x80);
-					GlStateManager.disableBlend();
-					GlStateManager.callList(this.sphereId);
-					//GlStateManager.enableBlend();
-					GlStateManager.enableCull();
-					GlStateManager.disableLighting();
-					GlStateManager.popMatrix();
-					
 		            long ticksElapsed = worldTime - this.startTime;
-		            this.renderToad(mc, event.getPartialTicks(), x, y, z, EnumFacing.NORTH, 12.0D);
-		            this.renderToad(mc, event.getPartialTicks(), x, y, z, EnumFacing.SOUTH, 12.0D);
-		            this.renderToad(mc, event.getPartialTicks(), x, y, z, EnumFacing.EAST, 12.0D);
-		            this.renderToad(mc, event.getPartialTicks(), x, y, z, EnumFacing.WEST, 12.0D);
-		            this.renderCube(mc, x, y - 0.2D, z, (int)ticksElapsed, event.getPartialTicks());
-
 		            if (this.isCaster) {
 	            		mc.setRenderViewEntity(mc.player.getEntityData().getBoolean(NarutomodModVariables.JutsuKey2Pressed) ? this.playerDup : mc.player);
 		            } else {
 		            	mc.player.getEntityData().setInteger("FearEffect", 5);
 	        			mc.setRenderViewEntity(ticksElapsed < 60 && ticksElapsed % ((80-ticksElapsed) / 10) != 0 ? mc.player : this.playerDup);
 	        		}
+	        		if (mc.getRenderViewEntity() == this.playerDup) {
+					    double x = this.posX - mc.getRenderManager().viewerPosX;
+					    double y = this.posY - mc.getRenderManager().viewerPosY;
+					    double z = this.posZ - mc.getRenderManager().viewerPosZ;
+	        			this.renderSphere(mc, x, y, z);
+			            this.renderToad(mc, event.getPartialTicks(), x, y, z, EnumFacing.NORTH, 12.0D);
+			            this.renderToad(mc, event.getPartialTicks(), x, y, z, EnumFacing.SOUTH, 12.0D);
+			            this.renderToad(mc, event.getPartialTicks(), x, y, z, EnumFacing.EAST, 12.0D);
+			            this.renderToad(mc, event.getPartialTicks(), x, y, z, EnumFacing.WEST, 12.0D);
+			            this.renderCube(mc, x, y - 0.2D, z, (int)ticksElapsed, event.getPartialTicks());
+	        		}
                 }
+	        }
+
+	        private void renderSphere(Minecraft mc, double x, double y, double z) {
+				GlStateManager.pushMatrix();
+				GlStateManager.enableLighting();
+				GlStateManager.translate(x, y, z);
+				GlStateManager.enableRescaleNormal();
+				GlStateManager.scale(30.0F, 30.0F, 30.0F);
+				GlStateManager.disableCull();
+				GlStateManager.enableTexture2D();
+				mc.renderEngine.bindTexture(this.texture);
+				OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float)0x80, (float)0x80);
+				GlStateManager.disableBlend();
+				GlStateManager.callList(this.sphereId);
+				//GlStateManager.enableBlend();
+				GlStateManager.enableCull();
+				GlStateManager.disableLighting();
+				GlStateManager.popMatrix();
 	        }
 
 			private void renderToad(Minecraft mc, float partialTicks, double x, double y, double z, EnumFacing facing, double offset) {

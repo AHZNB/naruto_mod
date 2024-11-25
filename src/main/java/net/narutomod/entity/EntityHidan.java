@@ -529,11 +529,6 @@ public class EntityHidan extends ElementsNarutomodMod.ModElement {
 			}
 
 			@Override
-			protected void preRenderCallback(EntityCustom entity, float partialTickTime) {
-				GlStateManager.scale(0.9375F, 0.9375F, 0.9375F);
-			}
-
-			@Override
 			public void transformHeldFull3DItemLayer() {
 				GlStateManager.translate(0.0F, 0.1875F, 0.0F);
 			}
@@ -662,7 +657,7 @@ public class EntityHidan extends ElementsNarutomodMod.ModElement {
 				GlStateManager.enableBlend();
 				GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 				super.render(entityIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale);
-				float jashinTicks = (float)((EntityCustom)entityIn).getJashinTicks();
+				float jashinTicks = entityIn instanceof EntityCustom ? (float)((EntityCustom)entityIn).getJashinTicks() : 0.0F;
 				if (jashinTicks > 0.0F) {
 					copyModelAngles(bipedHead, jashinHead);
 					copyModelAngles(bipedBody, jashinBody);

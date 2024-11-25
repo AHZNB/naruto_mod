@@ -28,10 +28,8 @@ import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
 import net.minecraft.village.MerchantRecipeList;
 import net.minecraft.village.MerchantRecipe;
 import net.minecraft.inventory.EntityEquipmentSlot;
-import net.minecraft.client.renderer.entity.RenderLiving;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.model.ModelBox;
-import net.minecraft.client.model.ModelBiped;
 
 import net.narutomod.item.ItemScrollBodyReplacement;
 import net.narutomod.item.ItemScrollKageBunshin;
@@ -72,7 +70,6 @@ public class EntityIrukaSensei extends ElementsNarutomodMod.ModElement {
 	public static class EntityCustom extends EntityNinjaMerchant.Base {
 		public EntityCustom(World world) {
 			super(world, 50);
-			this.setSize(0.6f, 2.0f);
 		}
 
 		@Override

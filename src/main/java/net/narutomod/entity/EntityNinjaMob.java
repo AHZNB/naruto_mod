@@ -993,6 +993,11 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 				super.renderLayers(entity, f0, f1, f2, f3, f4, f5, f6);
 			}
 		}
+
+		@Override
+		protected void preRenderCallback(T entity, float partialTickTime) {
+			GlStateManager.scale(0.9375F, 0.9375F, 0.9375F);
+		}
 	}
 
 	@SideOnly(Side.CLIENT)

@@ -464,11 +464,6 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 			}
 
 			@Override
-			protected void preRenderCallback(EntityCustom entity, float partialTickTime) {
-				GlStateManager.scale(0.9375F, 0.9375F, 0.9375F);
-			}
-
-			@Override
 			public void transformHeldFull3DItemLayer() {
 				GlStateManager.translate(0.0F, 0.1875F, 0.0F);
 			}

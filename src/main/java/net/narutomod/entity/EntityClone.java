@@ -238,6 +238,12 @@ public class EntityClone extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
+		public boolean isChild() {
+			EntityLivingBase summoner = this.getSummoner();
+			return summoner != null && summoner.isChild();
+		}
+
+		@Override
 		public SoundEvent getAmbientSound() {
 			return null;
 		}
@@ -730,7 +736,8 @@ public class EntityClone extends ElementsNarutomodMod.ModElement {
 		    	EntityLivingBase summoner = entity.getSummoner();
 		        if (summoner instanceof AbstractClientPlayer) {
 		        	AbstractClientPlayer clientPlayer = (AbstractClientPlayer)summoner;
-		        	if (clientPlayer.getSkinType().equals("slim")) {
+		        	if (clientPlayer.getSkinType().equals("slim") && this.mainModel != this.altModel) {
+		        		this.altModel.isChild = this.mainModel.isChild;
 		        		this.mainModel = this.altModel;
 		        	}
 		        	return clientPlayer.getLocationSkin();

@@ -120,7 +120,7 @@ public class EntityMightGuy extends ElementsNarutomodMod.ModElement {
 
 		public EntityCustom(World world) {
 			super(world, 120, 5000d);
-			this.setSize(0.6f, 1.9f);
+			this.setSize(0.6f, 1.9375f);
 			this.tasks.removeTask(this.leapAI);
 			this.setDropChance(EntityEquipmentSlot.MAINHAND, 0f);
 			this.gateCooldown = 100;
@@ -566,7 +566,7 @@ public class EntityMightGuy extends ElementsNarutomodMod.ModElement {
 					private final ResourceLocation texture = new ResourceLocation("narutomod:textures/might_guy.png");
 					@Override
 					protected void preRenderCallback(EntityCustom entity, float partialTickTime) {
-						GlStateManager.scale(0.9687F, 0.9687F, 0.9687F);
+						GlStateManager.scale(0.9375F, 0.96875F, 0.9375F);
 					}
 					@Override
 					protected ResourceLocation getEntityTexture(EntityCustom entity) {
@@ -597,7 +597,7 @@ public class EntityMightGuy extends ElementsNarutomodMod.ModElement {
 			@Override
 			public void setLivingAnimations(EntityLivingBase entity, float limbSwing, float limbSwingAmount, float partialTickTime) {
 				super.setLivingAnimations(entity, limbSwing, limbSwingAmount, partialTickTime);
-				if (((EntityCustom) entity).isSwingingArms()) {
+				if (entity instanceof EntityCustom && ((EntityCustom)entity).isSwingingArms()) {
 					this.rightArmPose = ModelBiped.ArmPose.BOW_AND_ARROW;
 				}
 			}
@@ -605,7 +605,7 @@ public class EntityMightGuy extends ElementsNarutomodMod.ModElement {
 			@Override
 			public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn) {
 				super.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scaleFactor, entityIn);
-				if (((EntityCustom)entityIn).blockingTicks > 0) {
+				if (entityIn instanceof EntityCustom && ((EntityCustom)entityIn).blockingTicks > 0) {
 					setRotationAngle(bipedRightArm, -1.0472F, -0.7854F, 0.0F);
 					setRotationAngle(bipedLeftArm, -2.0071F, 0.6109F, 0.0F);
 				}
