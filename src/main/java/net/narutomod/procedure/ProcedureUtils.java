@@ -937,6 +937,15 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 		return world.getCollisionBoxes(null, bb.contract(0d, -0.1d, 0d).grow(0.5d, 0d, 0.5d)).isEmpty();
 	}
 
+	public static int getTopSolidBlockY(World world, BlockPos pos) {
+		for ( ; pos.getY() < 256 && world.getBlockState(pos).getCollisionBoundingBox(world, pos) != null; pos = pos.up()) ;
+		for ( ; pos.getY() > 0 && world.getBlockState(pos).getCollisionBoundingBox(world, pos) == null; pos = pos.down()) ;
+		if (pos.getY() > 0) {
+			return pos.up().getY();
+		}
+		return 0;
+	}
+
 	public static String animateString(String string, int type, boolean returnToBlack) {
 		int stringLength = string.length();
 		if (stringLength < 1) {

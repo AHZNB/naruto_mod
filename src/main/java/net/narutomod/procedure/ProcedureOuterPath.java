@@ -78,7 +78,14 @@ public class ProcedureOuterPath extends ElementsNarutomodMod.ModElement {
 				}
 				EntityLivingBase entityToSpawn = EntityGedoStatue.getThisEntity(world);
 				if (entityToSpawn != null) {
-					(entityToSpawn).world.removeEntity(entityToSpawn);
+					if ((!((EntityGedoStatue.EntityCustom) entityToSpawn).isSitting()
+							|| entity.getUniqueID().equals(((EntityGedoStatue.EntityCustom) entityToSpawn).getOwnerId()))) {
+						(entityToSpawn).world.removeEntity(entityToSpawn);
+					} else {
+						if (entity instanceof EntityPlayer && !entity.world.isRemote) {
+							((EntityPlayer) entity).sendStatusMessage(new TextComponentString("Gedomazo already summoned by someone else."), (false));
+						}
+					}
 				} else {
 					entityToSpawn = EntityTenTails.getBijuManager().getEntityInWorld(world);
 					if (entityToSpawn != null) {
@@ -88,9 +95,11 @@ public class ProcedureOuterPath extends ElementsNarutomodMod.ModElement {
 					} else if (Chakra.pathway((EntityLivingBase) entity).consume(ItemRinnegan.getOuterPathChakraUsage((EntityLivingBase) entity))) {
 						entityToSpawn = EntityGedoStatue.gotAll9Bijus() && EntityTenTails.getBijuManager().getHasLived()
 								? new EntityTenTails.EntityCustom((EntityPlayer) entity)
-								: new EntityGedoStatue.EntityCustom((EntityLivingBase) entity);
-						entityToSpawn.rotationYawHead = entity.rotationYaw;
-						entityToSpawn.setLocationAndAngles(x, world.getTopSolidOrLiquidBlock(new BlockPos(x, y, z)).getY(), z, entity.rotationYaw,
+								: entity.isSneaking() && ((EntityPlayer) entity).isCreative()
+										? new EntityGedoStatue.EntityCustom((EntityLivingBase) entity, true)
+										: new EntityGedoStatue.EntityCustom((EntityLivingBase) entity);
+						entityToSpawn.rotationYawHead = entityToSpawn.renderYawOffset = entity.rotationYaw;
+						entityToSpawn.setLocationAndAngles(x, ProcedureUtils.getTopSolidBlockY(world, new BlockPos(x, y, z)), z, entity.rotationYaw,
 								0f);
 						if (world.spawnEntity(entityToSpawn)) {
 							entity.getEntityData().setDouble((NarutomodModVariables.InvulnerableTime), 100);

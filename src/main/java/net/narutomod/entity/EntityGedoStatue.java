@@ -26,6 +26,7 @@ import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.IAttribute;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.ai.EntityAIAttackMelee;
+import net.minecraft.entity.ai.EntityAIMoveTowardsTarget;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.EntityLivingBase;
@@ -44,6 +45,7 @@ import net.minecraft.block.Block;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.network.datasync.DataSerializers;
+import net.minecraft.nbt.NBTTagCompound;
 
 import net.narutomod.item.ItemJutsu;
 import net.narutomod.item.ItemRinnegan;
@@ -170,13 +172,17 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 		}
 
 		public EntityCustom(EntityLivingBase summonerIn, EntityLivingBase target) {
+			this(summonerIn, false);
+			this.fuuinTarget = target;
+		}
+
+		public EntityCustom(EntityLivingBase summonerIn, boolean creativeSit) {
 			this(summonerIn);
 			this.setSitting(true);
-			this.fuuinTarget = target;
 			Vec3d vec = new Vec3d(0d, 0d, -6d).rotateYaw(-summonerIn.rotationYaw * 0.017453292F).add(summonerIn.getPositionVector());
 			this.rotationYawHead = summonerIn.rotationYaw;
-			this.setLocationAndAngles(vec.x, summonerIn.world.getTopSolidOrLiquidBlock(new BlockPos(vec)).getY(), vec.z, summonerIn.rotationYaw, 0f);
-			this.lifeSpan = 400;
+			this.setLocationAndAngles(vec.x, ProcedureUtils.getTopSolidBlockY(this.world, new BlockPos(vec)), vec.z, summonerIn.rotationYaw, 0f);
+			this.lifeSpan = creativeSit ? Integer.MAX_VALUE - 1 : 400;
 		}
 
 		@Override
@@ -216,8 +222,19 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
+		protected void postScaleFixup() {
+			super.postScaleFixup();
+			this.stepHeight = this.height * 0.4f;
+		}
+
+		@Override
 		public SoundEvent getAmbientSound() {
 			return this.isSitting() ? null : SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:MonsterGrowl"));
+		}
+
+		@Override
+		protected float getSoundPitch() {
+			return (this.rand.nextFloat() - this.rand.nextFloat()) * 0.3F + 0.4F;
 		}
 
 		@Override
@@ -231,8 +248,17 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
+		public int getTalkInterval() {
+			return 240;
+		}
+
+		@Override
 		protected float getSoundVolume() {
 			return 10.0F;
+		}
+
+		public int getLifeSpan() {
+			return this.lifeSpan;
 		}
 
 		@Override
@@ -282,7 +308,14 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 		@Override
 		protected void initEntityAI() {
 			super.initEntityAI();
-			this.tasks.addTask(1, new EntityAIAttackMelee(this, 1.2D, true) {
+			this.tasks.addTask(1, new EntityAIMoveTowardsTarget(this, 1.0D, 64.0F) {
+				@Override
+				public boolean shouldExecute() {
+					return !EntityCustom.this.sealedAll9Bijus() && super.shouldExecute()
+					 && EntityCustom.this.getAttackTarget().getDistance(EntityCustom.this) > 24.0D;
+				}
+			});
+			this.tasks.addTask(2, new EntityAIAttackMelee(this, 1.0D, true) {
 				@Override
 				public boolean shouldExecute() {
 					return !EntityCustom.this.sealedAll9Bijus() && super.shouldExecute();
@@ -455,7 +488,7 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 				this.jumpMovementFactor = this.getAIMoveSpeed();
 				this.renderYawOffset = entity.rotationYaw;
 				this.rotationYawHead = entity.rotationYaw;
-				this.stepHeight = this.height / 3.0F;
+				//this.stepHeight = this.height / 3.0F;
 				if (entity instanceof EntityLivingBase) {
 					EntityLivingBase living = (EntityLivingBase)entity;
 					this.swingProgress = living.swingProgress;
@@ -526,6 +559,18 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 		@Override
 		public float getEyeHeight() {
 			return (this.isSitting() ? 13.0f : 23.0f) * 0.0625f * MODEL_SCALE;
+		}
+
+		@Override
+		public void readEntityFromNBT(NBTTagCompound compound) {
+			super.readEntityFromNBT(compound);
+			this.setSitting(compound.getBoolean("isSitting"));
+		}
+
+		@Override
+		public void writeEntityToNBT(NBTTagCompound compound) {
+			super.writeEntityToNBT(compound);
+			compound.setBoolean("isSitting", this.isSitting());
 		}
 	}
 
@@ -690,11 +735,15 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void register() {
 			RenderingRegistry.registerEntityRenderingHandler(EntityCustom.class, renderManager -> {
-				return new RenderLiving(renderManager, new ModelGedoMazo(), 5f) {
+				return new RenderLiving<EntityCustom>(renderManager, new ModelGedoMazo(), 5f) {
 					private final ResourceLocation texture = new ResourceLocation("narutomod:textures/gedomazo.png");
 					@Override
-					protected ResourceLocation getEntityTexture(Entity entity) {
+					protected ResourceLocation getEntityTexture(EntityCustom entity) {
 						return this.texture;
+					}
+					@Override
+					protected void renderModel(EntityCustom entity, float f0, float f1, float ageInTicks, float f3, float f4, float f5) {
+						super.renderModel(entity, f0, f1, ageInTicks - entity.ticksExisted + entity.getAge(), f3, f4, f5);
 					}
 				};
 			});
@@ -1102,7 +1151,8 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 				bipedHead = new ModelRenderer(this);
 				bipedHead.setRotationPoint(0.0F, 0.0F, 0.0F);
 				bipedHead.cubeList.add(new ModelBox(bipedHead, 0, 0, -3.0F, -6.0F, -4.0F, 6, 6, 6, -0.2F, false));
-				bipedHead.cubeList.add(new ModelBox(bipedHead, 0, 0, -3.0F, -7.1F, -4.0F, 6, 6, 6, -0.6F, false));
+				bipedHead.cubeList.add(new ModelBox(bipedHead, 0, 0, -3.0F, -7.25F, -4.0F, 6, 6, 6, -0.6F, false));
+				bipedHead.cubeList.add(new ModelBox(bipedHead, 0, 0, -3.0F, -8.25F, -4.0F, 6, 6, 6, -1.1F, false));
 				bipedHead.cubeList.add(new ModelBox(bipedHead, 0, 1, -3.0F, -5.0F, -4.0F, 6, 2, 6, 0.0F, false));
 		
 				jaw = new ModelRenderer(this);
