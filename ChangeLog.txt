@@ -43,13 +43,14 @@ Jutsus:
  - genjutsu doesn't affect tailed beasts unless the caster is wearing sharingan; genjutsu doesn't affect kikaichu users
  - fixed transformation/shadow imitation/mind control jutsus leaving a clone with no AI after server shutdown
  - Kikaichu: faster flying to target, applies slowness to target
+ - Flying thunder god jutsu: can teleport one additional entity if touching, chakra usage x 2
 
 Items:
  - added Sakura shippuden clothing and leggings (for slim player models only)
  - added Naruto shippuden jacket and pants
  - added Sound 5 clothing and forehead protector
  - added Jiraiya jacket, clothing, forehead protector and robe
- - added 3rd Kazekage puppet scroll
+ - added 3rd Kazekage puppet scroll, sand jutsus enabled when puppet is summoned and can be controlled
  - attack puppet scrolls: within 50 blocks, left click entity to set as puppet attack target, left click puppet to cancel target
  - senbons now does 4 melee damage, poison senbons 5 minute poison + slowness
  - puppet senbon arm canon can bounce off blocks, shoots poison senbons in all directions for 4s

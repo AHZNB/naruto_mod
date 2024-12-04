@@ -183,7 +183,7 @@ public class ItemScroll3rdKazekage extends ElementsNarutomodMod.ModElement {
 				}
 				if (entity.ticksExisted % 20 == 3) {
 					EntityPuppet3rdKazekage.EntityCustom puppet = this.getPuppetEntity(stack, world);
-					if (puppet != null && puppet.isEntityAlive()) {
+					if (puppet != null && puppet.isEntityAlive() && entity.equals(puppet.getOwner())) {
 						this.enableAllJutsus(stack, true);
 						this.setDamage(stack, (int)(puppet.getMaxHealth() - puppet.getHealth()));
 						EntitySandBullet.updateSwarms(puppet);

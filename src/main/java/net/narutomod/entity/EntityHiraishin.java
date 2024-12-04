@@ -570,8 +570,15 @@ public class EntityHiraishin extends ElementsNarutomodMod.ModElement {
 								ProcedureSync.SoundEffectMessage.sendToServer(vec.x, vec.y, vec.z,
 								 net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:swoosh")),
 								 net.minecraft.util.SoundCategory.NEUTRAL, 0.8f, player.getRNG().nextFloat() * 0.4f + 0.8f);
+								EntityLivingBase entity = mc.world.findNearestEntityWithinAABB(EntityLivingBase.class, player.getEntityBoundingBox().grow(0.1d), player);
 								player.setPosition(vec.x, vec.y, vec.z);
 								ProcedureSync.EntityPositionAndRotation.sendToServer(player);
+								if (entity != null) {
+									ProcedureOnLivingUpdate.setUntargetable(entity, 5);
+									entity.setPosition(vec.x, vec.y, vec.z);
+									ProcedureSync.EntityPositionAndRotation.sendToServer(entity);
+									chakraUsage *= 2;
+								}
 								Chakra.PathwayPlayer.ConsumeMessage.sendToServer(chakraUsage);
 							} else {
 								chakra.warningDisplay();
