@@ -8,6 +8,9 @@ public class ModConfig extends ElementsNarutomodMod.ModElement {
     @Config.Comment("If enabled tailed beasts spawn naturally around the world.")
 	public static boolean SPAWN_TAILED_BEASTS = true;
 
+    @Config.Comment("If true KG will be auto assigned to players in due time, after 300 ninjaXp reachched.")
+	public static boolean AUTO_KEKKEIGENKAI_ASSIGNMENT = true;
+
 	@Config.Comment("If enabled players has a chance of spawning as jinchuriki.")
 	public static boolean SPAWN_AS_JINCHURIKI = true;
 

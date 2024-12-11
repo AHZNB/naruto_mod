@@ -21,6 +21,7 @@ import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.SoundEvent;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.client.renderer.GlStateManager;
@@ -128,9 +129,11 @@ public class EntityWaterCanonball extends ElementsNarutomodMod.ModElement {
 				} else if (!this.isLaunched()) {
 					Vec3d vec = this.shootingEntity.getLookVec();
 					this.shoot(vec.x, vec.y, vec.z, 1.2f, 0f);
+					this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:throwpunch")),
+					 this.fullScale >= 10.0f ? 5.0F : 1.0f, 1.0f);
 				}
 				if (this.ticksAlive % 10 == 9) {
-					this.playSound(net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:waterfall")),
+					this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:waterfall")),
 					 this.fullScale >= 10.0f ? 5.0F : 1.0f, this.rand.nextFloat() * 0.5f + 0.6f);
 				}
 			}

@@ -1,3 +1,18 @@
+0.3.2-beta ================================================================================
+
+Jutsus
+ - wearing any dojutsu not bound to you consumes 15 chakra / second
+ - adding Crystal release (WIP)
+ 
+Items:
+ - giant folding fan is opened by default now (to fix fan not openning when held by random entities)
+ 
+Entities:
+ - improved giant dog summon model
+ 
+General:
+ - added config option to disable auto kekkeigenkai assignment
+
 0.3.1-beta ================================================================================
 
 Jutsus:
@@ -94,7 +109,7 @@ Entities:
  - added Deidara mob, naturally spawns, spawn weight configurable, follows Sasori if he's in the area
  - Ninja mobs like Itachi can spawn during daytime, you may need to decrease spawn weight in the config
     will not spawn in the same 1024 block area within 30 mins
- - add Toad Sage Fukasaku & Shima (WIP)
+ - add Toad Sage Fukasaku & Shima
  - hitting your own Explosion release: explosive clone despawns it
  - added Hidan, jashin mode only works on players or ninja mobs, unblockable, naturally spawns
  - fixed naturally spawned tailed beast only spawning in the +X, +Z direction relative to world spawn point

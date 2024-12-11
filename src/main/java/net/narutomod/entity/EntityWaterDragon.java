@@ -349,12 +349,14 @@ public class EntityWaterDragon extends ElementsNarutomodMod.ModElement {
 			private final ModelRenderer hornRight2;
 			private final ModelRenderer hornRight3;
 			private final ModelRenderer hornRight4;
+			private final ModelRenderer hornRight5;
 			private final ModelRenderer hornLeft;
 			private final ModelRenderer hornLeft0;
 			private final ModelRenderer hornLeft1;
 			private final ModelRenderer hornLeft2;
 			private final ModelRenderer hornLeft3;
 			private final ModelRenderer hornLeft4;
+			private final ModelRenderer hornLeft5;
 			private final ModelRenderer[] whiskerLeft = new ModelRenderer[6];
 			private final ModelRenderer[] whiskerRight = new ModelRenderer[6];
 			private final ModelRenderer[] spine = new ModelRenderer[100];
@@ -409,144 +411,156 @@ public class EntityWaterDragon extends ElementsNarutomodMod.ModElement {
 				head.addChild(hornRight);
 				setRotationAngle(hornRight, 0.0873F, -0.5236F, 0.0F);
 				hornRight.cubeList.add(new ModelBox(hornRight, 0, 0, -1.0F, -2.0F, 0.0F, 2, 4, 6, 1.0F, false));
-
+		
 				hornRight0 = new ModelRenderer(this);
 				hornRight0.setRotationPoint(0.0F, 0.0F, 7.0F);
 				hornRight.addChild(hornRight0);
 				setRotationAngle(hornRight0, 0.0873F, 0.0873F, 0.0F);
-				hornRight0.cubeList.add(new ModelBox(hornRight0, 0, 0, -1.0F, -2.0F, 0.0F, 2, 4, 6, 0.8F, false));
-
+				hornRight0.cubeList.add(new ModelBox(hornRight0, 0, 0, -1.0F, -2.0F, 0.0F, 2, 4, 6, 0.7F, false));
+		
 				hornRight1 = new ModelRenderer(this);
 				hornRight1.setRotationPoint(0.0F, 0.0F, 7.0F);
 				hornRight0.addChild(hornRight1);
 				setRotationAngle(hornRight1, 0.0873F, 0.0873F, 0.0F);
-				hornRight1.cubeList.add(new ModelBox(hornRight1, 0, 0, -1.0F, -2.0F, 0.0F, 2, 4, 6, 0.6F, false));
-
+				hornRight1.cubeList.add(new ModelBox(hornRight1, 0, 0, -1.0F, -2.0F, 0.0F, 2, 4, 6, 0.4F, false));
+		
 				hornRight2 = new ModelRenderer(this);
-				hornRight2.setRotationPoint(0.0F, 0.0F, 7.0F);
+				hornRight2.setRotationPoint(0.0F, 0.0F, 6.5F);
 				hornRight1.addChild(hornRight2);
 				setRotationAngle(hornRight2, 0.0873F, 0.0873F, 0.0F);
-				hornRight2.cubeList.add(new ModelBox(hornRight2, 0, 0, -1.0F, -2.0F, 0.0F, 2, 4, 6, 0.4F, false));
-
+				hornRight2.cubeList.add(new ModelBox(hornRight2, 0, 0, -1.0F, -2.0F, 0.0F, 2, 4, 6, 0.1F, false));
+		
 				hornRight3 = new ModelRenderer(this);
-				hornRight3.setRotationPoint(0.0F, 0.0F, 7.0F);
+				hornRight3.setRotationPoint(0.0F, 0.0F, 6.0F);
 				hornRight2.addChild(hornRight3);
 				setRotationAngle(hornRight3, 0.0873F, 0.0873F, 0.0F);
-				hornRight3.cubeList.add(new ModelBox(hornRight3, 0, 0, -1.0F, -2.0F, 0.0F, 2, 4, 6, 0.2F, false));
-
+				hornRight3.cubeList.add(new ModelBox(hornRight3, 0, 0, -1.0F, -2.0F, 0.0F, 2, 4, 6, -0.2F, false));
+		
 				hornRight4 = new ModelRenderer(this);
-				hornRight4.setRotationPoint(0.0F, 0.0F, 7.0F);
+				hornRight4.setRotationPoint(0.0F, 0.0F, 5.5F);
 				hornRight3.addChild(hornRight4);
 				setRotationAngle(hornRight4, 0.0873F, 0.0873F, 0.0F);
-				hornRight4.cubeList.add(new ModelBox(hornRight4, 0, 0, -1.0F, -2.0F, 0.0F, 2, 4, 6, 0.0F, false));
-
+				hornRight4.cubeList.add(new ModelBox(hornRight4, 0, 0, -1.0F, -2.0F, 0.0F, 2, 4, 6, -0.5F, false));
+		
+				hornRight5 = new ModelRenderer(this);
+				hornRight5.setRotationPoint(0.0F, 0.0F, 5.0F);
+				hornRight4.addChild(hornRight5);
+				setRotationAngle(hornRight5, 0.0873F, 0.0873F, 0.0F);
+				hornRight5.cubeList.add(new ModelBox(hornRight5, 0, 0, -1.0F, -2.0F, 0.0F, 2, 4, 6, -0.8F, false));
+		
 				hornLeft = new ModelRenderer(this);
 				hornLeft.setRotationPoint(6.0F, -2.0F, -13.0F);
 				head.addChild(hornLeft);
 				setRotationAngle(hornLeft, 0.0873F, 0.5236F, 0.0F);
 				hornLeft.cubeList.add(new ModelBox(hornLeft, 0, 0, -1.0F, -2.0F, 0.0F, 2, 4, 6, 1.0F, true));
-
+		
 				hornLeft0 = new ModelRenderer(this);
 				hornLeft0.setRotationPoint(0.0F, 0.0F, 7.0F);
 				hornLeft.addChild(hornLeft0);
 				setRotationAngle(hornLeft0, 0.0873F, -0.0873F, 0.0F);
-				hornLeft0.cubeList.add(new ModelBox(hornLeft0, 0, 0, -1.0F, -2.0F, 0.0F, 2, 4, 6, 0.8F, true));
-
+				hornLeft0.cubeList.add(new ModelBox(hornLeft0, 0, 0, -1.0F, -2.0F, 0.0F, 2, 4, 6, 0.7F, true));
+		
 				hornLeft1 = new ModelRenderer(this);
 				hornLeft1.setRotationPoint(0.0F, 0.0F, 7.0F);
 				hornLeft0.addChild(hornLeft1);
 				setRotationAngle(hornLeft1, 0.0873F, -0.0873F, 0.0F);
-				hornLeft1.cubeList.add(new ModelBox(hornLeft1, 0, 0, -1.0F, -2.0F, 0.0F, 2, 4, 6, 0.6F, true));
-
+				hornLeft1.cubeList.add(new ModelBox(hornLeft1, 0, 0, -1.0F, -2.0F, 0.0F, 2, 4, 6, 0.4F, true));
+		
 				hornLeft2 = new ModelRenderer(this);
-				hornLeft2.setRotationPoint(0.0F, 0.0F, 7.0F);
+				hornLeft2.setRotationPoint(0.0F, 0.0F, 6.5F);
 				hornLeft1.addChild(hornLeft2);
 				setRotationAngle(hornLeft2, 0.0873F, -0.0873F, 0.0F);
-				hornLeft2.cubeList.add(new ModelBox(hornLeft2, 0, 0, -1.0F, -2.0F, 0.0F, 2, 4, 6, 0.4F, true));
-
+				hornLeft2.cubeList.add(new ModelBox(hornLeft2, 0, 0, -1.0F, -2.0F, 0.0F, 2, 4, 6, 0.1F, true));
+		
 				hornLeft3 = new ModelRenderer(this);
-				hornLeft3.setRotationPoint(0.0F, 0.0F, 7.0F);
+				hornLeft3.setRotationPoint(0.0F, 0.0F, 6.0F);
 				hornLeft2.addChild(hornLeft3);
 				setRotationAngle(hornLeft3, 0.0873F, -0.0873F, 0.0F);
-				hornLeft3.cubeList.add(new ModelBox(hornLeft3, 0, 0, -1.0F, -2.0F, 0.0F, 2, 4, 6, 0.2F, true));
-
+				hornLeft3.cubeList.add(new ModelBox(hornLeft3, 0, 0, -1.0F, -2.0F, 0.0F, 2, 4, 6, -0.2F, true));
+		
 				hornLeft4 = new ModelRenderer(this);
-				hornLeft4.setRotationPoint(0.0F, 0.0F, 7.0F);
+				hornLeft4.setRotationPoint(0.0F, 0.0F, 5.5F);
 				hornLeft3.addChild(hornLeft4);
 				setRotationAngle(hornLeft4, 0.0873F, -0.0873F, 0.0F);
-				hornLeft4.cubeList.add(new ModelBox(hornLeft4, 0, 0, -1.0F, -2.0F, 0.0F, 2, 4, 6, 0.0F, true));
-
+				hornLeft4.cubeList.add(new ModelBox(hornLeft4, 0, 0, -1.0F, -2.0F, 0.0F, 2, 4, 6, -0.5F, true));
+		
+				hornLeft5 = new ModelRenderer(this);
+				hornLeft5.setRotationPoint(0.0F, 0.0F, 5.0F);
+				hornLeft4.addChild(hornLeft5);
+				setRotationAngle(hornLeft5, 0.0873F, -0.0873F, 0.0F);
+				hornLeft5.cubeList.add(new ModelBox(hornLeft5, 0, 0, -1.0F, -2.0F, 0.0F, 2, 4, 6, -0.8F, true));
+		
 				whiskerLeft[0] = new ModelRenderer(this);
 				whiskerLeft[0].setRotationPoint(6.0F, 6.0F, -24.0F);
 				head.addChild(whiskerLeft[0]);
 				setRotationAngle(whiskerLeft[0], 0.0F, 1.0472F, 0.0F);
 				whiskerLeft[0].cubeList.add(new ModelBox(whiskerLeft[0], 0, 0, -1.0F, -1.0F, 0.0F, 2, 2, 6, 0.8F, true));
-
+		
 				whiskerLeft[1] = new ModelRenderer(this);
 				whiskerLeft[1].setRotationPoint(0.0F, 0.0F, 6.0F);
 				whiskerLeft[0].addChild(whiskerLeft[1]);
 				setRotationAngle(whiskerLeft[1], -0.0873F, -0.1745F, 0.0F);
-				whiskerLeft[1].cubeList.add(new ModelBox(whiskerLeft[1], 0, 0, -1.0F, -1.0F, 0.0F, 2, 2, 6, 0.7F, true));
-
+				whiskerLeft[1].cubeList.add(new ModelBox(whiskerLeft[1], 0, 0, -1.0F, -1.0F, 0.0F, 2, 2, 6, 0.6F, true));
+		
 				whiskerLeft[2] = new ModelRenderer(this);
 				whiskerLeft[2].setRotationPoint(0.0F, 0.0F, 6.0F);
 				whiskerLeft[1].addChild(whiskerLeft[2]);
 				setRotationAngle(whiskerLeft[2], -0.0873F, -0.1745F, 0.0F);
-				whiskerLeft[2].cubeList.add(new ModelBox(whiskerLeft[2], 0, 0, -1.0F, -1.0F, 0.0F, 2, 2, 6, 0.6F, true));
-
+				whiskerLeft[2].cubeList.add(new ModelBox(whiskerLeft[2], 0, 0, -1.0F, -1.0F, 0.0F, 2, 2, 6, 0.4F, true));
+		
 				whiskerLeft[3] = new ModelRenderer(this);
 				whiskerLeft[3].setRotationPoint(0.0F, 0.0F, 6.0F);
 				whiskerLeft[2].addChild(whiskerLeft[3]);
 				setRotationAngle(whiskerLeft[3], -0.0873F, -0.1745F, 0.0F);
-				whiskerLeft[3].cubeList.add(new ModelBox(whiskerLeft[3], 0, 0, -1.0F, -1.0F, 0.0F, 2, 2, 6, 0.5F, true));
-
+				whiskerLeft[3].cubeList.add(new ModelBox(whiskerLeft[3], 0, 0, -1.0F, -1.0F, 0.0F, 2, 2, 6, 0.2F, true));
+		
 				whiskerLeft[4] = new ModelRenderer(this);
 				whiskerLeft[4].setRotationPoint(0.0F, 0.0F, 6.0F);
 				whiskerLeft[3].addChild(whiskerLeft[4]);
 				setRotationAngle(whiskerLeft[4], -0.0873F, -0.1745F, 0.0F);
-				whiskerLeft[4].cubeList.add(new ModelBox(whiskerLeft[4], 0, 0, -1.0F, -1.0F, 0.0F, 2, 2, 6, 0.4F, true));
-
+				whiskerLeft[4].cubeList.add(new ModelBox(whiskerLeft[4], 0, 0, -1.0F, -1.0F, 0.0F, 2, 2, 6, 0.0F, true));
+		
 				whiskerLeft[5] = new ModelRenderer(this);
 				whiskerLeft[5].setRotationPoint(0.0F, 0.0F, 6.0F);
 				whiskerLeft[4].addChild(whiskerLeft[5]);
 				setRotationAngle(whiskerLeft[5], -0.0873F, -0.1745F, 0.0F);
-				whiskerLeft[5].cubeList.add(new ModelBox(whiskerLeft[5], 0, 0, -1.0F, -1.0F, 0.0F, 2, 2, 6, 0.2F, true));
-
+				whiskerLeft[5].cubeList.add(new ModelBox(whiskerLeft[5], 0, 0, -1.0F, -1.0F, 0.0F, 2, 2, 6, -0.2F, true));
+		
 				whiskerRight[0] = new ModelRenderer(this);
 				whiskerRight[0].setRotationPoint(-6.0F, 6.0F, -24.0F);
 				head.addChild(whiskerRight[0]);
 				setRotationAngle(whiskerRight[0], 0.0F, -1.0472F, 0.0F);
 				whiskerRight[0].cubeList.add(new ModelBox(whiskerRight[0], 0, 0, -1.0F, -1.0F, 0.0F, 2, 2, 6, 0.8F, false));
-
+		
 				whiskerRight[1] = new ModelRenderer(this);
 				whiskerRight[1].setRotationPoint(0.0F, 0.0F, 6.0F);
 				whiskerRight[0].addChild(whiskerRight[1]);
 				setRotationAngle(whiskerRight[1], -0.0873F, 0.1745F, 0.0F);
-				whiskerRight[1].cubeList.add(new ModelBox(whiskerRight[1], 0, 0, -1.0F, -1.0F, 0.0F, 2, 2, 6, 0.7F, false));
-
+				whiskerRight[1].cubeList.add(new ModelBox(whiskerRight[1], 0, 0, -1.0F, -1.0F, 0.0F, 2, 2, 6, 0.6F, false));
+		
 				whiskerRight[2] = new ModelRenderer(this);
 				whiskerRight[2].setRotationPoint(0.0F, 0.0F, 6.0F);
 				whiskerRight[1].addChild(whiskerRight[2]);
 				setRotationAngle(whiskerRight[2], -0.0873F, 0.1745F, 0.0F);
-				whiskerRight[2].cubeList.add(new ModelBox(whiskerRight[2], 0, 0, -1.0F, -1.0F, 0.0F, 2, 2, 6, 0.6F, false));
-
+				whiskerRight[2].cubeList.add(new ModelBox(whiskerRight[2], 0, 0, -1.0F, -1.0F, 0.0F, 2, 2, 6, 0.4F, false));
+		
 				whiskerRight[3] = new ModelRenderer(this);
 				whiskerRight[3].setRotationPoint(0.0F, 0.0F, 6.0F);
 				whiskerRight[2].addChild(whiskerRight[3]);
 				setRotationAngle(whiskerRight[3], -0.0873F, 0.1745F, 0.0F);
-				whiskerRight[3].cubeList.add(new ModelBox(whiskerRight[3], 0, 0, -1.0F, -1.0F, 0.0F, 2, 2, 6, 0.5F, false));
-
+				whiskerRight[3].cubeList.add(new ModelBox(whiskerRight[3], 0, 0, -1.0F, -1.0F, 0.0F, 2, 2, 6, 0.2F, false));
+		
 				whiskerRight[4] = new ModelRenderer(this);
 				whiskerRight[4].setRotationPoint(0.0F, 0.0F, 6.0F);
 				whiskerRight[3].addChild(whiskerRight[4]);
 				setRotationAngle(whiskerRight[4], -0.0873F, 0.1745F, 0.0F);
-				whiskerRight[4].cubeList.add(new ModelBox(whiskerRight[4], 0, 0, -1.0F, -1.0F, 0.0F, 2, 2, 6, 0.4F, false));
-
+				whiskerRight[4].cubeList.add(new ModelBox(whiskerRight[4], 0, 0, -1.0F, -1.0F, 0.0F, 2, 2, 6, 0.0F, false));
+		
 				whiskerRight[5] = new ModelRenderer(this);
 				whiskerRight[5].setRotationPoint(0.0F, 0.0F, 6.0F);
 				whiskerRight[4].addChild(whiskerRight[5]);
 				setRotationAngle(whiskerRight[5], -0.0873F, 0.1745F, 0.0F);
-				whiskerRight[5].cubeList.add(new ModelBox(whiskerRight[5], 0, 0, -1.0F, -1.0F, 0.0F, 2, 2, 6, 0.2F, false));
+				whiskerRight[5].cubeList.add(new ModelBox(whiskerRight[5], 0, 0, -1.0F, -1.0F, 0.0F, 2, 2, 6, -0.2F, false));
 
 				for (int i = 0; i < spine.length; i++) {
 					spine[i] = new ModelRenderer(this);

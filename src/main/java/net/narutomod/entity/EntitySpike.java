@@ -153,14 +153,18 @@ public class EntitySpike extends ElementsNarutomodMod.ModElement {
 		@SideOnly(Side.CLIENT)
 		public static abstract class Renderer<T extends Base> extends Render<T> {
 			//private static final ResourceLocation TEXTURE = new ResourceLocation("narutomod:textures/spike.png");
-			protected final ModelSpike model;
+			protected final ModelBase model;
 	
 			public Renderer(RenderManager renderManagerIn) {
-				super(renderManagerIn);
-				this.model = new ModelSpike();
-				this.shadowSize = 0.1f;
+				this(renderManagerIn, new ModelSpike());
 			}
 	
+			public Renderer(RenderManager renderManagerIn, ModelBase modelIn) {
+				super(renderManagerIn);
+				this.model = modelIn;
+				this.shadowSize = 0.1f;
+			}
+
 			@Override
 			public void doRender(T entity, double x, double y, double z, float entityYaw, float pt) {
 				GlStateManager.pushMatrix();

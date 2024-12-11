@@ -450,6 +450,9 @@ public class ItemNuibariSword extends ElementsNarutomodMod.ModElement {
 				if (event.getEntity().getEntityData().getBoolean("TempData_disableKnockback")) {
 					event.setCanceled(true);
 					event.getEntity().getEntityData().removeTag("TempData_disableKnockback");
+				} else if (event.getEntity().getEntityData().hasKey("TempData_modifyKnockback")) {
+					event.setStrength(event.getStrength() * event.getEntity().getEntityData().getFloat("TempData_modifyKnockback"));
+					event.getEntity().getEntityData().removeTag("TempData_modifyKnockback");
 				}
 			}
 		}

@@ -50,6 +50,9 @@ public class ItemDojutsu extends ElementsNarutomodMod.ModElement {
 					entity.addPotionEffect(new PotionEffect(MobEffects.BLINDNESS, 1200, 0, false, false));
 					entity.getEntityData().setUniqueId("lastWornForeignDojutsu", uuid);
 				}
+				if (entity.ticksExisted % 20 == 5) {
+					net.narutomod.Chakra.pathway(entity).consume(15.0d);
+				}
 			}
 			if (entity.ticksExisted % 20 == 1) {
 				entity.getEntityData().setLong(NarutomodModVariables.MostRecentWornDojutsuTime, world.getTotalWorldTime());

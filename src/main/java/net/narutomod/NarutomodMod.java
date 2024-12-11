@@ -45,7 +45,7 @@ import java.util.function.Supplier;
 @Mod(modid = NarutomodMod.MODID, version = NarutomodMod.VERSION)
 public class NarutomodMod {
 	public static final String MODID = "narutomod";
-	public static final String VERSION = "0.3.1-beta";
+	public static final String VERSION = "0.3.2-beta";
 	public static final SimpleNetworkWrapper PACKET_HANDLER = NetworkRegistry.INSTANCE.newSimpleChannel("narutomod:a");
 	@SidedProxy(clientSide = "net.narutomod.ClientProxyNarutomodMod", serverSide = "net.narutomod.ServerProxyNarutomodMod")
 	public static IProxyNarutomodMod proxy;

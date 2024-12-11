@@ -59,9 +59,9 @@ public class ItemFoldingFan extends ElementsNarutomodMod.ModElement {
 	        @Override
 	        public ModelResourceLocation getModelLocation(ItemStack stack) {
 	            if (stack.hasTagCompound() && stack.getTagCompound().getBoolean(CUSTOM_MODEL_KEY)) {
-	                return this.resources[1];
+	                return this.resources[0];
 	            }
-	            return this.resources[0];
+	            return this.resources[1];
 	        }
 	    }
 	    MeshDef meshDef = new MeshDef();
@@ -97,15 +97,18 @@ public class ItemFoldingFan extends ElementsNarutomodMod.ModElement {
 			if (!stack.hasTagCompound()) {
 				stack.setTagCompound(new NBTTagCompound());
 			}
-			if (isSelected) {
+			if (!isSelected) {
 				if (!stack.getTagCompound().getBoolean(CUSTOM_MODEL_KEY)) {
 					stack.getTagCompound().setBoolean(CUSTOM_MODEL_KEY, true);
 					worldIn.playSound(null, entityIn.posX, entityIn.posY, entityIn.posZ,
 					 net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:movement")),
-					 net.minecraft.util.SoundCategory.NEUTRAL, 0.6f, worldIn.rand.nextFloat() * 0.3f + 0.8f);
+					 net.minecraft.util.SoundCategory.NEUTRAL, 0.6f, 1.6f);
 				}
 			} else if (stack.getTagCompound().hasKey(CUSTOM_MODEL_KEY)) {
 				stack.getTagCompound().removeTag(CUSTOM_MODEL_KEY);
+				worldIn.playSound(null, entityIn.posX, entityIn.posY, entityIn.posZ,
+				 net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:movement")),
+				 net.minecraft.util.SoundCategory.NEUTRAL, 0.6f, 0.8f);
 			}
 		}
 
