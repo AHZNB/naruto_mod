@@ -60,6 +60,7 @@ public class EntityCrystalPrison extends ElementsNarutomodMod.ModElement {
 		private static final DataParameter<Float> RAND_YAW = EntityDataManager.<Float>createKey(EC.class, DataSerializers.FLOAT);
 		private static final DataParameter<Float> RAND_PITCH = EntityDataManager.<Float>createKey(EC.class, DataSerializers.FLOAT);
 		private final int growTime = 10;
+		private float baseDamage = 20.0f;
 		private float maxScale;
 		private float health;
 		private EntityLivingBase user;
@@ -67,7 +68,7 @@ public class EntityCrystalPrison extends ElementsNarutomodMod.ModElement {
 
 		public EC(World worldIn) {
 			super(worldIn);
-			this.setColor(0xC0FFFFFF);
+			this.setColor(0xA0FFFFFF);
 			this.setRandYawPitch();
 			this.isImmuneToFire = true;
 		}
@@ -132,6 +133,10 @@ public class EntityCrystalPrison extends ElementsNarutomodMod.ModElement {
 					entity.maxInGroundTime = 100;
 					this.world.spawnEntity(entity);
 				}
+				for (EntityLivingBase entity : this.trappedEntities.keySet()) {
+					entity.attackEntityFrom(ItemJutsu.causeJutsuDamage(this, this.user).setDamageBypassesArmor(), this.maxScale * this.baseDamage);
+				}
+				this.trappedEntities.clear();
 			}
 		}
 
@@ -220,6 +225,9 @@ public class EntityCrystalPrison extends ElementsNarutomodMod.ModElement {
 						EC entity1 = new EC(entity, (1.5f - f1) * power * 0.5f + 1f);
 						entity1.setLocationAndAngles(vec.x, vec.y + 0.5d, vec.z, yaw + (entity.getRNG().nextFloat()-0.5f) * 60f, pitch);
 						world.spawnEntity(entity1);
+						if (entity.isSneaking()) {
+							entity1.baseDamage = 0.0f;
+						}
 					}
 					return true;
 				}
@@ -228,7 +236,7 @@ public class EntityCrystalPrison extends ElementsNarutomodMod.ModElement {
 
 			@Override
 			public float getPowerupDelay() {
-				return 100.0f;
+				return 200.0f;
 			}
 	
 			@Override

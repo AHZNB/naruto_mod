@@ -3,6 +3,7 @@
 Jutsus
  - wearing any dojutsu not bound to you consumes 15 chakra / second
  - adding Crystal release (WIP)
+ - projectiles now bounce off Flame formation jutsu
  
 Items:
  - giant folding fan is opened by default now (to fix fan not openning when held by random entities)
@@ -12,6 +13,7 @@ Entities:
  
 General:
  - added config option to disable auto kekkeigenkai assignment
+ - optimize particles by reducing network packet size
 
 0.3.1-beta ================================================================================
 

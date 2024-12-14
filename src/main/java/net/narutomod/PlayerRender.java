@@ -48,6 +48,7 @@ import net.minecraft.client.model.ModelPlayer;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.Minecraft;
 
+import net.narutomod.entity.EntityShieldBase;
 import net.narutomod.item.ItemOnBody;
 import net.narutomod.item.ItemBijuCloak;
 import net.narutomod.procedure.ProcedureUtils;
@@ -189,6 +190,14 @@ public class PlayerRender extends ElementsNarutomodMod.ModElement {
 				 	 && model.rightArmPose == ModelBiped.ArmPose.EMPTY && model.leftArmPose == ModelBiped.ArmPose.EMPTY) {
 						this.renderNarutoRun(model, entityIn, f0, f1, f2, f3, f4, f5);
 				 	} else {
+				 		if (entityIn.getRidingEntity() instanceof EntityShieldBase
+				 		 && !((EntityShieldBase)entityIn.getRidingEntity()).shouldRiderSit()
+				 		 && !((EntityShieldBase)entityIn.getRidingEntity()).shouldRiderBeStill()) {
+				 		 	float pt = f2 - entityIn.ticksExisted;
+				 			model.isRiding = false;
+				 			f1 = Math.min((entityIn.prevLimbSwingAmount + (entityIn.limbSwingAmount - entityIn.prevLimbSwingAmount) * pt) * 4.0f, 1.0f);
+				 			f0 = (entityIn.limbSwing - entityIn.limbSwingAmount * (1.0f - pt)) * 4.0f;
+				 		}
 				 		model.render(entityIn, f0, f1, f2, f3, f4, f5);
 				 	}
 					if (flag1) {

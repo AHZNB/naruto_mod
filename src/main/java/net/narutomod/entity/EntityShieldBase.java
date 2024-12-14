@@ -114,7 +114,7 @@ public abstract class EntityShieldBase extends EntityLivingBase {
 
 	@Override
 	public boolean attackEntityFrom(DamageSource source, float amount) {
-		if (source.getImmediateSource() instanceof EntityLivingBase && source.getImmediateSource().equals(this.getControllingPassenger()))
+		if (source.getTrueSource() instanceof EntityLivingBase && source.getTrueSource().equals(this.getControllingPassenger()))
 			return false;
 		if (source == DamageSource.FALL || source == DamageSource.CACTUS || source == DamageSource.IN_WALL)
 			return false;
@@ -192,6 +192,10 @@ public abstract class EntityShieldBase extends EntityLivingBase {
 		return false;
 	}
 
+	public boolean shouldRiderBeStill() {
+		return true;
+	}
+
 	public void setOwnerCanSteer(boolean canSteer, float speed) {
 		this.ownerCanSteer = canSteer;
 		this.steerSpeed = speed;
@@ -211,7 +215,7 @@ public abstract class EntityShieldBase extends EntityLivingBase {
 		return false;
 	}
 
-	private void clampMotion(double d) {
+	protected void clampMotion(double d) {
 		if (this.getRevengeTarget() != null && this.ticksExisted - this.getRevengeTimer() < 10) {
 			if (Math.abs(this.motionX) > d)
 				this.motionX = (this.motionX > 0.0D) ? d : -d;
@@ -246,7 +250,7 @@ public abstract class EntityShieldBase extends EntityLivingBase {
 	public void onLivingUpdate() {
 		this.clearActivePotions();
 		super.onLivingUpdate();
-		clampMotion(0.1D);
+		this.clampMotion(0.1D);
 		EntityLivingBase summoner = this.getSummoner();
 		if ((this.getPassengers().isEmpty() && this.dieOnNoPassengers) 
 		 || (summoner != null && !summoner.isEntityAlive())) {

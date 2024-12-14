@@ -2,6 +2,7 @@
 package net.narutomod.item;
 
 import net.narutomod.creativetab.TabModTab;
+import net.narutomod.entity.EntityCrystalArmor;
 import net.narutomod.entity.EntityCrystalPrison;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.ElementsNarutomodMod;
@@ -32,7 +33,8 @@ public class ItemShoton extends ElementsNarutomodMod.ModElement {
 	@GameRegistry.ObjectHolder("narutomod:shoton")
 	public static final Item block = null;
 	public static final int ENTITYID = 471;
-	public static final ItemJutsu.JutsuEnum PRISON = new ItemJutsu.JutsuEnum(0, "crystal_prison", 'S', 150, 20d, new EntityCrystalPrison.EC.Jutsu());
+	public static final ItemJutsu.JutsuEnum ARMOR = new ItemJutsu.JutsuEnum(0, "crystal_armor", 'S', 150, 20d, new EntityCrystalArmor.EC.Jutsu());
+	public static final ItemJutsu.JutsuEnum PRISON = new ItemJutsu.JutsuEnum(1, "crystal_prison", 'S', 150, 100d, new EntityCrystalPrison.EC.Jutsu());
 
 	public ItemShoton(ElementsNarutomodMod instance) {
 		super(instance, 900);
@@ -40,7 +42,7 @@ public class ItemShoton extends ElementsNarutomodMod.ModElement {
 
 	@Override
 	public void initElements() {
-		elements.items.add(() -> new RangedItem(PRISON));
+		elements.items.add(() -> new RangedItem(ARMOR, PRISON));
 		//elements.entities.add(() -> EntityEntryBuilder.create().entity(EntityPrison.class)
 		//		.id(new ResourceLocation("narutomod", "shoton_prison"), ENTITYID).name("shoton_prison").tracker(64, 1, true).build());
 	}

@@ -150,9 +150,9 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 		public static class MessageContents {
 			Types type;
 			int count;
-			double x, y, z;
-			double ox, oy, oz;
-			double speedx, speedy, speedz;
+			float x, y, z;
+			float ox, oy, oz;
+			float speedx, speedy, speedz;
 			int args;
 			int[] parms;
 
@@ -160,15 +160,15 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 			 double xOff, double yOff, double zOff, double xSpeed, double ySpeed, double zSpeed, int... argsIn) {
 				this.type = typeIn;
 				this.count = countIn;
-				this.x = xIn;
-				this.y = yIn;
-				this.z = zIn;
-				this.ox = xOff;
-				this.oy = yOff;
-				this.oz = zOff;
-				this.speedx = xSpeed;
-				this.speedy = ySpeed;
-				this.speedz = zSpeed;
+				this.x = (float)xIn;
+				this.y = (float)yIn;
+				this.z = (float)zIn;
+				this.ox = (float)xOff;
+				this.oy = (float)yOff;
+				this.oz = (float)zOff;
+				this.speedx = (float)xSpeed;
+				this.speedy = (float)ySpeed;
+				this.speedz = (float)zSpeed;
 				this.args = argsIn.length;
 				this.parms = argsIn;
 			}
@@ -180,32 +180,33 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 			public void toBytes(ByteBuf buf) {
 				buf.writeInt(this.type.getID());
 				buf.writeInt(this.count);
-				buf.writeDouble(this.x);
-				buf.writeDouble(this.y);
-				buf.writeDouble(this.z);
-				buf.writeDouble(this.ox);
-				buf.writeDouble(this.oy);
-				buf.writeDouble(this.oz);
-				buf.writeDouble(this.speedx);
-				buf.writeDouble(this.speedy);
-				buf.writeDouble(this.speedz);
-				buf.writeInt(this.args);
-				for (int j = 0; j < this.type.getArgsCount() && j < this.args; j++)
+				buf.writeFloat(this.x);
+				buf.writeFloat(this.y);
+				buf.writeFloat(this.z);
+				buf.writeFloat(this.ox);
+				buf.writeFloat(this.oy);
+				buf.writeFloat(this.oz);
+				buf.writeFloat(this.speedx);
+				buf.writeFloat(this.speedy);
+				buf.writeFloat(this.speedz);
+				int i = Math.min(this.type.getArgsCount(), this.args);
+				buf.writeInt(i);
+				for (int j = 0; j < i; j++)
 					buf.writeInt(this.parms[j]);
 			}
 	
 			public void fromBytes(ByteBuf buf) {
 				this.type = Types.getTypeFromId(buf.readInt());
 				this.count = buf.readInt();
-				this.x = buf.readDouble();
-				this.y = buf.readDouble();
-				this.z = buf.readDouble();
-				this.ox = buf.readDouble();
-				this.oy = buf.readDouble();
-				this.oz = buf.readDouble();
-				this.speedx = buf.readDouble();
-				this.speedy = buf.readDouble();
-				this.speedz = buf.readDouble();
+				this.x = buf.readFloat();
+				this.y = buf.readFloat();
+				this.z = buf.readFloat();
+				this.ox = buf.readFloat();
+				this.oy = buf.readFloat();
+				this.oz = buf.readFloat();
+				this.speedx = buf.readFloat();
+				this.speedy = buf.readFloat();
+				this.speedz = buf.readFloat();
 				this.args = buf.readInt();
 				int i = Math.min(this.type.getArgsCount(), this.args);
 				this.parms = new int[i];

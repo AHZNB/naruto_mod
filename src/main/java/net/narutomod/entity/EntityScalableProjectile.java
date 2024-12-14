@@ -217,7 +217,7 @@ public class EntityScalableProjectile extends ElementsNarutomodMod.ModElement {
 					if (f > 0f) {
 						this.ticksInAir++;
 						RayTraceResult raytraceresult = this.forwardsRaycast(true, this.ticksInAir >= 25, this.shootingEntity);
-						if (raytraceresult != null) {
+						if (raytraceresult != null && !net.minecraftforge.event.ForgeEventFactory.onProjectileImpact(this, raytraceresult)) {
 							this.onImpact(raytraceresult);
 							//f *= 0.4F;
 						}

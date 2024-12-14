@@ -64,6 +64,11 @@ public class EntityPretaShield extends ElementsNarutomodMod.ModElement {
 			this.setOwnerCanSteer(true, 0.1F);
 		}
 
+		@Override
+		public boolean shouldRiderBeStill() {
+			return false;
+		}
+
 		private void weakenEntity(EntityLivingBase entity, float amount) {
 			int duration = 200;
 			int amplifier = (int) Math.ceil((amount / 4.0F));
