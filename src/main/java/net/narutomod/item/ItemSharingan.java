@@ -112,6 +112,24 @@ public class ItemSharingan extends ElementsNarutomodMod.ModElement {
 			}
 		}
 
+		// returns true if evaded, false if otherwise
+		public boolean onAttackEvent(LivingAttackEvent event, EntityLivingBase entity, EntityLivingBase attacker) {
+		 	if (entity.getRNG().nextFloat() <= 0.6f) {
+		    	List<BlockPos> list = ProcedureUtils.getAllAirBlocks(entity.world, entity.getEntityBoundingBox().grow(2.5d));
+		    	for (int i = 0; i < list.size(); i++) {
+		    		BlockPos pos = list.get(entity.getRNG().nextInt(list.size()));
+		    		Material material = entity.world.getBlockState(pos.down()).getMaterial();
+		    		if ((material.isSolid() || material == material.WATER)
+		    		 && attacker.getDistanceSqToCenter(pos) > 6.25d && ProcedureUtils.isSpaceOpenToStandOn(entity, pos)) {
+			 			event.setCanceled(true);
+			 			entity.setPositionAndUpdate(0.5d+pos.getX(), pos.getY(), 0.5d+pos.getZ());
+			 			return true;
+		    		}
+		    	}
+		 	}
+		 	return false;
+		}
+
 		@Override
 		public void setDamage(ItemStack stack, int damage) {
 			if (this.canDamage) {
@@ -212,19 +230,7 @@ public class ItemSharingan extends ElementsNarutomodMod.ModElement {
 			Entity attacker = event.getSource().getTrueSource();
 			if (wearingAny(entity) && ItemJutsu.canTarget(entity) && !entity.isRiding() && !event.getSource().isUnblockable()
 			 && attacker instanceof EntityLivingBase && !attacker.world.isRemote) {
-			 	if (entity.getRNG().nextFloat() <= 0.6f) {
-			    	List<BlockPos> list = ProcedureUtils.getAllAirBlocks(entity.world, entity.getEntityBoundingBox().grow(2.5d));
-			    	for (int i = 0; i < list.size(); i++) {
-			    		BlockPos pos = list.get(entity.getRNG().nextInt(list.size()));
-			    		Material material = entity.world.getBlockState(pos.down()).getMaterial();
-			    		if ((material.isSolid() || material == material.WATER)
-			    		 && attacker.getDistanceSqToCenter(pos) > 6.25d && ProcedureUtils.isSpaceOpenToStandOn(entity, pos)) {
-				 			event.setCanceled(true);
-				 			entity.setPositionAndUpdate(0.5d+pos.getX(), pos.getY(), 0.5d+pos.getZ());
-				 			break;
-			    		}
-			    	}
-			 	}
+				((Base)entity.getItemStackFromSlot(EntityEquipmentSlot.HEAD).getItem()).onAttackEvent(event, entity, (EntityLivingBase)attacker);
 				if (entity instanceof EntityPlayer) {
 					this.lockOnTarget(entity, (EntityLivingBase)attacker, 300);
 				}

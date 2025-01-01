@@ -159,7 +159,7 @@ public class EntityZabuzaMomochi extends ElementsNarutomodMod.ModElement {
 			this.tasks.addTask(3, new EntityAIAttackMelee(this, 1.5d, true) {
 				@Override
 				protected double getAttackReachSqr(EntityLivingBase attackTarget) {
-					return 5.3d + attackTarget.width;
+					return (EntityCustom.this.meleeReach() + attackTarget.width) * (EntityCustom.this.meleeReach() + attackTarget.width);
 				}
 			});
 			this.tasks.addTask(4, new EntityAIWatchClosest2(this, EntityPlayer.class, 15.0F, 1.0F));
@@ -176,6 +176,11 @@ public class EntityZabuzaMomochi extends ElementsNarutomodMod.ModElement {
 		public void setAttackTargetsTasks() {
 			this.targetTasks.addTask(1, this.aiTargetHurt);
 			this.targetTasks.addTask(2, this.aiTargetPlayer);
+		}
+
+		@Override
+		protected double meleeReach() {
+			return 3.4d;
 		}
 
 		@Override

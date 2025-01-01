@@ -184,6 +184,14 @@ public class ProcedureOnLivingUpdate extends ElementsNarutomodMod.ModElement {
 				entity.getEntityData().removeTag("FearEffect");
 			}
 		}
+		if (entity.getEntityData().hasKey("tempDisableMouseClicks")) {
+			int i = entity.getEntityData().getInteger("tempDisableMouseClicks");
+			if (i > 0) {
+				entity.getEntityData().setInteger("tempDisableMouseClicks", i - 1);
+			} else {
+				entity.getEntityData().removeTag("tempDisableMouseClicks");
+			}
+		}
 		if (entity.getEntityData().hasKey("ForceExtinguish")) {
 			int i = entity.getEntityData().getInteger("ForceExtinguish");
 			if (i > 0) {
@@ -256,6 +264,19 @@ public class ProcedureOnLivingUpdate extends ElementsNarutomodMod.ModElement {
 		if (ticks == 0 || ticks > entity.getEntityData().getInteger(NarutomodModVariables.tempDisableAI)) {
 			entity.getEntityData().setInteger(NarutomodModVariables.tempDisableAI, ticks);
 		}
+	}
+
+	public static void disableMouseClicks(EntityPlayer player, int ticks) {
+		if (ticks == 0 || ticks > player.getEntityData().getInteger("tempDisableMouseClicks")) {
+			player.getEntityData().setInteger("tempDisableMouseClicks", ticks);
+			if (player instanceof EntityPlayerMP) {
+				ProcedureSync.EntityNBTTag.sendToSelf((EntityPlayerMP)player, "tempDisableMouseClicks", ticks);
+			}
+		}
+	}
+
+	public static boolean isMouseDisabled(EntityPlayer player) {
+		return player.getEntityData().getInteger("tempDisableMouseClicks") > 0;
 	}
 
 	@SubscribeEvent

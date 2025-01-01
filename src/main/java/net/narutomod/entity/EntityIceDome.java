@@ -187,8 +187,7 @@ public class EntityIceDome extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public boolean attackEntityFrom(DamageSource source, float amount) {
-			if (source == DamageSource.DROWN || source == DamageSource.FALL 
-			 || source == DamageSource.IN_WALL || source == DamageSource.STARVE || source == DamageSource.WITHER) {
+			if (source == DamageSource.DROWN || source == DamageSource.STARVE || source == DamageSource.WITHER) {
 				return false;
 			}
 			Entity srcEntity = source.getImmediateSource();

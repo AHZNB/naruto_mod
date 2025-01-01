@@ -150,7 +150,12 @@ public class EntityNinjaMerchant extends ElementsNarutomodMod.ModElement {
 		protected void initEntityAI() {
 			super.initEntityAI();
 			this.tasks.addTask(0, new EntityAISwimming(this));
-			this.tasks.addTask(3, new EntityAIAttackMelee(this, 1.0D, true));
+			this.tasks.addTask(3, new EntityAIAttackMelee(this, 1.125d, true) {
+				@Override
+				protected double getAttackReachSqr(EntityLivingBase attackTarget) {
+					return (Base.this.meleeReach() + attackTarget.width) * (Base.this.meleeReach() + attackTarget.width);
+				}
+			});
 			this.tasks.addTask(7, new AITradePlayer(this));
 			this.tasks.addTask(8, new AIWatchCustomer(this));
 			this.tasks.addTask(9, new EntityAIOpenDoor(this, true));

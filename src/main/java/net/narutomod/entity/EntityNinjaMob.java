@@ -241,6 +241,10 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 			}
 		}
 
+		protected double meleeReach() {
+			return 2.0d * this.width;
+		}
+
 		@Override
 		protected void updateAITasks() {
 			super.updateAITasks();
@@ -426,6 +430,10 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 		@Override
 		public Vec3d getLookVec() {
 			return this.getVectorForRotation(this.rotationPitch, this.rotationYawHead); 
+		}
+
+		public boolean isIdle() {
+			return this.peacefulTicks > 0;
 		}
 
 		protected boolean canSeeInvisible(Entity entityIn) {

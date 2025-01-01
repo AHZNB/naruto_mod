@@ -194,6 +194,9 @@ public class ItemAsuraCanon extends ElementsNarutomodMod.ModElement {
 
 		    @Override
 		    public void doRender(EntityMissile entity, double x, double y, double z, float entityYaw, float partialTicks) {
+		    	if (entity.prevRotationPitch == 0.0F && entity.prevRotationYaw == 0.0F) {
+		    		return;
+		    	}
 		        GlStateManager.pushMatrix();
 		        GlStateManager.scale(0.8f, 0.8f, 0.8f);
 		        GlStateManager.translate((float)x, (float)y + 0.5f, (float)z);

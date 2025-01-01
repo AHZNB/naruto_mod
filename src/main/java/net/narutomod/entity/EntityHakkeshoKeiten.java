@@ -11,7 +11,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.DamageSource;
+//import net.minecraft.util.DamageSource;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.SharedMonsterAttributes;
@@ -113,14 +113,14 @@ public class EntityHakkeshoKeiten extends ElementsNarutomodMod.ModElement {
 			return false;
 		}
 
-		@Override
+		/*@Override
 		public boolean attackEntityFrom(DamageSource source, float amount) {
 			Entity attacker = source.getImmediateSource();
 			if (attacker != null && !attacker.equals(this.getSummoner()) && !this.equals(attacker)) {
 				this.collideWithEntity(attacker);
 			}
 			return super.attackEntityFrom(source, amount);
-		}
+		}*/
 
 		private float getMaturity() {
 			return Math.min((float)this.ticksExisted / (float)this.matureTime, 1.0F);

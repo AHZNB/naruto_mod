@@ -116,7 +116,7 @@ public class EntityCrystalArmor extends ElementsNarutomodMod.ModElement {
 			EntityLivingBase user = this.getSummoner();
 			if (user != null) {
 				this.setPosition(user.posX, user.posY, user.posZ);
-				if (this.ticksExisted % 20 == 19) {
+				if (this.ticksExisted % 20 == 19 && !this.world.isRemote) {
 					if (!Chakra.pathway(user).consume(ItemShoton.ARMOR.chakraUsage)) {
 						this.setDead();
 					} else {

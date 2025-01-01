@@ -86,6 +86,7 @@ public class EntitySpecialEffect extends ElementsNarutomodMod.ModElement {
 		private static final DataParameter<Float> RADIUS = EntityDataManager.<Float>createKey(EntityCustom.class, DataSerializers.FLOAT);
 		private static final DataParameter<Integer> LIFESPAN = EntityDataManager.<Integer>createKey(EntityCustom.class, DataSerializers.VARINT);
 		private static final DataParameter<Integer> COLOR = EntityDataManager.<Integer>createKey(EntityCustom.class, DataSerializers.VARINT);
+		private static final DataParameter<Float> ROTATE = EntityDataManager.<Float>createKey(EntityCustom.class, DataSerializers.FLOAT);
 		
 		public EntityCustom(World world) {
 			super(world);
@@ -97,7 +98,7 @@ public class EntitySpecialEffect extends ElementsNarutomodMod.ModElement {
 		}
 
 		public EntityCustom(World world, float radius, int lifespan) {
-			this(world, Type.ROTATING_LINES_COLOR_END, 0xFF00FF, radius, lifespan);
+			this(world, Type.ROTATING_LINES_COLOR_END, 0xFFFF00FF, radius, lifespan);
 		}
 
 		public EntityCustom(World world, Type type, int color, float radius, int lifespan) {
@@ -115,6 +116,7 @@ public class EntitySpecialEffect extends ElementsNarutomodMod.ModElement {
 			this.getDataManager().register(RADIUS, Float.valueOf(200f));
 			this.getDataManager().register(LIFESPAN, Integer.valueOf(600));
 			this.getDataManager().register(COLOR, Integer.valueOf(0xFF00FF));
+			this.getDataManager().register(ROTATE, Float.valueOf(30f));
 		}
 
 		private Type getEffectType() {
@@ -157,6 +159,14 @@ public class EntitySpecialEffect extends ElementsNarutomodMod.ModElement {
 			this.getDataManager().set(COLOR, Integer.valueOf(color));
 		}
 
+		public float getRotate() {
+			return ((Float) this.getDataManager().get(ROTATE)).floatValue();
+		}
+
+		public void setRotate(float r) {
+			this.getDataManager().set(ROTATE, Float.valueOf(r));
+		}
+
 		@Override
 		public boolean attackEntityFrom(DamageSource source, float amount) {
 			return false;
@@ -179,7 +189,7 @@ public class EntitySpecialEffect extends ElementsNarutomodMod.ModElement {
 			this.setAge(this.getAge() + 1);
 			//if (this.getAge() == 2)
 			//	this.setPositionAndUpdate(this.posX, this.posY - this.height / 2, this.posZ);
-			this.rotationYaw += 30.0F;
+			this.rotationYaw += this.getRotate();
 			this.setDead();
 		}
 
@@ -272,8 +282,7 @@ public class EntitySpecialEffect extends ElementsNarutomodMod.ModElement {
 				Tessellator tessellator = Tessellator.getInstance();
 				BufferBuilder bufferbuilder = tessellator.getBuffer();
 				RenderHelper.disableStandardItemLighting();
-				float f = (entity.getAge() + partialTicks) / entity.getLifespan();
-				float f1 = f;// 0.0F;
+				float f1 = ((float)entity.getAge() + partialTicks) / entity.getLifespan();
 				// if (f > 0.5F)
 				// f1 = (f - 0.5F) / 0.5F;
 				Random random = new Random(432L);
@@ -286,6 +295,7 @@ public class EntitySpecialEffect extends ElementsNarutomodMod.ModElement {
 				GlStateManager.depthMask(false);
 				float r = entity.getRadius();
 				int j = entity.getColor();
+				int alpha = j >> 24 & 0xFF;
 				int red = j >> 16 & 0xFF;
 				int green = j >> 8 & 0xFF;
 				int blue = j & 0xFF;
@@ -296,11 +306,11 @@ public class EntitySpecialEffect extends ElementsNarutomodMod.ModElement {
 					GlStateManager.rotate(random.nextFloat() * 360.0F, 0.0F, 0.0F, 1.0F);
 					GlStateManager.rotate(random.nextFloat() * 360.0F, 1.0F, 0.0F, 0.0F);
 					GlStateManager.rotate(random.nextFloat() * 360.0F, 0.0F, 1.0F, 0.0F);
-					GlStateManager.rotate(random.nextFloat() * 360.0F + f * 90.0F, 0.0F, 0.0F, 1.0F);
+					GlStateManager.rotate(random.nextFloat() * 360.0F + f1 * 90.0F, 0.0F, 0.0F, 1.0F);
 					float f2 = (random.nextFloat() + f1) * 0.5F * r;
 					float f3 = (random.nextFloat() + f1) * 0.12F * r;
 					bufferbuilder.begin(6, DefaultVertexFormats.POSITION_COLOR);
-					bufferbuilder.pos(0.0D, 0.0D, 0.0D).color(255, 255, 255, (int) (255.0F * (1.0F - f1))).endVertex();
+					bufferbuilder.pos(0.0D, 0.0D, 0.0D).color(255, 255, 255, (int) ((float)alpha * (1.0F - f1))).endVertex();
 					bufferbuilder.pos(-0.866D * f3, f2, (-0.5F * f3)).color(red, green, blue, 0).endVertex();
 					bufferbuilder.pos(0.866D * f3, f2, (-0.5F * f3)).color(red, green, blue, 0).endVertex();
 					bufferbuilder.pos(0.0D, f2, (1.0F * f3)).color(red, green, blue, 0).endVertex();

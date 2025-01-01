@@ -189,13 +189,22 @@ public class BlockPortalBlock extends ElementsNarutomodMod.ModElement {
 					this.cooldown = 20;
 					if (!this.world.isRemote) {
 						entity.rotationYaw = te.facing.getHorizontalAngle();
-						if (entity instanceof EntityPlayerMP) {
+						/*if (entity instanceof EntityPlayerMP) {
 							ProcedureUtils.setInvulnerableDimensionChange((EntityPlayerMP)entity);
 							new EventDelayedCallback(this.world, 0, 0, 0, entity, this.world.getTotalWorldTime() + 3, CB);
 						}
 						entity.setPositionAndUpdate(this.pairPos.getX() + 0.5D + te.facing.getFrontOffsetX(),
 								this.pairPos.getY() - ((this.world.getBlockState(this.pairPos.down()).getBlock() == block) ? 1.0D : 0.0D),
-								this.pairPos.getZ() + 0.5D + te.facing.getFrontOffsetZ());
+								this.pairPos.getZ() + 0.5D + te.facing.getFrontOffsetZ());*/
+						if (entity instanceof EntityPlayerMP) {
+							((EntityPlayerMP)entity).connection.setPlayerLocation(this.pairPos.getX() + 0.5D + te.facing.getFrontOffsetX(),
+								this.pairPos.getY() - ((this.world.getBlockState(this.pairPos.down()).getBlock() == block) ? 1.0D : 0.0D),
+								this.pairPos.getZ() + 0.5D + te.facing.getFrontOffsetZ(), entity.rotationYaw, entity.rotationPitch);
+						} else {
+							entity.setPositionAndUpdate(this.pairPos.getX() + 0.5D + te.facing.getFrontOffsetX(),
+							 this.pairPos.getY() - ((this.world.getBlockState(this.pairPos.down()).getBlock() == block) ? 1.0D : 0.0D),
+							 this.pairPos.getZ() + 0.5D + te.facing.getFrontOffsetZ());
+						}
 					}
 				}
 			}

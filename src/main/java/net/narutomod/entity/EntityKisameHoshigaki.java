@@ -204,7 +204,7 @@ public class EntityKisameHoshigaki extends ElementsNarutomodMod.ModElement {
 			this.tasks.addTask(3, new EntityAIAttackMelee(this, 1.2d, true) {
 				@Override
 				protected double getAttackReachSqr(EntityLivingBase attackTarget) {
-					return 5.3d + attackTarget.width;
+					return (EntityCustom.this.meleeReach() + attackTarget.width) * (EntityCustom.this.meleeReach() + attackTarget.width);
 				}
 			});
 			this.tasks.addTask(4, new EntityClone.AIFollowSummoner(this, 0.6d, 4f) {
@@ -217,6 +217,11 @@ public class EntityKisameHoshigaki extends ElementsNarutomodMod.ModElement {
 			this.tasks.addTask(5, new EntityAIWatchClosest2(this, EntityPlayer.class, 15.0F, 1.0F));
 			this.tasks.addTask(6, new EntityAIWander(this, 0.5));
 			this.tasks.addTask(7, new EntityAIWatchClosest(this, EntityMob.class, 8.0F));
+		}
+
+		@Override
+		protected double meleeReach() {
+			return 3.4d;
 		}
 
 		public boolean isClone() {
@@ -514,10 +519,10 @@ public class EntityKisameHoshigaki extends ElementsNarutomodMod.ModElement {
 				hair.setRotationPoint(0.0F, 0.0F, 0.0F);
 				bipedHeadwear.addChild(hair);
 				hair.cubeList.add(new ModelBox(hair, 32, 0, -4.0F, -8.0F, -4.0F, 8, 8, 8, 0.1F, false));
-				hair.cubeList.add(new ModelBox(hair, 40, 7, -3.0F, -8.7F, -4.15F, 6, 1, 1, 0.1F, false));
-				hair.cubeList.add(new ModelBox(hair, 40, 7, -3.0F, -9.25F, -4.75F, 6, 1, 1, -0.2F, false));
-				hair.cubeList.add(new ModelBox(hair, 40, 6, -3.0F, -10.0F, -5.0F, 6, 2, 1, -0.4F, false));
-				hair.cubeList.add(new ModelBox(hair, 40, 6, -3.0F, -10.5F, -5.25F, 6, 2, 1, -0.6F, false));
+				hair.cubeList.add(new ModelBox(hair, 35, 2, -3.0F, -8.45F, -4.15F, 6, 1, 6, 0.1F, false));
+				hair.cubeList.add(new ModelBox(hair, 35, 2, -3.0F, -9.25F, -4.75F, 6, 1, 6, -0.2F, false));
+				hair.cubeList.add(new ModelBox(hair, 37, 3, -3.0F, -9.85F, -5.0F, 6, 2, 4, -0.4F, false));
+				hair.cubeList.add(new ModelBox(hair, 39, 5, -3.0F, -10.5F, -5.25F, 6, 2, 2, -0.6F, false));
 		
 				fin = new ModelRenderer(this);
 				fin.setRotationPoint(0.0F, 0.0F, 0.0F);

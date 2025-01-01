@@ -2,14 +2,16 @@
 
 Jutsus
  - wearing any dojutsu not bound to you consumes 15 chakra / second
- - adding Crystal release (WIP)
+ - added Crystal release (crystal armor, crystal prison, divine path, ray of light)
  - projectiles now bounce off Flame formation jutsu
+ - wood prison won't leave open spaces at the bottom of the cage
  
 Items:
  - giant folding fan is opened by default now (to fix fan not openning when held by random entities)
  
 Entities:
  - improved giant dog summon model
+ - changed kurama model to run on all 4 legs instead of sitting
  
 General:
  - added config option to disable auto kekkeigenkai assignment

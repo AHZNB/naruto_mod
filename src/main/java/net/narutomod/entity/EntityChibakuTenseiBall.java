@@ -326,7 +326,7 @@ public class EntityChibakuTenseiBall extends ElementsNarutomodMod.ModElement {
 					new EventSphericalExplosion(this.world, this.summoner, (int)this.posX, (int)this.posY, (int)this.posZ, 60, 0, 0.3f) {
 						protected void doOnTick(int currentTick) {
 							ProcedureAoeCommand.set(getWorld(), getX0(), getY0(), getZ0(), 0d, getRadius())
-							 .exclude(getEntity()).damageEntities(DamageSource.FALLING_BLOCK, (float)getRadius());
+							 .exclude(getEntity()).damageEntities(DamageSource.FALLING_BLOCK.setExplosion(), (float)getRadius());
 						}
 					};
 					this.explosionSet = true;

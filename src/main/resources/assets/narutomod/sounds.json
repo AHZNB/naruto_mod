@@ -1177,5 +1177,14 @@
         "stream": false
       }
     ]
+  },
+  "ray": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "narutomod:ray",
+        "stream": false
+      }
+    ]
   }
 }

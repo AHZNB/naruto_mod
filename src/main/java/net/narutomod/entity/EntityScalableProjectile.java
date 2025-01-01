@@ -55,6 +55,7 @@ public class EntityScalableProjectile extends ElementsNarutomodMod.ModElement {
 			super(world);
 			this.isImmuneToFire = false;
 			//this.setEntityInvulnerable(true);
+			this.setAlwaysRenderNameTag(false);
 		}
 
 		public Base(EntityLivingBase shooter) {
@@ -62,7 +63,6 @@ public class EntityScalableProjectile extends ElementsNarutomodMod.ModElement {
 			this.shootingEntity = shooter;
 			//this.setPosition(shooter.posX, shooter.posY + shooter.height + 0.5D, shooter.posZ);
 			this.setNoGravity(true);
-			this.setAlwaysRenderNameTag(false);
 		}
 
 		@Override
@@ -328,6 +328,7 @@ public class EntityScalableProjectile extends ElementsNarutomodMod.ModElement {
 			this.ticksAlive = compound.getInteger("life");
 			this.ticksInAir = compound.getInteger("flighttime");
 			this.ticksInGround = compound.getInteger("groundtime");
+			this.maxInGroundTime = compound.getInteger("maxInGroundTime");
 		}
 
 		@Override
@@ -339,6 +340,7 @@ public class EntityScalableProjectile extends ElementsNarutomodMod.ModElement {
 			compound.setInteger("life", this.ticksAlive);
 			compound.setInteger("flighttime", this.ticksInAir);
 			compound.setInteger("groundtime", this.ticksInGround);
+			compound.setInteger("maxInGroundTime", this.maxInGroundTime);
 		}
 	}
 

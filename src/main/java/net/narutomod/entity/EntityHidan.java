@@ -39,6 +39,7 @@ import net.minecraft.entity.ai.EntityAIWatchClosest2;
 import net.minecraft.entity.ai.EntityAIWander;
 import net.minecraft.entity.ai.EntityAILookIdle;
 import net.minecraft.entity.ai.EntityAISwimming;
+import net.minecraft.entity.ai.EntityAITarget;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.entity.IEntityLivingData;
 import net.minecraft.entity.IRangedAttackMob;
@@ -221,7 +222,7 @@ public class EntityHidan extends ElementsNarutomodMod.ModElement {
 					this.scytheOnRetrieval = true;
 				}
 			} else {
-				if (this.curseTarget != null && this.curseTarget.isEntityAlive()) {
+				if (this.curseTarget != null && EntityAITarget.isSuitableTarget(this, this.curseTarget, false, false)) {
 					if (this.jashinSymbol != null && !this.jashinSymbol.isDead) {
 						AxisAlignedBB bb1 = this.getEntityBoundingBox();
 						AxisAlignedBB bb2 = this.jashinSymbol.getEntityBoundingBox().expand(0d, 1d, 0d);

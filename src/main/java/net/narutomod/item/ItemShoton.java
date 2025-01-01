@@ -4,6 +4,8 @@ package net.narutomod.item;
 import net.narutomod.creativetab.TabModTab;
 import net.narutomod.entity.EntityCrystalArmor;
 import net.narutomod.entity.EntityCrystalPrison;
+import net.narutomod.entity.EntityCrystalThorns;
+import net.narutomod.entity.EntityCrystalRay;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.ElementsNarutomodMod;
 
@@ -22,9 +24,12 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Item;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.potion.PotionEffect;
+import net.minecraft.init.MobEffects;
 
 import java.util.List;
 
@@ -35,6 +40,8 @@ public class ItemShoton extends ElementsNarutomodMod.ModElement {
 	public static final int ENTITYID = 471;
 	public static final ItemJutsu.JutsuEnum ARMOR = new ItemJutsu.JutsuEnum(0, "crystal_armor", 'S', 150, 20d, new EntityCrystalArmor.EC.Jutsu());
 	public static final ItemJutsu.JutsuEnum PRISON = new ItemJutsu.JutsuEnum(1, "crystal_prison", 'S', 150, 100d, new EntityCrystalPrison.EC.Jutsu());
+	public static final ItemJutsu.JutsuEnum THORNS = new ItemJutsu.JutsuEnum(2, "crystal_thorns", 'S', 150, 2d, new EntityCrystalThorns.EC.Jutsu());
+	public static final ItemJutsu.JutsuEnum RAY = new ItemJutsu.JutsuEnum(3, "crystal_ray", 'S', 300, 500d, new EntityCrystalRay.EC.Jutsu());
 
 	public ItemShoton(ElementsNarutomodMod instance) {
 		super(instance, 900);
@@ -42,7 +49,7 @@ public class ItemShoton extends ElementsNarutomodMod.ModElement {
 
 	@Override
 	public void initElements() {
-		elements.items.add(() -> new RangedItem(ARMOR, PRISON));
+		elements.items.add(() -> new RangedItem(ARMOR, PRISON, THORNS, RAY));
 		//elements.entities.add(() -> EntityEntryBuilder.create().entity(EntityPrison.class)
 		//		.id(new ResourceLocation("narutomod", "shoton_prison"), ENTITYID).name("shoton_prison").tracker(64, 1, true).build());
 	}
@@ -59,12 +66,30 @@ public class ItemShoton extends ElementsNarutomodMod.ModElement {
 			setUnlocalizedName("shoton");
 			setRegistryName("shoton");
 			setCreativeTab(TabModTab.tab);
+			this.defaultCooldownMap[ARMOR.index] = 0;
 			this.defaultCooldownMap[PRISON.index] = 0;
+			this.defaultCooldownMap[THORNS.index] = 0;
+			this.defaultCooldownMap[RAY.index] = 0;
+		}
+
+		@Override
+		public void onUsingTick(ItemStack stack, EntityLivingBase player, int timeLeft) {
+			ItemJutsu.JutsuEnum jutsu = this.getCurrentJutsu(stack);
+			if (jutsu == THORNS) {
+				if (!player.world.isRemote && player instanceof EntityPlayer
+				 && this.canActivateJutsu(stack, THORNS, (EntityPlayer)player) == EnumActionResult.SUCCESS) {
+					this.executeJutsu(stack, player, 0.99f + ((float)this.getMaxUseDuration() - timeLeft) * 0.01f);
+				}
+				return;
+			} else if (!player.world.isRemote && jutsu == RAY && !player.isRiding()) {
+				player.addPotionEffect(new PotionEffect(MobEffects.LEVITATION, 5, 4, false, false));
+			}
+			super.onUsingTick(stack, player, timeLeft);
 		}
 
 		@Override
 		public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer entity, EnumHand hand) {
-			if (entity.isCreative() || ProcedureUtils.hasItemInInventory(entity, ItemDoton.block)) { 
+			if (entity.isCreative() || ProcedureUtils.hasItemInInventory(entity, ItemDoton.block)) {
 				return super.onItemRightClick(world, entity, hand);
 			}
 			return new ActionResult<ItemStack>(EnumActionResult.FAIL, entity.getHeldItem(hand));

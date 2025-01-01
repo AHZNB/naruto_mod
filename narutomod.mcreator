@@ -1,6 +1,6 @@
 {
   "id_map": {
-    "ENTITY": 475,
+    "ENTITY": 479,
     "DIMENSION": 13,
     "GUI": 70
   },
@@ -810,14 +810,6 @@
       "metadata": {
         "dependencies": []
       }
-    },
-    {
-      "name": "ExtendedReachMouseEvent",
-      "type": "keybind",
-      "sortid": 171,
-      "compiles": true,
-      "locked_code": true,
-      "ids": {}
     },
     {
       "name": "MangekyoSharinganOpened",
@@ -7710,6 +7702,42 @@
         "1": 475
       },
       "registry_name": "crystal_armor"
+    },
+    {
+      "name": "CrystalThorns",
+      "type": "mob",
+      "sortid": 903,
+      "compiles": true,
+      "locked_code": true,
+      "ids": {
+        "0": 476,
+        "1": 477
+      },
+      "registry_name": "crystal_thorns"
+    },
+    {
+      "name": "OnMouseEvent",
+      "type": "procedure",
+      "sortid": 904,
+      "compiles": true,
+      "locked_code": true,
+      "ids": {},
+      "registry_name": "on_mouse_event",
+      "metadata": {
+        "dependencies": []
+      }
+    },
+    {
+      "name": "CrystalRay",
+      "type": "mob",
+      "sortid": 905,
+      "compiles": true,
+      "locked_code": true,
+      "ids": {
+        "0": 478,
+        "1": 479
+      },
+      "registry_name": "crystal_ray"
     }
   ],
   "variable_elements": [
@@ -8805,6 +8833,14 @@
       ],
       "category": "master",
       "subtitle": ""
+    },
+    {
+      "name": "ray",
+      "files": [
+        "ray"
+      ],
+      "category": "master",
+      "subtitle": ""
     }
   ],
   "language_map": {
@@ -8924,6 +8960,7 @@
       "item.ashbones.name": "All-Killing Ash Bones",
       "entity.snake_8_heads.name": "8-branch Jutsu",
       "entity.transformation_jutsu.name": "Transformation Jutsu",
+      "entity.crystal_ray.name": "Ray of Light",
       "tooltip.byakurinnesharingan.pulse": "Chakra pulse",
       "subtitles.daibakusuishoha": "",
       "advancements.kekkei_tota_awakened.title": "Kekkei Tota Acquired",
@@ -9266,6 +9303,7 @@
       "item.zzz.name": "Zzz",
       "tooltip.sagestaff.descr": "Six Path Shakujo: This is the staff created by the truth seeking orb - Originally being held by the sage of the six paths",
       "death.attack.senjutsu": "%1$s was killed by %2$s using senjutsu",
+      "subtitles.ray": "",
       "entity.laser_circus.name": "Laser Circus",
       "tooltip.phantom9sealing.name": "Sealing Jutsu: Nine Phantom Dragons",
       "item.biju_cloakbody.name": "Biju Cloak Body",
@@ -9276,6 +9314,7 @@
       "tooltip.katon.annihilation": "Great Annihilation",
       "splash_potion.effect.heaviness": "Splash Heaviness",
       "subtitles.dragon_roar": "",
+      "entity.crystal_thorns.name": "Divine Path",
       "entity.chidori.name": "Chidori/Spear/Current",
       "advancements.shikotsumyaku_acquired.title": "Shikotsumyaku Acquired",
       "item.scroll_multi_size.name": "Yang Release - Multi-Size jutsu",

@@ -153,7 +153,8 @@ public class ItemSuiton extends ElementsNarutomodMod.ModElement {
 						ProcedureSync.SetGlowing.send((EntityPlayerMP)this.user, entity, 5);
 					}
 				}
-				if (this.user != null && !this.user.isEntityAlive()) {
+				if (this.user != null && this.idleTime > this.ticksExisted && (!this.user.isEntityAlive()
+				 || (this.user instanceof EntityNinjaMob.Base && ((EntityNinjaMob.Base)this.user).isIdle()))) {
 					this.idleTime = this.ticksExisted;
 				}
 				if (this.ticksExisted >= this.getFinishTime()) {

@@ -395,7 +395,7 @@ public class EntityMightGuy extends ElementsNarutomodMod.ModElement {
 							+ TextFormatting.WHITE + I18n.translateToLocal("chattext.mightguy.interact1"));
 					long startTime = this.world.getTotalWorldTime() + 18000L - (this.world.getWorldTime() % 24000L);
 					new EventVillageSiege(this.world, null, village.getCenter().getX(), village.getCenter().getY(),
-							village.getCenter().getZ(), startTime, village.getVillageRadius() + 5, 60) {
+							village.getCenter().getZ(), startTime, village.getVillageRadius() + 5, 40) {
 						@Override
 						protected void doOnTick(int currentTick) {
 							if (currentTick == 0) startTrackingCustomer();

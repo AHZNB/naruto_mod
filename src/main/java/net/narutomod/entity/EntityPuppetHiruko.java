@@ -217,7 +217,7 @@ public class EntityPuppetHiruko extends ElementsNarutomodMod.ModElement {
 			if (this.shouldBlock) {
 				this.playSound(SoundEvent.REGISTRY
 				 .getObject(new ResourceLocation("narutomod:ting")), 0.6f, this.rand.nextFloat() * 0.6f + 0.8f);
-				amount *= this.rand.nextFloat() * 0.2f;
+				amount *= source.isExplosion() ? 0.9f - this.rand.nextFloat() * 0.2f : (this.rand.nextFloat() * 0.2f);
 			}
 			super.damageEntity(source, amount);
 		}

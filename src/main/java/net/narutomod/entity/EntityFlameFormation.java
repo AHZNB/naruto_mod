@@ -81,7 +81,7 @@ public class EntityFlameFormation extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public ItemJutsu.JutsuEnum.Type getJutsuType() {
-			return ItemJutsu.JutsuEnum.Type.RAITON;
+			return ItemJutsu.JutsuEnum.Type.KATON;
 		}
 
 		@Override

@@ -238,7 +238,7 @@ public class EntityTenTails extends ElementsNarutomodMod.ModElement {
 			if (!this.isAIDisabled() && (this.mouthShootingJutsu == null || this.mouthShootingJutsu.isDead)
 			 && distanceFactor < 1.0f && distanceFactor > (float)(ProcedureUtils.getReachDistance(this) * 0.6d / this.getBijudamaMinRange())) {
 				this.setSwingingArms(true);
-				this.mouthShootingJutsu = EntityNineTails.EntityBeam.shoot(this, 2.0f, 1.4f);
+				this.mouthShootingJutsu = EntityNineTails.EntityBeam.shoot(this, 2.0f, 1.6f);
 			} else {
 				super.attackEntityWithRangedAttack(target, distanceFactor);
 			}
