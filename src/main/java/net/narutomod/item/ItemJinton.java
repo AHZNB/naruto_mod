@@ -214,7 +214,8 @@ public class ItemJinton extends ElementsNarutomodMod.ModElement {
 					this.beam.execute2(this.shootingEntity, (double)this.getBeamLength(), (double)this.getScale() / 2);
 				}
 			}
-			if (!this.world.isRemote && this.ticksAlive > this.wait + 60) {
+			if (!this.world.isRemote && this.ticksAlive > this.wait + 60)
+ {
 				this.setDead();
 			}
 		}
@@ -442,13 +443,12 @@ public class ItemJinton extends ElementsNarutomodMod.ModElement {
 			@SubscribeEvent
 			public void onGetCollisionBoxes(GetCollisionBoxesEvent event) {
 				//if (event.getWorld().isRemote && event.getEntity() == null) {
-					for (Entity entity : event.getWorld().getEntitiesWithinAABBExcludingEntity(event.getEntity(), event.getAabb().grow(10.0D))) {
-						if (entity instanceof EntityCube && entity.getEntityBoundingBox().intersects(event.getAabb())) {
-							EntityCube ec = (EntityCube)entity;
+					for (EntityCube ec : event.getWorld().getEntitiesWithinAABB(EntityCube.class, event.getAabb().grow(10.0D))) {
+						if (ec != event.getEntity() && ec.getEntityBoundingBox().intersects(event.getAabb())) {
 							if (ec.getTicksAlive() >= ec.wait + ec.growTime && ec.getTicksAlive() - ec.wait - ec.growTime <= ec.idleTime) {
 								event.getCollisionBoxesList().clear();
 								float f = ec.fullScale * 0.025f;
-								AxisAlignedBB bb = entity.getEntityBoundingBox();
+								AxisAlignedBB bb = ec.getEntityBoundingBox();
 								List<AxisAlignedBB> list = Lists.newArrayList(
 									new AxisAlignedBB(bb.minX, bb.minY + f, bb.minZ + f, bb.minX + f, bb.maxY - f, bb.maxZ - f),
 									new AxisAlignedBB(bb.minX + f, bb.minY, bb.minZ + f, bb.maxX - f, bb.minY + f, bb.maxZ - f),
