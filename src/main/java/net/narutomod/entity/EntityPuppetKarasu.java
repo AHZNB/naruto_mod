@@ -55,12 +55,12 @@ public class EntityPuppetKarasu extends ElementsNarutomodMod.ModElement {
 		
 		public EntityCustom(World worldIn) {
 			super(worldIn);
-			this.setSize(0.6f, 2.0f);
+			this.setSize(0.6f, 2.2f);
 		}
 
 		public EntityCustom(EntityLivingBase ownerIn) {
 			super(ownerIn);
-			this.setSize(0.6f, 2.0f);
+			this.setSize(0.6f, 2.2f);
 			Vec3d vec = ownerIn.getLookVec();
 			vec = ownerIn.getPositionVector().addVector(vec.x, 1d, vec.z);
 			this.setLocationAndAngles(vec.x, vec.y, vec.z, ownerIn.rotationYaw, 0f);
@@ -182,7 +182,7 @@ public class EntityPuppetKarasu extends ElementsNarutomodMod.ModElement {
 					private final ResourceLocation texture = new ResourceLocation("narutomod:textures/karasu.png");
 					@Override
 					protected void preRenderCallback(EntityCustom entity, float partialTickTime) {
-						float f = 0.0625f * 17f;
+						float f = 0.0625f * 18f;
 						GlStateManager.scale(f, f, f);
 					}
 					@Override
@@ -204,11 +204,15 @@ public class EntityPuppetKarasu extends ElementsNarutomodMod.ModElement {
 			private final ModelRenderer bone;
 			private final ModelRenderer bone2;
 			private final ModelRenderer rightArm2;
-			private final ModelRenderer leftArm2;
-			private final ModelRenderer blade0;
-			private final ModelRenderer blade1;
+			private final ModelRenderer bone5;
 			private final ModelRenderer blade2;
+			private final ModelRenderer leftArm2;
+			private final ModelRenderer bone7;
 			private final ModelRenderer blade3;
+			private final ModelRenderer bone4;
+			private final ModelRenderer blade0;
+			private final ModelRenderer bone6;
+			private final ModelRenderer blade1;
 	
 			public ModelKarasu() {
 				textureWidth = 64;
@@ -232,23 +236,24 @@ public class EntityPuppetKarasu extends ElementsNarutomodMod.ModElement {
 				bipedHeadwear = new ModelRenderer(this);
 				bipedHeadwear.setRotationPoint(0.0F, 0.0F, 0.0F);
 				
+		
 				bone3 = new ModelRenderer(this);
 				bone3.setRotationPoint(0.0F, -4.0F, 0.5F);
 				bipedHeadwear.addChild(bone3);
 				setRotationAngle(bone3, 0.2618F, 0.0F, 0.0F);
-				bone3.cubeList.add(new ModelBox(bone3, 32, 0, -4.0F, -4.0F, -4.0F, 8, 8, 8, 0.5F, false));
+				bone3.cubeList.add(new ModelBox(bone3, 32, 0, -4.0F, -4.0F, -4.0F, 8, 8, 8, 1.0F, false));
 		
 				bone = new ModelRenderer(this);
 				bone.setRotationPoint(0.0F, -4.0F, 0.0F);
 				bipedHeadwear.addChild(bone);
 				setRotationAngle(bone, 0.0F, 0.0F, 0.2618F);
-				bone.cubeList.add(new ModelBox(bone, 32, 0, -4.0F, -4.0F, -4.0F, 8, 8, 8, 0.5F, false));
+				bone.cubeList.add(new ModelBox(bone, 32, 0, -4.0F, -4.0F, -4.0F, 8, 8, 8, 1.0F, false));
 		
 				bone2 = new ModelRenderer(this);
 				bone2.setRotationPoint(0.0F, -4.0F, 0.0F);
 				bipedHeadwear.addChild(bone2);
 				setRotationAngle(bone2, 0.0F, 0.0F, -0.2618F);
-				bone2.cubeList.add(new ModelBox(bone2, 32, 0, -4.0F, -4.0F, -4.0F, 8, 8, 8, 0.5F, true));
+				bone2.cubeList.add(new ModelBox(bone2, 32, 0, -4.0F, -4.0F, -4.0F, 8, 8, 8, 1.0F, true));
 		
 				bipedBody = new ModelRenderer(this);
 				bipedBody.setRotationPoint(0.0F, 0.0F, 0.0F);
@@ -268,51 +273,75 @@ public class EntityPuppetKarasu extends ElementsNarutomodMod.ModElement {
 				setRotationAngle(bipedLeftLeg, 0.0F, 0.0F, -0.0873F);
 				bipedLeftLeg.cubeList.add(new ModelBox(bipedLeftLeg, 16, 48, -1.5F, 0.0F, -2.0F, 3, 12, 4, -0.2F, false));
 				bipedLeftLeg.cubeList.add(new ModelBox(bipedLeftLeg, 0, 48, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.6F, false));
-
+		
 				rightArm2 = new ModelRenderer(this);
-				rightArm2.setRotationPoint(-5.0F, 7.5F, 0.0F);
+				rightArm2.setRotationPoint(-5.0F, 6.5F, 0.0F);
 				bipedBody.addChild(rightArm2);
-				setRotationAngle(rightArm2, 0.0F, 0.0F, 0.2182F);
-				rightArm2.cubeList.add(new ModelBox(rightArm2, 40, 16, -2.0F, -2.0F, -2.0F, 3, 12, 4, -0.2F, false));
-				rightArm2.cubeList.add(new ModelBox(rightArm2, 40, 32, -2.0F, -2.0F, -2.0F, 3, 12, 4, 0.5F, false));
+				setRotationAngle(rightArm2, 0.0F, 0.0F, 0.2618F);
+				rightArm2.cubeList.add(new ModelBox(rightArm2, 40, 32, -2.0F, -2.0F, -2.0F, 3, 12, 4, 0.6F, false));
+				rightArm2.cubeList.add(new ModelBox(rightArm2, 40, 20, -2.0F, -2.0F, -2.0F, 3, 8, 4, -0.2F, false));
+		
+				bone5 = new ModelRenderer(this);
+				bone5.setRotationPoint(-1.75F, 5.85F, 1.75F);
+				rightArm2.addChild(bone5);
+				setRotationAngle(bone5, -0.0873F, 0.0F, -0.0873F);
+				bone5.cubeList.add(new ModelBox(bone5, 40, 20, -0.2282F, -0.249F, -3.75F, 3, 8, 4, -0.2F, false));
 		
 				blade2 = new ModelRenderer(this);
-				blade2.setRotationPoint(-1.5F, 14.5F, 0.0F);
-				rightArm2.addChild(blade2);
+				blade2.setRotationPoint(0.25F, 12.65F, -1.75F);
+				bone5.addChild(blade2);
 				blade2.cubeList.add(new ModelBox(blade2, 24, 0, 1.0F, -5.0F, -1.0F, 0, 6, 2, 0.0F, false));
 		
 				leftArm2 = new ModelRenderer(this);
-				leftArm2.setRotationPoint(5.0F, 7.5F, 0.0F);
+				leftArm2.setRotationPoint(5.0F, 6.5F, 0.0F);
 				bipedBody.addChild(leftArm2);
 				setRotationAngle(leftArm2, 0.0F, 0.0F, -0.2618F);
-				leftArm2.cubeList.add(new ModelBox(leftArm2, 32, 48, -1.0F, -2.0F, -2.0F, 3, 12, 4, -0.2F, false));
-				leftArm2.cubeList.add(new ModelBox(leftArm2, 48, 48, -1.0F, -2.0F, -2.0F, 3, 12, 4, 0.5F, false));
+				leftArm2.cubeList.add(new ModelBox(leftArm2, 40, 32, -1.0F, -2.0F, -2.0F, 3, 12, 4, 0.6F, true));
+				leftArm2.cubeList.add(new ModelBox(leftArm2, 40, 20, -1.0F, -2.0F, -2.0F, 3, 8, 4, -0.2F, true));
+		
+				bone7 = new ModelRenderer(this);
+				bone7.setRotationPoint(1.75F, 5.85F, 1.75F);
+				leftArm2.addChild(bone7);
+				setRotationAngle(bone7, -0.0873F, 0.0F, 0.0873F);
+				bone7.cubeList.add(new ModelBox(bone7, 40, 20, -2.7718F, -0.249F, -3.75F, 3, 8, 4, -0.2F, true));
 		
 				blade3 = new ModelRenderer(this);
-				blade3.setRotationPoint(1.5F, 14.5F, 0.0F);
-				leftArm2.addChild(blade3);
+				blade3.setRotationPoint(-0.25F, 12.65F, -1.75F);
+				bone7.addChild(blade3);
 				blade3.cubeList.add(new ModelBox(blade3, 24, 0, -1.0F, -5.0F, -1.0F, 0, 6, 2, 0.0F, true));
-
+		
 				bipedRightArm = new ModelRenderer(this);
 				bipedRightArm.setRotationPoint(-5.0F, 2.5F, 0.0F);
-				setRotationAngle(bipedRightArm, 0.0F, 0.0F, 0.3491F);
-				bipedRightArm.cubeList.add(new ModelBox(bipedRightArm, 40, 16, -2.0F, -2.0F, -2.0F, 3, 12, 4, -0.2F, false));
+				setRotationAngle(bipedRightArm, 0.0F, 0.0F, 0.5236F);
 				bipedRightArm.cubeList.add(new ModelBox(bipedRightArm, 40, 32, -2.0F, -2.0F, -2.0F, 3, 12, 4, 0.6F, false));
+				bipedRightArm.cubeList.add(new ModelBox(bipedRightArm, 32, 52, -2.0F, -2.0F, -2.0F, 3, 8, 4, -0.2F, false));
+		
+				bone4 = new ModelRenderer(this);
+				bone4.setRotationPoint(-1.75F, 5.85F, 1.75F);
+				bipedRightArm.addChild(bone4);
+				setRotationAngle(bone4, -0.0873F, 0.0F, -0.0873F);
+				bone4.cubeList.add(new ModelBox(bone4, 40, 20, -0.2282F, -0.249F, -3.75F, 3, 8, 4, -0.2F, false));
 		
 				blade0 = new ModelRenderer(this);
-				blade0.setRotationPoint(-1.5F, 14.5F, 0.0F);
-				bipedRightArm.addChild(blade0);
+				blade0.setRotationPoint(0.25F, 12.65F, -1.75F);
+				bone4.addChild(blade0);
 				blade0.cubeList.add(new ModelBox(blade0, 24, 0, 1.0F, -5.0F, -1.0F, 0, 6, 2, 0.0F, false));
-
+		
 				bipedLeftArm = new ModelRenderer(this);
 				bipedLeftArm.setRotationPoint(5.0F, 2.5F, 0.0F);
-				setRotationAngle(bipedLeftArm, 0.0F, 0.0F, -0.3491F);
-				bipedLeftArm.cubeList.add(new ModelBox(bipedLeftArm, 32, 48, -1.0F, -2.0F, -2.0F, 3, 12, 4, -0.2F, false));
-				bipedLeftArm.cubeList.add(new ModelBox(bipedLeftArm, 48, 48, -1.0F, -2.0F, -2.0F, 3, 12, 4, 0.6F, false));
+				setRotationAngle(bipedLeftArm, 0.0F, 0.0F, -0.5236F);
+				bipedLeftArm.cubeList.add(new ModelBox(bipedLeftArm, 40, 32, -1.0F, -2.0F, -2.0F, 3, 12, 4, 0.6F, true));
+				bipedLeftArm.cubeList.add(new ModelBox(bipedLeftArm, 32, 52, -1.0F, -2.0F, -2.0F, 3, 8, 4, -0.2F, true));
+		
+				bone6 = new ModelRenderer(this);
+				bone6.setRotationPoint(1.75F, 5.85F, 1.75F);
+				bipedLeftArm.addChild(bone6);
+				setRotationAngle(bone6, -0.0873F, 0.0F, 0.0873F);
+				bone6.cubeList.add(new ModelBox(bone6, 40, 20, -2.7718F, -0.249F, -3.75F, 3, 8, 4, -0.2F, true));
 		
 				blade1 = new ModelRenderer(this);
-				blade1.setRotationPoint(1.5F, 14.5F, 0.0F);
-				bipedLeftArm.addChild(blade1);
+				blade1.setRotationPoint(-0.25F, 12.65F, -1.75F);
+				bone6.addChild(blade1);
 				blade1.cubeList.add(new ModelBox(blade1, 24, 0, -1.0F, -5.0F, -1.0F, 0, 6, 2, 0.0F, true));
 			}
 	
@@ -335,8 +364,8 @@ public class EntityPuppetKarasu extends ElementsNarutomodMod.ModElement {
 			@Override
 			public void setRotationAngles(float f, float f1, float f2, float f3, float f4, float f5, Entity e) {
 				super.setRotationAngles(0f, 0f, f2, f3, f4, f5, e);
-				bipedRightArm.rotateAngleZ += 0.3491F;
-				bipedLeftArm.rotateAngleZ += -0.3491F;
+				bipedRightArm.rotateAngleZ += 0.5236F;
+				bipedLeftArm.rotateAngleZ += -0.5236F;
 		        if (e instanceof EntityCustom) {
 					boolean flag = ((EntityCustom)e).isKnivesOut();
 					blade0.showModel = flag;
@@ -363,10 +392,10 @@ public class EntityPuppetKarasu extends ElementsNarutomodMod.ModElement {
 		        if (this.swingProgress > 0.0F) {
 					rightArm2.rotateAngleX = bipedRightArm.rotateAngleX;
 					rightArm2.rotateAngleY = bipedRightArm.rotateAngleY;
-					rightArm2.rotateAngleZ = bipedRightArm.rotateAngleZ - 0.1309F;
+					rightArm2.rotateAngleZ = bipedRightArm.rotateAngleZ - 0.2618F;
 					leftArm2.rotateAngleX = bipedLeftArm.rotateAngleX;
 					leftArm2.rotateAngleY = bipedLeftArm.rotateAngleY;
-					leftArm2.rotateAngleZ = bipedLeftArm.rotateAngleZ + 0.1309F;
+					leftArm2.rotateAngleZ = bipedLeftArm.rotateAngleZ + 0.2618F;
 		        } else {
 			        rightArm2.rotateAngleX = MathHelper.sin(f2 * 0.067F) * 0.03F;
 		        	rightArm2.rotateAngleY = 0.0F;

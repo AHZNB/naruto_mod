@@ -4,6 +4,7 @@ package net.narutomod.entity;
 import net.narutomod.ElementsNarutomodMod;
 import net.narutomod.Particles;
 import net.narutomod.item.ItemJutsu;
+import net.narutomod.item.ItemShoton;
 import net.narutomod.procedure.ProcedureAoeCommand;
 import net.narutomod.procedure.ProcedureUtils;
 
@@ -131,6 +132,10 @@ public class EntityCrystalRay extends ElementsNarutomodMod.ModElement {
 				EntityLivingBase user = this.getSummoner();
 				if (user != null) {
 					user.getEntityData().removeTag(ENTITYID_KEY);
+					ItemStack stack = ProcedureUtils.getMatchingItemStack(user, ItemShoton.block);
+					if (stack != null) {
+						ItemJutsu.setJutsuCooldown(stack, user, ItemShoton.RAY, 1800);
+					}
 				}
 				this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:ice_shoot_small")),
 				 0.8f, this.rand.nextFloat() * 0.4f + 0.9f);
@@ -244,9 +249,10 @@ public class EntityCrystalRay extends ElementsNarutomodMod.ModElement {
 						if (this.hitTrace.typeOfHit != RayTraceResult.Type.MISS) {
 							ProcedureAoeCommand.set(this.world, this.hitTrace.hitVec.x, this.hitTrace.hitVec.y, this.hitTrace.hitVec.z, 0d, 3d)
 							 .exclude(this.shootingEntity).resetHurtResistanceTime()
-							 .damageEntities(DamageSource.causeIndirectMagicDamage(this, this.shootingEntity), this.power * this.damageMultiplier);
+							 .damageEntities(ItemJutsu.causeJutsuDamage(this, this.shootingEntity), this.power * this.damageMultiplier);
 							this.world.newExplosion(this.shootingEntity, this.hitTrace.hitVec.x, this.hitTrace.hitVec.y, this.hitTrace.hitVec.z,
-							 5.0f + this.damageMultiplier, true, net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.world, this.shootingEntity));
+							 5.0f + this.damageMultiplier, this.rand.nextInt(4) == 0,
+							 net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.world, this.shootingEntity));
 						}
 					}
 				}

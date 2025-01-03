@@ -2,16 +2,21 @@
 
 Jutsus
  - wearing any dojutsu not bound to you consumes 15 chakra / second
- - added Crystal release (crystal armor, crystal prison, divine path, ray of light)
+ - added Crystal release [crystal armor, crystal prison, divine path, ray of light (add cooldown)]
  - projectiles now bounce off Flame formation jutsu
  - wood prison won't leave open spaces at the bottom of the cage
+ - buffed unrivaled strength's passive steam damage
  
 Items:
  - giant folding fan is opened by default now (to fix fan not openning when held by random entities)
+ - changed medical scroll to accept any mangekyo sharingan (addon makers need to update their code to utilize this)
+ - reduced cooldown on shooting black receivers
  
 Entities:
  - improved giant dog summon model
  - changed kurama model to run on all 4 legs instead of sitting
+ - King of hell now always spawns on ground
+ - Ninja mobs will not despawn unless there are no players within a 128 block range
  
 General:
  - added config option to disable auto kekkeigenkai assignment

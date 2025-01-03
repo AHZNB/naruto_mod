@@ -175,6 +175,14 @@ public class ItemSharingan extends ElementsNarutomodMod.ModElement {
 			return stack.hasTagCompound() ? stack.getTagCompound().getInteger("color") : 0;
 		}
 
+		public boolean isMangekyo() {
+			return false;
+		}
+
+		public boolean isEternal() {
+			return false;
+		}
+
 		@Override
 		public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
 			super.addInformation(stack, worldIn, tooltip, flagIn);

@@ -1084,26 +1084,6 @@
       }
     },
     {
-      "name": "KingOfHellEntityOnEntityTickUpdate",
-      "type": "procedure",
-      "sortid": 222,
-      "compiles": true,
-      "locked_code": false,
-      "ids": {},
-      "metadata": {
-        "dependencies": [
-          {
-            "name": "entity",
-            "type": "entity"
-          },
-          {
-            "name": "world",
-            "type": "world"
-          }
-        ]
-      }
-    },
-    {
       "name": "NarakaPath",
       "type": "procedure",
       "sortid": 223,

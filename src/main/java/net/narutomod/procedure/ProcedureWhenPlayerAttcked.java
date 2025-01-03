@@ -26,7 +26,7 @@ import net.narutomod.item.ItemRinnegan;
 import net.narutomod.item.ItemJutsu;
 import net.narutomod.entity.EntitySusanooBase;
 import net.narutomod.entity.EntityShieldBase;
-import net.narutomod.entity.EntityKingOfHell;
+//import net.narutomod.entity.EntityKingOfHell;
 import net.narutomod.entity.EntityTailedBeast;
 import net.narutomod.PlayerTracker;
 import net.narutomod.NarutomodModVariables;
@@ -85,10 +85,10 @@ public class ProcedureWhenPlayerAttcked extends ElementsNarutomodMod.ModElement 
 					 (float)((EntityLivingBase)ridingEntity).getTotalArmorValue(), 0f) - f);
 				}*/
 			}
-			if (ridingEntity instanceof EntityKingOfHell.EntityCustom) {
-				evt.setCanceled(true);
-				ridingEntity.attackEntityFrom(evt.getSource(), evt.getAmount());
-			}
+			//if (ridingEntity instanceof EntityKingOfHell.EntityCustom) {
+			//	evt.setCanceled(true);
+			//	ridingEntity.attackEntityFrom(evt.getSource(), evt.getAmount());
+			//}
 		}
 		if (attacker instanceof EntityPlayer && !evt.getSource().getImmediateSource().equals(attacker)) {
 			((EntityLivingBase)attacker).setLastAttackedEntity(entity);

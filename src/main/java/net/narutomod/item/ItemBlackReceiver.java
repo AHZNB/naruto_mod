@@ -114,7 +114,7 @@ public class ItemBlackReceiver extends ElementsNarutomodMod.ModElement {
 				 SoundCategory.NEUTRAL, 1, 1f / (itemRand.nextFloat() * 0.5f + 1f) + (power / 2));
 				entityarrow.pickupStatus = EntityArrow.PickupStatus.DISALLOWED;
 				world.spawnEntity(entityarrow);
-				entity.getCooldownTracker().setCooldown(itemstack.getItem(), 40);
+				entity.getCooldownTracker().setCooldown(itemstack.getItem(), 10);
 			}
 		}
 

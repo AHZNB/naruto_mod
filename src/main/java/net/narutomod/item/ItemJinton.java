@@ -442,24 +442,22 @@ public class ItemJinton extends ElementsNarutomodMod.ModElement {
 			@SubscribeEvent
 			public void onGetCollisionBoxes(GetCollisionBoxesEvent event) {
 				//if (event.getWorld().isRemote && event.getEntity() == null) {
-					for (Entity entity : event.getWorld().getEntitiesWithinAABBExcludingEntity(event.getEntity(), event.getAabb().grow(10.0D))) {
-						if (entity instanceof EntityCube && entity.getEntityBoundingBox().intersects(event.getAabb())) {
-							EntityCube ec = (EntityCube)entity;
-							if (ec.getTicksAlive() >= ec.wait + ec.growTime && ec.getTicksAlive() - ec.wait - ec.growTime <= ec.idleTime) {
-								event.getCollisionBoxesList().clear();
-								float f = ec.fullScale * 0.025f;
-								AxisAlignedBB bb = entity.getEntityBoundingBox();
-								List<AxisAlignedBB> list = Lists.newArrayList(
-									new AxisAlignedBB(bb.minX, bb.minY + f, bb.minZ + f, bb.minX + f, bb.maxY - f, bb.maxZ - f),
-									new AxisAlignedBB(bb.minX + f, bb.minY, bb.minZ + f, bb.maxX - f, bb.minY + f, bb.maxZ - f),
-									new AxisAlignedBB(bb.minX + f, bb.minY + f, bb.minZ, bb.maxX - f, bb.maxY - f, bb.minZ + f),
-									new AxisAlignedBB(bb.maxX - f, bb.minY + f, bb.minZ + f, bb.maxX, bb.maxY - f, bb.maxZ - f),
-									new AxisAlignedBB(bb.minX + f, bb.maxY - f, bb.minZ + f, bb.maxX - f, bb.maxY, bb.maxZ - f),
-									new AxisAlignedBB(bb.minX + f, bb.minY + f, bb.maxZ - f, bb.maxX - f, bb.maxY - f, bb.maxZ));
-								for (AxisAlignedBB axisalignedbb : list) {
-									if (axisalignedbb.intersects(event.getAabb())) {
-										event.getCollisionBoxesList().add(axisalignedbb);
-									}
+					for (EntityCube ec : event.getWorld().getEntitiesWithinAABB(EntityCube.class, event.getAabb().grow(10.0D))) {
+						if (ec != event.getEntity() && ec.getEntityBoundingBox().intersects(event.getAabb())
+						 && ec.getTicksAlive() >= ec.wait + ec.growTime && ec.getTicksAlive() - ec.wait - ec.growTime <= ec.idleTime) {
+							event.getCollisionBoxesList().clear();
+							float f = ec.fullScale * 0.025f;
+							AxisAlignedBB bb = ec.getEntityBoundingBox();
+							List<AxisAlignedBB> list = Lists.newArrayList(
+								new AxisAlignedBB(bb.minX, bb.minY + f, bb.minZ + f, bb.minX + f, bb.maxY - f, bb.maxZ - f),
+								new AxisAlignedBB(bb.minX + f, bb.minY, bb.minZ + f, bb.maxX - f, bb.minY + f, bb.maxZ - f),
+								new AxisAlignedBB(bb.minX + f, bb.minY + f, bb.minZ, bb.maxX - f, bb.maxY - f, bb.minZ + f),
+								new AxisAlignedBB(bb.maxX - f, bb.minY + f, bb.minZ + f, bb.maxX, bb.maxY - f, bb.maxZ - f),
+								new AxisAlignedBB(bb.minX + f, bb.maxY - f, bb.minZ + f, bb.maxX - f, bb.maxY, bb.maxZ - f),
+								new AxisAlignedBB(bb.minX + f, bb.minY + f, bb.maxZ - f, bb.maxX - f, bb.maxY - f, bb.maxZ));
+							for (AxisAlignedBB axisalignedbb : list) {
+								if (axisalignedbb.intersects(event.getAabb())) {
+									event.getCollisionBoxesList().add(axisalignedbb);
 								}
 							}
 						}

@@ -23,6 +23,7 @@ import net.narutomod.ElementsNarutomodMod;
 import net.narutomod.Chakra;
 import net.narutomod.entity.EntityEarthBlocks;
 import net.narutomod.entity.EntityChibakuTenseiBall;
+import net.narutomod.entity.EntityShieldBase;
 
 import java.util.List;
 import java.util.Map;
@@ -67,6 +68,7 @@ public class ProcedureBanShoTenin extends ElementsNarutomodMod.ModElement {
 				} else if (procedure.getGrabbedEntity() == null) {
 					if (t.entityHit != null && !(t.entityHit instanceof EntityChibakuTenseiBall.EntityCustom)
 					 && (!(t.entityHit instanceof EntityEarthBlocks.Base) || t.entityHit.ticksExisted > 5)
+					 && !(t.entityHit instanceof EntityShieldBase)
 					 && t.entityHit.height < 24) {
 						grabbedEntity = t.entityHit;
 						entity.world.playSound(null, entity.posX, entity.posY, entity.posZ,

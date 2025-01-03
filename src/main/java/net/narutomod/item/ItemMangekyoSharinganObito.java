@@ -77,6 +77,11 @@ public class ItemMangekyoSharinganObito extends ElementsNarutomodMod.ModElement 
 			}
 
 			@Override
+			public boolean isMangekyo() {
+				return true;
+			}
+
+			@Override
 			public String getArmorTexture(ItemStack stack, Entity entity, EntityEquipmentSlot slot, String type) {
 				return "narutomod:textures/mangekyosharinganhelmet_obito.png";
 			}

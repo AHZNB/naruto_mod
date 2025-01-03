@@ -395,6 +395,30 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
+		protected void despawnEntity() {
+			net.minecraftforge.fml.common.eventhandler.Event.Result result = null;
+			if (this.isNoDespawnRequired()) {
+				this.idleTime = 0;
+			} else if ((this.idleTime & 0x1F) == 0x1F && (result = net.minecraftforge.event.ForgeEventFactory.canEntityDespawn(this)) != net.minecraftforge.fml.common.eventhandler.Event.Result.DEFAULT) {
+				if (result == net.minecraftforge.fml.common.eventhandler.Event.Result.DENY) {
+					this.idleTime = 0;
+				} else {
+					this.setDead();
+				}
+			} else {
+				Entity entity = this.world.getClosestPlayerToEntity(this, -1.0D);
+				if (entity != null) {
+					double d3 = entity.getDistanceSq(this);
+					if (d3 < 16384.0D) {
+						this.idleTime = 0;
+					} else if (this.canDespawn() && this.idleTime > 600 && this.rand.nextInt(800) == 0) {
+						this.setDead();
+					}
+				}
+			}
+		}
+
+		@Override
 		public void onRemovedFromWorld() {
 			super.onRemovedFromWorld();
 			if (!this.world.isRemote) {
