@@ -6,17 +6,20 @@ Jutsus
  - projectiles now bounce off Flame formation jutsu
  - wood prison won't leave open spaces at the bottom of the cage
  - buffed unrivaled strength's passive steam damage
+ - amaterasu damage can't be negated by fire protection
  
 Items:
  - giant folding fan is opened by default now (to fix fan not openning when held by random entities)
  - changed medical scroll to accept any mangekyo sharingan (addon makers need to update their code to utilize this)
  - reduced cooldown on shooting black receivers
+ - release items can't be tossed anymore
  
 Entities:
  - improved giant dog summon model
  - changed kurama model to run on all 4 legs instead of sitting
- - King of hell now always spawns on ground
+ - King of hell now always spawns on ground, improved model
  - Ninja mobs will not despawn unless there are no players within a 128 block range
+ - slight buffed puppet reach, health
  
 General:
  - added config option to disable auto kekkeigenkai assignment

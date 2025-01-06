@@ -523,16 +523,16 @@ public class EntityEightTails extends ElementsNarutomodMod.ModElement {
 				bipedBody.cubeList.add(new ModelBox(bipedBody, 18, 48, -0.3F, -9.5F, -4.5F, 7, 8, 1, -0.3F, true));
 		
 				bipedBody_r1 = new ModelRenderer(this);
-				bipedBody_r1.setRotationPoint(0.25F, -1.5F, 0.0F);
+				bipedBody_r1.setRotationPoint(7.75F, -11.4F, 0.0F);
 				bipedBody.addChild(bipedBody_r1);
-				setRotationAngle(bipedBody_r1, 0.0F, 0.0F, 0.0873F);
-				bipedBody_r1.cubeList.add(new ModelBox(bipedBody_r1, 0, 0, -0.25F, -9.9F, -4.0F, 7, 10, 8, 0.0F, true));
+				setRotationAngle(bipedBody_r1, 0.0F, 0.0F, -0.1745F);
+				bipedBody_r1.cubeList.add(new ModelBox(bipedBody_r1, 0, 0, -7.0F, 0.0F, -4.0F, 7, 10, 8, 0.0F, true));
 		
 				bipedBody_r2 = new ModelRenderer(this);
-				bipedBody_r2.setRotationPoint(-0.25F, -1.5F, 0.0F);
+				bipedBody_r2.setRotationPoint(-7.75F, -11.4F, 0.0F);
 				bipedBody.addChild(bipedBody_r2);
-				setRotationAngle(bipedBody_r2, 0.0F, 0.0F, -0.0873F);
-				bipedBody_r2.cubeList.add(new ModelBox(bipedBody_r2, 0, 0, -6.75F, -9.9F, -4.0F, 7, 10, 8, 0.0F, false));
+				setRotationAngle(bipedBody_r2, 0.0F, 0.0F, 0.1745F);
+				bipedBody_r2.cubeList.add(new ModelBox(bipedBody_r2, 0, 0, 0.0F, 0.0F, -4.0F, 7, 10, 8, 0.0F, false));
 
 				bipedHead = new ModelRenderer(this);
 				bipedHead.setRotationPoint(0.0F, -19.5F, -5.0F);
@@ -899,16 +899,16 @@ public class EntityEightTails extends ElementsNarutomodMod.ModElement {
 				bone8.cubeList.add(new ModelBox(bone8, 0, 24, -1.0F, 1.3033F, -5.3618F, 2, 2, 2, 0.0F, false));
 
 				dick = new ModelRenderer(this);
-				dick.setRotationPoint(-1.0F, -1.6F, -3.8F);
+				dick.setRotationPoint(-1.0F, -1.85F, -3.8F);
 				bipedBody.addChild(dick);
 				setRotationAngle(dick, 0.5236F, 0.0F, 0.0F);
 				dick.cubeList.add(new ModelBox(dick, 0, 59, -2.0F, 0.0F, 0.0F, 6, 2, 2, 0.0F, false));
-
+		
 				dick1 = new ModelRenderer(this);
 				dick1.setRotationPoint(0.0F, 2.0F, 0.0F);
 				dick.addChild(dick1);
 				setRotationAngle(dick1, 1.0908F, 0.0F, 0.0F);
-				dick1.cubeList.add(new ModelBox(dick1, 0, 59, -2.0F, 0.0F, 0.0F, 6, 2, 2, 0.0F, false));
+				dick1.cubeList.add(new ModelBox(dick1, 40, 51, -2.0F, 0.0F, 0.0F, 6, 7, 6, 0.0F, false));
 
 				chest = new ModelRenderer(this);
 				chest.setRotationPoint(1.0F, -12.5F, 4.0F);

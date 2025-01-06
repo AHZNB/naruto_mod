@@ -1266,7 +1266,7 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 
 	    @Override
 	    protected void checkForStuck(Vec3d positionVec3) {
-	        if (this.totalTicks - this.ticksAtLastPos > 60) {
+	        if (this.totalTicks - this.ticksAtLastPos > 30) {
 	            if (positionVec3.squareDistanceTo(this.lastPosCheck) < this.entity.width * this.entity.width) {
 	                this.clearPath();
 	            }

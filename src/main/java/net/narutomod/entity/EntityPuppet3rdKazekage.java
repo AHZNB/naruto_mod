@@ -56,17 +56,17 @@ public class EntityPuppet3rdKazekage extends ElementsNarutomodMod.ModElement {
 
 	public static class EntityCustom extends EntityPuppet.Base {
 		private static final DataParameter<Boolean> MOUTH_OPEN = EntityDataManager.<Boolean>createKey(EntityCustom.class, DataSerializers.BOOLEAN);
-		public static final float MAXHEALTH = 120.0f;
+		public static final float MAXHEALTH = 160.0f;
 		private static final Vec3d offsetToOwner = new Vec3d(-1.4d, 0.5d, 3.0d);
 
 		public EntityCustom(World worldIn) {
 			super(worldIn);
-			this.setSize(0.6f, 2.0f);
+			this.setSize(0.6f, 2.125f);
 		}
 
 		public EntityCustom(EntityLivingBase ownerIn) {
 			super(ownerIn);
-			this.setSize(0.6f, 2.0f);
+			this.setSize(0.6f, 2.125f);
 			Vec3d vec = ownerIn.getLookVec();
 			vec = ownerIn.getPositionVector().addVector(vec.x, 1d, vec.z);
 			this.setLocationAndAngles(vec.x, vec.y, vec.z, ownerIn.rotationYaw, 0f);
@@ -109,7 +109,12 @@ public class EntityPuppet3rdKazekage extends ElementsNarutomodMod.ModElement {
 		@Override
 		protected void initEntityAI() {
 			super.initEntityAI();
-			this.tasks.addTask(1, new EntityAIAttackMelee(this, 2.0d, true));
+			this.tasks.addTask(1, new EntityAIAttackMelee(this, 2.0d, true) {
+				@Override
+				protected double getAttackReachSqr(EntityLivingBase attackTarget) {
+					return (2.4f + attackTarget.width) * (2.4f + attackTarget.width);
+				}
+			});
 		}
 
 		@Override
@@ -204,18 +209,18 @@ public class EntityPuppet3rdKazekage extends ElementsNarutomodMod.ModElement {
 
 				bipedHead = new ModelRenderer(this);
 				bipedHead.setRotationPoint(0.0F, 0.0F, 0.0F);
-				bipedHead.cubeList.add(new ModelBox(bipedHead, 0, 0, -4.0F, -8.0F, -4.0F, 8, 8, 8, 0.0F, false));
+				bipedHead.cubeList.add(new ModelBox(bipedHead, 0, 0, -4.0F, -8.0F, -4.0F, 8, 8, 8, -0.5F, false));
 		
 				jaw = new ModelRenderer(this);
-				jaw.setRotationPoint(0.0F, -1.0F, 0.0F);
+				jaw.setRotationPoint(0.5F, -1.0F, 0.0F);
 				bipedHead.addChild(jaw);
-				jaw.cubeList.add(new ModelBox(jaw, 50, 24, -1.5F, -1.0F, -4.01F, 3, 2, 4, 0.0F, false));
+				jaw.cubeList.add(new ModelBox(jaw, 48, 24, -2.5F, -1.0F, -4.01F, 4, 2, 4, -0.5F, false));
 		
 				jaw2 = new ModelRenderer(this);
 				jaw2.setRotationPoint(0.0F, -1.0F, 0.0F);
 				bipedHead.addChild(jaw2);
-				jaw2.cubeList.add(new ModelBox(jaw2, 36, 24, -4.0F, -2.0F, -4.0F, 3, 3, 4, -0.01F, false));
-				jaw2.cubeList.add(new ModelBox(jaw2, 36, 24, 1.0F, -2.0F, -4.0F, 3, 3, 4, -0.01F, true));
+				jaw2.cubeList.add(new ModelBox(jaw2, 32, 24, -4.0F, -3.0F, -4.0F, 3, 4, 4, -0.51F, false));
+				jaw2.cubeList.add(new ModelBox(jaw2, 32, 24, 1.0F, -3.0F, -4.0F, 3, 4, 4, -0.51F, true));
 		
 				bipedHeadwear = new ModelRenderer(this);
 				bipedHeadwear.setRotationPoint(0.0F, 0.0F, 0.0F);
@@ -225,41 +230,42 @@ public class EntityPuppet3rdKazekage extends ElementsNarutomodMod.ModElement {
 				niceHair.setRotationPoint(0.0F, 0.0F, 0.0F);
 				bipedHeadwear.addChild(niceHair);
 				
+		
 				cube_r1 = new ModelRenderer(this);
-				cube_r1.setRotationPoint(3.4118F, -8.1983F, -3.0337F);
+				cube_r1.setRotationPoint(2.9118F, -7.6983F, -2.7837F);
 				niceHair.addChild(cube_r1);
 				setRotationAngle(cube_r1, -0.0873F, 0.5236F, -0.0873F);
-				cube_r1.cubeList.add(new ModelBox(cube_r1, 16, 16, -0.9464F, 0.1951F, -0.6367F, 2, 10, 2, 0.15F, false));
+				cube_r1.cubeList.add(new ModelBox(cube_r1, 16, 16, -0.9464F, 0.1951F, -0.6367F, 2, 10, 2, 0.0F, false));
 		
 				cube_r2 = new ModelRenderer(this);
-				cube_r2.setRotationPoint(-3.4118F, -8.1983F, -3.0337F);
+				cube_r2.setRotationPoint(-2.9118F, -7.6983F, -2.7837F);
 				niceHair.addChild(cube_r2);
 				setRotationAngle(cube_r2, -0.0873F, -0.5236F, 0.0873F);
-				cube_r2.cubeList.add(new ModelBox(cube_r2, 16, 16, -1.0536F, 0.1951F, -0.6367F, 2, 10, 2, 0.15F, true));
+				cube_r2.cubeList.add(new ModelBox(cube_r2, 16, 16, -1.0536F, 0.1951F, -0.6367F, 2, 10, 2, 0.0F, true));
 		
 				cube_r3 = new ModelRenderer(this);
-				cube_r3.setRotationPoint(0.005F, -7.9697F, -3.8572F);
+				cube_r3.setRotationPoint(0.005F, -7.7197F, -3.8572F);
 				niceHair.addChild(cube_r3);
 				setRotationAngle(cube_r3, -0.8727F, 0.0873F, 0.0F);
-				cube_r3.cubeList.add(new ModelBox(cube_r3, 32, 11, -4.0F, -6.15F, 0.15F, 8, 6, 7, 0.15F, true));
+				cube_r3.cubeList.add(new ModelBox(cube_r3, 32, 11, -4.0F, -6.15F, 0.15F, 8, 6, 7, -0.35F, true));
 		
 				cube_r4 = new ModelRenderer(this);
-				cube_r4.setRotationPoint(0.005F, -7.9697F, -3.8572F);
+				cube_r4.setRotationPoint(0.005F, -7.7197F, -3.8572F);
 				niceHair.addChild(cube_r4);
 				setRotationAngle(cube_r4, -1.0908F, -0.0873F, 0.0F);
-				cube_r4.cubeList.add(new ModelBox(cube_r4, 32, 11, -4.0F, -6.15F, 0.15F, 8, 6, 7, 0.2F, false));
+				cube_r4.cubeList.add(new ModelBox(cube_r4, 32, 11, -4.0F, -6.15F, 0.15F, 8, 6, 7, -0.3F, false));
 		
 				cube_r5 = new ModelRenderer(this);
 				cube_r5.setRotationPoint(0.005F, -7.9697F, -3.8572F);
 				niceHair.addChild(cube_r5);
 				setRotationAngle(cube_r5, -1.2654F, 0.1745F, 0.0F);
-				cube_r5.cubeList.add(new ModelBox(cube_r5, 32, 11, -4.0F, -6.65F, 0.25F, 8, 6, 7, 0.25F, true));
+				cube_r5.cubeList.add(new ModelBox(cube_r5, 32, 11, -4.0F, -6.65F, 0.25F, 8, 6, 7, -0.25F, true));
 		
 				cube_r6 = new ModelRenderer(this);
 				cube_r6.setRotationPoint(0.005F, -7.9697F, -3.8572F);
 				niceHair.addChild(cube_r6);
 				setRotationAngle(cube_r6, -1.4399F, -0.1745F, 0.0F);
-				cube_r6.cubeList.add(new ModelBox(cube_r6, 32, 11, -4.0F, -7.15F, 0.35F, 8, 6, 7, 0.3F, false));
+				cube_r6.cubeList.add(new ModelBox(cube_r6, 32, 11, -4.0F, -7.15F, 0.35F, 8, 6, 7, -0.2F, false));
 
 				bipedBody = new ModelRenderer(this);
 				bipedBody.setRotationPoint(0.0F, 0.0F, 0.0F);

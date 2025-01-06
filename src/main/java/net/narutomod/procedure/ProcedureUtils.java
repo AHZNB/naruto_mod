@@ -74,7 +74,7 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 	//  new RangedAttribute(null, "modded.reachDistance", 7.0, 0.0, 128.0).setShouldWatch(true);
 	public static final IAttribute MAXHEALTH = (new RangedAttribute(null, "modded.maxHealth", 20.0D, Float.MIN_VALUE, 1048576.0D)).setDescription("Max Modded Health").setShouldWatch(true);
 	private static final Random RNG = new Random();
-	public static final DamageSource AMATERASU = new DamageSource(ItemJutsu.NINJUTSU_TYPE).setFireDamage();
+	public static final DamageSource AMATERASU = new DamageSource(ItemJutsu.NINJUTSU_TYPE);
 	public static final DamageSource SPECIAL_DAMAGE = new DamageSource("wither").setDamageBypassesArmor().setDamageIsAbsolute();
 	public static final float DEG2RAD = (float)Math.PI / 180.0F;
 	public static final float RAD2DEG = 180.0F / (float)Math.PI;

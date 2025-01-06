@@ -125,6 +125,10 @@ public class EntityPuppetKarasu extends ElementsNarutomodMod.ModElement {
 				public boolean shouldContinueExecuting() {
 					return super.shouldContinueExecuting() && EntityCustom.this.meleeTime > 0;
 				}
+				@Override
+				protected double getAttackReachSqr(EntityLivingBase attackTarget) {
+					return (2.4f + attackTarget.width) * (2.4f + attackTarget.width);
+				}
 			});
 		}
 
