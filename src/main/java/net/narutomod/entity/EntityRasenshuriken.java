@@ -106,6 +106,9 @@ public class EntityRasenshuriken extends ElementsNarutomodMod.ModElement {
 
 		protected void setImpactTicks(int ticks) {
 			this.getDataManager().set(IMPACT_TICKS, Integer.valueOf(ticks));
+			if (ticks > 0 && this.width > this.height * 1.001f) {
+				this.setOGSize(0.5f, 0.5f);
+			}
 		}
 
 		private int getBallColor() {
@@ -195,17 +198,15 @@ public class EntityRasenshuriken extends ElementsNarutomodMod.ModElement {
 		private void onImpactUpdate() {
 			int impactTicks = this.getImpactTicks() + 1;
 			this.setImpactTicks(impactTicks);
-			if (impactTicks <= 3) {
-				this.setOGSize(0.5f, 0.5f);
-			}
 			if (!this.world.isRemote) {
 				if (impactTicks % 4 == 0) {
 					this.world.playSound(null, this.posX, this.posY, this.posZ, SoundEvent.REGISTRY
 					  .getObject(new ResourceLocation("narutomod:rasenshuriken_explode")), SoundCategory.NEUTRAL, 5, 1f);
 				}
-				float scale = this.getEntityScale() * (impactTicks <= 20 ? 1.15f : 1.001f);
-				double d = (this.height * scale / this.getEntityScale() - this.height) / 2;
-				this.setEntityScale(scale);
+				float lastScale = this.getEntityScale();
+				float newScale = lastScale * (impactTicks <= 20 ? 1.15f : 1.001f);
+				double d = (this.height * newScale / lastScale - this.height) / 2;
+				this.setEntityScale(newScale);
 				this.setPosition(this.impactVec.x, this.posY - d, this.impactVec.z);
 				this.doImpactDamage();
 				new EventSphericalExplosion(this.world, null, (int)Math.floor(this.impactVec.x), (int)this.impactVec.y, 
@@ -215,7 +216,7 @@ public class EntityRasenshuriken extends ElementsNarutomodMod.ModElement {
 					particles.spawnParticles(Particles.Types.SMOKE, this.posX, this.posY+this.height*0.5, this.posZ,
 					  1, 1d, 0d, 1d, (this.rand.nextDouble()-0.5d) * this.fullScale * 4.0d,
 					  0.5d * this.rand.nextGaussian(), 4.0d * (this.rand.nextDouble()-0.5d) * this.fullScale,
-					  0x10FFFFFF, (int)(scale * 16f), 20);
+					  0x10FFFFFF, (int)(newScale * 16f), 20);
 				}
 				particles.send();
 				if (impactTicks >= 200) {
@@ -245,6 +246,8 @@ public class EntityRasenshuriken extends ElementsNarutomodMod.ModElement {
 		protected void readEntityFromNBT(NBTTagCompound compound) {
 			super.readEntityFromNBT(compound);
 			this.fullScale = compound.getFloat("fullScale");
+			this.impactDamageMultiplier = compound.getFloat("impactDamageMultiplier");
+			this.damageSource = (compound.getBoolean("isSenjutsu") ? ItemJutsu.SENJUTSU_DAMAGE : ItemJutsu.NINJUTSU_DAMAGE).setDamageBypassesArmor();
 			int i = compound.getInteger("impactTicks");
 			this.setImpactTicks(i);
 			if (i > 0) {
@@ -256,6 +259,8 @@ public class EntityRasenshuriken extends ElementsNarutomodMod.ModElement {
 		protected void writeEntityToNBT(NBTTagCompound compound) {
 			super.writeEntityToNBT(compound);
 			compound.setFloat("fullScale", this.fullScale);
+			compound.setFloat("impactDamageMultiplier", this.impactDamageMultiplier);
+			compound.setBoolean("isSenjutsu", ItemJutsu.isDamageSourceSenjutsu(this.damageSource));
 			int i = this.getImpactTicks();
 			compound.setInteger("impactTicks", i);
 			if (i > 0) {

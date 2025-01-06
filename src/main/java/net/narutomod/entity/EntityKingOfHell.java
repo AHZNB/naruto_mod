@@ -331,8 +331,8 @@ public class EntityKingOfHell extends ElementsNarutomodMod.ModElement {
 				head.setRotationPoint(0.0F, 24.0F, 0.0F);
 				head.cubeList.add(new ModelBox(head, 0, 0, -8.0F, -24.0F, -8.0F, 16, 32, 16, 0.0F, false));
 				head.cubeList.add(new ModelBox(head, 48, 0, -2.5F, -28.5F, -2.5F, 5, 5, 5, 0.0F, false));
-				head.cubeList.add(new ModelBox(head, 48, 62, -8.0F, -0.1F, -8.0F, 16, 0, 16, 0.0F, false));
-				head.cubeList.add(new ModelBox(head, 68, 32, -10.0F, -4.0F, -9.0F, 20, 12, 18, 0.0F, false));
+				head.cubeList.add(new ModelBox(head, -16, 112, -8.0F, -0.1F, -8.0F, 16, 0, 16, 0.0F, false));
+				head.cubeList.add(new ModelBox(head, 68, 32, -10.0F, -6.0F, -9.0F, 20, 14, 18, 0.0F, false));
 		
 				mask_right = new ModelRenderer(this);
 				mask_right.setRotationPoint(-8.0F, 4.0F, -8.0F);
@@ -402,7 +402,7 @@ public class EntityKingOfHell extends ElementsNarutomodMod.ModElement {
 				bone13.cubeList.add(new ModelBox(bone13, 0, 0, -0.5F, -14.364F, -1.2071F, 1, 8, 0, 0.0F, true));
 		
 				collarOuter = new ModelRenderer(this);
-				collarOuter.setRotationPoint(0.0F, -2.0F, 0.0F);
+				collarOuter.setRotationPoint(0.0F, -4.0F, 0.0F);
 				head.addChild(collarOuter);
 				setRotationAngle(collarOuter, -0.2618F, 0.0F, 0.0F);
 				
@@ -444,7 +444,7 @@ public class EntityKingOfHell extends ElementsNarutomodMod.ModElement {
 				bone17.cubeList.add(new ModelBox(bone17, 40, 48, 0.0F, -21.0F, 0.0F, 12, 32, 0, 0.0F, true));
 		
 				collarInner = new ModelRenderer(this);
-				collarInner.setRotationPoint(0.0F, -2.0F, 0.0F);
+				collarInner.setRotationPoint(0.0F, -4.0F, 0.0F);
 				head.addChild(collarInner);
 				setRotationAngle(collarInner, -0.2618F, 0.0F, 0.0F);
 				

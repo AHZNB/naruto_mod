@@ -7,6 +7,7 @@ Jutsus
  - wood prison won't leave open spaces at the bottom of the cage
  - buffed unrivaled strength's passive steam damage
  - amaterasu damage can't be negated by fire protection
+ - fixed rasenshuriken crater size bug when chunk unloaded during impact
  
 Items:
  - giant folding fan is opened by default now (to fix fan not openning when held by random entities)
@@ -19,7 +20,7 @@ Entities:
  - changed kurama model to run on all 4 legs instead of sitting
  - King of hell now always spawns on ground, improved model
  - Ninja mobs will not despawn unless there are no players within a 128 block range
- - slight buffed puppet reach, health
+ - slightly buffed puppet reach, health
  
 General:
  - added config option to disable auto kekkeigenkai assignment

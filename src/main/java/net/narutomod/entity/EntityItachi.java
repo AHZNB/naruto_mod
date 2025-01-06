@@ -240,7 +240,7 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 					this.susanooEntity.setDead();
 				}
 			}
-			if ((this.getItemStackFromSlot(EntityEquipmentSlot.HEAD).getItem() == ItemAkatsukiRobe.helmet) != (target == null)) {
+			if ((this.getItemStackFromSlot(EntityEquipmentSlot.HEAD).getItem() == ItemMangekyoSharingan.helmet) != (target != null)) {
 				this.swapWithInventory(EntityEquipmentSlot.HEAD, 1);
 			}
 		}

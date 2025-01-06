@@ -323,7 +323,7 @@ public class EntityScalableProjectile extends ElementsNarutomodMod.ModElement {
 				this.setDead();
 			}
 			this.setEntityScale(compound.getFloat("scale"));
-			this.setSize(this.ogWidth * this.getEntityScale(), this.ogHeight * getEntityScale());
+			//this.setSize(this.ogWidth * this.getEntityScale(), this.ogHeight * getEntityScale());
 			this.motionFactor = compound.getFloat("speed");
 			this.ticksAlive = compound.getInteger("life");
 			this.ticksInAir = compound.getInteger("flighttime");
