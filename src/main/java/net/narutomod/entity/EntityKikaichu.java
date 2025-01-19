@@ -43,6 +43,7 @@ import java.util.List;
 public class EntityKikaichu extends ElementsNarutomodMod.ModElement {
 	public static final int ENTITYID = 323;
 	public static final int ENTITYID_RANGED = 324;
+	private static final String kikaichuSlownessAmp = "kikaichuSlownessAmplitude";
 
 	public EntityKikaichu(ElementsNarutomodMod instance) {
 		super(instance, 674);
@@ -111,8 +112,11 @@ public class EntityKikaichu extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void setDead() {
 			super.setDead();
-			if (!this.world.isRemote && this.bugsTarget != null && !this.bugsTarget.shouldRemove()) {
-				this.bugsTarget.forceRemove();
+			if (!this.world.isRemote) {
+				this.target.getEntityData().removeTag(kikaichuSlownessAmp);
+				if (this.bugsTarget != null && !this.bugsTarget.shouldRemove()) {
+					this.bugsTarget.forceRemove();
+				}
 			}
 		}
 
@@ -124,9 +128,9 @@ public class EntityKikaichu extends ElementsNarutomodMod.ModElement {
 				if (this.target.isEntityAlive() && this.ticksExisted < MAXTIME) {
 					if (this.bugsTarget.allParticlesReachedTarget()) {
 						this.bugsTarget.setTarget(this.getTargetVector(), 0.2f, 0.01f, false);
-						if (this.ticksExisted % 10 == 1) {
-							target.addPotionEffect(new PotionEffect(PotionHeaviness.potion, 22, 2, false, false));
-						}
+						//if (this.ticksExisted % 10 == 1) {
+						//	target.addPotionEffect(new PotionEffect(PotionHeaviness.potion, 22, 2, false, false));
+						//}
 					} else {
 						this.bugsTarget.setTarget(this.getTargetVector(), 1.5f, 0.05f, false);
 					}
@@ -168,7 +172,7 @@ public class EntityKikaichu extends ElementsNarutomodMod.ModElement {
 		public static class Jutsu implements ItemJutsu.IJutsuCallback {
 			@Override
 			public boolean createJutsu(ItemStack stack, EntityLivingBase entity, float power) {
-				RayTraceResult result = ProcedureUtils.objectEntityLookingAt(entity, 30d, 1.5d, true);
+				RayTraceResult result = ProcedureUtils.objectEntityLookingAt(entity, 30d, 3.0d, true);
 				if (result != null) {
 					if (result.entityHit instanceof EC) {
 						result.entityHit.ticksExisted = EC.MAXTIME;
@@ -288,9 +292,18 @@ public class EntityKikaichu extends ElementsNarutomodMod.ModElement {
 			if (!this.world.isRemote) {
 				for (EntityLivingBase entity : this.world.getEntitiesWithinAABB(EntityLivingBase.class, this.getEntityBoundingBox())) {
 					if (!entity.equals(this.host)) {
-						if (!entity.isPotionActive(PotionHeaviness.potion) || entity.getActivePotionEffect(PotionHeaviness.potion).getAmplifier() < 1) {
-							entity.addPotionEffect(new PotionEffect(PotionHeaviness.potion, 22, 1, false, false));
+						float ampf = entity.getEntityData().getFloat(kikaichuSlownessAmp);
+						PotionEffect effect = entity.getActivePotionEffect(PotionHeaviness.potion);
+						if (effect == null) {
+							ampf = 0.0f;
+							entity.addPotionEffect(new PotionEffect(PotionHeaviness.potion, 60, 0, false, false));
+						} else if (effect.getAmplifier() < (int)ampf) {
+							if (effect.getAmplifier() < (int)ampf - 1) {
+								ampf = effect.getAmplifier();
+							}
+							entity.addPotionEffect(new PotionEffect(PotionHeaviness.potion, 60, Math.min((int)ampf, 5), false, false));
 						}
+						entity.getEntityData().setFloat(kikaichuSlownessAmp, ampf + 0.01f);
 						if (this.chakra < 100d && Chakra.pathway(entity).consume(0.25d)) {
 							this.chakra += 0.25d;
 						}

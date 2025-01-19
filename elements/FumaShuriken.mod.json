@@ -10,7 +10,7 @@
     "creativeTab": {
       "value": "CUSTOM:ModTab"
     },
-    "stackSize": 64,
+    "stackSize": 1,
     "ammoItem": {
       "value": ""
     },
@@ -22,7 +22,7 @@
     "hasGlow": false,
     "animation": "bow",
     "enableMeleeDamage": true,
-    "damageVsEntity": 3.0,
+    "damageVsEntity": 13.0,
     "bulletPower": 1.2,
     "bulletDamage": 13.0,
     "bulletKnockback": 0,

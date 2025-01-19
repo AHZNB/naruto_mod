@@ -567,6 +567,9 @@ public class EntityHiraishin extends ElementsNarutomodMod.ModElement {
 							double chakraUsage = MathHelper.sqrt(d) * 10d;
 							if (chakra.getAmount() > chakraUsage) {
 								ProcedureOnLivingUpdate.setUntargetable(player, 5);
+								ProcedureSync.SoundEffectMessage.sendToServer(player.posX, player.posY, player.posZ,
+								 net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:swoosh")),
+								 net.minecraft.util.SoundCategory.NEUTRAL, 0.8f, player.getRNG().nextFloat() * 0.4f + 0.8f);
 								ProcedureSync.SoundEffectMessage.sendToServer(vec.x, vec.y, vec.z,
 								 net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:swoosh")),
 								 net.minecraft.util.SoundCategory.NEUTRAL, 0.8f, player.getRNG().nextFloat() * 0.4f + 0.8f);

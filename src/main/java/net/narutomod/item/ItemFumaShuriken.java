@@ -75,7 +75,7 @@ public class ItemFumaShuriken extends ElementsNarutomodMod.ModElement {
 			setFull3D();
 			setUnlocalizedName("fuma_shuriken");
 			setRegistryName("fuma_shuriken");
-			maxStackSize = 64;
+			maxStackSize = 1;
 			setCreativeTab(TabModTab.tab);
 		}
 
@@ -84,7 +84,7 @@ public class ItemFumaShuriken extends ElementsNarutomodMod.ModElement {
 			Multimap<String, AttributeModifier> multimap = super.getItemAttributeModifiers(slot);
 			if (slot == EntityEquipmentSlot.MAINHAND) {
 				multimap.put(SharedMonsterAttributes.ATTACK_DAMAGE.getName(),
-						new AttributeModifier(ATTACK_DAMAGE_MODIFIER, "Ranged item modifier", (double) -1, 0));
+						new AttributeModifier(ATTACK_DAMAGE_MODIFIER, "Ranged item modifier", (double) 9, 0));
 				multimap.put(SharedMonsterAttributes.ATTACK_SPEED.getName(),
 						new AttributeModifier(ATTACK_SPEED_MODIFIER, "Ranged item modifier", -2.4, 0));
 			}

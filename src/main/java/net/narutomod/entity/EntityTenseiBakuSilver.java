@@ -164,14 +164,21 @@ public class EntityTenseiBakuSilver extends ElementsNarutomodMod.ModElement {
 			protected void preExecuteParticles(Entity player) {
 				Vec3d vec0 = player.getLookVec();
 				Vec3d vec = vec0.scale(2d).addVector(player.posX, player.posY + 1.5d, player.posZ);
-				for (int i = 1; i <= 50; i++) {
+				Particles.Renderer particles = new Particles.Renderer(player.world);
+				for (int i = 1; i <= 25; i++) {
 					Vec3d vec1 = vec0.scale((EC.this.rand.nextDouble()*0.8d+0.2d) * this.getRange(0) * 0.125d);
-					Particles.spawnParticle(player.world, Particles.Types.SMOKE, vec.x, vec.y, vec.z, 1, 0d, 0d, 0d, 
+					particles.spawnParticles(Particles.Types.SMOKE, vec.x, vec.y, vec.z, 1, 0d, 0d, 0d, 
 					 vec1.x + (EC.this.rand.nextDouble()-0.5d) * this.getFarRadius(0) * 0.15d,
 					 vec1.y + (EC.this.rand.nextDouble()-0.5d) * this.getFarRadius(0) * 0.15d,
 					 vec1.z + (EC.this.rand.nextDouble()-0.5d) * this.getFarRadius(0) * 0.15d,
-					 0x80C0C0C0, 80 + EC.this.rand.nextInt(20), (int)(16.0D / (EC.this.rand.nextDouble()*0.8D+0.2D)));
+					 0x80C0C0C0, 90 + EC.this.rand.nextInt(20), (int)(16.0D / (EC.this.rand.nextDouble()*0.8D+0.2D)));
 				}
+				for (int i = 1, j = (int)(this.getRange(0) * 5); i <= j; i++) {
+					Vec3d vec1 = vec0.scale((double)i * this.getRange(0) / j * 0.2d);
+					particles.spawnParticles(Particles.Types.WHIRLPOOL, vec.x, vec.y, vec.z, 1,
+					 0d, 0d, 0d, vec1.x, vec1.y, vec1.z, 0x40C0C0C0, 20 + (int)((float)i/j * this.getFarRadius(0) * 25), 20);
+				}
+				particles.send();
 			}
 
 			@Override

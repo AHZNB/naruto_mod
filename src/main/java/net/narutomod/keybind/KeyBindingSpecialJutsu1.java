@@ -56,33 +56,24 @@ public class KeyBindingSpecialJutsu1 extends ElementsNarutomodMod.ModElement {
 	public void onClientPostTick(TickEvent.ClientTickEvent event) {
 		if (event.phase == TickEvent.Phase.END) {
 			Minecraft mc = Minecraft.getMinecraft();
-			if (mc.currentScreen == null) {
-				this.processKeyBind();
-			}
-			if (mc.player != null) {
-				boolean flag = mc.currentScreen != null;
-				if (flag != mc.player.getEntityData().getBoolean("hasAnyGuiOpen")) {
-					mc.player.getEntityData().setBoolean("hasAnyGuiOpen", flag);
-					ProcedureSync.EntityNBTTag.sendToServer(mc.player, "hasAnyGuiOpen", flag);
+			boolean flag = mc.currentScreen != null;
+			if (!flag) {
+				boolean isKeyDown = this.keys.isKeyDown();
+				if (isKeyDown || this.wasKeyDown) {
+					NarutomodMod.PACKET_HANDLER.sendToServer(new KeyBindingPressedMessage(isKeyDown));
+					if (mc.player != null) {
+						pressAction(mc.player, isKeyDown);
+					}
 				}
+				this.wasKeyDown = isKeyDown;
+			}
+			if (mc.player != null && flag != mc.player.getEntityData().getBoolean("hasAnyGuiOpen")) {
+				mc.player.getEntityData().setBoolean("hasAnyGuiOpen", flag);
+				ProcedureSync.EntityNBTTag.sendToServer(mc.player, "hasAnyGuiOpen", flag);
 			}
 		}
 	}
-
-	@SideOnly(Side.CLIENT)
-	private void processKeyBind() {
-		boolean isKeyDown = this.keys.isKeyDown();
-		if (isKeyDown || this.wasKeyDown) {
-			NarutomodMod.PACKET_HANDLER.sendToServer(new KeyBindingPressedMessage(isKeyDown));
-			EntityPlayer player = Minecraft.getMinecraft().player;
-			if (player != null) {
-				pressAction(player, isKeyDown);
-			}
-		}
-		this.wasKeyDown = isKeyDown;
-	}
-
-
+
 	public static class KeyBindingPressedMessage implements IMessage {
 		boolean is_pressed;
 		public KeyBindingPressedMessage() {

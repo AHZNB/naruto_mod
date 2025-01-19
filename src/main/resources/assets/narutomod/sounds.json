@@ -1186,5 +1186,14 @@
         "stream": false
       }
     ]
+  },
+  "paperflip": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "narutomod:paperflip",
+        "stream": false
+      }
+    ]
   }
 }

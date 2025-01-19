@@ -265,6 +265,7 @@ public class ItemScytheMadara extends ElementsNarutomodMod.ModElement {
 	public static class EntityCustom extends EntityArrow {
 		private static final DataParameter<Integer> SHOOTERID = EntityDataManager.<Integer>createKey(EntityCustom.class, DataSerializers.VARINT);
 		private final double chainMaxLength = 32.0d;
+		private final Vec3d needleEyeOffset = new Vec3d(0d, 2.6d, 0d); 
 		private double damage;
 		private ItemStack itemstack = ItemStack.EMPTY;
 
@@ -362,10 +363,9 @@ public class ItemScytheMadara extends ElementsNarutomodMod.ModElement {
 		}
 
 		protected Vec3d getNeedleEyePos(float pt) {
-			Vec3d vec0 = new Vec3d(this.lastTickPosX + (this.posX - this.lastTickPosX) * pt, this.lastTickPosY + (this.posY - this.lastTickPosY) * pt, this.lastTickPosZ + (this.posZ - this.lastTickPosZ) * pt);
-			float f0 = this.prevRotationYaw + (this.rotationYaw - this.prevRotationYaw) * pt;
-			float f1 = -this.prevRotationPitch - (this.rotationPitch - this.prevRotationPitch) * pt - 90F;
-			return new Vec3d(0d, 2.6d, 0d).rotatePitch(-f1 * (float)Math.PI / 180F).rotateYaw(f0 * (float)Math.PI / 180F).add(vec0);
+			return this.needleEyeOffset.rotatePitch((this.prevRotationPitch + (this.rotationPitch - this.prevRotationPitch) * pt + 90F) * (float)Math.PI / 180F)
+			 .rotateYaw((this.prevRotationYaw + (this.rotationYaw - this.prevRotationYaw) * pt) * (float)Math.PI / 180F)
+			 .addVector(this.lastTickPosX + (this.posX - this.lastTickPosX) * pt, this.lastTickPosY + (this.posY - this.lastTickPosY) * pt, this.lastTickPosZ + (this.posZ - this.lastTickPosZ) * pt);
 		}
 
 		protected void retrieve(double x, double y, double z, float speed) {

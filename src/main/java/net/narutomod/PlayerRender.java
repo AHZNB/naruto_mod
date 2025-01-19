@@ -334,6 +334,7 @@ public class PlayerRender extends ElementsNarutomodMod.ModElement {
 	public static class LayerInventoryItem implements LayerRenderer<AbstractClientPlayer> {
 		private final RenderPlayer playerRenderer;
 		private static final Map<String, ResourceLocation> ARMOR_TEXTURE_RES_MAP = Maps.<String, ResourceLocation>newHashMap();
+		private final ModelBiped defaultModel = new ModelBiped(1.0F);
 
 		public LayerInventoryItem(RenderPlayer playerRendererIn) {
 			this.playerRenderer = playerRendererIn;
@@ -359,7 +360,7 @@ public class PlayerRender extends ElementsNarutomodMod.ModElement {
 		}
 
 		private void renderSkinLayer(ItemStack stack, AbstractClientPlayer entityIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
-			ModelBiped model = stack.getItem().getArmorModel(entityIn, stack, EntityEquipmentSlot.HEAD, new ModelBiped(1.0F));
+			ModelBiped model = stack.getItem().getArmorModel(entityIn, stack, EntityEquipmentSlot.HEAD, this.defaultModel);
 			if (model != null) {
 				String s = stack.getItem().getArmorTexture(stack, entityIn, EntityEquipmentSlot.HEAD, null);
 				if (s != null) {

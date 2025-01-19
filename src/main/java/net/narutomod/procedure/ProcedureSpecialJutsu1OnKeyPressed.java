@@ -7,6 +7,7 @@ import net.narutomod.item.ItemMangekyoSharinganObito;
 import net.narutomod.item.ItemMangekyoSharinganEternal;
 import net.narutomod.item.ItemMangekyoSharingan;
 import net.narutomod.item.ItemByakugan;
+import net.narutomod.NarutomodModVariables;
 import net.narutomod.ElementsNarutomodMod;
 
 import net.minecraft.world.World;
@@ -55,6 +56,7 @@ public class ProcedureSpecialJutsu1OnKeyPressed extends ElementsNarutomodMod.Mod
 		int z = (int) dependencies.get("z");
 		World world = (World) dependencies.get("world");
 		ItemStack helmet = ItemStack.EMPTY;
+		entity.getEntityData().setBoolean((NarutomodModVariables.JutsuKey1Pressed), (is_pressed));
 		if (((world.isRemote) || ((EntityPlayer) entity).isSpectator())) {
 			return;
 		}

@@ -367,6 +367,12 @@ public class ItemGourd extends ElementsNarutomodMod.ModElement {
 			bipedLeftArm.cubeList.add(new ModelBox(bipedLeftArm, 48, 48, -1.0F, -2.0F, -2.0F, 4, 12, 4, 0.0F, true));
 		}
 
+		@Override
+		public void render(Entity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
+			bipedRightArm.showModel = false;
+			bipedLeftArm.showModel = false;
+			super.render(entityIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale);
+		}
 
 		public void setRotationAngle(ModelRenderer modelRenderer, float x, float y, float z) {
 			modelRenderer.rotateAngleX = x;

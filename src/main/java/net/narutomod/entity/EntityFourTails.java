@@ -665,9 +665,9 @@ public class EntityFourTails extends ElementsNarutomodMod.ModElement {
 				cube_r34.cubeList.add(new ModelBox(cube_r34, 14, 31, -3.85F, 1.4F, -1.7F, 4, 5, 4, 0.0F, false));
 		
 				cube_r35 = new ModelRenderer(this);
-				cube_r35.setRotationPoint(0.25F, 0.45F, 0.5F);
+				cube_r35.setRotationPoint(0.5F, 0.95F, 0.5F);
 				bipedRightArm.addChild(cube_r35);
-				setRotationAngle(cube_r35, 0.0852F, -0.0189F, 0.2174F);
+				setRotationAngle(cube_r35, 0.082F, -0.0298F, 0.3478F);
 				cube_r35.cubeList.add(new ModelBox(cube_r35, 30, 31, -3.4F, -1.65F, -1.9F, 4, 4, 4, 0.1F, false));
 		
 				right4Arm = new ModelRenderer(this);
@@ -707,9 +707,9 @@ public class EntityFourTails extends ElementsNarutomodMod.ModElement {
 				cube_r39.cubeList.add(new ModelBox(cube_r39, 14, 31, -0.15F, 1.4F, -1.7F, 4, 5, 4, 0.0F, true));
 		
 				cube_r40 = new ModelRenderer(this);
-				cube_r40.setRotationPoint(-0.25F, 0.45F, 0.5F);
+				cube_r40.setRotationPoint(-0.5F, 0.95F, 0.5F);
 				bipedLeftArm.addChild(cube_r40);
-				setRotationAngle(cube_r40, 0.0852F, 0.0189F, -0.2174F);
+				setRotationAngle(cube_r40, 0.082F, 0.0298F, -0.3478F);
 				cube_r40.cubeList.add(new ModelBox(cube_r40, 30, 31, -0.6F, -1.65F, -1.9F, 4, 4, 4, 0.1F, true));
 		
 				left4Arm = new ModelRenderer(this);

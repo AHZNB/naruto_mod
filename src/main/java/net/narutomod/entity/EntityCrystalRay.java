@@ -102,7 +102,7 @@ public class EntityCrystalRay extends ElementsNarutomodMod.ModElement {
 			super.applyEntityAttributes();
 			this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(100D);
 			this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.0D);
-			this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(400D);
+			this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(500.0D);
 		}
 
 		@Override
@@ -307,7 +307,7 @@ public class EntityCrystalRay extends ElementsNarutomodMod.ModElement {
 				GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 				GlStateManager.disableLighting();
 				OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240.0F, 240.0F);
-				GlStateManager.color(1.0f, 1.0f, 1.0f, MathHelper.clamp(age / this.growTime, 0f, 1.0f));
+				GlStateManager.color(1.0f, 1.0f, 1.0f, MathHelper.clamp(age / this.growTime, 0f, this.renderManager.renderViewEntity == entity.getControllingPassenger() && this.renderManager.options.thirdPersonView == 0  ? 0.2f : 1.0f));
 				this.model.render(entity, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
 				GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
 				GlStateManager.enableLighting();

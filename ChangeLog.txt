@@ -8,23 +8,33 @@ Jutsus
  - buffed unrivaled strength's passive steam damage
  - amaterasu damage can't be negated by fire protection
  - fixed rasenshuriken crater size bug when chunk unloaded during impact
+ - kikaichu bugs can now slow down and paralize the target to suck chakra
+ - added Dance of Shikigami (paper) jutsu [press JutsuKey1 to shoot paper arrows]
+ - added some sound effects for thuunder god & amenotejikara teleporting, biju cloak
+ - improved tensei silver blast animations
  
 Items:
  - giant folding fan is opened by default now (to fix fan not openning when held by random entities)
  - changed medical scroll to accept any mangekyo sharingan (addon makers need to update their code to utilize this)
  - reduced cooldown on shooting black receivers
  - release items can't be tossed anymore
+ - updated explosive tag recipe to give 8 instead of 1 tags
  
 Entities:
  - improved giant dog summon model
+ - re-textured Might Guy face
  - changed kurama model to run on all 4 legs instead of sitting
+ - updated Kokuo model
  - King of hell now always spawns on ground, improved model
  - Ninja mobs will not despawn unless there are no players within a 128 block range
  - slightly buffed puppet reach, health
+ - adding Konan (WIP - does nothing)
+ - fixed puppets bug taking the wrong damage from its user
  
 General:
  - added config option to disable auto kekkeigenkai assignment
  - optimize particles by reducing network packet size
+ - fixed not getting back nature releases after death when keepInventory false & keepNinjaXp true
 
 0.3.1-beta ================================================================================
 

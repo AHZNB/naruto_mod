@@ -6,6 +6,7 @@ import net.minecraft.entity.Entity;
 
 import net.narutomod.item.ItemJutsu;
 import net.narutomod.entity.EntityEarthBlocks;
+import net.narutomod.NarutomodModVariables;
 
 import com.google.common.collect.Lists;
 import javax.annotation.Nullable;
@@ -23,18 +24,14 @@ public class ProcedurePullAndHold {
 			if (this.grabbedEntity == null) {
 				this.grabbedEntity = target;
 			}
+			ProcedureSync.EntityNBTTag.setAndSync(puller, NarutomodModVariables.forceBowPose, true);
 			if (this.grabbedEntity instanceof net.minecraft.entity.item.EntityItem
 			 || this.grabbedEntity instanceof net.minecraft.entity.item.EntityXPOrb) {
 				this.grabbedEntity.setPosition(puller.posX, puller.posY, puller.posZ);
 			} else if (this.grabbedEntity instanceof EntityEarthBlocks.Base) {
 				Vec3d vec3d = ProcedureUtils.raytraceBlocks(puller, 5d).hitVec;
-				//if (this.grabbedEntity.getDistance(vec3d.x, vec3d.y, vec3d.z) > 2.0D) {
-					this.grabbedEntity.setNoGravity(true);
-					ProcedureUtils.pullEntity(vec3d, this.grabbedEntity, 
-					  2.5f / (float)this.grabbedEntity.getEntityBoundingBox().getAverageEdgeLength());
-				//} else {
-				//	this.grabbedEntity.setPositionAndUpdate(vec3d.x, vec3d.y - 0.5D, vec3d.z);
-				//}
+				this.grabbedEntity.setNoGravity(true);
+				ProcedureUtils.pullEntity(vec3d, this.grabbedEntity, 2.5f / (float)this.grabbedEntity.getEntityBoundingBox().getAverageEdgeLength());
 			} else if (ItemJutsu.canTarget(this.grabbedEntity) && this.grabbedEntity.height < 10f) {
 				Vec3d vec3d = ProcedureUtils.raytraceBlocks(puller, 3d).hitVec;
 				this.grabbedEntity.motionY += 0.08D;
@@ -43,8 +40,11 @@ public class ProcedurePullAndHold {
 			} else {
 				this.reset();
 			}
-		} else if (this.grabbedEntity != null) {
-			this.reset();
+		} else {
+			ProcedureSync.EntityNBTTag.removeAndSync(puller, NarutomodModVariables.forceBowPose);
+			if (this.grabbedEntity != null) {
+				this.reset();
+			}
 		}
 	}
 

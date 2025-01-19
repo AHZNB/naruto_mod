@@ -6,7 +6,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
-import net.minecraftforge.event.entity.living.LivingAttackEvent;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.common.MinecraftForge;
 
 import net.minecraft.world.World;
@@ -92,7 +92,10 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 		}
 
 		@SubscribeEvent
-		public void onAttacked(LivingAttackEvent event) {
+		public void onAttacked(LivingHurtEvent event) {
+			if (!(event.getSource().getTrueSource() instanceof EntityLivingBase)) {
+				return;
+			}
 			EntityLivingBase entity = event.getEntityLiving();
 			NBTTagCompound compound = entity.getEntityData();
 			if (entity instanceof EntityPlayer) {

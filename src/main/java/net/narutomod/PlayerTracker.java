@@ -313,7 +313,7 @@ public class PlayerTracker extends ElementsNarutomodMod.ModElement {
 			addPersistentData(oldPlayer, BATTLEXP, Double.valueOf(getBattleXp(oldPlayer)));
 			addPersistentData(oldPlayer, FORCE_SEND, Boolean.valueOf(true));
 			addPersistentData(oldPlayer, "MedicalNinjaChecked", Boolean.valueOf(oldPlayer.getEntityData().getBoolean("MedicalNinjaChecked")));
-			addPersistentData(oldPlayer, NarutomodModVariables.FirstGotNinjutsu, Boolean.valueOf(oldPlayer.getEntityData().getBoolean(NarutomodModVariables.FirstGotNinjutsu)));
+			//addPersistentData(oldPlayer, NarutomodModVariables.FirstGotNinjutsu, Boolean.valueOf(oldPlayer.getEntityData().getBoolean(NarutomodModVariables.FirstGotNinjutsu)));
 			if (event.isWasDeath()) {
 				addPersistentData(oldPlayer, "ForceExtinguish", Integer.valueOf(5));
 			}

@@ -47,6 +47,10 @@ public class ItemRobe extends ElementsNarutomodMod.ModElement {
 		private final ModelRenderer bone2;
 		//private final ModelRenderer bipedRightArm;
 		//private final ModelRenderer bipedLeftArm;
+		private final ModelRenderer rightNormal;
+		private final ModelRenderer rightSmall;
+		private final ModelRenderer leftNormal;
+		private final ModelRenderer leftSmall;
 		private ModelBiped wearerModel;
 
 		public ModelRobe() {
@@ -87,10 +91,24 @@ public class ItemRobe extends ElementsNarutomodMod.ModElement {
 			bone2.cubeList.add(new ModelBox(bone2, 0, 57, -4.0F, -6.0F, -1.0F, 8, 5, 2, 1.4F, false));
 			bipedRightArm = new ModelRenderer(this);
 			bipedRightArm.setRotationPoint(-5.0F, 2.0F, 0.0F);
-			bipedRightArm.cubeList.add(new ModelBox(bipedRightArm, 0, 32, -3.0F, -2.0F, -2.0F, 4, 12, 4, 0.5F, false));
+			rightNormal = new ModelRenderer(this);
+			rightNormal.setRotationPoint(0.0F, 0.0F, 0.0F);
+			bipedRightArm.addChild(rightNormal);
+			rightNormal.cubeList.add(new ModelBox(rightNormal, 0, 32, -3.0F, -2.0F, -2.0F, 4, 12, 4, 0.5F, false));
+			rightSmall = new ModelRenderer(this);
+			rightSmall.setRotationPoint(0.0F, 0.0F, 0.0F);
+			bipedRightArm.addChild(rightSmall);
+			rightSmall.cubeList.add(new ModelBox(rightSmall, 1, 32, -2.0F, -2.0F, -2.0F, 3, 12, 4, 0.5F, false));
 			bipedLeftArm = new ModelRenderer(this);
 			bipedLeftArm.setRotationPoint(5.0F, 2.0F, 0.0F);
-			bipedLeftArm.cubeList.add(new ModelBox(bipedLeftArm, 0, 32, -1.0F, -2.0F, -2.0F, 4, 12, 4, 0.5F, true));
+			leftNormal = new ModelRenderer(this);
+			leftNormal.setRotationPoint(0.0F, 0.0F, 0.0F);
+			bipedLeftArm.addChild(leftNormal);
+			leftNormal.cubeList.add(new ModelBox(leftNormal, 0, 32, -1.0F, -2.0F, -2.0F, 4, 12, 4, 0.5F, true));
+			leftSmall = new ModelRenderer(this);
+			leftSmall.setRotationPoint(0.0F, 0.0F, 0.0F);
+			bipedLeftArm.addChild(leftSmall);
+			leftSmall.cubeList.add(new ModelBox(leftSmall, 1, 32, -1.0F, -2.0F, -2.0F, 3, 12, 4, 0.5F, true));
 		}
 
 		public void setRotationAngle(ModelRenderer modelRenderer, float x, float y, float z) {
@@ -109,9 +127,21 @@ public class ItemRobe extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public void setRotationAngles(float f, float f1, float f2, float f3, float f4, float f5, Entity entity) {
-			if (entity instanceof AbstractClientPlayer && ((AbstractClientPlayer)entity).getSkinType().equals("slim")) {
+			if ((entity instanceof AbstractClientPlayer && ((AbstractClientPlayer)entity).getSkinType().equals("slim"))
+			 || entity.getEntityData().getBoolean("slimModel")) {
 				this.bipedLeftArm.setRotationPoint(5.0F, 2.5F, 0.0F);
 				this.bipedRightArm.setRotationPoint(-5.0F, 2.5F, 0.0F);
+				this.rightNormal.showModel = false;
+				this.rightSmall.showModel = true;
+				this.leftNormal.showModel = false;
+				this.leftSmall.showModel = true;
+			} else {
+				this.bipedLeftArm.setRotationPoint(5.0F, 2.0F, 0.0F);
+				this.bipedRightArm.setRotationPoint(-5.0F, 2.0F, 0.0F);
+				this.rightNormal.showModel = true;
+				this.rightSmall.showModel = false;
+				this.leftNormal.showModel = true;
+				this.leftSmall.showModel = false;
 			}
 			super.setRotationAngles(f, f1, f2, f3, f4, f5, entity);
 			if (!(entity instanceof AbstractClientPlayer) && this.wearerModel != null) {

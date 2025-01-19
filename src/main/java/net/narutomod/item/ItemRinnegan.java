@@ -126,6 +126,7 @@ public class ItemRinnegan extends ElementsNarutomodMod.ModElement {
 			public ModelBiped getArmorModel(EntityLivingBase living, ItemStack stack, EntityEquipmentSlot slot, ModelBiped defaultModel) {
 				ItemDojutsu.ClientModel.ModelHelmetSnug model = (ItemDojutsu.ClientModel.ModelHelmetSnug)super.getArmorModel(living, stack, slot, defaultModel);
 				model.hornMiddle.showModel = false;
+				model.onface.showModel = false;
 				if (living.ticksExisted % 20 == 6) {
 					model.foreheadHide = !isRinnesharinganActivated(stack) || !(living instanceof EntityPlayer) || PlayerTracker.getNinjaLevel((EntityPlayer)living) < 180d;
 				}

@@ -15,6 +15,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.translation.I18n;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.Item;
@@ -35,6 +36,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.init.MobEffects;
+import net.minecraft.init.SoundEvents;
 
 import net.narutomod.potion.PotionChakraEnhancedStrength;
 import net.narutomod.potion.PotionReach;
@@ -174,6 +176,10 @@ public class ItemBijuCloak extends ElementsNarutomodMod.ModElement {
 									} else {
 										spawnClone(livingEntity, itemstack);
 									}
+									if (entity.ticksExisted % 30 == 0 && cloakLevel == 1) {
+										world.playSound(null, entity.posX, entity.posY, entity.posZ, SoundEvents.BLOCK_LAVA_AMBIENT,
+										 SoundCategory.AMBIENT, 0.6f, this.itemRand.nextFloat() * 0.6f + 0.3f);
+									}
 						 	 	} else {
 						 	 		if (cloakXp < 400 || (cloakLevel == 2 && cloakXp < 800)) {
 						 	 			revertOriginal(livingEntity, itemstack);
@@ -192,6 +198,10 @@ public class ItemBijuCloak extends ElementsNarutomodMod.ModElement {
 					setWearingTicks(entity, getWearingTicks(entity) + 1);
 					int i = getCloakLevel(itemstack);
 					applyEffects((EntityLivingBase)entity, i, getTails(itemstack) != 1 && i == 1 ? 0x2088001b : 0);
+					if (entity.ticksExisted % 30 == 0 && i == 1) {
+						world.playSound(null, entity.posX, entity.posY, entity.posZ, SoundEvents.BLOCK_LAVA_AMBIENT,
+						 SoundCategory.AMBIENT, 0.6f, this.itemRand.nextFloat() * 0.6f + 0.3f);
+					}
 				}
 			}
 

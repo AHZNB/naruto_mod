@@ -142,7 +142,7 @@ public class EntityNineTails extends ElementsNarutomodMod.ModElement {
 
 		public EntityCustom(World world) {
 			super(world);
-			this.setSize(MODELSCALE * 1.0F, MODELSCALE * 1.25F);
+			this.setSize(MODELSCALE * 1.0F, MODELSCALE * 1.2F);
 			this.experienceValue = 12000;
 			this.stepHeight = this.height / 3.0F;
 		}
@@ -153,7 +153,7 @@ public class EntityNineTails extends ElementsNarutomodMod.ModElement {
 
 		public EntityCustom(EntityPlayer player, boolean is_kcm) {
 			super(player);
-			this.setSize(MODELSCALE * 1.0F, MODELSCALE * 1.25F);
+			this.setSize(MODELSCALE * 1.0F, MODELSCALE * 1.2F);
 			this.experienceValue = 12000;
 			this.stepHeight = this.height / 3.0F;
 			this.setKCM(is_kcm);
@@ -665,7 +665,7 @@ public class EntityNineTails extends ElementsNarutomodMod.ModElement {
 				cube_r13.setRotationPoint(0.0F, -0.75F, -5.25F);
 				snout.addChild(cube_r13);
 				setRotationAngle(cube_r13, 0.2618F, 0.0F, 0.0F);
-				cube_r13.cubeList.add(new ModelBox(cube_r13, 10, 14, -1.5F, -0.5388F, -1.5257F, 3, 3, 6, 0.0F, false));
+				cube_r13.cubeList.add(new ModelBox(cube_r13, 10, 12, -1.5F, -0.5388F, -1.5257F, 3, 4, 6, 0.0F, false));
 		
 				jaw = new ModelRenderer(this);
 				jaw.setRotationPoint(0.0F, -0.35F, -5.0F);

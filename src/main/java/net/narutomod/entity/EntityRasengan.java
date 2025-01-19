@@ -138,7 +138,7 @@ public class EntityRasengan extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void onUpdate() {
 			super.onUpdate();
-			if (!this.world.isRemote && this.ticksAlive == 1 && this.shootingEntity != null) {
+			if (!this.world.isRemote && this.shootingEntity != null && !this.shootingEntity.getEntityData().getBoolean(NarutomodModVariables.forceBowPose)) {
 				ProcedureSync.EntityNBTTag.setAndSync(this.shootingEntity, NarutomodModVariables.forceBowPose, true);
 			}
 			if (!this.world.isRemote && this.ticksAlive <= this.growTime) {

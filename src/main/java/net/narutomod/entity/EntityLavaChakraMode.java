@@ -121,7 +121,7 @@ public class EntityLavaChakraMode extends ElementsNarutomodMod.ModElement {
 					}
 				}
 				if (this.rand.nextInt(20) == 0) {
-					this.playSound(SoundEvents.BLOCK_LAVA_AMBIENT, 0.5f, this.rand.nextFloat() * 0.6f + 0.6f);
+					this.playSound(SoundEvents.BLOCK_LAVA_AMBIENT, 0.6f, this.rand.nextFloat() * 0.6f + 0.7f);
 				}
 				if (this.world instanceof WorldServer && this.rand.nextInt(10) == 0) {
 					((WorldServer)this.world).spawnParticle(EnumParticleTypes.LAVA, user.posX, 
