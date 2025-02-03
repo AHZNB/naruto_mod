@@ -115,12 +115,13 @@ public class ItemSharingan extends ElementsNarutomodMod.ModElement {
 		// returns true if evaded, false if otherwise
 		public boolean onAttackEvent(LivingAttackEvent event, EntityLivingBase entity, EntityLivingBase attacker) {
 		 	if (entity.getRNG().nextFloat() <= 0.6f) {
+		 		Entity immediateSource = event.getSource().getImmediateSource();
 		    	List<BlockPos> list = ProcedureUtils.getAllAirBlocks(entity.world, entity.getEntityBoundingBox().grow(2.5d));
 		    	for (int i = 0; i < list.size(); i++) {
 		    		BlockPos pos = list.get(entity.getRNG().nextInt(list.size()));
 		    		Material material = entity.world.getBlockState(pos.down()).getMaterial();
 		    		if ((material.isSolid() || material == material.WATER)
-		    		 && attacker.getDistanceSqToCenter(pos) > 6.25d && ProcedureUtils.isSpaceOpenToStandOn(entity, pos)) {
+		    		 && immediateSource.getDistanceSqToCenter(pos) > 6.25d && ProcedureUtils.isSpaceOpenToStandOn(entity, pos)) {
 			 			event.setCanceled(true);
 			 			entity.setPositionAndUpdate(0.5d+pos.getX(), pos.getY(), 0.5d+pos.getZ());
 			 			return true;
@@ -153,7 +154,7 @@ public class ItemSharingan extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void setOwner(ItemStack stack, EntityLivingBase entityIn) {
 			super.setOwner(stack, entityIn);
-			this.setColor(stack, 1 + entityIn.getRNG().nextInt(0x00FFFFFF) | 0x20000000);
+			this.setColor(stack, entityIn.getRNG().nextInt());
 		}
 
 		@Override
@@ -168,7 +169,7 @@ public class ItemSharingan extends ElementsNarutomodMod.ModElement {
 			if (!stack.hasTagCompound()) {
 				stack.setTagCompound(new NBTTagCompound());
 			}
-			stack.getTagCompound().setInteger("color", color);
+			stack.getTagCompound().setInteger("color", (color & 0x00FFFFFF) | 0x20000000);
 		}
 
 		public int getColor(ItemStack stack) {

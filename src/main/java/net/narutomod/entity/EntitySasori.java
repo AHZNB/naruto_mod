@@ -14,7 +14,7 @@ import net.narutomod.ElementsNarutomodMod;
 
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.ReflectionHelper;
+//import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -432,8 +432,8 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 	            damageAmount = net.minecraftforge.common.ForgeHooks.onLivingDamage(this, damageSrc, damageAmount);
 	            if (damageAmount != 0.0F) {
 	                float f1 = this.getHealth();
-	            	if (!this.canDie && !this.isAIDisabled() && f1 - damageAmount <= 0.0F) {
-	            		if (f1 > 0.01f) {
+	            	if (!this.canDie && f1 - damageAmount <= 0.0F) {
+	            		if (f1 > 0.01f && !this.hasNoCore()) {
 			                this.getCombatTracker().trackDamage(damageSrc, f1, damageAmount);
 			                this.setHealth(0.01F);
 	            			this.setBreaking(true);
@@ -585,7 +585,7 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 				} else if (breakingTicks >= 0) {
 					this.setBreakingTicks(breakingTicks + this.breakingDirection);
 					if (breakingTicks > this.breakingProgressEnd && !this.isStandingStill()) {
-						this.standStillFor(this.breakingEnd * 3);
+						this.standStillFor(Integer.MAX_VALUE - 1);
 					}
 				}
 				int robeOffTicks = this.getRobeOffTicks();
@@ -662,6 +662,7 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 		private float health = 40.0f;
 		private boolean returnToOwner;
 		private int hurtTime;
+		private int ticksInGround;
 
 		public EntityCore(World worldIn) {
 			super(worldIn);
@@ -722,6 +723,13 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 					this.isAirBorne = true;
 				}
 			}
+			if (this.inGround) {
+				++this.ticksInGround;
+				if (this.ticksInGround > 200) {
+					this.setReturnToOwner();
+				}
+				return;
+			}
 			super.onUpdate();
 			if (this.hurtTime > 0) {
 				--this.hurtTime;
@@ -749,12 +757,6 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 			        this.posZ = result.hitVec.z;
 				}
 			} else if (ProcedureUtils.getVelocity(this) < 0.1d) {
-				BlockPos blockpos = result.getBlockPos();
-				ReflectionHelper.setPrivateValue(EntityThrowable.class, this, blockpos.getX(), 0); //this.xTile = blockpos.getX();
-				ReflectionHelper.setPrivateValue(EntityThrowable.class, this, blockpos.getY(), 1); // this.yTile = blockpos.getY();
-				ReflectionHelper.setPrivateValue(EntityThrowable.class, this, blockpos.getZ(), 2); // this.zTile = blockpos.getZ();
-		        ReflectionHelper.setPrivateValue(EntityThrowable.class, this, this.world.getBlockState(blockpos).getBlock(), 3); //this.inTile = iblockstate.getBlock();
-				//ReflectionHelper.setPrivateValue(EntityThrowable.class, this, 900, 8); // this.ticksInGround = 900;
 		        this.motionX = 0.0d;
 		        this.motionY = 0.0d;
 		        this.motionZ = 0.0d;

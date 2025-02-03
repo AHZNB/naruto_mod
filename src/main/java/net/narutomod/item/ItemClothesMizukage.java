@@ -34,20 +34,21 @@ public class ItemClothesMizukage extends ElementsNarutomodMod.ModElement {
 	public void initElements() {
 		elements.items.add(() -> new ItemRobe.Base(EntityEquipmentSlot.HEAD) {
 			@Override
-			@SideOnly(Side.CLIENT)
-			public ModelBiped getArmorModel(EntityLivingBase living, ItemStack stack, EntityEquipmentSlot slot, ModelBiped defaultModel) {
-				if (this.armorModel == null) {
-					this.armorModel = new ItemClothesHokage.ModelRobeHokage();
-				}
-				this.armorModel.isSneak = living.isSneaking();
-				this.armorModel.isRiding = living.isRiding();
-				this.armorModel.isChild = living.isChild();
-				return this.armorModel;
+			protected ItemNinjaArmor.ArmorData setArmorData(ItemNinjaArmor.Type type, EntityEquipmentSlot slotIn) {
+				return new Armor4Slot();
 			}
 
-			@Override
-			public String getArmorTexture(ItemStack stack, Entity entity, EntityEquipmentSlot slot, String type) {
-				return "narutomod:textures/robe_mizukage.png";
+			class Armor4Slot extends ItemNinjaArmor.ArmorData {
+				@SideOnly(Side.CLIENT)
+				@Override
+				protected void init() {
+					ItemClothesHokage.ModelRobeHokage model1 = new ItemClothesHokage.ModelRobeHokage();
+					model1.veil.showModel = true;
+					model1.collar.showModel = false;
+					model1.collar2.showModel = false;
+					this.model = model1;
+					this.texture = "narutomod:textures/robe_mizukage.png";
+				}
 			}
 		}.setUnlocalizedName("clothes_mizukagehelmet").setRegistryName("clothes_mizukagehelmet").setCreativeTab(TabModTab.tab));
 	}

@@ -1,8 +1,8 @@
 {
   "id_map": {
-    "DIMENSION": 13,
     "GUI": 70,
-    "ENTITY": 483
+    "ENTITY": 485,
+    "DIMENSION": 13
   },
   "mod_elements": [
     {
@@ -1594,14 +1594,6 @@
         "0": 83,
         "1": 84
       }
-    },
-    {
-      "name": "LocateEntity",
-      "type": "command",
-      "sortid": 300,
-      "compiles": true,
-      "locked_code": true,
-      "ids": {}
     },
     {
       "name": "AltCamView",
@@ -4471,7 +4463,7 @@
       "type": "mob",
       "sortid": 619,
       "compiles": true,
-      "locked_code": false,
+      "locked_code": true,
       "ids": {
         "0": 295,
         "1": 296
@@ -7742,6 +7734,27 @@
         "1": 483
       },
       "registry_name": "konan"
+    },
+    {
+      "name": "ModCommands",
+      "type": "command",
+      "sortid": 908,
+      "compiles": true,
+      "locked_code": true,
+      "ids": {},
+      "registry_name": "mod_commands"
+    },
+    {
+      "name": "GiantChameleon",
+      "type": "mob",
+      "sortid": 909,
+      "compiles": true,
+      "locked_code": true,
+      "ids": {
+        "0": 484,
+        "1": 485
+      },
+      "registry_name": "giant_chameleon"
     }
   ],
   "variable_elements": [
@@ -8477,14 +8490,6 @@
       "subtitle": ""
     },
     {
-      "name": "eightgatesrelease",
-      "files": [
-        "eightgatesrelease"
-      ],
-      "category": "master",
-      "subtitle": ""
-    },
-    {
       "name": "waterblast",
       "files": [
         "waterblast"
@@ -8856,6 +8861,14 @@
       "name": "paperflip",
       "files": [
         "paperflip"
+      ],
+      "category": "master",
+      "subtitle": ""
+    },
+    {
+      "name": "eightgatesrelease",
+      "files": [
+        "eightgatesrelease"
       ],
       "category": "master",
       "subtitle": ""
@@ -9314,6 +9327,7 @@
       "item.scroll_water_shockwave.name": "Water Release - Water Shockwave",
       "item.ninja_armor_iwahelmet.name": "Forehead Protector (Iwagakure)",
       "item.byakuganhelmet.name": "Byakugan",
+      "entity.giant_chameleon.name": "Giant Chameleon",
       "subtitles.snake_hiss": "",
       "subtitles.highpitch": "",
       "item.kunai_hiraishin.name": "Kunai Hiraishin",

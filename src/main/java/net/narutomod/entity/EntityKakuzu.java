@@ -40,6 +40,7 @@ import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.item.ItemStack;
 import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.nbt.NBTTagCompound;
 
 import java.util.Random;
 import javax.annotation.Nullable;
@@ -76,7 +77,10 @@ public class EntityKakuzu extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public IEntityLivingData onInitialSpawn(DifficultyInstance difficulty, @Nullable IEntityLivingData livingdata) {
-			this.setItemStackToSlot(EntityEquipmentSlot.CHEST, new ItemStack(ItemAkatsukiRobe.body));
+			ItemStack stack = new ItemStack(ItemAkatsukiRobe.body);
+			stack.setTagCompound(new NBTTagCompound());
+			stack.getTagCompound().setBoolean("collarClosed", true);
+			this.setItemStackToSlot(EntityEquipmentSlot.CHEST, stack);
 			//this.setItemToInventory(new ItemStack(ItemAkatsukiRobe.body), 1);
 			return super.onInitialSpawn(difficulty, livingdata);
 		}

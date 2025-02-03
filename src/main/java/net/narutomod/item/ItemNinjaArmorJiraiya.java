@@ -10,14 +10,12 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-
-import net.narutomod.creativetab.TabModTab;
-import net.narutomod.ElementsNarutomodMod;
-import net.minecraft.entity.EntityLivingBase;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class ItemNinjaArmorJiraiya extends ElementsNarutomodMod.ModElement {
@@ -93,7 +91,7 @@ public class ItemNinjaArmorJiraiya extends ElementsNarutomodMod.ModElement {
 				}
 				@SideOnly(Side.CLIENT)
 				@Override
-				public void setSlotVisible(Entity entity) {
+				public void setSlotVisible(ItemStack stack, Entity entity, EntityEquipmentSlot slot) {
 					this.model.bipedRightArm.showModel = true;
 					this.model.bipedLeftArm.showModel = true;
 					if (this.model instanceof ItemNinjaArmor.ModelNinjaArmor) {

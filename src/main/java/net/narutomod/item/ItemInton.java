@@ -64,23 +64,24 @@ public class ItemInton extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static class Genjutsu implements ItemJutsu.IJutsuCallback {
-		private final double maxRange = 30.0d;
-		private final int duration = 200;
+		private final double maxRange;
+		private final int duration;
 		private final int cooldown = 1200;
+
+		public Genjutsu() {
+			this(16.0d, 200);
+		}
+
+		public Genjutsu(double range, int durationIn) {
+			this.maxRange = range;
+			this.duration = durationIn;
+		}
 
 		@Override
 		public boolean createJutsu(ItemStack stack, EntityLivingBase entity, float power) {
 			Entity target = ProcedureUtils.objectEntityLookingAt(entity, this.maxRange).entityHit;
-			if (target instanceof EntityLivingBase && this.canTargetBeAffected(entity, (EntityLivingBase)target)) {
-				entity.world.playSound(null, target.posX, target.posY, target.posZ,
-				  (SoundEvent) SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:genjutsu")), SoundCategory.NEUTRAL, 1f, 1f);
-				((EntityLivingBase)target).addPotionEffect(new PotionEffect(PotionParalysis.potion, this.duration, 1, false, false));
-				((EntityLivingBase)target).addPotionEffect(new PotionEffect(MobEffects.NAUSEA, this.duration + 40, 0, false, true));
-				((EntityLivingBase)target).addPotionEffect(new PotionEffect(MobEffects.BLINDNESS, this.duration, 0, false, true));
-				if (target instanceof EntityPlayerMP) {
-					ProcedureSync.MobAppearanceParticle.send((EntityPlayerMP)target, entity.getEntityId());
-				}
-				if (entity instanceof EntityPlayer) {
+			if (target instanceof EntityLivingBase && this.createJutsu(entity, (EntityLivingBase)target, this.duration)) {				
+				if (stack != null && entity instanceof EntityPlayer) {
 					ItemJutsu.setCurrentJutsuCooldown(stack, (EntityPlayer)entity, this.cooldown);
 				}
 				return true;
@@ -88,7 +89,23 @@ public class ItemInton extends ElementsNarutomodMod.ModElement {
 			return false;
 		}
 
-		public boolean canTargetBeAffected(EntityLivingBase caster, EntityLivingBase target) {
+		public static boolean createJutsu(EntityLivingBase entity, EntityLivingBase target, int durationIn) {
+			if (canTargetBeAffected(entity, target)) {
+				entity.world.playSound(null, target.posX, target.posY, target.posZ,
+				  SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:genjutsu")), SoundCategory.NEUTRAL, 1f, 1f);
+				target.addPotionEffect(new PotionEffect(PotionParalysis.potion, durationIn, 1, false, false));
+				target.addPotionEffect(new PotionEffect(MobEffects.NAUSEA, durationIn + 40, 0, false, true));
+				target.addPotionEffect(new PotionEffect(MobEffects.BLINDNESS, durationIn, 0, false, true));
+				if (target instanceof EntityPlayerMP) {
+					ProcedureSync.MobAppearanceParticle.send((EntityPlayerMP)target, entity.getEntityId());
+				}
+				target.setRevengeTarget(entity);
+				return true;
+			}
+			return false;			
+		}
+
+		public static boolean canTargetBeAffected(EntityLivingBase caster, EntityLivingBase target) {
 			if (target instanceof EntityTailedBeast.Base && !ItemSharingan.wearingAny(caster)) {
 				return false;
 			} else {

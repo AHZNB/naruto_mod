@@ -28,9 +28,11 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.model.ModelBox;
 import net.minecraft.client.model.ModelBase;
+import net.minecraft.network.datasync.DataParameter;
+import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraft.network.datasync.DataSerializers;
 
 import net.narutomod.procedure.ProcedureUtils;
-import net.narutomod.Particles;
 import net.narutomod.ElementsNarutomodMod;
 
 import javax.annotation.Nullable;
@@ -39,7 +41,7 @@ import javax.annotation.Nullable;
 public class EntityGiantDog2h extends ElementsNarutomodMod.ModElement {
 	public static final int ENTITYID = 181;
 	public static final int ENTITYID_RANGED = 182;
-	private static final float ENTITY_SCALE = 8f;
+	private static final float ENTITY_SCALE = 10f;
 	
 	public EntityGiantDog2h(ElementsNarutomodMod instance) {
 		super(instance, 446);
@@ -53,23 +55,23 @@ public class EntityGiantDog2h extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static class EntityCustom extends EntitySummonAnimal.Base implements IMob {
+		private static final DataParameter<Boolean> ONE_HEAD = EntityDataManager.<Boolean>createKey(EntityCustom.class, DataSerializers.BOOLEAN);
 		private int splitTicks;
 		private EntityCustom child;
 
 		public EntityCustom(World world) {
 			super(world);
 			this.setOGSize(0.6f, 0.85f);
-			this.experienceValue = 5000;
-			this.stepHeight = this.height / 3;
+			this.experienceValue = 500;
 			this.postScaleFixup();
+			this.stepHeight = this.height / 3;
 		}
 
 		public EntityCustom(EntityLivingBase player, double maxHealth) {
 			super(player);
 			this.setOGSize(0.6f, 0.85f);
 			this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(maxHealth);
-			this.experienceValue = 5000;
-			this.stepHeight = this.height / 3;
+			this.experienceValue = 500;
 			RayTraceResult res = ProcedureUtils.raytraceBlocks(player, 4.0);
 			double x = res != null ? 0.5d + res.getBlockPos().getX() : player.getPositionEyes(1f).add(player.getLookVec().scale(4)).x;
 			double z = res != null ? 0.5d + res.getBlockPos().getZ() : player.getPositionEyes(1f).add(player.getLookVec().scale(4)).z;
@@ -77,6 +79,7 @@ public class EntityGiantDog2h extends ElementsNarutomodMod.ModElement {
 			this.rotationYaw = player.rotationYaw - 180.0f;
 			this.rotationYawHead = this.rotationYaw;
 			this.postScaleFixup();
+			this.stepHeight = this.height / 3;
 		}
 
 		public EntityCustom(EntityLivingBase player) {
@@ -89,13 +92,19 @@ public class EntityGiantDog2h extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
-		protected void initEntityAI() {
-			super.initEntityAI();
-			this.tasks.addTask(1, new EntityAILeapAtTarget(this, 1.0f));
-			this.tasks.addTask(2, new EntityAIAttackMelee(this, 1.4f, true));
-			this.tasks.addTask(3, new EntityAILookIdle(this));
+		public void entityInit() {
+			super.entityInit();
+			this.dataManager.register(ONE_HEAD, Boolean.valueOf(false));
 		}
-
+
+		private void setOneHead(boolean b) {
+			this.dataManager.set(ONE_HEAD, Boolean.valueOf(b));
+		}
+	
+		public boolean isOneHead() {
+			return ((Boolean)this.getDataManager().get(ONE_HEAD)).booleanValue();
+		}
+
 		@Override
 		public SoundEvent getAmbientSound() {
 			return SoundEvent.REGISTRY.getObject(new ResourceLocation("entity.wolf.growl"));
@@ -125,10 +134,10 @@ public class EntityGiantDog2h extends ElementsNarutomodMod.ModElement {
 		protected void applyEntityAttributes() {
 			super.applyEntityAttributes();
 			//this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(10D);
-			this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.6D);
+			this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.7D);
 			//this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(1000D);
 			//this.getAttributeMap().registerAttribute(SharedMonsterAttributes.ATTACK_DAMAGE);
-			this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(40D);
+			this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(50.0D);
 			this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(64.0);
 		}
 
@@ -143,13 +152,6 @@ public class EntityGiantDog2h extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
-		public boolean attackEntityAsMob(Entity entityIn) {
-			return entityIn.attackEntityFrom(DamageSource.causeMobDamage(this), 
-			 (float)this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).getAttributeValue() 
-			 * (this.rand.nextFloat() * 0.4f + 0.8f));
-		}
-
-		@Override
 		public double getMountedYOffset() {
 			return this.height + 0.35d;
 		}
@@ -161,13 +163,25 @@ public class EntityGiantDog2h extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public int getMaxFallHeight() {
-			return 12;
+			return 24;
+		}
+
+		@Override
+		protected void initEntityAI() {
+			super.initEntityAI();
+			this.tasks.addTask(1, new EntityAILeapAtTarget(this, 1.0f));
+			this.tasks.addTask(2, new EntityAIAttackMelee(this, 1.4f, true) {
+				@Override
+				public boolean shouldExecute() {
+					return this.attacker.getControllingPassenger() == null && super.shouldExecute();
+				}
+			});
+			this.tasks.addTask(3, new EntityAILookIdle(this));
 		}
 
 		@Override
 		public void setDead() {
 			super.setDead();
-			this.poof();
 			if (!this.world.isRemote && this.child != null) {
 				this.child.setDead();
 			}
@@ -187,11 +201,13 @@ public class EntityGiantDog2h extends ElementsNarutomodMod.ModElement {
 						this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(maxhp);
 						this.setHealth(maxhp);
 						this.setNoAI(false);
+						this.setOneHead(true);
 						this.child = this.createChild(maxhp);
 						if (this.child != null) {
 							this.child.copyLocationAndAnglesFrom(this);
 							this.child.rotationYawHead = this.rotationYawHead;
 							this.world.spawnEntity(this.child);
+							this.child.setOneHead(true);
 						}
 					}
 				}
@@ -199,12 +215,29 @@ public class EntityGiantDog2h extends ElementsNarutomodMod.ModElement {
 //System.out.println(">>> maxHealth:"+getMaxHealth()+", curHealth:"+getHealth()+", splitTicks:"+splitTicks+", "+this);
 		}
 
-		private void poof() {
-			if (!this.world.isRemote) {
-				this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:poof")), 1.0F, 1.0F);
-				Particles.spawnParticle(this.world, Particles.Types.SMOKE, this.posX, this.posY+this.height/2, this.posZ, 300,
-				 this.width * 0.5d, this.height * 0.3d, this.width * 0.5d, 0d, 0d, 0d, 0xD0FFFFFF, 20 + (int)(ENTITY_SCALE * 5));
+		@Override @Nullable
+		public EntityLivingBase getControllingPassenger() {
+			Entity passenger = super.getControllingPassenger();
+			return passenger instanceof EntityLivingBase && this.isSummoner(passenger) ? (EntityLivingBase)passenger : null;
+		}
+
+		@Override
+		public void travel(float strafe, float vertical, float forward) {
+			EntityLivingBase passenger = this.getControllingPassenger();
+			if (passenger != null) {
+				this.rotationYaw = passenger.rotationYaw;
+				this.rotationPitch = passenger.rotationPitch;
+				this.setRotation(this.rotationYaw, this.rotationPitch);
+				this.renderYawOffset = passenger.renderYawOffset;
+				this.rotationYawHead = passenger.getRotationYawHead();
+				this.jumpMovementFactor = passenger.getAIMoveSpeed() * 0.15F;
+				this.setAIMoveSpeed((float)ProcedureUtils.getModifiedSpeed(this));
+				forward = passenger.moveForward;
+				strafe = passenger.moveStrafing;
+			} else {
+				this.jumpMovementFactor = 0.02f;
 			}
+			super.travel(strafe, vertical, forward);
 		}
 
 		@Override
@@ -227,8 +260,8 @@ public class EntityGiantDog2h extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		protected void collideWithEntity(Entity entity) {
-			if (!this.world.isRemote && entity instanceof EntityLivingBase && !this.isSummoner((EntityLivingBase)entity)) {
-				entity.attackEntityFrom(DamageSource.causeMobDamage(this), 5f);
+			if (!this.world.isRemote && this.isBeingRidden() && entity instanceof EntityLivingBase && !this.isSummoner((EntityLivingBase)entity)) {
+				this.attackEntityAsMob(entity);
 			}
 			super.collideWithEntity(entity);
 		}
@@ -255,11 +288,22 @@ public class EntityGiantDog2h extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void register() {
 			RenderingRegistry.registerEntityRenderingHandler(EntityCustom.class, renderManager -> {
-				return new RenderLiving(renderManager, new ModelDog2head(), 0.5f * ENTITY_SCALE) {
+				return new RenderLiving<EntityCustom>(renderManager, new ModelDog2head(), 0.5f * ENTITY_SCALE) {
 					private final ResourceLocation texture = new ResourceLocation("narutomod:textures/dog.png");
 					@Override
-					protected ResourceLocation getEntityTexture(Entity entity) {
+					protected ResourceLocation getEntityTexture(EntityCustom entity) {
 						return this.texture;
+					}
+					@Override
+					protected void renderModel(EntityCustom entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor) {
+						GlStateManager.pushMatrix();
+						GlStateManager.translate(0.0f, 1.5f - ENTITY_SCALE * 1.5f, 0.0f);
+						GlStateManager.scale(ENTITY_SCALE, ENTITY_SCALE, ENTITY_SCALE);
+						GlStateManager.enableBlend();
+						GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+						super.renderModel(entity, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scaleFactor);
+						GlStateManager.disableBlend();
+						GlStateManager.popMatrix();
 					}
 				};
 			});
@@ -274,13 +318,24 @@ public class EntityGiantDog2h extends ElementsNarutomodMod.ModElement {
 			private final ModelRenderer bone6;
 			private final ModelRenderer bone8;
 			private final ModelRenderer bone3;
+			private final ModelRenderer jawRight;
 			private final ModelRenderer headLeft;
 			private final ModelRenderer bone4;
 			private final ModelRenderer bone9;
 			private final ModelRenderer bone10;
+			private final ModelRenderer jawLeft;
 			private final ModelRenderer body;
 			private final ModelRenderer tail;
+			private final ModelRenderer tail2;
 			private final ModelRenderer upperBody;
+			private final ModelRenderer wingRight;
+			private final ModelRenderer cube_r1;
+			private final ModelRenderer cube_r2;
+			private final ModelRenderer cube_r3;
+			private final ModelRenderer wingLeft;
+			private final ModelRenderer cube_r4;
+			private final ModelRenderer cube_r5;
+			private final ModelRenderer cube_r6;
 			private final ModelRenderer leg0;
 			private final ModelRenderer bone2;
 			private final ModelRenderer leg6;
@@ -337,54 +392,67 @@ public class EntityGiantDog2h extends ElementsNarutomodMod.ModElement {
 				textureHeight = 32;
 	
 				headRight = new ModelRenderer(this);
-				headRight.setRotationPoint(-3.5F, 13.5F, -7.0F);
+				headRight.setRotationPoint(-2.0F, 13.5F, -6.0F);
 				setRotationAngle(headRight, 0.0F, 0.2618F, 0.0F);
-				headRight.cubeList.add(new ModelBox(headRight, 0, 1, -2.0F, -2.5F, -2.0F, 5, 5, 4, 0.0F, false));
-				headRight.cubeList.add(new ModelBox(headRight, 0, 10, -1.0F, -0.5156F, -5.0F, 3, 3, 4, 0.0F, false));
-				headRight.cubeList.add(new ModelBox(headRight, 16, 11, 0.0539F, -1.5F, -4.0F, 1, 2, 1, 0.0F, false));
+				headRight.cubeList.add(new ModelBox(headRight, 0, 1, -2.5F, -2.5F, -4.0F, 5, 5, 4, 0.0F, false));
+				headRight.cubeList.add(new ModelBox(headRight, 1, 2, -2.5F, -2.5F, -0.25F, 5, 5, 3, 0.0F, false));
+				headRight.cubeList.add(new ModelBox(headRight, 0, 10, -1.5F, -0.5156F, -7.0F, 3, 2, 4, 0.0F, false));
+				headRight.cubeList.add(new ModelBox(headRight, 10, 10, -0.4461F, -1.5F, -6.0F, 1, 2, 1, 0.0F, false));
 		
 				bone6 = new ModelRenderer(this);
-				bone6.setRotationPoint(-1.0F, 1.0F, -3.0F);
+				bone6.setRotationPoint(-1.5F, 1.0F, -5.0F);
 				headRight.addChild(bone6);
 				setRotationAngle(bone6, 0.0F, -0.6981F, 0.0F);
 				bone6.cubeList.add(new ModelBox(bone6, 20, 0, 0.0F, -1.5F, 0.0F, 1, 3, 2, 0.0F, false));
 		
 				bone8 = new ModelRenderer(this);
-				bone8.setRotationPoint(2.0F, 1.0F, -3.0F);
+				bone8.setRotationPoint(1.5F, 1.0F, -5.0F);
 				headRight.addChild(bone8);
 				setRotationAngle(bone8, 0.0F, 0.6981F, 0.0F);
 				bone8.cubeList.add(new ModelBox(bone8, 20, 0, -1.0F, -1.5F, 0.0F, 1, 3, 2, 0.0F, true));
 		
 				bone3 = new ModelRenderer(this);
-				bone3.setRotationPoint(0.5F, -1.4F, -4.75F);
+				bone3.setRotationPoint(0.0F, -1.4F, -6.75F);
 				headRight.addChild(bone3);
 				setRotationAngle(bone3, 0.0F, 0.0F, -3.1416F);
 				bone3.cubeList.add(new ModelBox(bone3, 40, 15, -5.0F, -2.5F, 0.0F, 10, 4, 0, -2.7F, false));
 		
+				jawRight = new ModelRenderer(this);
+				jawRight.setRotationPoint(0.0F, 1.5F, -4.0F);
+				headRight.addChild(jawRight);
+				setRotationAngle(jawRight, 0.5236F, 0.0F, 0.0F);
+				jawRight.cubeList.add(new ModelBox(jawRight, 10, 13, -1.5F, 0.0F, -3.0F, 3, 1, 4, 0.0F, false));
+		
 				headLeft = new ModelRenderer(this);
-				headLeft.setRotationPoint(3.5F, 13.5F, -7.0F);
+				headLeft.setRotationPoint(2.0F, 13.5F, -6.0F);
 				setRotationAngle(headLeft, 0.0F, -0.2618F, 0.0F);
-				headLeft.cubeList.add(new ModelBox(headLeft, 0, 1, -3.0F, -2.5F, -2.0F, 5, 5, 4, 0.0F, true));
-				headLeft.cubeList.add(new ModelBox(headLeft, 0, 10, -2.0F, -0.5156F, -5.0F, 3, 3, 4, 0.0F, true));
-				headLeft.cubeList.add(new ModelBox(headLeft, 16, 11, -1.0539F, -1.5F, -4.0F, 1, 2, 1, 0.0F, true));
+				headLeft.cubeList.add(new ModelBox(headLeft, 0, 1, -2.5F, -2.5F, -4.0F, 5, 5, 4, 0.0F, true));
+				headLeft.cubeList.add(new ModelBox(headLeft, 1, 2, -2.5F, -2.5F, -0.25F, 5, 5, 3, 0.0F, true));
+				headLeft.cubeList.add(new ModelBox(headLeft, 0, 10, -1.5F, -0.5156F, -7.0F, 3, 2, 4, 0.0F, true));
+				headLeft.cubeList.add(new ModelBox(headLeft, 10, 10, -0.5539F, -1.5F, -6.0F, 1, 2, 1, 0.0F, true));
 		
 				bone4 = new ModelRenderer(this);
-				bone4.setRotationPoint(1.0F, 1.0F, -3.0F);
+				bone4.setRotationPoint(1.5F, 1.0F, -5.0F);
 				headLeft.addChild(bone4);
 				setRotationAngle(bone4, 0.0F, 0.6981F, 0.0F);
 				bone4.cubeList.add(new ModelBox(bone4, 20, 0, -1.0F, -1.5F, 0.0F, 1, 3, 2, 0.0F, true));
 		
 				bone9 = new ModelRenderer(this);
-				bone9.setRotationPoint(-2.0F, 1.0F, -3.0F);
+				bone9.setRotationPoint(-1.5F, 1.0F, -5.0F);
 				headLeft.addChild(bone9);
 				setRotationAngle(bone9, 0.0F, -0.6981F, 0.0F);
 				bone9.cubeList.add(new ModelBox(bone9, 20, 0, 0.0F, -1.5F, 0.0F, 1, 3, 2, 0.0F, false));
 		
 				bone10 = new ModelRenderer(this);
-				bone10.setRotationPoint(-0.5F, -1.4F, -4.75F);
+				bone10.setRotationPoint(0.0F, -1.4F, -6.75F);
 				headLeft.addChild(bone10);
 				setRotationAngle(bone10, 0.0F, 0.0F, 3.1416F);
 				bone10.cubeList.add(new ModelBox(bone10, 40, 15, -5.0F, -2.5F, 0.0F, 10, 4, 0, -2.7F, true));
+		
+				jawLeft = new ModelRenderer(this);
+				jawLeft.setRotationPoint(0.0F, 1.5F, -4.0F);
+				headLeft.addChild(jawLeft);
+				jawLeft.cubeList.add(new ModelBox(jawLeft, 10, 13, -1.5F, 0.0F, -3.0F, 3, 1, 4, 0.0F, true));
 		
 				body = new ModelRenderer(this);
 				body.setRotationPoint(0.0F, 10.5F, 0.0F);
@@ -397,10 +465,64 @@ public class EntityGiantDog2h extends ElementsNarutomodMod.ModElement {
 				setRotationAngle(tail, -0.5236F, 0.0F, 0.0F);
 				tail.cubeList.add(new ModelBox(tail, 9, 18, -1.0F, 0.0F, -1.0F, 2, 8, 2, 0.0F, false));
 		
+				tail2 = new ModelRenderer(this);
+				tail2.setRotationPoint(0.0F, 7.5F, 0.0F);
+				tail.addChild(tail2);
+				setRotationAngle(tail2, 0.5236F, 0.0F, 0.0F);
+				tail2.cubeList.add(new ModelBox(tail2, 9, 18, -1.0F, -0.5F, -1.0F, 2, 8, 2, -0.2F, false));
+		
 				upperBody = new ModelRenderer(this);
 				upperBody.setRotationPoint(0.0F, 14.0F, 2.0F);
 				setRotationAngle(upperBody, -1.5708F, 0.0F, 0.0F);
 				upperBody.cubeList.add(new ModelBox(upperBody, 21, 0, -4.0F, 2.0F, -4.0F, 8, 6, 7, 0.0F, false));
+		
+				wingRight = new ModelRenderer(this);
+				wingRight.setRotationPoint(-4.0927F, 5.8734F, -3.9678F);
+				upperBody.addChild(wingRight);
+				setRotationAngle(wingRight, 1.5708F, 0.7854F, 0.0F);
+				
+		
+				cube_r1 = new ModelRenderer(this);
+				cube_r1.setRotationPoint(1.7704F, 7.9911F, 5.1063F);
+				wingRight.addChild(cube_r1);
+				setRotationAngle(cube_r1, -0.9722F, -0.0114F, -0.2253F);
+				cube_r1.cubeList.add(new ModelBox(cube_r1, 52, -6, 0.0F, -10.0F, -12.0F, 0, 10, 6, 0.0F, true));
+		
+				cube_r2 = new ModelRenderer(this);
+				cube_r2.setRotationPoint(2.7704F, 2.7911F, 9.1063F);
+				wingRight.addChild(cube_r2);
+				setRotationAngle(cube_r2, -0.9722F, -0.0114F, -0.2253F);
+				cube_r2.cubeList.add(new ModelBox(cube_r2, 0, 18, -3.2F, -4.8F, -11.2F, 2, 8, 2, -0.7F, false));
+		
+				cube_r3 = new ModelRenderer(this);
+				cube_r3.setRotationPoint(2.2927F, 0.7266F, 10.5178F);
+				wingRight.addChild(cube_r3);
+				setRotationAngle(cube_r3, -0.3177F, -0.0114F, -0.2253F);
+				cube_r3.cubeList.add(new ModelBox(cube_r3, 0, 19, -3.2F, -2.8F, -11.2F, 2, 6, 2, -0.7F, false));
+		
+				wingLeft = new ModelRenderer(this);
+				wingLeft.setRotationPoint(4.0927F, 5.8734F, -3.9678F);
+				upperBody.addChild(wingLeft);
+				setRotationAngle(wingLeft, 1.5708F, -0.7854F, 0.0F);
+				
+		
+				cube_r4 = new ModelRenderer(this);
+				cube_r4.setRotationPoint(-1.7704F, 7.9911F, 5.1063F);
+				wingLeft.addChild(cube_r4);
+				setRotationAngle(cube_r4, -0.9722F, 0.0114F, 0.2253F);
+				cube_r4.cubeList.add(new ModelBox(cube_r4, 52, -6, 0.0F, -10.0F, -12.0F, 0, 10, 6, 0.0F, false));
+		
+				cube_r5 = new ModelRenderer(this);
+				cube_r5.setRotationPoint(-2.7704F, 2.7911F, 9.1063F);
+				wingLeft.addChild(cube_r5);
+				setRotationAngle(cube_r5, -0.9722F, 0.0114F, 0.2253F);
+				cube_r5.cubeList.add(new ModelBox(cube_r5, 0, 18, 1.2F, -4.8F, -11.2F, 2, 8, 2, -0.7F, true));
+		
+				cube_r6 = new ModelRenderer(this);
+				cube_r6.setRotationPoint(-2.2927F, 0.7266F, 10.5178F);
+				wingLeft.addChild(cube_r6);
+				setRotationAngle(cube_r6, -0.3177F, 0.0114F, 0.2253F);
+				cube_r6.cubeList.add(new ModelBox(cube_r6, 0, 19, 1.2F, -2.8F, -11.2F, 2, 6, 2, -0.7F, true));
 		
 				leg0 = new ModelRenderer(this);
 				leg0.setRotationPoint(-2.5F, 13.0F, 7.0F);
@@ -697,11 +819,15 @@ public class EntityGiantDog2h extends ElementsNarutomodMod.ModElement {
 	
 			@Override
 			public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
-				GlStateManager.pushMatrix();
-				GlStateManager.translate(0.0f, 1.5f - ENTITY_SCALE * 1.5f, 0.0f);
-				GlStateManager.scale(ENTITY_SCALE, ENTITY_SCALE, ENTITY_SCALE);
-				GlStateManager.enableBlend();
-				GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+				if (((EntityCustom)entity).isOneHead()) {
+					headRight.rotationPointX = 0.0F;
+					headLeft.showModel = false;
+				} else {
+					headRight.rotationPointX = -2.0F;
+					headRight.rotateAngleY += 0.2618F;
+					headLeft.rotateAngleY -= 0.2618F;
+					headLeft.showModel = true;
+				}
 				headRight.render(f5);
 				headLeft.render(f5);
 				body.render(f5);
@@ -710,8 +836,6 @@ public class EntityGiantDog2h extends ElementsNarutomodMod.ModElement {
 				leg1.render(f5);
 				leg2.render(f5);
 				leg3.render(f5);
-				GlStateManager.disableBlend();
-				GlStateManager.popMatrix();
 			}
 	
 			public void setRotationAngle(ModelRenderer modelRenderer, float x, float y, float z) {
@@ -724,15 +848,27 @@ public class EntityGiantDog2h extends ElementsNarutomodMod.ModElement {
 			public void setRotationAngles(float f, float f1, float f2, float f3, float f4, float f5, Entity e) {
 				f *= 2.0f / e.height;
 				super.setRotationAngles(f, f1, f2, f3, f4, f5, e);
-				this.headRight.rotateAngleY = f3 / 180F * (float) Math.PI + 0.2618F;
+				this.headRight.rotateAngleY = f3 / 180F * (float) Math.PI;
 				this.headRight.rotateAngleX = f4 / 180F * (float) Math.PI;
-				this.headLeft.rotateAngleY = f3 / 180F * (float) Math.PI - 0.2618F;
+				this.headLeft.rotateAngleY = f3 / 180F * (float) Math.PI;
 				this.headLeft.rotateAngleX = f4 / 180F * (float) Math.PI;
-				this.leg0.rotateAngleX = MathHelper.cos(f * 1.0F) * -1.0F * f1;
-				this.leg1.rotateAngleX = MathHelper.cos(f * 1.0F) * 1.0F * f1;
-				this.leg2.rotateAngleX = MathHelper.cos(f * 1.0F) * 1.0F * f1;
-				this.leg3.rotateAngleX = MathHelper.cos(f * 1.0F) * -1.0F * f1;
+				float f6 = MathHelper.cos(f * 1.0F) * f1;
+				this.leg0.rotateAngleX = -f6;
+				this.leg1.rotateAngleX = f6;
+				this.leg2.rotateAngleX = f6;
+				this.leg3.rotateAngleX = -f6;
+				f6 = MathHelper.sin(f2 * 0.09F) * 0.1F + f6 * 0.6F;
+				this.wingRight.rotateAngleY = 0.7854F - f6;
+				this.wingLeft.rotateAngleY = -0.7854F + f6;
 				this.tail.rotateAngleY = f2 * 0.2f;
+				this.tail2.rotateAngleY = f2 * 0.1f;
+				if (this.swingProgress > 0.0F) {
+					jawRight.rotateAngleX = 0.7854F * (1.0F - this.swingProgress);
+					jawLeft.rotateAngleX = 0.7854F * (1.0F - this.swingProgress);
+				} else {
+					jawRight.rotateAngleX = 0.0F;
+					jawLeft.rotateAngleX = 0.0F;
+				}
 			}
 		}
 	}

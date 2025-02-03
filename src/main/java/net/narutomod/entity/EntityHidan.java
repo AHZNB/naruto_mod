@@ -192,7 +192,14 @@ public class EntityHidan extends ElementsNarutomodMod.ModElement {
 					return 16.0d;
 				}
 			});
-			this.tasks.addTask(5, new EntityAIWatchClosest(this, null, 48.0F, 1.0F) {
+			this.tasks.addTask(5, new EntityClone.AIFollowSummoner(this, 0.6d, 4f) {
+				@Override @Nullable
+				protected EntityLivingBase getFollowEntity() {
+					return (EntityLivingBase)EntityCustom.this.world.findNearestEntityWithinAABB(EntityKakuzu.EntityCustom.class,
+					 EntityCustom.this.getEntityBoundingBox().grow(256d, 16d, 256d), EntityCustom.this);
+				}
+			});
+			this.tasks.addTask(6, new EntityAIWatchClosest(this, null, 48.0F, 1.0F) {
 				@Override
 				public boolean shouldExecute() {
 					if (EntityCustom.this.jashinTransitionDirection > 0
@@ -203,9 +210,9 @@ public class EntityHidan extends ElementsNarutomodMod.ModElement {
 					return false;
 				}
 			});
-			this.tasks.addTask(6, new EntityAIWatchClosest2(this, EntityPlayer.class, 32.0F, 1.0F));
-			this.tasks.addTask(7, new EntityAIWander(this, 0.5d));
-			this.tasks.addTask(8, new EntityAILookIdle(this));
+			this.tasks.addTask(7, new EntityAIWatchClosest2(this, EntityPlayer.class, 32.0F, 1.0F));
+			this.tasks.addTask(8, new EntityAIWander(this, 0.5d));
+			this.tasks.addTask(9, new EntityAILookIdle(this));
 		}
 
 		@Override

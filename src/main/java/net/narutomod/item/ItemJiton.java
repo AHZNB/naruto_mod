@@ -444,7 +444,6 @@ public class ItemJiton extends ElementsNarutomodMod.ModElement {
 	public static class SwarmTarget<T extends Entity & ISwarmEntity> {
 		private World world;
 		private int total;
-		private Vec3d startPos;
 		private AxisAlignedBB startBB;
 		private AxisAlignedBB targetBB;
 		private float speed;
@@ -476,45 +475,15 @@ public class ItemJiton extends ElementsNarutomodMod.ModElement {
 		}
 
 		public SwarmTarget(World worldIn, int totalIn, Vec3d startPosIn, Vec3d targetPos, Vec3d initialMotion, float speedIn, float inaccuracyIn, boolean dieOnReached, float scaleIn, int colorIn) {
-			this.world = worldIn;
-			this.total = totalIn;
-			this.startPos = startPosIn;
-			this.setTarget(targetPos, speedIn, inaccuracyIn, dieOnReached);
-			this.particles = Lists.newArrayList();
-			this.rand = new Random();
-			this.spawnMotion = initialMotion;
-			this.scale = scaleIn;
-			this.color = colorIn;
-			this.spawnNewParticles();
-			this.border = this.particles.get(0).getEntityBoundingBox();
+			this(worldIn, totalIn, convert2AABB(startPosIn, 0.01f), convert2AABB(targetPos, inaccuracyIn), initialMotion, speedIn, inaccuracyIn, dieOnReached, scaleIn, colorIn);
 		}
 
 		public SwarmTarget(World worldIn, int totalIn, Vec3d startPosIn, AxisAlignedBB targetBBIn, Vec3d initialMotion, float speedIn, float inaccuracyIn, boolean dieOnReached, float scaleIn, int colorIn) {
-			this.world = worldIn;
-			this.total = totalIn;
-			this.startPos = startPosIn;
-			this.setTarget(targetBBIn, speedIn, inaccuracyIn, dieOnReached);
-			this.particles = Lists.newArrayList();
-			this.rand = new Random();
-			this.spawnMotion = initialMotion;
-			this.scale = scaleIn;
-			this.color = colorIn;
-			this.spawnNewParticles();
-			this.border = this.particles.get(0).getEntityBoundingBox();
+			this(worldIn, totalIn, convert2AABB(startPosIn, 0.01f), targetBBIn, initialMotion, speedIn, inaccuracyIn, dieOnReached, scaleIn, colorIn);
 		}
 
 		public SwarmTarget(World worldIn, int totalIn, AxisAlignedBB startBBIn, Vec3d targetPos, Vec3d initialMotion, float speedIn, float inaccuracyIn, boolean dieOnReached, float scaleIn, int colorIn) {
-			this.world = worldIn;
-			this.total = totalIn;
-			this.startBB = startBBIn;
-			this.setTarget(targetPos, speedIn, inaccuracyIn, dieOnReached);
-			this.particles = Lists.newArrayList();
-			this.rand = new Random();
-			this.spawnMotion = initialMotion;
-			this.scale = scaleIn;
-			this.color = colorIn;
-			this.spawnNewParticles();
-			this.border = this.particles.get(0).getEntityBoundingBox();
+			this(worldIn, totalIn, startBBIn, convert2AABB(targetPos, inaccuracyIn), initialMotion, speedIn, inaccuracyIn, dieOnReached, scaleIn, colorIn);
 		}
 
 		public SwarmTarget(World worldIn, int totalIn, AxisAlignedBB startBBIn, AxisAlignedBB targetBBIn, Vec3d initialMotion, float speedIn, float inaccuracyIn, boolean dieOnReached, float scaleIn, int colorIn) {
@@ -537,7 +506,7 @@ public class ItemJiton extends ElementsNarutomodMod.ModElement {
 
 		private void spawnNewParticles() {
 			for (int i = 0; this.spawned < this.total && i < 5; i++, this.spawned++) {
-				Vec3d vec = this.startPos != null ? this.startPos : this.randomPosInBB(this.startBB);
+				Vec3d vec = this.randomPosInBB(this.startBB);
 				T p = this.createParticle(vec.x, vec.y, vec.z,
 				 (this.rand.nextDouble()-0.5d) * 2d * this.spawnMotion.x, this.spawnMotion.y,
 				 (this.rand.nextDouble()-0.5d) * 2d * this.spawnMotion.z, this.color,
@@ -621,7 +590,7 @@ public class ItemJiton extends ElementsNarutomodMod.ModElement {
 		}
 
 		public void setStartVec(Vec3d vec) {
-			this.startPos = vec;
+			this.startBB = convert2AABB(vec, 0.01f);
 		}
 
 		public void setSpeed(float speedIn, float inaccuracyIn) {
@@ -647,7 +616,7 @@ public class ItemJiton extends ElementsNarutomodMod.ModElement {
 			this.setSpeed(speedIn, inaccuracyIn);
 		}
 
-		private AxisAlignedBB convert2AABB(Vec3d vec, float width) {
+		private static AxisAlignedBB convert2AABB(Vec3d vec, float width) {
 			return new AxisAlignedBB(vec.x-width*0.5f, vec.y-width*0.5f, vec.z-width*0.5f, vec.x+width*0.5f, vec.y+width*0.5f, vec.z+width*0.5f);
 		}
 		

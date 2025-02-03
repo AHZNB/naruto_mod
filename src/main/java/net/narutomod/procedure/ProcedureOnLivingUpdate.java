@@ -229,8 +229,11 @@ public class ProcedureOnLivingUpdate extends ElementsNarutomodMod.ModElement {
 		}
 		if (world.isRemote && entity.getEntityData().hasKey("GlowingTicks")) {
 			int i = entity.getEntityData().getInteger("GlowingTicks");
-			entity.setGlowing(i > 0);
-			if (i > 0) {
+			boolean shouldGlow = i > 0;
+			if (entity.isGlowing() != shouldGlow) {
+				entity.setGlowing(shouldGlow);
+			}
+			if (shouldGlow) {
 				setGlowingFor(entity, i - 1);
 			} else {
 				entity.getEntityData().removeTag("GlowingTicks");

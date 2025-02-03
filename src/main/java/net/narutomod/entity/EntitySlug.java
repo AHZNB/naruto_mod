@@ -38,7 +38,6 @@ import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.block.Block;
-import net.minecraft.pathfinding.PathNavigateClimber;
 import net.minecraft.pathfinding.PathNavigate;
 
 import net.narutomod.procedure.ProcedureUtils;
@@ -101,7 +100,7 @@ public class EntitySlug extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		protected PathNavigate createNavigator(World worldIn) {
-			return new PathNavigateClimber(this, worldIn);
+			return new EntitySummonAnimal.NavigateClimber(this, worldIn);
 		}
 
 		@Override

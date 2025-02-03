@@ -333,6 +333,13 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
+		public void setRevengeTarget(@Nullable EntityLivingBase livingBase) {
+			this.ticksExisted += 120;
+			super.setRevengeTarget(livingBase);
+			this.ticksExisted -= 120;
+		}
+
+		@Override
 		public boolean attackEntityAsMob(Entity entityIn) {
 			return ProcedureUtils.attackEntityAsMob(this, entityIn);
 		}
@@ -416,6 +423,11 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 					}
 				}
 			}
+		}
+
+		@Override
+		protected boolean canBeRidden(Entity entityIn) {
+			return false;
 		}
 
 		@Override

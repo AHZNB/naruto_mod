@@ -123,7 +123,7 @@ public class EntityShikigami extends ElementsNarutomodMod.ModElement {
 					 && user.getEntityData().getBoolean(NarutomodModVariables.JutsuKey1Pressed)
 					 && Chakra.pathway(user).consume(ItemNinjutsu.SHIKIGAMI.chakraUsage * 0.05d)) {
 						this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:paperflip")), 0.5f, this.rand.nextFloat() * 0.4f + 0.9f);
-						for (int i = 0; i < 2; i++) {
+						for (int i = 0; i < 3; i++) {
 							EntityPaperArrow entityarrow = new EntityPaperArrow(user);
 							Vec3d vec = new Vec3d((this.rand.nextFloat()-0.5f) * 5f, 0.8f + this.rand.nextFloat() * 0.4f, 0.0f)
 							 .rotateYaw(-(float)Math.toRadians(user.renderYawOffset)).add(user.getPositionVector());

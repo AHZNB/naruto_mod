@@ -61,7 +61,7 @@ public abstract class EntityShieldBase extends EntityLivingBase {
 		this(summonerIn.world);
 		this.setSummoner(summonerIn);
 		this.setLocationAndAngles(x, y, z, summonerIn.rotationYaw, summonerIn.rotationPitch);
-		summonerIn.startRiding(this);
+		summonerIn.startRiding(this, true);
 	}
 
 	@Override

@@ -31,20 +31,17 @@ public class ItemRobeJiraiya extends ElementsNarutomodMod.ModElement {
 	public void initElements() {
 		elements.items.add(() -> new ItemRobe.Base(EntityEquipmentSlot.CHEST) {
 			@Override
-			@SideOnly(Side.CLIENT)
-			public ModelBiped getArmorModel(EntityLivingBase living, ItemStack stack, EntityEquipmentSlot slot, ModelBiped defaultModel) {
-				if (this.armorModel == null) {
-					this.armorModel = new ItemRobe.ModelRobe();
-				}
-				this.armorModel.isSneak = living.isSneaking();
-				this.armorModel.isRiding = living.isRiding();
-				this.armorModel.isChild = living.isChild();
-				return this.armorModel;
+			protected ItemNinjaArmor.ArmorData setArmorData(ItemNinjaArmor.Type type, EntityEquipmentSlot slotIn) {
+				return new Armor4Slot();
 			}
 
-			@Override
-			public String getArmorTexture(ItemStack stack, Entity entity, EntityEquipmentSlot slot, String type) {
-				return "narutomod:textures/robe_jiraiya.png";
+			class Armor4Slot extends ItemNinjaArmor.ArmorData {
+				@SideOnly(Side.CLIENT)
+				@Override
+				protected void init() {
+					this.model = new ItemClothesHokage.ModelRobeHokage();
+					this.texture = "narutomod:textures/robe_jiraiya.png";
+				}
 			}
 		}.setUnlocalizedName("robe_jiraiyabody").setRegistryName("robe_jiraiyabody").setCreativeTab(TabModTab.tab));
 	}

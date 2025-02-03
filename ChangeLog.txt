@@ -12,6 +12,7 @@ Jutsus
  - added Dance of Shikigami (paper) jutsu [press JutsuKey1 to shoot paper arrows]
  - added some sound effects for thuunder god & amenotejikara teleporting, biju cloak
  - improved tensei silver blast animations
+ - changed genutsu and kamui damage to be recognized as being attacked by caster
  
 Items:
  - giant folding fan is opened by default now (to fix fan not openning when held by random entities)
@@ -19,10 +20,13 @@ Items:
  - reduced cooldown on shooting black receivers
  - release items can't be tossed anymore
  - updated explosive tag recipe to give 8 instead of 1 tags
+ - added puppet jutsu scroll in loot chests
+ - updated the gourd texture, wears a vest instead of a shoulder band
+ - updated all robes model, collar now moves with head
  
 Entities:
  - improved giant dog summon model
- - re-textured Might Guy face
+ - re-textured Might Guy, Gaara and Kankuro
  - changed kurama model to run on all 4 legs instead of sitting
  - updated Kokuo model
  - King of hell now always spawns on ground, improved model
@@ -30,11 +34,13 @@ Entities:
  - slightly buffed puppet reach, health
  - adding Konan (WIP - does nothing)
  - fixed puppets bug taking the wrong damage from its user
+ - added giant chameleon to rinnegan animal path (goes invisible when attacking, can maneuver when riding, replaces giant dog temporarily)
  
 General:
  - added config option to disable auto kekkeigenkai assignment
  - optimize particles by reducing network packet size
  - fixed not getting back nature releases after death when keepInventory false & keepNinjaXp true
+ - removed /locateEntity command, replace with /shinobicraftcmd <locateEntity | jinchuriki | susanooColor>
 
 0.3.1-beta ================================================================================
 

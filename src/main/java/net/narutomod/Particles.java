@@ -692,11 +692,11 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 
 	@SideOnly(Side.CLIENT)
 	public static class MobAppearance extends Particle {
-		private static final Map<Integer, Class <? extends Entity>> particleEntities = ImmutableMap.of(
-			net.narutomod.entity.EntityItachi.ENTITYID_RANGED, net.narutomod.entity.EntityItachi.Entity4MobAppearance.class
-		);
-	    private Entity entity;
-	    private int entityTypeId;
+		//private static final Map<Integer, Class <? extends Entity>> particleEntities = ImmutableMap.of(
+		//	net.narutomod.entity.EntityItachi.ENTITYID_RANGED, net.narutomod.entity.EntityItachi.Entity4MobAppearance.class
+		//);
+	    private EntityLivingBase entity;
+	    //private int entityTypeId;
 	
 	    protected MobAppearance(World worldIn, double xCoordIn, double yCoordIn, double zCoordIn, int id) {
 	        super(worldIn, xCoordIn, yCoordIn, zCoordIn, 0.0D, 0.0D, 0.0D);
@@ -708,29 +708,32 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 	        this.motionZ = 0.0D;
 	        this.particleGravity = 0.0F;
 	        this.particleMaxAge = 30;
-	        this.entityTypeId = id;
-	        if (particleEntities.containsKey(id)) {
-	            try {
-	            	this.entity = particleEntities.get(this.entityTypeId).getConstructor(World.class).newInstance(this.world);
-	            } catch (Exception e) {
-	            	throw new RuntimeException("Unregistered custom mob appearance particle type " + this.entityTypeId, e);
-	            }
+	        Entity entity1 = worldIn.getEntityByID(id);
+	        if (entity1 instanceof EntityLivingBase) {
+	        	this.entity = (EntityLivingBase)entity1;
 	        }
+	        //if (particleEntities.containsKey(id)) {
+	        //    try {
+	        //    	this.entity = particleEntities.get(this.entityTypeId).getConstructor(World.class).newInstance(this.world);
+	        //    } catch (Exception e) {
+	        //    	throw new RuntimeException("Unregistered custom mob appearance particle type " + this.entityTypeId, e);
+	        //    }
+	        //}
 	    }
 	
 	    public int getFXLayer() {
 	        return 3;
 	    }
 	
-	    public void onUpdate() {
+	    /*public void onUpdate() {
 	        super.onUpdate();
 			if (this.entity == null) {
 	        	Entity entity1 = this.world.getEntityByID(this.entityTypeId);
-	        	if (entity1 instanceof EntityPlayer) {
+	        	if (entity1 instanceof EntityLivingBase) {
 	        		this.entity = entity1;
 	        	}
 			}
-	    }
+	    }*/
 	
 	    @Override
 	    public void renderParticle(BufferBuilder buffer, Entity entityIn, float partialTicks, 
@@ -755,24 +758,18 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 	            GlStateManager.translate(0.0F, -f4 * 1.5f, -1.5F);
 	            GlStateManager.scale(f4, f4, f4);
 	            float f5 = this.entity.rotationYaw;
-	            float f6 = this.entity.prevRotationYaw;
-	            float f7 = 0f;
-	            float f8 = 0f;
+	            float f6 = this.entity.renderYawOffset;
+	            float f7 = this.entity.getRotationYawHead();
+	            float f8 = this.entity.rotationPitch;
 	            this.entity.rotationYaw = 0.0F;
-	            this.entity.prevRotationYaw = 0.0F;
-	            if (this.entity instanceof EntityLivingBase) {
-	            	f7 = ((EntityLivingBase)this.entity).rotationYawHead;
-	            	f8 = ((EntityLivingBase)this.entity).prevRotationYawHead;
-		            ((EntityLivingBase)this.entity).rotationYawHead = 0.0F;
-		            ((EntityLivingBase)this.entity).prevRotationYawHead = 0.0F;
-	            }
-	            rendermanager.renderEntity(this.entity, 0.0D, 0.0D, 0.0D, 0.0F, partialTicks, false);
+	            this.entity.setRotationYawHead(0.0F);
+	            this.entity.setRenderYawOffset(0.0F);
+	            this.entity.rotationPitch = 0.0F;
+	            rendermanager.renderEntity(this.entity, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F, false);
 	            this.entity.rotationYaw = f5;
-	            this.entity.prevRotationYaw = f6;
-	            if (this.entity instanceof EntityLivingBase) {
-		            ((EntityLivingBase)this.entity).rotationYawHead = f7;
-		            ((EntityLivingBase)this.entity).prevRotationYawHead = f8;
-	            }
+	            this.entity.setRenderYawOffset(f6);
+	            this.entity.setRotationYawHead(f7);
+	            this.entity.rotationPitch = f8;
 	            GlStateManager.popMatrix();
 	            GlStateManager.enableDepth();
 	        }
@@ -782,7 +779,7 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 	    public static class Factory implements IParticleFactory {
 	        public Particle createParticle(int particleID, World worldIn, double xCoordIn, 
 	        		double yCoordIn, double zCoordIn, double xSpeedIn, double ySpeedIn, double zSpeedIn, int... parameters) {
-                int arg0 = (parameters.length > 0) ? parameters[0] : net.narutomod.entity.EntityItachi.ENTITYID;
+                int arg0 = (parameters.length > 0) ? parameters[0] : -1;
                 return new MobAppearance(worldIn, xCoordIn, yCoordIn, zCoordIn, arg0);
             }
         }

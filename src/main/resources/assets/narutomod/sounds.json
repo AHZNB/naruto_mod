@@ -764,15 +764,6 @@
       }
     ]
   },
-  "eightgatesrelease": {
-    "category": "master",
-    "sounds": [
-      {
-        "name": "narutomod:eightgatesrelease",
-        "stream": false
-      }
-    ]
-  },
   "waterblast": {
     "category": "master",
     "sounds": [
@@ -1192,6 +1183,15 @@
     "sounds": [
       {
         "name": "narutomod:paperflip",
+        "stream": false
+      }
+    ]
+  },
+  "eightgatesrelease": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "narutomod:eightgatesrelease",
         "stream": false
       }
     ]

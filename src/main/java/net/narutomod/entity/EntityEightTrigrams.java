@@ -32,6 +32,7 @@ import net.minecraft.client.model.ModelBox;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.Minecraft;
 
+import net.narutomod.potion.PotionHeaviness;
 import net.narutomod.procedure.ProcedureRenderView;
 import net.narutomod.procedure.ProcedureAoeCommand;
 import net.narutomod.procedure.ProcedureSync;
@@ -137,7 +138,7 @@ public class EntityEightTrigrams extends ElementsNarutomodMod.ModElement {
 					}
 				}
 				if (this.ticksExisted > 3 && this.ticksExisted < 20) {
-					ProcedureAoeCommand.set(this, 0.0D, this.effectRadius).exclude(this.ownerPlayer).effect(MobEffects.SLOWNESS, 15, 4, true)
+					ProcedureAoeCommand.set(this, 0.0D, this.effectRadius).exclude(this.ownerPlayer).effect(PotionHeaviness.potion, 15, 4, true)
 					 .effect(MobEffects.WEAKNESS, 15, 255, true).effect(MobEffects.MINING_FATIGUE, 15, 5, true);
 				}
 				if (this.ownerPlayer instanceof EntityPlayer) {

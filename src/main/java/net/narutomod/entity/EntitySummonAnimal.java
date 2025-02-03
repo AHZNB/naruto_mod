@@ -15,10 +15,12 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.ai.attributes.IAttribute;
 import net.minecraft.entity.ai.EntityAIWander;
+import net.minecraft.entity.ai.EntityAITarget;
 import net.minecraft.entity.MoverType;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.EntityCreature;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.Entity;
@@ -29,10 +31,11 @@ import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.network.play.server.SPacketSetPassengers;
 import net.minecraft.item.Item;
 import net.minecraft.block.material.Material;
+import net.minecraft.pathfinding.Path;
 import net.minecraft.pathfinding.PathNavigateGround;
-import net.minecraft.pathfinding.WalkNodeProcessor;
 import net.minecraft.pathfinding.PathFinder;
 import net.minecraft.pathfinding.PathNodeType;
+import net.minecraft.pathfinding.WalkNodeProcessor;
 
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.Particles;
@@ -190,13 +193,20 @@ public class EntitySummonAnimal extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
+		protected void initEntityAI() {
+			super.initEntityAI();
+			this.targetTasks.addTask(1, new AIDefendEntity(this));
+		}
+
+		/*@Override
 		protected void updateAITasks() {
 			super.updateAITasks();
 			EntityLivingBase owner = this.getSummoner();
 			if (owner != null) {
 				EntityLivingBase target = owner.getRevengeTarget();
-				if (target == null) {
-					target = owner.getLastAttackedEntity();
+				if (target == null && owner.getLastAttackedEntity() != null) {
+					int i = owner.ticksExisted - owner.getLastAttackedEntityTime();
+					target = i <= 200 && i >= 0 ? owner.getLastAttackedEntity() : null;
 				}
 				if (target != null && !target.equals(this)) {
 					this.setAttackTarget(target);
@@ -206,15 +216,15 @@ public class EntitySummonAnimal extends ElementsNarutomodMod.ModElement {
 					if (!target.isEntityAlive()) {
 						this.setAttackTarget(null);
 					}
-				/*} else if (owner.getEntityData().hasKey(ItemSummoningContract.SUMMON_RALLY)) {
-					int[] ia = owner.getEntityData().getIntArray(ItemSummoningContract.SUMMON_RALLY);
-					if (ia.length == 3) {
-						BlockPos pos = new BlockPos(ia[0], ia[1], ia[2]);
-						this. getNavigator().
-					}*/
+				//} else if (owner.getEntityData().hasKey(ItemSummoningContract.SUMMON_RALLY)) {
+				//	int[] ia = owner.getEntityData().getIntArray(ItemSummoningContract.SUMMON_RALLY);
+				//	if (ia.length == 3) {
+				//		BlockPos pos = new BlockPos(ia[0], ia[1], ia[2]);
+				//		this. getNavigator().
+				//	}
 				}
 			}
-		}
+		}*/
 
 		@Override
 		public boolean processInteract(EntityPlayer entity, EnumHand hand) {
@@ -362,7 +372,7 @@ public class EntitySummonAnimal extends ElementsNarutomodMod.ModElement {
 				this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:poof")), 2.0F, 1.0F);
 				Particles.spawnParticle(this.world, Particles.Types.SMOKE, this.posX, this.posY+this.height/2, this.posZ,
 				 300, this.width * 0.5d, this.height * 0.3d, this.width * 0.5d, 0d, 0d, 0d, 0xD0FFFFFF,
-				 15 + (int)(this.getScale() * 5) + this.rand.nextInt(16));
+				 20 + (int)(this.getScale() * 5) + this.rand.nextInt(16));
 			}
 		}
 		
@@ -421,6 +431,40 @@ public class EntitySummonAnimal extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
+	public static class AIDefendEntity extends EntityAITarget {
+		private final Base baseEntity;
+
+		public AIDefendEntity(Base baseMob) {
+			super(baseMob, false);
+			this.baseEntity = baseMob;
+			this.setMutexBits(1);
+		}
+
+		@Override
+		public boolean shouldExecute() {
+			EntityLivingBase summoner = this.baseEntity.getSummoner();
+			if (summoner == null || !summoner.isEntityAlive()) {
+				return false;
+			} else {
+				this.target = summoner.getRevengeTarget();
+				if (this.target == null && summoner.getLastAttackedEntity() != null) {
+					int i = summoner.ticksExisted - summoner.getLastAttackedEntityTime();
+					this.target = i <= 200 && i >= 0 ? summoner.getLastAttackedEntity() : null;
+				}
+				if (this.target == null && summoner instanceof EntityLiving) {
+					this.target = ((EntityLiving)summoner).getAttackTarget();
+				}
+				return this.target != null && this.isSuitableTarget(this.target, false);
+			}
+		}
+
+		@Override
+		public void startExecuting() {
+			this.taskOwner.setAttackTarget(this.target);
+			super.startExecuting();
+		}
+	}
+
 	public static class AIWander extends EntityAIWander {
 		protected final Base baseEntity;
 		
@@ -462,5 +506,51 @@ public class EntitySummonAnimal extends ElementsNarutomodMod.ModElement {
 			};
 			return new PathFinder(this.nodeProcessor);
 		}
+	}
+
+	public static class NavigateClimber extends NavigateGround {
+	    private BlockPos targetPosition;
+	
+	    public NavigateClimber(Base entityLivingIn, World worldIn) {
+	        super(entityLivingIn, worldIn);
+	    }
+	
+	    @Override
+	    public Path getPathToPos(BlockPos pos) {
+	        this.targetPosition = pos;
+	        return super.getPathToPos(pos);
+	    }
+	
+	    @Override
+	    public Path getPathToEntityLiving(Entity entityIn) {
+	        this.targetPosition = new BlockPos(entityIn);
+	        return super.getPathToEntityLiving(entityIn);
+	    }
+	
+	    @Override
+	    public boolean tryMoveToEntityLiving(Entity entityIn, double speedIn) {
+	        Path path = this.getPathToEntityLiving(entityIn);
+	        if (path != null) {
+	            return this.setPath(path, speedIn);
+	        } else {
+	            this.targetPosition = new BlockPos(entityIn);
+	            this.speed = speedIn;
+	            return true;
+	        }
+	    }
+	
+	    @Override
+	    public void onUpdateNavigation() {
+	        if (!this.noPath()) {
+	            super.onUpdateNavigation();
+	        } else if (this.targetPosition != null) {
+	            double d0 = (double)(this.entity.width * this.entity.width);
+	            if (this.entity.getDistanceSqToCenter(this.targetPosition) >= d0 && (this.entity.posY <= (double)this.targetPosition.getY() || this.entity.getDistanceSqToCenter(new BlockPos(this.targetPosition.getX(), MathHelper.floor(this.entity.posY), this.targetPosition.getZ())) >= d0)) {
+	                this.entity.getMoveHelper().setMoveTo((double)this.targetPosition.getX(), (double)this.targetPosition.getY(), (double)this.targetPosition.getZ(), this.speed);
+	            } else {
+	                this.targetPosition = null;
+	            }
+	        }
+	    }
 	}
 }

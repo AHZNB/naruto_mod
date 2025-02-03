@@ -34,38 +34,45 @@ public class ItemClothesKazekage extends ElementsNarutomodMod.ModElement {
 	public void initElements() {
 		elements.items.add(() -> new ItemRobe.Base(EntityEquipmentSlot.HEAD) {
 			@Override
-			@SideOnly(Side.CLIENT)
-			public ModelBiped getArmorModel(EntityLivingBase living, ItemStack stack, EntityEquipmentSlot slot, ModelBiped defaultModel) {
-				if (this.armorModel == null) {
-					this.armorModel = new ItemClothesHokage.ModelRobeHokage();
-				}
-				this.armorModel.isSneak = living.isSneaking();
-				this.armorModel.isRiding = living.isRiding();
-				this.armorModel.isChild = living.isChild();
-				return this.armorModel;
+			protected ItemNinjaArmor.ArmorData setArmorData(ItemNinjaArmor.Type type, EntityEquipmentSlot slotIn) {
+				return new Armor4Slot();
 			}
 
-			@Override
-			public String getArmorTexture(ItemStack stack, Entity entity, EntityEquipmentSlot slot, String type) {
-				return "narutomod:textures/robe_kazekage.png";
+			class Armor4Slot extends ItemNinjaArmor.ArmorData {
+				@SideOnly(Side.CLIENT)
+				@Override
+				protected void init() {
+					ItemClothesHokage.ModelRobeHokage model1 = new ItemClothesHokage.ModelRobeHokage();
+					model1.veil.showModel = true;
+					model1.collar.showModel = false;
+					model1.collar2.showModel = false;
+					this.model = model1;
+					this.texture = "narutomod:textures/robe_kazekage.png";
+				}
 			}
 		}.setUnlocalizedName("clothes_kazekagehelmet").setRegistryName("clothes_kazekagehelmet").setCreativeTab(TabModTab.tab));
 		elements.items.add(() -> new ItemRobe.Base(EntityEquipmentSlot.CHEST) {
 			@Override
-			@SideOnly(Side.CLIENT)
-			public ModelBiped getArmorModel(EntityLivingBase living, ItemStack stack, EntityEquipmentSlot slot, ModelBiped defaultModel) {
-				if (this.armorModel == null) {
-					this.armorModel = new ItemClothesHokage.ModelRobeHokage();
-				}
-				this.armorModel.isSneak = living.isSneaking();
-				this.armorModel.isRiding = living.isRiding();
-				this.armorModel.isChild = living.isChild();
-				return this.armorModel;
+			protected ItemNinjaArmor.ArmorData setArmorData(ItemNinjaArmor.Type type, EntityEquipmentSlot slotIn) {
+				return new Armor4Slot();
 			}
 
-			@Override
-			public String getArmorTexture(ItemStack stack, Entity entity, EntityEquipmentSlot slot, String type) {
-				return "narutomod:textures/robe_kazekage.png";
+			class Armor4Slot extends ItemNinjaArmor.ArmorData {
+				@SideOnly(Side.CLIENT)
+				@Override
+				protected void init() {
+					ItemClothesHokage.ModelRobeHokage model1 = new ItemClothesHokage.ModelRobeHokage();
+					model1.veil.showModel = false;
+					model1.collar.showModel = true;
+					model1.collar2.showModel = true;
+					this.model = model1;
+					this.texture = "narutomod:textures/robe_kazekage.png";
+				}
+				@SideOnly(Side.CLIENT)
+				@Override
+				public void setSlotVisible() {
+					this.model.bipedHeadwear.showModel = true;
+				}
 			}
 		}.setUnlocalizedName("clothes_kazekagebody").setRegistryName("clothes_kazekagebody").setCreativeTab(TabModTab.tab));
 	}

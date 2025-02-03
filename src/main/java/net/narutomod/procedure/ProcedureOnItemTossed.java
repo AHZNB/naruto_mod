@@ -41,8 +41,7 @@ public class ProcedureOnItemTossed extends ElementsNarutomodMod.ModElement {
 			 || itemstack.getItem() == ItemAsuraPathArmor.body
 			 || itemstack.getItem() == ItemAshBones.block) {
 				event.setCanceled(true);
-			}
-			if (itemstack.getItem() instanceof ItemJutsu.Base) {
+			} else if (itemstack.getItem() instanceof ItemJutsu.Base) {
 				event.setCanceled(true);
 				new EventDelayedCallback(entity.world, 0, 0, 0, entity, entity.world.getTotalWorldTime() + 3, CB.setItemStack(itemstack));
 			}

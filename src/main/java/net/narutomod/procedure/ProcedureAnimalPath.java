@@ -1,7 +1,8 @@
 package net.narutomod.procedure;
 
 import net.narutomod.item.ItemRinnegan;
-import net.narutomod.entity.EntityGiantDog2h;
+import net.narutomod.entity.EntitySummonAnimal;
+import net.narutomod.entity.EntityGiantChameleon;
 import net.narutomod.Particles;
 import net.narutomod.ElementsNarutomodMod;
 import net.narutomod.Chakra;
@@ -56,7 +57,7 @@ public class ProcedureAnimalPath extends ElementsNarutomodMod.ModElement {
 							(net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY
 									.getObject(new ResourceLocation("narutomod:kuchiyosenojutsu")),
 							SoundCategory.NEUTRAL, (float) 2, (float) 0.8);
-					EntityGiantDog2h.EntityCustom entityToSpawn = new EntityGiantDog2h.EntityCustom((EntityPlayer) entity);
+					Entity entityToSpawn = new EntityGiantChameleon.EntityCustom((EntityPlayer) entity);
 					x = entityToSpawn.posX;
 					z = entityToSpawn.posZ;
 					h = entity.height;
@@ -87,7 +88,7 @@ public class ProcedureAnimalPath extends ElementsNarutomodMod.ModElement {
 				_stack.getTagCompound().setDouble("SummonedAnimal_id", 0);
 			}
 			entity = world.getEntityByID((int) summoned_id);
-			if ((entity instanceof EntityGiantDog2h.EntityCustom)) {
+			if (entity instanceof EntitySummonAnimal.Base) {
 				if (world instanceof WorldServer)
 					((WorldServer) world).spawnParticle(EnumParticleTypes.EXPLOSION_HUGE, entity.posX, entity.posY + 15, entity.posZ, 200, 4, 15, 4,
 							1, new int[0]);

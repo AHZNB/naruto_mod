@@ -27,7 +27,7 @@ public class ItemAnbuRobe extends ElementsNarutomodMod.ModElement {
 
 	@Override
 	public void initElements() {
-		elements.items.add(() -> new ItemNinjaArmor.Base(ItemNinjaArmor.Type.ROBE, ItemRobe.ENUMA, EntityEquipmentSlot.CHEST) {
+		elements.items.add(() -> new ItemRobe.Base(EntityEquipmentSlot.CHEST) {
 			@Override
 			protected ItemNinjaArmor.ArmorData setArmorData(ItemNinjaArmor.Type type, EntityEquipmentSlot slotIn) {
 				return new Armor4Slot();

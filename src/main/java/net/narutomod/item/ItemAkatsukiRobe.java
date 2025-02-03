@@ -40,55 +40,57 @@ public class ItemAkatsukiRobe extends ElementsNarutomodMod.ModElement {
 	public void initElements() {
 		elements.items.add(() -> new ItemRobe.Base(EntityEquipmentSlot.HEAD) {
 			@Override
-			@SideOnly(Side.CLIENT)
-			public ModelBiped getArmorModel(EntityLivingBase living, ItemStack stack, EntityEquipmentSlot slot, ModelBiped defaultModel) {
-				if (this.armorModel == null) {
-					this.armorModel = new ModelAkatsukiRobe();
-				}
-				this.armorModel.isSneak = living.isSneaking();
-				this.armorModel.isRiding = living.isRiding();
-				this.armorModel.isChild = living.isChild();
-				return this.armorModel;
+			protected ItemNinjaArmor.ArmorData setArmorData(ItemNinjaArmor.Type type, EntityEquipmentSlot slotIn) {
+				return new Armor4Slot();
 			}
 
-			@Override
-			public void onUpdate(ItemStack stack, World world, Entity entity, int itemSlot, boolean isSelected) {
-				if (entity instanceof EntityLivingBase) {
-					EntityLivingBase player = (EntityLivingBase)entity;
-					if (player.getRNG().nextInt(200) == 0 && stack.equals(player.getItemStackFromSlot(EntityEquipmentSlot.HEAD))) {
-						world.playSound(null, player.posX, player.posY, player.posZ,
-						 net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:dingding")),
-						 net.minecraft.util.SoundCategory.AMBIENT, 0.8f, player.getRNG().nextFloat() * 0.1f + 0.95f);
-					}
+			class Armor4Slot extends ItemNinjaArmor.ArmorData {
+				@SideOnly(Side.CLIENT)
+				@Override
+				protected void init() {
+					ModelAkatsukiRobe model1 = new ModelAkatsukiRobe();
+					model1.veil.showModel = true;
+					model1.collar.showModel = false;
+					model1.collar2.showModel = false;
+					this.model = model1;
+					this.texture = "narutomod:textures/robe_akatsuki_open.png";
 				}
-			}
-
-			@Override
-			public String getArmorTexture(ItemStack stack, Entity entity, EntityEquipmentSlot slot, String type) {
-				return "narutomod:textures/robe_akatsuki.png";
 			}
 		}.setUnlocalizedName("akatsuki_robehelmet").setRegistryName("akatsuki_robehelmet").setCreativeTab(TabModTab.tab));
 		elements.items.add(() -> new ItemRobe.Base(EntityEquipmentSlot.CHEST) {
 			@Override
-			@SideOnly(Side.CLIENT)
-			public ModelBiped getArmorModel(EntityLivingBase living, ItemStack stack, EntityEquipmentSlot slot, ModelBiped defaultModel) {
-				if (this.armorModel == null) {
-					this.armorModel = new ModelAkatsukiRobe();
-				}
-				this.armorModel.isSneak = living.isSneaking();
-				this.armorModel.isRiding = living.isRiding();
-				this.armorModel.isChild = living.isChild();
-				return this.armorModel;
+			protected ItemNinjaArmor.ArmorData setArmorData(ItemNinjaArmor.Type type, EntityEquipmentSlot slotIn) {
+				return new Armor4Slot();
 			}
 
-			@Override
-			@SideOnly(Side.CLIENT)
-			public String getArmorTexture(ItemStack stack, Entity entity, EntityEquipmentSlot slot, String type) {
-				if (stack.hasTagCompound() && stack.getTagCompound().getBoolean("halfOff")) {
-					this.armorModel.bipedRightArm.showModel = false;
-					return "narutomod:textures/robe_akatsuki_half.png";
+			class Armor4Slot extends ItemNinjaArmor.ArmorData {
+				private final String textureOpened = "narutomod:textures/robe_akatsuki_open.png";
+				private final String textureClosed = "narutomod:textures/robe_akatsuki_closed.png";
+				private final String texturePartial = "narutomod:textures/robe_akatsuki_half.png";
+
+				@SideOnly(Side.CLIENT)
+				@Override
+				protected void init() {
+					ModelAkatsukiRobe model1 = new ModelAkatsukiRobe();
+					model1.veil.showModel = false;
+					model1.collar.showModel = true;
+					model1.collar2.showModel = true;
+					this.model = model1;
+					this.texture = this.textureOpened;
 				}
-				return "narutomod:textures/robe_akatsuki.png";
+				@SideOnly(Side.CLIENT)
+				@Override
+				public void setSlotVisible(ItemStack stack, Entity entity, EntityEquipmentSlot slot) {
+					this.model.bipedHeadwear.showModel = true;
+					if (stack.hasTagCompound() && stack.getTagCompound().getBoolean("halfOff")) {
+						this.model.bipedRightArm.showModel = false;
+						this.texture = this.texturePartial;
+					} else if (stack.hasTagCompound() && stack.getTagCompound().getBoolean("collarClosed")) {
+						this.texture = this.textureClosed;
+					} else {
+						this.texture = this.textureOpened;
+					}
+				}
 			}
 		}.setUnlocalizedName("akatsuki_robebody").setRegistryName("akatsuki_robebody").setCreativeTab(TabModTab.tab));
 	}
@@ -126,6 +128,7 @@ public class ItemAkatsukiRobe extends ElementsNarutomodMod.ModElement {
 		private final ModelRenderer Bell_r1;
 		private final ModelRenderer Bell_r2;
 		//private final ModelRenderer bipedHeadwear;
+		public final ModelRenderer veil;
 		//private final ModelRenderer bipedBody;
 		//private final ModelRenderer bipedRightArm;
 		//private final ModelRenderer bipedLeftArm;
@@ -250,9 +253,10 @@ public class ItemAkatsukiRobe extends ElementsNarutomodMod.ModElement {
 			setRotationAngle(cube_r16, 0.9599F, 0.0F, 0.0F);
 			cube_r16.cubeList.add(new ModelBox(cube_r16, 56, 16, -2.0F, 0.5F, 0.0F, 4, 12, 0, 0.0F, false));
 	
-			bipedHeadwear = new ModelRenderer(this);
-			bipedHeadwear.setRotationPoint(0.0F, 0.0F, 0.0F);
-			bipedHeadwear.cubeList.add(new ModelBox(bipedHeadwear, 32, 0, -4.0F, -8.6F, -4.0F, 8, 8, 8, 2.0F, false));
+			veil = new ModelRenderer(this);
+			veil.setRotationPoint(0.0F, -0.8F, 0.0F);
+			bipedHeadwear.addChild(veil);
+			veil.cubeList.add(new ModelBox(veil, 32, 0, -4.0F, -7.8F, -4.0F, 8, 8, 8, 2.0F, false));
 		}
 	}
 }

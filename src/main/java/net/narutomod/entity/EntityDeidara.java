@@ -165,7 +165,7 @@ public class EntityDeidara extends ElementsNarutomodMod.ModElement {
 						this.c2Entity.setLocationAndAngles(vec.x, vec.y, vec.z, this.rotationYaw, 0f);
 						ProcedureUtils.poofWithSmoke(this.c2Entity);
 						this.world.spawnEntity(this.c2Entity);
-						this.startRiding(this.c2Entity);
+						this.startRiding(this.c2Entity, true);
 						this.c2Entity.setRemainingLife(10000);
 					}
 				} 

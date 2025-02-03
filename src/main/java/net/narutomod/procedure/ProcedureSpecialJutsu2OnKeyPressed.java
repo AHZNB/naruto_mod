@@ -1,10 +1,8 @@
 package net.narutomod.procedure;
 
 import net.narutomod.item.ItemTenseigan;
+import net.narutomod.item.ItemSharingan;
 import net.narutomod.item.ItemRinnegan;
-import net.narutomod.item.ItemMangekyoSharinganObito;
-import net.narutomod.item.ItemMangekyoSharinganEternal;
-import net.narutomod.item.ItemMangekyoSharingan;
 import net.narutomod.item.ItemByakugan;
 import net.narutomod.entity.EntityBijuManager;
 import net.narutomod.NarutomodModVariables;
@@ -158,9 +156,7 @@ public class ProcedureSpecialJutsu2OnKeyPressed extends ElementsNarutomodMod.Mod
 					}
 				}
 			}
-		} else if (((((helmet).getItem() == new ItemStack(ItemMangekyoSharingan.helmet, (int) (1)).getItem())
-				|| ((helmet).getItem() == new ItemStack(ItemMangekyoSharinganObito.helmet, (int) (1)).getItem()))
-				|| ((helmet).getItem() == new ItemStack(ItemMangekyoSharinganEternal.helmet, (int) (1)).getItem()))) {
+		} else if ((helmet.getItem() instanceof ItemSharingan.Base && ((ItemSharingan.Base) helmet.getItem()).isMangekyo())) {
 			if ((!(is_pressed))) {
 				{
 					Map<String, Object> $_dependencies = new HashMap<>();
