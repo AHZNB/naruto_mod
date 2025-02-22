@@ -242,7 +242,7 @@ public class EntityExplosiveClone extends ElementsNarutomodMod.ModElement {
 				}
 			}
 
-			public EC createJutsu(EntityLivingBase entity) {
+			public static EC createJutsu(EntityLivingBase entity) {
 				EC entity1 = new EC(entity);
 				if (entity.getRevengeTarget() != null) {
 					EntityLivingBase attacker = entity.getRevengeTarget();

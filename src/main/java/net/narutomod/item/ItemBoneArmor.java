@@ -152,7 +152,7 @@ public class ItemBoneArmor extends ElementsNarutomodMod.ModElement {
 			if (!target.world.isRemote && isLarchActive(target.getItemStackFromSlot(EntityEquipmentSlot.CHEST))
 			 && source.getImmediateSource() instanceof EntityLivingBase
 			 && !source.isExplosion() && !((EntityDamageSource)source).getIsThornsDamage()) {
-				source.getImmediateSource().attackEntityFrom(DamageSource.causeThornsDamage(target), event.getAmount() * 0.7f);
+				source.getImmediateSource().attackEntityFrom(DamageSource.causeThornsDamage(target), Math.min(event.getAmount() * 0.7f, 60.0f));
 			}
 		}
 	//}

@@ -62,6 +62,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.pathfinding.Path;
 import net.minecraft.pathfinding.PathNavigate;
 import net.minecraft.pathfinding.PathNavigateGround;
+import net.minecraft.pathfinding.PathNavigateSwimmer;
 
 import net.narutomod.item.ItemOnBody;
 import net.narutomod.potion.PotionFeatherFalling;
@@ -262,7 +263,7 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 			this.fixOnClientSpawn();
 			super.onUpdate();
 			BlockPos pos = new BlockPos(this);
-			if (this.navigator instanceof PathNavigateGround
+			if (!(this.navigator instanceof PathNavigateSwimmer)
 			 && this.world.getBlockState(pos).getMaterial() == Material.WATER
 			 && this.world.getBlockState(pos.up()).getMaterial() != Material.WATER) {
 				this.motionY = 0.01d;

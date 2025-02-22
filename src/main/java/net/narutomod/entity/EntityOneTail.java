@@ -356,7 +356,7 @@ public class EntityOneTail extends ElementsNarutomodMod.ModElement {
 				bipedHead = new ModelRenderer(this);
 				bipedHead.setRotationPoint(0.0F, -9.6F, -7.0F);
 				bipedBody.addChild(bipedHead);
-				bipedHead.cubeList.add(new ModelBox(bipedHead, 52, 8, -1.5F, -0.72F, -5.4006F, 3, 0, 3, 0.0F, false));
+				bipedHead.cubeList.add(new ModelBox(bipedHead, 51, 8, -2.0F, -0.72F, -5.4006F, 4, 0, 3, 0.0F, false));
 		
 				cube_r1 = new ModelRenderer(this);
 				cube_r1.setRotationPoint(0.0F, -2.4F, -5.5F);
@@ -368,7 +368,6 @@ public class EntityOneTail extends ElementsNarutomodMod.ModElement {
 				cube_r2.setRotationPoint(0.0F, 12.6F, -1.5F);
 				bipedHead.addChild(cube_r2);
 				setRotationAngle(cube_r2, 0.1309F, 0.0F, 0.0F);
-				cube_r2.cubeList.add(new ModelBox(cube_r2, 48, 0, -1.5F, -13.9F, -2.1F, 3, 0, 2, 0.0F, false));
 				cube_r2.cubeList.add(new ModelBox(cube_r2, 48, 0, -1.5F, -14.9F, -2.1F, 3, 2, 2, 0.0F, false));
 		
 				cube_r3 = new ModelRenderer(this);
@@ -392,7 +391,6 @@ public class EntityOneTail extends ElementsNarutomodMod.ModElement {
 				jaw = new ModelRenderer(this);
 				jaw.setRotationPoint(0.0F, -0.7346F, -2.3706F);
 				bipedHead.addChild(jaw);
-				setRotationAngle(jaw, 0.5236F, 0.0F, 0.0F);
 				jaw.cubeList.add(new ModelBox(jaw, 47, 13, -1.5F, 0.0F, -2.9F, 3, 1, 3, 0.2F, false));
 				jaw.cubeList.add(new ModelBox(jaw, 47, 13, -1.5F, 0.3F, -2.9F, 3, 0, 3, 0.2F, false));
 		

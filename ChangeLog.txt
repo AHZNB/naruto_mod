@@ -9,10 +9,12 @@ Jutsus
  - amaterasu damage can't be negated by fire protection
  - fixed rasenshuriken crater size bug when chunk unloaded during impact
  - kikaichu bugs can now slow down and paralize the target to suck chakra
- - added Dance of Shikigami (paper) jutsu [press JutsuKey1 to shoot paper arrows]
- - added some sound effects for thuunder god & amenotejikara teleporting, biju cloak
+ - added Dance of Shikigami (paper) jutsu [press JutsuKey1 to shoot paper arrows, jutsukey2 to bind target]
+ - added some sound effects for flying thunder god & amenotejikara teleporting, biju cloak
  - improved tensei silver blast animations
- - changed genutsu and kamui damage to be recognized as being attacked by caster
+ - changed genjutsu and kamui damage to be recognized as being attacked by caster
+ - shukaku jinchuriki's biju cloak level 2 changed to sand cloak instead of blood cloak
+ - body replacement clone: improved evasion, position 
  
 Items:
  - giant folding fan is opened by default now (to fix fan not openning when held by random entities)
@@ -22,7 +24,8 @@ Items:
  - updated explosive tag recipe to give 8 instead of 1 tags
  - added puppet jutsu scroll in loot chests
  - updated the gourd texture, wears a vest instead of a shoulder band
- - updated all robes model, collar now moves with head
+ - updated all robes model, collar now moves with head (addon makers extending the robe item class needs to update their code)
+ - cap bone armor thorns damage to max 60
  
 Entities:
  - improved giant dog summon model
@@ -32,8 +35,8 @@ Entities:
  - King of hell now always spawns on ground, improved model
  - Ninja mobs will not despawn unless there are no players within a 128 block range
  - slightly buffed puppet reach, health
- - adding Konan (WIP - does nothing)
- - fixed puppets bug taking the wrong damage from its user
+ - added Konan (uses paper drizzle, paper bind and paper replacement clone, spawns in rain)
+ - fixed puppets bug taking the wrong damage from its user, and won't attack your puppets
  - added giant chameleon to rinnegan animal path (goes invisible when attacking, can maneuver when riding, replaces giant dog temporarily)
  
 General:

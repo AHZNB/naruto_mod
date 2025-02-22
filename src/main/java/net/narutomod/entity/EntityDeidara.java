@@ -194,7 +194,7 @@ public class EntityDeidara extends ElementsNarutomodMod.ModElement {
 			 && EntityAITarget.isSuitableTarget(this, (EntityLivingBase)source.getTrueSource(), false, false)
 			 && this.consumeChakra(ItemBakuton.CLONE.chakraUsage)) {
 				this.setRevengeTarget((EntityLivingBase)source.getTrueSource());
-				EntityExplosiveClone.EC clone = new EntityExplosiveClone.EC.Jutsu().createJutsu(this);
+				EntityExplosiveClone.EC clone = EntityExplosiveClone.EC.Jutsu.createJutsu(this);
 				clone.attackEntityFrom(source, amount);
 				this.explosiveCloneLastUsed = this.ticksExisted;
 				return false;

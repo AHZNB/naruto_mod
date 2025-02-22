@@ -28,6 +28,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.item.ItemStack;
@@ -43,22 +44,14 @@ import net.minecraft.potion.PotionEffect;
 
 import net.narutomod.creativetab.TabModTab;
 import net.narutomod.ElementsNarutomodMod;
-import net.narutomod.entity.EntityClone;
-import net.narutomod.entity.EntityKageBunshin;
-import net.narutomod.entity.EntityRasengan;
-import net.narutomod.entity.EntityLimboClone;
-import net.narutomod.entity.EntitySealingChains;
-import net.narutomod.entity.EntityPuppet;
-import net.narutomod.entity.EntityKikaichu;
-import net.narutomod.entity.EntityTransformationJutsu;
-import net.narutomod.entity.EntityHiraishin;
-import net.narutomod.entity.EntityShikigami;
+import net.narutomod.entity.*;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.procedure.ProcedureOnLivingUpdate;
 import net.narutomod.potion.PotionParalysis;
 import net.narutomod.Chakra;
 
 import javax.annotation.Nullable;
+import java.util.List;
 //import com.google.common.collect.ImmutableMap;
 
 @ElementsNarutomodMod.ModElement.Tag
@@ -137,32 +130,35 @@ public class ItemNinjutsu extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static class EntityReplacementClone extends EntityClone.Base implements ItemJutsu.IJutsu {
+		protected int lifeSpan = 40;
+		
 		public EntityReplacementClone(World world) {
 			super(world);
 			this.setNoAI(true);
+			this.moveHelper = new EntityNinjaMob.MoveHelper(this);
 		}
 
 		public EntityReplacementClone(EntityLivingBase player, Entity attacker) {
 			super(player);
-			Vec3d vec3d = player.getPositionVector().subtract(attacker.getPositionVector()).normalize();
-			int i = 6;
-			BlockPos.PooledMutableBlockPos pos = BlockPos.PooledMutableBlockPos.retain();
-			for (Vec3d vec1 = vec3d.scale(i); i > 1; vec1 = vec3d.scale(--i)) {
-				int j = 0;
-				pos.setPos(attacker.posX - vec1.x, attacker.posY - vec1.y, attacker.posZ - vec1.z);
-				while (j < EnumFacing.VALUES.length && (!player.world.getBlockState(pos.down()).isTopSolid() || !ProcedureUtils.isSpaceOpenToStandOn(player, pos))) {
-					pos.setPos(pos.offset(EnumFacing.VALUES[j++]));
-				}
-				if (j < EnumFacing.VALUES.length) {
-					vec3d = new Vec3d(0.5d + pos.getX(), pos.getY(), 0.5d + pos.getZ());
-					player.rotationYaw = ProcedureUtils.getYawFromVec(attacker.getPositionVector().subtract(vec3d));
-					player.addPotionEffect(new PotionEffect(MobEffects.INVISIBILITY, 5, 0, false, false));
-					player.setInvisible(true);
-					player.setPositionAndUpdate(vec3d.x, vec3d.y, vec3d.z);
-					break;
+			List<BlockPos> list = ProcedureUtils.getAllAirBlocks(player.world, attacker.getEntityBoundingBox().grow(8));
+			list.sort(new ProcedureUtils.BlockposSorter(player.getPosition()));
+			for (int i = list.size() - 1; i >= 0; --i) {
+				BlockPos pos = list.get(i);
+				Vec3d vec = new Vec3d(0.5d+pos.getX(), pos.getY(), 0.5d+pos.getZ());
+				if (player.getDistance(vec.x, vec.y, vec.z) <= 8d && player.world.isAirBlock(pos.up())
+				 && (player.world.getBlockState(pos.down()).isTopSolid() || (!player.onGround && !attacker.onGround))
+				 && player.world.rayTraceBlocks(vec.addVector(0d, player.getEyeHeight(), 0d), attacker.getPositionEyes(1f), false, true, false) == null) {
+					float angle = MathHelper.wrapDegrees(ProcedureUtils.getYawFromVec(vec.subtract(attacker.getPositionVector())) - ProcedureUtils.getYawFromVec(player.getPositionVector().subtract(attacker.getPositionVector()))); 
+					if (angle > 135.0f || angle < -135.0f) {
+						player.rotationYaw = ProcedureUtils.getYawFromVec(attacker.getPositionVector().subtract(vec));
+						player.addPotionEffect(new PotionEffect(MobEffects.INVISIBILITY, 5, 0, false, false));
+						player.setInvisible(true);
+						player.setPositionAndUpdate(vec.x, vec.y, vec.z);
+						break;
+					}
 				}
 			}
-			pos.release();
+			this.moveHelper = new EntityNinjaMob.MoveHelper(this);
 		}
 		
 		@Override
@@ -170,10 +166,8 @@ public class ItemNinjutsu extends ElementsNarutomodMod.ModElement {
 			return ItemJutsu.JutsuEnum.Type.NINJUTSU;
 		}
 
-		@Override
-		public void setDead() {
-			super.setDead();
-			this.world.playSound(null, this.posX, this.posY, this.posZ, (SoundEvent) SoundEvent.REGISTRY
+		protected void onSetDead() {
+			this.world.playSound(null, this.posX, this.posY, this.posZ, SoundEvent.REGISTRY
 			  .getObject(new ResourceLocation("narutomod:poof")), SoundCategory.NEUTRAL, 1.0F, 1.0F);
 			if (!this.world.isRemote && net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.world, this)) {
 				BlockPos pos = new BlockPos(this).up();
@@ -199,9 +193,15 @@ public class ItemNinjutsu extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
+		public void setDead() {
+			super.setDead();
+			this.onSetDead();
+		}
+
+		@Override
 		public void onUpdate() {
 			super.onUpdate();
-			if (this.ticksExisted > 40) {
+			if (!this.world.isRemote && this.ticksExisted > this.lifeSpan) {
 				this.setDead();
 			}
 		}
@@ -236,9 +236,9 @@ public class ItemNinjutsu extends ElementsNarutomodMod.ModElement {
 				@SubscribeEvent
 				public void onAttacked(LivingHurtEvent event) {
 					EntityLivingBase entity = event.getEntityLiving();
+					Entity attacker = event.getSource().getTrueSource();
 					if (entity instanceof EntityPlayer && !entity.world.isRemote && !entity.isPotionActive(PotionParalysis.potion)
-					 && event.getSource() != DamageSource.OUT_OF_WORLD && event.getSource().getTrueSource() instanceof EntityLivingBase
-					 && !event.getSource().getTrueSource().equals(entity)) {
+					 && event.getSource() != DamageSource.OUT_OF_WORLD && attacker instanceof EntityLivingBase && !attacker.equals(entity)) {
 						ItemStack stack = ProcedureUtils.getMatchingItemStack((EntityPlayer)entity, block);
 						if (stack != null && REPLACEMENT.jutsu.isActivated(stack)) {
 							long l = entity.world.getTotalWorldTime();
@@ -246,7 +246,10 @@ public class ItemNinjutsu extends ElementsNarutomodMod.ModElement {
 							 && Chakra.pathway(entity).consume(REPLACEMENT.chakraUsage)) {
 								event.setCanceled(true);
 								stack.getTagCompound().setLong(JUTSULASTUSEKEY, l);
-								entity.world.spawnEntity(new EntityReplacementClone(entity, event.getSource().getTrueSource()));
+								ProcedureOnLivingUpdate.setUntargetable(entity, 5);
+								EntityReplacementClone clone = new EntityReplacementClone(entity, attacker);
+								entity.world.spawnEntity(clone);
+								clone.attackEntityFrom(event.getSource(), event.getAmount());
 							}
 						}
 					}

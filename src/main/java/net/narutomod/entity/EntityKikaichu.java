@@ -113,7 +113,9 @@ public class EntityKikaichu extends ElementsNarutomodMod.ModElement {
 		public void setDead() {
 			super.setDead();
 			if (!this.world.isRemote) {
-				this.target.getEntityData().removeTag(kikaichuSlownessAmp);
+				if (this.target != null) {
+					this.target.getEntityData().removeTag(kikaichuSlownessAmp);
+				}
 				if (this.bugsTarget != null && !this.bugsTarget.shouldRemove()) {
 					this.bugsTarget.forceRemove();
 				}
@@ -206,6 +208,8 @@ public class EntityKikaichu extends ElementsNarutomodMod.ModElement {
 	public static class EntityCustom extends Entity implements ItemJiton.ISwarmEntity {
 		private EntityLivingBase host;
 		private int maxAge;
+		public float prevRotationRoll;
+		public float rotationRoll;
 	    public float prevLimbSwingAmount;
 	    public float limbSwingAmount;
 	    public float limbSwing;
@@ -259,21 +263,18 @@ public class EntityKikaichu extends ElementsNarutomodMod.ModElement {
 	    }
 
 		private void updateInFlightRotations() {
-            float f4 = MathHelper.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
-            this.rotationYaw = -(float)(MathHelper.atan2(this.motionX, this.motionZ) * (180D / Math.PI));
-            for (this.rotationPitch = -(float)(MathHelper.atan2(this.motionY, (double)f4) * (180D / Math.PI)); 
-             this.rotationPitch - this.prevRotationPitch < -180.0F; this.prevRotationPitch -= 360.0F) ;
-            while (this.rotationPitch - this.prevRotationPitch >= 180.0F) {
-                this.prevRotationPitch += 360.0F;
-            }
-            while (this.rotationYaw - this.prevRotationYaw < -180.0F) {
-                this.prevRotationYaw -= 360.0F;
-            }
-            while (this.rotationYaw - this.prevRotationYaw >= 180.0F) {
-                this.prevRotationYaw += 360.0F;
-            }
-            this.rotationPitch = this.prevRotationPitch + (this.rotationPitch - this.prevRotationPitch) * 0.2F;
-            this.rotationYaw = this.prevRotationYaw + (this.rotationYaw - this.prevRotationYaw) * 0.2F;
+            double d = (double)MathHelper.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
+            float yaw = -(float)(MathHelper.atan2(this.motionX, this.motionZ) * (180D / Math.PI));
+            float pitch = -(float)(MathHelper.atan2(this.motionY, d) * (180D / Math.PI));
+            float deltaYaw = ProcedureUtils.subtractDegreesWrap(yaw, this.prevRotationYaw);
+            float deltaPitch = ProcedureUtils.subtractDegreesWrap(pitch, this.prevRotationPitch);
+            float roll = MathHelper.wrapDegrees(deltaYaw * 1.5f);
+            this.prevRotationYaw = yaw - deltaYaw;
+            this.prevRotationPitch = pitch - deltaPitch;
+            this.prevRotationRoll = this.rotationRoll;
+            this.rotationPitch = this.prevRotationPitch + (pitch - this.prevRotationPitch) * 0.2F;
+            this.rotationYaw = this.prevRotationYaw + (yaw - this.prevRotationYaw) * 0.2F;
+            this.rotationRoll = this.prevRotationRoll + (roll - this.prevRotationRoll) * 0.2F;
 		}
 
 		@Override
@@ -409,6 +410,7 @@ public class EntityKikaichu extends ElementsNarutomodMod.ModElement {
 				GlStateManager.translate(x, y + 0.03125d, z);
 				GlStateManager.rotate(-entity.prevRotationYaw - (entity.rotationYaw - entity.prevRotationYaw) * partialTicks, 0.0F, 1.0F, 0.0F);
 				GlStateManager.rotate(entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks - 180.0F, 1.0F, 0.0F, 0.0F);
+				GlStateManager.rotate(entity.prevRotationRoll + (entity.rotationRoll - entity.prevRotationRoll) * partialTicks, 0.0F, 0.0F, 1.0F);
 				GlStateManager.scale(0.1F, 0.1F, 0.1F);
 				GlStateManager.enableBlend();
 				GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);

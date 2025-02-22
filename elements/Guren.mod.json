@@ -2,10 +2,10 @@
   "_fv": 18,
   "_type": "mob",
   "definition": {
-    "mobName": "Temari",
+    "mobName": "Guren",
     "mobLabel": "",
-    "mobModelName": "ModelTemari",
-    "mobModelTexture": "temari.png",
+    "mobModelName": "ModelGuren",
+    "mobModelTexture": "guren.png",
     "mobModelGlowTexture": "",
     "modelWidth": 0.6,
     "modelHeight": 1.8,
@@ -13,11 +13,11 @@
     "mountedYOffset": 0.0,
     "hasSpawnEgg": true,
     "spawnEggBaseColor": {
-      "value": -13421773,
+      "value": -16751104,
       "falpha": 0.0
     },
     "spawnEggDotColor": {
-      "value": -3407821,
+      "value": -3355648,
       "falpha": 0.0
     },
     "creativeTab": {
@@ -46,13 +46,13 @@
     },
     "mobBehaviourType": "Mob",
     "mobCreatureType": "UNDEFINED",
-    "attackStrength": 3,
+    "attackStrength": 10,
     "attackKnockback": 0.0,
     "knockbackResistance": 0.0,
     "movementSpeed": 0.3,
     "armorBaseValue": 0.0,
     "trackingRange": 64,
-    "health": 10,
+    "health": 40,
     "xpAmount": 0,
     "waterMob": false,
     "flyingMob": false,
@@ -80,7 +80,7 @@
       "value": ""
     },
     "livingSound": {
-      "value": "entity.villager.ambient"
+      "value": ""
     },
     "hurtSound": {
       "value": "entity.generic.hurt"
@@ -100,7 +100,7 @@
     "particleAmount": 4,
     "hasAI": true,
     "aiBase": "(none)",
-    "aixml": "<xml xmlns=\"https://developers.google.com/blockly/xml\"><block type=\"aitasks_container\" deletable=\"false\" x=\"40\" y=\"40\"><next><block type=\"swim_in_water\"><field name=\"condition\">null,null</field><next><block type=\"attack_on_collide\"><field name=\"speed\">1.2</field><field name=\"longmemory\">FALSE</field><field name=\"condition\">null,null</field><next><block type=\"wander\"><field name=\"speed\">1</field><field name=\"condition\">null,null</field><next><block type=\"look_around\"><field name=\"condition\">null,null</field><next><block type=\"attack_action\"><field name=\"callhelp\">FALSE</field><field name=\"condition\">null,null</field></block></next></block></next></block></next></block></next></block></next></block></xml>",
+    "aixml": "<xml xmlns=\"https://developers.google.com/blockly/xml\"><block type=\"aitasks_container\" deletable=\"false\" x=\"40\" y=\"40\"><next><block type=\"swim_in_water\"><field name=\"condition\">null,null</field><next><block type=\"attack_action\"><field name=\"callhelp\">FALSE</field><field name=\"condition\">null,null</field><next><block type=\"attack_on_collide\"><field name=\"speed\">1.2</field><field name=\"longmemory\">FALSE</field><field name=\"condition\">null,null</field><next><block type=\"wander\"><field name=\"speed\">1</field><field name=\"condition\">null,null</field><next><block type=\"look_around\"><field name=\"condition\">null,null</field></block></next></block></next></block></next></block></next></block></next></block></xml>",
     "breedable": false,
     "tameable": false,
     "breedTriggerItems": [],
@@ -111,10 +111,10 @@
     "rangedItemType": "Default item",
     "spawnThisMob": false,
     "doesDespawnWhenIdle": false,
-    "spawningProbability": 1,
-    "mobSpawningType": "creature",
-    "minNumberOfMobsPerGroup": 1,
-    "maxNumberOfMobsPerGroup": 1,
+    "spawningProbability": 20,
+    "mobSpawningType": "monster",
+    "minNumberOfMobsPerGroup": 4,
+    "maxNumberOfMobsPerGroup": 4,
     "restrictionBiomes": [],
     "spawnInDungeons": false
   }

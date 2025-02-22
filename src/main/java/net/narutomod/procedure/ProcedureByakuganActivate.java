@@ -58,14 +58,14 @@ public class ProcedureByakuganActivate extends ElementsNarutomodMod.ModElement {
 		if (((is_pressed) && ((chakraAmount) >= ItemByakugan.getByakuganChakraUsage((EntityLivingBase) entity) * 2))) {
 			if ((!(activated))) {
 				OverlayByakuganView.sendCustomData(entity, true, 110f);
-				entity.getEntityData().setBoolean("byakugan_activated", (true));
+				ProcedureSync.EntityNBTTag.setAndSync(entity, "byakugan_activated", true);
 				entity.getEntityData().setDouble("byakugan_fov", 110);
 				world.playSound((EntityPlayer) null, x, y, z,
 						(net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:byakugan")),
 						SoundCategory.NEUTRAL, (float) 1, (float) 1);
 			}
 		} else if ((activated)) {
-			entity.getEntityData().setBoolean("byakugan_activated", (false));
+			ProcedureSync.EntityNBTTag.setAndSync(entity, "byakugan_activated", false);
 			OverlayByakuganView.sendCustomData(entity, false, 0f);
 		}
 	}

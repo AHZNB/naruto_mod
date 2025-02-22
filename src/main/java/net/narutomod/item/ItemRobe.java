@@ -24,12 +24,41 @@ public class ItemRobe extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static abstract class Base extends ItemNinjaArmor.Base {
+		@Deprecated
+		@SideOnly(Side.CLIENT)
+		public ModelBiped armorModel;
+		
 		public Base(EntityEquipmentSlot equipmentSlotIn) {
 			super(ItemNinjaArmor.Type.ROBE, equipmentSlotIn);
 		}
+
+		@Override
+		protected ItemNinjaArmor.ArmorData setArmorData(ItemNinjaArmor.Type type, EntityEquipmentSlot slotIn) {
+			return new Armor4Slot(slotIn);
+		}
+
+		class Armor4Slot extends ItemNinjaArmor.ArmorData {
+			EntityEquipmentSlot slot;
+			
+			Armor4Slot(EntityEquipmentSlot slotIn) {
+				this.slot = slotIn;
+			}
+			
+			@SideOnly(Side.CLIENT)
+			@Override
+			protected void init() {
+				ModelRobe model1 = new ModelRobe();
+				if (this.slot != EntityEquipmentSlot.CHEST) {
+					model1.collar.showModel = false;
+					model1.collar2.showModel = false;
+				}
+				this.model = model1;
+			}
+		}
 	}
 
-	public static abstract class ModelRobe extends ModelBiped {
+	@SideOnly(Side.CLIENT)
+	public static class ModelRobe extends ModelBiped {
 		//private final ModelRenderer bipedHead;
 		//private final ModelRenderer bipedHeadwear;
 		//private final ModelRenderer bipedBody;

@@ -396,7 +396,7 @@ public class EntityGiantDog2h extends ElementsNarutomodMod.ModElement {
 				setRotationAngle(headRight, 0.0F, 0.2618F, 0.0F);
 				headRight.cubeList.add(new ModelBox(headRight, 0, 1, -2.5F, -2.5F, -4.0F, 5, 5, 4, 0.0F, false));
 				headRight.cubeList.add(new ModelBox(headRight, 1, 2, -2.5F, -2.5F, -0.25F, 5, 5, 3, 0.0F, false));
-				headRight.cubeList.add(new ModelBox(headRight, 0, 10, -1.5F, -0.5156F, -7.0F, 3, 2, 4, 0.0F, false));
+				headRight.cubeList.add(new ModelBox(headRight, 0, 10, -1.5F, -0.5156F, -7.0F, 3, 3, 4, 0.0F, false));
 				headRight.cubeList.add(new ModelBox(headRight, 10, 10, -0.4461F, -1.5F, -6.0F, 1, 2, 1, 0.0F, false));
 		
 				bone6 = new ModelRenderer(this);
@@ -412,23 +412,24 @@ public class EntityGiantDog2h extends ElementsNarutomodMod.ModElement {
 				bone8.cubeList.add(new ModelBox(bone8, 20, 0, -1.0F, -1.5F, 0.0F, 1, 3, 2, 0.0F, true));
 		
 				bone3 = new ModelRenderer(this);
-				bone3.setRotationPoint(0.0F, -1.4F, -6.75F);
+				bone3.setRotationPoint(5.0F, -0.6F, -5.85F);
 				headRight.addChild(bone3);
 				setRotationAngle(bone3, 0.0F, 0.0F, -3.1416F);
-				bone3.cubeList.add(new ModelBox(bone3, 40, 15, -5.0F, -2.5F, 0.0F, 10, 4, 0, -2.7F, false));
+				bone3.cubeList.add(new ModelBox(bone3, 44, 14, 3.5F, -2.5F, -2.1F, 6, 6, 0, -3.9F, true));
+				bone3.cubeList.add(new ModelBox(bone3, 44, 14, 0.5F, -2.5F, -2.1F, 6, 6, 0, -3.9F, false));
 		
 				jawRight = new ModelRenderer(this);
 				jawRight.setRotationPoint(0.0F, 1.5F, -4.0F);
 				headRight.addChild(jawRight);
 				setRotationAngle(jawRight, 0.5236F, 0.0F, 0.0F);
-				jawRight.cubeList.add(new ModelBox(jawRight, 10, 13, -1.5F, 0.0F, -3.0F, 3, 1, 4, 0.0F, false));
+				jawRight.cubeList.add(new ModelBox(jawRight, 50, 27, -1.5F, 0.0F, -3.0F, 3, 1, 4, 0.0F, false));
 		
 				headLeft = new ModelRenderer(this);
 				headLeft.setRotationPoint(2.0F, 13.5F, -6.0F);
 				setRotationAngle(headLeft, 0.0F, -0.2618F, 0.0F);
 				headLeft.cubeList.add(new ModelBox(headLeft, 0, 1, -2.5F, -2.5F, -4.0F, 5, 5, 4, 0.0F, true));
 				headLeft.cubeList.add(new ModelBox(headLeft, 1, 2, -2.5F, -2.5F, -0.25F, 5, 5, 3, 0.0F, true));
-				headLeft.cubeList.add(new ModelBox(headLeft, 0, 10, -1.5F, -0.5156F, -7.0F, 3, 2, 4, 0.0F, true));
+				headLeft.cubeList.add(new ModelBox(headLeft, 0, 10, -1.5F, -0.5156F, -7.0F, 3, 3, 4, 0.0F, true));
 				headLeft.cubeList.add(new ModelBox(headLeft, 10, 10, -0.5539F, -1.5F, -6.0F, 1, 2, 1, 0.0F, true));
 		
 				bone4 = new ModelRenderer(this);
@@ -444,20 +445,21 @@ public class EntityGiantDog2h extends ElementsNarutomodMod.ModElement {
 				bone9.cubeList.add(new ModelBox(bone9, 20, 0, 0.0F, -1.5F, 0.0F, 1, 3, 2, 0.0F, false));
 		
 				bone10 = new ModelRenderer(this);
-				bone10.setRotationPoint(0.0F, -1.4F, -6.75F);
+				bone10.setRotationPoint(-5.0F, -0.6F, -5.85F);
 				headLeft.addChild(bone10);
 				setRotationAngle(bone10, 0.0F, 0.0F, 3.1416F);
-				bone10.cubeList.add(new ModelBox(bone10, 40, 15, -5.0F, -2.5F, 0.0F, 10, 4, 0, -2.7F, true));
+				bone10.cubeList.add(new ModelBox(bone10, 44, 14, -9.5F, -2.5F, -2.1F, 6, 6, 0, -3.9F, false));
+				bone10.cubeList.add(new ModelBox(bone10, 44, 14, -6.5F, -2.5F, -2.1F, 6, 6, 0, -3.9F, true));
 		
 				jawLeft = new ModelRenderer(this);
 				jawLeft.setRotationPoint(0.0F, 1.5F, -4.0F);
 				headLeft.addChild(jawLeft);
-				jawLeft.cubeList.add(new ModelBox(jawLeft, 10, 13, -1.5F, 0.0F, -3.0F, 3, 1, 4, 0.0F, true));
+				jawLeft.cubeList.add(new ModelBox(jawLeft, 50, 27, -1.5F, 0.0F, -3.0F, 3, 1, 4, 0.0F, true));
 		
 				body = new ModelRenderer(this);
 				body.setRotationPoint(0.0F, 10.5F, 0.0F);
 				setRotationAngle(body, 1.3963F, 0.0F, 0.0F);
-				body.cubeList.add(new ModelBox(body, 18, 14, -3.0F, 0.0F, -6.0F, 6, 9, 6, 0.0F, false));
+				body.cubeList.add(new ModelBox(body, 17, 17, -3.0F, 0.0F, -6.0F, 6, 9, 6, 0.0F, false));
 		
 				tail = new ModelRenderer(this);
 				tail.setRotationPoint(0.0F, 8.5F, -1.0F);

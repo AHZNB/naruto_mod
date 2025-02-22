@@ -57,7 +57,7 @@ public class ItemTenseiganChakraMode extends ElementsNarutomodMod.ModElement {
 	public static final int ENTITYID = 339;
 	public static final ItemJutsu.JutsuEnum CHAKRAORBS = new ItemJutsu.JutsuEnum(0, "tenseigangun", 'S', 10d, new EntityOrbs.Jutsu());
 	public static final ItemJutsu.JutsuEnum SILVERBLAST = new ItemJutsu.JutsuEnum(1, "tensei_baku_silver", 'S', 50d, new EntityTenseiBakuSilver.EC.Jutsu());
-	public static final ItemJutsu.JutsuEnum GOLDBLAST = new ItemJutsu.JutsuEnum(2, "tensei_baku_gold", 'S', 50d, new EntityTenseiBakuGold.EC.Jutsu());
+	public static final ItemJutsu.JutsuEnum GOLDBLAST = new ItemJutsu.JutsuEnum(2, "tensei_baku_gold", 'S', 60d, new EntityTenseiBakuGold.EC.Jutsu());
 
 	public ItemTenseiganChakraMode(ElementsNarutomodMod instance) {
 		super(instance, 695);

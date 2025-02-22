@@ -32,6 +32,9 @@ public class ModConfig extends ElementsNarutomodMod.ModElement {
 	@Config.Comment("Hidan's spawn weight (0~20). 0 to stop spawning.")
 	public static int SPAWN_WEIGHT_HIDAN = 1;
 
+	@Config.Comment("Konan's spawn weight (0~20). 0 to stop spawning.")
+	public static int SPAWN_WEIGHT_KONAN = 1;
+
 	@Config.Comment("Zabuza's spawn weight (0~20). 0 to stop spawning.")
 	public static int SPAWN_WEIGHT_ZABUZA = 1;
 

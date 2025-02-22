@@ -546,6 +546,8 @@ public class EntityClone extends ElementsNarutomodMod.ModElement {
 	}
 
     public static class AIFlyControl extends EntityMoveHelper {
+    	private boolean lookAtTarget;
+    	
         public AIFlyControl(EntityLiving entityIn) {
             super(entityIn);
         }
@@ -564,15 +566,12 @@ public class EntityClone extends ElementsNarutomodMod.ModElement {
                     this.entity.motionX += d0 / d3 * 0.05D * f;
                     this.entity.motionY += d1 / d3 * 0.05D * f;
                     this.entity.motionZ += d2 / d3 * 0.05D * f;
-                    //if (this.entity.getAttackTarget() == null) {
-                        this.entity.rotationYaw = -((float)MathHelper.atan2(this.entity.motionX, this.entity.motionZ)) * (180F / (float)Math.PI);
-                        this.entity.renderYawOffset = this.entity.rotationYaw;
-                    //} else {
-                    //    double d4 = this.entity.getAttackTarget().posX - this.entity.posX;
-                    //    double d5 = this.entity.getAttackTarget().posZ - this.entity.posZ;
-                    //    this.entity.rotationYaw = -((float)MathHelper.atan2(d4, d5)) * (180F / (float)Math.PI);
-                    //    this.entity.renderYawOffset = this.entity.rotationYaw;
-                    //}
+                    if (this.lookAtTarget && this.entity.getAttackTarget() != null) {
+                    	this.entity.faceEntity(this.entity.getAttackTarget(), 30.0f, 30.0f);
+                    } else {
+                    	float f1 = -((float)MathHelper.atan2(this.entity.motionX, this.entity.motionZ)) * (180F / (float)Math.PI);
+                        this.entity.rotationYaw = this.limitAngle(this.entity.rotationYaw, f1, 90.0F);
+                    }
                 } else {
                     this.entity.motionX *= 0.5D;
                     this.entity.motionY *= 0.5D;
@@ -583,6 +582,10 @@ public class EntityClone extends ElementsNarutomodMod.ModElement {
             	this.entity.setMoveVertical(0.0F);
             	this.entity.setMoveForward(0.0F);
             }
+        }
+
+        public void setFacingAttackTarget(boolean look) {
+        	this.lookAtTarget = look;
         }
     }
 
@@ -786,6 +789,7 @@ public class EntityClone extends ElementsNarutomodMod.ModElement {
 	    		GlStateManager.enableBlend();
 	    		GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 	    		super.doRenderLayer(entityIn, limbSwing * 1.8F / entityIn.height, f1, f2, f3, f4, f5, f6);
+	    		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 	    		GlStateManager.disableBlend();
 	    	}
 	

@@ -82,14 +82,14 @@ public class ProcedureOnMouseEvent extends ElementsNarutomodMod.ModElement {
 
 	@SideOnly(Side.CLIENT)
 	private void onLeftClick() {
-		EntityPlayer playerSP = Minecraft.getMinecraft().player;
-		EntityLivingBase attacker = playerSP.isRiding() && playerSP.getRidingEntity() instanceof EntityLivingBase
-		 ? (EntityLivingBase)playerSP.getRidingEntity() : playerSP;
+		Minecraft mc = Minecraft.getMinecraft();
+		EntityLivingBase attacker = mc.player.isRiding() && mc.player.getRidingEntity() instanceof EntityLivingBase
+		 ? (EntityLivingBase)mc.player.getRidingEntity() : mc.player;
 		double reach = ProcedureUtils.getReachDistance(attacker);
 		if (reach > 5.0D) {
-			//RayTraceResult rtr = ProcedureUtils.objectEntityLookingAt(playerSP, reach, playerSP.isRiding() ? playerSP.getRidingEntity() : null);
-			RayTraceResult rtr = ProcedureUtils.objectEntityLookingAt(playerSP, reach, 3.0d);
-			if (rtr != null && rtr.typeOfHit == RayTraceResult.Type.ENTITY) {
+			RayTraceResult rtr = ProcedureUtils.objectEntityLookingAt(mc.player, reach, 3.0d);
+			if (rtr != null && rtr.entityHit != null
+			 && (mc.objectMouseOver == null || mc.objectMouseOver.entityHit == null || rtr.entityHit != mc.objectMouseOver.entityHit)) {
 				NarutomodMod.PACKET_HANDLER.sendToServer(new Message(attacker.getEntityId(), rtr.entityHit.getEntityId()));
 			}
 		}

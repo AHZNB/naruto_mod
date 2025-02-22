@@ -206,6 +206,10 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 			}
 		}
 
+		public boolean isOwner(Entity entity) {
+			return entity != null && this.getOwner() == entity;
+		}
+
 		public static boolean canPlayerUseJutsu(EntityPlayer player) {
 			ItemStack stack = ProcedureUtils.getMatchingItemStack(player, ItemNinjutsu.block);
 			return stack != null && ((ItemNinjutsu.RangedItem)stack.getItem()).canActivateJutsu(stack, ItemNinjutsu.PUPPET, player) == EnumActionResult.SUCCESS;
@@ -282,17 +286,29 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 	        return null;
 	    }
 
+	    public boolean hasSameOwner(Base entity) {
+	    	return this.isOwner(entity.getOwner());
+	    }
+
 	    @Override
 	    public boolean isOnSameTeam(Entity entityIn) {
-	    	return super.isOnSameTeam(entityIn) || entityIn.equals(this.getOwner());
+	    	return this.isOwner(entityIn) || (entityIn instanceof Base && this.hasSameOwner((Base)entityIn));
+	    }
+
+		@Override
+		public void setAttackTarget(@Nullable EntityLivingBase entity) {
+			if (entity != null && !EntityAITarget.isSuitableTarget(this, entity, false, false)) {
+				return;
+			}
+			super.setAttackTarget(entity);
 	    }
 
 		@Override
 		public boolean attackEntityFrom(DamageSource source, float amount) {
-			if (source == DamageSource.FALL) {
+			if (source == DamageSource.FALL || source.getTrueSource() == this) {
 				return false;
 			}
-			if (source.getTrueSource() != null && source.getTrueSource().equals(this.getOwner())) {
+			if (source.getTrueSource() != null && this.isOnSameTeam(source.getTrueSource())) {
 				return false;
 			}
 			if (source.isProjectile()) {
@@ -845,9 +861,9 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 				float f6 = (float) d / 32.0F - f;
 				bufferbuilder.begin(5, DefaultVertexFormats.POSITION_TEX_COLOR);
 				for (int j = 0; j <= 8; j++) {
-					float f7 = MathHelper.sin((j % 8) * ((float) Math.PI * 2F) / 8.0F) * 0.008F;
-					float f8 = MathHelper.cos((j % 8) * ((float) Math.PI * 2F) / 8.0F) * 0.008F;
 					float f9 = (j % 8) / 8.0F;
+					float f7 = MathHelper.sin(f9 * (float) Math.PI * 2F) * 0.008F;
+					float f8 = MathHelper.cos(f9 * (float) Math.PI * 2F) * 0.008F;
 					bufferbuilder.pos(f7, f8, 0.0D).tex(f9, f5).color(255, 255, 255, 128).endVertex();
 					bufferbuilder.pos(f7, f8, d).tex(f9, f6).color(255, 255, 255, 128).endVertex();
 				}

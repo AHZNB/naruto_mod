@@ -451,7 +451,7 @@ public class ItemJiton extends ElementsNarutomodMod.ModElement {
 		private List<T> particles;
 		private int spawned;
 		private int ticks;
-		private Random rand;
+		private static Random rand = new Random();
 		private boolean dieOnTargetReached;
 		private Vec3d spawnMotion;
 		private AxisAlignedBB border;
@@ -492,7 +492,6 @@ public class ItemJiton extends ElementsNarutomodMod.ModElement {
 			this.startBB = startBBIn;
 			this.setTarget(targetBBIn, speedIn, inaccuracyIn, dieOnReached);
 			this.particles = Lists.newArrayList();
-			this.rand = new Random();
 			this.spawnMotion = initialMotion;
 			this.scale = scaleIn;
 			this.color = colorIn;
@@ -589,8 +588,17 @@ public class ItemJiton extends ElementsNarutomodMod.ModElement {
 			}
 		}
 
+		public void resetSpawned() {
+			this.spawned = 0;
+			this.spawnNewParticles();
+		}
+
 		public void setStartVec(Vec3d vec) {
-			this.startBB = convert2AABB(vec, 0.01f);
+			this.setStartBB(convert2AABB(vec, 0.01f));
+		}
+
+		public void setStartBB(AxisAlignedBB bb) {
+			this.startBB = bb;
 		}
 
 		public void setSpeed(float speedIn, float inaccuracyIn) {
@@ -633,17 +641,11 @@ public class ItemJiton extends ElementsNarutomodMod.ModElement {
 		}
 
 		private Vec3d randomPosInBB(AxisAlignedBB aabb) {
-			return new Vec3d(aabb.minX + this.rand.nextDouble() * (aabb.maxX - aabb.minX),
-			 aabb.minY + this.rand.nextDouble() * (aabb.maxY - aabb.minY),
-			 aabb.minZ + this.rand.nextDouble() * (aabb.maxZ - aabb.minZ));
+			return ProcedureUtils.BB.randomPosInBB(aabb);
 		}
 		
 		private Vec3d randomPosOnBB(AxisAlignedBB aabb) {
-			Vec3d vec0 = this.randomPosInBB(aabb);
-			final Vec3d[] vec1 = { new Vec3d(aabb.minX, vec0.y, vec0.z), new Vec3d(aabb.maxX, vec0.y, vec0.z),
-			 new Vec3d(vec0.x, aabb.minY, vec0.z), new Vec3d(vec0.x, aabb.maxY, vec0.z),
-			 new Vec3d(vec0.x, vec0.y, aabb.minZ), new Vec3d(vec0.x, vec0.y, aabb.maxZ) };
-			return vec1[this.rand.nextInt(6)];
+			return ProcedureUtils.BB.randomPosOnBB(aabb);
 		}
 	}
 }

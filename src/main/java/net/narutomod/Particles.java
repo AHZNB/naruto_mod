@@ -38,6 +38,7 @@ import net.minecraft.potion.PotionEffect;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.block.Block;
 
+import net.narutomod.entity.EntityPaperBind;
 import net.narutomod.potion.PotionCorrosion;
 import net.narutomod.procedure.ProcedureUtils;
 
@@ -89,6 +90,7 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 		Minecraft.getMinecraft().effectRenderer.registerParticle(Types.BLOCK_DUST.getID(), new BlockDust.Factory());
 		Minecraft.getMinecraft().effectRenderer.registerParticle(Types.SAND.getID(), new Sand.Factory());
 		Minecraft.getMinecraft().effectRenderer.registerParticle(Types.WATER_SPLASH.getID(), new WaterSplash.Factory());
+		Minecraft.getMinecraft().effectRenderer.registerParticle(Types.PAPER.getID(), new Paper.Factory());
 	}
 
 	public static void spawnParticle(World world, Types type, double x, double y, double z, int count, 
@@ -1770,6 +1772,84 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 	    }
 	}
 
+	@SideOnly(Side.CLIENT)
+	public static class Paper extends Smoke {
+		private final EntityPaperBind.EntityPaper entity;
+		
+		protected Paper(World worldIn, double xCoordIn, double yCoordIn, double zCoordIn, double motionX, double motionY, double motionZ) {
+			super(worldIn, xCoordIn, yCoordIn, zCoordIn, motionX, motionY, motionZ, -1, 4f, 0, 0, -1, -0.004f, 0d);
+			this.motionX = motionX;
+			this.motionY = motionY;
+			this.motionZ = motionZ;
+			this.entity = new EntityPaperBind.EntityPaper(worldIn);
+		}
+
+		@Override
+		public void renderParticle(BufferBuilder buffer, Entity entityIn, float partialTicks, float rotationX, float rotationZ, float rotationYZ,
+				float rotationXY, float rotationXZ) {
+            RenderManager rendermanager = Minecraft.getMinecraft().getRenderManager();
+            rendermanager.setRenderPosition(Particle.interpPosX, Particle.interpPosY, Particle.interpPosZ);
+			rendermanager.setDebugBoundingBox(false);
+			//rendermanager.setRenderOutlines(false);
+			double x = this.prevPosX + (this.posX - this.prevPosX) * partialTicks - interpPosX;
+			double y = this.prevPosY + (this.posY - this.prevPosY) * partialTicks - interpPosY;
+			double z = this.prevPosZ + (this.posZ - this.prevPosZ) * partialTicks - interpPosZ;
+			GlStateManager.pushMatrix();
+			GlStateManager.translate(x, y, z);
+			GlStateManager.disableLighting();
+            rendermanager.renderEntity(this.entity, 0.0D, 0.0D, 0.0D, 0.0F, partialTicks, false);
+            GlStateManager.enableLighting();
+            GlStateManager.popMatrix();
+		}
+
+		@Override
+		public void onUpdate() {
+			this.prevPosX = this.posX;
+			this.prevPosY = this.posY;
+			this.prevPosZ = this.posZ;
+			if (this.particleMaxAge == 0 || this.particleAge++ >= this.particleMaxAge) {
+				this.setExpired();
+				return;
+			}
+			this.motionY += this.floatMotionY;
+			this.move(this.motionX, this.motionY, this.motionZ);
+			this.entity.ticksExisted = this.particleAge;
+			this.entity.motionX = this.motionX;
+			this.entity.motionY = this.motionY;
+			this.entity.motionZ = this.motionZ;
+			this.entity.updateInFlightRotations();
+			if (this.posY == this.prevPosY) {
+				this.motionX *= 1.1D;
+				this.motionZ *= 1.1D;
+			}
+			this.motionX *= 0.96D;
+			this.motionY *= 0.96D;
+			this.motionZ *= 0.96D;
+			if (this.onGround) {
+				this.motionX *= 0.7D;
+				this.motionZ *= 0.7D;
+			}
+		}
+
+		@Override
+		public boolean shouldDisableDepth() {
+			return false;
+		}
+
+		@Override
+	    public int getFXLayer() {
+	        return 3;
+	    }
+
+		@SideOnly(Side.CLIENT)
+		public static class Factory implements IParticleFactory {
+			public Particle createParticle(int particleID, World worldIn, double xCoordIn, double yCoordIn, double zCoordIn, double xSpeedIn,
+					double ySpeedIn, double zSpeedIn, int... parameters) {
+				return new Paper(worldIn, xCoordIn, yCoordIn, zCoordIn, xSpeedIn, ySpeedIn, zSpeedIn);
+			}
+		}
+	}
+
 	public enum Types {
 		SMOKE("smoke_colored", 54678400, 7), 
 		SUSPENDED("suspended_colored", 54678401, 3), 
@@ -1789,7 +1869,8 @@ public class Particles extends ElementsNarutomodMod.ModElement {
 		WATER_SPLASH("water_splash", 54678415, 1),
 		SPIT("spit", 54678416, 4),
 		CLAY_SPIT("clay_spit", 54678417, 3),
-		CONCENTRIC_SPHERES("concentric_spheres", 54678418, 3);
+		CONCENTRIC_SPHERES("concentric_spheres", 54678418, 3),
+		PAPER("paper", 54678419, 0);
 		
 		private final String particleName;
 		private final int particleID;

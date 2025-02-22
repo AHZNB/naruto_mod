@@ -141,7 +141,7 @@ public class EntityIrukaSensei extends ElementsNarutomodMod.ModElement {
 		public void register() {
 			RenderingRegistry.registerEntityRenderingHandler(EntityCustom.class, renderManager -> {
 				return new EntityNinjaMob.RenderBase<EntityCustom>(renderManager, new ModelBiped64()) {
-					private final ResourceLocation texture = new ResourceLocation("narutomod:textures/iruka64x64.png");
+					private final ResourceLocation texture = new ResourceLocation("narutomod:textures/iruka256.png");
 					@Override
 					protected ResourceLocation getEntityTexture(EntityCustom entity) {
 						return this.texture;
@@ -160,7 +160,12 @@ public class EntityIrukaSensei extends ElementsNarutomodMod.ModElement {
 				this.bipedHead = new ModelRenderer(this);
 				this.bipedHead.setRotationPoint(0.0F, 0.0F, 0.0F);
 				this.bipedHead.cubeList.add(new ModelBox(this.bipedHead, 0, 0, -4.0F, -8.0F, -4.0F, 8, 8, 8, 0.0F, false));
-				this.bipedHead.cubeList.add(new ModelBox(this.bipedHead, 24, 0, -2.0F, -10.0F, 3.0F, 4, 4, 4, 0.0F, false));
+				ModelRenderer bone = new ModelRenderer(this);
+				bone.setRotationPoint(0.0F, -7.0F, 2.5F);
+				this.bipedHead.addChild(bone);
+				setRotationAngle(bone, 0.2618F, 0.0F, 0.0F);
+				bone.cubeList.add(new ModelBox(bone, 24, 0, -2.0F, -2.0F, -0.5F, 4, 4, 4, -0.3F, false));
+				bone.cubeList.add(new ModelBox(bone, 24, 0, -2.0F, -2.0F, 1.5F, 4, 4, 4, 0.0F, true));
 				this.bipedHeadwear = new ModelRenderer(this);
 				this.bipedHeadwear.setRotationPoint(0.0F, 0.0F, 0.0F);
 				this.bipedHeadwear.cubeList.add(new ModelBox(this.bipedHeadwear, 32, 0, -4.0F, -8.0F, -4.0F, 8, 8, 8, 0.25F, false));

@@ -27,6 +27,7 @@ import net.minecraft.util.SoundEvent;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityArrow;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.SharedMonsterAttributes;
@@ -42,6 +43,8 @@ import net.minecraft.potion.PotionEffect;
 import net.minecraft.item.ItemStack;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.network.play.server.SPacketChangeGameState;
+
+import javax.annotation.Nullable;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityShikigami extends ElementsNarutomodMod.ModElement {
@@ -63,6 +66,8 @@ public class EntityShikigami extends ElementsNarutomodMod.ModElement {
 	public static class EC extends EntityShieldBase {
 		protected static final String ENTITYID_KEY = "ShikigamiWingsEntityId";
 		private final int waitTime = 100;
+		private double chakraUsage;
+		private boolean jutsuKey2Pressed;
 		
 		public EC(World a) {
 			super(a);
@@ -70,9 +75,10 @@ public class EntityShikigami extends ElementsNarutomodMod.ModElement {
 			this.dieOnNoPassengers = false;
 		}
 
-		public EC(EntityLivingBase userIn) {
+		public EC(EntityLivingBase userIn, double chakraUsageIn) {
 			this(userIn.world);
 			this.setSummoner(userIn);
+			this.chakraUsage = chakraUsageIn;
 			this.setPosition(userIn.posX, userIn.posY, userIn.posZ);
 			this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(Math.max(userIn.getMaxHealth() * 0.5f, 20.0f));
 			this.setHealth(this.getMaxHealth());
@@ -113,7 +119,7 @@ public class EntityShikigami extends ElementsNarutomodMod.ModElement {
 						this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:paperflip")), 0.8f, this.rand.nextFloat() * 0.4f + 0.9f);
 					}
 					if (this.ticksExisted % 20 == 2) {
-						if (Chakra.pathway(user).consume(ItemNinjutsu.SHIKIGAMI.chakraUsage)) {
+						if (Chakra.pathway(user).consume(this.chakraUsage)) {
 							user.addPotionEffect(new PotionEffect(PotionFlight.potion, 25, 1, false, false));
 						} else {
 							this.setDead();
@@ -121,17 +127,32 @@ public class EntityShikigami extends ElementsNarutomodMod.ModElement {
 					}
 					if (this.ticksExisted > this.waitTime
 					 && user.getEntityData().getBoolean(NarutomodModVariables.JutsuKey1Pressed)
-					 && Chakra.pathway(user).consume(ItemNinjutsu.SHIKIGAMI.chakraUsage * 0.05d)) {
+					 && Chakra.pathway(user).consume(this.chakraUsage * 0.05d)) {
 						this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:paperflip")), 0.5f, this.rand.nextFloat() * 0.4f + 0.9f);
+						Vec3d shootvec = user.getLookVec();
+						if (user instanceof EntityLiving && ((EntityLiving)user).getAttackTarget() != null) {
+							shootvec = ((EntityLiving)user).getAttackTarget().getPositionEyes(1f).subtract(user.getPositionEyes(1f));
+							shootvec = shootvec.addVector(0, MathHelper.sqrt(shootvec.x * shootvec.x + shootvec.z * shootvec.z) * 0.1d, 0);
+						}
 						for (int i = 0; i < 3; i++) {
-							EntityPaperArrow entityarrow = new EntityPaperArrow(user);
 							Vec3d vec = new Vec3d((this.rand.nextFloat()-0.5f) * 5f, 0.8f + this.rand.nextFloat() * 0.4f, 0.0f)
 							 .rotateYaw(-(float)Math.toRadians(user.renderYawOffset)).add(user.getPositionVector());
+							EntityPaperArrow entityarrow = new EntityPaperArrow(user);
 							entityarrow.setPosition(vec.x, vec.y, vec.z);
-							vec = user.getLookVec();
-							entityarrow.shoot(vec.x, vec.y, vec.z, 2.0f, 0.05f);
+							entityarrow.shoot(shootvec.x, shootvec.y, shootvec.z, 2.0f, 0.05f);
 							this.world.spawnEntity(entityarrow);
 						}
+					}
+					if (this.ticksExisted > this.waitTime) {
+						boolean newPressed = user.getEntityData().getBoolean(NarutomodModVariables.JutsuKey2Pressed);
+						if (this.jutsuKey2Pressed && !newPressed && Chakra.pathway(user).consume(this.chakraUsage)) {
+							if (user instanceof EntityLiving && ((EntityLiving)user).getAttackTarget() != null) {
+								EntityPaperBind.EC.Jutsu.createJutsu(user, ((EntityLiving)user).getAttackTarget());
+							} else {
+								new EntityPaperBind.EC.Jutsu().createJutsu(null, user, 1.0f);
+							}
+						}
+						this.jutsuKey2Pressed = newPressed;
 					}
 				}
 			} else if (!this.world.isRemote) {
@@ -158,7 +179,7 @@ public class EntityShikigami extends ElementsNarutomodMod.ModElement {
 			public boolean createJutsu(ItemStack stack, EntityLivingBase entity, float power) {
 			 	Entity entity1 = entity.world.getEntityByID(entity.getEntityData().getInteger(ENTITYID_KEY));
 				if (!(entity1 instanceof EC)) {
-					this.createJutsu(entity);
+					this.createJutsu(entity, ItemNinjutsu.SHIKIGAMI.chakraUsage);
 					return true;
 				} else {
 					entity1.setDead();
@@ -166,10 +187,14 @@ public class EntityShikigami extends ElementsNarutomodMod.ModElement {
 				return false;
 			}
 
-			public static EC createJutsu(EntityLivingBase entity) {
-				EC entity1 = new EC(entity);
-				entity.world.spawnEntity(entity1);
-				return entity1;
+			@Nullable
+			public static EC createJutsu(EntityLivingBase entity, double chakraUsage) {
+				if (Chakra.pathway(entity).getAmount() >= chakraUsage) {
+					EC entity1 = new EC(entity, chakraUsage);
+					entity.world.spawnEntity(entity1);
+					return entity1;
+				}
+				return null;
 			}
 		}
 	}
@@ -445,49 +470,54 @@ public class EntityShikigami extends ElementsNarutomodMod.ModElement {
 				
 		
 				rightBone[5] = new ModelRenderer(this);
-				rightBone[5].setRotationPoint(1.5897F, 0.6998F, 16.1128F);
+				rightBone[5].setRotationPoint(1.5897F, 0.6998F, 0.1128F);
 				rightJoint2.addChild(rightBone[5]);
-				rightBone[5].cubeList.add(new ModelBox(rightBone[5], 27, 25, -3.434F, -5.1998F, -15.7105F, 4, 11, 8, 0.0F, false));
+				rightBone[5].cubeList.add(new ModelBox(rightBone[5], 27, 25, -3.434F, -5.1998F, 0.2895F, 4, 11, 8, 0.0F, false));
 		
 				rightBone[6] = new ModelRenderer(this);
-				rightBone[6].setRotationPoint(1.5897F, 0.6998F, 16.1128F);
+				rightBone[6].setRotationPoint(1.5897F, 0.6998F, 0.1128F);
 				rightJoint2.addChild(rightBone[6]);
-				rightBone[6].cubeList.add(new ModelBox(rightBone[6], 63, 0, -3.434F, -5.1998F, -15.7105F, 4, 11, 12, -0.15F, false));
+				rightBone[6].cubeList.add(new ModelBox(rightBone[6], 63, 0, -3.434F, -5.1998F, 0.2895F, 4, 11, 12, -0.15F, false));
 		
 				rightBone[7] = new ModelRenderer(this);
-				rightBone[7].setRotationPoint(1.5897F, 0.6998F, 16.1128F);
+				rightBone[7].setRotationPoint(1.5897F, 0.6998F, 0.1128F);
 				rightJoint2.addChild(rightBone[7]);
-				rightBone[7].cubeList.add(new ModelBox(rightBone[7], 47, 6, -3.434F, -5.1998F, -15.7105F, 4, 11, 16, -0.3F, false));
+				rightBone[7].cubeList.add(new ModelBox(rightBone[7], 47, 6, -3.434F, -5.1998F, 0.2895F, 4, 11, 16, -0.3F, false));
 		
 				rightBone[8] = new ModelRenderer(this);
-				rightBone[8].setRotationPoint(1.5897F, 0.6998F, 16.1128F);
+				rightBone[8].setRotationPoint(1.5897F, 0.6998F, 0.1128F);
 				rightJoint2.addChild(rightBone[8]);
-				rightBone[8].cubeList.add(new ModelBox(rightBone[8], 7, 0, -3.434F, -5.1998F, -15.7105F, 4, 11, 20, -0.45F, false));
+				rightBone[8].cubeList.add(new ModelBox(rightBone[8], 7, 0, -3.434F, -5.1998F, 0.2895F, 4, 11, 20, -0.45F, false));
 		
 				rightBone[9] = new ModelRenderer(this);
-				rightBone[9].setRotationPoint(1.5897F, 0.6998F, 16.1128F);
+				rightBone[9].setRotationPoint(1.5897F, 0.6998F, 0.1128F);
 				rightJoint2.addChild(rightBone[9]);
-				rightBone[9].cubeList.add(new ModelBox(rightBone[9], 72, 7, -3.434F, -5.1998F, -15.7105F, 4, 11, 24, -0.6F, false));
+				setRotationAngle(rightBone[9], -0.0349F, 0.0F, 0.0F);
+				rightBone[9].cubeList.add(new ModelBox(rightBone[9], 72, 7, -3.434F, -5.1998F, 0.2895F, 4, 11, 24, -0.6F, false));
 		
 				rightBone[10] = new ModelRenderer(this);
-				rightBone[10].setRotationPoint(1.0897F, 1.1998F, 16.1128F);
+				rightBone[10].setRotationPoint(1.0897F, 1.1998F, 0.1128F);
 				rightJoint2.addChild(rightBone[10]);
-				rightBone[10].cubeList.add(new ModelBox(rightBone[10], 1, 1, -2.434F, -4.1998F, -14.7105F, 3, 9, 27, 0.0F, false));
+				setRotationAngle(rightBone[10], -0.0698F, 0.0F, 0.0F);
+				rightBone[10].cubeList.add(new ModelBox(rightBone[10], 1, 1, -2.434F, -4.1998F, 1.2895F, 3, 9, 27, 0.0F, false));
 		
 				rightBone[11] = new ModelRenderer(this);
-				rightBone[11].setRotationPoint(-0.4103F, -4.3002F, 0.1128F);
+				rightBone[11].setRotationPoint(-0.4103F, 0.6998F, 0.1128F);
 				rightJoint2.addChild(rightBone[11]);
-				rightBone[11].cubeList.add(new ModelBox(rightBone[11], 64, 4, -0.434F, 2.8002F, 1.2895F, 2, 7, 30, 0.0F, false));
+				setRotationAngle(rightBone[11], -0.1047F, 0.0F, 0.0F);
+				rightBone[11].cubeList.add(new ModelBox(rightBone[11], 64, 4, -0.434F, -2.1998F, 1.2895F, 2, 7, 30, 0.0F, false));
 		
 				rightBone[12] = new ModelRenderer(this);
-				rightBone[12].setRotationPoint(0.0897F, -4.8002F, 0.1128F);
+				rightBone[12].setRotationPoint(0.0897F, 1.1998F, 0.1128F);
 				rightJoint2.addChild(rightBone[12]);
-				rightBone[12].cubeList.add(new ModelBox(rightBone[12], 26, 3, -0.434F, 4.8002F, 1.2895F, 1, 5, 32, 0.0F, false));
+				setRotationAngle(rightBone[12], -0.1396F, 0.0F, 0.0F);
+				rightBone[12].cubeList.add(new ModelBox(rightBone[12], 26, 3, -0.434F, -1.1998F, 1.2895F, 1, 5, 32, 0.0F, false));
 		
 				rightBone[13] = new ModelRenderer(this);
-				rightBone[13].setRotationPoint(0.5897F, -5.3002F, 0.6128F);
+				rightBone[13].setRotationPoint(0.5897F, 0.6998F, 0.6128F);
 				rightJoint2.addChild(rightBone[13]);
-				rightBone[13].cubeList.add(new ModelBox(rightBone[13], 0, -34, -0.434F, 6.8002F, 1.2895F, 0, 3, 34, 0.0F, false));
+				setRotationAngle(rightBone[13], -0.1745F, 0.0F, 0.0F);
+				rightBone[13].cubeList.add(new ModelBox(rightBone[13], 0, -34, -0.434F, 0.8002F, 1.2895F, 0, 3, 34, 0.0F, false));
 		
 				leftWing = new ModelRenderer(this);
 				leftWing.setRotationPoint(3.84F, 0.1435F, 1.6884F);
@@ -532,49 +562,54 @@ public class EntityShikigami extends ElementsNarutomodMod.ModElement {
 				
 		
 				leftBone[5] = new ModelRenderer(this);
-				leftBone[5].setRotationPoint(-1.5897F, 0.6998F, 16.1128F);
+				leftBone[5].setRotationPoint(-1.5897F, 0.6998F, 0.1128F);
 				leftJoint2.addChild(leftBone[5]);
-				leftBone[5].cubeList.add(new ModelBox(leftBone[5], 27, 25, -0.566F, -5.1998F, -15.7105F, 4, 11, 8, 0.0F, true));
+				leftBone[5].cubeList.add(new ModelBox(leftBone[5], 27, 25, -0.566F, -5.1998F, 0.2895F, 4, 11, 8, 0.0F, true));
 		
 				leftBone[6] = new ModelRenderer(this);
-				leftBone[6].setRotationPoint(-1.5897F, 0.6998F, 16.1128F);
+				leftBone[6].setRotationPoint(-1.5897F, 0.6998F, 0.1128F);
 				leftJoint2.addChild(leftBone[6]);
-				leftBone[6].cubeList.add(new ModelBox(leftBone[6], 63, 0, -0.566F, -5.1998F, -15.7105F, 4, 11, 12, -0.15F, true));
+				leftBone[6].cubeList.add(new ModelBox(leftBone[6], 63, 0, -0.566F, -5.1998F, 0.2895F, 4, 11, 12, -0.15F, true));
 		
 				leftBone[7] = new ModelRenderer(this);
-				leftBone[7].setRotationPoint(-1.5897F, 0.6998F, 16.1128F);
+				leftBone[7].setRotationPoint(-1.5897F, 0.6998F, 0.1128F);
 				leftJoint2.addChild(leftBone[7]);
-				leftBone[7].cubeList.add(new ModelBox(leftBone[7], 47, 6, -0.566F, -5.1998F, -15.7105F, 4, 11, 16, -0.3F, true));
+				leftBone[7].cubeList.add(new ModelBox(leftBone[7], 47, 6, -0.566F, -5.1998F, 0.2895F, 4, 11, 16, -0.3F, true));
 		
 				leftBone[8] = new ModelRenderer(this);
-				leftBone[8].setRotationPoint(-1.5897F, 0.6998F, 16.1128F);
+				leftBone[8].setRotationPoint(-1.5897F, 0.6998F, 0.1128F);
 				leftJoint2.addChild(leftBone[8]);
-				leftBone[8].cubeList.add(new ModelBox(leftBone[8], 7, 0, -0.566F, -5.1998F, -15.7105F, 4, 11, 20, -0.45F, true));
+				leftBone[8].cubeList.add(new ModelBox(leftBone[8], 7, 0, -0.566F, -5.1998F, 0.2895F, 4, 11, 20, -0.45F, true));
 		
 				leftBone[9] = new ModelRenderer(this);
-				leftBone[9].setRotationPoint(-1.5897F, 0.6998F, 16.1128F);
+				leftBone[9].setRotationPoint(-1.5897F, 0.6998F, 0.1128F);
 				leftJoint2.addChild(leftBone[9]);
-				leftBone[9].cubeList.add(new ModelBox(leftBone[9], 72, 7, -0.566F, -5.1998F, -15.7105F, 4, 11, 24, -0.6F, true));
+				setRotationAngle(leftBone[9], -0.0349F, 0.0F, 0.0F);
+				leftBone[9].cubeList.add(new ModelBox(leftBone[9], 72, 7, -0.566F, -5.1998F, 0.2895F, 4, 11, 24, -0.6F, true));
 		
 				leftBone[10] = new ModelRenderer(this);
-				leftBone[10].setRotationPoint(-1.0897F, 1.1998F, 16.1128F);
+				leftBone[10].setRotationPoint(-1.0897F, 1.1998F, 0.1128F);
 				leftJoint2.addChild(leftBone[10]);
-				leftBone[10].cubeList.add(new ModelBox(leftBone[10], 1, 1, -0.566F, -4.1998F, -14.7105F, 3, 9, 27, 0.0F, true));
+				setRotationAngle(leftBone[10], -0.0698F, 0.0F, 0.0F);
+				leftBone[10].cubeList.add(new ModelBox(leftBone[10], 1, 1, -0.566F, -4.1998F, 1.2895F, 3, 9, 27, 0.0F, true));
 		
 				leftBone[11] = new ModelRenderer(this);
-				leftBone[11].setRotationPoint(0.4103F, -4.3002F, 0.1128F);
+				leftBone[11].setRotationPoint(0.4103F, 0.6998F, 0.1128F);
 				leftJoint2.addChild(leftBone[11]);
-				leftBone[11].cubeList.add(new ModelBox(leftBone[11], 64, 4, -1.566F, 2.8002F, 1.2895F, 2, 7, 30, 0.0F, true));
+				setRotationAngle(leftBone[11], -0.1047F, 0.0F, 0.0F);
+				leftBone[11].cubeList.add(new ModelBox(leftBone[11], 64, 4, -1.566F, -2.1998F, 1.2895F, 2, 7, 30, 0.0F, true));
 		
 				leftBone[12] = new ModelRenderer(this);
-				leftBone[12].setRotationPoint(-0.0897F, -4.8002F, 0.1128F);
+				leftBone[12].setRotationPoint(-0.0897F, 1.1998F, 0.1128F);
 				leftJoint2.addChild(leftBone[12]);
-				leftBone[12].cubeList.add(new ModelBox(leftBone[12], 26, 3, -0.566F, 4.8002F, 1.2895F, 1, 5, 32, 0.0F, true));
+				setRotationAngle(leftBone[12], -0.1396F, 0.0F, 0.0F);
+				leftBone[12].cubeList.add(new ModelBox(leftBone[12], 26, 3, -0.566F, -1.1998F, 1.2895F, 1, 5, 32, 0.0F, true));
 		
 				leftBone[13] = new ModelRenderer(this);
-				leftBone[13].setRotationPoint(-0.5897F, -5.3002F, 0.6128F);
+				leftBone[13].setRotationPoint(-0.5897F, 0.6998F, 0.6128F);
 				leftJoint2.addChild(leftBone[13]);
-				leftBone[13].cubeList.add(new ModelBox(leftBone[13], 0, -34, 0.434F, 6.8002F, 1.2895F, 0, 3, 34, 0.0F, true));
+				setRotationAngle(leftBone[13], -0.1745F, 0.0F, 0.0F);
+				leftBone[13].cubeList.add(new ModelBox(leftBone[13], 0, -34, 0.434F, 0.8002F, 1.2895F, 0, 3, 34, 0.0F, true));
 		
 				chest = new ModelRenderer(this);
 				chest.setRotationPoint(0.0F, 0.0F, 0.0F);
