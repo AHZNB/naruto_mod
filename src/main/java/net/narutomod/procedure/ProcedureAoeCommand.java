@@ -32,7 +32,7 @@ public class ProcedureAoeCommand extends ElementsNarutomodMod.ModElement {
 	private static double centerX;
 	private static double centerY;
 	private static double centerZ;
-	private static AxisAlignedBB aabb;
+	//private static AxisAlignedBB aabb;
 	private static double minRange;
 	private static double maxRange;
 	//private static List<Entity> excludedEntities = Lists.newArrayList();
@@ -51,12 +51,16 @@ public class ProcedureAoeCommand extends ElementsNarutomodMod.ModElement {
 		Instance = this;
 	}
 
+	public static ProcedureAoeCommand getInstance() {
+		return Instance;
+	}
+
 	public static ProcedureAoeCommand set(World worldIn, double x, double y, double z, double minR, double maxR) {
 		world = worldIn;
 		centerX = x;
 		centerY = y;
 		centerZ = z;
-		aabb = new AxisAlignedBB(x - 0.5D, y, z - 0.5D, x + 0.5D, y + 1.0D, z + 0.5D);
+		AxisAlignedBB aabb = new AxisAlignedBB(x - 0.5D, y, z - 0.5D, x + 0.5D, y + 1.0D, z + 0.5D);
 		minRange = minR;
 		maxRange = maxR;
 		//excludedEntities.clear();
@@ -72,7 +76,7 @@ public class ProcedureAoeCommand extends ElementsNarutomodMod.ModElement {
 		centerX = entity.posX;
 		centerY = entity.posY;
 		centerZ = entity.posZ;
-		aabb = entity.getEntityBoundingBox();
+		AxisAlignedBB aabb = entity.getEntityBoundingBox();
 		minRange = minR;
 		maxRange = maxR;
 		//excludedEntities.clear();
@@ -80,6 +84,21 @@ public class ProcedureAoeCommand extends ElementsNarutomodMod.ModElement {
 			minRange = 0.0D;
 		entitiesList = world.getEntitiesWithinAABB(Entity.class, aabb.grow(maxRange), MIN_DISTANCE);
 		return Instance;
+	}
+
+	public static ProcedureAoeCommand set(World worldIn, AxisAlignedBB axisalignedbb) {
+		world = worldIn;
+		centerX = ProcedureUtils.BB.getCenterX(axisalignedbb);
+		centerY = ProcedureUtils.BB.getCenterY(axisalignedbb);
+		centerZ = ProcedureUtils.BB.getCenterZ(axisalignedbb);
+		minRange = 0.0d;
+		maxRange = Math.max(Math.max(axisalignedbb.maxX - axisalignedbb.minX, axisalignedbb.maxZ - axisalignedbb.minZ), axisalignedbb.maxY - axisalignedbb.minY) * 0.5d;
+		entitiesList = world.getEntitiesWithinAABB(Entity.class, axisalignedbb, MIN_DISTANCE);
+		return Instance;
+	}
+
+	public List<Entity> getEntitiesList() {
+		return entitiesList;
 	}
 
 	public ProcedureAoeCommand exclude(Entity entity) {

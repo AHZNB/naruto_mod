@@ -51,8 +51,9 @@ import net.minecraft.client.Minecraft;
 import net.narutomod.entity.EntityShieldBase;
 import net.narutomod.item.ItemOnBody;
 import net.narutomod.item.ItemBijuCloak;
-import net.narutomod.procedure.ProcedureUtils;
+import net.narutomod.procedure.ProcedureOnLivingUpdate;
 import net.narutomod.procedure.ProcedureSync;
+import net.narutomod.procedure.ProcedureUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -61,6 +62,8 @@ import java.util.UUID;
 import java.util.Iterator;
 import javax.annotation.Nullable;
 import com.google.common.collect.Maps;
+import javax.naming.LimitExceededException;
+import javax.vecmath.Vector2f;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class PlayerRender extends ElementsNarutomodMod.ModElement {
@@ -190,14 +193,9 @@ public class PlayerRender extends ElementsNarutomodMod.ModElement {
 				 	 && model.rightArmPose == ModelBiped.ArmPose.EMPTY && model.leftArmPose == ModelBiped.ArmPose.EMPTY) {
 						this.renderNarutoRun(model, entityIn, f0, f1, f2, f3, f4, f5);
 				 	} else {
-				 		if (entityIn.getRidingEntity() instanceof EntityShieldBase
-				 		 && !((EntityShieldBase)entityIn.getRidingEntity()).shouldRiderSit()
-				 		 && !((EntityShieldBase)entityIn.getRidingEntity()).shouldRiderBeStill()) {
-				 		 	float pt = f2 - entityIn.ticksExisted;
-				 			model.isRiding = false;
-				 			f1 = Math.min((entityIn.prevLimbSwingAmount + (entityIn.limbSwingAmount - entityIn.prevLimbSwingAmount) * pt) * 4.0f, 1.0f);
-				 			f0 = (entityIn.limbSwing - entityIn.limbSwingAmount * (1.0f - pt)) * 4.0f;
-				 		}
+				 		Vector2f vec2f = this.getRevisedLimbSwingAmount(model, entityIn, f0, f1, f2 - entityIn.ticksExisted);
+				 		f0 = vec2f.x;
+				 		f1 = vec2f.y;
 				 		model.render(entityIn, f0, f1, f2, f3, f4, f5);
 				 	}
 					if (flag1) {
@@ -205,6 +203,17 @@ public class PlayerRender extends ElementsNarutomodMod.ModElement {
 					}
 				}
 			}
+		}
+
+		public Vector2f getRevisedLimbSwingAmount(ModelBiped model, EntityLivingBase entityIn, float limbSwing, float limbSwingAmount, float pt) {
+	 		if (entityIn.getRidingEntity() instanceof EntityShieldBase
+	 		 && !((EntityShieldBase)entityIn.getRidingEntity()).shouldRiderSit()
+	 		 && !((EntityShieldBase)entityIn.getRidingEntity()).shouldRiderBeStill()) {
+	 			model.isRiding = false;
+	 			limbSwingAmount = Math.min((entityIn.prevLimbSwingAmount + (entityIn.limbSwingAmount - entityIn.prevLimbSwingAmount) * pt) * 4.0f, 1.0f);
+	 			limbSwing = (entityIn.limbSwing - entityIn.limbSwingAmount * (1.0f - pt)) * 4.0f;
+	 		}
+	 		return new Vector2f(limbSwing, limbSwingAmount);
 		}
 
 		public void renderNarutoRun(ModelBiped model, Entity entityIn, float f0, float f1, float f2, float f3, float f4, float scale) {
@@ -421,7 +430,7 @@ public class PlayerRender extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static boolean shouldNarutoRun(Entity entity) {
-		return ModConfig.NARUTO_RUN && !entity.isRiding()
+		return ModConfig.NARUTO_RUN && !entity.isRiding() && !ProcedureOnLivingUpdate.isForcedBowPose(entity)
 		 && (!(entity instanceof EntityPlayer) || !((EntityPlayer)entity).capabilities.isFlying)
 		 && entity.getPositionVector().subtract(entity.lastTickPosX, entity.lastTickPosY, entity.lastTickPosZ).lengthSquared() >= 0.125d;
 	}
@@ -452,6 +461,9 @@ public class PlayerRender extends ElementsNarutomodMod.ModElement {
 	                t = getArmorModelHook(entityIn, itemstack, slotIn, t);
 	                ModelBiped wearerModel = (ModelBiped)this.renderer.getMainModel();
 	                t.setModelAttributes(wearerModel);
+				 	Vector2f vec2f = this.renderer.getRevisedLimbSwingAmount(t, entityIn, limbSwing, limbSwingAmount, partialTicks);
+				 	limbSwing = vec2f.x;
+				 	limbSwingAmount = vec2f.y;
 	                t.setLivingAnimations(entityIn, limbSwing, limbSwingAmount, partialTicks);
 	                this.setModelSlotVisible(t, slotIn);
 	                this.renderer.bindTexture(this.getArmorResource(entityIn, itemstack, slotIn, null));

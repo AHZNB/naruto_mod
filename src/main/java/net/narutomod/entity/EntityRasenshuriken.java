@@ -75,7 +75,7 @@ public class EntityRasenshuriken extends ElementsNarutomodMod.ModElement {
 			super(a);
 			this.setOGSize(2.5F, 0.5F);
 			this.isImmuneToFire = true;
-			this.damageSource = ItemJutsu.NINJUTSU_DAMAGE.setDamageBypassesArmor();
+			this.damageSource = ItemJutsu.causeJutsuDamage(this, this.shootingEntity).setDamageBypassesArmor();
 		}
 
 		public EC(EntityLivingBase shooter, float scale) {
@@ -247,7 +247,8 @@ public class EntityRasenshuriken extends ElementsNarutomodMod.ModElement {
 			super.readEntityFromNBT(compound);
 			this.fullScale = compound.getFloat("fullScale");
 			this.impactDamageMultiplier = compound.getFloat("impactDamageMultiplier");
-			this.damageSource = (compound.getBoolean("isSenjutsu") ? ItemJutsu.SENJUTSU_DAMAGE : ItemJutsu.NINJUTSU_DAMAGE).setDamageBypassesArmor();
+			this.damageSource = (compound.getBoolean("isSenjutsu") ? ItemJutsu.causeSenjutsuDamage(this, this.shootingEntity)
+			 : ItemJutsu.causeJutsuDamage(this, this.shootingEntity)).setDamageBypassesArmor();
 			int i = compound.getInteger("impactTicks");
 			this.setImpactTicks(i);
 			if (i > 0) {

@@ -23,7 +23,7 @@ public class ProcedureCurryofLifeFoodEaten extends ElementsNarutomodMod.ModEleme
 		}
 		Entity entity = (Entity) dependencies.get("entity");
 		if (entity instanceof EntityLivingBase)
-			((EntityLivingBase) entity).addPotionEffect(new PotionEffect(PotionChakraRegeneration.potion, (int) 400, (int) 1, (false), (false)));
+			((EntityLivingBase) entity).addPotionEffect(new PotionEffect(PotionChakraRegeneration.potion, (int) 400, (int) 6, (false), (false)));
 		if (entity instanceof EntityLivingBase)
 			((EntityLivingBase) entity).addPotionEffect(new PotionEffect(MobEffects.INSTANT_HEALTH, (int) 100, (int) 1, (false), (false)));
 	}

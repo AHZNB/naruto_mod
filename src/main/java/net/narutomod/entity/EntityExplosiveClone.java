@@ -251,7 +251,7 @@ public class EntityExplosiveClone extends ElementsNarutomodMod.ModElement {
 					for (int i = list.size() - 1; i >= 0; --i) {
 						BlockPos pos = list.get(i);
 						Vec3d vec = new Vec3d(0.5d+pos.getX(), pos.getY(), 0.5d+pos.getZ());
-						if (entity.getDistance(vec.x, vec.y, vec.z) <= 16d && entity.world.getBlockState(pos.down()).isTopSolid() && entity.world.isAirBlock(pos.up())
+						if (attacker.getDistance(vec.x, vec.y, vec.z) <= 16d && entity.world.getBlockState(pos.down()).isTopSolid() && entity.world.isAirBlock(pos.up())
 						 && entity.world.rayTraceBlocks(vec.addVector(0d, entity.getEyeHeight(), 0d), attacker.getPositionEyes(1f), false, true, false) == null) {
 							float angle = MathHelper.wrapDegrees(ProcedureUtils.getYawFromVec(vec.subtract(attacker.getPositionVector())) - ProcedureUtils.getYawFromVec(entity.getPositionVector().subtract(attacker.getPositionVector()))); 
 							if (angle > 135.0f || angle < -135.0f) {

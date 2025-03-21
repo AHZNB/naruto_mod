@@ -106,6 +106,26 @@ public class ItemDojutsu extends ElementsNarutomodMod.ModElement {
 			}
 			super.onUpdate(stack, world, entity, par4, par5);
 		}
+
+		public Type getType() {
+			return Type.OTHER;
+		}
+
+		public boolean onJutsuKey1(boolean is_pressed, ItemStack stack, EntityPlayer player) {
+			return false;
+		}
+
+		public boolean onJutsuKey2(boolean is_pressed, ItemStack stack, EntityPlayer player) {
+			return false;
+		}
+
+		public boolean onJutsuKey3(boolean is_pressed, ItemStack stack, EntityPlayer player) {
+			return false;
+		}
+
+		public boolean onSwitchJutsuKey(boolean is_pressed, ItemStack stack, EntityPlayer player) {
+			return false;
+		}
 	}
 
 	public static boolean hasAnyDojutsu(EntityPlayer player) {
@@ -118,6 +138,13 @@ public class ItemDojutsu extends ElementsNarutomodMod.ModElement {
 
 	public static long getMostRecentWornTime(EntityLivingBase entity) {
 		return entity.getEntityData().getLong(NarutomodModVariables.MostRecentWornDojutsuTime);
+	}
+
+	public enum Type {
+		BYAKUGAN,
+		SHARINGAN,
+		RINNE_TENSEI,
+		OTHER;
 	}
 
 	public static class ClientModel {

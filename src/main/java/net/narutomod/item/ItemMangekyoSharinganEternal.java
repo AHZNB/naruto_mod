@@ -21,16 +21,19 @@ import net.minecraft.init.MobEffects;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.text.translation.I18n;
 
-import net.narutomod.procedure.ProcedureUtils;
+import net.narutomod.procedure.*;
 import net.narutomod.world.WorldKamuiDimension;
 import net.narutomod.creativetab.TabModTab;
+import net.narutomod.entity.EntitySusanooBase;
 import net.narutomod.Chakra;
 import net.narutomod.NarutomodModVariables;
 import net.narutomod.ElementsNarutomodMod;
 
 import java.util.UUID;
 import java.util.List;
+import java.util.Map;
 import javax.annotation.Nullable;
+import com.google.common.collect.Maps;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class ItemMangekyoSharinganEternal extends ElementsNarutomodMod.ModElement {
@@ -113,6 +116,58 @@ public class ItemMangekyoSharinganEternal extends ElementsNarutomodMod.ModElemen
 			@Override
 			public String getItemStackDisplayName(ItemStack stack) {
 				return TextFormatting.RED + super.getItemStackDisplayName(stack) + TextFormatting.WHITE;
+			}
+
+			@Override
+			public boolean onJutsuKey1(boolean is_pressed, ItemStack stack, EntityPlayer entity) {
+				Map<String, Object> $_dependencies = Maps.newHashMap();
+				$_dependencies.put("is_pressed", is_pressed);
+				$_dependencies.put("entity", entity);
+				$_dependencies.put("world", entity.world);
+				$_dependencies.put("x", (int)entity.posX);
+				$_dependencies.put("y", (int)entity.posY);
+				$_dependencies.put("z", (int)entity.posZ);
+				ProcedureAmaterasu.executeProcedure($_dependencies);
+				return true;
+			}
+
+			@Override
+			public boolean onJutsuKey2(boolean is_pressed, ItemStack stack, EntityPlayer entity) {
+				if (!is_pressed) {
+					Map<String, Object> $_dependencies = Maps.newHashMap();
+					$_dependencies.put("entity", entity);
+					$_dependencies.put("world", entity.world);
+					ProcedureSusanoo.executeProcedure($_dependencies);
+				}
+				return true;
+			}
+
+			@Override
+			public boolean onJutsuKey3(boolean is_pressed, ItemStack stack, EntityPlayer entity) {
+				Map<String, Object> $_dependencies = Maps.newHashMap();
+				$_dependencies.put("is_pressed", is_pressed);
+				$_dependencies.put("entity", entity);
+				$_dependencies.put("world", entity.world);
+				if (entity.world.provider.getDimension() == WorldKamuiDimension.DIMID && !entity.isSneaking()) {
+					ProcedureGrabEntity.executeProcedure($_dependencies);
+				} else {
+					$_dependencies.put("x", (int)entity.posX);
+					$_dependencies.put("y", (int)entity.posY);
+					$_dependencies.put("z", (int)entity.posZ);
+					ProcedureKamuiJikukanIdo.executeProcedure($_dependencies);
+				}
+				return true;
+			}
+
+			@Override
+			public boolean onSwitchJutsuKey(boolean is_pressed, ItemStack stack, EntityPlayer entity) {
+				if (entity.getRidingEntity() instanceof EntitySusanooBase) {
+					if (!is_pressed) {
+						ProcedureSusanoo.upgrade(entity);
+					}
+					return true;
+				}
+				return false;
 			}
 		}.setUnlocalizedName("mangekyosharinganeternalhelmet").setRegistryName("mangekyosharinganeternalhelmet").setCreativeTab(TabModTab.tab));
 	}

@@ -27,17 +27,19 @@ import net.minecraft.client.util.ITooltipFlag;
 
 import net.narutomod.entity.EntityEightTrigrams;
 import net.narutomod.entity.EntityHakkeshoKeiten;
-import net.narutomod.procedure.ProcedureUtils;
-import net.narutomod.procedure.ProcedureByakuganHelmetTickEvent;
+import net.narutomod.gui.overlay.OverlayByakuganView;
+import net.narutomod.procedure.*;
 import net.narutomod.creativetab.TabModTab;
 import net.narutomod.ElementsNarutomodMod;
 import net.narutomod.NarutomodModVariables;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Map;
 import java.util.HashMap;
 import java.util.UUID;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Maps;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class ItemByakugan extends ElementsNarutomodMod.ModElement {
@@ -84,6 +86,11 @@ public class ItemByakugan extends ElementsNarutomodMod.ModElement {
 		ItemArmor.ArmorMaterial enuma = EnumHelper.addArmorMaterial("BYAKUGAN", "narutomod:byakugan_", 25, new int[]{2, 5, 6, 15}, 0, null, 0.0F);
 		
 		this.elements.items.add(() -> new ItemDojutsu.Base(enuma) {
+			@Override
+			public ItemDojutsu.Type getType() {
+				return ItemDojutsu.Type.BYAKUGAN;
+			}
+			
 			@SideOnly(Side.CLIENT)
 			@Override
 			public ModelBiped getArmorModel(EntityLivingBase living, ItemStack stack, EntityEquipmentSlot slot, ModelBiped defaultModel) {
@@ -108,7 +115,7 @@ public class ItemByakugan extends ElementsNarutomodMod.ModElement {
 				int x = (int) entity.posX;
 				int y = (int) entity.posY;
 				int z = (int) entity.posZ;
-				HashMap<String, Object> $_dependencies = new HashMap<>();
+				HashMap<String, Object> $_dependencies = Maps.newHashMap();
 				$_dependencies.put("entity", entity);
 				$_dependencies.put("world", world);
 				$_dependencies.put("itemstack", itemstack);
@@ -186,6 +193,60 @@ public class ItemByakugan extends ElementsNarutomodMod.ModElement {
 						 + (long)(d / 20d) + TextFormatting.WHITE));
 					}
 				}
+			}
+
+			@Override
+			public boolean onJutsuKey1(boolean is_pressed, ItemStack stack, EntityPlayer entity) {
+				Map<String, Object> $_dependencies = Maps.newHashMap();
+				$_dependencies.put("is_pressed", is_pressed);
+				$_dependencies.put("entity", entity);
+				if (entity.isSneaking()) {
+					ProcedureHakkeKusho.executeProcedure($_dependencies);
+				} else {
+					$_dependencies.put("x", (int)entity.posX);
+					$_dependencies.put("y", (int)entity.posY);
+					$_dependencies.put("z", (int)entity.posZ);
+					$_dependencies.put("world", entity.world);
+					ProcedureByakuganActivate.executeProcedure($_dependencies);
+				}
+				return true;
+			}
+
+			@Override
+			public boolean onJutsuKey2(boolean is_pressed, ItemStack stack, EntityPlayer entity) {
+				if (!is_pressed) {
+					Map<String, Object> $_dependencies = Maps.newHashMap();
+					$_dependencies.put("entity", entity);
+					$_dependencies.put("world", entity.world);
+					if (stack.hasTagCompound() && stack.getTagCompound().getBoolean(NarutomodModVariables.RINNESHARINGAN_ACTIVATED)) {
+						ProcedureYomotsuHirasaka.executeProcedure($_dependencies);
+					} else {
+						ProcedureEightTrigrams64Palms.executeProcedure($_dependencies);
+					}
+				}
+				return true;
+			}
+
+			@Override
+			public boolean onJutsuKey3(boolean is_pressed, ItemStack stack, EntityPlayer entity) {
+				Map<String, Object> $_dependencies = Maps.newHashMap();
+				$_dependencies.put("is_pressed", is_pressed);
+				$_dependencies.put("entity", entity);
+				$_dependencies.put("world", entity.world);
+				ProcedureHakkeshoKaiten.executeProcedure($_dependencies);
+				return true;
+			}
+
+			@Override
+			public boolean onSwitchJutsuKey(boolean is_pressed, ItemStack stack, EntityPlayer entity) {
+				if (entity.getEntityData().getBoolean("byakugan_activated")) {
+					if (is_pressed) {
+						entity.getEntityData().setDouble("byakugan_fov", entity.getEntityData().getDouble("byakugan_fov") - 1);
+						OverlayByakuganView.sendCustomData(entity, true, (float) entity.getEntityData().getDouble("byakugan_fov"));
+					}
+					return true;
+				}
+				return false;
 			}
 		}.setUnlocalizedName("byakuganhelmet").setRegistryName("byakuganhelmet").setCreativeTab(TabModTab.tab));
 	}

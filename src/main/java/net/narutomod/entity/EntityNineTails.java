@@ -78,7 +78,7 @@ public class EntityNineTails extends ElementsNarutomodMod.ModElement {
 		@Override
 		public int increaseCloakLevel() {
 			int ret = super.increaseCloakLevel();
-			if (ret == 3) {
+			if (ret == 3 && this.getEntity() != null) {
 				this.getEntity().setKCM(true);
 			}
 			return ret;
@@ -144,7 +144,7 @@ public class EntityNineTails extends ElementsNarutomodMod.ModElement {
 			super(world);
 			this.setSize(MODELSCALE * 1.0F, MODELSCALE * 1.2F);
 			this.experienceValue = 12000;
-			this.stepHeight = this.height / 3.0F;
+			this.stepHeight = this.height / 2.0F;
 		}
 
 		public EntityCustom(EntityPlayer player) {
@@ -155,7 +155,7 @@ public class EntityNineTails extends ElementsNarutomodMod.ModElement {
 			super(player);
 			this.setSize(MODELSCALE * 1.0F, MODELSCALE * 1.2F);
 			this.experienceValue = 12000;
-			this.stepHeight = this.height / 3.0F;
+			this.stepHeight = this.height / 2.0F;
 			this.setKCM(is_kcm);
 		}
 

@@ -31,6 +31,7 @@ import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.model.ModelBox;
@@ -68,6 +69,8 @@ public class EntityShikigami extends ElementsNarutomodMod.ModElement {
 		private final int waitTime = 100;
 		private double chakraUsage;
 		private boolean jutsuKey2Pressed;
+		private boolean isShooting;
+		private EntityPaperBind.EC bindEntity;
 		
 		public EC(World a) {
 			super(a);
@@ -125,9 +128,10 @@ public class EntityShikigami extends ElementsNarutomodMod.ModElement {
 							this.setDead();
 						}
 					}
-					if (this.ticksExisted > this.waitTime
-					 && user.getEntityData().getBoolean(NarutomodModVariables.JutsuKey1Pressed)
-					 && Chakra.pathway(user).consume(this.chakraUsage * 0.05d)) {
+					Chakra.Pathway chakra = Chakra.pathway(user);
+					this.isShooting = this.ticksExisted > this.waitTime
+					 && user.getEntityData().getBoolean(NarutomodModVariables.JutsuKey1Pressed) && chakra.consume(this.chakraUsage * 0.05d);
+					if (this.isShooting) {
 						this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:paperflip")), 0.5f, this.rand.nextFloat() * 0.4f + 0.9f);
 						Vec3d shootvec = user.getLookVec();
 						if (user instanceof EntityLiving && ((EntityLiving)user).getAttackTarget() != null) {
@@ -145,11 +149,16 @@ public class EntityShikigami extends ElementsNarutomodMod.ModElement {
 					}
 					if (this.ticksExisted > this.waitTime) {
 						boolean newPressed = user.getEntityData().getBoolean(NarutomodModVariables.JutsuKey2Pressed);
-						if (this.jutsuKey2Pressed && !newPressed && Chakra.pathway(user).consume(this.chakraUsage)) {
-							if (user instanceof EntityLiving && ((EntityLiving)user).getAttackTarget() != null) {
-								EntityPaperBind.EC.Jutsu.createJutsu(user, ((EntityLiving)user).getAttackTarget());
-							} else {
-								new EntityPaperBind.EC.Jutsu().createJutsu(null, user, 1.0f);
+						if (this.jutsuKey2Pressed && !newPressed && chakra.getAmount() >= this.chakraUsage) {
+							RayTraceResult targetRT = user instanceof EntityLiving && ((EntityLiving)user).getAttackTarget() != null
+							 ? new RayTraceResult(((EntityLiving)user).getAttackTarget())
+							 : ProcedureUtils.objectEntityLookingAt(user, 30d, 3d, true, true, EntityShikigami.EC.class);
+							if (targetRT != null && targetRT.entityHit != null) {
+								EntityPaperBind.EC entity1 = EntityPaperBind.EC.Jutsu.createJutsu(user, targetRT.entityHit);
+								if (entity1 != null) {
+									chakra.consume(this.chakraUsage);
+									this.bindEntity = entity1;
+								}
 							}
 						}
 						this.jutsuKey2Pressed = newPressed;
@@ -158,6 +167,14 @@ public class EntityShikigami extends ElementsNarutomodMod.ModElement {
 			} else if (!this.world.isRemote) {
 				this.setDead();
 			}
+		}
+
+		public boolean isShooting() {
+			return this.isShooting;
+		}
+
+		public boolean isBinding() {
+			return this.bindEntity != null && this.bindEntity.isEntityAlive();
 		}
 
 		@Override
@@ -280,7 +297,7 @@ public class EntityShikigami extends ElementsNarutomodMod.ModElement {
 			@Override
 			public void doRender(EC entity, double x, double y, double z, float entityYaw, float pt) {
 				EntityLivingBase user = entity.getSummoner();
-				if (user != null) {
+				if (user != null && (!user.isInvisible() || !user.isInvisibleToPlayer(Minecraft.getMinecraft().player))) {
 					RenderLivingBase userRenderer = (RenderLivingBase)this.renderManager.getEntityRenderObject(user);
 					float f = (float)entity.ticksExisted + pt;
 		            float f1 = ProcedureUtils.interpolateRotation(user.prevRenderYawOffset, user.renderYawOffset, pt);

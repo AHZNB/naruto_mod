@@ -40,7 +40,6 @@ import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.item.ItemStack;
 import net.minecraft.inventory.EntityEquipmentSlot;
-import net.minecraft.nbt.NBTTagCompound;
 
 import java.util.Random;
 import javax.annotation.Nullable;
@@ -77,10 +76,7 @@ public class EntityKakuzu extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public IEntityLivingData onInitialSpawn(DifficultyInstance difficulty, @Nullable IEntityLivingData livingdata) {
-			ItemStack stack = new ItemStack(ItemAkatsukiRobe.body);
-			stack.setTagCompound(new NBTTagCompound());
-			stack.getTagCompound().setBoolean("collarClosed", true);
-			this.setItemStackToSlot(EntityEquipmentSlot.CHEST, stack);
+			this.setItemStackToSlot(EntityEquipmentSlot.CHEST, new ItemStack(ItemAkatsukiRobe.body));
 			//this.setItemToInventory(new ItemStack(ItemAkatsukiRobe.body), 1);
 			return super.onInitialSpawn(difficulty, livingdata);
 		}
@@ -211,11 +207,6 @@ public class EntityKakuzu extends ElementsNarutomodMod.ModElement {
 			 && this.world.getEntities(EntityCustom.class, EntitySelectors.IS_ALIVE).isEmpty()
 			 && !EntityNinjaMob.SpawnData.spawnedRecentlyHere(this, 36000);
 			 //&& this.rand.nextInt(5) == 0;
-		}
-
-		@Override
-		public boolean isOnSameTeam(Entity entityIn) {
-			return super.isOnSameTeam(entityIn) || EntityNinjaMob.TeamAkatsuki.contains(entityIn.getClass());
 		}
 
 		@Override

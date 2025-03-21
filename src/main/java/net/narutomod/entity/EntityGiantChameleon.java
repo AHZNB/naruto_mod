@@ -19,7 +19,6 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.entity.ai.EntityAILookIdle;
-import net.minecraft.entity.ai.EntityAILeapAtTarget;
 import net.minecraft.entity.ai.EntityAIAttackMelee;
 import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.SharedMonsterAttributes;
@@ -34,9 +33,15 @@ import net.minecraft.client.model.ModelQuadruped;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.network.datasync.DataSerializers;
+import net.minecraft.pathfinding.PathNavigate;
 
 import javax.annotation.Nullable;
 import javax.vecmath.Vector3f;
+
+//import net.minecraft.entity.ai.EntityAIBase;
+//import net.minecraft.entity.EntityCreature;
+//import net.minecraft.pathfinding.Path;
+//import net.minecraft.util.math.BlockPos;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityGiantChameleon extends ElementsNarutomodMod.ModElement {
@@ -55,34 +60,33 @@ public class EntityGiantChameleon extends ElementsNarutomodMod.ModElement {
 		 .name("giant_chameleon").tracker(64, 3, true).egg(-16751053, -16724941).build());
 	}
 
-	public static class EntityCustom extends EntitySummonAnimal.Base implements IMob {
+	public static class EntityCustom extends EntitySummonAnimal.Base implements IMob, EntityTailedBeast.ICollisionData {
 		private static final DataParameter<Boolean> MOUTH_OPEN = EntityDataManager.<Boolean>createKey(EntityCustom.class, DataSerializers.BOOLEAN);
 		private final int invisEnd = 40;
 		private int prevInvisProgress = invisEnd;
 		private int invisProgress = invisEnd;
 		private int invisDirection;
 		private EntityLivingBase lastTarget;
+		private final ProcedureUtils.CollisionHelper collisionData;
 
 		public EntityCustom(World world) {
 			super(world);
+			this.collisionData = new ProcedureUtils.CollisionHelper(this);
 			this.setOGSize(0.5f, 0.5f);
 			this.experienceValue = 500;
 			this.postScaleFixup();
-			this.stepHeight = this.height;
+			this.stepHeight = this.height * 2;
 		}
 
 		public EntityCustom(EntityLivingBase player) {
-			super(player);
-			this.setOGSize(0.5f, 0.5f);
-			this.experienceValue = 500;
+			this(player.world);
+			this.setSummoner(player);
 			RayTraceResult res = ProcedureUtils.raytraceBlocks(player, 4.0);
 			double x = res != null ? 0.5d + res.getBlockPos().getX() : player.getPositionEyes(1f).add(player.getLookVec().scale(4)).x;
 			double z = res != null ? 0.5d + res.getBlockPos().getZ() : player.getPositionEyes(1f).add(player.getLookVec().scale(4)).z;
 			this.setPosition(x, player.posY, z);
 			this.rotationYaw = player.rotationYaw - 180.0f;
 			this.rotationYawHead = this.rotationYaw;
-			this.postScaleFixup();
-			this.stepHeight = this.height;
 		}
 
 		@Override
@@ -102,6 +106,12 @@ public class EntityGiantChameleon extends ElementsNarutomodMod.ModElement {
 	
 		public boolean isMouthOpen() {
 			return ((Boolean)this.getDataManager().get(MOUTH_OPEN)).booleanValue();
+		}
+
+		@Override
+		protected PathNavigate createNavigator(World worldIn) {
+			this.moveHelper = new EntityTailedBeast.MoveHelper(this);
+			return new EntityTailedBeast.NavigateGround(this, worldIn);
 		}
 
 		@Override
@@ -141,16 +151,20 @@ public class EntityGiantChameleon extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
+		public ProcedureUtils.CollisionHelper getCollisionData() {
+			return this.collisionData;
+		}
+
+		@Override
 		protected void initEntityAI() {
 			super.initEntityAI();
-			this.tasks.addTask(1, new EntityAILeapAtTarget(this, 1.0f));
-			this.tasks.addTask(2, new EntityAIAttackMelee(this, 1.4f, true) {
+			this.tasks.addTask(1, new EntityAIAttackMelee(this, 1.4f, true) {
 				@Override
 				public boolean shouldExecute() {
-					return this.attacker.getControllingPassenger() == null && super.shouldExecute();
+					return !(this.attacker.getControllingPassenger() instanceof EntityPlayer) && super.shouldExecute();
 				}
 			});
-			this.tasks.addTask(3, new EntityAILookIdle(this));
+			this.tasks.addTask(2, new EntityAILookIdle(this));
 		}
 
 		@Override
@@ -189,7 +203,8 @@ public class EntityGiantChameleon extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void travel(float strafe, float vertical, float forward) {
 			EntityLivingBase passenger = this.getControllingPassenger();
-			if (passenger != null) {
+			if (passenger instanceof EntityPlayer) {
+				++this.lifeSpan;
 				this.rotationYaw = passenger.rotationYaw;
 				this.rotationPitch = passenger.rotationPitch;
 				this.setRotation(this.rotationYaw, this.rotationPitch);
@@ -202,21 +217,17 @@ public class EntityGiantChameleon extends ElementsNarutomodMod.ModElement {
 			} else {
 				this.jumpMovementFactor = 0.02f;
 			}
+//if (!this.world.isRemote)
+//System.out.println("++++++ noPath?"+navigator.noPath()+", finalPathPoint:("+(navigator.getPath()!=null?navigator.getPath().getFinalPathPoint():"na")+"), strafe="+strafe+", vertical="+vertical+", forward="+forward+", passenger:"+passenger);
 			super.travel(strafe, vertical, forward);
-		}
-
-		@Override
-		public void onEntityUpdate() {
-			EntityLivingBase owner = this.getSummoner();
-			if (owner != null && owner.getHealth() <= 0.0f) {
-				this.setDead();
-			}
-			super.onEntityUpdate();
 		}
 
 		@Override
 		public void onUpdate() {
 			super.onUpdate();
+			if (!this.world.isRemote) {
+				this.tasks.setControlFlag(7, !(this.getControllingPassenger() instanceof EntityPlayer));
+			}
 			this.updateInvisibleProgress();
 			if (!this.world.isRemote && this.world.getDifficulty() == EnumDifficulty.PEACEFUL) {
 				this.setDead();
@@ -230,6 +241,11 @@ public class EntityGiantChameleon extends ElementsNarutomodMod.ModElement {
 				this.attackEntityAsMob(entity);
 			}
 			super.collideWithEntity(entity);
+		}
+
+		@Override
+		public boolean couldBreakBlocks() {
+			return true;
 		}
 
 		public void updateInvisibleProgress() {
@@ -272,6 +288,152 @@ public class EntityGiantChameleon extends ElementsNarutomodMod.ModElement {
 			return player.isSpectator() || this.isSummoner(player) ? false : this.isInvisible();
 		}
 	}
+
+	/*public static class AIAttackMelee extends EntityAIBase
+	{
+	    World world;
+	    protected EntityCreature attacker;
+	    protected int attackTick;
+	    double speedTowardsTarget;
+	    boolean longMemory;
+	    Path path;
+	    private int delayCounter;
+	    private double targetX;
+	    private double targetY;
+	    private double targetZ;
+	    protected final int attackInterval = 20;
+	
+	    public AIAttackMelee(EntityCreature creature, double speedIn, boolean useLongMemory)
+	    {
+	        this.attacker = creature;
+	        this.world = creature.world;
+	        this.speedTowardsTarget = speedIn;
+	        this.longMemory = useLongMemory;
+	        this.setMutexBits(3);
+	    }
+	
+	    public boolean shouldExecute()
+	    {
+	        EntityLivingBase entitylivingbase = this.attacker.getAttackTarget();
+	
+	        if (entitylivingbase == null)
+	        {
+	            return false;
+	        }
+	        else if (!entitylivingbase.isEntityAlive())
+	        {
+	            return false;
+	        }
+	        else
+	        {
+	            this.path = this.attacker.getNavigator().getPathToEntityLiving(entitylivingbase);
+System.out.println(">>>>>> hasPath:"+(path!=null));
+	            if (this.path != null)
+	            {
+	                return true;
+	            }
+	            else
+	            {
+	                return this.getAttackReachSqr(entitylivingbase) >= this.attacker.getDistanceSq(entitylivingbase.posX, entitylivingbase.getEntityBoundingBox().minY, entitylivingbase.posZ);
+	            }
+	        }
+	    }
+	
+	    public boolean shouldContinueExecuting()
+	    {
+	        EntityLivingBase entitylivingbase = this.attacker.getAttackTarget();
+	
+	        if (entitylivingbase == null)
+	        {
+	            return false;
+	        }
+	        else if (!entitylivingbase.isEntityAlive())
+	        {
+	            return false;
+	        }
+	        else if (!this.longMemory)
+	        {
+	            return !this.attacker.getNavigator().noPath();
+	        }
+	        else if (!this.attacker.isWithinHomeDistanceFromPosition(new BlockPos(entitylivingbase)))
+	        {
+	            return false;
+	        }
+	        else
+	        {
+	            return !(entitylivingbase instanceof EntityPlayer) || !((EntityPlayer)entitylivingbase).isSpectator() && !((EntityPlayer)entitylivingbase).isCreative();
+	        }
+	    }
+	
+	    public void startExecuting()
+	    {
+	        this.attacker.getNavigator().setPath(this.path, this.speedTowardsTarget);
+	        this.delayCounter = 0;
+	    }
+	
+	    public void resetTask()
+	    {
+	        EntityLivingBase entitylivingbase = this.attacker.getAttackTarget();
+	
+	        if (entitylivingbase instanceof EntityPlayer && (((EntityPlayer)entitylivingbase).isSpectator() || ((EntityPlayer)entitylivingbase).isCreative()))
+	        {
+	            this.attacker.setAttackTarget((EntityLivingBase)null);
+	        }
+	
+	        this.attacker.getNavigator().clearPath();
+	    }
+	
+	    public void updateTask()
+	    {
+	        EntityLivingBase entitylivingbase = this.attacker.getAttackTarget();
+	        this.attacker.getLookHelper().setLookPositionWithEntity(entitylivingbase, 30.0F, 30.0F);
+	        double d0 = this.attacker.getDistanceSq(entitylivingbase.posX, entitylivingbase.getEntityBoundingBox().minY, entitylivingbase.posZ);
+	        --this.delayCounter;
+	
+	        if ((this.longMemory || this.attacker.getEntitySenses().canSee(entitylivingbase)) && this.delayCounter <= 0 && (this.targetX == 0.0D && this.targetY == 0.0D && this.targetZ == 0.0D || entitylivingbase.getDistanceSq(this.targetX, this.targetY, this.targetZ) >= 1.0D || this.attacker.getRNG().nextFloat() < 0.05F))
+	        {
+	            this.targetX = entitylivingbase.posX;
+	            this.targetY = entitylivingbase.getEntityBoundingBox().minY;
+	            this.targetZ = entitylivingbase.posZ;
+	            this.delayCounter = 4 + this.attacker.getRNG().nextInt(7);
+		
+	            if (d0 > 1024.0D)
+	            {
+	                this.delayCounter += 10;
+	            }
+	            else if (d0 > 256.0D)
+	            {
+	                this.delayCounter += 5;
+	            }
+				boolean flag = this.attacker.getNavigator().tryMoveToEntityLiving(entitylivingbase, this.speedTowardsTarget);
+System.out.println("====== tryMoveToEntityLiving suceeded? "+flag+", speed="+speedTowardsTarget+", entity:"+entitylivingbase);
+	            if (!flag)
+	            {
+	                this.delayCounter += 15;
+	            }
+	        }
+	
+	        this.attackTick = Math.max(this.attackTick - 1, 0);
+	        this.checkAndPerformAttack(entitylivingbase, d0);
+	    }
+	
+	    protected void checkAndPerformAttack(EntityLivingBase p_190102_1_, double p_190102_2_)
+	    {
+	        double d0 = this.getAttackReachSqr(p_190102_1_);
+	
+	        if (p_190102_2_ <= d0 && this.attackTick <= 0)
+	        {
+	            this.attackTick = 20;
+	            this.attacker.swingArm(EnumHand.MAIN_HAND);
+	            this.attacker.attackEntityAsMob(p_190102_1_);
+	        }
+	    }
+	
+	    protected double getAttackReachSqr(EntityLivingBase attackTarget)
+	    {
+	        return (double)(this.attacker.width * 2.0F * this.attacker.width * 2.0F + attackTarget.width);
+	    }
+	}*/
 
 	@Override
 	public void preInit(FMLPreInitializationEvent event) {

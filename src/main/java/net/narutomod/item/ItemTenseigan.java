@@ -10,6 +10,8 @@ import net.minecraftforge.client.event.ModelRegistryEvent;
 
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.translation.I18n;
@@ -32,11 +34,10 @@ import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.util.ITooltipFlag;
 
 import net.narutomod.entity.EntityKingOfHell;
+import net.narutomod.entity.EntityPretaShield;
 import net.narutomod.entity.EntityTenTails;
 import net.narutomod.gui.GuiNinjaScroll;
-import net.narutomod.procedure.ProcedureUtils;
-import net.narutomod.procedure.ProcedureRinneganHelmetTickEvent;
-import net.narutomod.procedure.ProcedureTenseiganBodyTickEvent;
+import net.narutomod.procedure.*;
 import net.narutomod.creativetab.TabModTab;
 import net.narutomod.ElementsNarutomodMod;
 
@@ -46,6 +47,7 @@ import java.util.List;
 import java.util.UUID;
 import javax.annotation.Nullable;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Maps;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class ItemTenseigan extends ElementsNarutomodMod.ModElement {
@@ -65,7 +67,28 @@ public class ItemTenseigan extends ElementsNarutomodMod.ModElement {
 		ItemArmor.ArmorMaterial enuma = EnumHelper.addArmorMaterial("TENSEIGAN", "narutomod:sasuke_", 5, new int[]{2, 75, 100, 15}, 0,
 		 net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:dojutsu")), 2.0f);
 
-		elements.items.add(() -> new ItemDojutsu.Base(enuma) {
+		elements.items.add(() -> new ItemRinnegan.Base(enuma) {
+			@Override
+			public boolean isTenseigan() {
+				return true;
+			}
+
+			@Override
+			public void onPlayerTickEventPost(EntityPlayer player) {
+				if (!player.world.isRemote && player.ticksExisted % 20 == 3) {
+					ItemStack helmetStack = player.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
+					GuiNinjaScroll.enableJutsu(player, (ItemJutsu.Base)ItemYoton.block, ItemYoton.SEALING9D, helmetStack.getItem() == helmet);
+					GuiNinjaScroll.enableJutsu(player, (ItemJutsu.Base)ItemYoton.block,
+					 ItemYoton.SEALING10, helmetStack.getItem() == helmet && EntityTenTails.getBijuManager().isAddedToWorld(player.world));
+					if (!(helmetStack.getItem() instanceof ItemRinnegan.Base)) {
+						player.inventory.clearMatchingItems(ItemAsuraCanon.block, -1, -1, null);
+						if (player.getRidingEntity() instanceof EntityPretaShield.EntityCustom) {
+							player.getRidingEntity().setDead();
+						}
+					}
+				}
+			}
+			
 			@SideOnly(Side.CLIENT)
 			@Override
 			public ModelBiped getArmorModel(EntityLivingBase living, ItemStack stack, EntityEquipmentSlot slot, ModelBiped defaultModel) {
@@ -86,82 +109,11 @@ public class ItemTenseigan extends ElementsNarutomodMod.ModElement {
 			}
 
 			@Override
-			public void onArmorTick(World world, EntityPlayer entity, ItemStack itemstack) {
-				super.onArmorTick(world, entity, itemstack);
-				{
-					Map<String, Object> $_dependencies = new HashMap<>();
-					$_dependencies.put("entity", entity);
-					$_dependencies.put("itemstack", itemstack);
-					$_dependencies.put("world", world);
-					ProcedureRinneganHelmetTickEvent.executeProcedure($_dependencies);
-				}
-			}
-
-			@Override
-			public void onUpdate(ItemStack itemstack, World world, Entity entity, int par4, boolean par5) {
-				super.onUpdate(itemstack, world, entity, par4, par5);
-				if (!world.isRemote && entity.ticksExisted % 20 == 0) {
-					UUID uuid = ProcedureUtils.getUniqueId(itemstack, "KoH_id");
-					if (uuid != null) {
-						Entity koh = ((WorldServer)world).getEntityFromUuid(uuid);
-						if (!(koh instanceof EntityKingOfHell.EntityCustom) || !koh.isEntityAlive()) {
-							ProcedureUtils.removeUniqueIdTag(itemstack, "KoH_id");
-						}
-					}
-					if (entity instanceof EntityPlayer) {
-						EntityPlayer player = (EntityPlayer)entity;
-						ItemStack helmetStack = player.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
-						GuiNinjaScroll.enableJutsu(player, (ItemJutsu.Base)ItemYoton.block,
-						 ItemYoton.SEALING9D, helmetStack.getItem() == helmet);
-						GuiNinjaScroll.enableJutsu(player, (ItemJutsu.Base)ItemYoton.block,
-						 ItemYoton.SEALING10, helmetStack.getItem() == helmet && EntityTenTails.getBijuManager().isAddedToWorld(world));
-						if (helmetStack.getItem() != helmet && helmetStack.getItem() != ItemRinnegan.helmet) {
-							player.inventory.clearMatchingItems(ItemAsuraCanon.block, -1, -1, null);
-						}
-					}
-				}
-			}
-
-			@Override
-			public int getMaxDamage() {
-				return 0;
-			}
-
-			@Override
-			public boolean isDamageable() {
-				return false;
-			}
-
-			@Override
-			public Multimap<String, AttributeModifier> getAttributeModifiers(EntityEquipmentSlot slot, ItemStack stack) {
-				Multimap<String, AttributeModifier> multimap = super.getAttributeModifiers(slot, stack);
-				if (slot == EntityEquipmentSlot.HEAD && ItemRinnegan.isRinnesharinganActivated(stack)) {
-					multimap.put(SharedMonsterAttributes.MAX_HEALTH.getName(),
-					 new AttributeModifier(ItemRinnegan.RINNESHARINGAN_MODIFIER, "rinnesharingan.maxhealth", 380d, 0));
-				}
-				return multimap;
-			}
-
-			@Override
-			public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
-				super.addInformation(stack, worldIn, tooltip, flagIn);
-				if (ItemRinnegan.isRinnesharinganActivated(stack)) {
-					tooltip.add(TextFormatting.RED + I18n.translateToLocal("advancements.rinnesharinganactivated.title") + TextFormatting.WHITE);
-				}
-				tooltip.add(TextFormatting.ITALIC + I18n.translateToLocal("key.mcreator.specialjutsu1") + ": "
-				 + TextFormatting.GRAY + I18n.translateToLocal("chattext.shinratensei"));
-				tooltip.add(TextFormatting.ITALIC + I18n.translateToLocal("key.mcreator.specialjutsu2") + ": "
-				 + TextFormatting.GRAY + I18n.translateToLocal("tooltip.rinnegan.jutsu2")
-				 + " (" + I18n.translateToLocal("tooltip.general.powerupkey") + ")");
-				tooltip.add(TextFormatting.ITALIC + I18n.translateToLocal("key.mcreator.specialjutsu3") + ": "
-				 + TextFormatting.GRAY + I18n.translateToLocal("tooltip.rinnegan.jutsu3"));
-			}
-
-			@Override
 			public String getItemStackDisplayName(ItemStack stack) {
 				return TextFormatting.AQUA + super.getItemStackDisplayName(stack) + TextFormatting.WHITE;
 			}
 		}.setUnlocalizedName("tenseiganhelmet").setRegistryName("tenseiganhelmet").setCreativeTab(TabModTab.tab));
+		
 		elements.items.add(() -> new ItemArmor(enuma, 0, EntityEquipmentSlot.CHEST) {
 			@SideOnly(Side.CLIENT)
 			private ModelBiped armorModel;
@@ -261,6 +213,20 @@ public class ItemTenseigan extends ElementsNarutomodMod.ModElement {
 		 && entity.getItemStackFromSlot(EntityEquipmentSlot.CHEST).getItem() == body
 		 && entity.getItemStackFromSlot(EntityEquipmentSlot.LEGS).getItem() == legs;
 	}
+
+	/*public class EventHook {
+		@SubscribeEvent
+		public void onTick(TickEvent.PlayerTickEvent event) {
+			if (event.phase == TickEvent.Phase.END) {
+				((ItemRinnegan.Base)helmet).onPlayerTickEventPost(event.player);
+			}
+		}
+	}
+
+	@Override
+	public void init(FMLInitializationEvent event) {
+		MinecraftForge.EVENT_BUS.register(new EventHook());
+	}*/
 
 	@SideOnly(Side.CLIENT)
 	@Override

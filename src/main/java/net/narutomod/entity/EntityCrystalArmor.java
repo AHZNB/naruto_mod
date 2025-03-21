@@ -22,6 +22,8 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.entity.ai.attributes.AttributeModifier;
+import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.EntityLivingBase;
@@ -37,12 +39,12 @@ import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.network.datasync.DataSerializers;
-import net.minecraft.init.MobEffects;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
-import net.minecraft.potion.PotionEffect;
+import net.minecraft.inventory.EntityEquipmentSlot;
 
 import javax.annotation.Nullable;
+import java.util.UUID;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityCrystalArmor extends ElementsNarutomodMod.ModElement {
@@ -62,11 +64,14 @@ public class EntityCrystalArmor extends ElementsNarutomodMod.ModElement {
 	public static class EC extends EntityShieldBase implements ItemJutsu.IJutsu {
 		protected static final String ENTITYID_KEY = "CrystalArmorEntityId";
 		private int strengthAmplifier = 9;
+		private final AttributeModifier strengthModifier;
 
 		public EC(World world) {
 			super(world);
 			this.setSize(0.7f, 1.9f);
 			this.dieOnNoPassengers = false;
+			// UUID needs a different unique one 
+			this.strengthModifier = new AttributeModifier(UUID.fromString("ef834eb3-67d2-48cf-8d75-1530ee1ed81f"), "crystalarmor.damage", this.strengthAmplifier * 3, 0);
 		}
 
 		public EC(EntityLivingBase userIn) {
@@ -76,9 +81,9 @@ public class EntityCrystalArmor extends ElementsNarutomodMod.ModElement {
 			this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(Math.max(userIn.getMaxHealth() * 0.5f, 20.0f));
 			this.setHealth(this.getMaxHealth());
 			userIn.getEntityData().setInteger(ENTITYID_KEY, this.getEntityId());
-			if (userIn.isPotionActive(MobEffects.STRENGTH)) {
-				this.strengthAmplifier += userIn.getActivePotionEffect(MobEffects.STRENGTH).getAmplifier() + 1;
-			}
+			//if (userIn.isPotionActive(MobEffects.STRENGTH)) {
+			//	this.strengthAmplifier += userIn.getActivePotionEffect(MobEffects.STRENGTH).getAmplifier() + 1;
+			//}			
 		}
 
 		@Override
@@ -89,7 +94,7 @@ public class EntityCrystalArmor extends ElementsNarutomodMod.ModElement {
 		@Override
 		protected void applyEntityAttributes() {
 			super.applyEntityAttributes();
-			this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(0.0D);
+			this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(10.0D);
 		}
 
 		@Override
@@ -120,12 +125,26 @@ public class EntityCrystalArmor extends ElementsNarutomodMod.ModElement {
 					if (!Chakra.pathway(user).consume(ItemShoton.ARMOR.chakraUsage)) {
 						this.setDead();
 					} else {
-						user.addPotionEffect(new PotionEffect(MobEffects.STRENGTH, 22, this.strengthAmplifier, false, false));
+						IAttributeInstance aInstance = user.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE);
+						if (aInstance != null && this.strengthModifier != null) {
+							if (!this.holdingWeapon(user)) {
+								//user.addPotionEffect(new PotionEffect(MobEffects.STRENGTH, 22, this.strengthAmplifier, false, false));
+								if (!aInstance.hasModifier(this.strengthModifier)) {
+									aInstance.applyModifier(this.strengthModifier);
+								}
+							} else {
+								aInstance.removeModifier(this.strengthModifier);
+							}
+						}
 					}
 				}
 			} else if (!this.world.isRemote) {
 				this.setDead();
 			}
+		}
+
+		public boolean holdingWeapon(EntityLivingBase entity) {
+			return ProcedureUtils.isWeapon(entity.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND));
 		}
 
 		@Override
@@ -163,12 +182,21 @@ public class EntityCrystalArmor extends ElementsNarutomodMod.ModElement {
 			@SubscribeEvent
 			public void onHurt(LivingHurtEvent event) {
 				EntityLivingBase entity = event.getEntityLiving();
-				if (!entity.world.isRemote && entity.getEntityData().hasKey(ENTITYID_KEY)) {
-				 	Entity entity1 = entity.world.getEntityByID(entity.getEntityData().getInteger(ENTITYID_KEY));
-					if (entity1 instanceof EC) {
-						entity1.playSound(SoundEvents.BLOCK_GLASS_BREAK, 0.8f, entity.getRNG().nextFloat() * 0.4f + 0.9f);
-						entity1.attackEntityFrom(event.getSource(), event.getAmount() * 0.8f);
-						event.setAmount(event.getAmount() * 0.2f);
+				if (!entity.world.isRemote) {
+					if (entity.getEntityData().hasKey(ENTITYID_KEY)) {
+						Entity entity1 = entity.world.getEntityByID(entity.getEntityData().getInteger(ENTITYID_KEY));
+						if (entity1 instanceof EC) {
+							entity1.playSound(SoundEvents.BLOCK_GLASS_BREAK, 0.8f, entity.getRNG().nextFloat() * 0.4f + 0.9f);
+							entity1.attackEntityFrom(event.getSource(), event.getAmount() * 0.8f);
+							event.setAmount(event.getAmount() * 0.2f);
+						}
+					}
+					Entity attacker = event.getSource().getImmediateSource();
+					if (attacker instanceof EntityLivingBase && attacker.getEntityData().hasKey(ENTITYID_KEY)) {
+						Entity entity1 = entity.world.getEntityByID(attacker.getEntityData().getInteger(ENTITYID_KEY));
+						if (entity1 instanceof EC && ((EC)entity1).holdingWeapon((EntityLivingBase)attacker)) {
+							event.getSource().damageType = ItemJutsu.NINJUTSU_TYPE;
+						}
 					}
 				}
 			}

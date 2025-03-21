@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.HashMap;
 
 import com.google.common.collect.Multimap;
+import com.google.common.collect.HashMultimap;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class ItemYaguraStaff extends ElementsNarutomodMod.ModElement {
@@ -40,7 +41,7 @@ public class ItemYaguraStaff extends ElementsNarutomodMod.ModElement {
 		elements.items.add(() -> new ItemSword(EnumHelper.addToolMaterial("YAGURA_STAFF", 0, 100000, 10f, 12f, 0)) {
 			@Override
 			public Multimap<String, AttributeModifier> getItemAttributeModifiers(EntityEquipmentSlot slot) {
-				Multimap<String, AttributeModifier> multimap = super.getItemAttributeModifiers(slot);
+				Multimap<String, AttributeModifier> multimap = HashMultimap.<String, AttributeModifier>create();
 				if (slot == EntityEquipmentSlot.MAINHAND) {
 					multimap.put(SharedMonsterAttributes.ATTACK_DAMAGE.getName(),
 							new AttributeModifier(ATTACK_DAMAGE_MODIFIER, "Weapon modifier", (double) this.getAttackDamage(), 0));

@@ -164,6 +164,10 @@ public class EntityKikaichu extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
+		protected void playStepSound(net.minecraft.util.math.BlockPos pos, net.minecraft.block.Block blockIn) {
+		}
+
+		@Override
 		protected void readEntityFromNBT(NBTTagCompound compound) {
 		}
 
@@ -215,11 +219,13 @@ public class EntityKikaichu extends ElementsNarutomodMod.ModElement {
 	    public float limbSwing;
 	    private double chakra;
 		private int lastUpdateTime;
+		private float hp;
 
 		public EntityCustom(World worldIn) {
 			super(worldIn);
 			this.setSize(0.1f, 0.1f);
 			this.maxAge = 6000;
+			this.hp = 4.0f;
 		}
 
 		public EntityCustom(EntityLivingBase hostIn, double x, double y, double z, double mX, double mY, double mZ, int color, float scale, int maxAgeIn) {
@@ -248,7 +254,31 @@ public class EntityKikaichu extends ElementsNarutomodMod.ModElement {
 			return !this.isDead;
 		}
 
-    	public void updateLimbSwing() {
+ 		/*@Override
+		public boolean canBePushed() {
+			return !this.isDead;
+		}
+
+ 		@Override
+		public void applyEntityCollision(Entity entityIn) {
+			if (!entityIn.noClip) {
+				double d0 = entityIn.posX - this.posX;
+				double d1 = entityIn.posZ - this.posZ;
+				double d2 = MathHelper.absMax(d0, d1);
+				if (d2 >= 0.01D) {
+					d2 = (double)MathHelper.sqrt(d2);
+					d0 = d0 / d2;
+					d1 = d1 / d2;
+					double d3 = 1.0D / d2;
+					if (d3 > 1.0D) d3 = 1.0D;
+					d0 *= d3 * 0.01D;
+					d1 *= d3 * 0.01D;
+					this.addVelocity(-d0, 0.0D, -d1);
+				}
+			}
+		}*/
+
+  		public void updateLimbSwing() {
 	        if (this.collided) {
 		        this.prevLimbSwingAmount = this.limbSwingAmount;
 		        double d5 = this.posX - this.prevPosX;
@@ -330,9 +360,12 @@ public class EntityKikaichu extends ElementsNarutomodMod.ModElement {
 			 || source == DamageSource.FALL || source == DamageSource.FLY_INTO_WALL) {
 				return false;
 			}
-			if (!this.world.isRemote && amount >= 1.0f) {
-				this.setDead();
-				((WorldServer)this.world).spawnParticle(EnumParticleTypes.EXPLOSION_NORMAL, this.posX, this.posY, this.posZ, 1, 0d, 0d, 0d, 0d);
+			if (!this.world.isRemote && this.hp > 0.0f) {
+				this.hp -= amount;
+				if (this.hp <= 0.0f) {
+					this.setDead();
+					((WorldServer)this.world).spawnParticle(EnumParticleTypes.EXPLOSION_NORMAL, this.posX, this.posY, this.posZ, 1, 0d, 0d, 0d, 0d);
+				}
 				return true;
 			}
 			return false;

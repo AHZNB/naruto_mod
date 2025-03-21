@@ -82,11 +82,8 @@ public class ItemAsuraCanon extends ElementsNarutomodMod.ModElement {
 		public void onPlayerStoppedUsing(ItemStack itemstack, World world, EntityLivingBase entityLivingBase, int timeLeft) {
 			if (!world.isRemote && entityLivingBase instanceof EntityPlayerMP) {
 				EntityPlayerMP entity = (EntityPlayerMP) entityLivingBase;
-				EntityMissile entityarrow = new EntityMissile(entity);
+				EntityMissile.shoot(entity);
 				itemstack.damageItem(1, entity);
-				world.playSound(null, entity.posX, entity.posY, entity.posZ, SoundEvents.ENTITY_BLAZE_SHOOT,
-				 SoundCategory.NEUTRAL, 1.0F, 1.0F / (itemRand.nextFloat() * 0.5F + 1.0F) + 0.5F);
-				world.spawnEntity(entityarrow);
 			}
 		}
 
@@ -131,9 +128,9 @@ public class ItemAsuraCanon extends ElementsNarutomodMod.ModElement {
 		public void onUpdate() {
 			super.onUpdate();
 			this.updateInFlightRotations();
-			if (this.target != null) {
+			if (this.target != null && this.target.isEntityAlive()) {
 				Vec3d vec = this.target.getPositionEyes(1f).subtract(this.getPositionVector());
-				this.shootPrecise(vec.x, vec.y, vec.z, this.isInWater() ? 0.85f : 0.95f);
+				this.shootPrecise(vec.x, vec.y, vec.z, this.isInWater() ? 0.85f : 0.98f);
 			} else if (this.shootingEntity instanceof EntityLiving) {
 				this.target = ((EntityLiving)this.shootingEntity).getAttackTarget();
 			} else if (this.shootingEntity != null) {
@@ -144,16 +141,16 @@ public class ItemAsuraCanon extends ElementsNarutomodMod.ModElement {
 					}
 				}).entityHit;
 			}
-			if (!this.world.isRemote && this.ticksInAir > 160) {
-				this.setDead();
+			if (!this.world.isRemote && this.ticksInAir > 160 && this.hasNoGravity()) {
+				this.setNoGravity(false);
 			}
 		}
 
 		@Override
 		protected void onImpact(RayTraceResult result) {
 			if (!this.world.isRemote && (result.entityHit == null || !result.entityHit.equals(this.shootingEntity))) {
-				this.world.createExplosion(this.shootingEntity, this.posX, this.posY, this.posZ, this.explosivePower,
-				 ForgeEventFactory.getMobGriefingEvent(this.world, this.shootingEntity));
+				boolean flag = ForgeEventFactory.getMobGriefingEvent(this.world, this.shootingEntity);
+				this.world.newExplosion(this.shootingEntity, this.posX, this.posY, this.posZ, this.explosivePower, flag, flag);
 				this.setDead();
 			}
 		}
@@ -164,6 +161,13 @@ public class ItemAsuraCanon extends ElementsNarutomodMod.ModElement {
 				this.world.spawnParticle(EnumParticleTypes.EXPLOSION_NORMAL, this.posX - this.motionX,
 				 this.posY - this.motionY, this.posZ - this.motionZ, -this.motionX, -this.motionY, -this.motionZ);
 			}
+		}
+
+		public static void shoot(EntityLivingBase entity) {
+			EntityMissile entityarrow = new EntityMissile(entity);
+			entity.world.playSound(null, entity.posX, entity.posY, entity.posZ, SoundEvents.ENTITY_BLAZE_SHOOT,
+			 SoundCategory.NEUTRAL, 1.0F, 1.0F / (entity.getRNG().nextFloat() * 0.5F + 1.0F) + 0.5F);
+			entity.world.spawnEntity(entityarrow);
 		}
 	}
 

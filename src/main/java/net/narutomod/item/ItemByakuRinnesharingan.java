@@ -41,28 +41,15 @@ public class ItemByakuRinnesharingan extends ElementsNarutomodMod.ModElement {
 		ItemArmor.ArmorMaterial enuma = EnumHelper.addArmorMaterial("BYAKURINNESHARINGAN", "narutomod:sasuke_", 0, new int[]{0, 0, 0, 0}, 0, null,
 				0f);
 		elements.items.add(() -> new ItemArmor(enuma, 0, EntityEquipmentSlot.HEAD) {
-			@SideOnly(Side.CLIENT)
-			private ModelBiped armorModel;
-
-			@SideOnly(Side.CLIENT)
-			private ModelHelmetSnug helmentModel;
-
 			@Override
 			@SideOnly(Side.CLIENT)
 			public ModelBiped getArmorModel(EntityLivingBase living, ItemStack stack, EntityEquipmentSlot slot, ModelBiped defaultModel) {
-				if (this.armorModel == null) {
-					this.armorModel = new ModelBiped();
-				}
-
-				if (this.helmentModel == null) {
-					this.helmentModel = new ModelHelmetSnug();
-				}
-
-				this.armorModel.bipedHead = this.helmentModel.bb_main;
-				this.armorModel.isSneak = living.isSneaking();
-				this.armorModel.isRiding = living.isRiding();
-				this.armorModel.isChild = living.isChild();
-				return this.armorModel;
+				ModelBiped armorModel = new ModelBiped();
+				armorModel.bipedHead = new ModelHelmetSnug().bb_main;
+				armorModel.isSneak = living.isSneaking();
+				armorModel.isRiding = living.isRiding();
+				armorModel.isChild = living.isChild();
+				return armorModel;
 			}
 
 			@Override

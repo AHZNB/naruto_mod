@@ -85,12 +85,28 @@ import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import java.util.stream.Stream;
+import java.util.stream.Collectors;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 	public static final List<Class <? extends Base>> TeamKonoha = Arrays.asList(EntityTenten.EntityCustom.class, EntitySakuraHaruno.EntityCustom.class, EntityIrukaSensei.EntityCustom.class, EntityMightGuy.EntityCustom.class);
 	public static final List<Class <? extends Base>> TeamZabuza = Arrays.asList(EntityZabuzaMomochi.EntityCustom.class, EntityHaku.EntityCustom.class);
-	public static final List<Class <? extends Base>> TeamAkatsuki = Arrays.asList(EntityItachi.EntityCustom.class, EntityKisameHoshigaki.EntityCustom.class, EntitySasori.EntityCustom.class, EntityDeidara.EntityCustom.class, EntityHidan.EntityCustom.class, EntityKakuzu.EntityCustom.class, EntityKonan.EntityCustom.class);
+	public static final List<Class <? extends Base>> TeamPain = Arrays.asList(EntityPainDeva.EntityCustom.class, EntityPainAsura.EntityCustom.class, EntityPainAnimal.EntityCustom.class, EntityPainHuman.EntityCustom.class, EntityPainNaraka.EntityCustom.class, EntityPainPreta.EntityCustom.class, EntityNagato.EntityCustom.class);
+	public static final List<Class <? extends Base>> TeamAkatsukiMembers = Arrays.asList(EntityItachi.EntityCustom.class, EntityKisameHoshigaki.EntityCustom.class, EntitySasori.EntityCustom.class, EntityDeidara.EntityCustom.class, EntityHidan.EntityCustom.class, EntityKakuzu.EntityCustom.class, EntityKonan.EntityCustom.class);
+	public static final List<Class <? extends Base>> TeamAkatsuki = Stream.concat(TeamPain.stream(), TeamAkatsukiMembers.stream()).collect(Collectors.toList());
+	private static final Map<String, List<Class <? extends Base>>> TEAMSMap = Maps.newHashMap();
+
+	public static final void registerTeam(String teamName, List<Class <? extends Base>> teamList) {
+		TEAMSMap.put(teamName, teamList);
+	}
+
+	static {
+		registerTeam("Konaha", TeamKonoha);
+		registerTeam("Zabuza", TeamZabuza);
+		registerTeam("Pain", TeamPain);
+		registerTeam("Akatsuki", TeamAkatsuki);
+	}
 
 	public EntityNinjaMob(ElementsNarutomodMod instance) {
 		super(instance, 404);
@@ -244,6 +260,24 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 
 		protected double meleeReach() {
 			return 2.0d * this.width;
+		}
+
+		@Override
+		public boolean isOnSameTeam(Entity entityIn) {
+			if (super.isOnSameTeam(entityIn)) {
+				return true;
+			}
+			if (entityIn instanceof EntityClone.Base) {
+				entityIn = ((EntityClone.Base)entityIn).getSummoner();
+			}
+			if (entityIn instanceof Base) {
+				for (List<Class <? extends Base>> list : TEAMSMap.values()) {
+					if (list.contains(entityIn.getClass()) && list.contains(this.getClass())) {
+						return true;
+					}
+				}
+			}
+			return false;
 		}
 
 		@Override
@@ -432,6 +466,11 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
+		public double getYOffset() {
+			return -0.35d;
+		}
+
+		@Override
 		public void onRemovedFromWorld() {
 			super.onRemovedFromWorld();
 			if (!this.world.isRemote) {
@@ -587,11 +626,17 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 	public static class AILeapAtTarget extends EntityAIBase {
 	    protected EntityLiving leaper;
 	    protected EntityLivingBase target;
-	    protected float leapStrength;
+	    private float leapStrength;
+	    private float maxLeapDistance;
 	
 	    public AILeapAtTarget(EntityLiving leapingEntity, float leapStrengthIn) {
+	    	this(leapingEntity, leapStrengthIn, leapStrengthIn * 20.0f);
+	    }
+
+	    public AILeapAtTarget(EntityLiving leapingEntity, float leapStrengthIn, float maxDistanceIn) {
 	        this.leaper = leapingEntity;
 	        this.leapStrength = leapStrengthIn;
+	        this.maxLeapDistance = maxDistanceIn;
 	        this.setMutexBits(5);
 	    }
 	
@@ -601,7 +646,7 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 	            return false;
 	        } else {
 	            double d0 = this.leaper.getDistance(this.target);
-	            if (d0 >= 3.0D && d0 <= this.leapStrength * 20.0d && this.leaper.onGround) {
+	            if (d0 >= 3.0D && d0 <= this.maxLeapDistance && this.leaper.onGround) {
                     return this.leaper.getRNG().nextInt(5) == 0;
 	            } else {
 	                return false;
@@ -620,9 +665,17 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 	        double d2 = this.target.posY + (double)this.target.height * 0.4d - this.leaper.posY + d4 * 0.2d;
 	        double d3 = MathHelper.sqrt(d0 * d0 + d1 * d1 + d2 * d2);
 	        if (d3 >= 1.0E-4D) {
-	            this.leaper.motionX = d0 / d3 * (double)this.leapStrength;
-	            this.leaper.motionZ = d1 / d3 * (double)this.leapStrength;
-	        	this.leaper.motionY = d2 / d3 * (double)this.leapStrength;
+	        	if (this.leapStrength > 0.0f) {
+		            this.leaper.motionX = d0 / d3 * (double)this.leapStrength;
+		            this.leaper.motionZ = d1 / d3 * (double)this.leapStrength;
+		        	this.leaper.motionY = d2 / d3 * (double)this.leapStrength;
+	        	} else {
+		            double d5 = this.target.posY - this.leaper.posY;
+		            this.leaper.rotationYaw = (float)(MathHelper.atan2(d1, d0) * (180D / Math.PI)) - 90.0F;
+		            this.leaper.motionX = d0 * 0.145d;
+		            this.leaper.motionZ = d1 * 0.145d;
+		            this.leaper.motionY = 0.32d + (Math.max(d5, 0.0d) + d4 * 0.6d) * 0.1d;
+	        	}
 	        }
 	    }
 	}	
@@ -655,7 +708,11 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 	    }
 	
 	    public boolean shouldExecute() {
-	        return this.entity.getAttackTarget() != null;
+			if (this.entity.tasks.isControlFlagDisabled(this.getMutexBits())) {
+				return false;
+			}
+	    	EntityLivingBase target = this.entity.getAttackTarget();
+	        return target != null && target.isEntityAlive();
 	    }
 	
 	    public boolean shouldContinueExecuting() {
@@ -689,12 +746,14 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 	            } else {
 	                --this.seeTime;
 	            }
-	            if (d0 <= (double)this.maxAttackDistance && this.seeTime >= 20) {
-	                this.entity.getNavigator().clearPath();
-	                ++this.strafingTime;
-	            } else {
+	            if (d0 > (double)this.maxAttackDistance) {
 	                this.entity.getNavigator().tryMoveToEntityLiving(entitylivingbase, this.moveSpeedAmp);
 	                this.strafingTime = -1;
+	            } else if (this.seeTime < 20) {
+	            	this.strafingTime = -1;
+	            } else {
+	                this.entity.getNavigator().clearPath();
+	                ++this.strafingTime;
 	            }
 	            if (this.strafingTime >= 20) {
 	                if (this.entity.getRNG().nextFloat() < 0.3F) {
@@ -864,7 +923,7 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 
 	public static class NavigateGround extends PathNavigateGround {
 		private BlockPos targetPosition;
-	
+
 		public NavigateGround(EntityLiving entityLivingIn, World worldIn) {
 			super(entityLivingIn, worldIn);
 		}
@@ -923,6 +982,12 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 	public static class MoveHelper extends EntityMoveHelper {
 		public MoveHelper(EntityLiving entityIn) {
 			super(entityIn);
+		}
+
+		@Override
+		public void strafe(float forward, float strafe) {
+			super.strafe(forward, strafe);
+			this.speed = 0.75f;
 		}
 
 		@Override

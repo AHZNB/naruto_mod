@@ -30,10 +30,12 @@ import net.minecraft.network.datasync.DataSerializers;
 
 import net.narutomod.potion.PotionAmaterasuFlame;
 import net.narutomod.potion.PotionCorrosion;
+import net.narutomod.potion.PotionInstantDamage;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.item.ItemScrollSanshouo;
 import net.narutomod.item.ItemNinjutsu;
 import net.narutomod.Particles;
+import net.narutomod.Chakra;
 import net.narutomod.ElementsNarutomodMod;
 
 import com.google.common.collect.Lists;
@@ -67,7 +69,7 @@ public class EntityPuppetSanshouo extends ElementsNarutomodMod.ModElement {
 			this.dieOnNoPassengers = false;
 			this.setAlwaysRenderNameTag(false);
 			//this.setOwnerCanSteer(true, this.driveSpeed);
-			this.effectivePotions.addAll(Lists.newArrayList(PotionAmaterasuFlame.potion, PotionCorrosion.potion));
+			this.effectivePotions.addAll(Lists.newArrayList(PotionAmaterasuFlame.potion, PotionCorrosion.potion, PotionInstantDamage.potion));
 		}
 
 		public EntityCustom(EntityLivingBase summonerIn) {
@@ -160,6 +162,14 @@ public class EntityPuppetSanshouo extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void onUpdate() {
 			super.onUpdate();
+			if (!this.world.isRemote && this.ticksExisted % 20 == 1) {
+				Entity passenger = this.getControllingPassenger();
+				if (passenger instanceof EntityLivingBase && this.canBeSteered()
+				 && !Chakra.pathway((EntityLivingBase)passenger).consume(ItemNinjutsu.PUPPET.chakraUsage * 20)) {
+					this.setOwnerCanSteer(false, 0);
+					this.world.setEntityState(this, (byte)101);
+				}
+			}
 			this.setAge(this.getAge() + 1);
 		}
 
@@ -197,6 +207,16 @@ public class EntityPuppetSanshouo extends ElementsNarutomodMod.ModElement {
                         }
                     }
                 }
+			}
+		}
+
+		@SideOnly(Side.CLIENT)
+		@Override
+		public void handleStatusUpdate(byte id) {
+			if (id == 101) {
+				this.setOwnerCanSteer(false, 0);
+			} else {
+				super.handleStatusUpdate(id);
 			}
 		}
 

@@ -190,7 +190,7 @@ public class GuiNinjaScroll extends ElementsNarutomodMod.ModElement {
 			((ItemJutsu.Base)stack.getItem()).setOwner(stack, player);
 			ItemHandlerHelper.giveItemToPlayer(player, stack);
 		}
-		if (stack != null) {
+		if (stack != null && ((ItemJutsu.Base)stack.getItem()).isJutsuEnabled(stack, jutsu) != enable) {
 			((ItemJutsu.Base)stack.getItem()).enableJutsu(stack, jutsu, enable);
 		}
 		return stack;

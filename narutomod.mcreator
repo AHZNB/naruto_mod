@@ -1,8 +1,8 @@
 {
   "id_map": {
-    "ENTITY": 489,
-    "GUI": 70,
-    "DIMENSION": 13
+    "ENTITY": 507,
+    "DIMENSION": 13,
+    "GUI": 72
   },
   "mod_elements": [
     {
@@ -238,18 +238,6 @@
             "type": "entity"
           },
           {
-            "name": "x",
-            "type": "number"
-          },
-          {
-            "name": "y",
-            "type": "number"
-          },
-          {
-            "name": "z",
-            "type": "number"
-          },
-          {
             "name": "world",
             "type": "world"
           }
@@ -288,18 +276,6 @@
           {
             "name": "entity",
             "type": "entity"
-          },
-          {
-            "name": "x",
-            "type": "number"
-          },
-          {
-            "name": "y",
-            "type": "number"
-          },
-          {
-            "name": "z",
-            "type": "number"
           },
           {
             "name": "world",
@@ -444,18 +420,6 @@
           {
             "name": "entity",
             "type": "entity"
-          },
-          {
-            "name": "x",
-            "type": "number"
-          },
-          {
-            "name": "y",
-            "type": "number"
-          },
-          {
-            "name": "z",
-            "type": "number"
           },
           {
             "name": "world",
@@ -1112,6 +1076,10 @@
       "ids": {},
       "metadata": {
         "dependencies": [
+          {
+            "name": "is_pressed",
+            "type": "boolean"
+          },
           {
             "name": "entity",
             "type": "entity"
@@ -2275,6 +2243,10 @@
           {
             "name": "entity",
             "type": "entity"
+          },
+          {
+            "name": "amplifier",
+            "type": "number"
           }
         ]
       }
@@ -7779,6 +7751,149 @@
         "1": 489
       },
       "registry_name": "guren"
+    },
+    {
+      "name": "PainDeva",
+      "type": "mob",
+      "sortid": 912,
+      "compiles": true,
+      "locked_code": true,
+      "ids": {
+        "0": 490,
+        "1": 491
+      },
+      "registry_name": "pain_deva"
+    },
+    {
+      "name": "ScrollShikigamiGui",
+      "type": "gui",
+      "sortid": 913,
+      "compiles": true,
+      "locked_code": true,
+      "ids": {
+        "0": 72
+      },
+      "registry_name": "scroll_shikigami_gui"
+    },
+    {
+      "name": "ScrollShikigami",
+      "type": "item",
+      "sortid": 914,
+      "compiles": true,
+      "locked_code": false,
+      "ids": {},
+      "registry_name": "scroll_shikigami"
+    },
+    {
+      "name": "PainAsura",
+      "type": "mob",
+      "sortid": 915,
+      "compiles": true,
+      "locked_code": true,
+      "ids": {
+        "0": 492,
+        "1": 493
+      },
+      "registry_name": "pain_asura"
+    },
+    {
+      "name": "PainAnimal",
+      "type": "mob",
+      "sortid": 916,
+      "compiles": true,
+      "locked_code": true,
+      "ids": {
+        "0": 494,
+        "1": 495
+      },
+      "registry_name": "pain_animal"
+    },
+    {
+      "name": "GiantBird",
+      "type": "mob",
+      "sortid": 917,
+      "compiles": true,
+      "locked_code": true,
+      "ids": {
+        "0": 496,
+        "1": 497
+      },
+      "registry_name": "giant_bird"
+    },
+    {
+      "name": "PainPreta",
+      "type": "mob",
+      "sortid": 918,
+      "compiles": true,
+      "locked_code": true,
+      "ids": {
+        "0": 498,
+        "1": 499
+      },
+      "registry_name": "pain_preta"
+    },
+    {
+      "name": "PainHuman",
+      "type": "mob",
+      "sortid": 919,
+      "compiles": true,
+      "locked_code": true,
+      "ids": {
+        "0": 500,
+        "1": 501
+      },
+      "registry_name": "pain_human"
+    },
+    {
+      "name": "PainNaraka",
+      "type": "mob",
+      "sortid": 920,
+      "compiles": true,
+      "locked_code": true,
+      "ids": {
+        "0": 502,
+        "1": 503
+      },
+      "registry_name": "pain_naraka"
+    },
+    {
+      "name": "MechWalker",
+      "type": "mob",
+      "sortid": 921,
+      "compiles": true,
+      "locked_code": true,
+      "ids": {
+        "0": 504,
+        "1": 505
+      },
+      "registry_name": "mech_walker"
+    },
+    {
+      "name": "Nagato",
+      "type": "mob",
+      "sortid": 922,
+      "compiles": true,
+      "locked_code": true,
+      "ids": {
+        "0": 506,
+        "1": 507
+      },
+      "registry_name": "nagato"
+    },
+    {
+      "name": "AkatsukiRobeOld",
+      "type": "armor",
+      "sortid": 923,
+      "compiles": true,
+      "locked_code": true,
+      "ids": {},
+      "registry_name": "akatsuki_robe_old",
+      "metadata": {
+        "eh": false,
+        "el": false,
+        "eb": false,
+        "ec": true
+      }
     }
   ],
   "variable_elements": [
@@ -7908,13 +8023,6 @@
         "chewbacca sound byte"
       ],
       "category": "hostile"
-    },
-    {
-      "name": "KamuiSFX",
-      "files": [
-        "kamui sound efect "
-      ],
-      "category": "master"
     },
     {
       "name": "MonsterGrowl",
@@ -8896,6 +9004,14 @@
       ],
       "category": "master",
       "subtitle": ""
+    },
+    {
+      "name": "kamui",
+      "files": [
+        "kamui_sound_efect_"
+      ],
+      "category": "master",
+      "subtitle": ""
     }
   ],
   "language_map": {
@@ -8903,6 +9019,7 @@
       "item.kiba_blades.name": "Kiba Blades",
       "entity.crow.name": "Crow",
       "chattext.gedomazo.cantspawn": "Can\u0027t summon Gedo Mazo, it\u0027s already in the world",
+      "subtitles.kamui": "",
       "item.scroll_water_prison.name": "Water Release - Water Prison jutsu",
       "subtitles.sando_no_jutsi": "",
       "item.futon.name": "Wind Release",
@@ -8931,6 +9048,7 @@
       "subtitles.bonecrack": "",
       "entity.katonfirestream.name": "Great Flame Jutsu",
       "advancements.yooton_acquired.title": "Lava Release Acquired",
+      "entity.giant_bird.name": "Eight Span Crow",
       "chattext.sharingan.notyours": "This is not your sharingan. You don\u0027t have enough experience to use it yet.",
       "item.mask_obito_warlegs.name": "Mask Obito War Leggings",
       "entity.iruka_sensei.name": "Iruka Sensei",
@@ -8947,12 +9065,13 @@
       "item.ninja_armor_war_1helmet.name": "Facial Protector (Konoha)",
       "item.mask_anbu_4helmet.name": "Mask Anbu",
       "item.scroll_sealing_4_symbols.name": "Four Symbols Sealing Jutsu",
-      "advancements.learned_1st_jutsu.title": "Learned First Jutsu",
+      "advancements.learned_1st_jutsu.title": "Learned first jutsu",
+      "item.akatsuki_robe_oldbody.name": "Akatsuki Robe (original)",
       "chattext.biju.playerisjinchuriki": "%s is %s\u0027s jinchuriki",
       "tooltip.6psenjutsu.shield": "Truth Seeking Ball: Shield",
       "entity.susanooclothed.name": "Susanoo",
       "entity.lightning_arc.name": "Lightning Arc",
-      "advancements.eternalmangekyoachieved.descr": "The Eternal Mangekyo Sharingan is proof an Uchiha has continued to push forward despite experiencing great losses.",
+      "advancements.eternalmangekyoachieved.descr": "The Eternal Mangeky¨­ Sharingan is proof an Uchiha has continued to push forward despite experiencing great losses.",
       "item.ninja_armor_otoboots.name": "",
       "advancements.bakuton_acquired.title": "Explosion Release Acquired",
       "advancements.ranton_acquired.title": "Storm Release Acquired",
@@ -9013,6 +9132,7 @@
       "item.clothes_raikagebody.name": "Clothes Raikage Body",
       "tooltip.senjutsu.type": "Sage Mode type: ",
       "item.jinton.name": "Dust Release",
+      "entity.pain_animal.name": "Pain - Animal path",
       "entity.lightning_beast.name": "Lightning Beast Tracking Fang",
       "item.ashbones.name": "All-Killing Ash Bones",
       "entity.snake_8_heads.name": "8-branch Jutsu",
@@ -9085,7 +9205,7 @@
       "item.ninja_armor_war_1legs.name": "Ninja Armor War 1 Leggings",
       "tooltip.mokuton.rightclick2": "Four-Pillar House Technique",
       "subtitles.mindtransfer": "",
-      "advancements.shakuton_acquired.descr": "Scorch Release is a nature transformation kekkei genkai, a combination of fire and wind.",
+      "advancements.shakuton_acquired.descr": "Ice Release is a nature transformation kekkei genkai, a combination of fire and wind.",
       "lingering_potion.effect.paralysis": "Lingering Paralysis",
       "advancements.ninjaachievement.descr": "You may now begin your ninja training!",
       "subtitles.gyuki_roar": "",
@@ -9124,6 +9244,7 @@
       "tooltip.bijucloak.level1": "Requires 400 JXP to master, 3600 JXP to level 2",
       "chattext.rinnegan.path4": "Naraka Path",
       "chattext.rinnegan.path5": "Outer Path",
+      "entity.nagato.name": "Nagato",
       "advancements.mokuton_acquired.title": "Wood Release Acquired",
       "entity.spike.name": "Spike",
       "entity.finger_bone.name": "Finger Bone Bullets",
@@ -9149,6 +9270,7 @@
       "item.clothes_hokageboots.name": "",
       "entity.katonfireball.name": "Great Fireball jutsu",
       "tooltip.senjutsu.rasengan": "Sage Art: Ultra-Big Ball Rasengan",
+      "entity.mech_walker.name": "Mech Walker",
       "item.scroll_chidori.name": "Lightning Release - Chidori",
       "subtitles.ice_shoot_small": "",
       "splash_potion.effect.instant_damage": "Splash Instant Damage",
@@ -9223,6 +9345,7 @@
       "item.poison_senbon.name": "Poison Senbons",
       "tooltip.shikotsumyaku.dancecamellia": "Camellia Dance",
       "subtitles.opengate": "",
+      "entity.pain_naraka.name": "Pain - Naraka path",
       "item.scroll_hiding_in_rock.name": "Earth Release - Hiding In Rock scroll",
       "entity.replacementclone.name": "Body Replacement Jutsu",
       "subtitles.windblast": "",
@@ -9257,9 +9380,9 @@
       "item.ninja_armor_konohahelmet.name": "Forehead Protector (Konoha)",
       "death.attack.ninjutsu": "%1$s was killed by %2$s using ninjutsu",
       "tooltip.jiton.musthave": "Must have Earth \u0026 Wind release",
-      "item.scroll_flame_formation.name": "Fire Release: Uchiha Flame Formation",
-      "item.tenseiganbody.name": "Tenseigan Chakra",
       "entity.specialeffect.name": "Special Effect",
+      "item.tenseiganbody.name": "Tenseigan Chakra",
+      "item.scroll_flame_formation.name": "Fire Release: Uchiha Flame Formation",
       "item.dojutsu.name": "Dojutsu",
       "item.steam_armorhelmet.name": "Steam Armor Hat",
       "entity.three_tails.name": "Isobu",
@@ -9302,9 +9425,10 @@
       "chattext.medicalgui.notmedninja": "You are not a medical ninja.",
       "tooltip.shikotsumyaku.dancelarch": "Larch Dance",
       "advancements.futton_acquired.title": "Boil Release Acquired",
+      "entity.pain_preta.name": "Pain - Preta path",
       "subtitles.chains": "",
       "item.bone_sword.name": "Bone Sword",
-      "item.curryof_life.name": "Curry of Life",
+      "item.curryof_life.name": "Curryof Life",
       "entity.truthseekerball.name": "Truth Seeking Ball",
       "entity.ice_spear.name": "Shooting Ice Spears",
       "advancements.openedgates.descr": "Only hard working shinobi can unlock the eight gates that limit the full flow of chakra in one\u0027s body, releasing ever greater strength and speed.",
@@ -9321,7 +9445,7 @@
       "entity.toad_shima.name": "Shima",
       "item.scroll_earth_spears.name": "Earth Release - Earth Flow Spears",
       "entity.mind_transfer.name": "Mind Body Transfer",
-      "entity.jintonbeam.name": "Dust Release: Boundary Dismantling Jutsu - Beam",
+      "entity.jintonbeam.name": "Dust Release: Boundary Dismantling Jutsu - Cone",
       "tooltip.eightgates.opengates": "[SHIFT] + [Right Click] to open gates",
       "entity.kankuro.name": "Kankuro",
       "chattext.tentails.sealedintoplayer": "Sealing %s into %s\u0027s body",
@@ -9342,8 +9466,8 @@
       "tooltip.kabutowari.general": "The Kabutowari (Helmet Splitter) is one of the swords of the Seven Ninja Swordsmen of the Mist. The sword consists of a giant axe and hammer, which together are referred to as a \"bluntsword\" that is said to be able to break through any defence.",
       "item.sound_gaunlet.name": "Sound Reflecting Gauntlet",
       "item.mangekyosharinganobitohelmet.name": "Mangekyo Sharingan - Kamui",
-      "advancements.sharinganopened.title": "Sharingan Activated",
-      "advancements.kekkei_tota_awakened.descr": "Kekkei Tota is an advanced branch of jutsu that is more advanced than kekkei genkai. The only known example is Dust Release, a combination of three different nature transformations earth, wind, and fire.",
+      "advancements.sharinganopened.title": "Sharingan activated",
+      "advancements.kekkei_tota_awakened.descr": "Kekkei T¨­ta is an advanced branch of jutsu that is more advanced than kekkei genkai. The only known example is Dust Release, a combination of three different nature transformations ¡ª earth, wind, and fire.",
       "item.inton.name": "Yin Release",
       "entity.water_prison.name": "Water Prison jutsu",
       "item.ninja_armor_obito_warhelmet.name": "Ninja Armor Obito War Helmet",
@@ -9389,7 +9513,7 @@
       "entity.ninja_iwa.name": "Ninja Iwa",
       "tooltip.6psenjutsu.shoot": "Truth Seeking Ball: Shoot",
       "subtitles.kuchiyosenojutsu": "",
-      "advancements.achievementmedicalgenin.descr": "You can now perform some medical jutsu.",
+      "advancements.achievementmedicalgenin.descr": "You can now perform some medical jutsu",
       "entity.earth_sandwich.name": "Earth Sandwich Jutsu",
       "item.scroll_3rd_kazekage.name": "3rd Kazekage puppet scroll",
       "tooltip.byakugan.jutsu1": "Activate, [Switch Jutsu] zoom-in, [SHIFT] 8-Trigrams Vacuum Palm",
@@ -9439,9 +9563,11 @@
       "entity.futon_great_breakthrough.name": "Great Breakthrough",
       "item.rice.name": "Rice",
       "potion.effect.instant_damage": "Instant Damage",
+      "item.akatsuki_robe_oldhelmet.name": "Akatsuki Robe Old Helmet",
       "splash_potion.effect.reach": "Splash Reach",
       "item.nuibari_thrown.name": "Nuibari Sword",
       "item.shoton.name": "Crystal Release",
+      "entity.pain.name": "Pain",
       "chattext.amaterasu": "Amaterasu!",
       "item.ninja_armor_anbuboots.name": "Ninja Boots (Anbu)",
       "item.whitezetsuflesh.name": "White Zetsu Flesh",
@@ -9488,7 +9614,7 @@
       "tooltip.jinton.musthave": "Must have Earth, Wind \u0026 Fire release \u0026 4900 NXP",
       "item.mask_obito_warbody.name": "Mask Obito War Body",
       "item.shikotsumyaku.name": "Skeletal Control",
-      "advancements.byakuganopened.descr": "Byakugan is regarded as one of the \"Three Great Dojutsu\", the others being the Sharingan and the Rinnegan.",
+      "advancements.byakuganopened.descr": "Byakugan is regarded as one of the \"Three Great D¨­jutsu\", the others being the Sharingan and the Rinnegan.",
       "subtitles.dingding": "",
       "item.scroll_earth_golem.name": "Earth Release: Golem Jutsu",
       "item.robe_jiraiyahelmet.name": "Robe Jiraiya Helmet",
@@ -9500,7 +9626,7 @@
       "item.scroll_sanshouo.name": "Sansh?uo Puppet Scroll",
       "potion.effect.chakra_enhanced_strength": "Chakra Enhanced Strength",
       "item.scroll_rasengan.name": "Rasengan",
-      "advancements.sharinganopened.descr": "Practice and practice and practice your ninja skills.",
+      "advancements.sharinganopened.descr": "Practice and practice and practice your ninja skills",
       "entity.anbu.name": "Anbu",
       "subtitles.ice_shoot": "",
       "item.on_body.name": "On Body",
@@ -9526,6 +9652,7 @@
       "chattext.jutsu.enabled": "%s is now enabled!",
       "item.folding_fan.name": "Giant Folding Fan",
       "subtitles.waterfall": "",
+      "item.akatsuki_robe_oldboots.name": "Akatsuki Robe Old Boots",
       "lingering_potion.effect.instant_damage": "Lingering Instant Damage",
       "entity.ice_spike.name": "Shattering Ice Spear",
       "splash_potion.effect.flight": "Splash Flight",
@@ -9541,6 +9668,7 @@
       "item.ninja_armor_kirihelmet.name": "Forehead Protector (Kirigakure)",
       "tile.kamuiblock.name": "Kamui Block",
       "subtitles.bijudama": "",
+      "entity.pain_asura.name": "Pain - Asura path",
       "item.ninja_armor_anbubody.name": "Chest Armor (Anbu)",
       "item.kabutowari_hammer.name": "Kabutowari Hammer",
       "entity.kakuzu.name": "Kakuzu",
@@ -9600,6 +9728,7 @@
       "entity.paper_bind.name": "Paper Bind",
       "item.clothes_hokagelegs.name": "",
       "entity.guren.name": "Guren",
+      "item.akatsuki_robe_oldlegs.name": "Akatsuki Robe Old Leggings",
       "entity.lightning_panther.name": "Black Panther",
       "potion.effect.reach": "Reach",
       "subtitles.bugs": "",
@@ -9616,6 +9745,7 @@
       "itemGroup.tabmodtab": "Naruto",
       "item.ninja_armor_naruto_slegs.name": "Naruto Pants",
       "item.totsuka_sword.name": "Totsuka Sword",
+      "entity.pain_human.name": "Pain - Human path",
       "subtitles.hand_press": "",
       "tooltip.shakuton.scorchkill": "Steam Kill",
       "item.tenseiganlegs.name": "Tenseigan Chakra",
@@ -9637,7 +9767,7 @@
       "entity.entityngdragon.name": "Yagai (Night Guy)",
       "item.scroll_fire_stream.name": "Fire Release - Great Flame",
       "item.ninja_armor_kumobody.name": "Flak Jacket (Kumogakure)",
-      "entity.giant_dog_2h.name": "Giant Dog",
+      "entity.giant_dog_2h.name": "Giant Multi-head Dog",
       "subtitles.gyuki_snort": "",
       "entity.vacuum_wave.name": "Vacuum Wave",
       "item.ninja_armor_iwalegs.name": "Ninja Pants (Iwagakure)",
@@ -9662,6 +9792,8 @@
       "subtitles.chakraflow": "",
       "entity.susanooskeleton.name": "Susanoo Skeleton",
       "entity.hiraishin.name": "Flying Thunder God Jutsu",
+      "entity.pain_deva.name": "Pain - Deva path",
+      "item.scroll_shikigami.name": "Scroll Shikigami",
       "item.anbu_sword.name": "Anbu Sword",
       "effect.flight": "Flight",
       "subtitles.paperflip": "",

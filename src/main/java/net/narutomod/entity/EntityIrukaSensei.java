@@ -119,11 +119,6 @@ public class EntityIrukaSensei extends ElementsNarutomodMod.ModElement {
 		}
 		
 		@Override
-		public boolean isOnSameTeam(Entity entityIn) {
-			return EntityNinjaMob.TeamKonoha.contains(entityIn.getClass());
-		}
-
-		@Override
 		public boolean getCanSpawnHere() {
 			return super.getCanSpawnHere() 
 			 && this.world.getEntitiesWithinAABB(EntityCustom.class, this.getEntityBoundingBox().grow(128d, 16d, 128d)).isEmpty();

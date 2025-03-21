@@ -50,12 +50,16 @@ import net.minecraft.block.Block;
 import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.init.Items;
+import net.minecraft.potion.Potion;
 
 import net.narutomod.entity.EntityNinjaMob;
 import net.narutomod.item.ItemJutsu;
 import net.narutomod.PlayerTracker;
 import net.narutomod.PlayerRender;
 import net.narutomod.Particles;
+import net.narutomod.potion.PotionAmaterasuFlame;
+import net.narutomod.potion.PotionCorrosion;
+import net.narutomod.potion.PotionInstantDamage;
 import net.narutomod.NarutomodModVariables;
 import net.narutomod.ElementsNarutomodMod;
 
@@ -74,13 +78,28 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 	//  new RangedAttribute(null, "modded.reachDistance", 7.0, 0.0, 128.0).setShouldWatch(true);
 	public static final IAttribute MAXHEALTH = (new RangedAttribute(null, "modded.maxHealth", 20.0D, Float.MIN_VALUE, 1048576.0D)).setDescription("Max Modded Health").setShouldWatch(true);
 	private static final Random RNG = new Random();
-	public static final DamageSource AMATERASU = new DamageSource(ItemJutsu.NINJUTSU_TYPE);
+	public static final DamageSource AMATERASU = new JutsuEffectDamageSource(PotionAmaterasuFlame.potion);
+	public static final DamageSource CORROSION = new JutsuEffectDamageSource(PotionCorrosion.potion);
+	public static final DamageSource INSTANT_DAMAGE = new JutsuEffectDamageSource(PotionInstantDamage.potion).setDamageBypassesArmor();
 	public static final DamageSource SPECIAL_DAMAGE = new DamageSource("wither").setDamageBypassesArmor().setDamageIsAbsolute();
 	public static final float DEG2RAD = (float)Math.PI / 180.0F;
 	public static final float RAD2DEG = 180.0F / (float)Math.PI;
 	
 	public ProcedureUtils(ElementsNarutomodMod instance) {
 		super(instance, 177);
+	}
+
+	public static class JutsuEffectDamageSource extends DamageSource {
+		public final Potion potion;
+		
+		public JutsuEffectDamageSource(Potion potionIn) {
+			super(ItemJutsu.NINJUTSU_TYPE);
+			this.potion = potionIn;
+		}
+
+		public Potion getPotion() {
+			return this.potion;
+		}
 	}
 
 	public static double rngGaussian() {
@@ -338,6 +357,10 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 
 	public static boolean hasItemInInventory(EntityPlayer player, Item item) {
 		return hasItemStackIgnoreDurability(player.inventory, new ItemStack(item));
+	}
+
+	public static boolean hasItemInInventory(EntityLivingBase entity, Item item) {
+		return getMatchingItemStack(entity, item) != null;
 	}
 
 	private static boolean stackEqualExact(ItemStack stack1, ItemStack stack2) {

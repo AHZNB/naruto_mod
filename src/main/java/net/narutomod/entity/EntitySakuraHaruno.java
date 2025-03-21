@@ -174,7 +174,7 @@ public class EntitySakuraHaruno extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public boolean isOnSameTeam(Entity entityIn) {
-			return EntityNinjaMob.TeamKonoha.contains(entityIn.getClass()) || this.healableEntities.contains(entityIn);
+			return super.isOnSameTeam(entityIn) || this.healableEntities.contains(entityIn);
 		}
 
 		@Override

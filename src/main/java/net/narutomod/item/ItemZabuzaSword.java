@@ -20,6 +20,7 @@ import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.Entity;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.block.state.IBlockState;
@@ -118,6 +119,14 @@ public class ItemZabuzaSword extends ElementsNarutomodMod.ModElement {
 		@Override
 		public boolean isShield(ItemStack stack, @Nullable EntityLivingBase entity) {
 			return stack.getItem() == block;
+		}
+
+		@Override
+		public boolean onLeftClickEntity(ItemStack itemstack, EntityPlayer attacker, Entity target) {
+			if (attacker.isHandActive()) {
+				return true;
+			}
+			return super.onLeftClickEntity(itemstack, attacker, target);
 		}
 
 		@Override

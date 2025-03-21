@@ -411,7 +411,7 @@ public class EntityCrystalRay extends ElementsNarutomodMod.ModElement {
 				float beamRadius = bullet.getBeamWidth();
 				float age = (float)bullet.ticksExisted + pt;
 				float f = age * 0.02F;
-				double max_l = bullet.prevBeamLength + (bullet.getBeamLength() - bullet.prevBeamLength) * pt;
+				float max_l = bullet.prevBeamLength + (bullet.getBeamLength() - bullet.prevBeamLength) * pt;
 				yaw = ProcedureUtils.interpolateRotation(bullet.prevRotationYaw, bullet.rotationYaw, pt);
 				float pitch = 90.0F - bullet.prevRotationPitch - (bullet.rotationPitch - bullet.prevRotationPitch) * pt;
 				this.bindEntityTexture(bullet);
@@ -427,7 +427,7 @@ public class EntityCrystalRay extends ElementsNarutomodMod.ModElement {
 				OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240.0F, 240.0F);
 				GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 				float f5 = 0.0F - f;
-				float f6 = (float) max_l / 32.0F - f;
+				float f6 = max_l / 32.0F - f;
 				float f11 = 1.4F;
 				Tessellator tessellator = Tessellator.getInstance();
 				BufferBuilder bufferbuilder = tessellator.getBuffer();

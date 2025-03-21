@@ -145,7 +145,7 @@ public class ProcedureKamuiJikukanIdo extends ElementsNarutomodMod.ModElement {
 						}
 						if ((((timer) % 60) == 1)) {
 							world.playSound((EntityPlayer) null, x, y, z, (net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY
-									.getObject(new ResourceLocation("narutomod:KamuiSFX")), SoundCategory.NEUTRAL, (float) 1, (float) 1);
+									.getObject(new ResourceLocation("narutomod:kamui")), SoundCategory.NEUTRAL, (float) 1, (float) 1);
 						}
 						Particles.spawnParticle(world, Particles.Types.PORTAL_SPIRAL, t.hitVec.x, t.hitVec.y, t.hitVec.z, 100, 0d, 0d, 0d, 0d, 0d, 0d,
 								5, 0x20000000, 30);

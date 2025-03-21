@@ -67,19 +67,23 @@ public class EntityC2 extends ElementsNarutomodMod.ModElement {
 		protected void applyEntityAttributes() {
 			super.applyEntityAttributes();
 			this.getEntityAttribute(SharedMonsterAttributes.FLYING_SPEED).setBaseValue(0.4D);
-			this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(40D);
+			this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(100.0D);
 		}
 
 		@Override
 		protected void updateAITasks() {
 			super.updateAITasks();
 			if (this.isBeingRidden()) {
-				this.clearTargetTasks();
+				this.disableAttackTask();
 				if (this.forceFlyTo != null) {
-					this.moveHelper.setMoveTo(this.forceFlyTo.x, this.forceFlyTo.y, this.forceFlyTo.z, this.forceFlySpeed);
+					if (this.getDistance(this.forceFlyTo.x, this.forceFlyTo.y, this.forceFlyTo.z) < this.forceFlySpeed * 0.5d * this.width) {
+						this.forceFlyTo = null;
+					} else {
+						this.moveHelper.setMoveTo(this.forceFlyTo.x, this.forceFlyTo.y, this.forceFlyTo.z, this.forceFlySpeed);
+					}
 				}
 			} else {
-				this.setTargetTasks();
+				this.enableAttackTask();
 			}
 		}
 
@@ -134,7 +138,7 @@ public class EntityC2 extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public void travel(float strafe, float vertical, float forward) {
-			if (this.isBeingRidden() && this.getControllingPassenger() instanceof EntityPlayer) {
+			if (this.getControllingPassenger() instanceof EntityPlayer) {
 				EntityPlayer entity = (EntityPlayer)this.getControllingPassenger();
 				this.rotationYaw = entity.rotationYaw;
 				this.prevRotationYaw = this.rotationYaw;
@@ -144,8 +148,8 @@ public class EntityC2 extends ElementsNarutomodMod.ModElement {
 				this.renderYawOffset = entity.rotationYaw;
 				this.rotationYawHead = entity.rotationYaw;
 				this.setAIMoveSpeed((float)this.getEntityAttribute(SharedMonsterAttributes.FLYING_SPEED).getAttributeValue());
-				forward = entity.moveForward == 0f ? this.onGround ? forward : forward + 0.4f 
-				 : entity.moveForward < 0f ? forward : entity.moveForward;
+				forward = entity.moveForward == 0f ? this.onGround ? forward : forward + 0.2f 
+				 : entity.moveForward < 0f ? forward : (forward + 0.4f);
 				if ((!this.onGround || entity.rotationPitch < 0.0F) && forward > 0.0F)
 					this.motionY = -entity.rotationPitch * 0.01f;
 				super.travel(0.0F, 0.0F, forward);
@@ -167,6 +171,9 @@ public class EntityC2 extends ElementsNarutomodMod.ModElement {
 	    @Override
 	    public void onUpdate() {
 	    	super.onUpdate();
+	    	if (!this.world.isRemote && this.ticksExisted % 5 == 0) {
+	    		this.tasks.setControlFlag(7, !(this.getControllingPassenger() instanceof EntityPlayer));
+	    	}
 	    	if (!this.isBeingRidden() && this.getRemainingLife() > 400) {
 	    		this.setRemainingLife(400);
 	    	}

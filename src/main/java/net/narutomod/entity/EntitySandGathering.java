@@ -238,7 +238,7 @@ public class EntitySandGathering extends ElementsNarutomodMod.ModElement {
 							((EC)entity1).shoot(target.getPositionVector().subtract(entity1.getPositionVector()));
 							return false;
 						}
-						EntityLivingBase owner = ((EntityPuppet3rdKazekage.EntityCustom)entity).getOwner();
+						EntityLivingBase owner = ((EntityPuppet3rdKazekage.EntityCustom)entity).getSummoner();
 						if (owner != null) {
 							entity = owner;
 						}

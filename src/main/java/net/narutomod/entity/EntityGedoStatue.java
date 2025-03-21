@@ -60,6 +60,7 @@ import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.UUID;
 import javax.annotation.Nullable;
+import net.minecraft.pathfinding.PathNavigate;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
@@ -134,7 +135,7 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-	public static class EntityCustom extends EntitySummonAnimal.Base implements ItemJutsu.IJutsu {
+	public static class EntityCustom extends EntitySummonAnimal.Base implements ItemJutsu.IJutsu, EntityTailedBeast.ICollisionData {
 		private static final DataParameter<Boolean> SIT = EntityDataManager.<Boolean>createKey(EntityCustom.class, DataSerializers.BOOLEAN);
 		private static final DataParameter<Boolean> SEALED9 = EntityDataManager.<Boolean>createKey(EntityCustom.class, DataSerializers.BOOLEAN);
 		private EntityPurpleDragon dragonEntity;
@@ -152,10 +153,12 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 		private EntityLivingBase fuuinTarget;
 		private EntityPlayer ogJinchuriki;
 		private int evolveTime = Integer.MAX_VALUE;
-
+		private final ProcedureUtils.CollisionHelper collisionData;
+		
 		public EntityCustom(World world) {
 			super(world);
 			this.setUniqueId(ENTITY_UUID);
+			this.collisionData = new ProcedureUtils.CollisionHelper(this);
 			this.setOGSize(0.5f, 1.9f);
 			this.experienceValue = 100;
 			this.isImmuneToFire = true;
@@ -163,12 +166,8 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 		}
 
 		public EntityCustom(EntityLivingBase summonerIn) {
-			super(summonerIn);
-			this.setUniqueId(ENTITY_UUID);
-			this.setOGSize(0.5f, 1.9f);
-			this.experienceValue = 100;
-			this.isImmuneToFire = true;
-			this.postScaleFixup();
+			this(summonerIn.world);
+			this.setSummoner(summonerIn);
 		}
 
 		public EntityCustom(EntityLivingBase summonerIn, EntityLivingBase target) {
@@ -178,7 +177,7 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 
 		public EntityCustom(EntityLivingBase summonerIn, boolean creativeSit) {
 			this(summonerIn);
-			this.setSitting(true);
+			this.setSitting(creativeSit);
 			Vec3d vec = new Vec3d(0d, 0d, -6d).rotateYaw(-summonerIn.rotationYaw * 0.017453292F).add(summonerIn.getPositionVector());
 			this.rotationYawHead = summonerIn.rotationYaw;
 			this.setLocationAndAngles(vec.x, ProcedureUtils.getTopSolidBlockY(this.world, new BlockPos(vec)), vec.z, summonerIn.rotationYaw, 0f);
@@ -228,6 +227,12 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
+		protected PathNavigate createNavigator(World worldIn) {
+			this.moveHelper = new EntityTailedBeast.MoveHelper(this);
+			return new EntityTailedBeast.NavigateGround(this, worldIn);
+		}
+
+		@Override
 		public SoundEvent getAmbientSound() {
 			return this.isSitting() ? null : SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:MonsterGrowl"));
 		}
@@ -269,7 +274,7 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 			this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.8D);
 			this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(10000D);
 			this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(100D);
-			this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(24.0D);
+			this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(64.0D);
 			this.getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(1.0D);
 			this.getEntityAttribute(EntityPlayer.REACH_DISTANCE).setBaseValue(24.0D);
 		}
@@ -306,16 +311,14 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
+		public ProcedureUtils.CollisionHelper getCollisionData() {
+			return this.collisionData;
+		}
+
+		@Override
 		protected void initEntityAI() {
 			super.initEntityAI();
-			this.tasks.addTask(1, new EntityAIMoveTowardsTarget(this, 1.0D, 64.0F) {
-				@Override
-				public boolean shouldExecute() {
-					return !EntityCustom.this.sealedAll9Bijus() && super.shouldExecute()
-					 && EntityCustom.this.getAttackTarget().getDistance(EntityCustom.this) > 24.0D;
-				}
-			});
-			this.tasks.addTask(2, new EntityAIAttackMelee(this, 1.0D, true) {
+			this.tasks.addTask(1, new EntityAIAttackMelee(this, 1.0D, true) {
 				@Override
 				public boolean shouldExecute() {
 					return !EntityCustom.this.sealedAll9Bijus() && super.shouldExecute();

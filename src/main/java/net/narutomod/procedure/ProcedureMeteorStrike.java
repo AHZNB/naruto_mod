@@ -64,8 +64,8 @@ public class ProcedureMeteorStrike extends ElementsNarutomodMod.ModElement {
 			double chakraUsage = ItemRinnegan.getTengaishinseiChakraUsage((EntityLivingBase)entity);
 			Entity entity1 = world.findNearestEntityWithinAABB(
 			 EntityChibakuTenseiBall.Satellite.class, entity.getEntityBoundingBox().grow(64d, 0d, 64d).expand(0d, 128d, 0d), entity);
-			if (entity1 != null && Chakra.pathway((EntityPlayer)entity).consume(chakraUsage * 0.2d)) {
-				world.playSound(null, x, y, z, (net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY
+			if (entity1 != null && Chakra.pathway((EntityLivingBase)entity).consume(chakraUsage * 0.2d)) {
+				world.playSound(null, x, y, z, net.minecraft.util.SoundEvent.REGISTRY
 				 .getObject(new ResourceLocation("narutomod:tengaishinsei")), net.minecraft.util.SoundCategory.NEUTRAL, 5.0F, 1.0F);
 				entity1.setNoGravity(false);
 				double d0 = (double)x - entity1.posX;
@@ -75,41 +75,9 @@ public class ProcedureMeteorStrike extends ElementsNarutomodMod.ModElement {
 				double t = MathHelper.sqrt(Math.abs(d1) * 2d / a);
 				entity1.motionX = d0 / t * 1.2d;
 				entity1.motionZ = d2 / t * 1.2d;
-			} else if (Chakra.pathway((EntityPlayer)entity).consume(chakraUsage)) {
-				world.playSound(null, x, y, z, (net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY
+			} else if (Chakra.pathway((EntityLivingBase)entity).consume(chakraUsage)) {
+				world.playSound(null, x, y, z, net.minecraft.util.SoundEvent.REGISTRY
 				 .getObject(new ResourceLocation("narutomod:tengaishinsei")), net.minecraft.util.SoundCategory.NEUTRAL, 5.0F, 1.0F);
-				/*BlockPos[][] layer = {
-					{ new BlockPos(0,0,-1), new BlockPos(-1,0,0), new BlockPos(0,0,0), new BlockPos(1,0,0), new BlockPos(0,0,1) },
-					{ new BlockPos(-1,0,-2), new BlockPos(0,0,-2), new BlockPos(1,0,-2), 
-					  new BlockPos(-2,0,-1), new BlockPos(-1,0,-1), new BlockPos(1,0,-1), new BlockPos(2,0,-1),
-					  new BlockPos(-2,0,0), new BlockPos(2,0,0),
-					  new BlockPos(-2,0,1), new BlockPos(-1,0,1), new BlockPos(1,0,1), new BlockPos(2,0,1),
-					  new BlockPos(-1,0,2), new BlockPos(0,0,2), new BlockPos(1,0,2) },
-					{ new BlockPos(0,0,-3), 
-					  new BlockPos(-2,0,-2), new BlockPos(2,0,-2),
-					  new BlockPos(-3,0,0), new BlockPos(3,0,0),
-					  new BlockPos(-2,0,2), new BlockPos(2,0,2),
-					  new BlockPos(0,0,3) },
-					{ new BlockPos(-1,0,-3), new BlockPos(1,0,-3),
-					  new BlockPos(-3,0,-1), new BlockPos(3,0,-1),
-					  new BlockPos(-3,0,1), new BlockPos(3,0,1),
-					  new BlockPos(-1,0,3), new BlockPos(1,0,3) }
-				};
-				entity.getEntityData().setDouble(NarutomodModVariables.InvulnerableTime, 300d);
-				for (int y1 = 0; y1 <= 3; y1++) {
-					for (int i = 0; i <= y1; i++) {
-						for (BlockPos pos : layer[i]) {
-							world.setBlockState(pos.add(pos).add(0, y1*2, 0).add(x, y+90, z), BlockMeteor.block.getDefaultState());
-						}
-					}
-				}
-				for (int y1 = 2; y1 >= 0; y1--) {
-					for (int i = 0; i <= y1; i++) {
-						for (BlockPos pos : layer[i]) {
-							world.setBlockState(pos.add(pos).add(0, (6-y1)*2, 0).add(x, y+90, z), BlockMeteor.block.getDefaultState());
-						}
-					}
-				}*/
 				Template template = ((WorldServer)world).getStructureTemplateManager().getTemplate(world.getMinecraftServer(),
 						new ResourceLocation("narutomod", "meteor"));
 				if (template != null) {
@@ -120,9 +88,9 @@ public class ProcedureMeteorStrike extends ElementsNarutomodMod.ModElement {
 					 new PlacementSettings().setRotation(Rotation.NONE).setMirror(Mirror.NONE)
 					  .setChunk(null).setReplacedBlock(null).setIgnoreStructureBlock(true).setIgnoreEntities(false));
 					entity1 = new EntityChibakuTenseiBall.Satellite((EntityLivingBase)entity, 
-					 ProcedureUtils.getNonAirBlocks(world, new AxisAlignedBB(spawnTo).expand(20d, 20d, 20d)));
-					world.spawnEntity(entity1);
-					((EntityChibakuTenseiBall.Satellite)entity1).setFallTime(5);
+					 ProcedureUtils.getNonAirBlocks(world, new AxisAlignedBB(spawnTo).expand(20d, 20d, 20d)), 5);
+					world.spawnEntity(entity1);
+					entity1.setNoGravity(false);
 				}
 			}
 		}

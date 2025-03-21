@@ -4,7 +4,6 @@ import net.minecraft.world.WorldServer;
 import net.minecraft.world.World;
 import net.minecraft.util.EnumHand;
 import net.minecraft.item.ItemStack;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.inventory.EntityEquipmentSlot;
@@ -37,14 +36,15 @@ public class ProcedureNarakaPath extends ElementsNarutomodMod.ModElement {
 		if (entity instanceof EntityLivingBase) {
 			((EntityLivingBase) entity).swingArm(EnumHand.MAIN_HAND);
 		}
-		if (!world.isRemote && entity instanceof EntityPlayer) {
-			EntityPlayer living = (EntityPlayer)entity;
+		if (!world.isRemote && entity instanceof EntityLivingBase) {
+			EntityLivingBase living = (EntityLivingBase)entity;
 			ItemStack stack = living.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
 			if (stack.getItem() == ItemRinnegan.helmet || stack.getItem() == ItemTenseigan.helmet) {
 				UUID entity_id = ProcedureUtils.getUniqueId(stack, "KoH_id");
 				if (entity_id == null) {
-					if (Chakra.pathway(living).consume(ItemRinnegan.getNarakaPathChakraUsage(living))) {
-						EntityKingOfHell.EntityCustom entityToSpawn = new EntityKingOfHell.EntityCustom(living);
+					double chakraburn = ItemRinnegan.getNarakaPathChakraUsage(living);
+					if (Chakra.pathway(living).consume(chakraburn)) {
+						EntityKingOfHell.EntityCustom entityToSpawn = new EntityKingOfHell.EntityCustom(living, chakraburn);
 						entity.world.spawnEntity(entityToSpawn);
 						stack.getTagCompound().setUniqueId("KoH_id", entityToSpawn.getUniqueID());
 					}

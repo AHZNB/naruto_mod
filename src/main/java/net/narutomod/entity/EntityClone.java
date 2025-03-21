@@ -563,14 +563,14 @@ public class EntityClone extends ElementsNarutomodMod.ModElement {
                 double d3 = MathHelper.sqrt(d0 * d0 + d1 * d1 + d2 * d2);
                 if (d3 >= 0.001D) {
                 	float f = (float)(this.speed * this.entity.getEntityAttribute(SharedMonsterAttributes.FLYING_SPEED).getAttributeValue());
-                    this.entity.motionX += d0 / d3 * 0.05D * f;
-                    this.entity.motionY += d1 / d3 * 0.05D * f;
-                    this.entity.motionZ += d2 / d3 * 0.05D * f;
+                    this.entity.motionX += d0 / d3 * 0.1D * f;
+                    this.entity.motionY += d1 / d3 * 0.1D * f;
+                    this.entity.motionZ += d2 / d3 * 0.1D * f;
                     if (this.lookAtTarget && this.entity.getAttackTarget() != null) {
                     	this.entity.faceEntity(this.entity.getAttackTarget(), 30.0f, 30.0f);
                     } else {
                     	float f1 = -((float)MathHelper.atan2(this.entity.motionX, this.entity.motionZ)) * (180F / (float)Math.PI);
-                        this.entity.rotationYaw = this.limitAngle(this.entity.rotationYaw, f1, 90.0F);
+                        this.entity.rotationYaw = this.limitAngle(this.entity.rotationYaw, f1, 30.0F);
                     }
                 } else {
                     this.entity.motionX *= 0.5D;

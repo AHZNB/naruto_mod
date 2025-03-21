@@ -20,10 +20,18 @@ public class ProcedureChakraRegenerationOnPotionActiveTick extends ElementsNarut
 			System.err.println("Failed to load dependency entity for procedure ChakraRegenerationOnPotionActiveTick!");
 			return;
 		}
+		if (dependencies.get("amplifier") == null) {
+			System.err.println("Failed to load dependency amplifier for procedure ChakraRegenerationOnPotionActiveTick!");
+			return;
+		}
 		Entity entity = (Entity) dependencies.get("entity");
+		int amplifier = (int) dependencies.get("amplifier");
+		double amp = 0;
 		if ((entity instanceof EntityPlayerMP)) {
-			if (entity.ticksExisted % 20 == 0)
-				Chakra.pathway((EntityPlayer) entity).consume(-0.05f, true);
+			if (((entity.ticksExisted % 20) == 0)) {
+				amp = (double) ((amplifier) + 1);
+				Chakra.pathway((EntityPlayer) entity).consume(-0.01f * (int) amp, true);
+			}
 		}
 	}
 }

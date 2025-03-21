@@ -42,6 +42,8 @@ import net.narutomod.creativetab.TabModTab;
 import net.narutomod.ElementsNarutomodMod;
 import net.narutomod.NarutomodMod;
 
+import java.lang.reflect.Field;
+
 @ElementsNarutomodMod.ModElement.Tag
 public class ItemYoton extends ElementsNarutomodMod.ModElement {
 	@GameRegistry.ObjectHolder("narutomod:yoton")
@@ -105,7 +107,9 @@ public class ItemYoton extends ElementsNarutomodMod.ModElement {
 			this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).applyModifier(new AttributeModifier("biggerme.damage", scaleIn * scaleIn, 0));
 			this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(user.getHealth() * scaleIn);
 			this.setHealth(this.getMaxHealth());
-			this.addPotionEffect(new PotionEffect(MobEffects.JUMP_BOOST, 999999, (int)scaleIn, false, false));
+			PotionEffect jumpBoostEffect = user.getActivePotionEffect(MobEffects.JUMP_BOOST);
+			int jumpBoost = (int)(scaleIn * (1 + (jumpBoostEffect != null ? jumpBoostEffect.getAmplifier() : 0)));
+			this.addPotionEffect(new PotionEffect(MobEffects.JUMP_BOOST, 999999, jumpBoost, false, false));
 			user.startRiding(this);
 		}
 
@@ -178,10 +182,17 @@ public class ItemYoton extends ElementsNarutomodMod.ModElement {
 		}
 
 		private void checkJump(EntityLivingBase entity) {
-			if (this.world.isRemote) {
-				if ((boolean)ReflectionHelper.getPrivateValue(EntityLivingBase.class, entity, 49) && this.onGround) {
-					this.jump();
-					ReflectionHelper.setPrivateValue(EntityLivingBase.class, entity, false, 49);
+			if (this.world.isRemote && this.onGround) {
+				Field isJumpingField = ReflectionHelper.findField(EntityLivingBase.class, "isJumping", "field_70703_bu");
+				try {
+					if (isJumpingField.getBoolean(entity)) {
+					//if ((boolean)ReflectionHelper.getPrivateValue(EntityLivingBase.class, entity, 49) && this.onGround) {
+						this.jump();
+						//ReflectionHelper.setPrivateValue(EntityLivingBase.class, entity, false, 49);
+						isJumpingField.setBoolean(entity, false);
+					}
+				} catch (IllegalAccessException e) {
+					System.err.println("What environment is this? "+e);
 				}
 			}
 		}

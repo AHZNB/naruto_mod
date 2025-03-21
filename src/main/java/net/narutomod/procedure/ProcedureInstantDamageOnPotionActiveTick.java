@@ -1,6 +1,5 @@
 package net.narutomod.procedure;
 
-import net.narutomod.item.ItemJutsu;
 import net.narutomod.ElementsNarutomodMod;
 
 import net.minecraft.world.WorldServer;
@@ -53,7 +52,7 @@ public class ProcedureInstantDamageOnPotionActiveTick extends ElementsNarutomodM
 		double amp = 0;
 		amp = (double) (amplifier);
 		entity.hurtResistantTime = 10;
-		entity.attackEntityFrom(ItemJutsu.NINJUTSU_DAMAGE.setDamageBypassesArmor(), (float) amp + 1f);
+		entity.attackEntityFrom(ProcedureUtils.INSTANT_DAMAGE, (float) amp + 1f);
 		if ((Math.random() <= 0.1)) {
 			world.playSound((EntityPlayer) null, (entity.posX), (entity.posY), (entity.posZ),
 					(net.minecraft.util.SoundEvent) net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("entity.generic.explode")),

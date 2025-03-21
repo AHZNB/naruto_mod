@@ -10,6 +10,7 @@ import net.narutomod.item.ItemAkatsukiRobe;
 import net.narutomod.item.ItemJutsu;
 import net.narutomod.item.ItemNinjutsu;
 import net.narutomod.procedure.ProcedureAoeCommand;
+import net.narutomod.procedure.ProcedureOnLivingUpdate;
 import net.narutomod.procedure.ProcedureUtils;
 
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -115,6 +116,8 @@ public class EntityKonan extends ElementsNarutomodMod.ModElement {
 		private final PathNavigateFlying flyNavigator;
 		private int shootingTicks;
 		private int bindingTicks;
+		private final int bindingCD = 600;
+		private int lastBindingTime;
 
 		public EntityCustom(World world) {
 			super(world, 120, 7000d);
@@ -140,7 +143,7 @@ public class EntityKonan extends ElementsNarutomodMod.ModElement {
 			this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(100D);
 			this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.5D);
 			this.getEntityAttribute(SharedMonsterAttributes.FLYING_SPEED).setBaseValue(0.6D);
-			this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(16D);
+			this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(10D);
 		}
 
 		@Override
@@ -148,7 +151,14 @@ public class EntityKonan extends ElementsNarutomodMod.ModElement {
 			super.initEntityAI();
 			this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, false));
 			this.tasks.addTask(0, new EntityAISwimming(this));
-			this.tasks.addTask(1, new AIAttackRangedFlying(this, 100, 8.0f, 12.0f, 6.0f, 10.0f));
+			this.tasks.addTask(1, new AIAttackRangedFlying(this, 120, 8.0f, 12.0f, 6.0f, 10.0f));
+			this.tasks.addTask(4, new EntityClone.AIFollowSummoner(this, 0.6d, 4f) {
+				@Override @Nullable
+				protected EntityLivingBase getFollowEntity() {
+					return (EntityLivingBase)EntityCustom.this.world.findNearestEntityWithinAABB(EntityNagato.EntityCustom.class,
+					 EntityCustom.this.getEntityBoundingBox().grow(256d, 16d, 256d), EntityCustom.this);
+				}
+			});
 			this.tasks.addTask(5, new EntityAIWatchClosest2(this, EntityPlayer.class, 32.0F, 1.0F));
 			this.tasks.addTask(6, new EntityAIWatchClosest(this, EntityNinjaMob.Base.class, 24.0F) {
 				@Override
@@ -207,6 +217,7 @@ public class EntityKonan extends ElementsNarutomodMod.ModElement {
 			 && attacker instanceof EntityLivingBase && this.rand.nextInt(4) != 0
 			 && Chakra.pathway(this).consume(ItemNinjutsu.REPLACEMENT.chakraUsage)) {
 				this.setRevengeTarget((EntityLivingBase)attacker);
+				ProcedureOnLivingUpdate.setUntargetable(this, 5);
 				EntityReplacementClone clone = new EntityReplacementClone(this, attacker);
 				this.world.spawnEntity(clone);
 				clone.attackEntityFrom(source, amount);
@@ -226,9 +237,9 @@ public class EntityKonan extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void attackEntityWithRangedAttack(EntityLivingBase target, float distanceFactor) {
 			if (this.isWinged()) {
-				if (this.rand.nextFloat() < 0.333f) {
-					this.bindingTicks = 3;
-				} else {
+				if (!this.wingsEntity.isBinding() && this.rand.nextFloat() < 0.333f) {
+					this.bindingTicks = 2;
+				} else if (!this.wingsEntity.isShooting()) {
 					this.shootingTicks = 60;
 				}
 			}
@@ -240,11 +251,6 @@ public class EntityKonan extends ElementsNarutomodMod.ModElement {
 			 && this.world.getEntities(EntityCustom.class, EntitySelectors.IS_ALIVE).isEmpty()
 			 && !EntityNinjaMob.SpawnData.spawnedRecentlyHere(this, 36000)
 			 && this.world.isRaining();
-		}
-
-		@Override
-		public boolean isOnSameTeam(Entity entityIn) {
-			return super.isOnSameTeam(entityIn) || EntityNinjaMob.TeamAkatsuki.contains(entityIn.getClass());
 		}
 
 		@Override
@@ -420,27 +426,28 @@ public class EntityKonan extends ElementsNarutomodMod.ModElement {
 
 	    @Override
 	    public void updateTask() {
-	        EntityLivingBase entitylivingbase = this.entity.getAttackTarget();
-	        if (entitylivingbase != null) {
-	        	--this.attackTime;
-				if (!this.isInRange(this.entity.posX, this.entity.posY, this.entity.posZ, entitylivingbase)) {
-	            	this.setNewPath(entitylivingbase);
-	            } else if (this.attackTime <= 0) {
-					double dx = this.entity.posX - entitylivingbase.posX;
-					double dz = this.entity.posZ - entitylivingbase.posZ;
+	        EntityLivingBase target = this.entity.getAttackTarget();
+	        if (target != null) {
+				if (!this.isInRange(true, this.entity.posX, this.entity.posY, this.entity.posZ, target)) {
+	            	this.setNewPath(target);
+	            }
+	            if (--this.attackTime <= 0 && this.isInRange(false, this.entity.posX, this.entity.posY, this.entity.posZ, target)) {
+					double dx = this.entity.posX - target.posX;
+					double dz = this.entity.posZ - target.posZ;
 					float f = (float)MathHelper.sqrt(dx * dx + dz * dz) / this.maxRadius;
-		            this.entity.attackEntityWithRangedAttack(entitylivingbase, MathHelper.clamp(f, 0.1F, 1.0F));
+		            this.entity.attackEntityWithRangedAttack(target, MathHelper.clamp(f, 0.1F, 1.0F));
 		            this.attackTime = MathHelper.floor(f * (float)(this.attackCooldown));
 	            }
 	        }
 	    }
 
-	    private boolean isInRange(double x, double y, double z, EntityLivingBase target) {
+	    private boolean isInRange(boolean forFlight, double x, double y, double z, EntityLivingBase target) {
 			double dx = x - target.posX;
 			double dy = y - target.posY;
 			double dz = z - target.posZ;
 			double dxz = MathHelper.sqrt(dx * dx + dz * dz);
-            return (float)dxz >= this.minRadius && (float)dxz <= this.maxRadius && (float)dy >= this.minHeight && (float)dy <= this.maxHeight
+            return (!forFlight || (float)dxz >= this.minRadius) && (float)dxz <= this.maxRadius
+             && (!forFlight || (float)dy >= this.minHeight) && (float)dy <= this.maxHeight
              && target.world.rayTraceBlocks(new Vec3d(x, y + this.entity.getEyeHeight(), z), target.getPositionEyes(1f), false, true, false) == null;
 	    }
 
@@ -449,7 +456,7 @@ public class EntityKonan extends ElementsNarutomodMod.ModElement {
 			 .grow(this.maxRadius, 0, this.maxRadius).expand(0, this.maxHeight, 0).contract(0, -target.height, 0));
 			list.sort(new ProcedureUtils.BlockposSorter(this.entity.getPosition()));
 			for (BlockPos pos : list) {
-				if (this.isInRange(0.5d + pos.getX(), pos.getY(), 0.5d + pos.getZ(), target)
+				if (this.isInRange(true, 0.5d + pos.getX(), pos.getY(), 0.5d + pos.getZ(), target)
 				 && this.entity.getNavigator().setPath(this.entity.getNavigator().getPathToPos(pos), 1.0d)) {
 					return true;
 				}

@@ -29,12 +29,12 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.ActionResult;
 import net.minecraft.item.EnumAction;
+import net.minecraft.inventory.EntityEquipmentSlot;
 
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.ElementsNarutomodMod;
 
 import java.util.Set;
-import net.minecraft.inventory.EntityEquipmentSlot;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class ItemKabutowariAxe extends ElementsNarutomodMod.ModElement {

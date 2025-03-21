@@ -117,7 +117,10 @@ public class EntityHidan extends ElementsNarutomodMod.ModElement {
 		public IEntityLivingData onInitialSpawn(DifficultyInstance difficulty, @Nullable IEntityLivingData livingdata) {
 			this.setItemToInventory(new ItemStack(ItemScytheHidan.block), 0);
 			this.setItemToInventory(new ItemStack(ItemSpearRetractable.block), 1);
-			this.setItemStackToSlot(EntityEquipmentSlot.CHEST, new ItemStack(ItemAkatsukiRobe.body));
+			ItemStack stack = new ItemStack(ItemAkatsukiRobe.body);
+			stack.setTagCompound(new NBTTagCompound());
+			stack.getTagCompound().setBoolean("collarOpen", true);
+			this.setItemStackToSlot(EntityEquipmentSlot.CHEST, stack);
 			return super.onInitialSpawn(difficulty, livingdata);
 		}
 
@@ -192,14 +195,7 @@ public class EntityHidan extends ElementsNarutomodMod.ModElement {
 					return 16.0d;
 				}
 			});
-			this.tasks.addTask(5, new EntityClone.AIFollowSummoner(this, 0.6d, 4f) {
-				@Override @Nullable
-				protected EntityLivingBase getFollowEntity() {
-					return (EntityLivingBase)EntityCustom.this.world.findNearestEntityWithinAABB(EntityKakuzu.EntityCustom.class,
-					 EntityCustom.this.getEntityBoundingBox().grow(256d, 16d, 256d), EntityCustom.this);
-				}
-			});
-			this.tasks.addTask(6, new EntityAIWatchClosest(this, null, 48.0F, 1.0F) {
+			this.tasks.addTask(5, new EntityAIWatchClosest(this, null, 48.0F, 1.0F) {
 				@Override
 				public boolean shouldExecute() {
 					if (EntityCustom.this.jashinTransitionDirection > 0
@@ -208,6 +204,13 @@ public class EntityHidan extends ElementsNarutomodMod.ModElement {
 						return true;
 					}
 					return false;
+				}
+			});
+			this.tasks.addTask(6, new EntityClone.AIFollowSummoner(this, 0.6d, 4f) {
+				@Override @Nullable
+				protected EntityLivingBase getFollowEntity() {
+					return (EntityLivingBase)EntityCustom.this.world.findNearestEntityWithinAABB(EntityKakuzu.EntityCustom.class,
+					 EntityCustom.this.getEntityBoundingBox().grow(256d, 16d, 256d), EntityCustom.this);
 				}
 			});
 			this.tasks.addTask(7, new EntityAIWatchClosest2(this, EntityPlayer.class, 32.0F, 1.0F));
@@ -308,7 +311,8 @@ public class EntityHidan extends ElementsNarutomodMod.ModElement {
 			if (this.curseTarget != null && this.curseTarget.isEntityAlive() && this.jashinTransitionDirection > 0) {
 				this.curseTarget.attackEntityFrom(source.setDamageBypassesArmor(), amount);
 			}
-			return super.attackEntityFrom(source, amount * (this.rand.nextFloat() * 0.08f + 0.08f));
+			amount *= source.isUnblockable() && source.isDamageAbsolute() ? 1.0f : (this.rand.nextFloat() * 0.08f + 0.08f);
+			return super.attackEntityFrom(source, amount);
 		}
 
 		@Override
@@ -331,11 +335,6 @@ public class EntityHidan extends ElementsNarutomodMod.ModElement {
 			if (!this.world.isRemote && this.jashinSymbol != null) {
 				this.jashinSymbol.fadeOut();
 			}
-		}
-
-		@Override
-		public boolean isOnSameTeam(Entity entityIn) {
-			return super.isOnSameTeam(entityIn) || EntityNinjaMob.TeamAkatsuki.contains(entityIn.getClass());
 		}
 
 		@Override

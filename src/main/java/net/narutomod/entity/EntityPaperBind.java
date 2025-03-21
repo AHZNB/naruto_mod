@@ -7,6 +7,7 @@ import net.narutomod.item.ItemJutsu;
 import net.narutomod.item.ItemJiton;
 import net.narutomod.potion.PotionParalysis;
 import net.narutomod.potion.PotionHeaviness;
+import net.narutomod.procedure.ProcedureOnLivingUpdate;
 import net.narutomod.procedure.ProcedureSync;
 import net.narutomod.procedure.ProcedureUtils;
 
@@ -40,6 +41,8 @@ import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.network.datasync.DataSerializers;
 
 import javax.annotation.Nullable;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.EntityLiving;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityPaperBind extends ElementsNarutomodMod.ModElement {
@@ -64,7 +67,7 @@ public class EntityPaperBind extends ElementsNarutomodMod.ModElement {
 		private EntityLivingBase user;
 		private EntityLivingBase targetEntity;
 		private ItemJiton.SwarmTarget swarmTarget;
-		private Vec3d capturedVec;
+		private ProcedureSync.PositionRotationPacket capturedPRP;
 		private static final int MAXTIME = 600;
 
 		public EC(World world) {
@@ -120,18 +123,27 @@ public class EntityPaperBind extends ElementsNarutomodMod.ModElement {
 		}
 
 		private boolean isTargetCaptured() {
-			boolean flag = this.capturedVec != null;
+			boolean flag = this.capturedPRP != null;
 			if (!flag && this.getEntityBoundingBox().intersects(this.targetEntity.getEntityBoundingBox())) {
 				AxisAlignedBB bb = this.getEntityBoundingBox().intersect(this.targetEntity.getEntityBoundingBox());
 				flag = bb.equals(this.targetEntity.getEntityBoundingBox())
 				 && this.getEntityBoundingBox().getAverageEdgeLength() < this.targetEntity.getEntityBoundingBox().getAverageEdgeLength() * 2.5d;
 			}
-			if (flag && this.capturedVec == null) {
-				this.capturedVec = this.targetEntity.getPositionVector();
+			if (flag && this.capturedPRP == null) {
+				this.capturedPRP = new ProcedureSync.PositionRotationPacket(this.targetEntity);
 			} else if (!flag) {
-				this.capturedVec = null;
+				this.capturedPRP = null;
 			}
 			return flag;
+		}
+
+		private void holdTarget() {
+			this.capturedPRP.setPositionAndUpdate(this.targetEntity);
+			if (this.targetEntity instanceof EntityPlayer) {
+				ProcedureOnLivingUpdate.disableMouseClicks((EntityPlayer)this.targetEntity, 2);
+			} else if (this.targetEntity instanceof EntityLiving) {
+				ProcedureOnLivingUpdate.disableAIfor((EntityLiving)this.targetEntity, 2);
+			}
 		}
 
 		@Override
@@ -158,8 +170,7 @@ public class EntityPaperBind extends ElementsNarutomodMod.ModElement {
 			if (this.user != null && this.user.isEntityAlive() && ItemJutsu.canTarget(this.targetEntity) && this.ticksExisted < MAXTIME) {
 			 	boolean swarmactive = this.swarmTarget != null && !this.swarmTarget.shouldRemove();
 				if (this.isTargetCaptured()) {
-					this.targetEntity.addPotionEffect(new PotionEffect(PotionParalysis.potion, 2, 0, false, false));
-					this.targetEntity.setPositionAndUpdate(this.capturedVec.x, this.capturedVec.y, this.capturedVec.z);
+					this.holdTarget();
 					if (swarmactive) {
 						if (this.getEntityBoundingBox().getAverageEdgeLength() > this.targetEntity.getEntityBoundingBox().getAverageEdgeLength() * 1.2d) {
 							this.swarmTarget.setTarget(this.targetEntity.getEntityBoundingBox(), 0.3f, 0.0f, false);
@@ -227,7 +238,7 @@ public class EntityPaperBind extends ElementsNarutomodMod.ModElement {
 					}
 					if (target instanceof EntityLivingBase) {
 						for (EC ec : entity.world.getEntitiesWithinAABB(EC.class, entity.getEntityBoundingBox().grow(30d))) {
-							if (target.equals(ec.targetEntity)) {
+							if (target.equals(ec.targetEntity) && entity.equals(ec.user)) {
 								return null;
 							}
 						}
@@ -277,6 +288,15 @@ public class EntityPaperBind extends ElementsNarutomodMod.ModElement {
 		public boolean canBeCollidedWith() {
 			return !this.isDead;
 		}
+
+		/*@Override
+		public boolean canBePushed() {
+			return !this.isDead;
+		}
+
+		@Override
+		public void applyEntityCollision(Entity entityIn) {
+		}*/
 
 		public void updateInFlightRotations() {
             double d = (double)MathHelper.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);

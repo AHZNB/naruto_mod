@@ -99,8 +99,20 @@ public class EntityHaku extends ElementsNarutomodMod.ModElement {
 					return super.shouldContinueExecuting() && this.attacker.getAttackTarget().getDistance(EntityCustom.this) <= 3d;
 				}
 			});
-			this.tasks.addTask(2, new EntityNinjaMob.AIAttackRangedTactical(this, 1.25D, 20, ICE_SPEARS_CD, 12.0F));
-			this.tasks.addTask(3, new AIFollowLeader(this, 0.5d, 4f));
+			this.tasks.addTask(2, new EntityNinjaMob.AIAttackRangedTactical(this, 1.2D, 20, ICE_SPEARS_CD, 12.0F));
+			this.tasks.addTask(3, new EntityClone.AIFollowSummoner(this, 0.5d, 4f) {
+				@Override @Nullable
+				protected EntityLivingBase getFollowEntity() {
+					return EntityCustom.this.leader;
+				}
+				@Override
+				protected double getSpeed() {
+					if (this.followingEntity instanceof EntityLiving && ((EntityLiving)this.followingEntity).getAttackTarget() != null) {
+						return super.getSpeed() * 2.0d;
+					}
+					return super.getSpeed();
+				}
+			});
 			this.targetTasks.addTask(2, new EntityAIHurtByTarget(this, false));
 		}
 
@@ -119,11 +131,6 @@ public class EntityHaku extends ElementsNarutomodMod.ModElement {
 
 		public void setLeader(EntityLivingBase entity) {
 			this.leader = entity;
-		}
-
-		@Override
-		public boolean isOnSameTeam(Entity entityIn) {
-			return super.isOnSameTeam(entityIn) || EntityNinjaMob.TeamZabuza.contains(entityIn.getClass());
 		}
 
 		@Override
@@ -193,39 +200,7 @@ public class EntityHaku extends ElementsNarutomodMod.ModElement {
 				new EntityIceSpear.EC.Jutsu().createJutsu(this, target, 2f);
 			}
 		}
-
-		public static class AIFollowLeader extends EntityClone.AIFollowSummoner {
-			private final EntityCustom entity;
-
-			public AIFollowLeader(EntityCustom entityIn, double speed, float stopRange) {
-				super(entityIn, speed, stopRange);
-				this.entity = entityIn;
-			}
-
-			@Override
-			public boolean shouldExecute() {
-				if (this.entity.leader == null) {
-					return false;
-				} else if (this.entity.leader instanceof EntityPlayer && ((EntityPlayer)this.entity.leader).isSpectator()) {
-					return false;
-				} else if (this.entity.getDistanceSq(this.entity.leader) < (double)(this.stopDistance * this.stopDistance)) {
-					return false;
-				} else {
-					this.followingEntity = this.entity.leader;
-					return true;
-				}
-			}
-
-			@Override
-			protected double getSpeed() {
-				if (this.followingEntity instanceof EntityLiving
-						&& ((EntityLiving)this.followingEntity).getAttackTarget() != null) {
-					return super.getSpeed() * 2.0d;
-				}
-				return super.getSpeed();
-			}
-		}
-	}
+	}
 
 	@Override
 	public void preInit(FMLPreInitializationEvent event) {

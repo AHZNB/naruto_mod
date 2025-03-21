@@ -22,6 +22,7 @@ import net.minecraft.init.MobEffects;
 
 import java.util.Map;
 import java.util.HashMap;
+import net.minecraft.entity.player.EntityPlayer;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class PotionHeaviness extends ElementsNarutomodMod.ModElement {
@@ -78,10 +79,21 @@ public class PotionHeaviness extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public void performEffect(EntityLivingBase entity, int amplifier) {
-			if (entity.isPotionActive(MobEffects.JUMP_BOOST)) {
+			PotionEffect effect = entity.getActivePotionEffect(MobEffects.JUMP_BOOST);
+			if (effect == null) {
+				entity.addPotionEffect(new PotionEffect(MobEffects.JUMP_BOOST, 3, -2 - amplifier, false, false));
+			} else if (effect.getAmplifier() > -2 - amplifier) {
 				entity.removePotionEffect(MobEffects.JUMP_BOOST);
+				entity.addPotionEffect(new PotionEffect(MobEffects.JUMP_BOOST, 3, -2 - amplifier, false, false));
 			}
-			entity.addPotionEffect(new PotionEffect(MobEffects.JUMP_BOOST, 2, -2 - amplifier, false, false));
+			if (entity instanceof EntityPlayer && ((EntityPlayer)entity).capabilities.isFlying) {
+				((EntityPlayer)entity).capabilities.isFlying = false;
+				((EntityPlayer)entity).sendPlayerAbilities();
+			}
+			if (entity.hasNoGravity()) {
+				entity.setNoGravity(false);
+			}
+			entity.motionY -= 0.05d + amplifier * 0.01d;
 		}
 
 		@SideOnly(Side.CLIENT)

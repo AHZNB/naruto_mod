@@ -36,9 +36,8 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 @ElementsNarutomodMod.ModElement.Tag
-public abstract class EntityShieldBase extends EntityLivingBase {
+public abstract class EntityShieldBase extends EntityLivingBase implements EntitySummonAnimal.ISummon {
 	private static final DataParameter<Optional<UUID>> SUMMONER_UUID = EntityDataManager.<Optional<UUID>>createKey(EntityShieldBase.class, DataSerializers.OPTIONAL_UNIQUE_ID);
-	private EntityLivingBase summoner;
 	private boolean ownerCanSteer = false;
 	private float steerSpeed;
 	protected boolean dieOnNoPassengers = true;
@@ -82,7 +81,7 @@ public abstract class EntityShieldBase extends EntityLivingBase {
 	    this.setSummonerUuid(player.getUniqueID());
 	}
 	
-	@Nullable
+	@Override @Nullable
 	public EntityLivingBase getSummoner() {
 	    UUID uuid = this.getSummonerUuid();
 	    if (uuid == null) {
@@ -94,6 +93,10 @@ public abstract class EntityShieldBase extends EntityLivingBase {
 	        }
 		    return null;
 	    }
+	}
+
+	public boolean isSummoner(Entity entity) {
+		return this.getSummonerUuid().equals(entity.getUniqueID());
 	}
 
 	@Override
@@ -128,8 +131,7 @@ public abstract class EntityShieldBase extends EntityLivingBase {
 
 	@Override
 	public boolean attackEntityAsMob(Entity entityIn) {
-		EntityLivingBase owner = this.getSummoner();
-		return owner != null ? ProcedureUtils.attackEntityAsMob(this, entityIn, DamageSource.causeIndirectDamage(this, owner)) : false;
+		return this.getSummoner() != null ? ProcedureUtils.attackEntityAsMob(this, entityIn) : false;
 	}
 
 	@Override

@@ -204,11 +204,6 @@ public class EntityZabuzaMomochi extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
-		public boolean isOnSameTeam(Entity entityIn) {
-			return super.isOnSameTeam(entityIn) || EntityNinjaMob.TeamZabuza.contains(entityIn.getClass());
-		}
-
-		@Override
 		public boolean attackEntityFrom(DamageSource source, float amount) {
 			if (!this.isAIDisabled() && !source.isUnblockable()) {
 				if (this.getHeldItemMainhand().isEmpty() && source.getTrueSource() instanceof EntityLivingBase) {

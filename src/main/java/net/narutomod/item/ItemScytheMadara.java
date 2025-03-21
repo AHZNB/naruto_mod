@@ -182,21 +182,22 @@ public class ItemScytheMadara extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public boolean onLeftClickEntity(ItemStack itemstack, EntityPlayer attacker, Entity target) {
+			if (attacker.isHandActive() || this.isThrown(itemstack)) {
+				return true;
+			}
 			if (!attacker.world.isRemote && attacker.equals(target)) {
-				if (itemstack.hasTagCompound() && !this.isThrown(itemstack)) {
+				if (!itemstack.isEmpty()) {
 					itemstack.damageItem(1, attacker);
-					if (!itemstack.isEmpty()) {
-						itemstack.getTagCompound().setBoolean(USE_THROWN_MODEL, true);
-						EntityCustom entityarrow = new EntityCustom(attacker.world, attacker);
-						Vec3d vec = attacker.getLookVec();
-						entityarrow.shoot(vec.x, vec.y, vec.z, 2.0f, 0);
-						entityarrow.setDamage(14d);
-						attacker.world.playSound(null, attacker.posX, attacker.posY, attacker.posZ, SoundEvents.ENTITY_ARROW_SHOOT,
-								SoundCategory.NEUTRAL, 1, 1f / (itemRand.nextFloat() * 0.5f + 1f) + 1f);
-						attacker.world.spawnEntity(entityarrow);
-						this.setEntity(itemstack, entityarrow);
-						entityarrow.setItemStack(itemstack);
-					}
+					itemstack.getTagCompound().setBoolean(USE_THROWN_MODEL, true);
+					EntityCustom entityarrow = new EntityCustom(attacker.world, attacker);
+					Vec3d vec = attacker.getLookVec();
+					entityarrow.shoot(vec.x, vec.y, vec.z, 2.0f, 0);
+					entityarrow.setDamage(14d);
+					attacker.world.playSound(null, attacker.posX, attacker.posY, attacker.posZ, SoundEvents.ENTITY_ARROW_SHOOT,
+							SoundCategory.NEUTRAL, 1, 1f / (itemRand.nextFloat() * 0.5f + 1f) + 1f);
+					attacker.world.spawnEntity(entityarrow);
+					this.setEntity(itemstack, entityarrow);
+					entityarrow.setItemStack(itemstack);
 				}
 				return true;
 			}

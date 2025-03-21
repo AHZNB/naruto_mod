@@ -58,8 +58,8 @@ public class EntityPuppetKarasu extends ElementsNarutomodMod.ModElement {
 			this.setSize(0.6f, 2.2f);
 		}
 
-		public EntityCustom(EntityLivingBase ownerIn) {
-			super(ownerIn);
+		public EntityCustom(EntityLivingBase ownerIn, double chakraUsage) {
+			super(ownerIn, chakraUsage);
 			this.setSize(0.6f, 2.2f);
 			Vec3d vec = ownerIn.getLookVec();
 			vec = ownerIn.getPositionVector().addVector(vec.x, 1d, vec.z);
@@ -153,7 +153,7 @@ public class EntityPuppetKarasu extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public void attackEntityWithRangedAttack(EntityLivingBase target, float flval) {
-			EntityLivingBase owner = this.getOwner();
+			EntityLivingBase owner = this.getSummoner();
 			if (owner != null && target.getDistance(owner) > 14.0d && this.rand.nextFloat() < 0.2f) {
 				ItemPoisonbomb.EntityArrowCustom entityarrow = new ItemPoisonbomb.EntityArrowCustom(this.world, this);
 				Vec3d vec = target.getPositionVector().subtract(this.getPositionEyes(1f));

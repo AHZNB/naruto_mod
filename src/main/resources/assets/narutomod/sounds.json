@@ -44,15 +44,6 @@
       }
     ]
   },
-  "KamuiSFX": {
-    "category": "master",
-    "sounds": [
-      {
-        "name": "narutomod:kamui sound efect ",
-        "stream": false
-      }
-    ]
-  },
   "MonsterGrowl": {
     "category": "master",
     "sounds": [
@@ -1192,6 +1183,15 @@
     "sounds": [
       {
         "name": "narutomod:eightgatesrelease",
+        "stream": false
+      }
+    ]
+  },
+  "kamui": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "narutomod:kamui_sound_efect_",
         "stream": false
       }
     ]

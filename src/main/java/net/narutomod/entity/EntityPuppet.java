@@ -58,6 +58,7 @@ import net.narutomod.potion.PotionAmaterasuFlame;
 import net.narutomod.potion.PotionCorrosion;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.procedure.ProcedureOnLivingUpdate;
+import net.narutomod.Chakra;
 import net.narutomod.ElementsNarutomodMod;
 
 import java.util.Iterator;
@@ -106,7 +107,7 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 				List<Base> list = Base.Jutsu.getPuppetList(compound, entity.world);
 				if (!list.isEmpty()) {
 					for (Base puppet : list) {
-						if (puppet.getDistanceSq(entity) <= 64.0d) {
+						if (puppet.isOwner(entity) && puppet.getDistanceSq(entity) <= 64.0d) {
 							if (event.getSource().getDamageLocation() != null) {
 								Vec3d vec = event.getSource().getDamageLocation().subtract(entity.getPositionVector());
 								Vec3d vec1 = vec.scale(event.getSource().getImmediateSource() instanceof EntityLivingBase ? 0.5d : 0.8d);
@@ -127,9 +128,10 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-	public abstract static class Base extends EntityCreature {
+	public abstract static class Base extends EntityCreature implements EntitySummonAnimal.ISummon {
 		private static final DataParameter<Integer> OWNERID = EntityDataManager.<Integer>createKey(Base.class, DataSerializers.VARINT);
 		private static final DataParameter<Integer> REAL_AGE = EntityDataManager.<Integer>createKey(Base.class, DataSerializers.VARINT);
+		private double chakraUsage;
 		//private int haltAITicks;
 
 		public Base(World worldIn) {
@@ -141,8 +143,9 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 			this.moveHelper = new FlyHelper(this);
 		}
 
-		public Base(EntityLivingBase ownerIn) {
+		public Base(EntityLivingBase ownerIn, double chakraUsageIn) {
 			this(ownerIn.world);
+			this.chakraUsage = ownerIn instanceof EntitySasori.EntityCustom ? chakraUsageIn * 0.2d : chakraUsageIn;
 			if (ownerIn instanceof EntityPlayer) {
 				ItemStack stack = ProcedureUtils.getMatchingItemStack((EntityPlayer)ownerIn, ItemNinjutsu.block);
 				if (stack != null && ((ItemNinjutsu.RangedItem)stack.getItem())
@@ -169,15 +172,15 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 			return ((Integer)this.getDataManager().get(REAL_AGE)).intValue();
 		}
 
-		@Nullable
-		public EntityLivingBase getOwner() {
+		@Override @Nullable
+		public EntityLivingBase getSummoner() {
 			Entity entity = this.world.getEntityByID(((Integer)this.getDataManager().get(OWNERID)).intValue());
 			return entity instanceof EntityLivingBase ? (EntityLivingBase)entity : null;
 		}
 
 		protected void setOwner(@Nullable EntityLivingBase newOwner) {
 			if (!this.world.isRemote) {
-				EntityLivingBase oldOwner = this.getOwner();
+				EntityLivingBase oldOwner = this.getSummoner();
 				if (oldOwner != newOwner) {
 					boolean addedNew = false;
 					if (newOwner instanceof EntityPlayer) {
@@ -207,7 +210,7 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 		}
 
 		public boolean isOwner(Entity entity) {
-			return entity != null && this.getOwner() == entity;
+			return entity != null && this.getSummoner() == entity;
 		}
 
 		public static boolean canPlayerUseJutsu(EntityPlayer player) {
@@ -244,7 +247,7 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		protected void updateAITasks() {
-	    	EntityLivingBase owner = this.getOwner();
+	    	EntityLivingBase owner = this.getSummoner();
 	    	//this.setNoGravity(owner != null);
 			if (owner != null && this.getVelocity() > 0.1d && this.ticksExisted % 2 == 0) {
 				this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:wood_click")), 
@@ -287,7 +290,7 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 	    }
 
 	    public boolean hasSameOwner(Base entity) {
-	    	return this.isOwner(entity.getOwner());
+	    	return this.isOwner(entity.getSummoner());
 	    }
 
 	    @Override
@@ -319,8 +322,7 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public boolean attackEntityAsMob(Entity entityIn) {
-			EntityLivingBase owner = this.getOwner();
-			return owner != null ? ProcedureUtils.attackEntityAsMob(this, entityIn, DamageSource.causeIndirectDamage(this, owner)) : false;
+			return this.getSummoner() != null ? ProcedureUtils.attackEntityAsMob(this, entityIn) : false;
 		}
 
 		/*@Override
@@ -336,10 +338,16 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public void onLivingUpdate() {
-			EntityLivingBase owner = this.getOwner();
+			EntityLivingBase owner = this.getSummoner();
 			if (this.getAttackTarget() == null && owner != null) {
 		    	RayTraceResult res = ProcedureUtils.objectEntityLookingAt(owner, 60d);
-		        this.getLookHelper().setLookPosition(res.hitVec.x, res.hitVec.y, res.hitVec.z, 45.0f, 45.0f);
+		    	if (res != null) {
+		        	this.getLookHelper().setLookPosition(res.hitVec.x, res.hitVec.y, res.hitVec.z, 60.0f, 60.0f);
+		    	}
+			}
+			if (!this.world.isRemote && this.ticksExisted % 20 == 1 && owner != null
+			 && !Chakra.pathway(owner).consume(this.chakraUsage * 20)) {
+				this.setOwner(null);
 			}
 			this.updateArmSwingProgress();
 			super.onLivingUpdate();
@@ -355,7 +363,7 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 	    	this.fallDistance = 0f;
 	    	this.clearMostPotions(PotionCorrosion.potion, PotionAmaterasuFlame.potion);
 	    	super.onUpdate();
-	    	
+
 	    	if (this.world.isRemote && this.isAIDisabled()) {
 	    		this.motionX *= 0.1d;
 	    		this.motionY *= 0.1d;
@@ -420,11 +428,11 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 			public boolean createJutsu(ItemStack stack, EntityLivingBase entity, float power) {
 				Entity entity1 = ProcedureUtils.objectEntityLookingAt(entity, 5d, 2d).entityHit;
 				if (entity1 instanceof Base) {
-					EntityLivingBase puppetowner = ((Base)entity1).getOwner();
+					EntityLivingBase puppetowner = ((Base)entity1).getSummoner();
 					boolean flag = puppetowner == null;
 					if (flag || entity.equals(puppetowner)) {
 						((Base)entity1).setOwner(flag ? entity : null);
-						return flag && entity == ((Base)entity1).getOwner();
+						return flag && entity == ((Base)entity1).getSummoner();
 					}
 				}
 				return false;
@@ -516,7 +524,7 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 
 	        @Override
 	        public boolean shouldExecute() {
-	        	EntityLivingBase entitylb = this.entity.getOwner();
+	        	EntityLivingBase entitylb = this.entity.getSummoner();
 		        if (entitylb == null) {
 		            return false;
 		        } else if (entitylb instanceof EntityPlayer && ((EntityPlayer)entitylb).isSpectator()) {
@@ -531,7 +539,7 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 
 			@Override
 		    public boolean shouldContinueExecuting() {
-		    	EntityLivingBase entitylb = this.entity.getOwner();
+		    	EntityLivingBase entitylb = this.entity.getSummoner();
 		        return entitylb != null && this.entity.getDistanceSq(entitylb) <= 1600d;
 		    }
 
@@ -805,7 +813,7 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 			@Override
 			public void doRender(T entity, double x, double y, double z, float entityYaw, float pt) {
 				super.doRender(entity, x, y, z, entityYaw, pt);
-				EntityLivingBase owner = entity.getOwner();
+				EntityLivingBase owner = entity.getSummoner();
 				if (owner != null) {
 					this.renderLine(this.getPosVec(entity, pt).addVector(0d, 1.2d, 0d), this.transform3rdPerson(owner, entity.chakraStringAttachesTo(), pt), pt + entity.ticksExisted);
 				}
@@ -813,7 +821,7 @@ public class EntityPuppet extends ElementsNarutomodMod.ModElement {
 
 			@Override
 			protected void renderModel(T entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor) {
-				if (entity.getOwner() == null && entity.onGround) {
+				if (entity.getSummoner() == null && entity.onGround) {
 					this.mainModel.isRiding = true;
 					headPitch = 45.0f;
 					GlStateManager.translate(0.0f, 0.55f, 0.0f);

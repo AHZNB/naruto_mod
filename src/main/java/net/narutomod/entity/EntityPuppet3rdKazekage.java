@@ -64,8 +64,8 @@ public class EntityPuppet3rdKazekage extends ElementsNarutomodMod.ModElement {
 			this.setSize(0.6f, 2.125f);
 		}
 
-		public EntityCustom(EntityLivingBase ownerIn) {
-			super(ownerIn);
+		public EntityCustom(EntityLivingBase ownerIn, double chakraUsage) {
+			super(ownerIn, chakraUsage);
 			this.setSize(0.6f, 2.125f);
 			Vec3d vec = ownerIn.getLookVec();
 			vec = ownerIn.getPositionVector().addVector(vec.x, 1d, vec.z);

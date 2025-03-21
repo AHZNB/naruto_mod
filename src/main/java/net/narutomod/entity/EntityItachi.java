@@ -147,7 +147,10 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 			((ItemSharingan.Base)stack.getItem()).setOwner(stack, this);
 			((ItemSharingan.Base)stack.getItem()).setColor(stack, 0x20ec1c24);
 			this.setItemStackToSlot(EntityEquipmentSlot.HEAD, stack);
-			this.setItemStackToSlot(EntityEquipmentSlot.CHEST, new ItemStack(ItemAkatsukiRobe.body, 1));
+			ItemStack stack1 = new ItemStack(ItemAkatsukiRobe.body);
+			stack1.setTagCompound(new NBTTagCompound());
+			stack1.getTagCompound().setBoolean("collarOpen", true);
+			this.setItemStackToSlot(EntityEquipmentSlot.CHEST, stack1);
 			this.setItemToInventory(new ItemStack(ItemKunai.block), 0);
 			this.setItemToInventory(new ItemStack(ItemAkatsukiRobe.helmet), 1);
 			this.setIsReal(this.rand.nextInt(ModConfig.ITACHI_REAL_CHANCE) == 0);
@@ -252,12 +255,7 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 		public SoundEvent getDeathSound() {
 			return SoundEvents.ENTITY_ILLAGER_DEATH;
 		}
-
-		@Override
-		public boolean isOnSameTeam(Entity entityIn) {
-			return super.isOnSameTeam(entityIn) || EntityNinjaMob.TeamAkatsuki.contains(entityIn.getClass());
-		}
-
+
 		private boolean isSusanooActive() {
 			return this.susanooEntity != null && this.susanooEntity.isEntityAlive();
 		}

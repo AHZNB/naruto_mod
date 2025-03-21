@@ -30,6 +30,7 @@ import net.minecraft.client.model.ModelBox;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.init.MobEffects;
+import net.minecraft.nbt.NBTTagCompound;
 
 import net.narutomod.item.ItemJutsu;
 import net.narutomod.NarutomodModVariables;
@@ -78,6 +79,7 @@ public class EntityChibakuTenseiBall extends ElementsNarutomodMod.ModElement {
 		private double stationaryX;
 		private double stationaryY;
 		private double stationaryZ;
+		private float health;
 
 		public EntityCustom(World world) {
 			super(world);
@@ -89,14 +91,14 @@ public class EntityChibakuTenseiBall extends ElementsNarutomodMod.ModElement {
 			this.setOGSize(0.25F, 0.25F);
 			this.setPosition(shooter.posX, shooter.posY + shooter.height + 0.5D, shooter.posZ);
 			shooter.getEntityData().setBoolean("chibakutensei_active", true);
+			this.health = 62.5f;
 		}
 
-		@Override
-		public void shoot(double x, double y, double z, float speed, float inaccuracy) {
+		private void convertBlocks2Satellite(int stayTicks) {
 			this.setDead();
 			List<? extends BlockPos> list = ProcedureUtils.getNonAirBlocks(this.world, this.getEntityBoundingBox().grow(1));
 			if (!list.isEmpty() && this.shootingEntity != null) {
-				this.world.spawnEntity(new Satellite(this.shootingEntity, list));
+				this.world.spawnEntity(new Satellite(this.shootingEntity, list, stayTicks));
 			}
 		}
 
@@ -228,7 +230,7 @@ public class EntityChibakuTenseiBall extends ElementsNarutomodMod.ModElement {
 						}
 					}
 				} else {
-					this.shoot(0, 0, 0, 0, 0);
+					this.convertBlocks2Satellite(1200);
 				}
 				if (this.dropTime > 0) {
 					--this.dropTime;
@@ -283,6 +285,29 @@ public class EntityChibakuTenseiBall extends ElementsNarutomodMod.ModElement {
 			}
 		}
 
+		@Override
+		public void setEntityScale(float scale) {
+			if (!this.world.isRemote) {
+				float lastScale = this.getEntityScale();
+				float oldHealth = Math.min(lastScale * 62.5f, 2000f);
+				float newHealth = Math.min(scale * 62.5f, 2000f);
+				this.health += newHealth - oldHealth;
+			}
+			super.setEntityScale(scale);
+		}
+
+		@Override
+		public boolean attackEntityFrom(DamageSource source, float amount) {
+			if (!this.world.isRemote && source.getTrueSource() instanceof EntityLivingBase && this.health > 0.0f) {
+				this.health -= amount;
+				if (this.health <= 0.0f) {
+					this.convertBlocks2Satellite(10);
+				}
+				return true;
+			}
+			return false;
+		}
+
 		private double maxRadius() {
 			AxisAlignedBB aabb = this.getEntityBoundingBox();
 			double d0 = (aabb.maxX - aabb.minX) / 2;
@@ -298,6 +323,18 @@ public class EntityChibakuTenseiBall extends ElementsNarutomodMod.ModElement {
 		@Override
 		protected void checkOnGround() {
 		}
+
+		@Override
+		protected void readEntityFromNBT(NBTTagCompound compound) {
+			super.readEntityFromNBT(compound);
+			this.health = compound.getFloat("health");
+		}
+
+		@Override
+		protected void writeEntityToNBT(NBTTagCompound compound) {
+			super.writeEntityToNBT(compound);
+			compound.setFloat("health", this.health);
+		}
 	}
 
 	public static class Satellite extends EntityEarthBlocks.Base {
@@ -308,18 +345,18 @@ public class EntityChibakuTenseiBall extends ElementsNarutomodMod.ModElement {
 			super(world);
 		}
 
-		public Satellite(EntityLivingBase summonerIn, List<? extends BlockPos> list) {
+		public Satellite(EntityLivingBase summonerIn, List<? extends BlockPos> list, int fallTime) {
 			super(summonerIn.world, list);
 			this.summoner = summonerIn;
 			this.setNoGravity(true);
 			this.motionY = -0.1d;
-			this.setFallTime(1200);
+			this.setFallTime(fallTime);
 		}
 
 		@Override
 		protected void onImpact(float impact) {
 			if (!this.world.isRemote) {
-				if (!this.explosionSet && this.getTicksAlive() - this.fallTicks <= 1200) {
+				if (!this.explosionSet && this.getTicksAlive() - this.fallTicks <= this.getFallTime()) {
 					if (this.summoner != null) {
 						this.summoner.getEntityData().setDouble(NarutomodModVariables.InvulnerableTime, 300d);
 					}

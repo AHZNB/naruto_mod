@@ -64,7 +64,7 @@ public class ItemNinjutsu extends ElementsNarutomodMod.ModElement {
 	public static final ItemJutsu.JutsuEnum RASENGAN = new ItemJutsu.JutsuEnum(2, "rasengan", 'A', 150d, new EntityRasengan.EC.Jutsu());
 	public static final ItemJutsu.JutsuEnum LIMBOCLONE = new ItemJutsu.JutsuEnum(3, "limbo_clone", 'S', EntityLimboClone.CHAKRA_USAGE, new EntityLimboClone.EC.Jutsu());
 	public static final ItemJutsu.JutsuEnum AMENOTEJIKARA = new ItemJutsu.JutsuEnum(4, "item.ninjutsu.amenotejikara", 'S', 50d, new Amenotejikara());
-	public static final ItemJutsu.JutsuEnum PUPPET = new ItemJutsu.JutsuEnum(5, "tooltip.ninjutsu.puppetjutsu", 'C', 0.25d, new EntityPuppet.Base.Jutsu());
+	public static final ItemJutsu.JutsuEnum PUPPET = new ItemJutsu.JutsuEnum(5, "tooltip.ninjutsu.puppetjutsu", 'C', 0.5d, new EntityPuppet.Base.Jutsu());
 	public static final ItemJutsu.JutsuEnum BUGSWARM = new ItemJutsu.JutsuEnum(6, "bugball", 'C', 100d, new EntityKikaichu.EC.Jutsu());
 	public static final ItemJutsu.JutsuEnum INVISABILITY = new ItemJutsu.JutsuEnum(7, "tooltip.ninjutsu.hidingincamouflage", 'A', 100d, new HidingWithCamouflage());
 	public static final ItemJutsu.JutsuEnum TRANSFORM = new ItemJutsu.JutsuEnum(8, "transformation_jutsu", 'D', 50d, new EntityTransformationJutsu.EC.Jutsu());
@@ -145,7 +145,7 @@ public class ItemNinjutsu extends ElementsNarutomodMod.ModElement {
 			for (int i = list.size() - 1; i >= 0; --i) {
 				BlockPos pos = list.get(i);
 				Vec3d vec = new Vec3d(0.5d+pos.getX(), pos.getY(), 0.5d+pos.getZ());
-				if (player.getDistance(vec.x, vec.y, vec.z) <= 8d && player.world.isAirBlock(pos.up())
+				if (attacker.getDistance(vec.x, vec.y, vec.z) <= 8d && player.world.isAirBlock(pos.up())
 				 && (player.world.getBlockState(pos.down()).isTopSolid() || (!player.onGround && !attacker.onGround))
 				 && player.world.rayTraceBlocks(vec.addVector(0d, player.getEyeHeight(), 0d), attacker.getPositionEyes(1f), false, true, false) == null) {
 					float angle = MathHelper.wrapDegrees(ProcedureUtils.getYawFromVec(vec.subtract(attacker.getPositionVector())) - ProcedureUtils.getYawFromVec(player.getPositionVector().subtract(attacker.getPositionVector()))); 

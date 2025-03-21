@@ -240,8 +240,7 @@ public class EntityMightGuy extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public boolean isOnSameTeam(Entity entityIn) {
-			return super.isOnSameTeam(entityIn) || EntityNinjaMob.TeamKonoha.contains(entityIn.getClass())
-					|| (this.isTrackingCustomer() && entityIn.equals(this.customer));
+			return super.isOnSameTeam(entityIn) || (this.isTrackingCustomer() && entityIn.equals(this.customer));
 		}
 
 		@Override

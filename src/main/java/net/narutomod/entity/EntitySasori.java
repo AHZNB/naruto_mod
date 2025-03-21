@@ -380,11 +380,6 @@ public class EntitySasori extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
-		public boolean isOnSameTeam(Entity entityIn) {
-			return super.isOnSameTeam(entityIn) || EntityNinjaMob.TeamAkatsuki.contains(entityIn.getClass());
-		}
-
-		@Override
 		public void dismountEntity(Entity entityIn) {
 			if (entityIn.equals(this.hirukoEntity)) {
 				Vec3d vec = this.getAttackTarget() != null

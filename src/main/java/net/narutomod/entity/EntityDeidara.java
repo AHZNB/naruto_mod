@@ -6,7 +6,6 @@ import net.narutomod.item.ItemNinjaArmorFishnets;
 import net.narutomod.item.ItemBakuton;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.ModConfig;
-import net.narutomod.NarutomodModVariables;
 import net.narutomod.ElementsNarutomodMod;
 
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -24,10 +23,7 @@ import net.minecraft.world.BossInfo;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntitySelectors;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.item.ItemStack;
@@ -54,8 +50,6 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.init.Biomes;
 import net.minecraft.init.SoundEvents;
-import net.minecraft.init.MobEffects;
-import net.minecraft.potion.PotionEffect;
 
 import javax.annotation.Nullable;
 
@@ -91,9 +85,8 @@ public class EntityDeidara extends ElementsNarutomodMod.ModElement {
 		private int explosiveCloneLastUsed = -200;
 		private EntityC2.EC c2Entity;
 		private EntityC4.EC c4Entity;
-		private final Vec3d[] flightPath = new Vec3d[8];
 		private final float flyHeightOffGround = 16.0f;
-		private int currentPathPoint;
+		private EntityGiantBird.AIHoverOverTarget aiHover;
 		
 		public EntityCustom(World world) {
 			super(world, 120, 7000d);
@@ -148,35 +141,24 @@ public class EntityDeidara extends ElementsNarutomodMod.ModElement {
 					this.c4Entity.setExplosionDamage(100, 2);
 					this.world.spawnEntity(this.c4Entity);
 				}
-				if (this.isRiding() && this.getRidingEntity() == this.c2Entity) {
-					if (this.c2Entity.ticksExisted % 40 == 39) {
-						this.generateFlightPath(this.getGroundBelow(target).addVector(0d, this.flyHeightOffGround, 0d));
-					}
-					Vec3d vec = this.flightPath[this.currentPathPoint % 8];
-					if (this.c2Entity.getDistance(vec.x, vec.y, vec.z) < 1.0d) {
-						++this.currentPathPoint;
-					} else {
-						this.c2Entity.setFlyTo(vec.x, vec.y, vec.z, 2.0d);
-					}
-				} else if (this.ticksExisted - this.explosiveCloneLastUsed == 40 && this.getHealth() < this.getMaxHealth()) {
-					Vec3d vec = this.generateOriginAndFlightPath();
-					if (vec != null && this.consumeChakra(ItemBakuton.CLAY.chakraUsage * 2d)) {
-						this.c2Entity = new EntityC2.EC(this);
-						this.c2Entity.setLocationAndAngles(vec.x, vec.y, vec.z, this.rotationYaw, 0f);
-						ProcedureUtils.poofWithSmoke(this.c2Entity);
-						this.world.spawnEntity(this.c2Entity);
-						this.startRiding(this.c2Entity, true);
-						this.c2Entity.setRemainingLife(10000);
-					}
+				if (!this.isRiding() && this.ticksExisted - this.explosiveCloneLastUsed == 40 && this.getHealth() < this.getMaxHealth()
+				 && this.consumeChakra(ItemBakuton.CLAY.chakraUsage * 2d)) {
+					this.c2Entity = new EntityC2.EC(this);
+					this.c2Entity.setLocationAndAngles(this.posX, this.posY, this.posZ, this.rotationYaw, 0f);
+					ProcedureUtils.poofWithSmoke(this.c2Entity);
+					this.world.spawnEntity(this.c2Entity);
+					this.startRiding(this.c2Entity, true);
+					this.c2Entity.setRemainingLife(10000);
+					this.aiHover = new EntityGiantBird.AIHoverOverTarget(this.c2Entity, this.flyHeightOffGround, 10.0f, 1.0d);
+					this.c2Entity.tasks.addTask(1, this.aiHover);
 				} 
 			} else {
 				if (this.c4Entity != null && this.c4Entity.isEntityAlive()) {
 					this.c4Entity.setDead();
 				}
 				if (this.isRiding() && this.getRidingEntity() == this.c2Entity && this.c2Entity.getRemainingLife() > 100) {
-					Vec3d vec = this.getGroundBelow(this);
-					this.c2Entity.setFlyTo(vec.x, vec.y, vec.z, 1.0d);
 					this.c2Entity.setRemainingLife(100);
+					this.c2Entity.tasks.removeTask(this.aiHover);
 				}
 			}
 			if ((this.getItemStackFromSlot(EntityEquipmentSlot.HEAD).getItem() == ItemAkatsukiRobe.helmet) != (target == null)) {
@@ -191,7 +173,7 @@ public class EntityDeidara extends ElementsNarutomodMod.ModElement {
 			}
 			if (!this.world.isRemote && !this.isAIDisabled() && source.getTrueSource() instanceof EntityLivingBase
 			 && !this.isRiding() && this.ticksExisted - this.explosiveCloneLastUsed > this.explosiveCloneCD
-			 && EntityAITarget.isSuitableTarget(this, (EntityLivingBase)source.getTrueSource(), false, false)
+			 //&& EntityAITarget.isSuitableTarget(this, (EntityLivingBase)source.getTrueSource(), false, false)
 			 && this.consumeChakra(ItemBakuton.CLONE.chakraUsage)) {
 				this.setRevengeTarget((EntityLivingBase)source.getTrueSource());
 				EntityExplosiveClone.EC clone = EntityExplosiveClone.EC.Jutsu.createJutsu(this);
@@ -218,92 +200,6 @@ public class EntityDeidara extends ElementsNarutomodMod.ModElement {
 			}
 		}
 
-		private Vec3d getGroundBelow(Entity target) {
-			BlockPos pos = target.getPosition().down();
-			while (this.world.getBlockState(pos).getCollisionBoundingBox(this.world, pos) == null) {
-				pos = pos.down();
-			}
-			return new Vec3d(pos.up());
-		}
-
-		@Nullable
-		private Vec3d generateOriginAndFlightPath() {
-			EntityLivingBase target = this.getAttackTarget();
-			if (target != null) {
-				Vec3d vec = this.getPositionVector();
-				if (this.generateFlightPath(this.getGroundBelow(target).addVector(0d, this.flyHeightOffGround, 0d))) {
-					for (int i = 0; (int)vec.y + 1 < this.world.getHeight(); i++) {
-						if (this.isDirectPath(vec, this.flightPath[i])) {
-							this.currentPathPoint = i;
-							return vec;
-						}
-						if (i == this.flightPath.length - 1) {
-							vec = vec.addVector(0d, 1d, 0d);
-							i = 0;
-						}
-					}
-				}
-			}
-			return null;
-		}
-
-		private boolean generateFlightPath(Vec3d centerVec) {
-			int i;
-			Vec3d[] newPath = new Vec3d[this.flightPath.length];
-			for (i = 0; i < newPath.length; i++) {
-				newPath[i] = new Vec3d(10d, 0d, 0d).rotateYaw(0.7854f * i).add(centerVec);
-			}
-			for (i = 1;
-				i < 13 && !ProcedureUtils.isSpaceOpenToStandOn(this.world, EntityC2.EC.WIDTH, EntityC2.EC.HEIGHT,
-				 new BlockPos(MathHelper.floor(newPath[0].x), (int)newPath[0].y, MathHelper.floor(newPath[0].z)));
-				newPath[0] = newPath[0].addVector(0d, (i % 2 == 0 ? -1d : 1d) * i++, 0d));
-			if (i >= 13) {
-				return false;
-			}
-			for (i = 0; i < newPath.length; i++) {
-				int j = i == newPath.length - 1 ? 0 : (i + 1);
-				Vec3d vec = this.findNextDirectPath(newPath[i], newPath[j]);
-				if (vec == null) {
-					return false;
-				}
-				newPath[j] = vec;
-			}
-			System.arraycopy(newPath, 0, this.flightPath, 0, newPath.length);
-			return true;
-		}
-
-		@Nullable
-		private Vec3d findNextDirectPath(Vec3d ogVec1, Vec3d ogVec2) {
-			Vec3d tvec;
-			Vec3d vec2 = ogVec2;
-			for (int y = 1; y < 13; vec2 = ogVec2.addVector(0d, y % 2 == 0 ? -y / 2 : (y / 2 + 1), 0d), y++) {
-				for (int x = 1; x < 9; vec2 = tvec.addVector((x % 2 == 0 ? -1d : 1d) * x++, 0d, 0d)) {
-					tvec = vec2;
-					for (int z = 1; z < 9; vec2 = vec2.addVector(0d, 0d, (z % 2 == 0 ? -1d : 1d) * z++)) {
-						if (this.isDirectPath(ogVec1, vec2)) {
-							return vec2;
-						}
-					}
-				}
-			}
-			return null;
-		}
-
-		private boolean isDirectPath(Vec3d fromVec, Vec3d toVec) {
-			float f0 = EntityC2.EC.WIDTH * 0.5f;
-			float f1 = EntityC2.EC.HEIGHT;
-			AxisAlignedBB fromAabb = new AxisAlignedBB(fromVec.x - f0, fromVec.y, fromVec.z - f0, fromVec.x + f0, fromVec.y + f1, fromVec.z + f0).grow(0.2d);
-			AxisAlignedBB toAabb = new AxisAlignedBB(toVec.x - f0, toVec.y, toVec.z - f0, toVec.x + f0, toVec.y + f1, toVec.z + f0).grow(0.2d);
-			return this.world.rayTraceBlocks(new Vec3d(fromAabb.minX, fromAabb.minY, fromAabb.minZ), new Vec3d(toAabb.minX, toAabb.minY, toAabb.minZ), false, true, false) == null
-			 && this.world.rayTraceBlocks(new Vec3d(fromAabb.maxX, fromAabb.minY, fromAabb.minZ), new Vec3d(toAabb.maxX, toAabb.minY, toAabb.minZ), false, true, false) == null
-			 && this.world.rayTraceBlocks(new Vec3d(fromAabb.minX, fromAabb.maxY, fromAabb.minZ), new Vec3d(toAabb.minX, toAabb.maxY, toAabb.minZ), false, true, false) == null
-			 && this.world.rayTraceBlocks(new Vec3d(fromAabb.minX, fromAabb.minY, fromAabb.maxZ), new Vec3d(toAabb.minX, toAabb.minY, toAabb.maxZ), false, true, false) == null
-			 && this.world.rayTraceBlocks(new Vec3d(fromAabb.maxX, fromAabb.maxY, fromAabb.minZ), new Vec3d(toAabb.maxX, toAabb.maxY, toAabb.minZ), false, true, false) == null
-			 && this.world.rayTraceBlocks(new Vec3d(fromAabb.maxX, fromAabb.maxY, fromAabb.maxZ), new Vec3d(toAabb.maxX, toAabb.maxY, toAabb.maxZ), false, true, false) == null
-			 && this.world.rayTraceBlocks(new Vec3d(fromAabb.maxX, fromAabb.minY, fromAabb.maxZ), new Vec3d(toAabb.maxX, toAabb.minY, toAabb.maxZ), false, true, false) == null
-			 && this.world.rayTraceBlocks(new Vec3d(fromAabb.minX, fromAabb.maxY, fromAabb.maxZ), new Vec3d(toAabb.minX, toAabb.maxY, toAabb.maxZ), false, true, false) == null;
-		}
-
 		@Override
 		public double getYOffset() {
 			return -0.35D;
@@ -311,7 +207,7 @@ public class EntityDeidara extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public boolean isOnSameTeam(Entity entityIn) {
-			return super.isOnSameTeam(entityIn) || EntityNinjaMob.TeamAkatsuki.contains(entityIn.getClass())
+			return super.isOnSameTeam(entityIn)
 			 || (entityIn instanceof EntityExplosiveClone.EC && this == ((EntityExplosiveClone.EC)entityIn).getSummoner());
 		}
 

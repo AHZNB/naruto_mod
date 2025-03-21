@@ -44,14 +44,15 @@ public class ProcedureBasicNinjaSkills extends ElementsNarutomodMod.ModElement {
 			if (entity instanceof EntityLivingBase)
 				((EntityLivingBase) entity).addPotionEffect(new PotionEffect(MobEffects.JUMP_BOOST, (int) 2, (int) 1, (false), (false)));
 		}
-		if (((((world.getBlockState(new BlockPos((int) Math.floor((entity.posX)), (int) (entity.posY), (int) Math.floor((entity.posZ)))))
+		if ((((world.getBlockState(new BlockPos((int) Math.floor((entity.posX)), (int) (entity.posY), (int) Math.floor((entity.posZ)))))
 				.getMaterial() == Material.WATER)
 				&& (!((world.getBlockState(new BlockPos((int) Math.floor((entity.posX)), (int) ((entity.posY) + 1), (int) Math.floor((entity.posZ)))))
-						.getMaterial() == Material.WATER)))
-				&& (!(entity.isSneaking())))) {
-			entity.motionY = 0.01D;
+						.getMaterial() == Material.WATER)))) {
+			if ((!(entity.isSneaking()))) {
+				entity.motionY = 0.01D;
+				entity.fallDistance = (float) (0);
+			}
 			entity.onGround = true;
-			entity.fallDistance = (float) (0);
 		}
 		RayTraceResult r = ProcedureUtils.raytraceBlocks(entity, 1d);
 		f1 = (!entity.onGround && entity.rotationPitch < 0 && r != null && r.typeOfHit == RayTraceResult.Type.BLOCK

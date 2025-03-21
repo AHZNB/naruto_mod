@@ -396,6 +396,20 @@ public class ProcedureSync extends ElementsNarutomodMod.ModElement {
 			this.rotationPitch = pitch;
 		}
 
+		public void setPositionAndUpdate(Entity entity) {
+			entity.rotationYaw = this.rotationYaw;
+			entity.rotationPitch = this.rotationPitch;
+			entity.setPositionAndUpdate(this.posX, this.posY, this.posZ);
+		}
+
+		public void setPositionAndRotation(Entity entity) {
+			entity.setPositionAndRotation(this.posX, this.posY, this.posZ, this.rotationYaw, this.rotationPitch);
+		}
+
+		public void setLocationAndAngles(Entity entity) {
+			entity.setLocationAndAngles(this.posX, this.posY, this.posZ, this.rotationYaw, this.rotationPitch);
+		}
+
 		PositionRotationPacket(ByteBuf buf) {
 			this.posX = buf.readDouble();
 			this.posY = buf.readDouble();
@@ -463,8 +477,7 @@ public class ProcedureSync extends ElementsNarutomodMod.ModElement {
 						((EntityPlayerMP)entity).connection.setPlayerLocation(message.prp.posX,
 						 message.prp.posY, message.prp.posZ, message.prp.rotationYaw, message.prp.rotationPitch);
 					} else if (entity != null) {
-						entity.setLocationAndAngles(message.prp.posX, message.prp.posY, message.prp.posZ,
-						 message.prp.rotationYaw, message.prp.rotationPitch);
+						message.prp.setLocationAndAngles(entity);
 					}
 				});
 				return null;

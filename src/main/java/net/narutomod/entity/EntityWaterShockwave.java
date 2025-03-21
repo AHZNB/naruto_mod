@@ -194,6 +194,15 @@ public class EntityWaterShockwave extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
+		public void setDead() {
+			if (!this.world.isRemote && !this.shouldDie) {
+				this.shouldDie = true;
+			} else {
+				super.setDead();
+			}
+		}
+
+		@Override
 		protected void readEntityFromNBT(NBTTagCompound compound) {
 			if (compound.hasUniqueId("userUUID") && this.world instanceof WorldServer) {
 				this.user = (EntityLivingBase)((WorldServer)this.world).getEntityFromUuid(compound.getUniqueId("userUUID"));

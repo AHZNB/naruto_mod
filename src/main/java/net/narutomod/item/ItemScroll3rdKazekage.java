@@ -183,7 +183,7 @@ public class ItemScroll3rdKazekage extends ElementsNarutomodMod.ModElement {
 				}
 				if (entity.ticksExisted % 20 == 3) {
 					EntityPuppet3rdKazekage.EntityCustom puppet = this.getPuppetEntity(stack, world);
-					if (puppet != null && puppet.isEntityAlive() && entity.equals(puppet.getOwner())) {
+					if (puppet != null && puppet.isEntityAlive() && entity.equals(puppet.getSummoner())) {
 						this.enableAllJutsus(stack, true);
 						this.setDamage(stack, (int)(puppet.getMaxHealth() - puppet.getHealth()));
 						EntitySandBullet.updateSwarms(puppet);
@@ -265,7 +265,7 @@ public class ItemScroll3rdKazekage extends ElementsNarutomodMod.ModElement {
 				this.setDead();
 			} else if (this.ticksExisted > this.openScrollTime) {
 				if (this.summoner != null) {
-					EntityPuppet3rdKazekage.EntityCustom entity = new EntityPuppet3rdKazekage.EntityCustom(this.summoner);
+					EntityPuppet3rdKazekage.EntityCustom entity = new EntityPuppet3rdKazekage.EntityCustom(this.summoner, ItemNinjutsu.PUPPET.chakraUsage);
 					entity.setLocationAndAngles(this.posX, this.posY, this.posZ, this.summoner.rotationYaw, 0f);
 					entity.onInitialSpawn(this.world.getDifficultyForLocation(this.getPosition()), null);
 					this.world.spawnEntity(entity);

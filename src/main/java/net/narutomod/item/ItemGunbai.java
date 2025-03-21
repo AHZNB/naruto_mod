@@ -282,6 +282,9 @@ public class ItemGunbai extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public boolean onLeftClickEntity(ItemStack itemstack, EntityPlayer attacker, Entity target) {
+			if (attacker.isHandActive()) {
+				return true;
+			}
 			if (!attacker.world.isRemote && attacker.equals(target)) {
 				this.throwItemAt(itemstack, attacker, null);
 				return true;

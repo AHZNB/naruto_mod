@@ -298,6 +298,18 @@ public class ProcedureOnLivingUpdate extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
+	public static void forceBowPose(Entity entity, boolean pose) {
+		if (pose) {
+			ProcedureSync.EntityNBTTag.setAndSync(entity, NarutomodModVariables.forceBowPose, true);
+		} else {
+			ProcedureSync.EntityNBTTag.removeAndSync(entity, NarutomodModVariables.forceBowPose);
+		}
+	}
+
+	public static boolean isForcedBowPose(Entity entity) {
+		return entity.getEntityData().getBoolean(NarutomodModVariables.forceBowPose);
+	}
+
 	@SideOnly(Side.CLIENT)
 	@SubscribeEvent
 	public void onRenderLivingPre(RenderLivingEvent.Pre event) {

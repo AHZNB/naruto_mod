@@ -31,6 +31,8 @@ import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
+import net.narutomod.procedure.ProcedureAoeCommand;
+import net.narutomod.procedure.ProcedureOnLivingUpdate;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.item.ItemByakugan;
 import net.narutomod.item.ItemJutsu;
@@ -153,12 +155,26 @@ public class EntityHakkeshoKeiten extends ElementsNarutomodMod.ModElement {
 						this.breakBlocks(ProcedureUtils.getNonAirBlocks(this.world, 
 						 this.getEntityBoundingBox().expand(1.0D, 1.0D, 1.0D).expand(-1.0D, 0.0D, -1.0D)));
 						ProcedureUtils.purgeHarmfulEffects(summoner);
+						ProcedureOnLivingUpdate.setUntargetable(summoner, 3);
 					}
 				}
 			}
 		}
 
 		@Override
+		protected void collideWithNearbyEntities() {
+			if (!this.world.isRemote && this.getMaturity() >= 0.9f) {
+				EntityLivingBase summoner = this.getSummoner();
+				float damage = summoner instanceof EntityPlayer ? (float)PlayerTracker.getNinjaLevel((EntityPlayer)summoner) / 4.0F + 10F : 10F;
+				ProcedureAoeCommand.set(this.world, this.getEntityBoundingBox()).exclude(this).exclude(summoner)
+				 .damageEntities(ItemJutsu.causeJutsuDamage(this, summoner), damage);
+				for (Entity entity : ProcedureAoeCommand.getInstance().getEntitiesList()) {
+					ProcedureUtils.pushEntity(this, entity, 60.0d, 1.0F);
+				}
+			}
+		}
+
+		/*@Override
 		protected void collideWithEntity(Entity entity) {
 			super.collideWithEntity(entity);
 			if (!this.world.isRemote && !this.isRidingSameEntity(entity) && this.getMaturity() >= 0.9f) {
@@ -167,7 +183,7 @@ public class EntityHakkeshoKeiten extends ElementsNarutomodMod.ModElement {
 				entity.attackEntityFrom(ItemJutsu.causeJutsuDamage(this, summoner),
 				 summoner instanceof EntityPlayer ? (float)PlayerTracker.getNinjaLevel((EntityPlayer)summoner) / 4.0F + 10F : 10F);
 			}
-		}
+		}*/
 
 		private void breakBlocks(List<? extends BlockPos> list) {
 			EntityLivingBase summoner = this.getSummoner();

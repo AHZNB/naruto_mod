@@ -17,6 +17,7 @@ import net.narutomod.gui.GuiScrollWaterCannonGui;
 import net.narutomod.gui.GuiScrollVacuumWaveGui;
 import net.narutomod.gui.GuiScrollTransformationGui;
 import net.narutomod.gui.GuiScrollSwampPitGui;
+import net.narutomod.gui.GuiScrollShikigamiGui;
 import net.narutomod.gui.GuiScrollShadowImitationGui;
 import net.narutomod.gui.GuiScrollSealingChainsGui;
 import net.narutomod.gui.GuiScrollSealing4SymbolsGui;
@@ -113,7 +114,6 @@ public class ElementsNarutomodMod implements IFuelHandler, IWorldGenerator {
 				new net.minecraft.util.SoundEvent(new ResourceLocation("narutomod", "ChibakuTensei")));
 		sounds.put(new ResourceLocation("narutomod", "byakugan"), new net.minecraft.util.SoundEvent(new ResourceLocation("narutomod", "byakugan")));
 		sounds.put(new ResourceLocation("narutomod", "FurryRoar"), new net.minecraft.util.SoundEvent(new ResourceLocation("narutomod", "FurryRoar")));
-		sounds.put(new ResourceLocation("narutomod", "KamuiSFX"), new net.minecraft.util.SoundEvent(new ResourceLocation("narutomod", "KamuiSFX")));
 		sounds.put(new ResourceLocation("narutomod", "MonsterGrowl"),
 				new net.minecraft.util.SoundEvent(new ResourceLocation("narutomod", "MonsterGrowl")));
 		sounds.put(new ResourceLocation("narutomod", "KoH_spawn"), new net.minecraft.util.SoundEvent(new ResourceLocation("narutomod", "KoH_spawn")));
@@ -322,6 +322,7 @@ public class ElementsNarutomodMod implements IFuelHandler, IWorldGenerator {
 		sounds.put(new ResourceLocation("narutomod", "paperflip"), new net.minecraft.util.SoundEvent(new ResourceLocation("narutomod", "paperflip")));
 		sounds.put(new ResourceLocation("narutomod", "eightgatesrelease"),
 				new net.minecraft.util.SoundEvent(new ResourceLocation("narutomod", "eightgatesrelease")));
+		sounds.put(new ResourceLocation("narutomod", "kamui"), new net.minecraft.util.SoundEvent(new ResourceLocation("narutomod", "kamui")));
 	}
 
 	public void preInit(FMLPreInitializationEvent event) {
@@ -492,6 +493,8 @@ public class ElementsNarutomodMod implements IFuelHandler, IWorldGenerator {
 				return new GuiScrollWindBladeGui.GuiContainerMod(world, x, y, z, player);
 			if (id == GuiScrollVacuumWaveGui.GUIID)
 				return new GuiScrollVacuumWaveGui.GuiContainerMod(world, x, y, z, player);
+			if (id == GuiScrollShikigamiGui.GUIID)
+				return new GuiScrollShikigamiGui.GuiContainerMod(world, x, y, z, player);
 			return null;
 		}
 
@@ -599,6 +602,8 @@ public class ElementsNarutomodMod implements IFuelHandler, IWorldGenerator {
 				return new GuiScrollWindBladeGui.GuiWindow(world, x, y, z, player);
 			if (id == GuiScrollVacuumWaveGui.GUIID)
 				return new GuiScrollVacuumWaveGui.GuiWindow(world, x, y, z, player);
+			if (id == GuiScrollShikigamiGui.GUIID)
+				return new GuiScrollShikigamiGui.GuiWindow(world, x, y, z, player);
 			return null;
 		}
 	}

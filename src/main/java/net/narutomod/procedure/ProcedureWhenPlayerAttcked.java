@@ -108,6 +108,10 @@ public class ProcedureWhenPlayerAttcked extends ElementsNarutomodMod.ModElement 
 		}
 	}
 
+	public static void setInvulnerable(Entity entity, int ticks) {
+		entity.getEntityData().setDouble(NarutomodModVariables.InvulnerableTime, ticks);
+	}
+
 	public static void setExtraDamageReduction(Entity entity, float reduction) {
 		if (reduction <= 0.0f) {
 			entity.getEntityData().removeTag("ExtraDamageReduction");

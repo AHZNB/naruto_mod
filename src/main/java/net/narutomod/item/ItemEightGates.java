@@ -526,6 +526,16 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 						 SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:opengate")),
 						 SoundCategory.NEUTRAL, 1, 1);
 					}
+					if (gateOpened >= 6f) {
+						ProcedureAoeCommand.set(player, 0d, gateOpened * 2f).exclude(player).knockback(2f);
+						for (Entity entity2 : ProcedureAoeCommand.getInstance().getEntitiesList()) {
+							if (entity2 instanceof ItemJutsu.IJutsu) {
+								entity2.setDead();
+							}
+						}
+						ProcedureUtils.purgeHarmfulEffects(player);
+						player.extinguish();
+					}
 					if (gateOpened >= 8f - increments && gateOpened < 8f) {
 						player.world.playSound(null, player.posX, player.posY, player.posZ, 
 						 SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:eightgatesrelease")),

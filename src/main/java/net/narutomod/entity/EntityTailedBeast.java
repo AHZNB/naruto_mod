@@ -127,7 +127,7 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 		MinecraftForge.EVENT_BUS.register(new PlayerHooks());
 	}
 
-	public static abstract class Base extends EntityMob implements IRangedAttackMob, EntityBijuManager.ITailBeast {
+	public static abstract class Base extends EntityMob implements IRangedAttackMob, EntityBijuManager.ITailBeast, ICollisionData {
 		private static final DataParameter<Integer> AGE = EntityDataManager.<Integer>createKey(Base.class, DataSerializers.VARINT);
 		private static final DataParameter<Integer> VESSEL = EntityDataManager.<Integer>createKey(Base.class, DataSerializers.VARINT);
 		private static final DataParameter<Boolean> SHOOT = EntityDataManager.<Boolean>createKey(Base.class, DataSerializers.BOOLEAN);
@@ -301,7 +301,7 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 					Base.this.meleeTime = 100;
 				}
 			});
-			this.tasks.addTask(1, new AILeapAtTarget(this, 36.0d, 2.0f) {
+			this.tasks.addTask(1, new AILeapAtTarget(this, 36.0d) {
 				@Override
 				public boolean shouldExecute() {
 					return !Base.this.isMotionHalted() && super.shouldExecute();
@@ -613,6 +613,11 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 
 		public boolean couldBreakBlocks() {
 			return this.world.getGameRules().getBoolean("mobGriefing");
+		}
+
+		@Override
+		public ProcedureUtils.CollisionHelper getCollisionData() {
+			return this.collisionData;
 		}
 
 		@Override
@@ -1113,13 +1118,11 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 	public static class AILeapAtTarget extends EntityAIBase {
 	    private EntityLiving leaper;
 	    private EntityLivingBase leapTarget;
-	    private float leapStrength;
 	    private double leapRange;
 	
-	    public AILeapAtTarget(EntityLiving leapingEntity, double range, float strength) {
+	    public AILeapAtTarget(EntityLiving leapingEntity, double range) {
 	        this.leaper = leapingEntity;
 	        this.leapRange = range;
-	        this.leapStrength = strength;
 	        this.setMutexBits(5);
 	    }
 	
@@ -1166,19 +1169,21 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static class NavigateGround extends PathNavigateGround {
-		protected Base baseEntity; 
 		private BlockPos targetPos;
 	    private int ticksAtLastPos;
 	    private Vec3d lastPosCheck = Vec3d.ZERO;
 
-		public NavigateGround(Base entityLivingIn, World worldIn) {
+		public NavigateGround(EntityLiving entityLivingIn, World worldIn) {
 			super(entityLivingIn, worldIn);
-			this.baseEntity = entityLivingIn;
 		}
 
 		@Override
 		protected PathFinder getPathFinder() {
 			return null;
+		}
+
+		public double getSpeed() {
+			return this.speed;
 		}
 
 		@Override
@@ -1251,13 +1256,16 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void onUpdateNavigation() {
 			++this.totalTicks;
+//System.out.println("------ totalTicks="+totalTicks+(currentPath!=null?(", isFinished?"+currentPath.isFinished()):", currentPath=null"));
 			if (!this.noPath()) {
 				this.checkForStuck(this.getEntityPosition());
 				if (!this.noPath()) {
 					Vec3d vec3d2 = this.currentPath.getCurrentPos();
+//System.out.println("       vec3d2:"+vec3d2+", currentPathIndex:"+currentPath.getCurrentPathIndex()+", pathLength:"+currentPath.getCurrentPathLength());
 					if (this.distanceTo(vec3d2.x, vec3d2.y, vec3d2.z) < 0.5d * (this.entity.width + 1.0d)) {
 						this.currentPath.incrementPathIndex();
 					} else {
+//System.out.println("       setMoveTo speed="+speed);
 		                this.entity.getMoveHelper().setMoveTo(vec3d2.x, vec3d2.y, vec3d2.z, this.speed);
 					}
 				}
@@ -1316,10 +1324,10 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 	    }
 	}
 
-	public static class MoveHelper extends EntityMoveHelper {
-		private Base baseEntity;
+	public static class MoveHelper<T extends EntityLiving & ICollisionData> extends EntityMoveHelper {
+		private T baseEntity;
 		
-		public MoveHelper(Base entity) {
+		public MoveHelper(T entity) {
 			super(entity);
 			this.baseEntity = entity;
 		}
@@ -1337,20 +1345,21 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 	                return;
 	            }
 				if (this.entity.collidedHorizontally) {
+					ProcedureUtils.CollisionHelper collisionData = this.baseEntity.getCollisionData();
 					double d5 = this.entity.posY;
 					for (EnumFacing face : EnumFacing.HORIZONTALS) {
-						for (BlockPos pos : this.baseEntity.collisionData.hitsOnSide(face)) {
+						for (BlockPos pos : collisionData.hitsOnSide(face)) {
 							double d6 = this.getHighestSolidTop(this.entity.world, pos);
 							if (d6 > d5) {
 								d5 = d6;
 							}
 						}
 					}
-					if (d5 - this.entity.posY > 2d * this.entity.height || this.baseEntity.collisionData.hitOnSide(EnumFacing.UP)) {
-						if (this.baseEntity.collisionData.hitOnAxis(EnumFacing.Axis.X)) {
+					if (d5 - this.entity.posY > 2d * this.entity.height || collisionData.hitOnSide(EnumFacing.UP)) {
+						if (collisionData.hitOnAxis(EnumFacing.Axis.X)) {
 							d0 = 0.0d;
 						}
-						if (this.baseEntity.collisionData.hitOnAxis(EnumFacing.Axis.Z)) {
+						if (collisionData.hitOnAxis(EnumFacing.Axis.Z)) {
 							d1 = 0.0d;
 						}
 					} else if (this.entity.onGround) {
@@ -2232,5 +2241,9 @@ public class EntityTailedBeast extends ElementsNarutomodMod.ModElement {
 				}
 			}
 		}
+	}
+
+	public interface ICollisionData {
+		ProcedureUtils.CollisionHelper getCollisionData();
 	}
 }

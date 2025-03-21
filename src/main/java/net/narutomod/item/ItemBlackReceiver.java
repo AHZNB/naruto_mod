@@ -3,10 +3,14 @@ package net.narutomod.item;
 
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.client.registry.RenderingRegistry;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 
@@ -17,6 +21,8 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EntitySelectors;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Item;
 import net.minecraft.item.EnumAction;
@@ -48,6 +54,7 @@ import net.narutomod.creativetab.TabModTab;
 import net.narutomod.ElementsNarutomodMod;
 
 import com.google.common.collect.Multimap;
+import javax.annotation.Nullable;
 //import java.util.Collection;
 
 @ElementsNarutomodMod.ModElement.Tag
@@ -72,6 +79,11 @@ public class ItemBlackReceiver extends ElementsNarutomodMod.ModElement {
 	@SideOnly(Side.CLIENT)
 	public void registerModels(ModelRegistryEvent event) {
 		ModelLoader.setCustomModelResourceLocation(block, 0, new ModelResourceLocation("narutomod:black_receiver", "inventory"));
+	}
+
+	@Override
+	public void init(FMLInitializationEvent event) {
+		MinecraftForge.EVENT_BUS.register(new AttackHook());
 	}
 
 	public static class RangedItem extends Item {
@@ -101,19 +113,8 @@ public class ItemBlackReceiver extends ElementsNarutomodMod.ModElement {
 		public void onPlayerStoppedUsing(ItemStack itemstack, World world, EntityLivingBase entityLivingBase, int timeLeft) {
 			if (!world.isRemote && entityLivingBase instanceof EntityPlayerMP) {
 				EntityPlayerMP entity = (EntityPlayerMP) entityLivingBase;
-				float power = 1f;
-				EntityArrowCustom entityarrow = new EntityArrowCustom(world, entity);
-				entityarrow.shoot(entity.getLookVec().x, entity.getLookVec().y, entity.getLookVec().z, power * 2, 0);
-				entityarrow.setSilent(true);
-				entityarrow.setIsCritical(true);
-				entityarrow.setDamage(10);
-				entityarrow.setKnockbackStrength(0);
+				EntityArrowCustom.shoot(entity, null, 2.0f);
 				itemstack.damageItem(1, entity);
-				world.playSound(null, entity.posX, entity.posY, entity.posZ,
-				 net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:hand_shoot")),
-				 SoundCategory.NEUTRAL, 1, 1f / (itemRand.nextFloat() * 0.5f + 1f) + (power / 2));
-				entityarrow.pickupStatus = EntityArrow.PickupStatus.DISALLOWED;
-				world.spawnEntity(entityarrow);
 				entity.getCooldownTracker().setCooldown(itemstack.getItem(), 10);
 			}
 		}
@@ -135,7 +136,7 @@ public class ItemBlackReceiver extends ElementsNarutomodMod.ModElement {
 					 && !((EntityPlayer)entity).isCreative() && entity.ticksExisted % 20 == 7) {
 			 			((EntityLivingBase)entity).addPotionEffect(new PotionEffect(MobEffects.NAUSEA, 100, 1, false, false));
 			 		}
-				} else if (entity instanceof EntityLiving) {
+				} else if (entity instanceof EntityLiving && !entity.getEntityData().getBoolean("BlackReceiverTolerance")) {
 					((EntityLiving)entity).setNoAI(true);
 				}
 			}
@@ -169,10 +170,18 @@ public class ItemBlackReceiver extends ElementsNarutomodMod.ModElement {
 			amplifier += entity.getActivePotionEffect(PotionHeaviness.potion).getAmplifier();
 		}
 		entity.addPotionEffect(new PotionEffect(PotionHeaviness.potion, 300, amplifier, false, false));
-		//if (entity.isPotionActive(MobEffects.JUMP_BOOST) && entity.getActivePotionEffect(MobEffects.JUMP_BOOST).getAmplifier() > -5) {
-		//	entity.removePotionEffect(MobEffects.JUMP_BOOST);
-		//}
-		//entity.addPotionEffect(new PotionEffect(MobEffects.JUMP_BOOST, 600, -5, false, false));
+	}
+
+	public class AttackHook {
+		@SubscribeEvent
+		public void onAttack(LivingHurtEvent event) {
+			EntityLivingBase target = event.getEntityLiving();
+			Entity attacker = event.getSource().getImmediateSource();
+			if (attacker instanceof EntityLivingBase && !(attacker instanceof EntityPlayer)
+			 && ((EntityLivingBase)attacker).getHeldItemMainhand().getItem() == block) {
+				onHitEntity(target);
+			}
+		}
 	}
 
 	public static class EntityArrowCustom extends EntityArrow {
@@ -205,12 +214,31 @@ public class ItemBlackReceiver extends ElementsNarutomodMod.ModElement {
 			super.onUpdate();
 			if (!this.world.isRemote) {
 				for (EntityLivingBase entity : this.world.getEntitiesWithinAABB(EntityLivingBase.class,
-				 this.getEntityBoundingBox().grow(0.75d), EntitySelectors.getTeamCollisionPredicate(this))) {
+				 this.getEntityBoundingBox().grow(0.5d), EntitySelectors.getTeamCollisionPredicate(this))) {
 					if (!entity.equals(this.shootingEntity)) {
 			 			entity.addPotionEffect(new PotionEffect(MobEffects.NAUSEA, 200, 1, false, false));
 					}
 				}
 			}
+		}
+
+		public static void shoot(EntityLivingBase shooter, @Nullable EntityLivingBase target, float power) {
+			EntityArrowCustom entityarrow = new EntityArrowCustom(shooter.world, shooter);
+			Vec3d vec = shooter.getLookVec();
+			if (target != null) {
+				vec = target.getPositionVector().addVector(0, target.height * 0.5, 0).subtract(entityarrow.getPositionVector());
+				vec = vec.addVector(0, MathHelper.sqrt(vec.x * vec.x + vec.z * vec.z) * 0.32d / power, 0);
+			}
+			entityarrow.shoot(vec.x, vec.y, vec.z, power, 0);
+			entityarrow.setSilent(true);
+			entityarrow.setIsCritical(true);
+			entityarrow.setDamage(10);
+			entityarrow.setKnockbackStrength(0);
+			shooter.world.playSound(null, shooter.posX, shooter.posY, shooter.posZ,
+			 net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:hand_shoot")),
+			 SoundCategory.NEUTRAL, 1, 1f / (shooter.getRNG().nextFloat() * 0.5f + 1f) + (power / 4));
+			entityarrow.pickupStatus = EntityArrow.PickupStatus.DISALLOWED;
+			shooter.world.spawnEntity(entityarrow);
 		}
 	}
 

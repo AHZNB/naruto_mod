@@ -6,7 +6,6 @@ import net.narutomod.item.ItemJutsu;
 import net.narutomod.entity.EntityEarthBlocks;
 import net.narutomod.event.SpecialEvent;
 import net.narutomod.Particles;
-import net.narutomod.NarutomodModVariables;
 import net.narutomod.ElementsNarutomodMod;
 import net.narutomod.Chakra;
 
@@ -24,6 +23,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
 
 import java.util.List;
+import javax.annotation.Nullable;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class ProcedureShinraTenseiOnKeyPressed extends ElementsNarutomodMod.ModElement {
@@ -83,39 +83,7 @@ public class ProcedureShinraTenseiOnKeyPressed extends ElementsNarutomodMod.ModE
 				if (entity.getEntityData().getBoolean("was_pressed")) {
 					entity.getEntityData().setBoolean("was_pressed", false);
 					if (power >= 5 && Chakra.pathway(entity).consume(power * ItemRinnegan.getShinratenseiChakraUsage(entity))) {
-						List<EntityEarthBlocks.Base> list = ProcedureBanShoTenin.getGrabbedEarthBlocks(entity);
-						RayTraceResult res = ProcedureUtils.objectEntityLookingAt(entity, 40d, 3d);
-						if (!list.isEmpty() && res != null && res.entityHit != null && !list.contains(res.entityHit)) {
-							for (EntityEarthBlocks.Base entity1 : list) {
-								entity1.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:BanshoTenin")), 1f, 1f);
-								Vec3d vec = res.entityHit.getPositionEyes(1f).subtract(entity1.getPositionVector()).normalize().scale(power * 0.1d);
-								entity1.motionX = vec.x;
-								entity1.motionY = vec.y;
-								entity1.motionZ = vec.z;
-								entity1.setNoGravity(false);
-							}
-						} else {
-							entity.getEntityData().setDouble(NarutomodModVariables.InvulnerableTime, 60);
-							for (int i = 0; i < 1000; i++) {
-								Particles.spawnParticle(world, Particles.Types.SMOKE, entity.posX, entity.posY + 1.4d, entity.posZ,
-								 1, 1d, 0d, 1d, (entity.getRNG().nextDouble() - 0.5d) * 2, (entity.getRNG().nextDouble() - 0.5d) * 2,
-								 (entity.getRNG().nextDouble() - 0.5d) * 2, 0x10FFFFFF, 25 + entity.getRNG().nextInt(25), 0);
-							}
-							if (power >= 20) {
-								SpecialEvent.setSphericalExplosionEvent(world, x, y + 2, z, (int)(power * power / 200), entity);
-								world.playSound(null, x, y, z, SoundEvent.REGISTRY
-								 .getObject(new ResourceLocation("narutomod:ShinraTensei")), SoundCategory.NEUTRAL, 5f, 1f);
-							} else {
-								world.playSound(null, x, y, z, SoundEvent.REGISTRY
-								 .getObject(new ResourceLocation("narutomod:BanshoTenin")), SoundCategory.NEUTRAL, 1f, 1f);
-							}
-							if (entity instanceof EntityPlayer && !entity.world.isRemote) {
-								((EntityPlayer)entity).sendStatusMessage(new TextComponentString("Power " + (int)power), true);
-							}
-							ProcedureAoeCommand.set(entity, 0d, power).exclude(entity).damageEntities(entity, (float)power).knockback(2f).noGravity(false);
-							ProcedureUtils.purgeHarmfulEffects(entity);
-							entity.extinguish();
-						}
+						execute(entity, ProcedureUtils.objectEntityLookingAt(entity, 40d, 3d), power);
 						double cd_modifier = Chakra.getChakraModifier(entity);
 						entity.getEntityData().setLong("shinratenseicd", ProcedureUpdateworldtick.getTotalWorldTime() + (long)(power * 10 * cd_modifier));
 					}
@@ -128,6 +96,47 @@ public class ProcedureShinraTenseiOnKeyPressed extends ElementsNarutomodMod.ModE
 				((EntityPlayer)entity).sendStatusMessage(new TextComponentTranslation("chattext.cooldown.formatted", 
 				 (entity.getEntityData().getLong("shinratenseicd") - ProcedureUpdateworldtick.getTotalWorldTime() + 100) / 20), true);
 			}
+		}
+	}
+
+	public static void execute(EntityLivingBase entity, @Nullable RayTraceResult res, double power) {
+		List<EntityEarthBlocks.Base> list = ProcedureBanShoTenin.getGrabbedEarthBlocks(entity);
+		if (!list.isEmpty() && res != null && res.entityHit != null && !list.contains(res.entityHit)) {
+			for (EntityEarthBlocks.Base entity1 : list) {
+				entity1.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:BanshoTenin")), 1f, 1f);
+				Vec3d vec = res.entityHit.getPositionEyes(1f).subtract(entity1.getPositionVector()).normalize().scale(power * 0.1d);
+				entity1.motionX = vec.x;
+				entity1.motionY = vec.y;
+				entity1.motionZ = vec.z;
+				entity1.setNoGravity(false);
+			}
+		} else {
+			ProcedureWhenPlayerAttcked.setInvulnerable(entity, 60);
+			for (int i = 0; i < 1000; i++) {
+				Particles.spawnParticle(entity.world, Particles.Types.SMOKE, entity.posX, entity.posY + 1.4d, entity.posZ,
+				 1, 1d, 0d, 1d, (entity.getRNG().nextDouble() - 0.5d) * 2, (entity.getRNG().nextDouble() - 0.5d) * 2,
+				 (entity.getRNG().nextDouble() - 0.5d) * 2, 0x10FFFFFF, 25 + (int)(entity.getRNG().nextFloat() * (float)power * 2.5f),
+				 (int) (16.0f / (entity.getRNG().nextFloat() * 0.8f + 0.2f)));
+			}
+			if (power >= 20) {
+				SpecialEvent.setSphericalExplosionEvent(entity.world, (int)entity.posX, (int)entity.posY + 2, (int)entity.posZ, (int)(power * power / 200), entity);
+				entity.world.playSound(null, entity.posX, entity.posY, entity.posZ, SoundEvent.REGISTRY
+				 .getObject(new ResourceLocation("narutomod:ShinraTensei")), SoundCategory.NEUTRAL, 5f, 1f);
+			} else {
+				entity.world.playSound(null, entity.posX, entity.posY, entity.posZ, SoundEvent.REGISTRY
+				 .getObject(new ResourceLocation("narutomod:BanshoTenin")), SoundCategory.NEUTRAL, 1f, 1f);
+			}
+			if (entity instanceof EntityPlayer && !entity.world.isRemote) {
+				((EntityPlayer)entity).sendStatusMessage(new TextComponentString("Power " + (int)power), true);
+			}
+			ProcedureAoeCommand.set(entity, 0d, power).exclude(entity).damageEntities(ItemJutsu.causeJutsuDamage(entity, null).setDamageBypassesArmor(), (float)power * 1.8f).knockback(2f).noGravity(false);
+			for (Entity entity2 : ProcedureAoeCommand.getInstance().getEntitiesList()) {
+				if (entity2 instanceof ItemJutsu.IJutsu) {
+					entity2.setDead();
+				}
+			}
+			ProcedureUtils.purgeHarmfulEffects(entity);
+			entity.extinguish();
 		}
 	}
 }

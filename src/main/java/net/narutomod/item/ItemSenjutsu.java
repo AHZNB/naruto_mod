@@ -10,6 +10,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
+import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.event.ModelRegistryEvent;
@@ -362,6 +363,17 @@ public class ItemSenjutsu extends ElementsNarutomodMod.ModElement {
 		public void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
 			if (!event.player.world.isRemote) {
 				deactivateSageMode(event.player);
+			}
+		}
+
+		@SubscribeEvent
+		public void onAttack(LivingAttackEvent event) {
+			if (event.getSource().getImmediateSource() instanceof EntityPlayer) {
+				EntityPlayer attacker = (EntityPlayer)event.getSource().getImmediateSource();
+				if (isSageModeActivated(attacker) && !ItemJutsu.isDamageSourceSenjutsu(event.getSource())) {
+					event.setCanceled(true);
+					event.getEntityLiving().attackEntityFrom(ItemJutsu.causeSenjutsuDamage(attacker, null), event.getAmount());
+				}
 			}
 		}
 	}

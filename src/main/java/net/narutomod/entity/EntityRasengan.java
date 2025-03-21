@@ -51,6 +51,7 @@ import net.narutomod.item.ItemJutsu;
 import java.util.List;
 import java.util.Random;
 import javax.annotation.Nullable;
+import net.minecraft.nbt.NBTTagCompound;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityRasengan extends ElementsNarutomodMod.ModElement {
@@ -79,7 +80,7 @@ public class EntityRasengan extends ElementsNarutomodMod.ModElement {
 			super(a);
 			this.setOGSize(0.35F, 0.35F);
 			this.isImmuneToFire = true;
-			this.damageSource = ItemJutsu.NINJUTSU_DAMAGE;
+			this.damageSource = ItemJutsu.causeJutsuDamage(this, this.getOwner());
 		}
 
 		public EC(EntityLivingBase shooter, float scale, @Nullable ItemStack stack) {
@@ -248,6 +249,21 @@ public class EntityRasengan extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void handleClientPacket(Vec3d vec) {
 			this.angles = vec;
+		}
+
+		@Override
+		protected void readEntityFromNBT(NBTTagCompound compound) {
+			super.readEntityFromNBT(compound);
+			this.fullScale = compound.getFloat("fullScale");
+			this.damageSource = compound.getBoolean("isSenjutsu") ? ItemJutsu.causeSenjutsuDamage(this, this.getOwner())
+			 : ItemJutsu.causeJutsuDamage(this, this.getOwner());
+		}
+
+		@Override
+		protected void writeEntityToNBT(NBTTagCompound compound) {
+			super.writeEntityToNBT(compound);
+			compound.setFloat("fullScale", this.fullScale);
+			compound.setBoolean("isSenjutsu", ItemJutsu.isDamageSourceSenjutsu(this.damageSource));
 		}
 
 		public static class Jutsu implements ItemJutsu.IJutsuCallback {

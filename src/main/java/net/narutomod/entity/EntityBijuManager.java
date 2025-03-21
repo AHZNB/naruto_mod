@@ -598,20 +598,21 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 				if (chakra.getAmount() + d > chakra.getMax() * 4 && !this.jinchurikiPlayer.isCreative()) {
 					this.jinchurikiPlayer.sendStatusMessage(new TextComponentTranslation("chattext.bijumanager.tooweak",
 					 this.getEntityLocalizedName()), false);
-				} else {
+				} else if (this.cloakLevel == 1) {
 					chakra.consume(-d, true);
 					this.saveAndResetWearingTicks(this.cloakLevel++);
+				} else {
+					T biju = this.spawnEntity(this.jinchurikiPlayer);
+					if (biju != null) {
+						ItemBijuCloak.clearCloakItems(this.jinchurikiPlayer);
+						biju.setLifeSpan(this.cloakXp[2] * 5 + 200);
+						chakra.consume(-d, true);
+						this.saveAndResetWearingTicks(this.cloakLevel++);
+					}
 				}
 			}
 		} else {
 			this.cloakLevel = 3;
-		}
-		if (this.cloakLevel == 3 && this.jinchurikiPlayer != null) {
-			ItemBijuCloak.clearCloakItems(this.jinchurikiPlayer);
-			T biju = this.spawnEntity(this.jinchurikiPlayer);
-			if (biju != null) {
-				biju.setLifeSpan(this.cloakXp[2] * 5 + 200);
-			}
 		}
 		return this.cloakLevel;
 	}
@@ -647,16 +648,19 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 		return biju;
 	}
 
+	@Nullable
 	private T spawnEntity(EntityPlayer jinchuriki) {
 		try {
 			T biju = this.entityClass.getConstructor(EntityPlayer.class).newInstance(jinchuriki);
 			biju.forceSpawn = true;
-			jinchuriki.world.spawnEntity(biju);
-			biju.forceSpawn = false;
-			return biju;
+			if (jinchuriki.world.spawnEntity(biju)) {
+				biju.forceSpawn = false;
+				return biju;
+			}
 		} catch (Exception exception) {
 			throw new Error(exception);
 		}
+		return null;
 	}
 
 	@Nullable

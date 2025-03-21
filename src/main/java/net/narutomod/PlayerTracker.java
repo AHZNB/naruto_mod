@@ -1,13 +1,13 @@
 package net.narutomod;
 
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.world.WorldEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
-import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.common.MinecraftForge;
 
 import net.minecraft.world.World;
@@ -30,6 +30,7 @@ import net.minecraft.init.MobEffects;
 import net.minecraft.potion.PotionEffect;
 
 import net.narutomod.entity.EntityNinjaMob;
+import net.narutomod.entity.EntitySummonAnimal;
 import net.narutomod.item.ItemIryoJutsu;
 import net.narutomod.procedure.ProcedureSync;
 import net.narutomod.procedure.ProcedureUtils;
@@ -260,6 +261,12 @@ public class PlayerTracker extends ElementsNarutomodMod.ModElement {
 			Entity targetEntity = event.getEntity();
 			Entity sourceEntity = event.getSource().getTrueSource();
 			float amount = event.getAmount();
+			if (sourceEntity instanceof EntitySummonAnimal.ISummon) {
+				Entity summoner = ((EntitySummonAnimal.ISummon)sourceEntity).getSummoner();
+				if (summoner != null) {
+					sourceEntity = summoner;
+				}
+			}
 			if (!targetEntity.equals(sourceEntity) && sourceEntity instanceof EntityLivingBase && amount > 0f) {
 				if (this.isOffCooldown(targetEntity) && targetEntity instanceof EntityPlayer && amount < ((EntityPlayer)targetEntity).getHealth()) {
 					double bxp = getBattleXp((EntityPlayer)targetEntity);

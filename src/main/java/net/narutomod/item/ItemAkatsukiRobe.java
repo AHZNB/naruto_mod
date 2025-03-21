@@ -82,13 +82,17 @@ public class ItemAkatsukiRobe extends ElementsNarutomodMod.ModElement {
 				@Override
 				public void setSlotVisible(ItemStack stack, Entity entity, EntityEquipmentSlot slot) {
 					this.model.bipedHeadwear.showModel = true;
+					((ModelAkatsukiRobe)this.model).collar.rotateAngleX = 0.0f;
+					((ModelAkatsukiRobe)this.model).collar2.rotateAngleX = 0.0f;
 					if (stack.hasTagCompound() && stack.getTagCompound().getBoolean("halfOff")) {
 						this.model.bipedRightArm.showModel = false;
 						this.texture = this.texturePartial;
-					} else if (stack.hasTagCompound() && stack.getTagCompound().getBoolean("collarClosed")) {
-						this.texture = this.textureClosed;
-					} else {
+					} else if (stack.hasTagCompound() && stack.getTagCompound().getBoolean("collarOpen")) {
 						this.texture = this.textureOpened;
+					} else {
+						((ModelAkatsukiRobe)this.model).collar.rotateAngleX = 0.0436f;
+						((ModelAkatsukiRobe)this.model).collar2.rotateAngleX = 0.0436f;
+						this.texture = this.textureClosed;
 					}
 				}
 			}

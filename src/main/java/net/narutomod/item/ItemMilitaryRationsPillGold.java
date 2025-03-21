@@ -84,7 +84,7 @@ public class ItemMilitaryRationsPillGold extends ElementsNarutomodMod.ModElement
 			super.onFoodEaten(itemStack, world, entity);
 			if (!world.isRemote) {
 				Chakra.pathway(entity).consume(-500d, true);
-				entity.addPotionEffect(new PotionEffect(PotionChakraRegeneration.potion, 600, 0));
+				entity.addPotionEffect(new PotionEffect(PotionChakraRegeneration.potion, 600, 4));
 				entity.addPotionEffect(new PotionEffect(MobEffects.SATURATION, 2400, 0));
 				entity.getCooldownTracker().setCooldown(block, 2400);
 			}

@@ -134,7 +134,7 @@ public class EntityKisameHoshigaki extends ElementsNarutomodMod.ModElement {
 		private final ItemStack hatStack = new ItemStack(ItemAkatsukiRobe.helmet);
 
 		public EntityCustom(World worldIn) {
-			super(worldIn, 140, 10000d);
+			super(worldIn, 140, 12000d);
 			this.setSize(0.6f, 2.0f);
 			this.mainNavigator = this.navigator;
 			this.altNavigator = new PathNavigateSwimmer(this, worldIn);
@@ -226,11 +226,6 @@ public class EntityKisameHoshigaki extends ElementsNarutomodMod.ModElement {
 
 		public boolean isClone() {
 			return this.original != null;
-		}
-
-		@Override
-		public boolean isOnSameTeam(Entity entityIn) {
-			return super.isOnSameTeam(entityIn) || EntityNinjaMob.TeamAkatsuki.contains(entityIn.getClass());
 		}
 
 		@Override

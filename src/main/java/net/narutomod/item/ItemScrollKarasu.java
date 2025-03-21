@@ -197,7 +197,7 @@ public class ItemScrollKarasu extends ElementsNarutomodMod.ModElement {
 				this.setDead();
 			} else if (this.ticksExisted > this.openScrollTime) {
 				if (this.summoner != null) {
-					EntityPuppetKarasu.EntityCustom entity = new EntityPuppetKarasu.EntityCustom(this.summoner);
+					EntityPuppetKarasu.EntityCustom entity = new EntityPuppetKarasu.EntityCustom(this.summoner, ItemNinjutsu.PUPPET.chakraUsage);
 					entity.setLocationAndAngles(this.posX, this.posY, this.posZ, this.summoner.rotationYaw, 0f);
 					entity.setHealth(this.puppetHealth);
 					this.world.spawnEntity(entity);

@@ -49,6 +49,7 @@ public class EntityBeamBase extends ElementsNarutomodMod.ModElement {
 		public int ticksAlive;
 		public Entity shootingEntity;
 		public RayTraceResult hitTrace;
+		public float prevBeamLength;
 		
 		public Base(World a) {
 			super(a);
@@ -137,6 +138,7 @@ public class EntityBeamBase extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public void onUpdate() {
+			this.prevBeamLength = this.getBeamLength();
 			if (this.world.isRemote && this.prevRotationYaw == 0.0f && this.prevRotationPitch == 0.0f) {
 				this.prevRotationYaw = this.rotationYaw;
 				this.prevRotationPitch = this.rotationPitch;

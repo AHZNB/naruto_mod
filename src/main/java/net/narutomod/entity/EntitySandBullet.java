@@ -200,7 +200,7 @@ public class EntitySandBullet extends ElementsNarutomodMod.ModElement {
 				 net.minecraft.util.SoundCategory.BLOCKS, 0.5f, entity.getRNG().nextFloat() * 0.4f + 0.6f);
 				EC ecEntity = new EC(entity, color, x, y, z, delay);
 				if (entity instanceof EntityPuppet3rdKazekage.EntityCustom) {
-					ecEntity.setIgnoreEntities(((EntityPuppet3rdKazekage.EntityCustom)entity).getOwner());
+					ecEntity.setIgnoreEntities(((EntityPuppet3rdKazekage.EntityCustom)entity).getSummoner());
 				}
 				entity.world.spawnEntity(ecEntity);
 			}

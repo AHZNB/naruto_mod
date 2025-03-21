@@ -196,16 +196,15 @@ public class ItemBakuton extends ElementsNarutomodMod.ModElement {
 		private EntityLivingBase owner;
 		private int lifeSpan = 600;
 		private float explosionSize = 3.0f;
-		private final EntityAITarget aiCopyOwnerTarget = new AICopyOwnerTarget(this);
-		private final EntityAITarget aiHurtByTarget = new EntityAIHurtByTarget(this, false, new Class[0]);
-		private boolean targetTasksEnabled;
+		private final AIChargeAttack aiAttack = new AIChargeAttack();
+		private boolean attackTaskEnabled;
 
 		public ExplosiveClay(World world) {
 			super(world);
 			//this.setSize(0.4F, 0.8F);
 			this.isImmuneToFire = true;
 			this.moveHelper = new EntityClone.AIFlyControl(this);
-			this.setTargetTasks();
+			this.enableAttackTask();
 		}
 
 		public ExplosiveClay(EntityLivingBase ownerIn) {
@@ -230,25 +229,24 @@ public class ItemBakuton extends ElementsNarutomodMod.ModElement {
 		@Override
 		protected void initEntityAI() {
 			super.initEntityAI();
+			this.targetTasks.addTask(1, new AICopyOwnerTarget(this));
+			this.targetTasks.addTask(2, new EntityAIHurtByTarget(this, false, new Class[0]));
 			this.tasks.addTask(0, new EntityAISwimming(this));
-			this.tasks.addTask(1, new AIChargeAttack());
+			//this.tasks.addTask(1, new AIChargeAttack());
 			this.tasks.addTask(2, new EntityAIWatchClosest(this, EntityPlayer.class, 3.0F, 1.0F));
 		}
 
-		protected void setTargetTasks() {
-			if (!this.targetTasksEnabled) {
-				this.targetTasks.addTask(1, this.aiCopyOwnerTarget);
-				this.targetTasks.addTask(2, this.aiHurtByTarget);
-				this.targetTasksEnabled = true;
+		protected void enableAttackTask() {
+			if (!this.attackTaskEnabled) {
+				this.tasks.addTask(1, this.aiAttack);
+				this.attackTaskEnabled = true;
 			}
 		}
 
-		protected void clearTargetTasks() {
-			if (this.targetTasksEnabled) {
-				this.targetTasks.removeTask(this.aiCopyOwnerTarget);
-				this.targetTasks.removeTask(this.aiHurtByTarget);
-				this.setAttackTarget(null);
-				this.targetTasksEnabled = false;
+		protected void disableAttackTask() {
+			if (this.attackTaskEnabled) {
+				this.tasks.removeTask(this.aiAttack);
+				this.attackTaskEnabled = false;
 			}
 		}
 

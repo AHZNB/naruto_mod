@@ -3,18 +3,25 @@
 Jutsus
  - wearing any dojutsu not bound to you consumes 15 chakra / second
  - added Crystal release [crystal armor, crystal prison, divine path, ray of light (add cooldown)]
+ - crystal armor only grants strength when not holding a weapon
  - projectiles now bounce off Flame formation jutsu
  - wood prison won't leave open spaces at the bottom of the cage
  - buffed unrivaled strength's passive steam damage
  - amaterasu damage can't be negated by fire protection
  - fixed rasenshuriken crater size bug when chunk unloaded during impact
  - kikaichu bugs can now slow down and paralize the target to suck chakra
- - added Dance of Shikigami (paper) jutsu [press JutsuKey1 to shoot paper arrows, jutsukey2 to bind target]
+ - added Dance of Shikigami (paper) jutsu & scroll [press JutsuKey1 to shoot paper arrows, jutsukey2 to bind target]
  - added some sound effects for flying thunder god & amenotejikara teleporting, biju cloak
  - improved tensei silver blast animations
  - changed genjutsu and kamui damage to be recognized as being attacked by caster
  - shukaku jinchuriki's biju cloak level 2 changed to sand cloak instead of blood cloak
  - body replacement clone: improved evasion, position 
+ - updated dust beam animation to dust cone, shortened beam length
+ - almighty push can break out of most trapping jutsus and kill projectile jutsus in range
+ - chibakutensei entity can be destroyed with damage
+ - using puppets now costs chakra
+ - improved preta shield animation and better chakra absorbing
+ - added more summons to rinnegan animal path, cycle summons by press and holding jutsukey2
  
 Items:
  - giant folding fan is opened by default now (to fix fan not openning when held by random entities)
@@ -25,7 +32,9 @@ Items:
  - added puppet jutsu scroll in loot chests
  - updated the gourd texture, wears a vest instead of a shoulder band
  - updated all robes model, collar now moves with head (addon makers extending the robe item class needs to update their code)
+ - added original Akatsuki robe
  - cap bone armor thorns damage to max 60
+ - fixed blockable swords can attack while blocking
  
 Entities:
  - improved giant dog summon model
@@ -37,13 +46,23 @@ Entities:
  - slightly buffed puppet reach, health
  - added Konan (uses paper drizzle, paper bind and paper replacement clone, spawns in rain)
  - fixed puppets bug taking the wrong damage from its user, and won't attack your puppets
- - added giant chameleon to rinnegan animal path (goes invisible when attacking, can maneuver when riding, replaces giant dog temporarily)
+ - added giant chameleon to rinnegan animal path (goes invisible when attacking, can maneuver when riding)
+ - added giant eight span crow to rinnegan animal path
+ - adding Deva path Pain (WIP: uses almighty push and universal pull, shoots black receivers)
+ - adding Asura path Pain (WIP: shoots missiles, unnatural durability, incredible strength)
+ - adding Animal path Pain (WIP: summons weird giant animals)
+ - adding Preta path Pain (WIP: uses preta shield when attacked)
+ - adding Human path, Naraka path (WIP: does nothing)
+ - adding Nagato (WIP: does nothing)
+ - adding Nagato's mech walker, players can ride it if puppet jutsu learned
  
 General:
  - added config option to disable auto kekkeigenkai assignment
  - optimize particles by reducing network packet size
  - fixed not getting back nature releases after death when keepInventory false & keepNinjaXp true
  - removed /locateEntity command, replace with /shinobicraftcmd <locateEntity | jinchuriki | susanooColor>
+ - moved dojutsu keybind actions into its respective classes (addon makers can override)
+ - changed chakra regeneration potion effect from flat 5% to base on amplifier
 
 0.3.1-beta ================================================================================
 

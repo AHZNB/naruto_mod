@@ -63,6 +63,11 @@ public class ItemSharingan extends ElementsNarutomodMod.ModElement {
 			super(material);
 		}
 
+		@Override
+		public ItemDojutsu.Type getType() {
+			return ItemDojutsu.Type.SHARINGAN;
+		}
+			
 		@SideOnly(Side.CLIENT)
 		@Override
 		public ModelBiped getArmorModel(EntityLivingBase living, ItemStack stack, EntityEquipmentSlot slot, ModelBiped defaultModel) {
@@ -195,19 +200,25 @@ public class ItemSharingan extends ElementsNarutomodMod.ModElement {
 		return ProcedureUtils.hasAnyItemOfSubtype(player, Base.class);
 	}
 
-	public static boolean hasAnyOwnedMangekyo(EntityPlayer player) {
-		return ProcedureUtils.hasOwnerMatchingItemstack(player, ItemMangekyoSharingan.helmet)
-		 || ProcedureUtils.hasOwnerMatchingItemstack(player, ItemMangekyoSharinganObito.helmet)
-		 || ProcedureUtils.hasOwnerMatchingItemstack(player, ItemMangekyoSharinganEternal.helmet);
+	public static boolean hasAnyMangekyo(EntityPlayer player, boolean checkIsOwner) {
+		for (ItemStack stack : ProcedureUtils.getAllItemsOfSubType(player, Base.class)) {
+			if ((!checkIsOwner || ((Base)stack.getItem()).isOwner(stack, player)) && ((Base)stack.getItem()).isMangekyo()) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public static boolean wearingAny(EntityLivingBase entity) {
 		return entity.getItemStackFromSlot(EntityEquipmentSlot.HEAD).getItem() instanceof Base;
 	}
 
+	public static boolean isMangekyo(ItemStack stack) {
+		return stack.getItem() instanceof Base && ((Base)stack.getItem()).isMangekyo();
+	}
+
 	public static boolean isWearingMangekyo(EntityLivingBase entity) {
-		Item item = entity.getItemStackFromSlot(EntityEquipmentSlot.HEAD).getItem();
-		return item instanceof Base && item != helmet;
+		return isMangekyo(entity.getItemStackFromSlot(EntityEquipmentSlot.HEAD));
 	}
 
 	public static boolean isBlinded(ItemStack stack) {

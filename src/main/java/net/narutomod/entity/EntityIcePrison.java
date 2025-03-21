@@ -154,7 +154,7 @@ public class EntityIcePrison extends ElementsNarutomodMod.ModElement {
 		public static class Jutsu implements ItemJutsu.IJutsuCallback {
 			@Override
 			public boolean createJutsu(ItemStack stack, EntityLivingBase entity, float power) {
-				RayTraceResult result = ProcedureUtils.objectEntityLookingAt(entity, 10d, true);
+				RayTraceResult result = ProcedureUtils.objectEntityLookingAt(entity, 10d, 3d, true);
 				if (result != null && result.entityHit instanceof EntityLivingBase) {
 					entity.world.playSound(null, result.entityHit.posX, result.entityHit.posY, result.entityHit.posZ, 
 					 net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:ice_shoot")),
