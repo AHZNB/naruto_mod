@@ -17,6 +17,7 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.entity.ai.EntityAIWander;
 import net.minecraft.entity.ai.EntityAISwimming;
 import net.minecraft.entity.ai.EntityAILookIdle;
+import net.minecraft.entity.ai.EntityAIWatchClosest2;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.Entity;
 import net.minecraft.client.renderer.entity.RenderLiving;
@@ -81,8 +82,9 @@ public class EntityNagato extends ElementsNarutomodMod.ModElement {
 			super.initEntityAI();
 			this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, false));
 			this.tasks.addTask(1, new EntityAISwimming(this));
-			this.tasks.addTask(2, new EntityAIWander(this, 1));
-			this.tasks.addTask(3, new EntityAILookIdle(this));
+			this.tasks.addTask(3, new EntityAIWatchClosest2(this, EntityPlayer.class, 32.0F, 1.0F));
+			this.tasks.addTask(4, new EntityAIWander(this, 1));
+			this.tasks.addTask(5, new EntityAILookIdle(this));
 		}
 
 		@Override
@@ -96,7 +98,7 @@ public class EntityNagato extends ElementsNarutomodMod.ModElement {
 			if (!ridingMech) {
 				if (this.mechEntity != null) {
 					if (this.mechEntity.isAddedToWorld()) {
-						this.startRiding(this.mechEntity, true);
+						this.startRiding(this.mechEntity);
 					}
 				} else if (this.ticksExisted < 5) {
 					double d = 1000;
@@ -115,7 +117,7 @@ public class EntityNagato extends ElementsNarutomodMod.ModElement {
 					}
 					if (closest != null) {
 						this.mechEntity = closest;
-						this.startRiding(closest, true);
+						this.startRiding(closest);
 					}
 				}
 			} else if (this.mechEntity == null) {

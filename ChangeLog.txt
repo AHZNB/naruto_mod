@@ -22,6 +22,7 @@ Jutsus
  - using puppets now costs chakra
  - improved preta shield animation and better chakra absorbing
  - added more summons to rinnegan animal path, cycle summons by press and holding jutsukey2
+ - shadow/limbo clones will gain ninjaXP from combat and give it to the user after death
  
 Items:
  - giant folding fan is opened by default now (to fix fan not openning when held by random entities)
@@ -35,6 +36,7 @@ Items:
  - added original Akatsuki robe
  - cap bone armor thorns damage to max 60
  - fixed blockable swords can attack while blocking
+ - buffed anbu sword damage slightly
  
 Entities:
  - improved giant dog summon model
@@ -53,8 +55,9 @@ Entities:
  - adding Animal path Pain (WIP: summons weird giant animals)
  - adding Preta path Pain (WIP: uses preta shield when attacked)
  - adding Human path, Naraka path (WIP: does nothing)
- - adding Nagato (WIP: does nothing)
+ - adding Nagato, Zetsu, Obito (WIP: does nothing)
  - adding Nagato's mech walker, players can ride it if puppet jutsu learned
+ - White zetsu: improved mimic ability, takes opponents chakra
  
 General:
  - added config option to disable auto kekkeigenkai assignment

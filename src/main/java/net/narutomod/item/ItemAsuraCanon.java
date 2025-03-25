@@ -205,8 +205,8 @@ public class ItemAsuraCanon extends ElementsNarutomodMod.ModElement {
 		        GlStateManager.scale(0.8f, 0.8f, 0.8f);
 		        GlStateManager.translate((float)x, (float)y + 0.5f, (float)z);
 		        GlStateManager.enableRescaleNormal();
-		        GlStateManager.rotate(90F - entity.prevRotationYaw + (entity.rotationYaw - entity.prevRotationYaw) * partialTicks, 0.0F, 1.0F, 0.0F);
-		        GlStateManager.rotate(entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks, 0.0F, 0.0F, 1.0F);
+		        GlStateManager.rotate(-entity.prevRotationYaw - (entity.rotationYaw - entity.prevRotationYaw) * partialTicks - 180F, 0.0F, 1.0F, 0.0F);
+		        GlStateManager.rotate(-entity.prevRotationPitch - (entity.rotationPitch - entity.prevRotationPitch) * partialTicks, 1.0F, 0.0F, 0.0F);
 		        this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
 		        if (this.renderOutlines) {
 		            GlStateManager.enableColorMaterial();

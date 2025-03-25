@@ -73,49 +73,49 @@ public class ItemRinnegan extends ElementsNarutomodMod.ModElement {
 
 	public static double getShinratenseiChakraUsage(EntityLivingBase entity) {
 		ItemStack stack = entity.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
-		return stack.getItem() == helmet || stack.getItem() == ItemTenseigan.helmet
+		return stack.getItem() instanceof Base
 		 ? ((ItemDojutsu.Base)stack.getItem()).isOwner(stack, entity)
 		  ? SHINRATENSEI_CHAKRA_USAGE : SHINRATENSEI_CHAKRA_USAGE * 2 : (Double.MAX_VALUE * 0.001d);
 	}
 
 	public static double getChibaukutenseiChakraUsage(EntityLivingBase entity) {
 		ItemStack stack = entity.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
-		return stack.getItem() == helmet || stack.getItem() == ItemTenseigan.helmet
+		return stack.getItem() instanceof Base
 		 ? ((ItemDojutsu.Base)stack.getItem()).isOwner(stack, entity)
 		  ? CHIBAKUTENSEI_CHAKRA_USAGE : CHIBAKUTENSEI_CHAKRA_USAGE * 2 : (Double.MAX_VALUE * 0.001d);
 	}
 
 	public static double getNarakaPathChakraUsage(EntityLivingBase entity) {
 		ItemStack stack = entity.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
-		return stack.getItem() == helmet || stack.getItem() == ItemTenseigan.helmet
+		return stack.getItem() instanceof Base
 		 ? ((ItemDojutsu.Base)stack.getItem()).isOwner(stack, entity)
 		  ? NARAKAPATH_CHAKRA_USAGE : NARAKAPATH_CHAKRA_USAGE * 2 : (Double.MAX_VALUE * 0.001d);
 	}
 
 	public static double getPretaPathChakraUsage(EntityLivingBase entity) {
 		ItemStack stack = entity.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
-		return stack.getItem() == helmet || stack.getItem() == ItemTenseigan.helmet
+		return stack.getItem() instanceof Base
 		 ? ((ItemDojutsu.Base)stack.getItem()).isOwner(stack, entity)
 		  ? PRETAPATH_CHAKRA_USAGE : PRETAPATH_CHAKRA_USAGE * 2 : (Double.MAX_VALUE * 0.001d);
 	}
 
 	public static double getAnimalPathChakraUsage(EntityLivingBase entity) {
 		ItemStack stack = entity.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
-		return stack.getItem() == helmet || stack.getItem() == ItemTenseigan.helmet
+		return stack.getItem() instanceof Base
 		 ? ((ItemDojutsu.Base)stack.getItem()).isOwner(stack, entity)
 		  ? ANIMALPATH_CHAKRA_USAGE : ANIMALPATH_CHAKRA_USAGE * 2 : (Double.MAX_VALUE * 0.001d);
 	}
 
 	public static double getOuterPathChakraUsage(EntityLivingBase entity) {
 		ItemStack stack = entity.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
-		return stack.getItem() == helmet || stack.getItem() == ItemTenseigan.helmet
+		return stack.getItem() instanceof Base
 		 ? ((ItemDojutsu.Base)stack.getItem()).isOwner(stack, entity)
 		  ? OUTERPATH_CHAKRA_USAGE : OUTERPATH_CHAKRA_USAGE * 2 : (Double.MAX_VALUE * 0.001d);
 	}
 
 	public static double getTengaishinseiChakraUsage(EntityLivingBase entity) {
 		ItemStack stack = entity.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
-		return stack.getItem() == helmet || stack.getItem() == ItemTenseigan.helmet
+		return stack.getItem() instanceof Base
 		 ? ((ItemDojutsu.Base)stack.getItem()).isOwner(stack, entity)
 		  ? TENGAISHINSEI_CHAKRA_USAGE : TENGAISHINSEI_CHAKRA_USAGE * 2 : (Double.MAX_VALUE * 0.001d);
 	}
@@ -458,9 +458,15 @@ public class ItemRinnegan extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static boolean hasRinnesharingan(EntityPlayer player) {
-		ItemStack stack1 = ProcedureUtils.getMatchingItemStack(player, helmet);
-		ItemStack stack2 = ProcedureUtils.getMatchingItemStack(player, ItemTenseigan.helmet);
-		return (stack1 != null && isRinnesharinganActivated(stack1)) || (stack2 != null && isRinnesharinganActivated(stack2));
+		//ItemStack stack1 = ProcedureUtils.getMatchingItemStack(player, helmet);
+		//ItemStack stack2 = ProcedureUtils.getMatchingItemStack(player, ItemTenseigan.helmet);
+		//return (stack1 != null && isRinnesharinganActivated(stack1)) || (stack2 != null && isRinnesharinganActivated(stack2));
+		for (ItemStack stack : ProcedureUtils.getAllItemsOfSubType(player, Base.class)) {
+			if (isRinnesharinganActivated(stack)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/*public class EventHook {

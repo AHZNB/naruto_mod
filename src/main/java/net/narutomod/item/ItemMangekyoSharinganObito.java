@@ -84,6 +84,11 @@ public class ItemMangekyoSharinganObito extends ElementsNarutomodMod.ModElement 
 			}
 
 			@Override
+			public ItemSharingan.Type getSubType() {
+				return ItemSharingan.Type.KAMUI;
+			}
+
+			@Override
 			public boolean isMangekyo() {
 				return true;
 			}

@@ -39,9 +39,7 @@ import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.procedure.ProcedureTotsukaSwordToolInHandTick;
 import net.narutomod.procedure.ProcedureKagutsuchiSwordToolInUseTick;
 import net.narutomod.potion.PotionAmaterasuFlame;
-import net.narutomod.item.ItemMangekyoSharinganObito;
-import net.narutomod.item.ItemMangekyoSharinganEternal;
-import net.narutomod.item.ItemMangekyoSharingan;
+import net.narutomod.item.ItemSharingan;
 import net.narutomod.item.ItemKamuiShuriken;
 import net.narutomod.item.ItemKagutsuchiSwordRanged;
 import net.narutomod.item.ItemTotsukaSword;
@@ -90,7 +88,7 @@ public class EntitySusanooWinged extends ElementsNarutomodMod.ModElement {
 			this.chakraUsage = 100d;
 		}
 
-		public EntityCustom(EntityPlayer player) {
+		public EntityCustom(EntityLivingBase player) {
 			super(player);
 			this.setSize(MODELSCALE * 0.8f, MODELSCALE * 2.0f);
 			this.stepHeight = this.height / 3.0F;
@@ -105,14 +103,13 @@ public class EntitySusanooWinged extends ElementsNarutomodMod.ModElement {
 			this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(this.playerXp * 0.003d);
 			this.getEntityData().setDouble("entityModelScale", (double)MODELSCALE);
 			Item helmet = player.getItemStackFromSlot(EntityEquipmentSlot.HEAD).getItem();
-			if (helmet == ItemMangekyoSharingan.helmet || helmet == ItemMangekyoSharinganEternal.helmet) {
-				//this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(ItemKagutsuchiSwordRanged.block));
-				ItemHandlerHelper.giveItemToPlayer(player, kagutsuchi);
-				//this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).applyModifier(new AttributeModifier("susanoo.sword.damage", 300d, 0));
-			}
-			if (helmet == ItemMangekyoSharinganObito.helmet || helmet == ItemMangekyoSharinganEternal.helmet) {
-				//this.setItemStackToSlot(EntityEquipmentSlot.OFFHAND, new ItemStack(ItemKamuiShuriken.block));
-				ItemHandlerHelper.giveItemToPlayer(player, kamuiShuriken);
+			if (player instanceof EntityPlayer && helmet instanceof ItemSharingan.Base) {
+				if (((ItemSharingan.Base)helmet).isEternal() || ((ItemSharingan.Base)helmet).getSubType() == ItemSharingan.Type.AMATERASU) {
+					ItemHandlerHelper.giveItemToPlayer((EntityPlayer)player, kagutsuchi);
+				}
+				if (((ItemSharingan.Base)helmet).isEternal() || ((ItemSharingan.Base)helmet).getSubType() == ItemSharingan.Type.KAMUI) {
+					ItemHandlerHelper.giveItemToPlayer((EntityPlayer)player, kamuiShuriken);
+				}
 			}
 			this.setHealth(this.getMaxHealth());
 		}
@@ -134,10 +131,6 @@ public class EntitySusanooWinged extends ElementsNarutomodMod.ModElement {
 
 		private float getWingSwingProgress() {
 			return ((Float)this.dataManager.get(WINGSWING)).floatValue();
-		}
-
-		protected void setOwnerPlayer(EntityPlayer entity) {
-			super.setOwnerPlayer(entity);
 		}
 
 		@Override

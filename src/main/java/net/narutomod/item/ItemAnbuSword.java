@@ -42,7 +42,7 @@ public class ItemAnbuSword extends ElementsNarutomodMod.ModElement {
 
 	static class ItemCustom extends ItemSword implements ItemOnBody.Interface {
 		ItemCustom() {
-			super(EnumHelper.addToolMaterial("ANBU_SWORD", 1, 500, 7f, 3f, 2));
+			super(EnumHelper.addToolMaterial("ANBU_SWORD", 1, 500, 7f, 6f, 2));
 		}
 
 		@Override

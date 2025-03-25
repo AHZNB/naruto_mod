@@ -93,7 +93,7 @@ public class EntityNinjaMob extends ElementsNarutomodMod.ModElement {
 	public static final List<Class <? extends Base>> TeamKonoha = Arrays.asList(EntityTenten.EntityCustom.class, EntitySakuraHaruno.EntityCustom.class, EntityIrukaSensei.EntityCustom.class, EntityMightGuy.EntityCustom.class);
 	public static final List<Class <? extends Base>> TeamZabuza = Arrays.asList(EntityZabuzaMomochi.EntityCustom.class, EntityHaku.EntityCustom.class);
 	public static final List<Class <? extends Base>> TeamPain = Arrays.asList(EntityPainDeva.EntityCustom.class, EntityPainAsura.EntityCustom.class, EntityPainAnimal.EntityCustom.class, EntityPainHuman.EntityCustom.class, EntityPainNaraka.EntityCustom.class, EntityPainPreta.EntityCustom.class, EntityNagato.EntityCustom.class);
-	public static final List<Class <? extends Base>> TeamAkatsukiMembers = Arrays.asList(EntityItachi.EntityCustom.class, EntityKisameHoshigaki.EntityCustom.class, EntitySasori.EntityCustom.class, EntityDeidara.EntityCustom.class, EntityHidan.EntityCustom.class, EntityKakuzu.EntityCustom.class, EntityKonan.EntityCustom.class);
+	public static final List<Class <? extends Base>> TeamAkatsukiMembers = Arrays.asList(EntityItachi.EntityCustom.class, EntityKisameHoshigaki.EntityCustom.class, EntitySasori.EntityCustom.class, EntityDeidara.EntityCustom.class, EntityHidan.EntityCustom.class, EntityKakuzu.EntityCustom.class, EntityKonan.EntityCustom.class, EntityZetsu.EntityCustom.class);
 	public static final List<Class <? extends Base>> TeamAkatsuki = Stream.concat(TeamPain.stream(), TeamAkatsukiMembers.stream()).collect(Collectors.toList());
 	private static final Map<String, List<Class <? extends Base>>> TEAMSMap = Maps.newHashMap();
 

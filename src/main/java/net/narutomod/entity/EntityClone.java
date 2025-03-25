@@ -9,6 +9,7 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.common.MinecraftForge;
 
 import net.minecraft.world.World;
@@ -63,11 +64,15 @@ import net.minecraft.pathfinding.PathNavigate;
 import net.minecraft.pathfinding.PathNavigateGround;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.block.material.Material;
+import net.minecraft.init.MobEffects;
 
 import net.narutomod.potion.PotionFeatherFalling;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.item.ItemOnBody;
 import net.narutomod.ElementsNarutomodMod;
+import net.narutomod.ModConfig;
+import net.narutomod.PlayerRender;
+import net.narutomod.PlayerTracker;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -95,7 +100,7 @@ public class EntityClone extends ElementsNarutomodMod.ModElement {
 
 	@Override
 	public void init(FMLInitializationEvent event) {
-		MinecraftForge.EVENT_BUS.register(new AITaskHook());
+		MinecraftForge.EVENT_BUS.register(new EventHook());
 	}
 
 	// mobs will attack instances of Base but won't attack instances of _Base
@@ -112,9 +117,10 @@ public class EntityClone extends ElementsNarutomodMod.ModElement {
 	public static abstract class _Base extends EntityCreature {
 		private static final DataParameter<Integer> SUMMONER_ID = EntityDataManager.<Integer>createKey(_Base.class, DataSerializers.VARINT);
 		private static final DataParameter<Float> MODEL_SCALE = EntityDataManager.<Float>createKey(_Base.class, DataSerializers.FLOAT);
-		private EntityLivingBase summoner;
+		private EntityLivingBase summonerCached;
 		private int collectedXPPoints;
 		protected boolean shouldDefendSummoner;
+		private double collectedNXP;
 
 		public _Base(World world) {
 			super(world);
@@ -132,11 +138,6 @@ public class EntityClone extends ElementsNarutomodMod.ModElement {
 		public _Base(EntityLivingBase summonerIn) {
 			this(summonerIn.world);
 			this.setSummoner(summonerIn);
-			this.setCustomNameTag(summonerIn.getName());
-			this.setLeftHanded(summonerIn.getPrimaryHand() == EnumHandSide.LEFT);
-			for (EntityEquipmentSlot entityequipmentslot : EntityEquipmentSlot.values()) {
-				this.setItemStackToSlot(entityequipmentslot, summoner.getItemStackFromSlot(entityequipmentslot).copy());
-			}
 			this.prevRotationYaw = this.prevRenderYawOffset = this.renderYawOffset = summonerIn.rotationYaw;
 			this.rotationYawHead = this.prevRotationYawHead = summonerIn.rotationYawHead;
 			this.copyLocationAndAnglesFrom(summonerIn);
@@ -158,15 +159,21 @@ public class EntityClone extends ElementsNarutomodMod.ModElement {
 
 		@Nullable
 		public EntityLivingBase getSummoner() {
-			if (this.summoner != null)
-				return this.summoner;
-	    	Entity e = this.world.getEntityByID(((Integer)this.getDataManager().get(SUMMONER_ID)).intValue());
-	    	return e instanceof EntityLivingBase ? (EntityLivingBase)e : null;
+			if (this.summonerCached == null) {
+		    	Entity e = this.world.getEntityByID(((Integer)this.getDataManager().get(SUMMONER_ID)).intValue());
+		    	this.summonerCached = e instanceof EntityLivingBase ? (EntityLivingBase)e : null;
+			}
+	    	return this.summonerCached;
 		}
 
 		protected void setSummoner(EntityLivingBase entity) {
-			this.summoner = entity;
+			this.summonerCached = entity;
 			this.getDataManager().set(SUMMONER_ID, Integer.valueOf(entity.getEntityId()));
+			this.setCustomNameTag(entity.getName());
+			this.setLeftHanded(entity.getPrimaryHand() == EnumHandSide.LEFT);
+			for (EntityEquipmentSlot entityequipmentslot : EntityEquipmentSlot.values()) {
+				this.setItemStackToSlot(entityequipmentslot, entity.getItemStackFromSlot(entityequipmentslot).copy());
+			}
 		}
 
 		protected float getScale() {
@@ -190,6 +197,20 @@ public class EntityClone extends ElementsNarutomodMod.ModElement {
 			if (MODEL_SCALE.equals(key) && this.world.isRemote) {
 				this.setScale(this.getScale());
 			}
+			if (SUMMONER_ID.equals(key) && this.world.isRemote) {
+				this.summonerCached = null;
+			}
+		}
+
+		@Override
+		protected void applyEntityAttributes() {
+			super.applyEntityAttributes();
+			this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(0D);
+			this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.5D);
+			this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(20D);
+			this.getAttributeMap().registerAttribute(SharedMonsterAttributes.ATTACK_DAMAGE);
+			this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(3.0D);
+			this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(32.0D);
 		}
 
 		@Override
@@ -264,21 +285,22 @@ public class EntityClone extends ElementsNarutomodMod.ModElement {
 		}
 
 		private void defendSummoner() {
-			if (!this.isAIDisabled() && this.shouldDefendSummoner) {
+			EntityLivingBase summoner = this.getSummoner();
+			if (summoner != null && !this.isAIDisabled() && this.shouldDefendSummoner) {
 				EntityLivingBase target = null;
-				if (this.summoner instanceof EntityLiving) {
-					 target = ((EntityLiving)this.summoner).getAttackTarget();
+				if (summoner instanceof EntityLiving) {
+					 target = ((EntityLiving)summoner).getAttackTarget();
 				}
-				if (target == null && this.summoner.getRevengeTarget() != null) {
-					target = this.summoner.getRevengeTarget();
+				if (target == null && summoner.getRevengeTarget() != null) {
+					target = summoner.getRevengeTarget();
 				}
-				if (target == null && this.summoner.getAttackingEntity() != null) {
-					target = this.summoner.getAttackingEntity();
+				if (target == null && summoner.getAttackingEntity() != null) {
+					target = summoner.getAttackingEntity();
 				}
-				if (target == null && this.summoner.getLastAttackedEntity() != null 
-				 && !this.isOnSameTeam(this.summoner.getLastAttackedEntity())
-				 && this.summoner.ticksExisted - this.summoner.getLastAttackedEntityTime() < 200) {
-					target = this.summoner.getLastAttackedEntity();
+				if (target == null && summoner.getLastAttackedEntity() != null 
+				 && !this.isOnSameTeam(summoner.getLastAttackedEntity())
+				 && summoner.ticksExisted - summoner.getLastAttackedEntityTime() < 200) {
+					target = summoner.getLastAttackedEntity();
 				}
 				if (target != null && EntityAITarget.isSuitableTarget(this, target, false, false)) {
 					this.setAttackTarget(target);
@@ -290,9 +312,7 @@ public class EntityClone extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		protected void updateAITasks() {
-			if (this.summoner != null) {
-				this.defendSummoner();
-			}
+			this.defendSummoner();
 			super.updateAITasks();
 		}
 
@@ -301,28 +321,56 @@ public class EntityClone extends ElementsNarutomodMod.ModElement {
 			return ProcedureUtils.attackEntityAsMob(this, entityIn);
 		}
 
-		@Override
-		protected void applyEntityAttributes() {
-			super.applyEntityAttributes();
-			this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(0D);
-			this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.5D);
-			this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(20D);
-			this.getAttributeMap().registerAttribute(SharedMonsterAttributes.ATTACK_DAMAGE);
-			this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(3.0D);
-			this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(32.0D);
+		public void onDamageTo(EntityLivingBase target, float amount) {
+			double xp = 0.0d;
+			if (target instanceof EntityPlayer || (target instanceof EntityLiving && !((EntityLiving)target).isAIDisabled())) {
+				int resistance = target.isPotionActive(MobEffects.RESISTANCE)
+				 ? target.getActivePotionEffect(MobEffects.RESISTANCE).getAmplifier() + 2 : 1;
+				double x = MathHelper.sqrt(target.getMaxHealth() * ProcedureUtils.getModifiedAttackDamage(target)
+				 * MathHelper.sqrt(ProcedureUtils.getArmorValue(target)+1d) * Math.min(resistance, 6));
+				xp = Math.min(x * Math.min(amount / target.getMaxHealth(), 1f), 60d);
+				xp *= ModConfig.NINJAXP_MULTIPLIER;
+			}
+			if (xp > 0d) {
+				this.collectedNXP += xp;
+			}
+		}
+
+		public void onDamagedBy(EntityLivingBase attacker, float amount) {
+			if (amount > 0f && amount < this.getHealth()) {
+				EntityLivingBase summoner = this.getSummoner();
+				if (summoner instanceof EntityPlayer) {
+					double bxp = PlayerTracker.getBattleXp((EntityPlayer)summoner);
+					this.collectedNXP += bxp < 1d ? 1d : (amount / MathHelper.sqrt(MathHelper.sqrt(bxp)));
+				}
+			}
+		}
+
+		public double getCollectedNinjaXP() {
+			return this.collectedNXP;
+		}
+
+		public int getCollectXPpoints() {
+			return this.collectedXPPoints;
 		}
 
 		@Override
 		public void setDead() {
 			super.setDead();
-			if (!this.world.isRemote && this.summoner instanceof EntityPlayer) {
-				((EntityPlayer)this.summoner).addExperience(this.collectedXPPoints);
+			if (!this.world.isRemote) {
+				EntityLivingBase summoner = this.getSummoner();
+				if (summoner instanceof EntityPlayer) {
+					((EntityPlayer)summoner).addExperience(this.getCollectXPpoints());
+					if (PlayerTracker.isNinja((EntityPlayer)summoner)) {
+						PlayerTracker.addBattleXp((EntityPlayer)summoner, this.getCollectedNinjaXP());
+					}
+				}
 			}
 		}
 
 		@Override
 		public void onKillEntity(EntityLivingBase entityIn) {
-			if (!this.world.isRemote && entityIn instanceof EntityLiving && this.summoner instanceof EntityPlayer) {
+			if (!this.world.isRemote && entityIn instanceof EntityLiving && this.getSummoner() instanceof EntityPlayer) {
 				int i = 0;
 				try {
 					Field xpValue = ProcedureUtils.getFieldByIndex(entityIn.getClass(), EntityLiving.class, 2);
@@ -355,13 +403,13 @@ public class EntityClone extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public void onUpdate() {
-			if (!this.world.isRemote 
-			 && (this.summoner == null || !this.summoner.isEntityAlive() || this.summoner.isPlayerSleeping() 
-			  || ProcedureUtils.isPlayerDisconnected(this.summoner))) {
-				this.setDead();
-			}
-			if (!this.world.isRemote && this.ticksExisted % 200 == 1) {
-				this.addPotionEffect(new PotionEffect(PotionFeatherFalling.potion, 202, 1, false, false));
+			if (!this.world.isRemote) {
+				if (this.shouldDespawn()) {
+					this.setDead();
+				}
+				if (this.ticksExisted % 200 == 1) {
+					this.addPotionEffect(new PotionEffect(PotionFeatherFalling.potion, 202, 1, false, false));
+				}
 			}
 			BlockPos pos = new BlockPos(this);
 			if (this.world.getBlockState(pos).getMaterial() == Material.WATER
@@ -370,6 +418,11 @@ public class EntityClone extends ElementsNarutomodMod.ModElement {
 				this.onGround = true;
 			}
 			super.onUpdate();
+		}
+
+		protected boolean shouldDespawn() {
+			EntityLivingBase summoner = this.getSummoner();
+			return summoner == null || !summoner.isEntityAlive() || summoner.isPlayerSleeping() || ProcedureUtils.isPlayerDisconnected(summoner);
 		}
 
 		@Override
@@ -589,7 +642,7 @@ public class EntityClone extends ElementsNarutomodMod.ModElement {
         }
     }
 
-    public class AITaskHook {
+    public class EventHook {
     	@SubscribeEvent
     	public void onEntitySpawn(EntityJoinWorldEvent event) throws Exception {
     		Entity entity = event.getEntity();
@@ -640,6 +693,18 @@ public class EntityClone extends ElementsNarutomodMod.ModElement {
 				}
 			}
 		}
+
+		@SubscribeEvent
+		public void onDamage(LivingDamageEvent event) {
+			EntityLivingBase target = event.getEntityLiving();
+			Entity attacker = event.getSource().getTrueSource();
+			if (target instanceof _Base && attacker instanceof EntityLivingBase) {
+				((_Base)target).onDamagedBy((EntityLivingBase)attacker, event.getAmount());
+			}
+			if (attacker instanceof _Base) {
+				((_Base)attacker).onDamageTo(target, event.getAmount());
+			}
+		}
     }
 
     public static class ClientRLM {
@@ -658,13 +723,13 @@ public class EntityClone extends ElementsNarutomodMod.ModElement {
 
 		@SideOnly(Side.CLIENT)
 		public class RenderClone<T extends _Base> extends RenderLivingBase<T> {
-			private final ModelClone altModel = new ModelClone(0.0F, true);
-			//private boolean smallArms;
+			private final ModelClone normalModel;
+			private final ModelClone slimModel = new ModelClone(0.0F, true);
 	
 		    public RenderClone(RenderManager renderManager) {
 		        super(renderManager, new ModelClone(0.0F, false), 0.5F);
-		        //this.smallArms = false;
-		        this.addLayer(new BipedArmorLayer(this));//this.addLayer(PlayerRender.getInstance().new LayerArmorCustom(this));
+		        this.normalModel = (ModelClone)this.mainModel;
+		        this.addLayer(new BipedArmorLayer(this));
 		        this.addLayer(new net.minecraft.client.renderer.entity.layers.LayerHeldItem(this));
 		        //this.addLayer(new net.minecraft.client.renderer.entity.layers.LayerDeadmau5Head(this));
 		        //this.addLayer(new net.minecraft.client.renderer.entity.layers.LayerCape(this));
@@ -677,21 +742,21 @@ public class EntityClone extends ElementsNarutomodMod.ModElement {
 		    @Override
 		    public void doRender(T entity, double x, double y, double z, float entityYaw, float partialTicks) {
 		    	EntityLivingBase summoner = entity.getSummoner();
-		    	if (summoner != null && !(summoner instanceof AbstractClientPlayer)) {
-		    		Render renderer = this.renderManager.getEntityRenderObject(summoner);
-		    		if (renderer instanceof RenderLivingBase) {
-		    			ModelBase model = ((RenderLivingBase)renderer).getMainModel();
-		    			if (model instanceof ModelBiped) {
-		    				this.mainModel = model;
-		    			}
-		    		}
-		    	}
+		        if (summoner instanceof AbstractClientPlayer) {
+		        	this.mainModel = ((AbstractClientPlayer)summoner).getSkinType().equals("slim") ? this.slimModel : this.normalModel;
+		        } else if (summoner != null) {
+		        	Render renderer = this.renderManager.getEntityRenderObject(summoner);
+			    	if (renderer instanceof RenderLivingBase && ((RenderLivingBase)renderer).getMainModel() instanceof ModelBiped) {
+		    			this.mainModel = ((RenderLivingBase)renderer).getMainModel();
+			    	}
+		        }
 		    	this.setPose(entity);
 		    	super.doRender(entity, x, y, z, entityYaw, partialTicks);
 		    }
 
 		    private void setPose(T entity) {
 		    	ModelBiped model = (ModelBiped)this.getMainModel();
+		    	model.isSneak = entity.isSneaking();
 	            ItemStack itemstack = entity.getHeldItemMainhand();
 	            ItemStack itemstack1 = entity.getHeldItemOffhand();
 	            ModelBiped.ArmPose mainhandpose = ModelBiped.ArmPose.EMPTY;
@@ -738,12 +803,7 @@ public class EntityClone extends ElementsNarutomodMod.ModElement {
 		    public ResourceLocation getEntityTexture(T entity) {
 		    	EntityLivingBase summoner = entity.getSummoner();
 		        if (summoner instanceof AbstractClientPlayer) {
-		        	AbstractClientPlayer clientPlayer = (AbstractClientPlayer)summoner;
-		        	if (clientPlayer.getSkinType().equals("slim") && this.mainModel != this.altModel) {
-		        		this.altModel.isChild = this.mainModel.isChild;
-		        		this.mainModel = this.altModel;
-		        	}
-		        	return clientPlayer.getLocationSkin();
+		        	return ((AbstractClientPlayer)summoner).getLocationSkin();
 		        } else if (summoner != null) {
 		        	Render renderer = this.renderManager.getEntityRenderObject(summoner);
 		        	return ProcedureUtils.invokeMethodByParameters(renderer, ResourceLocation.class, summoner);
@@ -994,7 +1054,17 @@ public class EntityClone extends ElementsNarutomodMod.ModElement {
 	
 			@Override
 			public void setRotationAngles(float limbSwing, float f1, float f2, float f3, float f4, float f5, Entity entityIn) {
+				boolean flag2 = PlayerRender.shouldNarutoRun(entityIn) && this.swingProgress == 0.0f && entityIn.height <= 2.0f;
+				if (flag2) {
+					this.isSneak = true;
+				}
 				super.setRotationAngles(limbSwing * 1.8F / entityIn.height, f1, f2, f3, f4, f5, entityIn);
+				if (flag2) {
+					this.bipedRightArm.rotateAngleX = 1.4835F;
+					this.bipedRightArm.rotateAngleY = -0.3927F;
+					this.bipedLeftArm.rotateAngleX = 1.4835F;
+					this.bipedLeftArm.rotateAngleY = 0.3927F;
+				}
 			}
 	
 		    /*@Override

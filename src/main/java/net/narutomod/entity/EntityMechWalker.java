@@ -147,6 +147,52 @@ public class EntityMechWalker extends ElementsNarutomodMod.ModElement {
 			this.rotationYawHead = this.rotationYaw;
 		}
 
+		private int getArmSwingAnimationEnd() {
+			return 20;
+		}
+
+		@Override
+		public void swingArm(EnumHand hand) {
+			if (!this.isSwingInProgress) {
+				this.isSwingInProgress = true;
+				if (!this.world.isRemote) {
+					this.world.setEntityState(this, (byte)102);
+				}
+			}
+		}
+
+		private void toggleArmSwing() {
+			this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:grill_open")), 0.8F, this.isArmsOpen() ? 0.3F : 0.6F);
+			this.swingArm(EnumHand.MAIN_HAND);
+		}
+
+		@Override
+		protected void updateArmSwingProgress() {
+			int i = getArmSwingAnimationEnd();
+			if (this.isSwingInProgress) {
+				this.swingProgressInt++;
+				if (this.swingProgressInt == i / 2) {
+					this.isSwingInProgress = false;
+				}
+				if (this.swingProgressInt >= i) {
+					this.swingProgressInt = 0;
+					this.isSwingInProgress = false;
+				}
+			}
+			this.prevSwingProgress = this.swingProgress;
+			this.swingProgress = (float) this.swingProgressInt / (float) i;
+		}
+
+		private boolean isArmsOpen() {
+			return (!this.isSwingInProgress && this.swingProgressInt == this.getArmSwingAnimationEnd() / 2);
+		}
+
+		@Override
+		public void onLivingUpdate() {
+			this.updateArmSwingProgress();
+			super.onLivingUpdate();
+		}
+
 		@Override
 		public void onUpdate() {
 			super.onUpdate();
@@ -198,6 +244,8 @@ public class EntityMechWalker extends ElementsNarutomodMod.ModElement {
 		public void handleStatusUpdate(byte id) {
 			if (id == 101) {
 				this.setOwnerCanSteer(false, 0);
+			} else if (id == 102) {
+				this.swingArm(EnumHand.MAIN_HAND);
 			} else {
 				super.handleStatusUpdate(id);
 			}
@@ -681,6 +729,12 @@ public class EntityMechWalker extends ElementsNarutomodMod.ModElement {
 		        this.leg2.rotateAngleY = 0.5236F - MathHelper.cos(limbSwing * 0.5F + (float)Math.PI) * 0.4F * limbSwingAmount;
 		        this.leg3.rotateAngleY = 0.5236F + MathHelper.cos(limbSwing * 0.5F + (float)Math.PI) * 0.4F * limbSwingAmount;
 		        this.leg4.rotateAngleY = -0.5236F - MathHelper.cos(limbSwing * 0.5F) * 0.4F * limbSwingAmount;
+				this.grillRight.rotateAngleY = 0.4625F;
+				this.grillLeft.rotateAngleY = -0.4625F;
+				if (this.swingProgress > 0.0F) {
+					this.grillRight.rotateAngleY += MathHelper.sin(this.swingProgress * (float) Math.PI) * 0.6545F;
+					this.grillLeft.rotateAngleY -= MathHelper.sin(this.swingProgress * (float) Math.PI) * 0.6545F;
+				}
 			}
 		}
 	}

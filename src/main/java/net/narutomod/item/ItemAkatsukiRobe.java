@@ -24,6 +24,7 @@ import net.minecraft.client.model.ModelBiped;
 
 import net.narutomod.creativetab.TabModTab;
 import net.narutomod.ElementsNarutomodMod;
+import net.minecraft.client.renderer.GlStateManager;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class ItemAkatsukiRobe extends ElementsNarutomodMod.ModElement {
@@ -96,6 +97,15 @@ public class ItemAkatsukiRobe extends ElementsNarutomodMod.ModElement {
 					}
 				}
 			}
+
+			@Override
+			@SideOnly(Side.CLIENT)
+			public ModelBiped getArmorModel(EntityLivingBase living, ItemStack stack, EntityEquipmentSlot slot, ModelBiped defaultModel) {
+				ModelAkatsukiRobe model = (ModelAkatsukiRobe)super.getArmorModel(living, stack, slot, defaultModel);
+				float modifier = stack.hasTagCompound() ? stack.getTagCompound().getFloat("customWidth") : 0f;
+				model.widthModifier = modifier > 0.0f ? modifier : 1.0f;
+				return model;
+			}
 		}.setUnlocalizedName("akatsuki_robebody").setRegistryName("akatsuki_robebody").setCreativeTab(TabModTab.tab));
 	}
 
@@ -136,6 +146,7 @@ public class ItemAkatsukiRobe extends ElementsNarutomodMod.ModElement {
 		//private final ModelRenderer bipedBody;
 		//private final ModelRenderer bipedRightArm;
 		//private final ModelRenderer bipedLeftArm;
+		public float widthModifier = 1.0F;
 	
 		public ModelAkatsukiRobe() {
 			super();
@@ -261,6 +272,18 @@ public class ItemAkatsukiRobe extends ElementsNarutomodMod.ModElement {
 			veil.setRotationPoint(0.0F, -0.8F, 0.0F);
 			bipedHeadwear.addChild(veil);
 			veil.cubeList.add(new ModelBox(veil, 32, 0, -4.0F, -7.8F, -4.0F, 8, 8, 8, 2.0F, false));
+		}
+
+		@Override
+		public void render(Entity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
+			if (this.widthModifier != 1.0F) {
+				GlStateManager.pushMatrix();
+				GlStateManager.scale(this.widthModifier, 1.0F, this.widthModifier);
+			}
+			super.render(entityIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale);
+			if (this.widthModifier != 1.0F) {
+				GlStateManager.popMatrix();
+			}
 		}
 	}
 }

@@ -67,29 +67,22 @@ public class EntityLimboClone extends ElementsNarutomodMod.ModElement {
 
 		public EC(World world) {
 			super(world);
-			this.setEntityInvulnerable(true);
+			//this.setEntityInvulnerable(true);
 		}
 
 		public EC(EntityLivingBase user) {
 			super(user);
 			//this.setInvisible(true);
-			this.setEntityInvulnerable(true);
+			//this.setEntityInvulnerable(true);
 			this.setAlwaysRenderNameTag(false);
 			this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE)
 			 .setBaseValue(user instanceof EntityPlayer ? PlayerTracker.getNinjaLevel((EntityPlayer)user)
 			 : ProcedureUtils.getModifiedAttackDamage(user));
-			this.moveHelper = new EntityClone.AIFlyControl(this);
 		}
 
 		@Override
 		public ItemJutsu.JutsuEnum.Type getJutsuType() {
 			return ItemJutsu.JutsuEnum.Type.NINJUTSU;
-		}
-
-		@Override
-		protected void initEntityAI() {
-			super.initEntityAI();
-			this.tasks.addTask(2, new EntityClone.AIFollowSummoner(this, 0.8d, 3.0F));
 		}
 
 		@Override
@@ -104,11 +97,18 @@ public class EntityLimboClone extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		protected PathNavigate createNavigator(World worldIn) {
+			this.moveHelper = new EntityClone.AIFlyControl(this);
 			PathNavigateFlying pathnavigateflying = new PathNavigateFlying(this, worldIn);
 			pathnavigateflying.setCanOpenDoors(false);
 			pathnavigateflying.setCanFloat(true);
 			pathnavigateflying.setCanEnterDoors(true);
 			return pathnavigateflying;
+		}
+
+		@Override
+		protected void initEntityAI() {
+			super.initEntityAI();
+			this.tasks.addTask(2, new EntityClone.AIFollowSummoner(this, 0.8d, 3.0F));
 		}
 
 		@Override
@@ -123,10 +123,10 @@ public class EntityLimboClone extends ElementsNarutomodMod.ModElement {
 			return false;
 		}
 		
-		@Override
-		public boolean canBeCollidedWith() {
-			return false;
-		}
+		//@Override
+		//public boolean canBeCollidedWith() {
+		//	return false;
+		//}
 		
 		@Override
 		public boolean canBePushed() {
@@ -174,7 +174,7 @@ public class EntityLimboClone extends ElementsNarutomodMod.ModElement {
 				if (!getLimboClones(entity).isEmpty()) {
 					return false;
 				}
-				entity.world.playSound(null, entity.posX, entity.posY, entity.posZ, (SoundEvent) SoundEvent.REGISTRY
+				entity.world.playSound(null, entity.posX, entity.posY, entity.posZ, SoundEvent.REGISTRY
 				  .getObject(new ResourceLocation("narutomod:rinbo_hengoku")), SoundCategory.NEUTRAL, 1.0F, 1.0F);
 				int[] ids = new int[2];
 				for (int i = 0; i < 2; i++) {

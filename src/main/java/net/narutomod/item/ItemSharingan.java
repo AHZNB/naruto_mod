@@ -67,7 +67,19 @@ public class ItemSharingan extends ElementsNarutomodMod.ModElement {
 		public ItemDojutsu.Type getType() {
 			return ItemDojutsu.Type.SHARINGAN;
 		}
-			
+
+		public Type getSubType() {
+			return Type.BASE;
+		}
+
+		public boolean isMangekyo() {
+			return false;
+		}
+
+		public boolean isEternal() {
+			return false;
+		}
+
 		@SideOnly(Side.CLIENT)
 		@Override
 		public ModelBiped getArmorModel(EntityLivingBase living, ItemStack stack, EntityEquipmentSlot slot, ModelBiped defaultModel) {
@@ -93,7 +105,7 @@ public class ItemSharingan extends ElementsNarutomodMod.ModElement {
 				ProcedureSharinganHelmetTickEvent.executeProcedure((HashMap) $_dependencies);
 			}
 			if (!world.isRemote && entity.ticksExisted % 6 == 1
-			 && (itemstack.getItem() != ItemMangekyoSharinganEternal.helmet || !this.isOwner(itemstack, entity))
+			 && (!((Base)itemstack.getItem()).isEternal() || !this.isOwner(itemstack, entity))
 			 && (entity.getEntityData().getBoolean("amaterasu_active")
 			  || entity.getEntityData().getBoolean("susanoo_activated") || entity.getEntityData().getBoolean("kamui_teleport"))) {
 			 	((Base)itemstack.getItem()).canDamage = true;
@@ -179,14 +191,6 @@ public class ItemSharingan extends ElementsNarutomodMod.ModElement {
 
 		public int getColor(ItemStack stack) {
 			return stack.hasTagCompound() ? stack.getTagCompound().getInteger("color") : 0;
-		}
-
-		public boolean isMangekyo() {
-			return false;
-		}
-
-		public boolean isEternal() {
-			return false;
 		}
 
 		@Override
@@ -358,5 +362,11 @@ public class ItemSharingan extends ElementsNarutomodMod.ModElement {
 	@Override
 	public void init(FMLInitializationEvent event) {
 		MinecraftForge.EVENT_BUS.register(new PlayerHook());
+	}
+
+	public enum Type {
+		BASE,
+		AMATERASU,
+		KAMUI;
 	}
 }

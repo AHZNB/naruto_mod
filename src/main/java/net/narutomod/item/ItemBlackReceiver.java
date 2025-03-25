@@ -270,8 +270,8 @@ public class ItemBlackReceiver extends ElementsNarutomodMod.ModElement {
 				GlStateManager.pushMatrix();
 				GlStateManager.translate((float) x, (float) y, (float) z);
 				GlStateManager.enableRescaleNormal();
-				GlStateManager.rotate(entity.prevRotationYaw + (entity.rotationYaw - entity.prevRotationYaw) * partialTicks - 90F, 0.0F, 1.0F, 0.0F);
-				GlStateManager.rotate(entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks, 0.0F, 0.0F, 1.0F);
+				GlStateManager.rotate(entity.prevRotationYaw + (entity.rotationYaw - entity.prevRotationYaw) * partialTicks - 180F, 0.0F, 1.0F, 0.0F);
+				GlStateManager.rotate(entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks, 1.0F, 0.0F, 0.0F);
 				this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
 				if (this.renderOutlines) {
 					GlStateManager.enableColorMaterial();

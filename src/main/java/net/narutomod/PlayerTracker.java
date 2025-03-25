@@ -77,13 +77,15 @@ public class PlayerTracker extends ElementsNarutomodMod.ModElement {
 	}
 
 	private static void addBattleXp(EntityPlayer entity, double xp, boolean sendMessage) {
-		entity.getEntityData().setDouble(BATTLEXP, Math.min(getBattleXp(entity) + xp, 100000.0d));
-		if (entity instanceof EntityPlayerMP) {
-			sendBattleXPToTracking((EntityPlayerMP)entity);
-			if (sendMessage) {
-				entity.sendStatusMessage(new TextComponentString(
-				 net.minecraft.util.text.translation.I18n.translateToLocal("chattext.ninjaexperience")+
-				 String.format("%.1f", getBattleXp(entity))), true);
+		if (xp != 0.0d) {
+			entity.getEntityData().setDouble(BATTLEXP, Math.min(getBattleXp(entity) + xp, 100000.0d));
+			if (entity instanceof EntityPlayerMP) {
+				sendBattleXPToTracking((EntityPlayerMP)entity);
+				if (sendMessage) {
+					entity.sendStatusMessage(new TextComponentString(
+					 net.minecraft.util.text.translation.I18n.translateToLocal("chattext.ninjaexperience")+
+					 String.format("%.1f", getBattleXp(entity))), true);
+				}
 			}
 		}
 	}

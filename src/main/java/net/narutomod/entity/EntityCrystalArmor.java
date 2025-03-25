@@ -70,8 +70,7 @@ public class EntityCrystalArmor extends ElementsNarutomodMod.ModElement {
 			super(world);
 			this.setSize(0.7f, 1.9f);
 			this.dieOnNoPassengers = false;
-			// UUID needs a different unique one 
-			this.strengthModifier = new AttributeModifier(UUID.fromString("ef834eb3-67d2-48cf-8d75-1530ee1ed81f"), "crystalarmor.damage", this.strengthAmplifier * 3, 0);
+			this.strengthModifier = new AttributeModifier(UUID.fromString("2866063d-9200-4f65-9025-1d841af84825"), "crystalarmor.damage", this.strengthAmplifier * 3, 0);
 		}
 
 		public EC(EntityLivingBase userIn) {
@@ -109,6 +108,10 @@ public class EntityCrystalArmor extends ElementsNarutomodMod.ModElement {
 				EntityLivingBase user = this.getSummoner();
 				if (user != null) {
 					user.getEntityData().removeTag(ENTITYID_KEY);
+					IAttributeInstance aInstance = user.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE);
+					if (aInstance != null && this.strengthModifier != null) {
+						aInstance.removeModifier(this.strengthModifier);
+					}
 				}
 				this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:ice_shoot_small")),
 				 0.8f, this.rand.nextFloat() * 0.4f + 0.9f);

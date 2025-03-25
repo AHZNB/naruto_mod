@@ -107,9 +107,7 @@ public class ItemDojutsu extends ElementsNarutomodMod.ModElement {
 			super.onUpdate(stack, world, entity, par4, par5);
 		}
 
-		public Type getType() {
-			return Type.OTHER;
-		}
+		public abstract Type getType();
 
 		public boolean onJutsuKey1(boolean is_pressed, ItemStack stack, EntityPlayer player) {
 			return false;
@@ -143,8 +141,7 @@ public class ItemDojutsu extends ElementsNarutomodMod.ModElement {
 	public enum Type {
 		BYAKUGAN,
 		SHARINGAN,
-		RINNE_TENSEI,
-		OTHER;
+		RINNE_TENSEI;
 	}
 
 	public static class ClientModel {

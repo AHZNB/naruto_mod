@@ -1195,5 +1195,14 @@
         "stream": false
       }
     ]
+  },
+  "grill_open": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "narutomod:grill_open",
+        "stream": false
+      }
+    ]
   }
 }
