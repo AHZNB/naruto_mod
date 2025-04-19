@@ -267,7 +267,7 @@ public class EntityBuddha1000 extends ElementsNarutomodMod.ModElement {
 			}
 			if (this.chakraBurn > 0.0d && this.ticksExisted % 20 == 19) {
 				EntityLivingBase summoner = this.getSummoner();
-				if (summoner != null && (!Chakra.pathway(summoner).consume(this.chakraBurn) || !this.isSageModeActive(summoner))) {
+				if (summoner != null && (!this.isSageModeActive(summoner) || !Chakra.pathway(summoner).consume(this.chakraBurn))) {
 					this.setDead();
 				}
 			}
@@ -276,11 +276,7 @@ public class EntityBuddha1000 extends ElementsNarutomodMod.ModElement {
 		}
 
 		private boolean isSageModeActive(EntityLivingBase summoner) {
-			if (summoner instanceof EntityPlayer) {
-				ItemStack stack = ProcedureUtils.getMatchingItemStack((EntityPlayer)summoner, ItemSenjutsu.block);
-				return stack != null && ItemSenjutsu.isSageModeActivated(stack);
-			}
-			return false;
+			return ItemSenjutsu.isSageModeActivated(summoner);
 		}
 
 		public void shootArms() {
@@ -324,12 +320,11 @@ public class EntityBuddha1000 extends ElementsNarutomodMod.ModElement {
 				this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:poof")), 2.0F, 1.0F);
 				Particles.spawnParticle(this.world, Particles.Types.SMOKE, this.posX, this.posY+this.height/2, this.posZ, 300,
 				 this.width * 0.5d, this.height * 0.3d, this.width * 0.5d, 0d, 0d, 0d, 0xD0FFFFFF, 20 + (int)(MODELSCALE * 5));
-				if (!this.getPassengers().isEmpty()) {
-					for (Entity passenger : this.getPassengers()) {
-						if (passenger instanceof EntityWoodGolem.EC) {
-							passenger.setDead();
-						}
-					}
+				for (Entity passenger : this.getPassengers()) {
+					passenger.dismountRidingEntity();
+					//if (passenger instanceof EntityWoodGolem.EC) {
+					//	passenger.setDead();
+					//}
 				}
 			}
 		}
@@ -442,7 +437,8 @@ public class EntityBuddha1000 extends ElementsNarutomodMod.ModElement {
 	public static class PlayerHook {
 		@SubscribeEvent
 		public void onDismount(EntityMountEvent event) {
-			if (!event.getWorldObj().isRemote && event.getEntityBeingMounted() instanceof EC && event.isDismounting()) {
+			if (!event.getWorldObj().isRemote && event.getEntityBeingMounted() instanceof EC
+			 && event.isDismounting() && !event.getEntityBeingMounted().isDead) {
 				EC entity = (EC)event.getEntityBeingMounted();
 				if (entity.isSitting()) {
 					EC.Jutsu.dismountFrom1000Arms(entity);
@@ -648,12 +644,16 @@ public class EntityBuddha1000 extends ElementsNarutomodMod.ModElement {
 			private final ModelRenderer bone24;
 			//private final ModelRenderer bipedBody;
 			//private final ModelRenderer bipedRightArm;
+			private final ModelRenderer rightUpperArm;
 			private final ModelRenderer rightForeArm;
 			//private final ModelRenderer bipedLeftArm;
+			private final ModelRenderer leftUpperArm;
 			private final ModelRenderer leftForeArm;
 			//private final ModelRenderer bipedRightLeg;
+			private final ModelRenderer rightThigh;
 			private final ModelRenderer rightCalf;
 			//private final ModelRenderer bipedLeftLeg;
+			private final ModelRenderer leftThigh;
 			private final ModelRenderer leftCalf;
 			private final ModelRenderer armStand;
 			private final ModelRenderer base;
@@ -1256,47 +1256,67 @@ public class EntityBuddha1000 extends ElementsNarutomodMod.ModElement {
 		
 				bipedRightArm = new ModelRenderer(this);
 				bipedRightArm.setRotationPoint(-5.0F, 2.0F, 0.0F);
-				setRotationAngle(bipedRightArm, -1.0472F, -0.4363F, 0.0F);
-				bipedRightArm.cubeList.add(new ModelBox(bipedRightArm, 0, 36, -3.0F, -2.0F, -2.0F, 4, 6, 4, 0.0F, false));
+				
+		
+				rightUpperArm = new ModelRenderer(this);
+				rightUpperArm.setRotationPoint(0.0F, 0.0F, 0.0F);
+				bipedRightArm.addChild(rightUpperArm);
+				setRotationAngle(rightUpperArm, -1.0472F, -0.2618F, 0.0F);
+				rightUpperArm.cubeList.add(new ModelBox(rightUpperArm, 0, 36, -3.0F, -2.0F, -2.0F, 4, 8, 4, 0.0F, false));
 		
 				rightForeArm = new ModelRenderer(this);
-				rightForeArm.setRotationPoint(-3.0F, 4.0F, 2.0F);
-				bipedRightArm.addChild(rightForeArm);
+				rightForeArm.setRotationPoint(-3.0F, 6.0F, 2.0F);
+				rightUpperArm.addChild(rightForeArm);
 				setRotationAngle(rightForeArm, 0.0F, 0.0F, -1.0472F);
-				rightForeArm.cubeList.add(new ModelBox(rightForeArm, 28, 32, 0.0F, 0.0F, -4.0F, 4, 6, 4, 0.0F, false));
+				rightForeArm.cubeList.add(new ModelBox(rightForeArm, 28, 36, 0.0F, 0.0F, -4.0F, 4, 6, 4, 0.0F, false));
 		
 				bipedLeftArm = new ModelRenderer(this);
 				bipedLeftArm.setRotationPoint(5.0F, 2.0F, 0.0F);
-				setRotationAngle(bipedLeftArm, -1.0472F, 0.4363F, 0.0F);
-				bipedLeftArm.cubeList.add(new ModelBox(bipedLeftArm, 0, 36, -1.0F, -2.0F, -2.0F, 4, 6, 4, 0.0F, true));
+				
+		
+				leftUpperArm = new ModelRenderer(this);
+				leftUpperArm.setRotationPoint(0.0F, 0.0F, 0.0F);
+				bipedLeftArm.addChild(leftUpperArm);
+				setRotationAngle(leftUpperArm, -1.0472F, 0.2618F, 0.0F);
+				leftUpperArm.cubeList.add(new ModelBox(leftUpperArm, 0, 36, -1.0F, -2.0F, -2.0F, 4, 8, 4, 0.0F, true));
 		
 				leftForeArm = new ModelRenderer(this);
-				leftForeArm.setRotationPoint(3.0F, 4.0F, 2.0F);
-				bipedLeftArm.addChild(leftForeArm);
+				leftForeArm.setRotationPoint(3.0F, 6.0F, 2.0F);
+				leftUpperArm.addChild(leftForeArm);
 				setRotationAngle(leftForeArm, 0.0F, 0.0F, 1.0472F);
-				leftForeArm.cubeList.add(new ModelBox(leftForeArm, 28, 32, -4.0F, 0.0F, -4.0F, 4, 6, 4, 0.0F, true));
+				leftForeArm.cubeList.add(new ModelBox(leftForeArm, 28, 36, -4.0F, 0.0F, -4.0F, 4, 6, 4, 0.0F, true));
 		
 				bipedRightLeg = new ModelRenderer(this);
 				bipedRightLeg.setRotationPoint(-1.9F, 12.0F, 0.0F);
-				setRotationAngle(bipedRightLeg, -2.0071F, 0.1745F, -1.2217F);
-				bipedRightLeg.cubeList.add(new ModelBox(bipedRightLeg, 40, 26, -2.1F, 0.0F, -2.0F, 4, 6, 4, 0.0F, false));
+				
+		
+				rightThigh = new ModelRenderer(this);
+				rightThigh.setRotationPoint(0.0F, 0.0F, 0.0F);
+				bipedRightLeg.addChild(rightThigh);
+				setRotationAngle(rightThigh, -2.0944F, 0.1745F, -1.309F);
+				rightThigh.cubeList.add(new ModelBox(rightThigh, 40, 28, -2.1F, 0.0F, -2.0F, 4, 6, 4, 0.0F, false));
 		
 				rightCalf = new ModelRenderer(this);
 				rightCalf.setRotationPoint(-0.1F, 6.0F, -2.0F);
-				bipedRightLeg.addChild(rightCalf);
+				rightThigh.addChild(rightCalf);
 				setRotationAngle(rightCalf, 1.5272F, 0.0F, 0.0F);
-				rightCalf.cubeList.add(new ModelBox(rightCalf, 40, 16, -2.0F, 0.0F, 0.0F, 4, 6, 4, 0.0F, false));
+				rightCalf.cubeList.add(new ModelBox(rightCalf, 40, 16, -2.0F, 0.0F, -0.2F, 4, 7, 4, 0.0F, false));
 		
 				bipedLeftLeg = new ModelRenderer(this);
 				bipedLeftLeg.setRotationPoint(1.9F, 12.0F, 0.0F);
-				setRotationAngle(bipedLeftLeg, -2.0071F, -0.1745F, 1.2217F);
-				bipedLeftLeg.cubeList.add(new ModelBox(bipedLeftLeg, 40, 26, -1.9F, 0.0F, -2.0F, 4, 6, 4, 0.0F, true));
+				
+		
+				leftThigh = new ModelRenderer(this);
+				leftThigh.setRotationPoint(0.0F, 0.0F, 0.0F);
+				bipedLeftLeg.addChild(leftThigh);
+				setRotationAngle(leftThigh, -2.0944F, -0.1745F, 1.309F);
+				leftThigh.cubeList.add(new ModelBox(leftThigh, 40, 28, -1.9F, 0.0F, -2.0F, 4, 6, 4, 0.0F, true));
 		
 				leftCalf = new ModelRenderer(this);
 				leftCalf.setRotationPoint(0.1F, 6.0F, -2.0F);
-				bipedLeftLeg.addChild(leftCalf);
+				leftThigh.addChild(leftCalf);
 				setRotationAngle(leftCalf, 1.5272F, 0.0F, 0.0F);
-				leftCalf.cubeList.add(new ModelBox(leftCalf, 40, 16, -2.0F, 0.0F, 0.0F, 4, 6, 4, 0.0F, true));
+				leftCalf.cubeList.add(new ModelBox(leftCalf, 40, 16, -2.0F, 0.0F, -0.2F, 4, 7, 4, 0.0F, true));
 		
 				armStand = new ModelRenderer(this);
 				armStand.setRotationPoint(0.0F, 4.0F, 4.0F);
@@ -4555,23 +4575,27 @@ public class EntityBuddha1000 extends ElementsNarutomodMod.ModElement {
 	
 			private void poseSitting(boolean isSitting) {
 				if (isSitting) {
-					this.setRotationAngle(bipedRightArm, -1.0472F, -0.4363F, 0.0F);
+					this.setRotationAngle(bipedRightArm, 0, 0, 0);
+					this.setRotationAngle(bipedLeftArm, 0, 0, 0);
+					this.setRotationAngle(bipedRightLeg, 0, 0, 0);
+					this.setRotationAngle(bipedLeftLeg, 0, 0, 0);
+					this.setRotationAngle(rightUpperArm, -1.0472F, -0.2618F, 0.0F);
 					this.setRotationAngle(rightForeArm, 0.0F, 0.0F, -1.0472F);
-					this.setRotationAngle(bipedLeftArm, -1.0472F, 0.4363F, 0.0F);
+					this.setRotationAngle(leftUpperArm, -1.0472F, 0.2618F, 0.0F);
 					this.setRotationAngle(leftForeArm, 0.0F, 0.0F, 1.0472F);
-					this.setRotationAngle(bipedRightLeg, -2.0071F, 0.1745F, -1.309F);
+					this.setRotationAngle(rightThigh, -2.0944F, 0.1745F, -1.309F);
 					this.setRotationAngle(rightCalf, 1.5272F, 0.0F, 0.0F);
-					this.setRotationAngle(bipedLeftLeg, -2.0071F, -0.1745F, 1.309F);
+					this.setRotationAngle(leftThigh, -2.0944F, -0.1745F, 1.309F);
 					this.setRotationAngle(leftCalf, 1.5272F, 0.0F, 0.0F);
 				} else {
-					this.setRotationAngle(bipedRightArm, 0.0F, 0.0F, 0.0F);
-					this.setRotationAngle(rightForeArm, 0.0F, 0.0F, 0.0F);
-					this.setRotationAngle(bipedLeftArm, 0.0F, 0.0F, 0.0F);
-					this.setRotationAngle(leftForeArm, 0.0F, 0.0F, 0.0F);
-					this.setRotationAngle(bipedRightLeg, 0.0F, 0.0F, 0.0F);
-					this.setRotationAngle(rightCalf, 0.0F, 0.0F, 0.0F);
-					this.setRotationAngle(bipedLeftLeg, 0.0F, 0.0F, 0.0F);
-					this.setRotationAngle(leftCalf, 0.0F, 0.0F, 0.0F);
+					this.setRotationAngle(rightUpperArm, 0.0F, -0.5236F, 0.2618F);
+					this.setRotationAngle(rightForeArm, -0.5236F, 0.0F, -0.0873F);
+					this.setRotationAngle(leftUpperArm, 0.0F, 0.5236F, -0.2618F);
+					this.setRotationAngle(leftForeArm, -0.5236F, 0.0F, 0.0873F);
+					this.setRotationAngle(rightThigh, -0.1745F, 0.3491F, 0.0F);
+					this.setRotationAngle(rightCalf, 0.2618F, 0.0F, 0.0F);
+					this.setRotationAngle(leftThigh, -0.1745F, -0.3491F, 0.0F);
+					this.setRotationAngle(leftCalf, 0.2618F, 0.0F, 0.0F);
 				}
 			}
 		}

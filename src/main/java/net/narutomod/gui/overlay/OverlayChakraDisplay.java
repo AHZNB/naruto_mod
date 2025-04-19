@@ -52,9 +52,9 @@ public class OverlayChakraDisplay extends ElementsNarutomodMod.ModElement {
 
 	public static void notEnoughChakraWarning(EntityPlayer player) {
 		if (player instanceof EntityPlayerMP) {
-			NarutomodMod.PACKET_HANDLER.sendTo(new WarningMessage(60), (EntityPlayerMP)player);
+			NarutomodMod.PACKET_HANDLER.sendTo(new WarningMessage(30), (EntityPlayerMP)player);
 		} else {
-			instance.warningTime = 60;
+			instance.warningTime = 30;
 		}
 	}
 
@@ -123,18 +123,19 @@ public class OverlayChakraDisplay extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static class GUIRenderEventClass {
+		@SideOnly(Side.CLIENT)
+		private int lastPlayerUpdate;
+		
 		@SubscribeEvent(priority = EventPriority.NORMAL)
 		@SideOnly(Side.CLIENT)
 		public void eventHandler(RenderGameOverlayEvent event) {
 			if (!event.isCancelable() && event.getType() == RenderGameOverlayEvent.ElementType.HELMET) {
-				int sWidth = event.getResolution().getScaledWidth();
-				int sHeight = event.getResolution().getScaledHeight();
 				Minecraft mc = Minecraft.getMinecraft();
-				EntityPlayer entity = mc.player;
-				World world = entity.world;
-				if (PlayerTracker.isNinja(entity) && Chakra.isInitialized(entity)) {
-					int color = (instance.warningTime % 20 < 10) ? 0xFF00FFFF : 0xFFFF0000;
-					Chakra.Pathway p = Chakra.pathway(entity);
+				if (PlayerTracker.isNinja(mc.player) && Chakra.isInitialized(mc.player)) {
+					int sWidth = event.getResolution().getScaledWidth();
+					int sHeight = event.getResolution().getScaledHeight();
+					int color = (instance.warningTime % 10 < 5) ? 0xFF00FFFF : 0xFFFF0000;
+					Chakra.Pathway p = Chakra.pathway(mc.player);
 					double d = p.getAmount() / p.getMax();
 					double d1 = d - Math.floor(d);
 					d1 = d != 0d && d1 == 0d ? 1d : d1;
@@ -145,7 +146,7 @@ public class OverlayChakraDisplay extends ElementsNarutomodMod.ModElement {
 						mc.renderEngine.bindTexture(new ResourceLocation("narutomod:textures/flames_green.png"));
 						int w1 = w +10;
 						int h1 = sHeight - bartop + 20;
-						int v = (entity.ticksExisted % 8) / 2;
+						int v = (mc.player.ticksExisted % 8) / 2;
 						GuiIngame.drawModalRectWithCustomSizedTexture(left - 5, bartop - 20, 0f, (float)v * h1, w1, h1, w1, h1 * 4);
 					}
 					GuiIngame.drawRect(left - 1, bartop - 1, left + w + 1, sHeight - 5, 0xFF202020);
@@ -154,11 +155,12 @@ public class OverlayChakraDisplay extends ElementsNarutomodMod.ModElement {
 					}
 					String chakraText = String.format("%d/%d", (int)p.getAmount(), (int)p.getMax());
 					int chakraTextLen = mc.fontRenderer.getStringWidth(chakraText);
-					mc.fontRenderer.drawStringWithShadow(
-					  chakraText, left + (80 / 2) - chakraTextLen / 2, bartop - 10, color);
+					mc.fontRenderer.drawStringWithShadow(chakraText, left + (80 / 2) - chakraTextLen / 2, bartop - 10, color);
+					if (instance.warningTime > 0 && mc.player.ticksExisted > this.lastPlayerUpdate) {
+						--instance.warningTime;
+					}
+					this.lastPlayerUpdate = instance.warningTime <= 0 ? 0 : mc.player.ticksExisted;
 				}
-				if (instance.warningTime > 0)
-					--instance.warningTime;
 			}
 		}
 	}

@@ -46,6 +46,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 import javax.annotation.Nullable;
+import net.minecraft.util.math.RayTraceResult;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class ItemSharingan extends ElementsNarutomodMod.ModElement {
@@ -273,10 +274,13 @@ public class ItemSharingan extends ElementsNarutomodMod.ModElement {
 					if (entity.world.isRemote) {
 						ProcedureOnLivingUpdate.setGlowingFor(target, 3);
 					}
-					if (entity.getEntityData().getBoolean(shouldTargetLockOnEntity)) {
-						Vec3d vec2 = target.getPositionEyes(1f).subtract(entity.getPositionEyes(1f));
-						entity.rotationYaw = ProcedureUtils.getYawFromVec(vec2);
-						entity.rotationPitch = ProcedureUtils.getPitchFromVec(vec2);
+					if (this.shouldLockOnTarget(entity)) {
+						RayTraceResult rtr = ProcedureUtils.objectEntityLookingAt(entity, 32d);
+						if (rtr == null || rtr.entityHit != target) {
+							Vec3d vec2 = target.getPositionEyes(1f).subtract(entity.getPositionEyes(1f));
+							entity.rotationYaw = ProcedureUtils.getYawFromVec(vec2);
+							entity.rotationPitch = ProcedureUtils.getPitchFromVec(vec2);
+						}
 					}
 					this.lockOnTarget(entity, target, remaining - 1);
 				}
@@ -325,6 +329,10 @@ public class ItemSharingan extends ElementsNarutomodMod.ModElement {
 					ProcedureSync.EntityNBTTag.sendToSelf((EntityPlayerMP)entity, shouldTargetLockOnEntity);
 				}
 			}
+		}
+
+		private boolean shouldLockOnTarget(EntityLivingBase entity) {
+			return entity.getEntityData().getBoolean(shouldTargetLockOnEntity);
 		}
 	
 		private boolean hasTargetLockOnEntity(EntityLivingBase entity) {

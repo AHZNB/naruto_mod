@@ -38,6 +38,7 @@ import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.item.ItemStack;
 import net.minecraft.init.SoundEvents;
+import net.minecraft.nbt.NBTTagCompound;
 
 import net.narutomod.NarutomodModVariables;
 import net.narutomod.ElementsNarutomodMod;
@@ -51,7 +52,6 @@ import net.narutomod.item.ItemJutsu;
 import java.util.List;
 import java.util.Random;
 import javax.annotation.Nullable;
-import net.minecraft.nbt.NBTTagCompound;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityRasengan extends ElementsNarutomodMod.ModElement {
@@ -68,10 +68,14 @@ public class EntityRasengan extends ElementsNarutomodMod.ModElement {
 				.id(new ResourceLocation("narutomod", "rasengan"), ENTITYID).name("rasengan").tracker(64, 3, true).build());
 	}
 
+	//@Override
+	//public void init(FMLInitializationEvent event) {
+	//	MinecraftForge.EVENT_BUS.register(new EC.EventHook());
+	//}
+
 	public static class EC extends EntityScalableProjectile.Base implements ProcedureSync.CPacketVec3d.IHandler, ItemJutsu.IJutsu {
 		private static final DataParameter<Integer> OWNER_ID = EntityDataManager.<Integer>createKey(EC.class, DataSerializers.VARINT);
 		private final int growTime = 30;
-		private ItemStack usingItemstack;
 		private float fullScale;
 		private Vec3d angles;
 		private DamageSource damageSource;
@@ -83,14 +87,13 @@ public class EntityRasengan extends ElementsNarutomodMod.ModElement {
 			this.damageSource = ItemJutsu.causeJutsuDamage(this, this.getOwner());
 		}
 
-		public EC(EntityLivingBase shooter, float scale, @Nullable ItemStack stack) {
+		public EC(EntityLivingBase shooter, float scale) {
 			super(shooter);
 			this.setOGSize(0.35F, 0.35F);
 			this.setEntityScale(0.1f);
 			this.setOwner(shooter);
 			this.setLocationAndAngles(shooter.posX, shooter.posY, shooter.posZ, 0.0f, 0.0f);
 			this.fullScale = scale;
-			this.usingItemstack = stack;
 			this.isImmuneToFire = true;
 			this.damageSource = ItemJutsu.causeJutsuDamage(this, shooter);
 		}
@@ -122,16 +125,7 @@ public class EntityRasengan extends ElementsNarutomodMod.ModElement {
 			if (!this.world.isRemote) {
 				if (this.shootingEntity != null) {
 					ProcedureSync.EntityNBTTag.removeAndSync(this.shootingEntity, NarutomodModVariables.forceBowPose);
-				}
-				if (this.usingItemstack != null) {
-					ItemStack stack = this.usingItemstack;
-					if (this.shootingEntity instanceof EntityPlayer) {
-						stack = ProcedureUtils.getMatchingItemStack((EntityPlayer)this.shootingEntity, stack.getItem());
-					}
-					if (stack != null && stack.hasTagCompound()) {
-						stack.getTagCompound().removeTag(Jutsu.SIZE_KEY);
-						stack.getTagCompound().removeTag(Jutsu.ID_KEY);
-					}
+					ItemNinjutsu.RASENGAN.jutsu.deactivate(this.shootingEntity);
 				}
 			}
 		}
@@ -218,10 +212,8 @@ public class EntityRasengan extends ElementsNarutomodMod.ModElement {
 					return false;
 				} else if (summoner.equals(entityIn)) {
 					return true;
-				} else if (entityIn instanceof EntityKageBunshin.EC) {
-					if (summoner.equals(((EntityKageBunshin.EC)entityIn).getSummoner())) {
-						return true;
-					}
+				} else if (entityIn instanceof EntityKageBunshin.EC && summoner.equals(((EntityKageBunshin.EC)entityIn).getSummoner())) {
+					return true;
 				}
 			}
 			return false;
@@ -266,6 +258,22 @@ public class EntityRasengan extends ElementsNarutomodMod.ModElement {
 			compound.setBoolean("isSenjutsu", ItemJutsu.isDamageSourceSenjutsu(this.damageSource));
 		}
 
+		/*public static class EventHook {
+			@SubscribeEvent
+			public void onAttack(LivingAttackEvent event) {
+				if (!event.getEntity().world.isRemote && !ItemJutsu.isDamageSourceJutsu(event.getSource())) {
+					Entity attacker = event.getSource().getImmediateSource();
+					if (attacker instanceof EntityLivingBase && ItemNinjutsu.RASENGAN.jutsu.isActivated((EntityLivingBase)attacker)) {
+						Entity jutsuEntity = ItemNinjutsu.RASENGAN.jutsu.getJutsu((EntityLivingBase)attacker);
+						if (jutsuEntity instanceof EC) {
+							event.setCanceled(true);
+							jutsuEntity.applyEntityCollision(event.getEntity());
+						}
+					}
+				}
+			}
+		}*/
+
 		public static class Jutsu implements ItemJutsu.IJutsuCallback {
 			private static final String ID_KEY = "RasenganEntityId";
 			private static final String SIZE_KEY = "RasenganSize";
@@ -277,7 +285,7 @@ public class EntityRasengan extends ElementsNarutomodMod.ModElement {
 					entity1.setDead();
 				} else if ((stack.getItem() == ItemNinjutsu.block && power >= 0.5f)
 				 || (stack.getItem() == ItemSenjutsu.block && power >= 3.0f)) {
-					EC entity2 = this.createJutsu(entity, power, stack);
+					EC entity2 = this.createJutsu(entity, power);
 					if (stack.getItem() == ItemSenjutsu.block) {
 						entity2.damageSource = ItemJutsu.causeSenjutsuDamage(entity2, entity);
 					}
@@ -288,10 +296,10 @@ public class EntityRasengan extends ElementsNarutomodMod.ModElement {
 				return false;
 			}
 
-			public static EC createJutsu(EntityLivingBase entity, float power, @Nullable ItemStack stack) {
+			public static EC createJutsu(EntityLivingBase entity, float power) {
 				entity.world.playSound(null, entity.posX, entity.posY, entity.posZ, SoundEvent.REGISTRY
 				  .getObject(new ResourceLocation("narutomod:rasengan_start")), SoundCategory.NEUTRAL, 1.0F, 1.0F);
-				EC entity2 = new EC(entity, power, stack);
+				EC entity2 = new EC(entity, power);
 				entity.world.spawnEntity(entity2);
 				return entity2;
 			}
@@ -302,13 +310,30 @@ public class EntityRasengan extends ElementsNarutomodMod.ModElement {
 			}
 
 			@Override
+			public boolean isActivated(EntityLivingBase entity) {
+				return this.getData(entity) != null;
+			}
+
+			@Override
+			public void deactivate(EntityLivingBase entity) {
+				ItemJutsu.IJutsuCallback.JutsuData jd = this.getData(entity);
+				if (jd != null) {
+					if (!jd.entity.isDead) {
+						jd.entity.setDead();
+					}
+					jd.stack.getTagCompound().removeTag(ID_KEY);
+					jd.stack.getTagCompound().removeTag(SIZE_KEY);
+				}
+			}
+
+			@Override
 			public float getPower(ItemStack stack) {
 				return stack.hasTagCompound() ? stack.getTagCompound().getFloat(SIZE_KEY) : 0.0f;
 			}
 
 			@Override
 			public float getBasePower() {
-				return 0.0f;
+				return 0.45f;
 			}
 	
 			@Override
@@ -319,6 +344,25 @@ public class EntityRasengan extends ElementsNarutomodMod.ModElement {
 			@Override
 			public float getMaxPower() {
 				return 3.0f;
+			}
+
+			@Override @Nullable
+			public Entity getJutsu(EntityLivingBase entity) {
+				ItemJutsu.IJutsuCallback.JutsuData jd = this.getData(entity);
+				if (jd != null) {
+					return jd.entity;
+				}
+				return null;
+			}
+
+			@Override @Nullable
+			public ItemJutsu.IJutsuCallback.JutsuData getData(EntityLivingBase entity) {
+				ItemStack stack = ProcedureUtils.getMatchingItemStack(entity, ItemNinjutsu.block);
+				if (stack != null && stack.hasTagCompound() && stack.getTagCompound().hasKey(ID_KEY)) {
+					Entity entity1 = entity.world.getEntityByID(stack.getTagCompound().getInteger(ID_KEY));
+					return entity1 instanceof EC ? new JutsuData(entity1, stack) : null;
+				}
+				return null;
 			}
 		}
 
@@ -337,7 +381,6 @@ public class EntityRasengan extends ElementsNarutomodMod.ModElement {
 			public float getMaxPower() {
 				return 6.0f;
 			}
-
 		}
 	}
 

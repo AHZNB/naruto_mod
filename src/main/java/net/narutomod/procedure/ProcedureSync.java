@@ -574,11 +574,12 @@ public class ProcedureSync extends ElementsNarutomodMod.ModElement {
 
 	public static class EntityNBTTag implements IMessage {
 		int id;
-		int dataType; // 0:remove, 1:integer, 2:double, 3:boolean
+		int dataType; // 0:remove, 1:integer, 2:double, 3:boolean, 4:byte
 		String tag;
 		int iData;
 		double dData;
 		boolean bData;
+		byte byteData;
 
 		public EntityNBTTag() {
 		}
@@ -600,6 +601,11 @@ public class ProcedureSync extends ElementsNarutomodMod.ModElement {
 		public EntityNBTTag(Entity entity, String tagName, boolean data) {
 			this.setup(entity, tagName, 3);
 			this.bData = data;
+		}
+
+		public EntityNBTTag(Entity entity, String tagName, byte data) {
+			this.setup(entity, tagName, 4);
+			this.byteData = data;
 		}
 
 		private void setup(Entity entity, String tagName, int type) {
@@ -632,6 +638,11 @@ public class ProcedureSync extends ElementsNarutomodMod.ModElement {
 			EntityNBTTag.sendToTracking(entity, tagName, b);
 		}
 
+		public static void setAndSync(Entity entity, String tagName, byte b) {
+			entity.getEntityData().setByte(tagName, b);
+			EntityNBTTag.sendToTracking(entity, tagName, b);
+		}
+
 		public static void sendToSelf(EntityPlayerMP entity, String tagName) {
 			NarutomodMod.PACKET_HANDLER.sendTo(new EntityNBTTag(entity, tagName), entity);
 		}
@@ -648,32 +659,53 @@ public class ProcedureSync extends ElementsNarutomodMod.ModElement {
 			NarutomodMod.PACKET_HANDLER.sendTo(new EntityNBTTag(entity, tagName, b), entity);
 		}
 
+		public static void sendToSelf(EntityPlayerMP entity, String tagName, byte b) {
+			NarutomodMod.PACKET_HANDLER.sendTo(new EntityNBTTag(entity, tagName, b), entity);
+		}
+
 		public static void sendToTracking(Entity entity, String tagName) {
 			if (entity instanceof EntityPlayerMP) {
 				EntityNBTTag.sendToSelf((EntityPlayerMP)entity, tagName);
 			}
-			NarutomodMod.PACKET_HANDLER.sendToAllTracking(new EntityNBTTag(entity, tagName), entity);
+			if (!entity.world.isRemote) {
+				NarutomodMod.PACKET_HANDLER.sendToAllTracking(new EntityNBTTag(entity, tagName), entity);
+			}
 		}
 
 		public static void sendToTracking(Entity entity, String tagName, int i) {
 			if (entity instanceof EntityPlayerMP) {
 				EntityNBTTag.sendToSelf((EntityPlayerMP)entity, tagName, i);
 			}
-			NarutomodMod.PACKET_HANDLER.sendToAllTracking(new EntityNBTTag(entity, tagName, i), entity);
+			if (!entity.world.isRemote) {
+				NarutomodMod.PACKET_HANDLER.sendToAllTracking(new EntityNBTTag(entity, tagName, i), entity);
+			}
 		}
 
 		public static void sendToTracking(Entity entity, String tagName, double d) {
 			if (entity instanceof EntityPlayerMP) {
 				EntityNBTTag.sendToSelf((EntityPlayerMP)entity, tagName, d);
 			}
-			NarutomodMod.PACKET_HANDLER.sendToAllTracking(new EntityNBTTag(entity, tagName, d), entity);
+			if (!entity.world.isRemote) {
+				NarutomodMod.PACKET_HANDLER.sendToAllTracking(new EntityNBTTag(entity, tagName, d), entity);
+			}
 		}
 
 		public static void sendToTracking(Entity entity, String tagName, boolean b) {
 			if (entity instanceof EntityPlayerMP) {
 				EntityNBTTag.sendToSelf((EntityPlayerMP)entity, tagName, b);
 			}
-			NarutomodMod.PACKET_HANDLER.sendToAllTracking(new EntityNBTTag(entity, tagName, b), entity);
+			if (!entity.world.isRemote) {
+				NarutomodMod.PACKET_HANDLER.sendToAllTracking(new EntityNBTTag(entity, tagName, b), entity);
+			}
+		}
+
+		public static void sendToTracking(Entity entity, String tagName, byte b) {
+			if (entity instanceof EntityPlayerMP) {
+				EntityNBTTag.sendToSelf((EntityPlayerMP)entity, tagName, b);
+			}
+			if (!entity.world.isRemote) {
+				NarutomodMod.PACKET_HANDLER.sendToAllTracking(new EntityNBTTag(entity, tagName, b), entity);
+			}
 		}
 
 		public static void sendToServer(Entity entity, String tagName) {
@@ -692,6 +724,10 @@ public class ProcedureSync extends ElementsNarutomodMod.ModElement {
 			NarutomodMod.PACKET_HANDLER.sendToServer(new EntityNBTTag(entity, tagName, b));
 		}
 
+		public static void sendToServer(Entity entity, String tagName, byte b) {
+			NarutomodMod.PACKET_HANDLER.sendToServer(new EntityNBTTag(entity, tagName, b));
+		}
+
 		private static void setDataTag(@Nullable Entity entity, EntityNBTTag message) {
 			if (entity != null) {
 				switch (message.dataType) {
@@ -706,6 +742,9 @@ public class ProcedureSync extends ElementsNarutomodMod.ModElement {
 						break;
 					case 3:
 						entity.getEntityData().setBoolean(message.tag, message.bData);
+						break;
+					case 4:
+						entity.getEntityData().setByte(message.tag, message.byteData);
 						break;
 				}
 			}
@@ -741,6 +780,7 @@ public class ProcedureSync extends ElementsNarutomodMod.ModElement {
 			buf.writeInt(this.iData);
 			buf.writeDouble(this.dData);
 			buf.writeBoolean(this.bData);
+			buf.writeByte(this.byteData);
 		}
 
 		public void fromBytes(ByteBuf buf) {
@@ -750,6 +790,7 @@ public class ProcedureSync extends ElementsNarutomodMod.ModElement {
 			this.iData = buf.readInt();
 			this.dData = buf.readDouble();
 			this.bData = buf.readBoolean();
+			this.byteData = buf.readByte();
 		}
 	}
 

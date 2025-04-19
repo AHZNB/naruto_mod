@@ -77,7 +77,7 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 	public void initElements() {
 		elements.entities.add(() -> EntityEntryBuilder.create().entity(EntityCustom.class)
 		 .id(new ResourceLocation("narutomod", "gedo_statue"), ENTITYID).name("gedo_statue")
-		 .tracker(128, 3, true).egg(-8621734, -10069692).build());
+		 .tracker(128, 3, true).build());
 		elements.entities.add(() -> EntityEntryBuilder.create().entity(EntityPurpleDragon.class)
 		 .id(new ResourceLocation("narutomod", "purple_dragon"), ENTITYID_RANGED).name("purple_dragon")
 		 .tracker(64, 3, true).build());
@@ -170,6 +170,7 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 
 		public EntityCustom(EntityLivingBase summonerIn, EntityLivingBase target) {
 			this(summonerIn, false);
+			this.setSitting(true);
 			this.fuuinTarget = target;
 		}
 
@@ -577,7 +578,7 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 
 	public static class EntityPurpleDragon extends EntityScalableProjectile.Base {
 		private final int wait = 40;
-		private final float damage = 120.0f;
+		private final float damage = 150.0f;
 		private float startYaw;
 		private float startPitch;
 		private float prevHeadYaw;
@@ -687,9 +688,10 @@ public class EntityGedoStatue extends ElementsNarutomodMod.ModElement {
 						 .setDamageBypassesArmor(), this.damage * 0.25f + (this.rand.nextFloat()-0.5f) * 10f);
 			 		}
 			 	} else if (!result.entityHit.equals(((EntityCustom)this.shootingEntity).getSummoner())) {
-					Chakra.pathway((EntityLivingBase)result.entityHit).consume(1.0f);
-					result.entityHit.attackEntityFrom(ItemJutsu.causeSenjutsuDamage(this, this.shootingEntity)
-					 .setDamageBypassesArmor(), this.damage + (this.rand.nextFloat()-0.5f) * 40f);
+					if (result.entityHit.attackEntityFrom(ItemJutsu.causeSenjutsuDamage(this, this.shootingEntity)
+					 .setDamageBypassesArmor(), this.damage + (this.rand.nextFloat()-0.5f) * 40f)) {
+						Chakra.pathway((EntityLivingBase)result.entityHit).consume(1.0f);
+					}
 					if (this.targetList.contains(result.entityHit)) {
 						this.targetList.remove(result.entityHit);
 						this.targetList.sort(new ProcedureUtils.EntitySorter(this));

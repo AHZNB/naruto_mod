@@ -4,6 +4,7 @@ package net.narutomod.entity;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.item.ItemJutsu;
 import net.narutomod.ElementsNarutomodMod;
+import net.narutomod.Particles;
 
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.relauncher.Side;
@@ -302,6 +303,16 @@ public class EntityLightningPanther extends ElementsNarutomodMod.ModElement {
 			@Override
 			public float getMaxPower() {
 				return 5.0f;
+			}
+
+			@Override
+			public void onUsingTick(ItemStack stack, EntityLivingBase player, float power) {
+				EntityLightningArc.spawnAsParticle(player.world, player.posX + player.getRNG().nextGaussian() * 0.3d, 
+				  player.posY + player.getRNG().nextDouble() * 1.3d, player.posZ + player.getRNG().nextGaussian() * 0.3d,
+				  1.0d, 0d, 0.15d, 0d, 0);
+				Particles.spawnParticle(player.world, Particles.Types.SMOKE, player.posX, player.posY, player.posZ,
+				  20, 0.3d, 0.0d, 0.3d, 0d, 0.5d, 0d, 0x20000000, 50, 5, 0xF0, player.getEntityId());
+				ItemJutsu.IJutsuCallback.super.onUsingTick(stack, player, power);
 			}
 		}
 	}

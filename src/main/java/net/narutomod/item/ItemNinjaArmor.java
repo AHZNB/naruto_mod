@@ -175,6 +175,7 @@ public class ItemNinjaArmor extends ElementsNarutomodMod.ModElement {
 			if (type == Type.KONOHA || type == Type.SUNA || type == Type.WAR1 || type == Type.OBITOWAR) {
 				collar.setRotationPoint(0.0F, 0.0F, 0.0F);
 				bipedHeadwear.addChild(collar);
+				setRotationAngle(collar, 0.0436F, 0.0F, 0.0F);
 				collar.cubeList.add(new ModelBox(collar, 32, 7, -4.0F, -1.5F, -4.0F, 8, 1, 8, 1.0F, false));
 			} else {
 				collar.showModel = false;

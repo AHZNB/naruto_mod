@@ -15,6 +15,7 @@ import net.minecraft.potion.PotionType;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.potion.Potion;
 import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.Minecraft;
@@ -22,7 +23,6 @@ import net.minecraft.init.MobEffects;
 
 import java.util.Map;
 import java.util.HashMap;
-import net.minecraft.entity.player.EntityPlayer;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class PotionHeaviness extends ElementsNarutomodMod.ModElement {
@@ -60,6 +60,7 @@ public class PotionHeaviness extends ElementsNarutomodMod.ModElement {
 			setPotionName("effect.heaviness");
 			potionIcon = new ResourceLocation("narutomod:textures/mob_effect/heaviness.png");
 			this.registerPotionAttributeModifier(SharedMonsterAttributes.MOVEMENT_SPEED, "fedf4303-bc45-4ad8-80e8-2237e9c90a18", -0.15D, 2);
+			this.registerPotionAttributeModifier(SharedMonsterAttributes.ATTACK_SPEED, "7d735ff6-8872-482d-ac1f-cd2249e8f584", -0.15D, 2);
 		}
 
 		@Override
@@ -81,10 +82,10 @@ public class PotionHeaviness extends ElementsNarutomodMod.ModElement {
 		public void performEffect(EntityLivingBase entity, int amplifier) {
 			PotionEffect effect = entity.getActivePotionEffect(MobEffects.JUMP_BOOST);
 			if (effect == null) {
-				entity.addPotionEffect(new PotionEffect(MobEffects.JUMP_BOOST, 3, -2 - amplifier, false, false));
+				entity.addPotionEffect(new PotionEffect(MobEffects.JUMP_BOOST, 5, -2 - amplifier, false, false));
 			} else if (effect.getAmplifier() > -2 - amplifier) {
 				entity.removePotionEffect(MobEffects.JUMP_BOOST);
-				entity.addPotionEffect(new PotionEffect(MobEffects.JUMP_BOOST, 3, -2 - amplifier, false, false));
+				entity.addPotionEffect(new PotionEffect(MobEffects.JUMP_BOOST, 5, -2 - amplifier, false, false));
 			}
 			if (entity instanceof EntityPlayer && ((EntityPlayer)entity).capabilities.isFlying) {
 				((EntityPlayer)entity).capabilities.isFlying = false;

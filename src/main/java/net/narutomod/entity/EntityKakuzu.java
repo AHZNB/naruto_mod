@@ -23,7 +23,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.entity.ai.EntityAISwimming;
 import net.minecraft.entity.ai.EntityAIHurtByTarget;
 import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
-import net.minecraft.entity.ai.EntityAIAttackMelee;
 import net.minecraft.entity.ai.EntityAIWatchClosest;
 import net.minecraft.entity.ai.EntityAIWatchClosest2;
 import net.minecraft.entity.ai.EntityAIWander;
@@ -143,7 +142,7 @@ public class EntityKakuzu extends ElementsNarutomodMod.ModElement {
 			this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, false));
 			this.tasks.addTask(0, new EntityAISwimming(this));
 			this.tasks.addTask(2, new EntityNinjaMob.AILeapAtTarget(this, 1.0F));
-			this.tasks.addTask(4, new EntityAIAttackMelee(this, 1.2d, true));
+			this.tasks.addTask(4, new EntityNinjaMob.AIAttackMelee(this, 1.2d, true));
 			this.tasks.addTask(5, new EntityAIWatchClosest2(this, EntityPlayer.class, 32.0F, 1.0F));
 			this.tasks.addTask(6, new EntityAIWatchClosest(this, EntityNinjaMob.Base.class, 24.0F) {
 				@Override

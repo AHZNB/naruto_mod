@@ -11,13 +11,9 @@ import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraft.world.World;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Item;
 import net.minecraft.entity.player.EntityPlayer;
@@ -80,54 +76,13 @@ public class ItemRaiton extends ElementsNarutomodMod.ModElement {
 			this.setRegistryName("raiton");
 			this.setCreativeTab(TabModTab.tab);
 		}
-
-		/*@Override
-		public void onUpdate(ItemStack itemstack, World world, Entity entity, int par4, boolean par5) {
-			super.onUpdate(itemstack, world, entity, par4, par5);
-			if (!world.isRemote && entity instanceof EntityPlayer && entity.ticksExisted % 10 == 3) {
-				if (((RangedItem)itemstack.getItem()).canActivateJutsu(itemstack, CHIDORI, (EntityPlayer)entity) == EnumActionResult.SUCCESS
-				 && !this.isJutsuEnabled(itemstack, KIRIN)) {
-					this.enableJutsu(itemstack, KIRIN, true);
-					((EntityPlayer)entity).sendStatusMessage(new TextComponentTranslation("chattext.jutsu.enabled", KIRIN.getName()), false);
-				}
-			}
-		}*/
-
-		@Override
-		public void onUsingTick(ItemStack stack, EntityLivingBase player, int timeLeft) {
-			if (!player.world.isRemote) {
-				ItemJutsu.JutsuEnum jutsu = this.getCurrentJutsu(stack);
-				if (jutsu == KIRIN) {
-					EntityKirin.chargingEffects(player, this.getPower(stack, player, timeLeft));
-					if ((this.getMaxUseDuration() - timeLeft) % 100 == 99) {
-						EntityKirin.startWeatherThunder(player, 200);
-					}
-				} else if (jutsu == BLACKPANTHER) {
-					EntityLightningArc.spawnAsParticle(player.world, player.posX + this.itemRand.nextGaussian() * 0.3d, 
-					  player.posY + this.itemRand.nextDouble() * 1.3d, player.posZ + this.itemRand.nextGaussian() * 0.3d,
-					  1.0d, 0d, 0.15d, 0d, 0);
-					Particles.spawnParticle(player.world, Particles.Types.SMOKE, player.posX, player.posY, player.posZ,
-					  20, 0.3d, 0.0d, 0.3d, 0d, 0.5d, 0d, 0x20000000, 50, 5, 0xF0, player.getEntityId());
-				}
-			}
-			super.onUsingTick(stack, player, timeLeft);
-		}
-
-		@Override
-		public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer entity, EnumHand hand) {
-			ActionResult<ItemStack> result = super.onItemRightClick(world, entity, hand);
-			if (result.getType() == EnumActionResult.SUCCESS && this.getCurrentJutsu(entity.getHeldItem(hand)) == KIRIN && !world.isRemote) {
-				EntityKirin.startWeatherThunder(entity, 200);
-			}
-			return result;
-		}
-	}
+	}
 
 	public static class EntityChakraMode extends Entity implements ItemJutsu.IJutsu {
 		private final double CHAKRA_BURN = CHAKRAMODE.chakraUsage; // per second
 		private EntityLivingBase summoner;
 		private ItemStack usingItemstack;
-		private int strengthAmplifier = 9;
+		private int strengthAmplifier = 12;
 		private float modifier;
 
 		public EntityChakraMode(World a) {
@@ -270,6 +225,11 @@ public class ItemRaiton extends ElementsNarutomodMod.ModElement {
 					entity.world.spawnEntity(entity1);
 					return true;
 				}
+			}
+
+			@Override
+			public boolean isActivated(ItemStack stack) {
+				return stack.getTagCompound().hasKey(ID_KEY);
 			}
 
 			@Override

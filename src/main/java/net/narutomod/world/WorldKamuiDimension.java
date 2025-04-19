@@ -4,6 +4,10 @@ package net.narutomod.world;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.event.world.BlockEvent;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.DimensionManager;
 
 import net.minecraft.world.storage.WorldInfo;
@@ -43,6 +47,7 @@ import net.minecraft.block.BlockFalling;
 import net.narutomod.procedure.ProcedureKamuiDimensionPlayerEntersDimension;
 import net.narutomod.block.BlockKamuiBlock;
 import net.narutomod.ElementsNarutomodMod;
+import net.narutomod.NarutomodMod;
 
 import javax.annotation.Nullable;
 import java.util.Random;
@@ -67,6 +72,20 @@ public class WorldKamuiDimension extends ElementsNarutomodMod.ModElement {
 		}
 		dtype = DimensionType.register("kamuidimension", "_kamuidimension", DIMID, WorldProviderMod.class, true);
 		DimensionManager.registerDimension(DIMID, dtype);
+	}
+
+	@Override
+	public void init(FMLInitializationEvent event) {
+		MinecraftForge.EVENT_BUS.register(new BlockEventHook());
+	}
+
+	public static class BlockEventHook {
+		@SubscribeEvent
+		public void onBlockEvent(BlockEvent event) {
+			if (event.getWorld().provider instanceof WorldProviderMod) {
+				event.setCanceled(true);
+			}
+		}
 	}
 
 	public static class WorldProviderMod extends WorldProvider {
@@ -170,14 +189,6 @@ public class WorldKamuiDimension extends ElementsNarutomodMod.ModElement {
 				$_dependencies.put("world", world);
 				ProcedureKamuiDimensionPlayerEntersDimension.executeProcedure($_dependencies);
 			}
-			entity.capabilities.allowEdit = false;
-			entity.sendPlayerAbilities();
-		}
-
-		@Override
-		public void onPlayerRemoved(EntityPlayerMP player) {
-			player.capabilities.allowEdit = !player.interactionManager.getGameType().hasLimitedInteractions();
-			player.sendPlayerAbilities();
 		}
 	}
 

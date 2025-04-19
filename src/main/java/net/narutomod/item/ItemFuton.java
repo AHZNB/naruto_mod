@@ -29,13 +29,7 @@ import net.narutomod.creativetab.TabModTab;
 import net.narutomod.ElementsNarutomodMod;
 import net.narutomod.PlayerTracker;
 import net.narutomod.Particles;
-import net.narutomod.entity.EntityRendererRegister;
-import net.narutomod.entity.EntityRasenshuriken;
-import net.narutomod.entity.EntityFutonGreatBreakthrough;
-import net.narutomod.entity.EntityFutonVacuum;
-import net.narutomod.entity.EntityChakraFlow;
-import net.narutomod.entity.EntityWindBlade;
-import net.narutomod.entity.EntityVacuumWave;
+import net.narutomod.entity.*;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.potion.PotionReach;
 
@@ -119,7 +113,9 @@ public class ItemFuton extends ElementsNarutomodMod.ModElement {
 				if (f > 0.0f) {
 					f = 1.0f / f;
 					if (user instanceof EntityPlayer) {
-						f *= PlayerTracker.getNinjaLevel((EntityPlayer)user) / 30d;
+						f *= PlayerTracker.getNinjaLevel((EntityPlayer)user) * 0.0334;
+					} else if (user instanceof EntityNinjaMob.Base) {
+						f *= ((EntityNinjaMob.Base)user).getNinjaLevel() * 0.04;
 					}
 					this.damageModifier = f * 3;
 				}

@@ -24,10 +24,10 @@ import net.narutomod.world.WorldKamuiDimension;
 import net.narutomod.procedure.ProcedureGrabEntity;
 import net.narutomod.procedure.ProcedureKamuiJikukanIdo;
 import net.narutomod.procedure.ProcedureSusanoo;
+import net.narutomod.procedure.ProcedureWhenPlayerAttcked;
 import net.narutomod.creativetab.TabModTab;
 import net.narutomod.entity.EntitySusanooBase;
 import net.narutomod.Chakra;
-import net.narutomod.NarutomodModVariables;
 import net.narutomod.ElementsNarutomodMod;
 
 import com.google.common.collect.Maps;
@@ -39,8 +39,8 @@ import java.util.Map;
 public class ItemMangekyoSharinganObito extends ElementsNarutomodMod.ModElement {
 	@ObjectHolder("narutomod:mangekyosharinganobitohelmet")
 	public static final Item helmet = null;
-	private static final double INTANGIBLE_CHAKRA_USAGE = 1d; // per tick
-	private static final double TELEPORT_CHAKRA_USAGE = 20d; // per tick
+	public static final double INTANGIBLE_CHAKRA_USAGE = 1d; // per tick
+	public static final double TELEPORT_CHAKRA_USAGE = 20d; // per tick
 	
 	public ItemMangekyoSharinganObito(ElementsNarutomodMod instance) {
 		super(instance, 118);
@@ -78,7 +78,8 @@ public class ItemMangekyoSharinganObito extends ElementsNarutomodMod.ModElement 
 					}
 					if (entity.getEntityData().getBoolean("kamui_intangible")) {
 						Chakra.pathway(entity).consume(getIntangibleChakraUsage(entity));
-						entity.getEntityData().setDouble(NarutomodModVariables.InvulnerableTime, 2.0d);
+						ProcedureWhenPlayerAttcked.setInvulnerable(entity, 2);
+						//entity.getEntityData().setDouble(NarutomodModVariables.InvulnerableTime, 2.0d);
 					}
 				}
 			}

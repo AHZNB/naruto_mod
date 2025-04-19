@@ -3,6 +3,7 @@ package net.narutomod.item;
 
 import net.narutomod.procedure.ProcedureTotsukaSwordToolInHandTick;
 import net.narutomod.procedure.ProcedureTotsukaSwordLivingEntityIsHitWithTool;
+import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.creativetab.TabModTab;
 import net.narutomod.ElementsNarutomodMod;
 
@@ -36,7 +37,6 @@ import com.google.common.collect.Multimap;
 public class ItemTotsukaSword extends ElementsNarutomodMod.ModElement {
 	@GameRegistry.ObjectHolder("narutomod:totsuka_sword")
 	public static final Item block = null;
-	public static final UUID REACH_MODIFIER = UUID.fromString("d91a016b-4d4a-49a1-9f1f-cfaa17fb9a46");
 
 	public ItemTotsukaSword(ElementsNarutomodMod instance) {
 		super(instance, 549);
@@ -54,7 +54,7 @@ public class ItemTotsukaSword extends ElementsNarutomodMod.ModElement {
 					multimap.put(SharedMonsterAttributes.ATTACK_SPEED.getName(),
 							new AttributeModifier(ATTACK_SPEED_MODIFIER, "Weapon modifier", -3, 0));
 					multimap.put(EntityPlayer.REACH_DISTANCE.getName(),
-							new AttributeModifier(REACH_MODIFIER, "Weapon modifier", 0.2d, 2));
+							new AttributeModifier(ProcedureUtils.REACH_MODIFIER, "Weapon modifier", 0.2d, 2));
 				}
 				return multimap;
 			}

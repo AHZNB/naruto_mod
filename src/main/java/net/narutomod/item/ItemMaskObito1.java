@@ -62,7 +62,7 @@ public class ItemMaskObito1 extends ElementsNarutomodMod.ModElement {
 			
 			@Override
 			public String getArmorTexture(ItemStack stack, Entity entity, EntityEquipmentSlot slot, String type) {
-				return "narutomod:textures/mask_obito1.png";
+				return "narutomod:textures/mask_obito1s.png";
 			}
 		}.setUnlocalizedName("mask_obito_1helmet").setRegistryName("mask_obito_1helmet").setCreativeTab(TabModTab.tab));
 	}

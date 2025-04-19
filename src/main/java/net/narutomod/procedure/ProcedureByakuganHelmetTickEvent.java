@@ -48,7 +48,10 @@ public class ProcedureByakuganHelmetTickEvent extends ElementsNarutomodMod.ModEl
 		ItemStack itemstack = (ItemStack) dependencies.get("itemstack");
 		//entity.getEntityData().setDouble(NarutomodModVariables.MostRecentWornDojutsuTime, NarutomodModVariables.world_tick);
 		if (entity instanceof EntityLivingBase && !world.isRemote) {
-			((EntityLivingBase) entity).addPotionEffect(new PotionEffect(MobEffects.NIGHT_VISION, 210, 0, false, false));
+			PotionEffect effect = ((EntityLivingBase)entity).getActivePotionEffect(MobEffects.NIGHT_VISION);
+			if (effect == null || effect.getDuration() <= 210) {
+				((EntityLivingBase)entity).addPotionEffect(new PotionEffect(MobEffects.NIGHT_VISION, 230, 0, false, false));
+			}
 		}
 		if (entity.getEntityData().getBoolean("byakugan_activated")) {
 			float fov = (float) entity.getEntityData().getDouble("byakugan_fov");

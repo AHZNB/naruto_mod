@@ -131,7 +131,7 @@ public class ProcedureShinraTenseiOnKeyPressed extends ElementsNarutomodMod.ModE
 			}
 			ProcedureAoeCommand.set(entity, 0d, power).exclude(entity).damageEntities(ItemJutsu.causeJutsuDamage(entity, null).setDamageBypassesArmor(), (float)power * 1.8f).knockback(2f).noGravity(false);
 			for (Entity entity2 : ProcedureAoeCommand.getInstance().getEntitiesList()) {
-				if (entity2 instanceof ItemJutsu.IJutsu) {
+				if (entity2 instanceof ItemJutsu.IJutsu && !(entity2 instanceof EntityLivingBase)) {
 					entity2.setDead();
 				}
 			}

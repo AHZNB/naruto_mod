@@ -374,7 +374,7 @@ public class EntityTruthSeekerBall extends ElementsNarutomodMod.ModElement {
 						eventOnTick(getWorld(), getX0(), getY0(), getZ0(), getRadius(), getEntity(), currentTick);
 					}
 				};
-				if (this.getEntityScale() >= 25.0F && result.entityHit instanceof EntityLivingBase) {
+				if (this.getEntityScale() >= 25.0F && result.entityHit instanceof EntityLivingBase) {
 					((EntityLivingBase)result.entityHit).setHealth(0.0F);
 				}
 				if (this.maxScale > this.shieldSize) {

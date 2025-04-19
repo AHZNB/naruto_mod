@@ -45,29 +45,37 @@ public class EntityIceSpear extends ElementsNarutomodMod.ModElement {
 		 .id(new ResourceLocation("narutomod", "ice_spear"), ENTITYID).name("ice_spear").tracker(64, 3, true).build());
 	}
 
-	@SideOnly(Side.CLIENT)
 	@Override
 	public void preInit(FMLPreInitializationEvent event) {
-		RenderingRegistry.registerEntityRenderingHandler(EC.class, renderManager -> new CustomRender(renderManager));
+		new Renderer().register();
 	}
 
-	@SideOnly(Side.CLIENT)
-	public class CustomRender extends EntitySpike.ClientSide.Renderer<EC> {
-		private final ResourceLocation texture = new ResourceLocation("narutomod:textures/spike_ice.png");
-
-		public CustomRender(RenderManager renderManagerIn) {
-			super(renderManagerIn);
+	public static class Renderer extends EntityRendererRegister {
+		@SideOnly(Side.CLIENT)
+		@Override
+		public void register() {
+			RenderingRegistry.registerEntityRenderingHandler(EC.class, renderManager -> new CustomRender(renderManager));
 		}
 
-		@Override
-		protected ResourceLocation getEntityTexture(EC entity) {
-			return this.texture;
+		@SideOnly(Side.CLIENT)
+		public class CustomRender extends EntitySpike.ClientSide.Renderer<EC> {
+			private final ResourceLocation texture = new ResourceLocation("narutomod:textures/spike_ice.png");
+	
+			public CustomRender(RenderManager renderManagerIn) {
+				super(renderManagerIn);
+			}
+	
+			@Override
+			protected ResourceLocation getEntityTexture(EC entity) {
+				return this.texture;
+			}
 		}
 	}
 
 	public static class EC extends EntitySpike.Base implements ItemJutsu.IJutsu {
 		private static final DataParameter<Float> RAND_YAW = EntityDataManager.<Float>createKey(EC.class, DataSerializers.FLOAT);
 		private static final DataParameter<Float> RAND_PITCH = EntityDataManager.<Float>createKey(EC.class, DataSerializers.FLOAT);
+		private final float baseImpactDamage = 10.0f;
 		
 		public EC(World world) {
 			super(world);
@@ -118,10 +126,17 @@ public class EntityIceSpear extends ElementsNarutomodMod.ModElement {
 		protected void onImpact(RayTraceResult result) {
 			if (!this.world.isRemote 
 			 && result.entityHit instanceof EntityLivingBase && !result.entityHit.equals(this.shootingEntity)) {
-				((EntityLivingBase)result.entityHit).addPotionEffect(new PotionEffect(MobEffects.SLOWNESS, 200, 1));
 				result.entityHit.hurtResistantTime = 10;
-				result.entityHit.attackEntityFrom(ItemJutsu.causeJutsuDamage(this, this.shootingEntity).setProjectile(), 10f);
-				this.setDead();
+				if (result.entityHit.attackEntityFrom(ItemJutsu.causeJutsuDamage(this, this.shootingEntity).setProjectile(), this.baseImpactDamage)) {
+					((EntityLivingBase)result.entityHit).addPotionEffect(new PotionEffect(MobEffects.SLOWNESS, 200, 1));
+					this.setDead();
+				} else if (!result.entityHit.noClip) {
+					this.motionX *= -0.1d;
+					this.motionY *= -0.1d;
+					this.motionZ *= -0.1d;
+					this.rotationYaw += 180.0F;
+					this.prevRotationYaw += 180.0F;
+				}
 			}
 		}
 
@@ -135,7 +150,7 @@ public class EntityIceSpear extends ElementsNarutomodMod.ModElement {
 					Vec3d vec2 = vec1.addVector((entity.getRNG().nextDouble()-0.5d) * d, entity.getRNG().nextDouble()-0.5d,
 					 (entity.getRNG().nextDouble()-0.5d) * d);
 					Vec3d vec3 = vec2.add(vec);
-					this.createJutsu(entity.world, entity, vec2.x, vec2.y, vec2.z, vec3.x, vec3.y, vec3.z, 1.2f, 0.05f);
+					this.createJutsu(entity.world, entity, vec2.x, vec2.y, vec2.z, vec3.x, vec3.y, vec3.z, 1.4f, 0.05f);
 				}
 				return true;
 			}
@@ -144,7 +159,7 @@ public class EntityIceSpear extends ElementsNarutomodMod.ModElement {
 				Vec3d vec1 = attacker.getPositionEyes(1f).add(attacker.getLookVec().scale(1.5d));
 				for (int i = 0; i < (int)(power * 3f); i++) {
 					Vec3d vec2 = vec1.addVector(attacker.getRNG().nextDouble()-0.5d, attacker.getRNG().nextDouble()-0.5d, attacker.getRNG().nextDouble()-0.5d);
-					this.createJutsu(attacker.world, attacker, vec2.x, vec2.y, vec2.z, target.posX, target.posY + target.height/2, target.posZ, 1.2f, 0.05f);
+					this.createJutsu(attacker.world, attacker, vec2.x, vec2.y, vec2.z, target.posX, target.posY + target.height/2, target.posZ, 1.4f, 0.05f);
 				}
 			}
 

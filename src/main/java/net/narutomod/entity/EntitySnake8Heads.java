@@ -67,7 +67,7 @@ public class EntitySnake8Heads extends ElementsNarutomodMod.ModElement {
 		 .name("snake_8_heads").tracker(128, 3, true).build());
 		elements.entities.add(() -> EntityEntryBuilder.create().entity(EntitySnakeHead.class)
 		 .id(new ResourceLocation("narutomod", "snake_8_head1"), ENTITYID_RANGED)
-		 .name("snake_8_head1").tracker(128, 3, true).egg(-1, -10066330).build());
+		 .name("snake_8_head1").tracker(128, 3, true).build());
 	}
 
 	public static class EC extends EntityShieldBase implements ItemJutsu.IJutsu {

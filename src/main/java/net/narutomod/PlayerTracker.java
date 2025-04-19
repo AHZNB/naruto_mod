@@ -271,8 +271,8 @@ public class PlayerTracker extends ElementsNarutomodMod.ModElement {
 			}
 			if (!targetEntity.equals(sourceEntity) && sourceEntity instanceof EntityLivingBase && amount > 0f) {
 				if (this.isOffCooldown(targetEntity) && targetEntity instanceof EntityPlayer && amount < ((EntityPlayer)targetEntity).getHealth()) {
-					double bxp = getBattleXp((EntityPlayer)targetEntity);
-					logBattleExp((EntityPlayer)targetEntity, bxp < 1d ? 1d : (amount / MathHelper.sqrt(MathHelper.sqrt(bxp))));
+					double xp = getBattleXp((EntityPlayer)targetEntity);
+					logBattleExp((EntityPlayer)targetEntity, xp < 1d ? 1d : (amount / MathHelper.sqrt(MathHelper.sqrt(xp))));
 				}
 				if (sourceEntity instanceof EntityPlayer) {
 					double xp = 0.0d;

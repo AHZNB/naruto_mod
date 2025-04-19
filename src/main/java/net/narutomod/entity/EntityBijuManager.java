@@ -507,7 +507,7 @@ public abstract class EntityBijuManager<T extends EntityTailedBeast.Base> {
 
 	public void addCloakXp(int xp) {
 		if (this.cloakLevel >= 1 && this.cloakLevel <= 3) {
-			this.cloakXp[this.cloakLevel-1] += xp;
+			this.cloakXp[this.cloakLevel-1] = Math.min(this.cloakXp[this.cloakLevel-1] + xp, 20000);
 			this.markDirty();
 		}
 	}

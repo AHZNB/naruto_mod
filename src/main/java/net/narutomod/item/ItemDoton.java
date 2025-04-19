@@ -96,12 +96,12 @@ public class ItemDoton extends ElementsNarutomodMod.ModElement {
 			//this.defaultCooldownMap[EARTHWALL.index] = 0;
 		}
 
-		@Override
+		/*@Override
 		public void onUsingTick(ItemStack stack, EntityLivingBase player, int count) {
 			if (this.getCurrentJutsu(stack) != HIDINGINROCK) {
 				super.onUsingTick(stack, player, count);
 			}
-		}
+		}*/
 	}
 
 	private static boolean isEarthenMaterial(Material material) {
@@ -207,6 +207,10 @@ public class ItemDoton extends ElementsNarutomodMod.ModElement {
 			@Override
 			public boolean isActivated(EntityLivingBase entity) {
 				return entity.getEntityData().getBoolean(ID_KEY);
+			}
+
+			@Override
+			public void onUsingTick(ItemStack stack, EntityLivingBase player, float power) {
 			}
 		}
 	}

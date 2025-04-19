@@ -24,6 +24,7 @@ import net.minecraft.util.text.translation.I18n;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.client.Minecraft;
 
 import net.narutomod.entity.EntityEightTrigrams;
 import net.narutomod.entity.EntityHakkeshoKeiten;
@@ -125,13 +126,11 @@ public class ItemByakugan extends ElementsNarutomodMod.ModElement {
 			@Override
 			public void onUpdate(ItemStack itemstack, World world, Entity entity, int par4, boolean par5) {
 				super.onUpdate(itemstack, world, entity, par4, par5);
-				if (!world.isRemote && entity instanceof EntityLivingBase && this.isOwner(itemstack, (EntityLivingBase)entity)
+				if (!world.isRemote && entity instanceof EntityLivingBase && entity.ticksExisted % 20 == 0
+				 && this.isOwner(itemstack, (EntityLivingBase)entity)
 				 && itemstack.hasTagCompound() && itemstack.getTagCompound().hasKey(TENSEIGANEVOLVEDTIME)) {
-					double d = itemstack.getTagCompound().getDouble(TENSEIGANEVOLVEDTIME);
-					if (entity.ticksExisted % 20 == 0) {
-						d -= 20.0d;
-						itemstack.getTagCompound().setDouble(TENSEIGANEVOLVEDTIME, d);
-					}
+					double d = itemstack.getTagCompound().getDouble(TENSEIGANEVOLVEDTIME) - 20d;
+					itemstack.getTagCompound().setDouble(TENSEIGANEVOLVEDTIME, d);
 					if (d <= 0.0d && entity instanceof EntityPlayerMP) {
 						ItemStack oldstack = itemstack.copy();
 						ItemStack newstack = new ItemStack(ItemTenseigan.helmet);
@@ -178,14 +177,16 @@ public class ItemByakugan extends ElementsNarutomodMod.ModElement {
 				super.addInformation(stack, worldIn, tooltip, flagIn);
 				if (isRinnesharinganActivated(stack)) {
 					tooltip.add(TextFormatting.RED + I18n.translateToLocal("advancements.rinnesharinganactivated.title") + TextFormatting.WHITE);
-				}
-				tooltip.add(TextFormatting.ITALIC + I18n.translateToLocal("key.mcreator.specialjutsu1") + ": " + TextFormatting.GRAY + I18n.translateToLocal("tooltip.byakugan.jutsu1") + " (NXP:500)");
-				if (isRinnesharinganActivated(stack)) {
+					tooltip.add(TextFormatting.ITALIC + I18n.translateToLocal("key.mcreator.specialjutsu1") + ": " + TextFormatting.GRAY + I18n.translateToLocal("tooltip.byakugan.jutsu1") + " (NXP:500)");
 					tooltip.add(TextFormatting.ITALIC + I18n.translateToLocal("key.mcreator.specialjutsu2") + ": " + TextFormatting.GRAY + I18n.translateToLocal("tooltip.byakurinnesharingan.jutsu2"));
-				} else {
-					tooltip.add(TextFormatting.ITALIC + I18n.translateToLocal("key.mcreator.specialjutsu2") + ": " + TextFormatting.GRAY + I18n.translateToLocal("tooltip.byakugan.jutsu2") + " (NXP:1000)");
+					tooltip.add(TextFormatting.ITALIC + I18n.translateToLocal("key.mcreator.specialjutsu3") + ": " + TextFormatting.GRAY + I18n.translateToLocal("entity.hakkeshokeiten.name") + " (NXP:1500)");
+				} else {
+					tooltip.add(TextFormatting.ITALIC + I18n.translateToLocal("key.mcreator.specialjutsu1") + ": " + TextFormatting.GRAY + I18n.translateToLocal("tooltip.byakugan.jutsu1") + " (NXP:500)");
+					if (Minecraft.getMinecraft().player != null && this.isOwner(stack, Minecraft.getMinecraft().player)) {
+						tooltip.add(TextFormatting.ITALIC + I18n.translateToLocal("key.mcreator.specialjutsu2") + ": " + TextFormatting.GRAY + I18n.translateToLocal("tooltip.byakugan.jutsu2") + " (NXP:1000)");
+						tooltip.add(TextFormatting.ITALIC + I18n.translateToLocal("key.mcreator.specialjutsu3") + ": " + TextFormatting.GRAY + I18n.translateToLocal("entity.hakkeshokeiten.name") + " (NXP:1500)");
+					}
 				}
-				tooltip.add(TextFormatting.ITALIC + I18n.translateToLocal("key.mcreator.specialjutsu3") + ": " + TextFormatting.GRAY + I18n.translateToLocal("entity.hakkeshokeiten.name") + " (NXP:1500)");
 				if (stack.hasTagCompound()) {
 					double d = stack.getTagCompound().getDouble(TENSEIGANEVOLVEDTIME);
 					if (d > 0.0d) {

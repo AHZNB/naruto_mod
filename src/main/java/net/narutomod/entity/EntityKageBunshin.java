@@ -21,7 +21,8 @@ import net.minecraft.util.SoundEvent;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -101,16 +102,17 @@ public class EntityKageBunshin extends ElementsNarutomodMod.ModElement {
 			super(world);
 			this.stepHeight = 16f;
 			this.moveHelper = new EntityNinjaMob.MoveHelper(this);
+			this.entityCollisionReduction = -1.0f;
 		}
 
 		public EC(EntityLivingBase user) {
 			super(user);
 			this.stepHeight = 16f;
-			this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).applyModifier(new AttributeModifier("bunshin.followRange", 32, 0));
-			this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(ProcedureUtils.getModifiedSpeed(user) * 4.0d);
-			this.getEntityAttribute(SharedMonsterAttributes.ARMOR)
-			 .setBaseValue(user.getEntityAttribute(SharedMonsterAttributes.ARMOR).getAttributeValue());
+			this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(64.0d);
+			//this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(ProcedureUtils.getModifiedSpeed(user) * 4.0d);
+			//this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(user.getEntityAttribute(SharedMonsterAttributes.ARMOR).getAttributeValue());
 			this.moveHelper = new EntityNinjaMob.MoveHelper(this);
+			this.entityCollisionReduction = -1.0f;
 		}
 
 		@Override
@@ -130,7 +132,8 @@ public class EntityKageBunshin extends ElementsNarutomodMod.ModElement {
 		@Override
 		protected void initEntityAI() {
 			super.initEntityAI();
-			this.tasks.addTask(2, new EntityClone.AIFollowSummoner(this, 0.8d, 4.0F) {
+			this.tasks.addTask(0, new EntityNinjaMob.AILeapAtTarget(this, 0.0f, 20.0f));
+			this.tasks.addTask(2, new EntityClone.AIFollowSummoner(this, 1.0d, 8.0F) {
 				@Override
 				public boolean shouldExecute() {
 					return super.shouldExecute() && !EC.this.isOriginal;
@@ -140,11 +143,11 @@ public class EntityKageBunshin extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public boolean processInteract(EntityPlayer entity, EnumHand hand) {
-			if (entity.equals(this.getSummoner())) {
+			if (entity.equals(this.getSummoner()) && entity.getHeldItem(hand).isEmpty()) {
 				if (this.isOriginal) {
 					this.cancelCloneControl();
 					if (!this.world.isRemote) 
-						entity.sendStatusMessage(new TextComponentString("You are now the original"), false);
+						ProcedureUtils.sendStatusMessage(entity, "You are now the original", false);
 					return true;
 				}
 				//EC original = this.getOriginal();
@@ -160,7 +163,7 @@ public class EntityKageBunshin extends ElementsNarutomodMod.ModElement {
 						entity.inventory.removeStackFromSlot(i);
 				}*/
 				if (!this.world.isRemote) 
-					entity.sendStatusMessage(new TextComponentString("You are now clone("+this.getEntityId()+")"), false);
+					ProcedureUtils.sendStatusMessage(entity, "You are now clone("+this.getEntityId()+")", false);
 				return true;
 			}
 			return super.processInteract(entity, hand);
@@ -193,10 +196,12 @@ public class EntityKageBunshin extends ElementsNarutomodMod.ModElement {
 					flag = true;
 				}
 				if (flag && summoner != null) {
-					Jutsu.updateClones(summoner, false);
-					Chakra.pathway(summoner).consume(-Chakra.pathway(this).getAmount() * 0.9d, false);
+					Jutsu.updateClones(summoner, this);
+					float f0 = this.getHealth();
+					float f1 = f0 / this.getMaxHealth();
+					Chakra.pathway(summoner).consume(-Chakra.pathway(this).getAmount() * f1 * 0.9, false);
 					if (summoner.getHealth() > 0.0f || flag2) {
-						summoner.setHealth(summoner.getHealth() + this.getHealth() * 0.9f);
+						summoner.setHealth(summoner.getHealth() + f0 * 0.9f);
 					}
 				}
 			}
@@ -216,6 +221,9 @@ public class EntityKageBunshin extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public boolean attackEntityFrom(DamageSource source, float amount) {
+			if (source == DamageSource.CRAMMING) {
+				return false;
+			}
 			if (source.getImmediateSource() instanceof EntityLivingBase && source.getImmediateSource().equals(this.getSummoner())) {
 				if (this.isOriginal) {
 					this.cancelCloneControl();
@@ -268,6 +276,14 @@ public class EntityKageBunshin extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
+		protected void updateFallState(double y, boolean onGroundIn, net.minecraft.block.state.IBlockState state, BlockPos pos) {
+			if (this.fallDistance > 4f) {
+				this.fallDistance -= 0.75f;
+			}
+			super.updateFallState(y, onGroundIn, state, pos);
+		}
+
+		@Override
 		protected void updateArmSwingProgress() {
 			super.updateArmSwingProgress();
 			for (ItemStack stack : this.getHeldEquipment()) {
@@ -311,16 +327,21 @@ public class EntityKageBunshin extends ElementsNarutomodMod.ModElement {
 					}
 					return false;
 				}
-				if (!(entity instanceof EntityPlayer) || Chakra.pathway((EntityPlayer)entity).getAmount() >= 200d) {
+				if (!(entity instanceof EntityPlayer) || Chakra.pathway(entity).getAmount() >= 2000.0d) {
 					entity.world.playSound(null, entity.posX, entity.posY, entity.posZ, SoundEvent.REGISTRY
 					  .getObject(new ResourceLocation("narutomod:kagebunshin")), SoundCategory.NEUTRAL, 1.0F, 1.0F);
-					updateClones(entity, true);
+					EC newClone = new EC(entity);
+					newClone.setPosition(newClone.posX + (entity.getRNG().nextBoolean() ? -0.1d : 0.1d), newClone.posY, newClone.posZ + (entity.getRNG().nextBoolean() ? -0.1d : 0.1d));
+					entity.world.spawnEntity(newClone);
+					updateClones(entity, newClone);
 					return true;
+				} else {
+					Chakra.pathway(entity).warningDisplay();
 				}
 				return false;
 			}
 
-			private static int updateClones(EntityLivingBase entity, boolean add1) {
+			private static int updateClones(EntityLivingBase entity, EC clone) {
 				List<Integer> clones = Lists.newArrayList();
 				int[] ids = entity.getEntityData().getIntArray(ID_KEY);
 				for (int i = 0; i < ids.length; i++) {
@@ -328,27 +349,21 @@ public class EntityKageBunshin extends ElementsNarutomodMod.ModElement {
 					if (ec != null && ec.isEntityAlive())
 						clones.add(ids[i]);
 				}
-				if (add1) {
-					EC newClone = new EC(entity);
-					newClone.setPosition(newClone.posX + (entity.getRNG().nextBoolean() ? -0.1d : 0.1d), newClone.posY, newClone.posZ + (entity.getRNG().nextBoolean() ? -0.1d : 0.1d));
-					entity.world.spawnEntity(newClone);
-					clones.add(newClone.getEntityId());
+				entity.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).removeModifier(MAXHEALTH);
+				if (!clone.isDead) {
+					clones.add(clone.getEntityId());
 					Chakra.Pathway chakra = Chakra.pathway(entity);
 					double d = chakra.getAmount() / (clones.size()+1);
 					chakra.consume(d);
-					Chakra.pathway(newClone).setMax(d).consume(-d);
-				}
-				entity.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).removeModifier(MAXHEALTH);
-				if (clones.size() > 0) {
-					entity.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH)
-					// .applyModifier(new AttributeModifier(MAXHEALTH, "maxhealth.modifier", 1d / (clones.size()+1) - 1d, 2));
-					 .applyModifier(new AttributeModifier(MAXHEALTH, "maxhealth.modifier",
-					 entity.getHealth() * (clones.size() + (add1 ? 0 : 2)) / (clones.size()+1) - entity.getMaxHealth(), 0));
+					Chakra.pathway(clone).setMax(d).consume(-d);
+					entity.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).applyModifier(new AttributeModifier(MAXHEALTH, "maxhealth.modifier", entity.getHealth() * clones.size() / (clones.size() + 1) - entity.getMaxHealth(), 0));
+				} else if (clones.size() > 0) {
+					entity.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).applyModifier(new AttributeModifier(MAXHEALTH, "maxhealth.modifier", -clone.getMaxHealth() * clones.size(), 0));
 				}
 				if (entity.getHealth() > entity.getMaxHealth()) {
 					entity.setHealth(entity.getMaxHealth());
 				}
-				if (add1) {
+				if (!clone.isDead) {
 					for (Integer i : clones) {
 						EC e = getCloneByID(entity.world, i.intValue());
 						e.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(entity.getHealth());
@@ -384,6 +399,50 @@ public class EntityKageBunshin extends ElementsNarutomodMod.ModElement {
 				entity.getEntityData().removeTag(ID_KEY);
 			}
 		}
+
+		public static class Jutsu2 extends Jutsu {
+			@Override
+			public boolean createJutsu(ItemStack stack, EntityLivingBase entity, float power) {
+				if (!(entity instanceof EntityPlayer) || !entity.isSneaking()) {
+					if (power >= 3.0f && Chakra.pathway(entity).getAmount() > 10000d) {
+						entity.world.playSound(null, entity.posX, entity.posY, entity.posZ, SoundEvent.REGISTRY
+						  .getObject(new ResourceLocation("narutomod:kagebunshin")), SoundCategory.NEUTRAL, 1.0F, 1.0F);
+						for (int i = 0, j = (int)Math.pow(2, power); i < j; i++) {
+							EC newClone = new EC(entity);
+							Vec3d vec = newClone.getPositionVector().addVector((entity.getRNG().nextDouble()-0.5d) * j * 0.3, 0.1, (entity.getRNG().nextDouble()-0.5d) * j * 0.3);
+							newClone.setPosition(vec.x, 0.1d + ProcedureUtils.getTopSolidBlockY(entity.world, new BlockPos(vec)), vec.z);
+							entity.world.spawnEntity(newClone);
+							Jutsu.updateClones(entity, newClone);
+						}
+						return true;
+					}
+					return false;
+				}
+				return super.createJutsu(stack, entity, power);
+			}
+			
+			@Override
+			public float getBasePower() {
+				return 2.9f;
+			}
+
+			@Override
+			public float getPowerupDelay() {
+				return 100.0f;
+			}
+
+			@Override
+			public float getMaxPower() {
+				return 7.0f;
+			}
+
+			@Override
+			public void onUsingTick(ItemStack stack, EntityLivingBase player, float power) {
+				if (player instanceof EntityPlayer) {
+					ProcedureUtils.sendStatusMessage((EntityPlayer)player, "" + (int)Math.pow(2, power) + " clones", true);
+				}
+			}
+		}
 	}
 
 	public static class PlayerEventHook {
@@ -406,7 +465,7 @@ public class EntityKageBunshin extends ElementsNarutomodMod.ModElement {
 			if (entity instanceof EntityPlayer) {
 				if (isPlayerClone((EntityPlayer)entity)) {
 					event.setCanceled(true);
-					((EntityPlayer)entity).sendStatusMessage(new TextComponentString("You are a clone, you can't travel to another dimension."), false);
+					ProcedureUtils.sendStatusMessage((EntityPlayer)entity, "You are a clone, you can't travel to another dimension.", false);
 				} else if (EC.Jutsu.hasClones((EntityPlayer)entity)) {
 					EC.Jutsu.removeAllClones((EntityPlayer)entity);
 				}
@@ -419,7 +478,7 @@ public class EntityKageBunshin extends ElementsNarutomodMod.ModElement {
 //System.out.println("isPlayerClone:"+isPlayerClone(entity));
 			if (!entity.world.isRemote && isPlayerClone(entity)) {
 				event.setResult(EntityPlayer.SleepResult.OTHER_PROBLEM);
-				entity.sendStatusMessage(new TextComponentString("You are a clone, you can't sleep."), false);
+				ProcedureUtils.sendStatusMessage(entity, "You are a clone, you can't sleep.", false);
 			}			
 		}
 

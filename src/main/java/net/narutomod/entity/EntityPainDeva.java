@@ -5,11 +5,9 @@ import net.narutomod.item.ItemAkatsukiRobe;
 import net.narutomod.item.ItemBlackReceiver;
 import net.narutomod.item.ItemRinnegan;
 import net.narutomod.ElementsNarutomodMod;
-import net.narutomod.NarutomodModVariables;
 import net.narutomod.procedure.ProcedureBanShoTenin;
 import net.narutomod.procedure.ProcedureOnLivingUpdate;
 import net.narutomod.procedure.ProcedureShinraTenseiOnKeyPressed;
-import net.narutomod.procedure.ProcedureSync;
 import net.narutomod.procedure.ProcedureUtils;
 
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -30,7 +28,6 @@ import net.minecraft.entity.ai.EntityAISwimming;
 import net.minecraft.entity.ai.EntityAILookIdle;
 import net.minecraft.entity.ai.EntityAIHurtByTarget;
 import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
-import net.minecraft.entity.ai.EntityAIAttackMelee;
 import net.minecraft.entity.ai.EntityAIAttackRanged;
 import net.minecraft.entity.ai.EntityAIWatchClosest;
 import net.minecraft.entity.ai.EntityAIWatchClosest2;
@@ -94,7 +91,7 @@ public class EntityPainDeva extends ElementsNarutomodMod.ModElement {
 			super.applyEntityAttributes();
 			this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(100D);
 			this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.5D);
-			this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(16.0D);
+			this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(18.0D);
 		}
 
 		@Override
@@ -108,7 +105,7 @@ public class EntityPainDeva extends ElementsNarutomodMod.ModElement {
 			this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, false));
 			this.tasks.addTask(0, new EntityAISwimming(this));
 			this.tasks.addTask(2, new EntityNinjaMob.AILeapAtTarget(this, 0.0F, 24.0F));
-			this.tasks.addTask(3, new EntityAIAttackMelee(this, 1.5d, true) {
+			this.tasks.addTask(3, new EntityNinjaMob.AIAttackMelee(this, 1.5d, true) {
 				@Override
 				public boolean shouldExecute() {
 					return super.shouldExecute() && EntityCustom.this.getDistance(EntityCustom.this.getAttackTarget()) < 6d;
@@ -117,21 +114,17 @@ public class EntityPainDeva extends ElementsNarutomodMod.ModElement {
 				public boolean shouldContinueExecuting() {
 					return super.shouldContinueExecuting() && EntityCustom.this.getDistance(EntityCustom.this.getAttackTarget()) < 6d;
 				}
-				@Override
-				protected double getAttackReachSqr(EntityLivingBase target) {
-					return (EntityCustom.this.meleeReach() + target.width) * (EntityCustom.this.meleeReach() + target.width);
-				}
 			});
 			this.tasks.addTask(4, new EntityAIAttackRanged(this, 1.0d, 20, 20f) {
 				@Override
 				public void startExecuting() {
 					super.startExecuting();
-					ProcedureSync.EntityNBTTag.setAndSync(EntityCustom.this, NarutomodModVariables.forceBowPose, true);
+					EntityCustom.this.setSwingingArms(true);
 				}
 				@Override
 				public void resetTask() {
 					super.resetTask();
-					ProcedureSync.EntityNBTTag.removeAndSync(EntityCustom.this, NarutomodModVariables.forceBowPose);
+					EntityCustom.this.setSwingingArms(false);
 				}
 			});
 			this.tasks.addTask(5, new EntityAIWatchClosest2(this, EntityPlayer.class, 32.0F, 1.0F));
@@ -161,7 +154,7 @@ public class EntityPainDeva extends ElementsNarutomodMod.ModElement {
 					this.outofrangeTicks = 0;
 				}
 			} else {
-				ProcedureSync.EntityNBTTag.removeAndSync(EntityCustom.this, NarutomodModVariables.forceBowPose);
+				this.setSwingingArms(false);
 			}
 		}
 
@@ -215,6 +208,7 @@ public class EntityPainDeva extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		public void setSwingingArms(boolean swingingArms) {
+			ProcedureOnLivingUpdate.forceBowPose(this, swingingArms);
 		}
 
 		@Override

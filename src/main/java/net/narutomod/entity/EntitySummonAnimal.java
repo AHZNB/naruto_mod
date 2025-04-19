@@ -281,10 +281,9 @@ public class EntitySummonAnimal extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void move(MoverType type, double x, double y, double z) {
 			if (this instanceof EntityTailedBeast.ICollisionData) {
-				((EntityTailedBeast.ICollisionData)this).getCollisionData().collideWithAABBs(this.world
-				 .getCollisionBoxes(this, this.getEntityBoundingBox().expand(x, y, z)), x, y, z);
+				((EntityTailedBeast.ICollisionData)this).getCollisionData().collideWithAABBs(x, y, z);
 			}
-			if (this.couldBreakBlocks()) {
+			if (this.world.getGameRules().getBoolean("mobGriefing") && this.couldBreakBlocks()) {
 				if (this instanceof EntityTailedBeast.ICollisionData) {
 					for (BlockPos pos : ((EntityTailedBeast.ICollisionData)this).getCollisionData().getHitBlocks()) {
 						if (canBreakList.contains(this.world.getBlockState(pos).getMaterial())) {

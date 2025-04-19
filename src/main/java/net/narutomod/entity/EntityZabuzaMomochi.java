@@ -32,7 +32,6 @@ import net.minecraft.entity.ai.EntityAIWander;
 import net.minecraft.entity.ai.EntityAISwimming;
 import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
 import net.minecraft.entity.ai.EntityAIHurtByTarget;
-import net.minecraft.entity.ai.EntityAIAttackMelee;
 import net.minecraft.entity.ai.EntityAIAttackRanged;
 import net.minecraft.entity.ai.EntityAITarget;
 import net.minecraft.entity.ai.EntityAIAvoidEntity;
@@ -146,6 +145,14 @@ public class EntityZabuzaMomochi extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
+		protected void applyEntityAttributes() {
+			super.applyEntityAttributes();
+			this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(100D);
+			this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.5D);
+			this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(10D);
+		}
+
+		@Override
 		protected void initEntityAI() {
 			super.initEntityAI();
 			this.tasks.addTask(0, new EntityAISwimming(this));
@@ -156,12 +163,7 @@ public class EntityZabuzaMomochi extends ElementsNarutomodMod.ModElement {
 			}, 10f, 1.25d, 1.5d));
 			this.tasks.addTask(2, new EntityNinjaMob.AIAttackRangedJutsu(this, WATERDRAGON_CD, 12.0F));
 			this.tasks.addTask(2, new EntityNinjaMob.AILeapAtTarget(this, 1.0f));
-			this.tasks.addTask(3, new EntityAIAttackMelee(this, 1.5d, true) {
-				@Override
-				protected double getAttackReachSqr(EntityLivingBase attackTarget) {
-					return (EntityCustom.this.meleeReach() + attackTarget.width) * (EntityCustom.this.meleeReach() + attackTarget.width);
-				}
-			});
+			this.tasks.addTask(3, new EntityNinjaMob.AIAttackMelee(this, 1.5d, true));
 			this.tasks.addTask(4, new EntityAIWatchClosest2(this, EntityPlayer.class, 15.0F, 1.0F));
 			this.tasks.addTask(5, new EntityAIWander(this, 0.5));
 			this.tasks.addTask(6, new EntityAIWatchClosest(this, EntityMob.class, 8.0F));
@@ -180,15 +182,7 @@ public class EntityZabuzaMomochi extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		protected double meleeReach() {
-			return 3.4d;
-		}
-
-		@Override
-		protected void applyEntityAttributes() {
-			super.applyEntityAttributes();
-			this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(100D);
-			this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.5D);
-			this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(10D);
+			return 4.8d;
 		}
 
 		@Override

@@ -122,7 +122,7 @@ public class ItemJinton extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
-		protected float getPower(ItemStack stack, EntityLivingBase entity, int timeLeft) {
+		public float getPower(ItemStack stack, EntityLivingBase entity, int timeLeft) {
 			return Math.min(this.getUsePercent(timeLeft) * this.getMaxUsablePower(entity, stack), this.getMaxPower(stack, entity));
 		}
 

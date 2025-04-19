@@ -24,7 +24,6 @@ import net.minecraft.entity.ai.EntityAIWander;
 import net.minecraft.entity.ai.EntityAISwimming;
 import net.minecraft.entity.ai.EntityAILookIdle;
 import net.minecraft.entity.ai.EntityAIHurtByTarget;
-import net.minecraft.entity.ai.EntityAIAttackMelee;
 import net.minecraft.entity.ai.EntityAIAttackRanged;
 import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
 import net.minecraft.entity.ai.EntityAIWatchClosest;
@@ -121,7 +120,7 @@ public class EntityPainAsura extends ElementsNarutomodMod.ModElement {
 					return super.shouldExecute() && EntityCustom.this.getAttackTarget().posY - EntityCustom.this.posY > 5d;
 				}
 			});
-			this.tasks.addTask(3, new EntityAIAttackMelee(this, 1.2d, true) {
+			this.tasks.addTask(3, new EntityNinjaMob.AIAttackMelee(this, 1.2d, true) {
 				@Override
 				public boolean shouldExecute() {
 					return super.shouldExecute() && EntityCustom.this.getDistance(EntityCustom.this.getAttackTarget()) < 6d;
@@ -129,10 +128,6 @@ public class EntityPainAsura extends ElementsNarutomodMod.ModElement {
 				@Override
 				public boolean shouldContinueExecuting() {
 					return super.shouldContinueExecuting() && EntityCustom.this.getDistance(EntityCustom.this.getAttackTarget()) < 6d;
-				}
-				@Override
-				protected double getAttackReachSqr(EntityLivingBase target) {
-					return (EntityCustom.this.meleeReach() + target.width) * (EntityCustom.this.meleeReach() + target.width);
 				}
 			});
 			this.tasks.addTask(4, new EntityAIAttackRanged(this, 1.2d, 20, 20f));

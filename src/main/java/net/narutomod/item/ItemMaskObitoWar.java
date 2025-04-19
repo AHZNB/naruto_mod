@@ -3,6 +3,7 @@ package net.narutomod.item;
 
 import net.narutomod.creativetab.TabModTab;
 import net.narutomod.ElementsNarutomodMod;
+import net.narutomod.PlayerRender;
 
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.relauncher.Side;
@@ -20,6 +21,8 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.model.ModelBiped;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.world.World;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class ItemMaskObitoWar extends ElementsNarutomodMod.ModElement {
@@ -41,6 +44,14 @@ public class ItemMaskObitoWar extends ElementsNarutomodMod.ModElement {
 	@Override
 	public void initElements() {
 		elements.items.add(() -> new ItemArmor(ItemMaskAnbu1.ENUMA, 0, EntityEquipmentSlot.HEAD) {
+			@Override
+			public void onArmorTick(World world, EntityPlayer player, ItemStack itemStack) {
+				super.onArmorTick(world, player, itemStack);
+				if (!world.isRemote && PlayerRender.headwearHiddenTicks(player) <= 2) {
+					PlayerRender.hideHeadwear(player, 10);
+				}
+			}
+
 			@Override
 			@SideOnly(Side.CLIENT)
 			public ModelBiped getArmorModel(EntityLivingBase living, ItemStack stack, EntityEquipmentSlot slot, ModelBiped defaultModel) {

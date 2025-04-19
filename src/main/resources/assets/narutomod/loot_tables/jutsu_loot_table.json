@@ -31,6 +31,11 @@
         },
         {
           "type": "item",
+          "name": "narutomod:scroll_multi_clone",
+          "weight": 10
+        },
+        {
+          "type": "item",
           "name": "narutomod:scroll_chidori",
           "weight": 10
         },
@@ -122,7 +127,7 @@
         {
           "type": "item",
           "name": "narutomod:scroll_lightning_chakra_mode",
-          "weight": 10
+          "weight": 5
         },
         {
           "type": "item",
@@ -158,6 +163,11 @@
           "type": "item",
           "name": "narutomod:scroll_water_shockwave",
           "weight": 10
+        },
+        {
+          "type": "item",
+          "name": "narutomod:scroll_shikigami",
+          "weight": 5
         }
       ]
     },

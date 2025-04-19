@@ -75,7 +75,7 @@ public class ItemSenjutsu extends ElementsNarutomodMod.ModElement {
 	@GameRegistry.ObjectHolder("narutomod:senjutsu")
 	public static final Item block = null;
 	public static final int ENTITYID = 355;
-	private static final String SAGEMODEACTIVATEDKEY = "SageModeActivated";
+	//private static final String SAGEMODEACTIVATEDKEY = "SageModeActivated";
 	private static final String SAGECHAKRADEPLETIONAMOUNT = "SageChakraDepletionAmount";
 	public static final ItemJutsu.JutsuEnum SAGEMODE = new ItemJutsu.JutsuEnum(0, "tooltip.senjutsu.sagemode", 'S', 10d, new SageMode());
 	public static final ItemJutsu.JutsuEnum RASENGAN = new ItemJutsu.JutsuEnum(1, "tooltip.senjutsu.rasengan", 'S', ItemNinjutsu.RASENGAN.chakraUsage, new EntityRasengan.EC.SageModeVariant());
@@ -223,16 +223,6 @@ public class ItemSenjutsu extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
-		public void onUsingTick(ItemStack stack, EntityLivingBase player, int timeLeft) {
-			ItemJutsu.JutsuEnum jutsu = this.getCurrentJutsu(stack);
-			if (!player.world.isRemote && jutsu == SAGEMODE && !(player.getRidingEntity() instanceof EntitySitPlatform)) {
-				player.resetActiveHand();
-				return;
-			}
-			super.onUsingTick(stack, player, timeLeft);
-		}
-
-		@Override
 		public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer entity, EnumHand hand) {
 			ItemStack stack = entity.getHeldItem(hand);
 			ItemJutsu.JutsuEnum jutsu = this.getCurrentJutsu(stack);
@@ -320,13 +310,34 @@ public class ItemSenjutsu extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-	public static boolean isSageModeActivated(ItemStack stack) {
-		return stack.hasTagCompound() && stack.getTagCompound().getBoolean(SAGEMODEACTIVATEDKEY);
+	public static boolean canUseSageMode(EntityLivingBase entity) {
+		if (entity instanceof EntityPlayer) {
+			ItemStack stack = ProcedureUtils.getMatchingItemStack(entity, block);
+			return stack != null && ((RangedItem)stack.getItem()).canActivateJutsu(stack, SAGEMODE, (EntityPlayer)entity) == EnumActionResult.SUCCESS;
+		}
+		return false;
 	}
 
-	public static boolean isSageModeActivated(EntityPlayer entity) {
-		ItemStack stack = ProcedureUtils.getMatchingItemStack(entity, block);
-		return stack != null ? isSageModeActivated(stack) : false;
+	public static Type getSageType(EntityLivingBase entity) {
+		if (entity instanceof EntityPlayer) {
+			ItemStack stack = ProcedureUtils.getMatchingItemStack(entity, block);
+			if (stack != null) {
+				return ((RangedItem)stack.getItem()).getSageType(stack);
+			}
+		}
+		return Type.NONE;
+	}
+
+	public static boolean isSageModeActivated(ItemStack stack) {
+		return stack.hasTagCompound() && stack.getTagCompound().hasKey(SAGECHAKRADEPLETIONAMOUNT, 6);
+	}
+
+	public static boolean isSageModeActivated(EntityLivingBase entity) {
+		if (entity instanceof EntityPlayer) {
+			ItemStack stack = ProcedureUtils.getMatchingItemStack(entity, block);
+			return stack != null && isSageModeActivated(stack);
+		}
+		return false;
 	}
 
 	public static void deactivateSageMode(EntityLivingBase entity) {
@@ -345,7 +356,7 @@ public class ItemSenjutsu extends ElementsNarutomodMod.ModElement {
 			if (d > 0.0d && cp.getAmount() > d) {
 				cp.consume(cp.getAmount() - d);
 			}
-			stack.getTagCompound().removeTag(SAGEMODEACTIVATEDKEY);
+			//stack.getTagCompound().removeTag(SAGEMODEACTIVATEDKEY);
 			stack.getTagCompound().removeTag(SAGECHAKRADEPLETIONAMOUNT);
 		}
 		if (entity instanceof EntityPlayerMP) {
@@ -387,7 +398,7 @@ public class ItemSenjutsu extends ElementsNarutomodMod.ModElement {
 				float f = stack.getItem() == block && ((RangedItem)stack.getItem()).getCurrentJutsu(stack) == SAGEMODE
 				 ? ((RangedItem)stack.getItem()).getCurrentJutsuXpModifier(stack, entity) : 1.0f;
 				cp.consume(-0.6f / f, true);
-				stack.getTagCompound().setBoolean(SAGEMODEACTIVATEDKEY, true);
+				//stack.getTagCompound().setBoolean(SAGEMODEACTIVATEDKEY, true);
 				if (entity instanceof EntityPlayerMP) {
 					OverlayChakraDisplay.ShowFlamesMessage.send((EntityPlayerMP)entity, true);
 				}
@@ -414,6 +425,15 @@ public class ItemSenjutsu extends ElementsNarutomodMod.ModElement {
 		@Override
 		public float getMaxPower() {
 			return 100.0f;
+		}
+		
+		@Override
+		public void onUsingTick(ItemStack stack, EntityLivingBase player, float power) {
+			if (!(player.getRidingEntity() instanceof EntitySitPlatform)) {
+				player.resetActiveHand();
+				return;
+			}
+			ItemJutsu.IJutsuCallback.super.onUsingTick(stack, player, power);
 		}
 	}
 

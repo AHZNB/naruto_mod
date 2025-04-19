@@ -1,11 +1,13 @@
 package net.narutomod.procedure;
 
+import net.narutomod.PlayerRender;
 import net.narutomod.NarutomodModVariables;
 import net.narutomod.ElementsNarutomodMod;
 
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.World;
 import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.Entity;
 
 import java.util.Map;
@@ -30,13 +32,20 @@ public class ProcedureDeathAnimations extends ElementsNarutomodMod.ModElement {
 		double w = 0;
 		double h = 0;
 		double n = 0;
+		double time = 0;
 		if (((entity.getEntityData().getDouble("deathAnimationType")) == 1)) {
-			w = entity.width / 2;
-			h = entity.height / 2;
-			n = (double) (((NarutomodModVariables.DeathAnimation_slowDust)
-					- (entity.getEntityData().getDouble((NarutomodModVariables.DeathAnimationTime)))) * (h));
-			((WorldServer) entity.world).spawnParticle(EnumParticleTypes.FALLING_DUST, entity.posX, entity.posY + h, entity.posZ, (int) n, w * 0.5,
-					h * 0.3, w * 0.5, 0, 4);
+			if (world instanceof WorldServer) {
+				w = entity.width / 2;
+				h = entity.height / 2;
+				n = (double) (((NarutomodModVariables.DeathAnimation_slowDust)
+						- (entity.getEntityData().getDouble((NarutomodModVariables.DeathAnimationTime)))) * (h));
+				((WorldServer) world).spawnParticle(EnumParticleTypes.FALLING_DUST, entity.posX, entity.posY + h, entity.posZ, (int) n, w * 0.5,
+						h * 0.3, w * 0.5, 0, 4);
+				if ((entity instanceof EntityPlayer)) {
+					time = (double) (entity.getEntityData().getDouble((NarutomodModVariables.DeathAnimationTime)));
+					PlayerRender.setColorMultiplier((EntityPlayer) entity, ((int) (16d + 239d * (time / 200)) << 24) | 0x00707070);
+				}
+			}
 		} else if (((entity.getEntityData().getDouble("deathAnimationType")) == 2)) {
 			w = entity.width / 2;
 			h = entity.height / 3;

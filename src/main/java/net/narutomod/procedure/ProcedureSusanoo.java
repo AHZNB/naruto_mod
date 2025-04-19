@@ -57,7 +57,7 @@ public class ProcedureSusanoo extends ElementsNarutomodMod.ModElement {
 
 	public static void execute(EntityPlayer player) {
 		World world = player.world;
-		boolean flag = (player.isCreative() || ProcedureUtils.hasItemInInventory(player, ItemRinnegan.helmet));
+		boolean flag = (player.isCreative() || ProcedureUtils.hasAnyItemOfSubtype(player, ItemRinnegan.Base.class));
 		ItemStack helmet = player.inventory.armorInventory.get(3);
 		if (!player.getEntityData().getBoolean("susanoo_activated")) {
 			if (!ItemSharingan.isBlinded(helmet) && PlayerTracker.getBattleXp(player) >= EntitySusanooBase.BXP_REQUIRED_L0

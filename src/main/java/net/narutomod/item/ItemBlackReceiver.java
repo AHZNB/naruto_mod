@@ -55,6 +55,7 @@ import net.narutomod.ElementsNarutomodMod;
 
 import com.google.common.collect.Multimap;
 import javax.annotation.Nullable;
+import net.minecraft.nbt.NBTTagCompound;
 //import java.util.Collection;
 
 @ElementsNarutomodMod.ModElement.Tag
@@ -139,6 +140,25 @@ public class ItemBlackReceiver extends ElementsNarutomodMod.ModElement {
 				} else if (entity instanceof EntityLiving && !entity.getEntityData().getBoolean("BlackReceiverTolerance")) {
 					((EntityLiving)entity).setNoAI(true);
 				}
+			}
+			NBTTagCompound compound = itemstack.getTagCompound();
+			if (compound == null) {
+				compound = new NBTTagCompound();
+				itemstack.setTagCompound(compound);
+			}
+			if (!compound.hasKey("CustomChakraFlowStartVec")) {
+				NBTTagCompound cmp1 = new NBTTagCompound();
+				cmp1.setDouble("x", 0d);
+				cmp1.setDouble("y", -0.875d);
+				cmp1.setDouble("z", 0d);
+				compound.setTag("CustomChakraFlowStartVec", cmp1);
+			}
+			if (!compound.hasKey("CustomChakraFlowEndVec")) {
+				NBTTagCompound cmp2 = new NBTTagCompound();
+				cmp2.setDouble("x", 0d);
+				cmp2.setDouble("y", -1.375d);
+				cmp2.setDouble("z", 0d);
+				compound.setTag("CustomChakraFlowEndVec", cmp2);
 			}
 		}
 

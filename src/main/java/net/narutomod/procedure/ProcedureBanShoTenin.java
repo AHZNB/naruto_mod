@@ -26,6 +26,7 @@ import net.narutomod.Chakra;
 import net.narutomod.entity.EntityEarthBlocks;
 import net.narutomod.entity.EntityChibakuTenseiBall;
 import net.narutomod.entity.EntityShieldBase;
+import net.narutomod.item.ItemRinnegan;
 
 import java.util.List;
 import java.util.Map;
@@ -35,7 +36,6 @@ import com.google.common.collect.Lists;
 @ElementsNarutomodMod.ModElement.Tag
 public class ProcedureBanShoTenin extends ElementsNarutomodMod.ModElement {
 	private static final Map<Entity, ProcedurePullAndHold> map = Maps.<Entity, ProcedurePullAndHold>newHashMap();
-	private static final double CHAKRA_USAGE = 0.5d; // per tick
 	public static final String BSTN_CD = "BanshoTenin_cooldown";
 	
 	public ProcedureBanShoTenin(ElementsNarutomodMod instance) {
@@ -76,9 +76,10 @@ public class ProcedureBanShoTenin extends ElementsNarutomodMod.ModElement {
 			procedure = new ProcedurePullAndHold();
 			map.put(entity, procedure);
 		}
-		Chakra.Pathway cp = Chakra.pathway(entity);
 		if (is_pressed) {
-			if (cp.getAmount() < CHAKRA_USAGE) {
+			double chakraUsage = ItemRinnegan.getBanshoteninChakraUsage(entity);
+			Chakra.Pathway cp = Chakra.pathway(entity);
+			if (cp.getAmount() < chakraUsage) {
 				is_pressed = false;
 				cp.warningDisplay();
 			} else if (t != null && procedure.getGrabbedEntity() == null) {
@@ -93,17 +94,16 @@ public class ProcedureBanShoTenin extends ElementsNarutomodMod.ModElement {
 					entity.world.playSound(null, t.getBlockPos(), SoundEvent.REGISTRY
 					  .getObject(new ResourceLocation("narutomod:rocks")), SoundCategory.NEUTRAL, 5.0F, 0.5F);
 					EntityEarthBlocks.Base entity1 = ProcedureGravityPower.dislodgeBlocks(entity.world, t.getBlockPos(), 5);
-					if (entity1 != null) {
+					if (entity1 != null && cp.consume(chakraUsage * 50d)) {
 						entity1.motionX = 0.2D * t.sideHit.getDirectionVec().getX();
 						entity1.motionY = 0.2D * t.sideHit.getDirectionVec().getY();
 						entity1.motionZ = 0.2D * t.sideHit.getDirectionVec().getZ();
 						procedure.addEarthBlock(entity1);
 					}
-					cp.consume(CHAKRA_USAGE);
 				}
 			}
 			if (procedure.getGrabbedEntity() != null) {
-				cp.consume(CHAKRA_USAGE);
+				cp.consume(chakraUsage);
 			}
 		} else if (procedure.getGrabbedEntity() != null) {
 			cooldown = entity.world.getTotalWorldTime() + 100;

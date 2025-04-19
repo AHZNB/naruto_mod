@@ -36,6 +36,7 @@ import net.narutomod.PlayerTracker;
 import net.narutomod.entity.EntityNinjaMob;
 import net.narutomod.creativetab.TabModTab;
 import net.narutomod.ElementsNarutomodMod;
+import net.narutomod.procedure.ProcedureUtils;
 
 import com.google.common.collect.Multimap;
 import javax.annotation.Nullable;
@@ -105,6 +106,7 @@ public class ItemSamehada extends ElementsNarutomodMod.ModElement {
 			if (equipmentSlot == EntityEquipmentSlot.MAINHAND) {
 				multimap.put(SharedMonsterAttributes.ATTACK_DAMAGE.getName(), new AttributeModifier(ATTACK_DAMAGE_MODIFIER, "Tool modifier", 17f, 0));
 				multimap.put(SharedMonsterAttributes.ATTACK_SPEED.getName(), new AttributeModifier(ATTACK_SPEED_MODIFIER, "Tool modifier", -3.4, 0));
+				multimap.put(EntityPlayer.REACH_DISTANCE.getName(), new AttributeModifier(ProcedureUtils.REACH_MODIFIER, "Tool modifier", 1, 0));
 			}
 			return multimap;
 		}

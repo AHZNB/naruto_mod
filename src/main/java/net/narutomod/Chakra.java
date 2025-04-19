@@ -120,7 +120,7 @@ public class Chakra extends ElementsNarutomodMod.ModElement {
 			double d = this.getAmount();
 			double max = this.getMax();
 			double d1 = d - amountIn;
-			d1 = d1 > max ? (ignoreMax ? d1 : amountIn > 0d ? d1 : d > max ? d : max) : d1 > 0 ? d1 : d;
+			d1 = d1 > max ? (ignoreMax ? d1 : amountIn > 0d ? d1 : d > max ? d : max) : d1 >= 0d ? d1 : d;
 			this.set(d1);
 			return d != d1;
 		}

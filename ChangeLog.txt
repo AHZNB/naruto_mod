@@ -20,9 +20,17 @@ Jutsus
  - almighty push can break out of most trapping jutsus and kill projectile jutsus in range
  - chibakutensei entity can be destroyed with damage
  - using puppets now costs chakra
- - improved preta shield animation and better chakra absorbing
+ - improved preta shield animation and better chakra absorbing, petrification & death after absorbing 1000 sage chakra
  - added more summons to rinnegan animal path, cycle summons by press and holding jutsukey2
  - shadow/limbo clones will gain ninjaXP from combat and give it to the user after death
+ - shadow clone jutsu: now requires 2000 minimum available chakra to use; does not copy player speed; can now use lightning chakra mode
+ - added multi shadow clone jutsu & scroll
+ - wood release big forest jutsu: branch extends faster (slight buff)
+ - wood burial: improved animation on large targets, target needs to be close to ground to activate (nerf)
+ - added wood release thrusting spear jutsu
+ - added wood release deep forest emergence (AOE jutsu)
+ - biju cloak xp capped to 20,000
+ - slightly buffed Vacuum wave damage
  
 Items:
  - giant folding fan is opened by default now (to fix fan not openning when held by random entities)
@@ -54,10 +62,11 @@ Entities:
  - adding Asura path Pain (WIP: shoots missiles, unnatural durability, incredible strength)
  - adding Animal path Pain (WIP: summons weird giant animals)
  - adding Preta path Pain (WIP: uses preta shield when attacked)
- - adding Human path, Naraka path (WIP: does nothing)
- - adding Nagato, Zetsu, Obito (WIP: does nothing)
+ - adding Human path, Naraka path, Nagato (WIP: does nothing)
+ - adding Zetsu (WIP: uses a small version of deep forest emergence)
+ - adding Obito/Tobi (WIP: Tobi runs away from attackers and calls for help from nearby akatsuki members, both uses kamui intangibiity)
  - adding Nagato's mech walker, players can ride it if puppet jutsu learned
- - White zetsu: improved mimic ability, takes opponents chakra
+ - White zetsu: improved mimic ability, can transform into mobs, takes opponents chakra
  
 General:
  - added config option to disable auto kekkeigenkai assignment
@@ -66,6 +75,7 @@ General:
  - removed /locateEntity command, replace with /shinobicraftcmd <locateEntity | jinchuriki | susanooColor>
  - moved dojutsu keybind actions into its respective classes (addon makers can override)
  - changed chakra regeneration potion effect from flat 5% to base on amplifier
+ - fixed kamui dimension bug showing overworld entities
 
 0.3.1-beta ================================================================================
 

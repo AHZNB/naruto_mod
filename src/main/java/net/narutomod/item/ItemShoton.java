@@ -28,8 +28,6 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.potion.PotionEffect;
-import net.minecraft.init.MobEffects;
 
 import java.util.List;
 
@@ -81,8 +79,6 @@ public class ItemShoton extends ElementsNarutomodMod.ModElement {
 					this.executeJutsu(stack, player, 0.99f + ((float)this.getMaxUseDuration() - timeLeft) * 0.01f);
 				}
 				return;
-			} else if (!player.world.isRemote && jutsu == RAY && !player.isRiding()) {
-				player.addPotionEffect(new PotionEffect(MobEffects.LEVITATION, 5, 4, false, false));
 			}
 			super.onUsingTick(stack, player, timeLeft);
 		}

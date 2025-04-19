@@ -104,16 +104,6 @@ public class ItemBakuton extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
-		public void onUsingTick(ItemStack stack, EntityLivingBase player, int count) {
-			if (player instanceof EntityPlayer && !player.world.isRemote && this.getCurrentJutsu(stack) == CLAY) {
-				((EntityPlayer)player).sendStatusMessage(
-				 new TextComponentString("C-" + Math.max(1, (int)this.getPower(stack, player, count))), true);
-			} else {
-				super.onUsingTick(stack, player, count);
-			}
-		}
-
-		@Override
 		public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer entity, EnumHand hand) {
 			if (entity.isCreative() || (ProcedureUtils.hasItemInInventory(entity, ItemDoton.block) 
 			 && ProcedureUtils.hasItemInInventory(entity, ItemRaiton.block))) {
@@ -396,6 +386,13 @@ public class ItemBakuton extends ElementsNarutomodMod.ModElement {
 			@Override
 			public float getMaxPower() {
 				return 4.1f;
+			}
+
+			@Override
+			public void onUsingTick(ItemStack stack, EntityLivingBase player, float power) {
+				if (player instanceof EntityPlayer) {
+					((EntityPlayer)player).sendStatusMessage(new TextComponentString("C-" + Math.max(1, (int)power)), true);
+				}
 			}
 	    }
 	

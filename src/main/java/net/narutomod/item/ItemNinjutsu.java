@@ -47,6 +47,7 @@ import net.narutomod.ElementsNarutomodMod;
 import net.narutomod.entity.*;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.procedure.ProcedureOnLivingUpdate;
+import net.narutomod.procedure.ProcedureOnLeftClickEmpty;
 import net.narutomod.potion.PotionParalysis;
 import net.narutomod.Chakra;
 
@@ -70,6 +71,7 @@ public class ItemNinjutsu extends ElementsNarutomodMod.ModElement {
 	public static final ItemJutsu.JutsuEnum TRANSFORM = new ItemJutsu.JutsuEnum(8, "transformation_jutsu", 'D', 50d, new EntityTransformationJutsu.EC.Jutsu());
 	public static final ItemJutsu.JutsuEnum HIRAISHIN = new ItemJutsu.JutsuEnum(9, "hiraishin", 'S', 10d, new EntityHiraishin.EC.Jutsu());
 	public static final ItemJutsu.JutsuEnum SHIKIGAMI = new ItemJutsu.JutsuEnum(10, "shikigami", 'B', 50d, new EntityShikigami.EC.Jutsu());
+	public static final ItemJutsu.JutsuEnum MULTICLONE = new ItemJutsu.JutsuEnum(11, "kage_bunshin_multi", 'A', new EntityKageBunshin.EC.Jutsu2());
 
 	public ItemNinjutsu(ElementsNarutomodMod instance) {
 		super(instance, 377);
@@ -77,7 +79,7 @@ public class ItemNinjutsu extends ElementsNarutomodMod.ModElement {
 	
 	@Override
 	public void initElements() {
-		elements.items.add(() -> new RangedItem(REPLACEMENT, KAGEBUNSHIN, RASENGAN, LIMBOCLONE, AMENOTEJIKARA, PUPPET, BUGSWARM, INVISABILITY, TRANSFORM, HIRAISHIN, SHIKIGAMI));
+		elements.items.add(() -> new RangedItem(REPLACEMENT, KAGEBUNSHIN, RASENGAN, LIMBOCLONE, AMENOTEJIKARA, PUPPET, BUGSWARM, INVISABILITY, TRANSFORM, HIRAISHIN, SHIKIGAMI, MULTICLONE));
 		elements.entities.add(() -> EntityEntryBuilder.create().entity(EntityReplacementClone.class)
 			.id(new ResourceLocation("narutomod", "replacementclone"), ENTITYID).name("replacementclone")
 			.tracker(64, 1, true).build());
@@ -126,6 +128,17 @@ public class ItemNinjutsu extends ElementsNarutomodMod.ModElement {
 					HidingWithCamouflage.deactivate(itemstack);
 				}
 			}
+		}
+
+		@Override
+		public boolean onLeftClickEntity(ItemStack itemstack, EntityPlayer attacker, Entity target) {
+			if (attacker.equals(target)) {
+				target = ProcedureUtils.objectEntityLookingAt(attacker, 50d, 3d).entityHit;
+			}
+			if (target instanceof EntityLivingBase) {
+				attacker.setRevengeTarget((EntityLivingBase)target);
+			}
+			return super.onLeftClickEntity(itemstack, attacker, target);
 		}
 	}
 
@@ -355,5 +368,6 @@ public class ItemNinjutsu extends ElementsNarutomodMod.ModElement {
 	public void init(FMLInitializationEvent event) {
 		MinecraftForge.EVENT_BUS.register(new EntityReplacementClone.Jutsu.Hook());
 		MinecraftForge.EVENT_BUS.register(new HidingWithCamouflage.Hook());
+		ProcedureOnLeftClickEmpty.addQualifiedItem(block, EnumHand.MAIN_HAND);
 	}
 }

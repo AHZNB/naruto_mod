@@ -13,7 +13,8 @@ import net.minecraft.init.Biomes;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.world.World;
-import net.minecraft.world.DifficultyInstance;
+import net.minecraft.world.EnumDifficulty;
+import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.gen.feature.WorldGenAbstractTree;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.DamageSource;
@@ -25,9 +26,13 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.ai.EntityAIWatchClosest;
 import net.minecraft.entity.ai.EntityAIWander;
 import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
-import net.minecraft.entity.IEntityLivingData;
+import net.minecraft.entity.monster.EntityEnderman;
+import net.minecraft.entity.monster.EntityZombie;
+import net.minecraft.entity.monster.IMob;
+import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.EnumCreatureType;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.client.model.ModelBox;
@@ -45,6 +50,7 @@ import net.narutomod.Chakra;
 import net.narutomod.ModConfig;
 import net.narutomod.ElementsNarutomodMod;
 
+import java.util.List;
 import javax.annotation.Nullable;
 
 @ElementsNarutomodMod.ModElement.Tag
@@ -74,8 +80,9 @@ public class EntityWhiteZetsu extends ElementsNarutomodMod.ModElement {
 		}
 	}
 
-	public static class EntityCustom extends EntityClone._Base {
+	public static class EntityCustom extends EntityClone._Base implements IMob {
 		private final ItemStack kunaiStack = new ItemStack(ItemKunai.block, 1);
+		private ItemStack oldHeldStack = ItemStack.EMPTY;
 		private double collectedChakra;
 
 		public EntityCustom(World world) {
@@ -86,41 +93,36 @@ public class EntityWhiteZetsu extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
-		public IEntityLivingData onInitialSpawn(DifficultyInstance difficulty, @Nullable IEntityLivingData livingdata) {
-			this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, this.kunaiStack);
-			return super.onInitialSpawn(difficulty, livingdata);
-		}
-
-		@Override
 		protected void applyEntityAttributes() {
 			super.applyEntityAttributes();
 			this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(5.0D);
 			this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.6D);
 			this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(30.0D);
-			this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(5D);
-		}
-
-		@Override
-		protected void setSummoner(EntityLivingBase entity) {
-			super.setSummoner(entity);
-			this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, this.kunaiStack);
-			this.setItemStackToSlot(EntityEquipmentSlot.OFFHAND, ItemStack.EMPTY);
+			this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(6D);
 		}
 
 		@Override
 		protected void initEntityAI() {
 			super.initEntityAI();
 			this.targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, EntityPlayer.class, false, false));
-			this.tasks.addTask(2, new EntityAIWatchClosest(this, EntityPlayer.class, 50f) {
+			this.tasks.addTask(2, new EntityAIWatchClosest(this, EntityPlayer.class, 64f, 0.05f) {
 				@Override
 				public void updateTask() {
 					super.updateTask();
 					World world = this.entity.world;
-					if (EntityCustom.this.getSummoner() == null && this.closestEntity instanceof EntityPlayer
-					 && world.playerEntities.size() > 1) {
+					if (EntityCustom.this.getSummoner() == null && this.closestEntity instanceof EntityPlayer) {
 						for (int i = 0; i < 10; i++) {
-							EntityPlayer entity1 = world.playerEntities.get(rand.nextInt(world.playerEntities.size()));
-							if (!entity1.equals(this.closestEntity)) {
+							EntityLivingBase entity1;
+							if (world.playerEntities.size() > 1) {
+								entity1 = world.playerEntities.get(rand.nextInt(world.playerEntities.size()));
+							} else {
+								List<EntityLiving> list = world.getEntitiesWithinAABB(EntityLiving.class, EntityCustom.this.getEntityBoundingBox().grow(64, 32, 64), (p)-> {
+									return p instanceof EntityZombie || p instanceof EntityVillager || p instanceof EntityEnderman
+									 || p instanceof EntityNinjaMerchant.Base;
+								});
+								entity1 = !list.isEmpty() ? list.get(rand.nextInt(list.size())) : null;
+							}
+							if (entity1 != null && !entity1.equals(this.closestEntity)) {
 								EntityCustom.this.setSummoner(entity1);
 								return;
 							}
@@ -129,6 +131,25 @@ public class EntityWhiteZetsu extends ElementsNarutomodMod.ModElement {
 				}
 			});
 			this.tasks.addTask(3, new EntityAIWander(this, 0.5));
+		}
+
+		@Override
+		protected void updateAITasks() {
+			super.updateAITasks();
+			if (this.getAttackTarget() != null && this.getAttackTarget().isEntityAlive()) {
+				ItemStack stack = this.getHeldItemMainhand();
+				if (!ProcedureUtils.isWeapon(stack)) {
+					this.oldHeldStack = stack; 
+					this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, this.kunaiStack);
+				}
+			} else if (this.getHeldItemMainhand().getItem() != this.oldHeldStack.getItem()) {
+				this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, this.oldHeldStack);
+			}
+		}
+
+		@Override
+		protected boolean canDropLoot() {
+			return true;
 		}
 
 		@Override
@@ -184,7 +205,7 @@ public class EntityWhiteZetsu extends ElementsNarutomodMod.ModElement {
 		public void onDamageTo(EntityLivingBase target, float amount) {
 			super.onDamageTo(target, amount);
 			Chakra.Pathway chakra = Chakra.pathway(target);
-			double d = chakra.getAmount() >= 40d ? 40d : chakra.getAmount();
+			double d = chakra.getAmount() >= 80d ? 80d : chakra.getAmount();
 			if (d > 0d) {
 				chakra.consume(d);
 				this.collectedChakra += d;
@@ -204,9 +225,32 @@ public class EntityWhiteZetsu extends ElementsNarutomodMod.ModElement {
 			}
 		}
 
+	    protected boolean isValidLightLevel() {
+	        BlockPos blockpos = new BlockPos(this.posX, this.getEntityBoundingBox().minY, this.posZ);
+	        if (this.world.getLightFor(EnumSkyBlock.SKY, blockpos) > this.rand.nextInt(32)) {
+	            return false;
+	        } else {
+	            int i = this.world.getLightFromNeighbors(blockpos);
+	            if (this.world.isThundering()) {
+	                int j = this.world.getSkylightSubtracted();
+	                this.world.setSkylightSubtracted(10);
+	                i = this.world.getLightFromNeighbors(blockpos);
+	                this.world.setSkylightSubtracted(j);
+	            }
+	            return i <= this.rand.nextInt(8);
+	        }
+	    }
+
+		@Override
+		public boolean getCanSpawnHere() {
+			return this.world.getDifficulty() != EnumDifficulty.PEACEFUL
+			 && (this.world.getVillageCollection().getNearestVillage(new BlockPos(this), 24) != null || this.isValidLightLevel())
+			 && super.getCanSpawnHere();
+		}
+
 		@Override
 		protected boolean shouldDespawn() {
-			return this.getHealth() <= 0.0f;
+			return this.world.getDifficulty() == EnumDifficulty.PEACEFUL || this.getHealth() <= 0.0f;
 		}
 
 		@Override
@@ -271,6 +315,12 @@ public class EntityWhiteZetsu extends ElementsNarutomodMod.ModElement {
 					super.preRenderCallback(entityIn, partialTickTime);
 				}
 			}
+
+		    @Override
+		    protected boolean canRenderName(EntityCustom entity) {
+		    	EntityLivingBase summoner = entity.getSummoner();
+		    	return (summoner instanceof EntityNinjaMerchant.Base || summoner instanceof EntityPlayer) && super.canRenderName(entity);
+		    }
 		}
 
 		@SideOnly(Side.CLIENT)

@@ -216,7 +216,7 @@ public class EntityScalableProjectile extends ElementsNarutomodMod.ModElement {
 					float f = this.motionFactor;
 					if (f > 0f) {
 						this.ticksInAir++;
-						RayTraceResult raytraceresult = this.forwardsRaycast(true, this.ticksInAir >= 25, this.shootingEntity);
+						RayTraceResult raytraceresult = this.forwardsRaycast(true, this.ticksInAir >= (int)(20f / f), this.shootingEntity);
 						if (raytraceresult != null && !net.minecraftforge.event.ForgeEventFactory.onProjectileImpact(this, raytraceresult)) {
 							this.onImpact(raytraceresult);
 							//f *= 0.4F;
@@ -275,8 +275,8 @@ public class EntityScalableProjectile extends ElementsNarutomodMod.ModElement {
             double d = (double)MathHelper.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
             float yaw = -(float)(MathHelper.atan2(this.motionX, this.motionZ) * (180D / Math.PI));
             float pitch = -(float)(MathHelper.atan2(this.motionY, d) * (180D / Math.PI));
-            float deltaYaw = ProcedureUtils.subtractDegreesWrap(yaw, this.prevRotationYaw);
-            float deltaPitch = ProcedureUtils.subtractDegreesWrap(pitch, this.prevRotationPitch);
+            float deltaYaw = ProcedureUtils.subtractDegreesWrap(yaw, this.rotationYaw);
+            float deltaPitch = ProcedureUtils.subtractDegreesWrap(pitch, this.rotationPitch);
             float roll = MathHelper.wrapDegrees(deltaYaw * 1.5f);
             this.prevRotationYaw = yaw - deltaYaw;
             this.prevRotationPitch = pitch - deltaPitch;

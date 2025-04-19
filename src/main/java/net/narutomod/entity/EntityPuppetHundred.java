@@ -20,7 +20,6 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
-import net.minecraft.entity.ai.EntityAIAttackMelee;
 import net.minecraft.entity.IEntityLivingData;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.EntityLiving;
@@ -136,12 +135,7 @@ public class EntityPuppetHundred extends ElementsNarutomodMod.ModElement {
 		@Override
 		protected void initEntityAI() {
 			super.initEntityAI();
-			this.tasks.addTask(1, new EntityAIAttackMelee(this, 2.0d, true) {
-				@Override
-				protected double getAttackReachSqr(EntityLivingBase attackTarget) {
-					return (2.4f + attackTarget.width) * (2.4f + attackTarget.width);
-				}
-			});
+			this.tasks.addTask(1, new EntityNinjaMob.AIAttackMelee(this, 2.0d, true));
 		}
 
 		@Override

@@ -150,7 +150,7 @@ public abstract class EntityShieldBase extends EntityLivingBase implements Entit
 		this.getAttributeMap().registerAttribute(ProcedureUtils.MAXHEALTH);
 		this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(100.0D);
 		this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.1D);
-		this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(10.0D);
+		this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(5.0D);
 		this.getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(1.0D);
 	}
 

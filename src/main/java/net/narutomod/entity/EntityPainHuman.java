@@ -17,7 +17,6 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
 import net.minecraft.entity.ai.EntityAISwimming;
 import net.minecraft.entity.ai.EntityAIHurtByTarget;
-import net.minecraft.entity.ai.EntityAIAttackMelee;
 import net.minecraft.entity.ai.EntityAIWander;
 import net.minecraft.entity.ai.EntityAIWatchClosest2;
 import net.minecraft.entity.ai.EntityAIWatchClosest;
@@ -72,7 +71,7 @@ public class EntityPainHuman extends ElementsNarutomodMod.ModElement {
 			super.applyEntityAttributes();
 			this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(100D);
 			this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.5D);
-			this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(14.0D);
+			this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(12.0D);
 		}
 
 		@Override
@@ -91,12 +90,7 @@ public class EntityPainHuman extends ElementsNarutomodMod.ModElement {
 					return super.shouldExecute() && EntityCustom.this.getAttackTarget().posY - EntityCustom.this.posY > 5d;
 				}
 			});
-			this.tasks.addTask(3, new EntityAIAttackMelee(this, 1.2d, true) {
-				@Override
-				protected double getAttackReachSqr(EntityLivingBase target) {
-					return (EntityCustom.this.meleeReach() + target.width) * (EntityCustom.this.meleeReach() + target.width);
-				}
-			});
+			this.tasks.addTask(3, new EntityNinjaMob.AIAttackMelee(this, 1.2d, true));
 			this.tasks.addTask(5, new EntityAIWatchClosest2(this, EntityPlayer.class, 32.0F, 1.0F));
 			this.tasks.addTask(6, new EntityAIWatchClosest(this, EntityNinjaMob.Base.class, 24.0F) {
 				@Override

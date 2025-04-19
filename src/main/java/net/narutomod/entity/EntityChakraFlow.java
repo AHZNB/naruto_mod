@@ -125,6 +125,9 @@ public class EntityChakraFlow extends ElementsNarutomodMod.ModElement {
 
 		protected void addEnchantment(ItemStack stack) {
 			Message.send(this.user, true, stack);
+			if (stack.getTagCompound() == null) {
+				stack.setTagCompound(new NBTTagCompound());
+			}
 		}
 
 		protected void removeEnchantment(ItemStack stack) {
@@ -208,8 +211,9 @@ public class EntityChakraFlow extends ElementsNarutomodMod.ModElement {
 						Entity entity = Minecraft.getMinecraft().world.getEntityByID(message.id);
 						if (entity instanceof EntityLivingBase) {
 							ItemStack stack = message.stack;
-							if (entity instanceof EntityPlayer) {
-								ItemStack stack1 = ProcedureUtils.getMatchingItemStack((EntityPlayer)entity, message.stack);
+							if (entity instanceof EntityLivingBase) {
+								ItemStack stack1 = ProcedureUtils.getMatchingItemStack((EntityLivingBase)entity, message.stack);
+//System.out.println("====== add?"+message.add+(stack1!=null?", stack1.getItem():"+stack1.getItem()+", nbttag:"+stack1.getTagCompound():", stack1:nul, stack.getItem():"+stack.getItem()+", nbttag:"+stack.getTagCompound()));
 								if (stack1 != null) {
 									stack = stack1;
 								}

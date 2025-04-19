@@ -39,6 +39,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
+import net.minecraft.init.MobEffects;
+import net.minecraft.potion.PotionEffect;
 
 import javax.annotation.Nullable;
 
@@ -182,6 +184,14 @@ public class EntityCrystalRay extends ElementsNarutomodMod.ModElement {
 				} else {
 					return ((EC)entity1).shootRay();
 				}
+			}
+
+			@Override
+			public void onUsingTick(ItemStack stack, EntityLivingBase player, float power) {
+				if (!player.isRiding()) {
+					player.addPotionEffect(new PotionEffect(MobEffects.LEVITATION, 5, 4, false, false));
+				}
+				ItemJutsu.IJutsuCallback.super.onUsingTick(stack, player, power);
 			}
 		}
 	}

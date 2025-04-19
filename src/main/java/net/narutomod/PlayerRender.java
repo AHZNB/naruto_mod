@@ -21,7 +21,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.common.MinecraftForge;
 
 import net.minecraft.world.World;
@@ -61,9 +61,8 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.Iterator;
 import javax.annotation.Nullable;
-import com.google.common.collect.Maps;
-import javax.naming.LimitExceededException;
 import javax.vecmath.Vector2f;
+import com.google.common.collect.Maps;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class PlayerRender extends ElementsNarutomodMod.ModElement {
@@ -72,6 +71,7 @@ public class PlayerRender extends ElementsNarutomodMod.ModElement {
 	private static final String CLONETARGETLAYERS = "SkinCloningRenderTargetLayers";
 	private static final String PLAYERTRANSPARENT = "PlayerRenderTransparent";
 	private static final String COLORMULTIPLIER = "SkinColorMultiplier";
+	private static final String HIDEHEADWEAR = "HideBipedHeadwear";
 	private RenderPlayer playerRenderer;
 	/**
 	 * Do not remove this constructor
@@ -88,6 +88,7 @@ public class PlayerRender extends ElementsNarutomodMod.ModElement {
 	@SideOnly(Side.CLIENT)
 	@Override
 	public void init(FMLInitializationEvent event) {
+		MinecraftForge.EVENT_BUS.register(this);
 		RenderManager renderManager = Minecraft.getMinecraft().getRenderManager();
 		this.playerRenderer = new Renderer(renderManager);
 		try {
@@ -153,6 +154,28 @@ public class PlayerRender extends ElementsNarutomodMod.ModElement {
 		return entity.getEntityData().hasKey(COLORMULTIPLIER) ? entity.getEntityData().getInteger(COLORMULTIPLIER) : 0;
 	}
 
+	public static void hideHeadwear(EntityPlayer entity, int hideTicks) {
+		if (hideTicks > 0) {
+			ProcedureSync.EntityNBTTag.setAndSync(entity, HIDEHEADWEAR, hideTicks);
+		} else {
+			ProcedureSync.EntityNBTTag.removeAndSync(entity, HIDEHEADWEAR);
+		}
+	}
+
+	public static int headwearHiddenTicks(EntityPlayer entity) {
+		return entity.getEntityData().getInteger(HIDEHEADWEAR);
+	}
+
+	@SubscribeEvent
+	public void onPlayerTickPost(TickEvent.PlayerTickEvent event) {
+		if (event.phase == TickEvent.Phase.END) {
+			int i = headwearHiddenTicks(event.player);
+			if (i > 0) {
+				hideHeadwear(event.player, i - 1);
+			}
+		}
+	}
+
 	@SideOnly(Side.CLIENT)
 	public class Renderer extends RenderPlayer {
 		public Renderer(RenderManager renderManager) {
@@ -189,6 +212,9 @@ public class PlayerRender extends ElementsNarutomodMod.ModElement {
 					}
 					this.bindEntityTexture(entityIn);
 					ModelPlayer model = this.getMainModel();
+					if (headwearHiddenTicks(entityIn) > 0) {
+						model.bipedHeadwear.showModel = false;
+					}
 					if (shouldNarutoRun(entityIn) && model.swingProgress == 0.0f
 				 	 && model.rightArmPose == ModelBiped.ArmPose.EMPTY && model.leftArmPose == ModelBiped.ArmPose.EMPTY) {
 						this.renderNarutoRun(model, entityIn, f0, f1, f2, f3, f4, f5);

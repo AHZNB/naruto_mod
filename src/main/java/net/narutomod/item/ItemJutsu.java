@@ -1,7 +1,7 @@
 
 package net.narutomod.item;
 
-import net.minecraft.entity.item.EntityItem;
+//import net.minecraft.entity.item.EntityItem;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.common.FMLCommonHandler;
@@ -21,7 +21,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraft.util.text.TextComponentString;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Item;
@@ -79,6 +78,10 @@ public class ItemJutsu extends ElementsNarutomodMod.ModElement {
 
 	public static boolean isDamageSourceSenjutsu(DamageSource source) {
 		return source.getDamageType().equals(SENJUTSU_TYPE);
+	}
+
+	public static boolean isDamageSourceJutsu(DamageSource source) {
+		return isDamageSourceNinjutsu(source) || isDamageSourceSenjutsu(source);
 	}
 
 	public static boolean canTarget(@Nullable Entity targetIn) {
@@ -190,7 +193,7 @@ public class ItemJutsu extends ElementsNarutomodMod.ModElement {
 			return false;
 		}
 
-		protected float getPower(ItemStack stack, EntityLivingBase entity, int timeLeft) {
+		public float getPower(ItemStack stack, EntityLivingBase entity, int timeLeft) {
 			JutsuEnum jutsuEnum = this.getCurrentJutsu(stack);
 			if (jutsuEnum.jutsu.getPowerupDelay() > 0.0f) {
 				return this.getPower(stack, entity, timeLeft, jutsuEnum.jutsu.getBasePower(), jutsuEnum.jutsu.getPowerupDelay());
@@ -211,45 +214,26 @@ public class ItemJutsu extends ElementsNarutomodMod.ModElement {
 			return (float)Chakra.getChakraModifier(entity) * this.getCurrentJutsuXpModifier(stack, entity);
 		}
 
-		protected float getMaxPower(ItemStack stack, EntityLivingBase entity) {
+		public float getMaxPower(ItemStack stack, EntityLivingBase entity) {
 			//return (float)ItemJutsu.getMaxPower(entity, this.getCurrentJutsu(stack).chakraUsage);
 			JutsuEnum jutsuEnum = this.getCurrentJutsu(stack);
 			float mp = (float)ItemJutsu.getMaxPower(entity, jutsuEnum.chakraUsage);
-			return Math.min(mp, jutsuEnum.jutsu.getMaxPower());
+			return Math.min(mp, jutsuEnum.jutsu.getMaxPower(stack, entity));
 		}
 
 		@Override
 		public void onUsingTick(ItemStack stack, EntityLivingBase player, int timeLeft) {
-			if (!(player instanceof EntityPlayer) || PlayerTracker.isNinja((EntityPlayer)player)) {
-				if (player instanceof EntityPlayer && !player.world.isRemote && this.getCurrentJutsu(stack).jutsu.getPowerupDelay() > 0.0f) {
-					((EntityPlayer)player).sendStatusMessage(
-						new TextComponentString(String.format("%.1f", this.getPower(stack, player, timeLeft))), true);
-				}
-			}
-			this.onUsingEffects(player);
-		}
-
-		protected void onUsingEffects(EntityLivingBase player) {
-			if (!player.world.isRemote) {
-				Particles.spawnParticle(player.world, Particles.Types.SMOKE, player.posX, player.posY, player.posZ, 
-				 40, 0.2d, 0d, 0.2d, 0d, 0.5d, 0d, 0x106AD1FF, 40, 5, 0xF0, player.getEntityId());
-			}
-			if (player.ticksExisted % 10 == 0) {
-				player.world.playSound(null, player.posX, player.posY, player.posZ,
-				 net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:charging_chakra")),
-				 net.minecraft.util.SoundCategory.PLAYERS, 0.05F, itemRand.nextFloat() + 0.5F);
+			if (!player.world.isRemote && (!(player instanceof EntityPlayer) || PlayerTracker.isNinja((EntityPlayer)player))) {
+				this.getCurrentJutsu(stack).jutsu.onUsingTick(stack, player, this.getPower(stack, player, timeLeft));
 			}
 		}
 
 		@Override
 		public void onPlayerStoppedUsing(ItemStack itemstack, World world, EntityLivingBase entity, int timeLeft) {
-			if (!world.isRemote) {
-				float power = this.getPower(itemstack, entity, timeLeft);
-				if (this.executeJutsu(itemstack, entity, power)) {
-					this.addCurrentJutsuXp(itemstack, 1);
-					if (entity instanceof EntityPlayer) {
-						((EntityPlayer)entity).addExhaustion(0.4f);
-					}
+			if (!world.isRemote && this.executeJutsu(itemstack, entity, this.getPower(itemstack, entity, timeLeft))) {
+				this.addCurrentJutsuXp(itemstack, 1);
+				if (entity instanceof EntityPlayer) {
+					((EntityPlayer)entity).addExhaustion(0.4f);
 				}
 			}
 		}
@@ -348,7 +332,7 @@ public class ItemJutsu extends ElementsNarutomodMod.ModElement {
 			if ((!(entity instanceof EntityPlayer) || ((EntityPlayer)entity).isCreative()) && has < required) {
 				has = required;
 			}
-			return has != 0 ? (float)required / (float)has : 0f;
+			return has < required ? 1000000f : (float)required / (float)has;
 		}
 
 		public boolean canUseAnyJutsu(ItemStack stack) {
@@ -478,7 +462,7 @@ public class ItemJutsu extends ElementsNarutomodMod.ModElement {
 			if (i < this.jutsuList.size()) {
 				this.setCurrentJutsu(stack, next);
 				if (entity instanceof EntityPlayer && !entity.world.isRemote)
-					((EntityPlayer) entity).sendStatusMessage(new TextComponentString(this.jutsuList.get(next).getName()), true);
+					ProcedureUtils.sendStatusMessage((EntityPlayer)entity, this.jutsuList.get(next).getName(), true);
 			}
 		}
 
@@ -558,7 +542,7 @@ public class ItemJutsu extends ElementsNarutomodMod.ModElement {
 				if (entity instanceof EntityPlayer && !entity.world.isRemote && stack.getItem() instanceof Base
 				 && event.getSlot().getSlotType() == EntityEquipmentSlot.Type.HAND && stack.getItem() != event.getFrom().getItem()) {
 					if (event.getSlot() == EntityEquipmentSlot.MAINHAND || !(entity.getHeldItemMainhand().getItem() instanceof Base)) {
-						((EntityPlayer)entity).sendStatusMessage(new TextComponentString(ItemJutsu.getCurrentJutsu(stack).getName()), true);
+						ProcedureUtils.sendStatusMessage((EntityPlayer)entity, ItemJutsu.getCurrentJutsu(stack).getName(), true);
 					}
 				}
 			}
@@ -662,8 +646,32 @@ public class ItemJutsu extends ElementsNarutomodMod.ModElement {
 			return 0.0f;
 		}
 		
+		@Deprecated // use entity sensitive version below
 		default float getMaxPower() {
 			return 1000.0f;
+		}
+
+		default float getMaxPower(ItemStack stack, EntityLivingBase entity) {
+			return this.getMaxPower();
+		}
+
+		default void onUsingTick(ItemStack stack, EntityLivingBase player, float power) {
+			if (this.getPowerupDelay() > 0.0f) {
+				if (player instanceof EntityPlayer) {
+					ProcedureUtils.sendStatusMessage((EntityPlayer)player, String.format("%.1f", power), true);
+				}
+				Particles.spawnParticle(player.world, Particles.Types.SMOKE, player.posX, player.posY, player.posZ, 
+				 40, 0.2d, 0d, 0.2d, 0d, 0.5d, 0d, 0x106AD1FF, 40, 5, 0xF0, player.getEntityId());
+				if (player.ticksExisted % 10 == 0) {
+					player.world.playSound(null, player.posX, player.posY, player.posZ,
+					 net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:charging_chakra")),
+					 net.minecraft.util.SoundCategory.PLAYERS, 0.05F, player.getRNG().nextFloat() + 0.5F);
+				}
+			}
+		}
+
+		default Entity getJutsu(EntityLivingBase entity) {
+			return null;
 		}
 
 		default JutsuData getData(EntityLivingBase entity) {

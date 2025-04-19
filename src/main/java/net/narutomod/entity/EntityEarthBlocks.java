@@ -333,9 +333,9 @@ public class EntityEarthBlocks extends ElementsNarutomodMod.ModElement {
 			double dx = x;
 			double dy = y;
 			double dz = z;
-			List<AxisAlignedBB> list = this.world.getCollisionBoxes(this, this.getCollisionBoundingBox().expand(x, y, z));
+			//List<AxisAlignedBB> list = this.world.getCollisionBoxes(this, this.getCollisionBoundingBox().expand(x, y, z));
 			ProcedureUtils.CollisionHelper ch = new ProcedureUtils.CollisionHelper(this);
-			ch.collideWithAABBs(list, x, y, z);
+			ch.collideWithAABBs(x, y, z);
 			x = ch.minX(x);
 			y = ch.minY(y);
 			z = ch.minZ(z);

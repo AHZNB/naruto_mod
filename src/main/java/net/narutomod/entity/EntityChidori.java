@@ -202,11 +202,9 @@ public class EntityChidori extends ElementsNarutomodMod.ModElement {
 						this.launchAtTarget((EntityLivingBase)this.target);
 					}
 					if (this.target.getDistanceSq(this.summoner) < 25d) {
-						float damage = flag 
-						 ? (float)ProcedureUtils.getMainhandItemDamage(this.summoner) * this.damageMultiplier() * 1.2f
-						 : (25f * this.damageMultiplier());
+						float damage = flag ? (float)ProcedureUtils.getMainhandItemDamage(this.summoner) * 1.2f : 25f;
 						EntityLightningArc.onStruck(this.target,
-						 ItemJutsu.causeJutsuDamage(this, this.summoner), damage * this.getCooledAttackStrength());
+						 ItemJutsu.causeJutsuDamage(this, this.summoner), damage * this.damageMultiplier());
 						this.target = null;
 					}
 				}
@@ -237,19 +235,23 @@ public class EntityChidori extends ElementsNarutomodMod.ModElement {
 			}
 		}
 
-		public float getCooledAttackStrength() {
-			if (this.summoner != null) {
-				float f = (float)(1.0D / ProcedureUtils.getAttackSpeed(this.summoner) * 20.0D);
-				return MathHelper.clamp((float)this.savedTicksSinceLastSwing / f, 0.0F, 1.0F);
-			}
-			return 0.0f;
-		}
-
 		protected float damageMultiplier() {
-			if (this.summoner instanceof EntityPlayer) {
-				return MathHelper.clamp((float)PlayerTracker.getNinjaLevel((EntityPlayer)this.summoner) / 40f, 1f, 6f);
+			float f0 = 1.0f;
+			EntityLivingBase realUser = this.summoner;
+			if (realUser instanceof EntityKageBunshin.EC) {
+				realUser = ((EntityKageBunshin.EC)realUser).getSummoner();
 			}
-			return 1f;
+			if (realUser instanceof EntityPlayer) {
+				f0 = MathHelper.clamp((float)PlayerTracker.getNinjaLevel((EntityPlayer)realUser) / 40f, 1f, 6f);
+			}
+			float f1 = 0.0f;
+			if (this.summoner instanceof EntityPlayer) {
+				float f2 = (float)(1.0D / ProcedureUtils.getAttackSpeed(this.summoner) * 20.0D);
+				f1 = MathHelper.clamp((float)this.savedTicksSinceLastSwing / f2, 0.0F, 1.0F);
+			} else if (this.summoner != null) {
+				f1 = 1.0f;
+			}
+			return f0 * f1;
 		}
 
 		@Override
@@ -289,7 +291,7 @@ public class EntityChidori extends ElementsNarutomodMod.ModElement {
 					double ninjalevel = entity2 instanceof EntityPlayer ? PlayerTracker.getNinjaLevel((EntityPlayer)entity2)
 					 : entity2 instanceof EntityNinjaMob.Base ? ((EntityNinjaMob.Base)entity2).getNinjaLevel() : 0d;
 					float f = ((ItemJutsu.Base)stack.getItem()).getCurrentJutsuXpModifier(stack, entity2);
-					entity1 = new EC(entity, CHAKRA_BURN, (int)(ninjalevel * 5d / f));
+					entity1 = new EC(entity, CHAKRA_BURN, (int)(ninjalevel * 2.5d / f));
 					entity.world.spawnEntity(entity1);
 					stack.getTagCompound().setInteger(ID_KEY, entity1.getEntityId());
 					return true;

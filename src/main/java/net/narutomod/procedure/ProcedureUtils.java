@@ -84,6 +84,7 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 	public static final DamageSource SPECIAL_DAMAGE = new DamageSource("wither").setDamageBypassesArmor().setDamageIsAbsolute();
 	public static final float DEG2RAD = (float)Math.PI / 180.0F;
 	public static final float RAD2DEG = 180.0F / (float)Math.PI;
+	public static final UUID REACH_MODIFIER = UUID.fromString("2ea719b4-d3ee-442b-97f6-3a6d704e5102");
 	
 	public ProcedureUtils(ElementsNarutomodMod instance) {
 		super(instance, 177);
@@ -282,7 +283,7 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 
 	@Nullable
 	public static ItemStack getMatchingItemStack(EntityLivingBase entity, ItemStack stackIn) {
-		if (entity instanceof EntityPlayer && !entity.world.isRemote) {
+		if (entity instanceof EntityPlayer) {
 			return getMatchingItemStack((EntityPlayer)entity, stackIn);
 		}
 		if (entity instanceof EntityNinjaMob.Base) {
@@ -960,10 +961,23 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 		return world.getCollisionBoxes(null, bb.contract(0d, -0.1d, 0d).grow(0.5d, 0d, 0.5d)).isEmpty();
 	}
 
-	public static int getTopSolidBlockY(World world, BlockPos pos) {
-		for ( ; pos.getY() < 256 && world.getBlockState(pos).getCollisionBoundingBox(world, pos) != null; pos = pos.up()) ;
+	public static BlockPos getGroundBelow(Entity entity) {
+		return getGroundBelow(entity.world, MathHelper.floor(entity.posX), MathHelper.floor(entity.posY), MathHelper.floor(entity.posZ));
+	}
+
+	public static BlockPos getGroundBelow(World world, int x, int y, int z) {
+		BlockPos pos = new BlockPos(x, y, z);
 		for ( ; pos.getY() > 0 && world.getBlockState(pos).getCollisionBoundingBox(world, pos) == null; pos = pos.down()) ;
 		if (pos.getY() > 0) {
+			return pos;
+		}
+		return BlockPos.ORIGIN;
+	}
+	
+	public static int getTopSolidBlockY(World world, BlockPos pos) {
+		for ( ; pos.getY() < 256 && world.getBlockState(pos).getCollisionBoundingBox(world, pos) != null; pos = pos.up()) ;
+		for ( ; pos.getY() >= 0 && world.getBlockState(pos).getCollisionBoundingBox(world, pos) == null; pos = pos.down()) ;
+		if (pos.getY() >= 0) {
 			return pos.up().getY();
 		}
 		return 0;
@@ -1085,8 +1099,10 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 			return;
 		}
 		if (entity.getEntityData().getDouble(NarutomodModVariables.DeathAnimationTime) <= 0.0D) {
-			entity.getEntityData().setDouble("deathAnimationType", (double) type);
-			entity.getEntityData().setDouble(NarutomodModVariables.DeathAnimationTime, (double) duration);
+			//entity.getEntityData().setDouble("deathAnimationType", (double) type);
+			//entity.getEntityData().setDouble(NarutomodModVariables.DeathAnimationTime, (double) duration);
+			ProcedureSync.EntityNBTTag.setAndSync(entity, "deathAnimationType", (double)type);
+			ProcedureSync.EntityNBTTag.setAndSync(entity, NarutomodModVariables.DeathAnimationTime, (double) duration);
 			if (type == 2 && entity instanceof EntityPlayer) {
 				PlayerRender.setColorMultiplier((EntityPlayer)entity, 0x30000000);
 			}
@@ -1094,7 +1110,7 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static void clearDeathAnimations(EntityLivingBase entity) {
-		if ((int)entity.getEntityData().getDouble("deathAnimationType") == 2 && entity instanceof EntityPlayer) {
+		if ((int)entity.getEntityData().getDouble("deathAnimationType") >= 1 && entity instanceof EntityPlayer) {
 			PlayerRender.setColorMultiplier((EntityPlayer)entity, 0);
 		}
 		entity.getEntityData().removeTag("deathAnimationType");
@@ -1266,7 +1282,7 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static double getCDModifier(double modifier) {
-		return 1.0d / (0.5d + 0.02d * modifier);
+		return 1.0d / (0.684d + 0.01d * modifier);
 	}
 	
 	public static double getCooldownModifier(EntityPlayer player) {
@@ -1307,6 +1323,10 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 	            }
 	        }
 		}
+	}
+
+	public static void sendStatusMessage(EntityPlayer player, String string, boolean actionBar) {
+		player.sendStatusMessage(new TextComponentString(string), true);
 	}
 
     public static class BlockposSorter implements Comparator<BlockPos> {
@@ -1495,7 +1515,7 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
     }
 
 	public static class CollisionHelper {
-		private Entity entity;
+		private final Entity entity;
 		public double dx;
 		public double dy;
 		public double dz;
@@ -1507,6 +1527,10 @@ public class ProcedureUtils extends ElementsNarutomodMod.ModElement {
 			for (int i = 0; i < this.hitsList.length; i++) {
 				this.hitsList[i] = Lists.newArrayList();
 			}
+		}
+
+		public void collideWithAABBs(double x, double y, double z) {
+			this.collideWithAABBs(this.entity.world.getCollisionBoxes(this.entity, this.entity.getEntityBoundingBox().expand(x, y, z)), x, y, z);
 		}
 
 		public void collideWithAABBs(List<AxisAlignedBB> list, double x, double y, double z) {

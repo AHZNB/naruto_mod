@@ -174,8 +174,9 @@ public class EntityMeltingJutsu extends ElementsNarutomodMod.ModElement {
 				if (result.entityHit != null) {
 					result.entityHit.getEntityData().setBoolean("TempData_disableKnockback", true);
 					result.entityHit.hurtResistantTime = 10;
-					result.entityHit.attackEntityFrom(ItemJutsu.causeJutsuDamage(this, this.shootingEntity).setFireDamage(), 4f);
-					result.entityHit.setFire(15);
+					if (result.entityHit.attackEntityFrom(ItemJutsu.causeJutsuDamage(this, this.shootingEntity).setFireDamage(), 4f)) {
+						result.entityHit.setFire(15);
+					}
 				}
 				Particles.spawnParticle(this.world, Particles.Types.SMOKE, result.hitVec.x, result.hitVec.y, result.hitVec.z,
 				 100, this.width, 0.0d, this.width, 0d, 0d, 0d, 0xB0202020, 20 + this.rand.nextInt(30));

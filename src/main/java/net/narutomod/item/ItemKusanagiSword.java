@@ -191,7 +191,7 @@ public class ItemKusanagiSword extends ElementsNarutomodMod.ModElement {
 					this.shoot(vec.x, vec.y, vec.z, 0.6f, 0f);
 				}
 			}
-			if (!this.world.isRemote && (this.shootingEntity == null || !this.shootingEntity.isEntityAlive())) {
+			if (!this.world.isRemote && (this.shootingEntity == null || !this.shootingEntity.isEntityAlive()) && this.hasNoGravity()) {
 				this.setNoGravity(false);
 				this.shootingEntity = null;
 			}
@@ -229,7 +229,7 @@ public class ItemKusanagiSword extends ElementsNarutomodMod.ModElement {
 						this.haltMotion();
 						this.targetCD = 10;
 					}
-				} else {
+				} else if (this.hasNoGravity()) {
 					if (result.sideHit.getAxis() == EnumFacing.Axis.X) {
 						this.motionX *= -0.8d;
 					} else if (result.sideHit.getAxis() == EnumFacing.Axis.Y) {
@@ -243,6 +243,9 @@ public class ItemKusanagiSword extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		protected void checkOnGround() {
+			if (!this.hasNoGravity()) {
+				super.checkOnGround();
+			}
 		}
 	}
 

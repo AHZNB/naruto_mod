@@ -54,7 +54,7 @@ public class EntityWoodBurial extends ElementsNarutomodMod.ModElement {
 		public EC(Entity targetIn) {
 			this(targetIn.world);
 			this.setParent(this);
-			this.setLocationAndAngles(targetIn.posX, targetIn.posY-0.5d, targetIn.posZ, 0f, 0f);
+			this.setLocationAndAngles(targetIn.posX, ProcedureUtils.getTopSolidBlockY(targetIn.world, new BlockPos(targetIn))-0.5d, targetIn.posZ, 0f, 0f);
 			this.setPositionAndRotationFromParent(1f);
 			this.prevSegment = this;
 			this.target = targetIn;
@@ -97,6 +97,7 @@ public class EntityWoodBurial extends ElementsNarutomodMod.ModElement {
 						EC segment = new EC(this, vec.x, vec.y, vec.z, f + ((this.rand.nextFloat()-0.5f) * 160f), 80f);
 						segment.setLifespan(this.lifespan - this.ticksExisted * 2);
 						segment.prevSegment = segment;
+						segment.setSize(this.target.width * 0.2f + 0.38f, this.target.width * 0.2f + 0.38f);
 						this.world.spawnEntity(segment);
 					}
 				}
@@ -106,9 +107,11 @@ public class EntityWoodBurial extends ElementsNarutomodMod.ModElement {
 					if (this.hasLivingTarget() && i > 1) {
 						yaw = MathHelper.wrapDegrees(ProcedureUtils.getYawFromVec(this.targetVec
 						 .subtract(this.prevSegment.getPositionVector())) - this.prevSegment.rotationYaw);
-						yaw /= this.target.width + Math.max(4.4f - (float)i * 0.075f, 1f);
+						float f = this.height + 0.5f;
+						yaw *= f / (this.target.width + Math.max(4.4f - (float)i * 0.075f, f));
 					}
 					this.prevSegment = new EC(this.prevSegment, yaw, -0.5f);
+					this.prevSegment.setSize(this.width, this.height);
 					this.prevSegment.setLifespan(this.lifespan - this.ticksExisted * 2);
 					this.world.spawnEntity(this.prevSegment);
 				}
@@ -120,7 +123,7 @@ public class EntityWoodBurial extends ElementsNarutomodMod.ModElement {
 				}
 				if (this.targetVec != null && this.targetTargetable()) {
 					if (this.ticksExisted > 50) {
-						this.target.attackEntityFrom(ItemJutsu.causeJutsuDamage(this, null), 10.0f);
+						this.target.attackEntityFrom(ItemJutsu.causeJutsuDamage(this, null).setDamageBypassesArmor(), 10.0f);
 					}
 					this.target.setPositionAndUpdate(this.targetVec.x, this.targetVec.y, this.targetVec.z);
 				}
@@ -149,7 +152,8 @@ public class EntityWoodBurial extends ElementsNarutomodMod.ModElement {
 						return p_apply_1_ instanceof EntityLivingBase;
 					}
 				});
-				if (res != null && res.entityHit != null) {
+				if (res != null && res.entityHit != null
+				 && res.entityHit.posY - (ProcedureUtils.getGroundBelow(res.entityHit).getY() + 1) < (res.entityHit.width * 0.2f + 0.38f) * 10) {
 					entity.world.spawnEntity(new EC(res.entityHit));
 					((ItemJutsu.Base)stack.getItem()).setCurrentJutsuCooldown(stack, 300);
 					return true;

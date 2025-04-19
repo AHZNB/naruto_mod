@@ -33,7 +33,6 @@ import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.entity.ai.EntityAIWander;
 import net.minecraft.entity.ai.EntityAILookIdle;
 import net.minecraft.entity.ai.EntityAIHurtByTarget;
-import net.minecraft.entity.ai.EntityAIAttackMelee;
 import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
 import net.minecraft.entity.ai.EntityAISwimming;
 import net.minecraft.entity.ai.EntityAIWatchClosest;
@@ -65,6 +64,7 @@ import net.narutomod.entity.EntityCrow;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.procedure.ProcedureBasicNinjaSkills;
 import net.narutomod.procedure.ProcedureSync;
+import net.narutomod.procedure.ProcedureOnLivingUpdate;
 import net.narutomod.item.ItemSharingan;
 import net.narutomod.item.ItemMangekyoSharingan;
 import net.narutomod.item.ItemInton;
@@ -285,6 +285,7 @@ public class EntityItachi extends ElementsNarutomodMod.ModElement {
 					this.susanooEntity.attackEntityFrom(source, amount);
 					ret = false;
 				} else if (this.ticksExisted > this.lastInvisTime + this.invisCD && this.consumeChakra(INVIS_CHAKRA)) {
+					ProcedureOnLivingUpdate.setUntargetable(this, 5);
 					this.addPotionEffect(new PotionEffect(MobEffects.INVISIBILITY, 100, 1, false, false));
 					for (int i = 0; i < 100; i++) {
 						Entity entityToSpawn = new EntityCrow.EntityCustom(this.world);

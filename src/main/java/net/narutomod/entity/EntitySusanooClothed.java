@@ -340,8 +340,7 @@ public class EntitySusanooClothed extends ElementsNarutomodMod.ModElement {
 		@Override
 		protected void onImpact(RayTraceResult result) {
 			if (!this.world.isRemote) {
-				if (result.entityHit != null 
-				 && (result.entityHit.equals(this.shootingEntity) || result.entityHit instanceof EntityMagatama)) {
+				if (result.entityHit != null && (result.entityHit.equals(this.shootingEntity) || result.entityHit instanceof EntityMagatama)) {
 					return;
 				}
 				boolean flag = net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.world, this.shootingEntity);
@@ -573,9 +572,6 @@ public class EntitySusanooClothed extends ElementsNarutomodMod.ModElement {
 			private final ModelRenderer cube_r13;
 			//private final ModelRenderer bipedHeadwear;
 			//private final ModelRenderer bipedBody;
-			private final ModelRenderer Coat;
-			private final ModelRenderer Cloak;
-			private final ModelRenderer Cloak2;
 			private final ModelRenderer bottomr;
 			private final ModelRenderer cube_r14;
 			private final ModelRenderer cube_r15;
@@ -718,22 +714,7 @@ public class EntitySusanooClothed extends ElementsNarutomodMod.ModElement {
 				bipedBody = new ModelRenderer(this);
 				bipedBody.setRotationPoint(0.0F, 0.0F, 0.0F);
 				bipedBody.cubeList.add(new ModelBox(bipedBody, 28, 18, -4.0F, 0.0F, -2.0F, 8, 12, 4, 0.0F, false));
-				bipedBody.cubeList.add(new ModelBox(bipedBody, 0, 16, -4.5F, 2.0F, -2.5F, 9, 10, 5, 0.0F, false));
-
-				Coat = new ModelRenderer(this);
-				Coat.setRotationPoint(0.0F, 20.9167F, 0.0F);
-				bipedBody.addChild(Coat);
-
-
-				Cloak = new ModelRenderer(this);
-				Cloak.setRotationPoint(-3.9098F, -15.9076F, 0.0F);
-				Coat.addChild(Cloak);
-
-
-				Cloak2 = new ModelRenderer(this);
-				Cloak2.setRotationPoint(3.9098F, -15.9076F, 0.0F);
-				Coat.addChild(Cloak2);
-
+				bipedBody.cubeList.add(new ModelBox(bipedBody, 0, 16, -4.5F, 2.0F, -2.5F, 9, 10, 5, 0.2F, false));
 
 				bottomr = new ModelRenderer(this);
 				bottomr.setRotationPoint(-2.9495F, 11.7705F, 0.0F);
@@ -905,18 +886,6 @@ public class EntitySusanooClothed extends ElementsNarutomodMod.ModElement {
 				setRotationAngle(cube_r21, -0.7854F, 0.6545F, 0.0F);
 				cube_r21.cubeList.add(new ModelBox(cube_r21, 0, 4, -1.0F, -1.0F, -1.0F, 2, 2, 2, 0.1F, true));
 			}
-
-		/*public ModelSusanooClothed() {
-			super(0.0F, 0.0F, 64, 64);
-			this.leftArmPose = ModelBiped.ArmPose.EMPTY;
-			this.rightArmPose = ModelBiped.ArmPose.ITEM;
-			this.bipedBody.cubeList.add(new ModelBox(this.bipedBody, 16, 32, -4.0F, 0.0F, -2.0F, 8, 12, 4, 0.5F, false));
-			this.bipedRightArm.cubeList.add(new ModelBox(this.bipedRightArm, 40, 32, -3.0F, -2.0F, -2.0F, 4, 12, 4, 0.5F, false));
-			this.bipedLeftArm.cubeList.add(new ModelBox(this.bipedLeftArm, 48, 48, -1.0F, -2.0F, -2.0F, 4, 12, 4, 0.5F, false));
-			this.bipedRightLeg.cubeList.add(new ModelBox(this.bipedRightLeg, 0, 32, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.5F, false));
-			this.bipedLeftLeg.cubeList.add(new ModelBox(this.bipedLeftLeg, 0, 48, -2.0F, 0.0F, -2.0F, 4, 12, 4, 0.5F, false));
-		}
-*/
 
 			@Override
 			public void render(Entity entity, float f, float f1, float age, float f3, float f4, float f5) {

@@ -15,7 +15,6 @@ import net.minecraft.entity.IRangedAttackMob;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.ai.EntityAIAttackMelee;
 import net.minecraft.entity.ai.EntityAIAttackRanged;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.EntityDataManager;
@@ -120,14 +119,10 @@ public class EntityPuppetKarasu extends ElementsNarutomodMod.ModElement {
 					EntityCustom.this.meleeTime = 80;
 				}
 			});
-			this.tasks.addTask(2, new EntityAIAttackMelee(this, 2.0d, true) {
+			this.tasks.addTask(2, new EntityNinjaMob.AIAttackMelee(this, 2.0d, true) {
 				@Override
 				public boolean shouldContinueExecuting() {
 					return super.shouldContinueExecuting() && EntityCustom.this.meleeTime > 0;
-				}
-				@Override
-				protected double getAttackReachSqr(EntityLivingBase attackTarget) {
-					return (2.4f + attackTarget.width) * (2.4f + attackTarget.width);
 				}
 			});
 		}

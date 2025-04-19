@@ -40,6 +40,8 @@ import net.narutomod.Chakra;
 import net.narutomod.ElementsNarutomodMod;
 
 import javax.annotation.Nullable;
+import net.minecraft.client.model.ModelRenderer;
+import net.minecraft.client.model.ModelBox;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityLavaChakraMode extends ElementsNarutomodMod.ModElement {
@@ -246,33 +248,16 @@ public class EntityLavaChakraMode extends ElementsNarutomodMod.ModElement {
 				if (modelIn instanceof ModelBiped) {
 					ModelBiped model = (ModelBiped)modelIn;
 			        GlStateManager.pushMatrix();
-			        if (model.isChild) {
-			            float f = 2.0F;
-			            GlStateManager.scale(0.75F, 0.75F, 0.75F);
-			            GlStateManager.translate(0.0F, 16.0F * f5, 0.0F);
-			            model.bipedHead.render(f5);
-			            GlStateManager.popMatrix();
-			            GlStateManager.pushMatrix();
-			            GlStateManager.scale(0.5F, 0.5F, 0.5F);
-			            GlStateManager.translate(0.0F, 24.0F * f5, 0.0F);
-			            model.bipedBody.render(f5);
-			            model.bipedRightArm.render(f5);
-			            model.bipedLeftArm.render(f5);
-			            model.bipedRightLeg.render(f5);
-			            model.bipedLeftLeg.render(f5);
-			            model.bipedHeadwear.render(f5);
-			        } else {
-			            if (entityIn.isSneaking()) {
-			                GlStateManager.translate(0.0F, 0.2F, 0.0F);
-			            }
-			            model.bipedHead.render(f5);
-			            model.bipedBody.render(f5);
-			            model.bipedRightArm.render(f5);
-			            model.bipedLeftArm.render(f5);
-			            model.bipedRightLeg.render(f5);
-			            model.bipedLeftLeg.render(f5);
-			            model.bipedHeadwear.render(f5);
-			        }
+		            if (entityIn.isSneaking()) {
+		                GlStateManager.translate(0.0F, 0.2F, 0.0F);
+		            }
+		            model.bipedHead.render(f5);
+		            model.bipedBody.render(f5);
+		            model.bipedRightArm.render(f5);
+		            model.bipedLeftArm.render(f5);
+		            model.bipedRightLeg.render(f5);
+		            model.bipedLeftLeg.render(f5);
+		            model.bipedHeadwear.render(f5);
 			        GlStateManager.popMatrix();
 				} else {
 					modelIn.setRotationAngles(f0, f1, f2, f3, f4, f5, entityIn);

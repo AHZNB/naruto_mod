@@ -52,6 +52,7 @@ import net.minecraft.init.Biomes;
 import net.minecraft.init.SoundEvents;
 
 import javax.annotation.Nullable;
+import net.minecraft.util.math.BlockPos;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityDeidara extends ElementsNarutomodMod.ModElement {
@@ -145,6 +146,7 @@ public class EntityDeidara extends ElementsNarutomodMod.ModElement {
 				 && this.consumeChakra(ItemBakuton.CLAY.chakraUsage * 2d)) {
 					this.c2Entity = new EntityC2.EC(this);
 					this.c2Entity.setLocationAndAngles(this.posX, this.posY, this.posZ, this.rotationYaw, 0f);
+					this.moveC2ToOpenSpace();
 					ProcedureUtils.poofWithSmoke(this.c2Entity);
 					this.world.spawnEntity(this.c2Entity);
 					this.startRiding(this.c2Entity, true);
@@ -163,6 +165,14 @@ public class EntityDeidara extends ElementsNarutomodMod.ModElement {
 			}
 			if ((this.getItemStackFromSlot(EntityEquipmentSlot.HEAD).getItem() == ItemAkatsukiRobe.helmet) != (target == null)) {
 				this.swapWithInventory(EntityEquipmentSlot.HEAD, 1);
+			}
+		}
+
+		private void moveC2ToOpenSpace() {
+			BlockPos pos = this.c2Entity.getPosition();
+			for (; pos.getY() < this.c2Entity.posY + this.flyHeightOffGround && !ProcedureUtils.isSpaceOpenToStandOn(this.c2Entity, pos); pos = pos.up());
+			if (pos.getY() < this.c2Entity.posY + this.flyHeightOffGround) {
+				 this.c2Entity.setPosition(0.5d + pos.getX(), pos.getY(), 0.5d + pos.getZ());
 			}
 		}
 

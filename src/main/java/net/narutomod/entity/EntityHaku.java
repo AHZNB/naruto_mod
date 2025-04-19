@@ -20,7 +20,6 @@ import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.EntityAISwimming;
-import net.minecraft.entity.ai.EntityAIAttackMelee;
 import net.minecraft.entity.ai.EntityAIHurtByTarget;
 import net.minecraft.client.renderer.entity.RenderLiving;
 import net.minecraft.client.model.ModelRenderer;
@@ -88,7 +87,7 @@ public class EntityHaku extends ElementsNarutomodMod.ModElement {
 		protected void initEntityAI() {
 			super.initEntityAI();
 			this.tasks.addTask(0, new EntityAISwimming(this));
-			this.tasks.addTask(1, new EntityAIAttackMelee(this, 1.5d, true) {
+			this.tasks.addTask(1, new EntityNinjaMob.AIAttackMelee(this, 1.5d, true) {
 				@Override
 				public boolean shouldExecute() {
 					return super.shouldExecute() && this.attacker.getAttackTarget().getDistance(EntityCustom.this) <= 3d

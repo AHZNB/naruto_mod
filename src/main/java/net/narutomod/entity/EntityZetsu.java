@@ -3,6 +3,8 @@ package net.narutomod.entity;
 
 import net.narutomod.ElementsNarutomodMod;
 import net.narutomod.item.ItemAkatsukiRobe;
+import net.narutomod.procedure.ProcedureOnLivingUpdate;
+import net.narutomod.procedure.ProcedureUtils;
 
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.relauncher.Side;
@@ -15,18 +17,21 @@ import net.minecraft.world.DifficultyInstance;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntitySelectors;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
 import net.minecraft.entity.ai.EntityAIWander;
 import net.minecraft.entity.ai.EntityAISwimming;
 import net.minecraft.entity.ai.EntityAILookIdle;
 import net.minecraft.entity.ai.EntityAIHurtByTarget;
-import net.minecraft.entity.ai.EntityAIAttackMelee;
 import net.minecraft.entity.ai.EntityAIWatchClosest;
 import net.minecraft.entity.ai.EntityAIWatchClosest2;
 import net.minecraft.entity.IEntityLivingData;
+import net.minecraft.entity.IRangedAttackMob;
 import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.GlStateManager;
@@ -36,6 +41,9 @@ import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
+import com.google.common.collect.Lists;
+import java.util.List;
+import java.util.Iterator;
 import javax.annotation.Nullable;
 
 @ElementsNarutomodMod.ModElement.Tag
@@ -53,7 +61,11 @@ public class EntityZetsu extends ElementsNarutomodMod.ModElement {
 				.name("zetsu").tracker(64, 3, true).egg(-16777216, -13408768).build());
 	}
 
-	public static class EntityCustom extends EntityNinjaMob.Base implements IMob {
+	public static class EntityCustom extends EntityNinjaMob.Base implements IMob, IRangedAttackMob {
+		private final double treeChakraUsage = 60.0d;
+		private final List<EntityWoodForest.EC> spawnedTrees = Lists.newArrayList();
+		private int deathTicks;
+		
 		public EntityCustom(World world) {
 			super(world, 120, 7000d);
 			this.setSize(0.6f, 1.8f);
@@ -79,12 +91,23 @@ public class EntityZetsu extends ElementsNarutomodMod.ModElement {
 		}
 
 		@Override
+		protected double meleeReach() {
+			return 3.4d;
+		}
+
+		@Override
 		protected void initEntityAI() {
 			super.initEntityAI();
-			this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, false));
+			this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, false) {
+				@Override
+				public boolean shouldContinueExecuting() {
+					return super.shouldContinueExecuting() && !EntityCustom.this.isCaptured(this.taskOwner.getAttackTarget());
+				}
+			});
 			this.tasks.addTask(0, new EntityAISwimming(this));
-			this.tasks.addTask(2, new EntityNinjaMob.AILeapAtTarget(this, 1.0F));
-			this.tasks.addTask(4, new EntityAIAttackMelee(this, 1.2d, true));
+			//this.tasks.addTask(2, new EntityNinjaMob.AILeapAtTarget(this, 1.0F));
+			//this.tasks.addTask(4, new EntityNinjaMob.AIAttackMelee(this, 1.2d, true));
+			this.tasks.addTask(4, new EntityNinjaMob.AIAttackRangedTactical(this, 0.8d, 60, 20f));
 			this.tasks.addTask(5, new EntityAIWatchClosest2(this, EntityPlayer.class, 32.0F, 1.0F));
 			this.tasks.addTask(6, new EntityAIWatchClosest(this, EntityNinjaMob.Base.class, 24.0F) {
 				@Override
@@ -94,6 +117,74 @@ public class EntityZetsu extends ElementsNarutomodMod.ModElement {
 			});
 			this.tasks.addTask(7, new EntityAIWander(this, 0.5d));
 			this.tasks.addTask(8, new EntityAILookIdle(this));
+		}
+
+		@Override
+		public void setSwingingArms(boolean swingingArms) {
+			ProcedureOnLivingUpdate.forceBowPose(this, swingingArms);
+		}
+
+		@Override
+		public void attackEntityWithRangedAttack(EntityLivingBase target, float distanceFactor) {
+			if (!this.isCaptured(target) && this.consumeChakra(this.treeChakraUsage)) {
+				Vec3d vec = target.getPositionVector().add(new Vec3d(target.motionX, target.motionY, target.motionZ).scale(10));
+				EntityWoodForest.EC ecEntity = new EntityWoodForest.EC(this, 
+				 ProcedureUtils.getGroundBelow(this.world, MathHelper.floor(vec.x), MathHelper.floor(vec.y), MathHelper.floor(vec.z)), 4f + this.rand.nextFloat() * 8f);
+				ecEntity.setLifespan(300);
+				this.world.spawnEntity(ecEntity);
+				this.spawnedTrees.add(ecEntity);
+			}
+		}
+
+		public boolean isCaptured(EntityLivingBase target) {
+			boolean captured = false;
+			Iterator<EntityWoodForest.EC> iter = this.spawnedTrees.iterator();
+			while (!captured && iter.hasNext()) {
+				EntityWoodForest.EC ecEntity = iter.next();
+				if (ecEntity.isDead) {
+					iter.remove();
+				} else if (ecEntity.getCapturedTargets().contains(target)) {
+					captured = true;
+				}
+			}
+			return captured;
+		}
+
+		@Override
+		public void onUpdate() {
+			super.onUpdate();
+			if (!this.world.isRemote && this.ticksExisted % 20 == 2) {
+				float health = this.getHealth();
+				if (health > 0.0f && health < this.getMaxHealth()) {
+					this.heal(1.0f);
+				}
+			}
+		}
+
+		@Override
+		protected void collideWithNearbyEntities() {
+			super.collideWithNearbyEntities();
+			if (this.isEntityAlive()) {
+				if (!this.world.getEntitiesWithinAABB(EntityWoodForest.EC.class, this.getEntityBoundingBox()).isEmpty()) {
+					if (!ProcedureOnLivingUpdate.isNoClip(this)) {
+						ProcedureOnLivingUpdate.setNoClip(this, true);
+					}
+				} else if (ProcedureOnLivingUpdate.isNoClip(this)) {
+					ProcedureOnLivingUpdate.setNoClip(this, false);
+				}
+			}
+		}
+
+		@Override
+		protected void onDeathUpdate() {
+			if (this.onGround) {
+				++this.deathTicks;
+				ProcedureOnLivingUpdate.setNoClip(this, true);
+				this.motionY -= 0.04d;
+			}
+			if (this.deathTicks == 100) {
+				this.setDead();
+			}
 		}
 
 		@Override
@@ -129,6 +220,10 @@ public class EntityZetsu extends ElementsNarutomodMod.ModElement {
 			protected void preRenderCallback(EntityCustom entity, float partialTickTime) {
 				float f = 0.0625F * 15.0F;
 				GlStateManager.scale(f, f, f);
+				boolean flag = entity.getItemStackFromSlot(EntityEquipmentSlot.CHEST).isEmpty();
+				((ModelZetsu)this.mainModel).flytrapRight.showModel = !flag;
+				((ModelZetsu)this.mainModel).flytrapLeft.showModel = !flag;
+				((ModelZetsu)this.mainModel).flaps.showModel = flag;
 			}
 
 			@Override
@@ -168,6 +263,13 @@ public class EntityZetsu extends ElementsNarutomodMod.ModElement {
 			private final ModelRenderer bone12;
 			private final ModelRenderer bone13;
 			private final ModelRenderer bone17;
+			private final ModelRenderer flaps;
+			private final ModelRenderer bone18;
+			private final ModelRenderer bone21;
+			private final ModelRenderer bone22;
+			private final ModelRenderer bone19;
+			private final ModelRenderer bone20;
+			private final ModelRenderer bone23;
 			public ModelZetsu() {
 				textureWidth = 64;
 				textureHeight = 96;
@@ -280,6 +382,39 @@ public class EntityZetsu extends ElementsNarutomodMod.ModElement {
 				bone13.addChild(bone17);
 				setRotationAngle(bone17, -0.2618F, 0.0F, 0.2618F);
 				bone17.cubeList.add(new ModelBox(bone17, 8, 56, 0.0F, -8.0F, 0.0F, 8, 8, 8, 0.0F, false));
+				flaps = new ModelRenderer(this);
+				flaps.setRotationPoint(-2.0F, 8.0F, 0.0F);
+				bipedBody.addChild(flaps);
+				bone18 = new ModelRenderer(this);
+				bone18.setRotationPoint(0.0F, 0.0F, 0.0F);
+				flaps.addChild(bone18);
+				setRotationAngle(bone18, 0.0F, 0.0F, -2.3562F);
+				bone18.cubeList.add(new ModelBox(bone18, 56, 16, -2.0F, -12.0F, 0.0F, 4, 12, 0, 0.0F, false));
+				bone21 = new ModelRenderer(this);
+				bone21.setRotationPoint(0.0F, 0.0F, 0.0F);
+				flaps.addChild(bone21);
+				setRotationAngle(bone21, -0.5236F, 0.0F, -2.0944F);
+				bone21.cubeList.add(new ModelBox(bone21, 56, 16, -2.0F, -12.0F, 0.0F, 4, 12, 0, 0.0F, false));
+				bone22 = new ModelRenderer(this);
+				bone22.setRotationPoint(0.0F, 0.0F, 0.0F);
+				flaps.addChild(bone22);
+				setRotationAngle(bone22, -1.0472F, 0.0F, -1.8326F);
+				bone22.cubeList.add(new ModelBox(bone22, 56, 16, -2.0F, -12.0F, 0.0F, 4, 12, 0, 0.0F, false));
+				bone19 = new ModelRenderer(this);
+				bone19.setRotationPoint(0.0F, 0.0F, 0.0F);
+				flaps.addChild(bone19);
+				setRotationAngle(bone19, -0.7854F, -0.2618F, -2.618F);
+				bone19.cubeList.add(new ModelBox(bone19, 56, 16, -2.0F, -12.0F, 0.0F, 4, 12, 0, 0.0F, false));
+				bone20 = new ModelRenderer(this);
+				bone20.setRotationPoint(0.0F, 0.0F, 0.0F);
+				flaps.addChild(bone20);
+				setRotationAngle(bone20, 0.4363F, 0.0F, -2.5307F);
+				bone20.cubeList.add(new ModelBox(bone20, 56, 16, -2.0F, -12.0F, 0.0F, 4, 12, 0, 0.0F, false));
+				bone23 = new ModelRenderer(this);
+				bone23.setRotationPoint(0.0F, 0.0F, 0.0F);
+				flaps.addChild(bone23);
+				setRotationAngle(bone23, 0.8727F, 0.0F, -2.8798F);
+				bone23.cubeList.add(new ModelBox(bone23, 56, 16, -2.0F, -12.0F, 0.0F, 4, 12, 0, 0.0F, false));
 				bipedRightArm = new ModelRenderer(this);
 				bipedRightArm.setRotationPoint(-5.0F, 2.0F, 0.0F);
 				bipedRightArm.cubeList.add(new ModelBox(bipedRightArm, 40, 16, -3.0F, -2.0F, -2.0F, 4, 12, 4, 0.0F, false));

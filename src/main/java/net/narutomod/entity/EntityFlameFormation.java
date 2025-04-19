@@ -3,11 +3,11 @@ package net.narutomod.entity;
 
 import net.narutomod.item.ItemJutsu;
 import net.narutomod.Particles;
+import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.ElementsNarutomodMod;
 
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -22,6 +22,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.Explosion;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
@@ -75,8 +76,29 @@ public class EntityFlameFormation extends ElementsNarutomodMod.ModElement {
 		public EC(EntityLivingBase userIn, float size) {
 			this(userIn.world);
 			this.user = userIn;
+			int lowestY = 256;
+			BlockPos.PooledMutableBlockPos pos = BlockPos.PooledMutableBlockPos.retain();
+			for (double d0 = -size * 0.5f; d0 < size * 0.5f; d0 += 1d) {
+				int i = ProcedureUtils.getTopSolidBlockY(userIn.world, pos.setPos(userIn.posX + d0, userIn.posY, userIn.posZ - size * 0.5));
+				if (i < lowestY) {
+					lowestY = i;
+				}
+				i = ProcedureUtils.getTopSolidBlockY(userIn.world, pos.setPos(userIn.posX + d0, userIn.posY, userIn.posZ + size * 0.5));
+				if (i < lowestY) {
+					lowestY = i;
+				}
+				i = ProcedureUtils.getTopSolidBlockY(userIn.world, pos.setPos(userIn.posX - size * 0.5, userIn.posY, userIn.posZ + d0));
+				if (i < lowestY) {
+					lowestY = i;
+				}
+				i = ProcedureUtils.getTopSolidBlockY(userIn.world, pos.setPos(userIn.posX + size * 0.5, userIn.posY, userIn.posZ + d0));
+				if (i < lowestY) {
+					lowestY = i;
+				}
+			}
+			pos.release();
+			this.setLocationAndAngles(userIn.posX, Math.min((double)lowestY, userIn.posY), userIn.posZ, 0.0f, 0.0f);
 			this.setScale(size);
-			this.setLocationAndAngles(userIn.posX, userIn.posY, userIn.posZ, 0.0f, 0.0f);
 		}
 
 		@Override
@@ -142,27 +164,27 @@ public class EntityFlameFormation extends ElementsNarutomodMod.ModElement {
 					float size = this.getScale();
 					AxisAlignedBB thisaabb = this.getEntityBoundingBox().grow(0.1d);
 					Vec3d vec = new Vec3d(thisaabb.minX, thisaabb.minY, thisaabb.minZ);
-					for (int i = 0; i < 10; i++) {
+					for (int i = 0; i < 20; i++) {
 						Vec3d vec1 = vec.add(new Vec3d(thisaabb.maxX - thisaabb.minX, 0d, 0d).scale(this.rand.nextFloat()));
-						Particles.spawnParticle(this.world, Particles.Types.FLAME, vec1.x, vec1.y, vec1.z,
-						 1, 0.0d, 0.0d, 0.0d, 0.0d, 0.09d * size, 0.0d, 0xffffcf00, (int)(size * 5f));
+						Particles.spawnParticle(this.world, Particles.Types.FLAME, vec1.x, vec1.y + this.rand.nextFloat() * this.height * 0.5,
+						 vec1.z, 1, 0.0d, 0.0d, 0.0d, 0.0d, 0.09d * size, 0.0d, 0xffffcf00, (int)(size * 5f));
 					}
-					for (int i = 0; i < 10; i++) {
+					for (int i = 0; i < 20; i++) {
 						Vec3d vec1 = vec.add(new Vec3d(0d, 0d, thisaabb.maxZ - thisaabb.minZ).scale(this.rand.nextFloat()));
-						Particles.spawnParticle(this.world, Particles.Types.FLAME, vec1.x, vec1.y, vec1.z,
-						 1, 0.0d, 0.0d, 0.0d, 0.0d, 0.09d * size, 0.0d, 0xffffcf00, (int)(size * 5f));
+						Particles.spawnParticle(this.world, Particles.Types.FLAME, vec1.x, vec1.y + this.rand.nextFloat() * this.height * 0.5,
+						 vec1.z, 1, 0.0d, 0.0d, 0.0d, 0.0d, 0.09d * size, 0.0d, 0xffffcf00, (int)(size * 5f));
 					}
 					vec = new Vec3d(thisaabb.maxX, thisaabb.minY, thisaabb.minZ);
-					for (int i = 0; i < 10; i++) {
+					for (int i = 0; i < 20; i++) {
 						Vec3d vec1 = vec.add(new Vec3d(0d, 0d, thisaabb.maxZ - thisaabb.minZ).scale(this.rand.nextFloat()));
-						Particles.spawnParticle(this.world, Particles.Types.FLAME, vec1.x, vec1.y, vec1.z,
-						 1, 0.0d, 0.0d, 0.0d, 0.0d, 0.09d * size, 0.0d, 0xffffcf00, (int)(size * 5f));
+						Particles.spawnParticle(this.world, Particles.Types.FLAME, vec1.x, vec1.y + this.rand.nextFloat() * this.height * 0.5,
+						 vec1.z, 1, 0.0d, 0.0d, 0.0d, 0.0d, 0.09d * size, 0.0d, 0xffffcf00, (int)(size * 5f));
 					}
 					vec = new Vec3d(thisaabb.minX, thisaabb.minY, thisaabb.maxZ);
-					for (int i = 0; i < 10; i++) {
+					for (int i = 0; i < 20; i++) {
 						Vec3d vec1 = vec.add(new Vec3d(thisaabb.maxX - thisaabb.minX, 0d, 0d).scale(this.rand.nextFloat()));
-						Particles.spawnParticle(this.world, Particles.Types.FLAME, vec1.x, vec1.y, vec1.z,
-						 1, 0.0d, 0.0d, 0.0d, 0.0d, 0.09d * size, 0.0d, 0xffffcf00, (int)(size * 5f));
+						Particles.spawnParticle(this.world, Particles.Types.FLAME, vec1.x, vec1.y + this.rand.nextFloat() * this.height * 0.5,
+						 vec1.z, 1, 0.0d, 0.0d, 0.0d, 0.0d, 0.09d * size, 0.0d, 0xffffcf00, (int)(size * 5f));
 					}
 				} else if (this.ticksExisted % 10 == 1) {
 					this.playSound(net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:flamethrow")), 
@@ -228,14 +250,15 @@ public class EntityFlameFormation extends ElementsNarutomodMod.ModElement {
 			public void onExplosion(ExplosionEvent.Detonate event) {
 				if (!event.getWorld().isRemote) {
 					Vec3d vec = event.getExplosion().getPosition();
-					float size = (float)ReflectionHelper.getPrivateValue(Explosion.class, event.getExplosion(), 8);
+					float size = 32.0f;
 					AxisAlignedBB bb = new AxisAlignedBB(vec.x - size, vec.y - size, vec.z - size, vec.x + size, vec.y + size, vec.z + size);
 					for (EC ec : event.getWorld().getEntitiesWithinAABB(EC.class, bb)) {
 						EntityLivingBase exploder = event.getExplosion().getExplosivePlacedBy();
 						if (!ec.getEntityBoundingBox().contains(vec) && (exploder == null || !ec.isEntityInside(exploder))) {
 							Iterator<Entity> itr = event.getAffectedEntities().iterator();
 							while (itr.hasNext()) {
-								if (ec.isEntityInside(itr.next())) {
+								Entity entity = itr.next();
+								if (ec.isEntityInside(entity)) {
 									itr.remove();
 								}
 							}

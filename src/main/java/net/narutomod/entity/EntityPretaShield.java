@@ -7,9 +7,11 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.SoundEvent;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.init.MobEffects;
 import net.minecraft.entity.player.EntityPlayer;
@@ -26,18 +28,17 @@ import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.model.ModelBox;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.Minecraft;
-//import net.minecraft.inventory.EntityEquipmentSlot;
-//import net.minecraft.item.ItemStack;
+import net.minecraft.network.play.server.SPacketAnimation;
 
-//import net.narutomod.item.ItemRinnegan;
-//import net.narutomod.item.ItemTenseigan;
 import net.narutomod.item.ItemJutsu;
+import net.narutomod.item.ItemSenjutsu;
 import net.narutomod.ElementsNarutomodMod;
 import net.narutomod.Chakra;
 import net.narutomod.PlayerTracker;
 import net.narutomod.potion.PotionAmaterasuFlame;
 import net.narutomod.potion.PotionCorrosion;
 import net.narutomod.potion.PotionInstantDamage;
+import net.narutomod.potion.PotionParalysis;
 import net.narutomod.procedure.ProcedureUtils;
 
 import com.google.common.collect.Lists;
@@ -58,6 +59,8 @@ public class EntityPretaShield extends ElementsNarutomodMod.ModElement {
 
 	public static class EntityCustom extends EntityShieldBase {
 		private int lifeSpan = Integer.MAX_VALUE - 1;
+		private double absorbedSageChakra;
+		private final double sageChakraLimit = 1000.0d;
 		
 		public EntityCustom(World world) {
 			super(world);
@@ -83,29 +86,35 @@ public class EntityPretaShield extends ElementsNarutomodMod.ModElement {
 		}
 
 		private void weakenEntity(EntityLivingBase entity, float amount) {
-			int duration = 200;
-			int amplifier = (int) Math.ceil((amount / 4.0F));
-			if (entity.isPotionActive(MobEffects.WEAKNESS) && amount > 0.1F) {
-				PotionEffect effect = entity.getActivePotionEffect(MobEffects.WEAKNESS);
-				amplifier += effect.getAmplifier();
-				duration = effect.getDuration() + 60;
+			PotionEffect effect = entity.getActivePotionEffect(MobEffects.MINING_FATIGUE);
+			if (effect == null || effect.getAmplifier() < 4) {
+				entity.addPotionEffect(new PotionEffect(MobEffects.MINING_FATIGUE, 200, 4));
 			}
-			entity.addPotionEffect(new PotionEffect(MobEffects.WEAKNESS, duration, amplifier));
-			entity.addPotionEffect(new PotionEffect(MobEffects.MINING_FATIGUE, 200, 4));
-			entity.addPotionEffect(new PotionEffect(MobEffects.SLOWNESS, 200, 4));
-			EntityLivingBase summoner = this.getSummoner();
+			effect = entity.getActivePotionEffect(MobEffects.SLOWNESS);
+			if (effect == null || effect.getAmplifier() < 4) {
+				entity.addPotionEffect(new PotionEffect(MobEffects.SLOWNESS, 200, 4));
+			}
+			effect = entity.getActivePotionEffect(MobEffects.WEAKNESS);
+			int amplifier = (int)Math.ceil(amount * 0.25F) + (effect != null ? effect.getAmplifier() : 0);
+			if (effect == null || effect.getAmplifier() < amplifier) {
+				entity.addPotionEffect(new PotionEffect(MobEffects.WEAKNESS, 200, amplifier));
+			}
+			/*EntityLivingBase summoner = this.getSummoner();
 			summoner.heal(amount / 2.0F);
 			if (summoner instanceof EntityPlayer) {
 				((EntityPlayer)summoner).sendStatusMessage(new TextComponentString(amount
 				  + " damage from " + entity.getDisplayName().getFormattedText()
 				  + " absorbed, weakening it by " + entity.getActivePotionEffect(MobEffects.WEAKNESS).getAmplifier() + " for "
 				  + (entity.getActivePotionEffect(MobEffects.WEAKNESS).getDuration() / 20) + " secs"), true);
-			}
+			}*/
 		}
 
 		@Override
 		public boolean attackEntityFrom(DamageSource source, float amount) {
 			if (source.getImmediateSource() != null && this.absorbEntityChakra(source.getImmediateSource(), amount)) {
+				if (this.world instanceof WorldServer) {
+					((WorldServer)this.world).getEntityTracker().sendToTracking(this, new SPacketAnimation(this, 1));
+				}
 				return false;
 			}
 			if (ItemJutsu.isDamageSourceNinjutsu(source)) {
@@ -115,30 +124,13 @@ public class EntityPretaShield extends ElementsNarutomodMod.ModElement {
 					if (source instanceof ProcedureUtils.JutsuEffectDamageSource) {
 						this.removePotionEffect(((ProcedureUtils.JutsuEffectDamageSource)source).getPotion());
 					}
+					if (this.world instanceof WorldServer) {
+						((WorldServer)this.world).getEntityTracker().sendToTracking(this, new SPacketAnimation(this, 1));
+					}
 					return false;
 				}
 			}
 			return super.attackEntityFrom(source, amount);
-			/*if (ItemJutsu.isDamageSourceNinjutsu(source)) {
-				if (!this.world.isRemote) {
-					if (source.getTrueSource() instanceof EntityLivingBase) {
-						this.weakenEntity((EntityLivingBase)source.getTrueSource(), amount);
-					}
-					if (source.getImmediateSource() instanceof ItemJutsu.IJutsu) {
-						source.getImmediateSource().setDead();
-					}
-					EntityLivingBase summoner = this.getSummoner();
-					if (summoner != null && amount > 0f) {
-						Chakra.pathway(summoner).consume((double)-amount, true);
-					}
-				}
-				return false;
-			} else {
-				if (this.absorbEntityChakra(source.getTrueSource(), amount)) {
-					return false;
-				}
-				return super.attackEntityFrom(source, amount);
-			}*/
 		}
 
 		/*@Override
@@ -155,7 +147,7 @@ public class EntityPretaShield extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void onLivingUpdate() {
 			if (this.ticksExisted == 1) {
-				this.playSound(net.minecraft.util.SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:kamui")), 0.6f, 1f);
+				this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:kamui")), 0.6f, 1f);
 			}
 			super.onLivingUpdate();
 			if (!this.world.isRemote) {
@@ -166,41 +158,61 @@ public class EntityPretaShield extends ElementsNarutomodMod.ModElement {
 		}
 
 		private boolean absorbEntityChakra(Entity entity, float amount) {
+			boolean ret = false;
 			if (!this.world.isRemote) {
 				EntityLivingBase summoner = this.getSummoner();
 				if (summoner != null) {
 					if (entity instanceof ItemJutsu.IJutsu) {
 						entity.setDead();
-						Chakra.pathway(summoner).consume((double)-amount, true);
-						return true;
-					}
-					if (entity instanceof EntitySusanooBase) {
-						//float amount = 10f;
+						ret = true;
+					} else if (entity instanceof EntitySusanooBase) {
 						entity.attackEntityFrom(DamageSource.MAGIC, amount);
-						summoner.heal(amount / 2.0F);
-						return true;
-					}
-					if (entity instanceof EntityLivingBase) {
+						ret = true;
+					} else if (entity instanceof EntityLivingBase) {
 						Chakra.Pathway chakra = Chakra.pathway((EntityLivingBase)entity);
 						if (chakra.getAmount() > 0.0d) {
-							double d = Math.min(chakra.getAmount(), amount);
-							chakra.consume(d);
-							this.weakenEntity((EntityLivingBase)entity, (float)d);
-							Chakra.pathway(summoner).consume(-d, true);
-							return true;
+							amount = Math.min((float)chakra.getAmount(), amount);
+							chakra.consume((double)amount);
+							this.weakenEntity((EntityLivingBase)entity, amount);
+							ret = true;
 						}
+					}
+					if (ret) {
+						Chakra.pathway(summoner).consume((double)-amount, true);
+						summoner.heal(amount * 0.01F);
+						this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:charging_chakra")),
+						 0.6F, this.rand.nextFloat() * 0.6F + 0.8F);
 					}
 				}
 			}
-			return false;
+			return ret;
 		}
 
 		@Override
 		protected void collideWithEntity(Entity entity) {
-			if (!entity.equals(this.getSummoner())) {
-				this.absorbEntityChakra(entity, 20f);
-				//super.collideWithEntity(entity);
+			EntityLivingBase summoner = this.getSummoner();
+			if (!entity.equals(summoner) && this.absorbEntityChakra(entity, 10f)) {
+				if (entity instanceof EntityLivingBase && ItemSenjutsu.isSageModeActivated((EntityLivingBase)entity)
+				 && !ItemSenjutsu.canUseSageMode(summoner)) {
+					this.absorbedSageChakra += 10.0d;
+					if (this.absorbedSageChakra >= this.sageChakraLimit) {
+						ProcedureUtils.setDeathAnimations(summoner, 1, 100);
+						summoner.addPotionEffect(new PotionEffect(PotionParalysis.potion, 100, 1, false, false));
+						this.setDead();
+					}
+				}
 			}
+		}
+
+		@Override
+		public void applyEntityCollision(Entity entityIn) {
+		}
+
+		@SideOnly(Side.CLIENT)
+		@Override
+		public void handleStatusUpdate(byte id) {
+			super.handleStatusUpdate(id);
+			this.hurtTime = 0;
 		}
 	}
 
@@ -267,10 +279,10 @@ public class EntityPretaShield extends ElementsNarutomodMod.ModElement {
 		            GlStateManager.glTexEnvi(8960, OpenGlHelper.GL_OPERAND0_ALPHA, 770);
 		            this.brightnessBuffer.position(0);
 		            if (flag1) {
-		                this.brightnessBuffer.put(0.6F);
-		                this.brightnessBuffer.put(0.6F);
-		                this.brightnessBuffer.put(0.6F);
-		                this.brightnessBuffer.put(0.6F);
+		                this.brightnessBuffer.put(0.5F);
+		                this.brightnessBuffer.put(0.5F);
+		                this.brightnessBuffer.put(0.5F);
+		                this.brightnessBuffer.put(0.5F);
 		            } else {
 		                float f1 = (float)(i >> 24 & 255) / 255.0F;
 		                float f2 = (float)(i >> 16 & 255) / 255.0F;

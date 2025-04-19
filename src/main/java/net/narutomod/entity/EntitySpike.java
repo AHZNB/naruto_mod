@@ -109,15 +109,40 @@ public class EntitySpike extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		protected void checkOnGround() {
-			if (this.isOnGround(this.getTransformedTip()) || this.isOnGround(this.getPositionVector())) {
-				this.onGround = true;
-				this.setNoGravity(false);
+			Vec3d vec1 = this.getPositionVector();
+			Vec3d vec2 = this.getTransformedTip().subtract(vec1);
+			double d = 1d / vec2.lengthVector(); 
+			for (double d1 = 0.0d; true; d1 += d) {
+				if (d1 > 1.0d) {
+					d1 = 1.0d;
+				}
+				if (this.isOnGround(vec1.add(vec2.scale(d1)))) {
+					this.onGround = true;
+					this.setNoGravity(false);
+					break;
+				}
+				if (d1 >= 1.0d) {
+					break;
+				}
 			}
 		}
 
-		private Vec3d getTransformedTip() {
+		protected Vec3d getTransformedTip() {
 			return this.tipOffset.scale(this.getEntityScale()).rotatePitch(-this.rotationPitch * 0.017453292F)
 			 .rotateYaw(-this.rotationYaw * 0.017453292F).add(this.getPositionVector());
+		}
+
+		@Override
+		public void updateInFlightRotations() {
+            double d = (double)MathHelper.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
+            float yaw = -(float)(MathHelper.atan2(this.motionX, this.motionZ) * (180D / Math.PI));
+            float pitch = -(float)(MathHelper.atan2(this.motionY, d) * (180D / Math.PI)) + 90F;
+            float deltaYaw = ProcedureUtils.subtractDegreesWrap(yaw, this.rotationYaw);
+            float deltaPitch = ProcedureUtils.subtractDegreesWrap(pitch, this.rotationPitch);
+            this.prevRotationYaw = yaw - deltaYaw;
+            this.prevRotationPitch = pitch - deltaPitch;
+            this.rotationPitch = this.prevRotationPitch + (pitch - this.prevRotationPitch) * 0.2F;
+            this.rotationYaw = this.prevRotationYaw + (yaw - this.prevRotationYaw) * 0.2F;
 		}
 
 		@Override
@@ -130,6 +155,7 @@ public class EntitySpike extends ElementsNarutomodMod.ModElement {
 					vec2 = raytraceresult.hitVec;
 				}
 				Entity entity = null;
+				Vec3d hitvec = null;
 				AxisAlignedBB bigAABB = this.getEntityBoundingBox().expand(this.motionX, this.motionY, this.motionZ).grow(1.0D);
 				double d0 = 0.0D;
 				for (Entity entity1 : this.world.getEntitiesWithinAABBExcludingEntity(this, bigAABB)) {
@@ -139,13 +165,14 @@ public class EntitySpike extends ElementsNarutomodMod.ModElement {
 							double d = vec1.distanceTo(result.hitVec);
 							if (d < d0 || d0 == 0.0D) {
 								entity = entity1;
+								hitvec = result.hitVec;
 								d0 = d;
 							}
 						}
 					}
 				}
 				if (entity != null) {
-					raytraceresult = new RayTraceResult(entity);
+					raytraceresult = new RayTraceResult(entity, hitvec);
 				}
 			}
 			return raytraceresult;
@@ -178,13 +205,16 @@ public class EntitySpike extends ElementsNarutomodMod.ModElement {
 
 			@Override
 			public void doRender(T entity, double x, double y, double z, float entityYaw, float pt) {
+				if (entity.prevRotationYaw == 0.0f && entity.prevRotationPitch == 0.0f) {
+					entity.prevRotationYaw = entity.rotationYaw;
+					entity.prevRotationPitch = entity.rotationPitch;
+				}
 				GlStateManager.pushMatrix();
 				this.bindEntityTexture(entity);
-				float scale = entity.getEntityScale();
 				GlStateManager.translate(x, y, z);
-				GlStateManager.rotate(-entity.prevRotationYaw - (entity.rotationYaw - entity.prevRotationYaw) * pt, 0.0F, 1.0F, 0.0F);
+				GlStateManager.rotate(-ProcedureUtils.interpolateRotation(entity.prevRotationYaw, entity.rotationYaw, pt), 0.0F, 1.0F, 0.0F);
 				GlStateManager.rotate(entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * pt - 180.0F, 1.0F, 0.0F, 0.0F);
-				this.prepareScale(scale);
+				this.prepareScale(entity.getEntityScale());
 				int color = entity.getColor();
 				float alpha = (color >> 24 & 0xFF) / 255.0F;
 				float red = (color >> 16 & 0xFF) / 255.0F;

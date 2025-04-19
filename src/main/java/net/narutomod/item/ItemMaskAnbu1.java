@@ -178,7 +178,7 @@ public class ItemMaskAnbu1 extends ElementsNarutomodMod.ModElement {
 			cube_r8.cubeList.add(new ModelBox(cube_r8, 23, 22, -0.5F, 0.1F, 0.95F, 1, 1, 3, -0.1F, false));
 			bipedHeadwear = new ModelRenderer(this);
 			bipedHeadwear.setRotationPoint(0.0F, 0.0F, 0.0F);
-			bipedHeadwear.cubeList.add(new ModelBox(bipedHeadwear, 0, 23, -4.0F, -8.0F, -4.01F, 8, 8, 0, 0.0F, true));
+			bipedHeadwear.cubeList.add(new ModelBox(bipedHeadwear, 0, 23, -4.0F, -8.0F, -4.03F, 8, 8, 0, 0.0F, true));
 		}
 
 		public void setRotationAngle(ModelRenderer modelRenderer, float x, float y, float z) {

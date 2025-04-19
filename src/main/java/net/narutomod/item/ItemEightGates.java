@@ -529,7 +529,7 @@ public class ItemEightGates extends ElementsNarutomodMod.ModElement {
 					if (gateOpened >= 6f) {
 						ProcedureAoeCommand.set(player, 0d, gateOpened * 2f).exclude(player).knockback(2f);
 						for (Entity entity2 : ProcedureAoeCommand.getInstance().getEntitiesList()) {
-							if (entity2 instanceof ItemJutsu.IJutsu) {
+							if (entity2 instanceof ItemJutsu.IJutsu && !(entity2 instanceof EntityLivingBase)) {
 								entity2.setDead();
 							}
 						}

@@ -266,7 +266,7 @@ public abstract class EntitySusanooBase extends EntityCreature implements IRange
 		if (passenger.getRidingEntity() != this) {
 			throw new IllegalStateException("Use x.startRiding(y), not y.addPassenger(x)");
 		} else {
-			Object obj = ReflectionHelper.getPrivateValue(Entity.class, this, 7);
+			Object obj = ReflectionHelper.getPrivateValue(Entity.class, this, "riddenByEntities", "field_70725_aQ");
 			if (!(obj instanceof List)) {
 				obj = null;
 				try {

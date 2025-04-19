@@ -27,8 +27,8 @@ import net.minecraft.block.state.IBlockState;
 
 import net.narutomod.creativetab.TabModTab;
 import net.narutomod.ElementsNarutomodMod;
+import net.narutomod.procedure.ProcedureUtils;
 
-import java.util.UUID;
 import java.util.List;
 import com.google.common.collect.Multimap;
 import javax.annotation.Nullable;
@@ -54,8 +54,6 @@ public class ItemZabuzaSword extends ElementsNarutomodMod.ModElement {
 	}
 
 	private static class ItemToolCustom extends Item implements ItemOnBody.Interface {
-		private static final UUID REACH_MODIFIER = UUID.fromString("2ea719b4-d3ee-442b-97f6-3a6d704e5102");
-		
 		protected ItemToolCustom() {
 			this.setMaxDamage(300);
 			this.setMaxStackSize(1);
@@ -73,7 +71,7 @@ public class ItemZabuzaSword extends ElementsNarutomodMod.ModElement {
 			if (slot == EntityEquipmentSlot.MAINHAND) {
 				multimap.put(SharedMonsterAttributes.ATTACK_DAMAGE.getName(), new AttributeModifier(ATTACK_DAMAGE_MODIFIER, "Tool modifier", 1f + 22f * this.getDurabilityPercent(stack), 0));
 				multimap.put(SharedMonsterAttributes.ATTACK_SPEED.getName(), new AttributeModifier(ATTACK_SPEED_MODIFIER, "Tool modifier", -3.4, 0));
-				multimap.put(EntityPlayer.REACH_DISTANCE.getName(), new AttributeModifier(REACH_MODIFIER, "Tool modifier", 1, 0));
+				multimap.put(EntityPlayer.REACH_DISTANCE.getName(), new AttributeModifier(ProcedureUtils.REACH_MODIFIER, "Tool modifier", 1.5, 0));
 			}
 			return multimap;
 		}

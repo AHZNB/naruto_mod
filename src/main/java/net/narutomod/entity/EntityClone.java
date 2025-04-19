@@ -33,7 +33,6 @@ import net.minecraft.entity.ai.EntityAISwimming;
 import net.minecraft.entity.ai.EntityAITasks;
 import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
 import net.minecraft.entity.ai.EntityAIHurtByTarget;
-import net.minecraft.entity.ai.EntityAIAttackMelee;
 import net.minecraft.entity.ai.EntityAILookIdle;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.player.EntityPlayer;
@@ -64,15 +63,12 @@ import net.minecraft.pathfinding.PathNavigate;
 import net.minecraft.pathfinding.PathNavigateGround;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.block.material.Material;
-import net.minecraft.init.MobEffects;
 
 import net.narutomod.potion.PotionFeatherFalling;
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.item.ItemOnBody;
 import net.narutomod.ElementsNarutomodMod;
-import net.narutomod.ModConfig;
 import net.narutomod.PlayerRender;
-import net.narutomod.PlayerTracker;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -114,7 +110,7 @@ public class EntityClone extends ElementsNarutomodMod.ModElement {
 		}
 	}
 	
-	public static abstract class _Base extends EntityCreature {
+	public static abstract class _Base extends EntityCreature implements EntitySummonAnimal.ISummon {
 		private static final DataParameter<Integer> SUMMONER_ID = EntityDataManager.<Integer>createKey(_Base.class, DataSerializers.VARINT);
 		private static final DataParameter<Float> MODEL_SCALE = EntityDataManager.<Float>createKey(_Base.class, DataSerializers.FLOAT);
 		private EntityLivingBase summonerCached;
@@ -157,7 +153,7 @@ public class EntityClone extends ElementsNarutomodMod.ModElement {
 			this.getDataManager().register(MODEL_SCALE, Float.valueOf(1f));
 		}
 
-		@Nullable
+		@Override @Nullable
 		public EntityLivingBase getSummoner() {
 			if (this.summonerCached == null) {
 		    	Entity e = this.world.getEntityByID(((Integer)this.getDataManager().get(SUMMONER_ID)).intValue());
@@ -218,7 +214,7 @@ public class EntityClone extends ElementsNarutomodMod.ModElement {
 			super.initEntityAI();
 			this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, true));
 			this.tasks.addTask(0, new EntityAISwimming(this));
-			this.tasks.addTask(1, new EntityAIAttackMelee(this, 1.25d, true));
+			this.tasks.addTask(1, new EntityNinjaMob.AIAttackMelee(this, 1.25d, true));
 			//this.tasks.addTask(2, new AIFollowSummoner(this, 0.6d, 3.0F));
 			this.tasks.addTask(5, new EntityAILookIdle(this));
 		}
@@ -299,7 +295,7 @@ public class EntityClone extends ElementsNarutomodMod.ModElement {
 				}
 				if (target == null && summoner.getLastAttackedEntity() != null 
 				 && !this.isOnSameTeam(summoner.getLastAttackedEntity())
-				 && summoner.ticksExisted - summoner.getLastAttackedEntityTime() < 200) {
+				 && summoner.ticksExisted - summoner.getLastAttackedEntityTime() < 400) {
 					target = summoner.getLastAttackedEntity();
 				}
 				if (target != null && EntityAITarget.isSuitableTarget(this, target, false, false)) {
@@ -322,7 +318,7 @@ public class EntityClone extends ElementsNarutomodMod.ModElement {
 		}
 
 		public void onDamageTo(EntityLivingBase target, float amount) {
-			double xp = 0.0d;
+			/*double xp = 0.0d;
 			if (target instanceof EntityPlayer || (target instanceof EntityLiving && !((EntityLiving)target).isAIDisabled())) {
 				int resistance = target.isPotionActive(MobEffects.RESISTANCE)
 				 ? target.getActivePotionEffect(MobEffects.RESISTANCE).getAmplifier() + 2 : 1;
@@ -333,17 +329,17 @@ public class EntityClone extends ElementsNarutomodMod.ModElement {
 			}
 			if (xp > 0d) {
 				this.collectedNXP += xp;
-			}
+			}*/
 		}
 
 		public void onDamagedBy(EntityLivingBase attacker, float amount) {
-			if (amount > 0f && amount < this.getHealth()) {
+			/*if (amount > 0f && amount < this.getHealth()) {
 				EntityLivingBase summoner = this.getSummoner();
 				if (summoner instanceof EntityPlayer) {
 					double bxp = PlayerTracker.getBattleXp((EntityPlayer)summoner);
 					this.collectedNXP += bxp < 1d ? 1d : (amount / MathHelper.sqrt(MathHelper.sqrt(bxp)));
 				}
-			}
+			}*/
 		}
 
 		public double getCollectedNinjaXP() {
@@ -361,9 +357,9 @@ public class EntityClone extends ElementsNarutomodMod.ModElement {
 				EntityLivingBase summoner = this.getSummoner();
 				if (summoner instanceof EntityPlayer) {
 					((EntityPlayer)summoner).addExperience(this.getCollectXPpoints());
-					if (PlayerTracker.isNinja((EntityPlayer)summoner)) {
-						PlayerTracker.addBattleXp((EntityPlayer)summoner, this.getCollectedNinjaXP());
-					}
+					//if (PlayerTracker.isNinja((EntityPlayer)summoner)) {
+					//	PlayerTracker.addBattleXp((EntityPlayer)summoner, this.getCollectedNinjaXP());
+					//}
 				}
 			}
 		}
@@ -746,7 +742,7 @@ public class EntityClone extends ElementsNarutomodMod.ModElement {
 		        	this.mainModel = ((AbstractClientPlayer)summoner).getSkinType().equals("slim") ? this.slimModel : this.normalModel;
 		        } else if (summoner != null) {
 		        	Render renderer = this.renderManager.getEntityRenderObject(summoner);
-			    	if (renderer instanceof RenderLivingBase && ((RenderLivingBase)renderer).getMainModel() instanceof ModelBiped) {
+			    	if (renderer instanceof RenderLivingBase) {// && ((RenderLivingBase)renderer).getMainModel() instanceof ModelBiped) {
 		    			this.mainModel = ((RenderLivingBase)renderer).getMainModel();
 			    	}
 		        }
@@ -755,41 +751,43 @@ public class EntityClone extends ElementsNarutomodMod.ModElement {
 		    }
 
 		    private void setPose(T entity) {
-		    	ModelBiped model = (ModelBiped)this.getMainModel();
-		    	model.isSneak = entity.isSneaking();
-	            ItemStack itemstack = entity.getHeldItemMainhand();
-	            ItemStack itemstack1 = entity.getHeldItemOffhand();
-	            ModelBiped.ArmPose mainhandpose = ModelBiped.ArmPose.EMPTY;
-	            ModelBiped.ArmPose offhandpose = ModelBiped.ArmPose.EMPTY;
-	            if (!itemstack.isEmpty()) {
-	                mainhandpose = ModelBiped.ArmPose.ITEM;
-	                if (entity.getItemInUseCount() > 0) {
-	                    EnumAction enumaction = itemstack.getItemUseAction();
-	                    if (enumaction == EnumAction.BLOCK) {
-	                        mainhandpose = ModelBiped.ArmPose.BLOCK;
-	                    } else if (enumaction == EnumAction.BOW) {
-	                        mainhandpose = ModelBiped.ArmPose.BOW_AND_ARROW;
-	                    }
-	                }
-	            }
-	            if (!itemstack1.isEmpty()) {
-	                offhandpose = ModelBiped.ArmPose.ITEM;
-	                if (entity.getItemInUseCount() > 0) {
-	                    EnumAction enumaction1 = itemstack1.getItemUseAction();
-	                    if (enumaction1 == EnumAction.BLOCK) {
-	                        offhandpose = ModelBiped.ArmPose.BLOCK;
-	                    } else if (enumaction1 == EnumAction.BOW) {
-	                        offhandpose = ModelBiped.ArmPose.BOW_AND_ARROW;
-	                    }
-	                }
-	            }
-	            if (entity.getPrimaryHand() == EnumHandSide.RIGHT) {
-	                model.rightArmPose = mainhandpose;
-	                model.leftArmPose = offhandpose;
-	            } else {
-	                model.rightArmPose = offhandpose;
-	                model.leftArmPose = mainhandpose;
-	            }
+		    	if (this.getMainModel() instanceof ModelBiped) {
+			    	ModelBiped model = (ModelBiped)this.getMainModel();
+			    	model.isSneak = entity.isSneaking();
+		            ItemStack itemstack = entity.getHeldItemMainhand();
+		            ItemStack itemstack1 = entity.getHeldItemOffhand();
+		            ModelBiped.ArmPose mainhandpose = ModelBiped.ArmPose.EMPTY;
+		            ModelBiped.ArmPose offhandpose = ModelBiped.ArmPose.EMPTY;
+		            if (!itemstack.isEmpty()) {
+		                mainhandpose = ModelBiped.ArmPose.ITEM;
+		                if (entity.getItemInUseCount() > 0) {
+		                    EnumAction enumaction = itemstack.getItemUseAction();
+		                    if (enumaction == EnumAction.BLOCK) {
+		                        mainhandpose = ModelBiped.ArmPose.BLOCK;
+		                    } else if (enumaction == EnumAction.BOW) {
+		                        mainhandpose = ModelBiped.ArmPose.BOW_AND_ARROW;
+		                    }
+		                }
+		            }
+		            if (!itemstack1.isEmpty()) {
+		                offhandpose = ModelBiped.ArmPose.ITEM;
+		                if (entity.getItemInUseCount() > 0) {
+		                    EnumAction enumaction1 = itemstack1.getItemUseAction();
+		                    if (enumaction1 == EnumAction.BLOCK) {
+		                        offhandpose = ModelBiped.ArmPose.BLOCK;
+		                    } else if (enumaction1 == EnumAction.BOW) {
+		                        offhandpose = ModelBiped.ArmPose.BOW_AND_ARROW;
+		                    }
+		                }
+		            }
+		            if (entity.getPrimaryHand() == EnumHandSide.RIGHT) {
+		                model.rightArmPose = mainhandpose;
+		                model.leftArmPose = offhandpose;
+		            } else {
+		                model.rightArmPose = offhandpose;
+		                model.leftArmPose = mainhandpose;
+		            }
+		    	}
 		    }
 
 		    @Override
@@ -846,11 +844,13 @@ public class EntityClone extends ElementsNarutomodMod.ModElement {
 	
 	    	@Override
 	    	public void doRenderLayer(EntityLivingBase entityIn, float limbSwing, float f1, float f2, float f3, float f4, float f5, float f6) {
-	    		GlStateManager.enableBlend();
-	    		GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-	    		super.doRenderLayer(entityIn, limbSwing * 1.8F / entityIn.height, f1, f2, f3, f4, f5, f6);
-	    		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-	    		GlStateManager.disableBlend();
+	    		if (this.renderer.getMainModel() instanceof ModelBiped) {
+		    		GlStateManager.enableBlend();
+		    		GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+		    		super.doRenderLayer(entityIn, limbSwing * 1.8F / entityIn.height, f1, f2, f3, f4, f5, f6);
+		    		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+		    		GlStateManager.disableBlend();
+	    		}
 	    	}
 	
 	    	@Override
@@ -908,19 +908,19 @@ public class EntityClone extends ElementsNarutomodMod.ModElement {
 			@Override
 			public void doRenderLayer(_Base entityIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
 				EntityLivingBase e = entityIn.getSummoner();
-				if (e instanceof AbstractClientPlayer) {
-					AbstractClientPlayer summoner = (AbstractClientPlayer)e;
-					for (int i = 0; i < summoner.inventory.mainInventory.size(); i++) {
-						ItemStack stack = summoner.inventory.mainInventory.get(i);
-						if (stack.getItem() instanceof ItemOnBody.Interface) {
-							ItemOnBody.Interface item = (ItemOnBody.Interface)stack.getItem();
-							if (item.showSkinLayer()) {
-								this.renderSkinLayer(stack, entityIn, limbSwing, limbSwingAmount, partialTicks, ageInTicks, netHeadYaw, headPitch, scale);
-							}
-							ItemOnBody.BodyPart part = item.showOnBody(stack);
-							if (part != ItemOnBody.BodyPart.NONE && !entityIn.getHeldItemMainhand().isItemEqualIgnoreDurability(stack)) {
-								this.renderItemOnBody(stack, entityIn, part);
-							}
+				int invsize = e instanceof AbstractClientPlayer ? ((AbstractClientPlayer)e).inventory.mainInventory.size()
+				 : e instanceof EntityNinjaMob.Base ? ((EntityNinjaMob.Base)e).getInventorySize() : 0;
+				for (int i = 0; i < invsize; i++) {
+					ItemStack stack = e instanceof AbstractClientPlayer ? ((AbstractClientPlayer)e).inventory.mainInventory.get(i)
+					 : e instanceof EntityNinjaMob.Base ? ((EntityNinjaMob.Base)e).getItemFromInventory(i) : ItemStack.EMPTY;
+					if (stack.getItem() instanceof ItemOnBody.Interface) {
+						ItemOnBody.Interface item = (ItemOnBody.Interface)stack.getItem();
+						if (item.showSkinLayer()) {
+							this.renderSkinLayer(stack, entityIn, limbSwing, limbSwingAmount, partialTicks, ageInTicks, netHeadYaw, headPitch, scale);
+						}
+						ItemOnBody.BodyPart part = item.showOnBody(stack);
+						if (part != ItemOnBody.BodyPart.NONE && !entityIn.getHeldItemMainhand().isItemEqualIgnoreDurability(stack)) {
+							this.renderItemOnBody(stack, entityIn, part);
 						}
 					}
 				}

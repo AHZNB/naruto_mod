@@ -37,7 +37,7 @@ import com.google.common.collect.Maps;
 public class ItemMangekyoSharingan extends ElementsNarutomodMod.ModElement {
 	@ObjectHolder("narutomod:mangekyosharinganhelmet")
 	public static final Item helmet = null;
-	private static final double AMATERASU_CHAKRA_USAGE = 100d;
+	public static final double AMATERASU_CHAKRA_USAGE = 100d;
 	
 	public ItemMangekyoSharingan(ElementsNarutomodMod instance) {
 		super(instance, 69);

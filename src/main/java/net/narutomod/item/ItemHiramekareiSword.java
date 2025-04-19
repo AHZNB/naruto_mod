@@ -38,7 +38,6 @@ import net.minecraft.init.MobEffects;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.nbt.NBTTagCompound;
 
-import net.narutomod.potion.PotionReach;
 import net.narutomod.entity.EntityRendererRegister;
 import net.narutomod.entity.EntityChakraFlow;
 import net.narutomod.entity.EntitySweep;
@@ -94,14 +93,14 @@ public class ItemHiramekareiSword extends ElementsNarutomodMod.ModElement {
 			Multimap<String, AttributeModifier> multimap = super.getAttributeModifiers(slot, stack);
 			if (slot == EntityEquipmentSlot.MAINHAND) {
 				NBTTagCompound cmp = this.effectActive(stack) ? stack.getTagCompound().getCompoundTag("EffectEntityActive") : null;
-				double strength = cmp != null ? cmp.getDouble("strength") : 8d;
+				double strength = cmp != null ? cmp.getDouble("strength") : 10d;
 				multimap.put(SharedMonsterAttributes.ATTACK_DAMAGE.getName(),
 				 new AttributeModifier(ATTACK_DAMAGE_MODIFIER, "Ranged item modifier", strength, 0));
 				multimap.put(SharedMonsterAttributes.ATTACK_SPEED.getName(),
 				 new AttributeModifier(ATTACK_SPEED_MODIFIER, "Ranged item modifier", -2.4, 0));
 				if (cmp != null) {
 					multimap.put(EntityPlayer.REACH_DISTANCE.getName(), 
-					 new AttributeModifier(UUID.fromString(PotionReach.REACH_MODIFIER), "Ranged item modifier", 4d, 0));
+					 new AttributeModifier(ProcedureUtils.REACH_MODIFIER, "Ranged item modifier", 4d, 0));
 				}
 			}
 			return multimap;
@@ -125,7 +124,7 @@ public class ItemHiramekareiSword extends ElementsNarutomodMod.ModElement {
 				}
 				NBTTagCompound cmp = new NBTTagCompound();
 				cmp.setInteger("Id", entity1.getEntityId());
-				cmp.setDouble("strength", Chakra.getLevel(entity) * 0.5d);
+				cmp.setDouble("strength", Chakra.getLevel(entity));
 				itemstack.getTagCompound().setTag("EffectEntityActive", cmp);
 				if (!entity.isCreative()) {
 					entity.getCooldownTracker().setCooldown(itemstack.getItem(), 500);

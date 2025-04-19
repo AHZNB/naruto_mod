@@ -74,7 +74,7 @@ public class ItemTenseigan extends ElementsNarutomodMod.ModElement {
 			}
 
 			@Override
-			public void onPlayerTickEventPost(EntityPlayer player) {
+			public void onUpdatePost(EntityPlayer player) {
 				if (!player.world.isRemote && player.ticksExisted % 20 == 3) {
 					ItemStack helmetStack = player.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
 					GuiNinjaScroll.enableJutsu(player, (ItemJutsu.Base)ItemYoton.block, ItemYoton.SEALING9D, helmetStack.getItem() == helmet);

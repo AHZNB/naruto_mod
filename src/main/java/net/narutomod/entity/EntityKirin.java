@@ -256,6 +256,15 @@ public class EntityKirin extends ElementsNarutomodMod.ModElement {
 			public float getMaxPower() {
 				return 1.0f;
 			}
+
+			@Override
+			public void onUsingTick(ItemStack stack, EntityLivingBase player, float power) {
+				chargingEffects(player, power);
+				if ((stack.getMaxItemUseDuration() - player.getItemInUseCount()) % 100 == 1) {
+					startWeatherThunder(player, 200);
+				}
+				ItemJutsu.IJutsuCallback.super.onUsingTick(stack, player, power);
+			}
 		}
 	}
 

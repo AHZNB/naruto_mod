@@ -26,6 +26,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Item;
 import net.minecraft.item.EnumAction;
@@ -99,8 +100,7 @@ public class ItemAdamantineNyoi extends ElementsNarutomodMod.ModElement {
 	}
 
 	public static class RangedItem extends ItemJutsu.Base implements ItemOnBody.Interface {
-		private static final UUID REACH_MODIFIER = UUID.fromString("2181075f-90e8-4444-9143-788f588ef58f");
-		private static final float DAMAGE = 18.0f;
+		private static final float DAMAGE = 20.0f;
 
 		public RangedItem(ItemJutsu.JutsuEnum... list) {
 			super(ItemJutsu.JutsuEnum.Type.OTHER, list);
@@ -118,34 +118,11 @@ public class ItemAdamantineNyoi extends ElementsNarutomodMod.ModElement {
 			if (slot == EntityEquipmentSlot.MAINHAND) {
 				multimap.put(SharedMonsterAttributes.ATTACK_DAMAGE.getName(), new AttributeModifier(ATTACK_DAMAGE_MODIFIER, "Ranged item modifier", DAMAGE - 1, 0));
 				multimap.put(SharedMonsterAttributes.ATTACK_SPEED.getName(), new AttributeModifier(ATTACK_SPEED_MODIFIER, "Ranged item modifier", -2.4, 0));
-				multimap.put(EntityPlayer.REACH_DISTANCE.getName(), new AttributeModifier(REACH_MODIFIER, "Tool modifier", 1.5d, 0));
+				multimap.put(EntityPlayer.REACH_DISTANCE.getName(), new AttributeModifier(ProcedureUtils.REACH_MODIFIER, "Tool modifier", 1.5d, 0));
 			}
 			return multimap;
 		}
-
-		@Override
-		public void onUsingTick(ItemStack stack, EntityLivingBase player, int timeLeft) {
-			super.onUsingTick(stack, player, timeLeft);
-			if (this.getCurrentJutsu(stack) == EXTEND && !player.world.isRemote) {
-				float power = this.getPower(stack, player, timeLeft);
-				if (power >= this.getMaxPower(stack, player)) {
-					player.stopActiveHand();
-				} else {
-					EntityExtend entity = this.getStaffEntity(player.world, stack);
-					if (entity == null) {
-						entity = new EntityExtend(player);
-						player.world.spawnEntity(entity);
-						this.setStaffEntity(stack, entity);
-					}
-					entity.setEntityScale(power);
-				}
-			}
-		}
-
-		@Override
-		protected void onUsingEffects(EntityLivingBase player) {
-		}
-
+
 		@Override
 		public void onUpdate(ItemStack itemstack, World world, Entity entity, int par4, boolean par5) {
 			super.onUpdate(itemstack, world, entity, par4, par5);
@@ -405,6 +382,25 @@ public class ItemAdamantineNyoi extends ElementsNarutomodMod.ModElement {
 			@Override
 			public float getMaxPower() {
 				return 15.0f;
+			}
+
+			@Override
+			public void onUsingTick(ItemStack stack, EntityLivingBase player, float power) {
+				if (player instanceof EntityPlayer) {
+					((EntityPlayer)player).sendStatusMessage(new TextComponentString(String.format("%.1f", power)), true);
+				}
+				RangedItem item = (RangedItem)stack.getItem();
+				if (power >= item.getMaxPower(stack, player)) {
+					player.stopActiveHand();
+				} else {
+					EntityExtend entity = item.getStaffEntity(player.world, stack);
+					if (entity == null) {
+						entity = new EntityExtend(player);
+						player.world.spawnEntity(entity);
+						item.setStaffEntity(stack, entity);
+					}
+					entity.setEntityScale(power);
+				}
 			}
 		}
 	}

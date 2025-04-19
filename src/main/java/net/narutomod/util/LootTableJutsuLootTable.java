@@ -45,14 +45,16 @@ public class LootTableJutsuLootTable extends ElementsNarutomodMod.ModElement {
 		  || event.getName().equals(LootTableList.CHESTS_WOODLAND_MANSION))) {
 			LootTable loottable = event.getTable();
 			LootTable newtable = event.getLootTableManager().getLootTableFromLocation(jutsuLootTable);
-			if (loottable.getPool("rank_a_pool") == null) {
-				loottable.addPool(newtable.getPool("rank_a_pool"));
-			}
-			if (loottable.getPool("rank_b_pool") == null) {
-				loottable.addPool(newtable.getPool("rank_b_pool"));
-			}
-			if (loottable.getPool("rank_cd_pool") == null) {
-				loottable.addPool(newtable.getPool("rank_cd_pool"));
+			if (newtable != null) {
+				if (loottable.getPool("rank_a_pool") == null) {
+					loottable.addPool(newtable.getPool("rank_a_pool"));
+				}
+				if (loottable.getPool("rank_b_pool") == null) {
+					loottable.addPool(newtable.getPool("rank_b_pool"));
+				}
+				if (loottable.getPool("rank_cd_pool") == null) {
+					loottable.addPool(newtable.getPool("rank_cd_pool"));
+				}
 			}
 		}
 	}

@@ -84,7 +84,7 @@ public class ItemKekkeiMora extends ElementsNarutomodMod.ModElement {
 			}
 		}
 
-		@Override
+		/*@Override
 		public void onUsingTick(ItemStack stack, EntityLivingBase player, int count) {
 			if (this.getCurrentJutsu(stack) == EIGHTYGODS) {
 				if (!player.world.isRemote && player.ticksExisted % 4 == 1 && player instanceof EntityPlayer
@@ -94,7 +94,7 @@ public class ItemKekkeiMora extends ElementsNarutomodMod.ModElement {
 				return;
 			}
 			super.onUsingTick(stack, player, count);
-		}
+		}*/
 	}
 
 	public static class YomotsuHirasaka implements ItemJutsu.IJutsuCallback {
@@ -239,6 +239,16 @@ public class ItemKekkeiMora extends ElementsNarutomodMod.ModElement {
 				entity.world.spawnEntity(entity1);
 				entity1.shoot(vec.x, vec.y, vec.z, 1.25f, 0.1f);
 				return true;
+			}
+
+			@Override
+			public void onUsingTick(ItemStack stack, EntityLivingBase player, float power) {
+				if (player.ticksExisted % 4 == 1 && player instanceof EntityPlayer) {
+					RangedItem item = (RangedItem)stack.getItem();
+					if (item.canActivateJutsu(stack, EIGHTYGODS, (EntityPlayer)player) == EnumActionResult.SUCCESS) {
+						item.executeJutsu(stack, player, 1.0f);
+					}
+				}
 			}
 		}
 	}

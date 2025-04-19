@@ -36,7 +36,6 @@ import net.minecraft.entity.ai.EntityAISwimming;
 import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
 import net.minecraft.entity.ai.EntityAIHurtByTarget;
 import net.minecraft.entity.ai.EntityAIAttackRanged;
-import net.minecraft.entity.ai.EntityAIAttackMelee;
 import net.minecraft.entity.ai.EntityAIWander;
 import net.minecraft.entity.ai.EntityAIWatchClosest2;
 import net.minecraft.entity.ai.EntityAIWatchClosest;
@@ -200,12 +199,7 @@ public class EntityKisameHoshigaki extends ElementsNarutomodMod.ModElement {
 			});
 			this.tasks.addTask(1, new EntityNinjaMob.AIAttackRangedJutsu(this, WATERSHARK_CD, 15.0F));
 			this.tasks.addTask(2, new EntityNinjaMob.AILeapAtTarget(this, 1.0f));
-			this.tasks.addTask(3, new EntityAIAttackMelee(this, 1.2d, true) {
-				@Override
-				protected double getAttackReachSqr(EntityLivingBase attackTarget) {
-					return (EntityCustom.this.meleeReach() + attackTarget.width) * (EntityCustom.this.meleeReach() + attackTarget.width);
-				}
-			});
+			this.tasks.addTask(3, new EntityNinjaMob.AIAttackMelee(this, 1.2d, true));
 			this.tasks.addTask(4, new EntityClone.AIFollowSummoner(this, 0.6d, 4f) {
 				@Override @Nullable
 				protected EntityLivingBase getFollowEntity() {
@@ -220,7 +214,7 @@ public class EntityKisameHoshigaki extends ElementsNarutomodMod.ModElement {
 
 		@Override
 		protected double meleeReach() {
-			return 3.4d;
+			return 4.4d;
 		}
 
 		public boolean isClone() {
