@@ -70,7 +70,8 @@ public class ItemNinjutsu extends ElementsNarutomodMod.ModElement {
 	public static final ItemJutsu.JutsuEnum INVISABILITY = new ItemJutsu.JutsuEnum(7, "tooltip.ninjutsu.hidingincamouflage", 'A', 100d, new HidingWithCamouflage());
 	public static final ItemJutsu.JutsuEnum TRANSFORM = new ItemJutsu.JutsuEnum(8, "transformation_jutsu", 'D', 50d, new EntityTransformationJutsu.EC.Jutsu());
 	public static final ItemJutsu.JutsuEnum HIRAISHIN = new ItemJutsu.JutsuEnum(9, "hiraishin", 'S', 10d, new EntityHiraishin.EC.Jutsu());
-	public static final ItemJutsu.JutsuEnum SHIKIGAMI = new ItemJutsu.JutsuEnum(10, "shikigami", 'B', 50d, new EntityShikigami.EC.Jutsu());
+
+	public static final ItemJutsu.JutsuEnum SHIKIGAMI = new ItemJutsu.JutsuEnum(10, "shikigami", 'B', 50d, new EntityShikigami.EC.Jutsu());
 	public static final ItemJutsu.JutsuEnum MULTICLONE = new ItemJutsu.JutsuEnum(11, "kage_bunshin_multi", 'A', new EntityKageBunshin.EC.Jutsu2());
 
 	public ItemNinjutsu(ElementsNarutomodMod instance) {
@@ -317,7 +318,7 @@ public class ItemNinjutsu extends ElementsNarutomodMod.ModElement {
 				}
 				ProcedureOnLivingUpdate.setUntargetable(target, 10);
 				entity.world.playSound(null, 0.5d + pos.getX(), pos.getY(), 0.5d + pos.getZ(), SoundEvent.REGISTRY
-				  .getObject(new ResourceLocation("narutomod:swoosh")), SoundCategory.NEUTRAL, 0.8f, entity.getRNG().nextFloat() * 0.4f + 0.8f);
+				  .getObject(new ResourceLocation("narutomod:rinnegansfx")), SoundCategory.NEUTRAL, 0.8f, entity.getRNG().nextFloat() * 0.4f + 0.8f);
 				target.setPositionAndUpdate(0.5d + pos.getX(), pos.getY(), 0.5d + pos.getZ());
 				setTarget(stack, null);
 				return true;
@@ -332,9 +333,9 @@ public class ItemNinjutsu extends ElementsNarutomodMod.ModElement {
 				ProcedureOnLivingUpdate.setUntargetable(target, 10);
 				ProcedureOnLivingUpdate.setUntargetable(rtr.entityHit, 10);
 				entity.world.playSound(null, x, y, z, SoundEvent.REGISTRY
-				  .getObject(new ResourceLocation("narutomod:swoosh")), SoundCategory.NEUTRAL, 0.8f, entity.getRNG().nextFloat() * 0.4f + 0.8f);
+				  .getObject(new ResourceLocation("narutomod:rinnegansfx")), SoundCategory.NEUTRAL, 0.8f, entity.getRNG().nextFloat() * 0.4f + 0.8f);
 				entity.world.playSound(null, rtr.entityHit.posX, rtr.entityHit.posY, rtr.entityHit.posZ, SoundEvent.REGISTRY
-				  .getObject(new ResourceLocation("narutomod:swoosh")), SoundCategory.NEUTRAL, 0.8f, entity.getRNG().nextFloat() * 0.4f + 0.8f);
+				  .getObject(new ResourceLocation("narutomod:rinnegansfx")), SoundCategory.NEUTRAL, 0.8f, entity.getRNG().nextFloat() * 0.4f + 0.8f);
 				target.setPositionAndUpdate(rtr.entityHit.posX, rtr.entityHit.posY, rtr.entityHit.posZ);
 				rtr.entityHit.setPositionAndUpdate(x, y, z);
 				setTarget(stack, null);
