@@ -317,9 +317,9 @@ public class ItemNinjutsu extends ElementsNarutomodMod.ModElement {
 					target = entity;
 				}
 				ProcedureOnLivingUpdate.setUntargetable(target, 10);
+				target.setPositionAndUpdate(0.5d + pos.getX(), pos.getY(), 0.5d + pos.getZ());
 				entity.world.playSound(null, 0.5d + pos.getX(), pos.getY(), 0.5d + pos.getZ(), SoundEvent.REGISTRY
 				  .getObject(new ResourceLocation("narutomod:rinnegansfx")), SoundCategory.NEUTRAL, 0.8f, entity.getRNG().nextFloat() * 0.4f + 0.8f);
-				target.setPositionAndUpdate(0.5d + pos.getX(), pos.getY(), 0.5d + pos.getZ());
 				setTarget(stack, null);
 				return true;
 			} else if (rtr.entityHit != null) {
@@ -332,12 +332,13 @@ public class ItemNinjutsu extends ElementsNarutomodMod.ModElement {
 				double z = target.posZ;
 				ProcedureOnLivingUpdate.setUntargetable(target, 10);
 				ProcedureOnLivingUpdate.setUntargetable(rtr.entityHit, 10);
-				entity.world.playSound(null, x, y, z, SoundEvent.REGISTRY
-				  .getObject(new ResourceLocation("narutomod:rinnegansfx")), SoundCategory.NEUTRAL, 0.8f, entity.getRNG().nextFloat() * 0.4f + 0.8f);
-				entity.world.playSound(null, rtr.entityHit.posX, rtr.entityHit.posY, rtr.entityHit.posZ, SoundEvent.REGISTRY
-				  .getObject(new ResourceLocation("narutomod:rinnegansfx")), SoundCategory.NEUTRAL, 0.8f, entity.getRNG().nextFloat() * 0.4f + 0.8f);
 				target.setPositionAndUpdate(rtr.entityHit.posX, rtr.entityHit.posY, rtr.entityHit.posZ);
 				rtr.entityHit.setPositionAndUpdate(x, y, z);
+
+				entity.world.playSound(null, target.posX, target.posY, target.posZ, SoundEvent.REGISTRY
+						.getObject(new ResourceLocation("narutomod:rinnegansfx")), SoundCategory.NEUTRAL, 0.8f, entity.getRNG().nextFloat() * 0.4f + 0.8f);
+				entity.world.playSound(null, rtr.entityHit.posX, rtr.entityHit.posY, rtr.entityHit.posZ, SoundEvent.REGISTRY
+						.getObject(new ResourceLocation("narutomod:rinnegansfx")), SoundCategory.NEUTRAL, 0.8f, entity.getRNG().nextFloat() * 0.4f + 0.8f);
 				setTarget(stack, null);
 				return true;
 			}
