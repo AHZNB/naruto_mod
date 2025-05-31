@@ -1,6 +1,7 @@
 
 package net.narutomod.item;
 
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.relauncher.Side;
@@ -113,12 +114,20 @@ public class ItemNinjutsu extends ElementsNarutomodMod.ModElement {
 		public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer entity, EnumHand hand) {
 			ActionResult<ItemStack> ares = super.onItemRightClick(world, entity, hand);
 			ItemStack stack = entity.getHeldItem(hand);
-			if (!world.isRemote && ares.getType() == EnumActionResult.SUCCESS && this.getCurrentJutsu(stack) == AMENOTEJIKARA) {
+			if (!world.isRemote && ares.getType() == EnumActionResult.SUCCESS && this.getCurrentJutsu(stack) == AMENOTEJIKARA && (!stack.getTagCompound().getBoolean("amenotejikaraStoreTarget"))) {
 				Entity hit = ProcedureUtils.objectEntityLookingAt(entity, 40d).entityHit;
 				Amenotejikara.setTarget(stack, hit);
-				if (hit != null)
-					entity.sendStatusMessage(new TextComponentTranslation("amenotejikara.target.switching", hit.getDisplayName()), true);
 
+				if (hit != null) {
+					if (entity.isSneaking()) { //shift clicking stores the target, which can be switched to on the next click
+						stack.getTagCompound().setBoolean("amenotejikaraStoreTarget", true);
+						stack.getTagCompound().setInteger("amenotejikaraDisable", 5);
+						entity.sendStatusMessage(new TextComponentTranslation("amenotejikara.target.next_switch", hit.getDisplayName()), true);
+					} else
+						entity.sendStatusMessage(new TextComponentTranslation("amenotejikara.target.switching", hit.getDisplayName()), true);
+				}
+				
+		
 			}
 			return ares;
 		}
@@ -126,6 +135,15 @@ public class ItemNinjutsu extends ElementsNarutomodMod.ModElement {
 		@Override
 		public void onUpdate(ItemStack itemstack, World world, Entity entity, int par4, boolean par5) {
 			super.onUpdate(itemstack, world, entity, par4, par5);
+
+			if (itemstack.getTagCompound().hasKey("amenotejikaraDisable")) { //important as to not switch on the same shift click that stores target 
+				int counter = itemstack.getTagCompound().getInteger("amenotejikaraDisable") - 1;
+				itemstack.getTagCompound().setInteger("amenotejikaraDisable", counter);
+				if (counter <= 0) {
+					itemstack.getTagCompound().removeTag("amenotejikaraDisable");
+				}
+			}
+			
 			if (!world.isRemote && entity.ticksExisted % 20 == 0
 			 && entity instanceof EntityLivingBase && INVISABILITY.jutsu.isActivated(itemstack)) {
 				if (Chakra.pathway((EntityLivingBase)entity).consume(INVISABILITY.chakraUsage * 0.2d)) {
@@ -313,39 +331,53 @@ public class ItemNinjutsu extends ElementsNarutomodMod.ModElement {
 	public static class Amenotejikara implements ItemJutsu.IJutsuCallback {
 		@Override
 		public boolean createJutsu(ItemStack stack, EntityLivingBase entity, float power) {
+			if (stack.getTagCompound().hasKey("amenotejikaraDisable")) //if the same click that stored the target, return as to not switch
+				return false;
+			
 			RayTraceResult rtr = ProcedureUtils.objectEntityLookingAt(entity, 40d);
-			if (rtr.typeOfHit == RayTraceResult.Type.BLOCK) {
-				BlockPos pos = entity.world.isAirBlock(rtr.getBlockPos().up()) && entity.world.isAirBlock(rtr.getBlockPos().up(2))
-				 ? rtr.getBlockPos().up() : rtr.getBlockPos().offset(rtr.sideHit);
-				Entity target = this.getTarget(stack, entity.world);
+			Entity target = this.getTarget(stack, entity.world);
+			Entity switchTargetWith = rtr.entityHit;
+			boolean targetStored = stack.getTagCompound().getBoolean("amenotejikaraStoreTarget");
+
+			if ((targetStored && target != null) || rtr.entityHit != null) {
+
+				if (target == null || target.equals(rtr.entityHit) && !targetStored) 
+					target = entity;
+
+				ITextComponent displayName = (switchTargetWith != null ? switchTargetWith : target).getDisplayName();
+				if (targetStored) {
+					switchTargetWith = rtr.entityHit == null || rtr.entityHit == target ? entity : rtr.entityHit;
+					stack.getTagCompound().removeTag("amenotejikaraStoreTarget");
+
+					if (target == rtr.entityHit) //if target switching with player, use target's name
+						displayName = target.getDisplayName();
+				}
+				if (displayName != null && entity instanceof EntityPlayer)
+					((EntityPlayer) entity).sendStatusMessage(new TextComponentTranslation("amenotejikara.target.switched", displayName), true);
+
+				double x = target.posX;
+				double y = target.posY;
+				double z = target.posZ;
+				ProcedureOnLivingUpdate.setUntargetable(target, 10);
+				ProcedureOnLivingUpdate.setUntargetable(switchTargetWith, 10);
+				target.setPositionAndUpdate(switchTargetWith.posX, switchTargetWith.posY, switchTargetWith.posZ);
+				switchTargetWith.setPositionAndUpdate(x, y, z);
+
+				entity.world.playSound(null, target.posX, target.posY, target.posZ, SoundEvent.REGISTRY
+						.getObject(new ResourceLocation("narutomod:rinnegansfx")), SoundCategory.NEUTRAL, 0.8f, entity.getRNG().nextFloat() * 0.4f + 0.8f);
+				entity.world.playSound(null, switchTargetWith.posX, switchTargetWith.posY, switchTargetWith.posZ, SoundEvent.REGISTRY
+						.getObject(new ResourceLocation("narutomod:rinnegansfx")), SoundCategory.NEUTRAL, 0.8f, entity.getRNG().nextFloat() * 0.4f + 0.8f);
+
+				setTarget(stack, null);
+				return true;
+			} else if (rtr.typeOfHit == RayTraceResult.Type.BLOCK) {
+				BlockPos pos = entity.world.isAirBlock(rtr.getBlockPos().up()) && entity.world.isAirBlock(rtr.getBlockPos().up(2)) ? rtr.getBlockPos().up() : rtr.getBlockPos().offset(rtr.sideHit);
 				if (target == null) {
 					target = entity;
 				}
 				ProcedureOnLivingUpdate.setUntargetable(target, 10);
 				target.setPositionAndUpdate(0.5d + pos.getX(), pos.getY(), 0.5d + pos.getZ());
 				entity.world.playSound(null, 0.5d + pos.getX(), pos.getY(), 0.5d + pos.getZ(), SoundEvent.REGISTRY
-				  .getObject(new ResourceLocation("narutomod:rinnegansfx")), SoundCategory.NEUTRAL, 0.8f, entity.getRNG().nextFloat() * 0.4f + 0.8f);
-				setTarget(stack, null);
-				return true;
-			} else if (rtr.entityHit != null) {
-				Entity target = this.getTarget(stack, entity.world);
-				if (target == null || target.equals(rtr.entityHit)) {
-					target = entity;
-				}
-				if (entity instanceof EntityPlayer)
-					((EntityPlayer) entity).sendStatusMessage(new TextComponentTranslation("amenotejikara.target.switched", rtr.entityHit.getDisplayName()), true);
-
-				double x = target.posX;
-				double y = target.posY;
-				double z = target.posZ;
-				ProcedureOnLivingUpdate.setUntargetable(target, 10);
-				ProcedureOnLivingUpdate.setUntargetable(rtr.entityHit, 10);
-				target.setPositionAndUpdate(rtr.entityHit.posX, rtr.entityHit.posY, rtr.entityHit.posZ);
-				rtr.entityHit.setPositionAndUpdate(x, y, z);
-
-				entity.world.playSound(null, target.posX, target.posY, target.posZ, SoundEvent.REGISTRY
-						.getObject(new ResourceLocation("narutomod:rinnegansfx")), SoundCategory.NEUTRAL, 0.8f, entity.getRNG().nextFloat() * 0.4f + 0.8f);
-				entity.world.playSound(null, rtr.entityHit.posX, rtr.entityHit.posY, rtr.entityHit.posZ, SoundEvent.REGISTRY
 						.getObject(new ResourceLocation("narutomod:rinnegansfx")), SoundCategory.NEUTRAL, 0.8f, entity.getRNG().nextFloat() * 0.4f + 0.8f);
 				setTarget(stack, null);
 				return true;

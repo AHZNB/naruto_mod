@@ -807,4 +807,5 @@ key.mcreator.specialjutsu3=Jutsu 3
 item.scroll_genjutsu.name=Genjutsu scroll
 amenotejikara.target.switching=Switching %s
 amenotejikara.target.switched=Switched with %s
+amenotejikara.target.next_switch=Selected %s for next switch
 
