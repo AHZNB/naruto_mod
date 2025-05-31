@@ -1,6 +1,7 @@
 
 package net.narutomod.item;
 
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.common.registry.GameRegistry;
@@ -113,7 +114,11 @@ public class ItemNinjutsu extends ElementsNarutomodMod.ModElement {
 			ActionResult<ItemStack> ares = super.onItemRightClick(world, entity, hand);
 			ItemStack stack = entity.getHeldItem(hand);
 			if (!world.isRemote && ares.getType() == EnumActionResult.SUCCESS && this.getCurrentJutsu(stack) == AMENOTEJIKARA) {
-				Amenotejikara.setTarget(stack, ProcedureUtils.objectEntityLookingAt(entity, 40d).entityHit);
+				Entity hit = ProcedureUtils.objectEntityLookingAt(entity, 40d).entityHit;
+				Amenotejikara.setTarget(stack, hit);
+				if (hit != null)
+					entity.sendStatusMessage(new TextComponentTranslation("amenotejikara.target.success", hit.getDisplayName()), true);
+
 			}
 			return ares;
 		}
@@ -327,6 +332,9 @@ public class ItemNinjutsu extends ElementsNarutomodMod.ModElement {
 				if (target == null || target.equals(rtr.entityHit)) {
 					target = entity;
 				}
+				if (entity instanceof EntityPlayer)
+					((EntityPlayer) entity).sendStatusMessage(new TextComponentString(""), true);
+
 				double x = target.posX;
 				double y = target.posY;
 				double z = target.posZ;
