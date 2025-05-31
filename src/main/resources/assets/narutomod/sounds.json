@@ -251,6 +251,15 @@
       }
     ]
   },
+  "rinnegansfx": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "narutomod:rinnegansfx",
+        "stream": false
+      }
+    ]
+  },
   "genjutsu": {
     "category": "master",
     "sounds": [
