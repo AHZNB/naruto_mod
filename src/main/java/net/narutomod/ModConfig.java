@@ -5,7 +5,14 @@ import net.minecraftforge.common.config.Config;
 @Config(modid = NarutomodMod.MODID)
 @ElementsNarutomodMod.ModElement.Tag
 public class ModConfig extends ElementsNarutomodMod.ModElement {
-    @Config.Comment("If enabled tailed beasts spawn naturally around the world.")
+
+	public static Techniques TECHNIQUES = new Techniques();
+
+	public ModConfig(ElementsNarutomodMod instance) {
+		super(instance, 837);
+	}
+
+	@Config.Comment("If enabled tailed beasts spawn naturally around the world.")
 	public static boolean SPAWN_TAILED_BEASTS = true;
 
     @Config.Comment("If true KG will be auto assigned to players in due time, after 300 ninjaXp reachched.")
@@ -62,7 +69,9 @@ public class ModConfig extends ElementsNarutomodMod.ModElement {
 	@Config.Comment("Ninja XP gain multiplier (higher value gains NinjaXp faster. default=0.5)")
 	public static double NINJAXP_MULTIPLIER = 0.5D;
 
-	public ModConfig(ElementsNarutomodMod instance) {
-		super(instance, 837);
+	public static class Techniques {
+		@Config.RangeDouble(min = 1, max = 256)
+		@Config.Comment({"Maximum Amenotejikara teleportation range."})
+		public double AMENOTEJIKARA_RANGE = 40;
 	}
 }

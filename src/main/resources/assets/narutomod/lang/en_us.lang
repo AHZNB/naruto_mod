@@ -808,4 +808,5 @@ item.scroll_genjutsu.name=Genjutsu scroll
 amenotejikara.target.switching=Switching %s
 amenotejikara.target.switched=Switched with %s
 amenotejikara.target.next_switch=Selected %s for next switch
+amenotejikara.target.too_far=Too far away to switch
 

@@ -44,6 +44,7 @@ import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.PotionEffect;
 
+import net.narutomod.ModConfig;
 import net.narutomod.creativetab.TabModTab;
 import net.narutomod.ElementsNarutomodMod;
 import net.narutomod.entity.*;
@@ -115,7 +116,7 @@ public class ItemNinjutsu extends ElementsNarutomodMod.ModElement {
 			ActionResult<ItemStack> ares = super.onItemRightClick(world, entity, hand);
 			ItemStack stack = entity.getHeldItem(hand);
 			if (!world.isRemote && ares.getType() == EnumActionResult.SUCCESS && this.getCurrentJutsu(stack) == AMENOTEJIKARA && (!stack.getTagCompound().getBoolean("amenotejikaraStoreTarget"))) {
-				Entity hit = ProcedureUtils.objectEntityLookingAt(entity, 40d).entityHit;
+				Entity hit = ProcedureUtils.objectEntityLookingAt(entity, ModConfig.TECHNIQUES.AMENOTEJIKARA_RANGE).entityHit;
 				Amenotejikara.setTarget(stack, hit);
 
 				if (hit != null) {
@@ -333,8 +334,8 @@ public class ItemNinjutsu extends ElementsNarutomodMod.ModElement {
 		public boolean createJutsu(ItemStack stack, EntityLivingBase entity, float power) {
 			if (stack.getTagCompound().hasKey("amenotejikaraDisable")) //if the same click that stored the target, return as to not switch
 				return false;
-			
-			RayTraceResult rtr = ProcedureUtils.objectEntityLookingAt(entity, 40d);
+
+			RayTraceResult rtr = ProcedureUtils.objectEntityLookingAt(entity, ModConfig.TECHNIQUES.AMENOTEJIKARA_RANGE);
 			Entity target = this.getTarget(stack, entity.world);
 			Entity switchTargetWith = rtr.entityHit;
 			boolean targetStored = stack.getTagCompound().getBoolean("amenotejikaraStoreTarget");
@@ -348,6 +349,14 @@ public class ItemNinjutsu extends ElementsNarutomodMod.ModElement {
 				if (targetStored) {
 					switchTargetWith = rtr.entityHit == null || rtr.entityHit == target ? entity : rtr.entityHit;
 					stack.getTagCompound().removeTag("amenotejikaraStoreTarget");
+
+					if (target.getDistance(switchTargetWith) > ModConfig.TECHNIQUES.AMENOTEJIKARA_RANGE) {
+						if (entity instanceof EntityPlayer)
+							((EntityPlayer) entity).sendStatusMessage(new TextComponentTranslation("amenotejikara.target.too_far"), true);
+						
+						setTarget(stack, null);
+						return false;
+					}
 
 					if (target == rtr.entityHit) //if target switching with player, use target's name
 						displayName = target.getDisplayName();
