@@ -805,4 +805,6 @@ item.tailed_beast_map.name=Tailed Beast Map
 key.mcreator.specialjutsu2=Jutsu 2
 key.mcreator.specialjutsu3=Jutsu 3
 item.scroll_genjutsu.name=Genjutsu scroll
-amenotejikara.target.success=Switching %s
+amenotejikara.target.switching=Switching %s
+amenotejikara.target.switched=Switched with %s
+

@@ -117,7 +117,7 @@ public class ItemNinjutsu extends ElementsNarutomodMod.ModElement {
 				Entity hit = ProcedureUtils.objectEntityLookingAt(entity, 40d).entityHit;
 				Amenotejikara.setTarget(stack, hit);
 				if (hit != null)
-					entity.sendStatusMessage(new TextComponentTranslation("amenotejikara.target.success", hit.getDisplayName()), true);
+					entity.sendStatusMessage(new TextComponentTranslation("amenotejikara.target.switching", hit.getDisplayName()), true);
 
 			}
 			return ares;
@@ -333,7 +333,7 @@ public class ItemNinjutsu extends ElementsNarutomodMod.ModElement {
 					target = entity;
 				}
 				if (entity instanceof EntityPlayer)
-					((EntityPlayer) entity).sendStatusMessage(new TextComponentString(""), true);
+					((EntityPlayer) entity).sendStatusMessage(new TextComponentTranslation("amenotejikara.target.switched", rtr.entityHit.getDisplayName()), true);
 
 				double x = target.posX;
 				double y = target.posY;
