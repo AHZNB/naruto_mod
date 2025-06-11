@@ -12,6 +12,10 @@ import net.minecraftforge.fml.client.registry.RenderingRegistry;
 
 import net.minecraft.world.World;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.EnumHand;
+import net.minecraft.item.ItemStack;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.client.model.ModelRenderer;
@@ -19,6 +23,8 @@ import net.minecraft.client.model.ModelBox;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.GlStateManager;
+
+import net.narutomod.item.ItemSenjutsu;
 
 @ElementsNarutomodMod.ModElement.Tag
 public class EntityToadFukasaku extends ElementsNarutomodMod.ModElement {
@@ -70,19 +76,37 @@ public class EntityToadFukasaku extends ElementsNarutomodMod.ModElement {
 			}
 		}*/
 
-		@Override
-		public void onUpdate() {
-			super.onUpdate();
-			int age = this.getAge();
-			EntityLivingBase summoner = this.getSummoner();
+                @Override
+                public void onUpdate() {
+                        super.onUpdate();
+                        int age = this.getAge();
+                        EntityLivingBase summoner = this.getSummoner();
 			if (summoner != null && age == 1) {
 				this.startRiding(summoner);
 			}
-			if (age == 3) {
-				ProcedureUtils.poofWithSmoke(this);
-			}
-		}
-	}
+                        if (age == 3) {
+                                ProcedureUtils.poofWithSmoke(this);
+                        }
+                }
+
+                @Override
+                public boolean processInteract(EntityPlayer player, EnumHand hand) {
+                        super.processInteract(player, hand);
+                        ItemStack stack = player.getHeldItem(hand);
+                        if (stack.getItem() == ItemSenjutsu.block) {
+                                if (!this.world.isRemote) {
+                                        ItemSenjutsu.RangedItem item = (ItemSenjutsu.RangedItem)stack.getItem();
+                                        item.setSageType(stack, ItemSenjutsu.Type.TOAD);
+                                        item.enableJutsu(stack, ItemSenjutsu.SAGEMODE, true);
+                                        player.sendStatusMessage(new TextComponentTranslation(
+                                         "chattext.sagemode.learn",
+                                         ItemSenjutsu.Type.TOAD.getLocalizedName()), true);
+                                }
+                                return true;
+                        }
+                        return false;
+                }
+        }
 
 	@Override
 	public void preInit(FMLPreInitializationEvent event) {

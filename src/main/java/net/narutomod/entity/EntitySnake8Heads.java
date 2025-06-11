@@ -17,6 +17,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraft.world.World;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.RayTraceResult;
@@ -36,6 +37,7 @@ import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionEffect;
+import net.minecraft.util.text.TextComponentTranslation;
 
 import net.narutomod.potion.PotionFeatherFalling;
 import net.narutomod.procedure.ProcedureUtils;
@@ -128,11 +130,11 @@ public class EntitySnake8Heads extends ElementsNarutomodMod.ModElement {
 			}
 		}
 
-		@Override
-		public void onUpdate() {
-			super.onUpdate();
-			if (this.ticksExisted == 1) {
-				this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:woodspawn")), 5f, 1f);
+                @Override
+                public void onUpdate() {
+                        super.onUpdate();
+                        if (this.ticksExisted == 1) {
+                                this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:woodspawn")), 5f, 1f);
 			} else if (this.ticksExisted == this.upTime) {
 				this.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("narutomod:snake_hiss")), 5f, 0.7f);
 			} else if (this.ticksExisted <= this.upTime + this.waitTime && this.ticksExisted % 5 == 1) {
@@ -149,9 +151,27 @@ public class EntitySnake8Heads extends ElementsNarutomodMod.ModElement {
 				if (summoner != null && (!Chakra.pathway(summoner).consume(this.chakraBurn) || !this.isSageModeActive(summoner))) {
 					this.setDead();
 				}
-			}
-			this.setTicksAlive(this.getTicksAlive() + 1);
-		}
+                        }
+                        this.setTicksAlive(this.getTicksAlive() + 1);
+                }
+
+                @Override
+                public boolean processInteract(EntityPlayer player, EnumHand hand) {
+                        super.processInteract(player, hand);
+                        ItemStack stack = player.getHeldItem(hand);
+                        if (stack.getItem() == ItemSenjutsu.block) {
+                                if (!this.world.isRemote) {
+                                        ItemSenjutsu.RangedItem item = (ItemSenjutsu.RangedItem)stack.getItem();
+                                        item.setSageType(stack, ItemSenjutsu.Type.SNAKE);
+                                        item.enableJutsu(stack, ItemSenjutsu.SAGEMODE, true);
+                                        player.sendStatusMessage(new TextComponentTranslation(
+                                         "chattext.sagemode.learn",
+                                         ItemSenjutsu.Type.SNAKE.getLocalizedName()), true);
+                                }
+                                return true;
+                        }
+                        return false;
+                }
 
 		private boolean isSageModeActive(EntityLivingBase summoner) {
 			if (summoner instanceof EntityPlayer) {

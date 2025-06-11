@@ -505,6 +505,7 @@ entity.ninja_kumo.name=Ninja Kumo
 entity.adamantine_prison.name=Adamantine Prison
 item.fuma_shuriken.name=Fuma Shuriken
 chattext.senjutsu.denied=%s says no!
+chattext.sagemode.learn=You have acquired %s Sage Mode!
 advancements.yooton_acquired.descr=Lava Release ("Corrosion Style" or "Lava Style") is a nature transformation kekkei genkai, a combination of fire and earth.
 tooltip.general.powerupkey=Press [Switch Jutsu] to cycle through abilities
 subtitles.toadchant=

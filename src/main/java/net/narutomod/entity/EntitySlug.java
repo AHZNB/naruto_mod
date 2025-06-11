@@ -15,9 +15,11 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Item;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.entity.IRangedAttackMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.EntityLivingBase;
@@ -42,6 +44,7 @@ import net.minecraft.pathfinding.PathNavigate;
 
 import net.narutomod.procedure.ProcedureUtils;
 import net.narutomod.item.ItemJutsu;
+import net.narutomod.item.ItemSenjutsu;
 import net.narutomod.Particles;
 import net.narutomod.ElementsNarutomodMod;
 
@@ -235,18 +238,36 @@ public class EntitySlug extends ElementsNarutomodMod.ModElement {
 		public void setSwingingArms(boolean swingingArms) {
 		}
 
-		@Override
-		public void onUpdate() {
-			super.onUpdate();
-			this.fallDistance = 0.0f;
-			if (!this.world.isRemote) {
+                @Override
+                public void onUpdate() {
+                        super.onUpdate();
+                        this.fallDistance = 0.0f;
+                        if (!this.world.isRemote) {
 				EntityLivingBase summoner = this.getSummoner();
 				if (summoner != null && !summoner.isRiding() && this.getAge() == 1 && this.getScale() >= 4.0f) {
 					summoner.startRiding(this);
 				}
 				this.checkClimbing();
-			}
-		}
+                        }
+                }
+
+                @Override
+                public boolean processInteract(EntityPlayer player, EnumHand hand) {
+                        super.processInteract(player, hand);
+                        ItemStack stack = player.getHeldItem(hand);
+                        if (stack.getItem() == ItemSenjutsu.block) {
+                                if (!this.world.isRemote) {
+                                        ItemSenjutsu.RangedItem item = (ItemSenjutsu.RangedItem)stack.getItem();
+                                        item.setSageType(stack, ItemSenjutsu.Type.SLUG);
+                                        item.enableJutsu(stack, ItemSenjutsu.SAGEMODE, true);
+                                        player.sendStatusMessage(new TextComponentTranslation(
+                                         "chattext.sagemode.learn",
+                                         ItemSenjutsu.Type.SLUG.getLocalizedName()), true);
+                                }
+                                return true;
+                        }
+                        return false;
+                }
 
 		private void checkClimbing() {
 			EnumFacing side = EnumFacing.DOWN;
