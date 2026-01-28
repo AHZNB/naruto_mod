@@ -1,0 +1,1 @@
+My mod is open source because I want to help people understand what I'm doing, and maybe get support. But I own all the rights to my source code and the releases built from my source code. Forks or modifications are completely allowed, but monetization of any part of my mod/fork or any releases built on it without my permission is NOT allowed.
